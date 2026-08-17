@@ -50,11 +50,13 @@ makarya/
 ## 🔗 Quick Links
 
 - [Product Requirements Document](docs/PRD.md)
+- [UI/UX Style Guide & Visual Reference](docs/UI_STYLE_GUIDE.md)
 - [Arsitektur Sistem](docs/ARSITEKTUR.md)
 - [ERD Database](docs/ERD.md)
 - [Use Case Diagram](docs/USE_CASE.md)
 - [Alur Proses (Sequence)](docs/ALUR_PROSES.md)
 - [UAT Plan](docs/UAT_PLAN.md)
+- [Master TODOLIST](TODOLIST.md)
 - [Backend Spec](backend/BACKEND_SPEC.md)
 - [Web App Spec](web/WEB_SPEC.md)
 - [Mobile App Spec](mobile/MOBILE_SPEC.md)
