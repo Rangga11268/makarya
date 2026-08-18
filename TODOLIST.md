@@ -1,14 +1,18 @@
 # ✅ TODOLIST MAKARYA — Master Engineering Checklist
 **Penyusun:** Darell Rangga Putra | UBSI Kaliabang (Junior Backend Engineer)  
 **Tech Lead / Mentor:** Antigravity (Senior Developer)  
-**Arsitektur:** Python FastAPI + MySQL (3NF) | React.js (shadcn/ui style) | React Native
+**Arsitektur:** Python FastAPI + MySQL (3NF) | React.js (shadcn/ui style) | React Native  
+**Repositori:** 1 Single Monorepo (`makarya`)
 
 ---
 
 ## 🗂️ STATUS FASE
 
 - [x] **Fase 0.1:** Persiapan Lingkungan Lokal & Akun 3rd Party
-- [x] **Fase 0.2:** UI/UX Design System Specification (Mengadopsi Gaya Minimalist Editorial / shadcn/ui dari Referensi)
+  - [x] Python 3.12.6, Node v24.12.0, npm 11.5.1, Git, Android Studio & SDK
+  - [x] 1 Repository Monorepo: `makarya` (Root `.gitignore` melindungi `.env`, `venv/`, `node_modules/`)
+  - [x] Akun 3rd Party: Midtrans Sandbox, Cloudinary, Firebase Console
+- [x] **Fase 0.2:** UI/UX Design System Specification (Minimalist Editorial / shadcn/ui style)
 - [ ] **Fase 1:** Backend Foundation & Database (MySQL + SQLAlchemy + Alembic)
 - [ ] **Fase 2:** Backend Core & Security Hardening (Auth, Projects, Proposals, Escrow, Idempotency)
 - [ ] **Fase 3A:** Web App Development (React + Tailwind + shadcn/ui pattern)
@@ -23,12 +27,12 @@
 *Mode: Anda (Junior Dev) menulis kodenya berdasarkan instruksi & arsitektur dari Senior Dev.*
 
 ### 1.1 Project Initialization & Settings
-- [ ] Buat virtual environment: `python -m venv venv` dan aktivasi
-- [ ] Buat file `backend/requirements.txt` (FastAPI, SQLAlchemy, Alembic, PyMySQL, Pydantic, SlowAPI, etc.)
-- [ ] Install dependencies: `pip install -r requirements.txt`
-- [ ] Buat file `backend/.env` & `backend/.env.example`
-- [ ] Buat `backend/app/core/config.py` menggunakan `pydantic-settings` untuk membaca `.env` secara typesafe
-- [ ] Buat file entry point `backend/main.py` dan verifikasi `http://localhost:8000/docs`
+- [x] Buat virtual environment: `python -m venv venv` dan aktivasi
+- [x] Buat file `backend/requirements.txt` (FastAPI, SQLAlchemy, Alembic, PyMySQL, Pydantic, SlowAPI, etc.)
+- [x] Install dependencies: `pip install -r requirements.txt`
+- [x] Buat file `backend/.env` & `backend/.env.example`
+- [x] Buat `backend/app/core/config.py` menggunakan `pydantic-settings` untuk membaca `.env` secara typesafe
+- [x] Buat file entry point `backend/main.py` dan verifikasi `http://localhost:8000/docs` (Status: 200 OK)
 
 ### 1.2 Database & SQLAlchemy Engine
 - [ ] Buat database lokal di MySQL: `CREATE DATABASE makarya_db;`
