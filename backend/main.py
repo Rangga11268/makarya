@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.core.config import settings
+from app.core.database import get_db
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -26,3 +29,20 @@ async def root():
         "status" : "healthy",
         "env" : settings.APP_ENV
     }
+
+@app.get("/db-check", tags=["Cek Health"])
+async def check_db(db: Session = Depends(get_db)):
+    try:
+        # Cek koneksi database versi postgres
+        result = db.execute(text("SELECT version();")).scalar()
+        return {
+            "status": "connected",
+            "database" :settings.DB_NAME,
+            "version": result,
+            "message": "Database connection successful"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database connection failed: {str(e)}"
+        }

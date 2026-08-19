@@ -11,16 +11,16 @@ class Settings(BaseSettings):
 
     # Database Credentials
     DB_HOST: str = "localhost"
-    DB_PORT: int = 3306
-    DB_USER: str = "root"
-    DB_PASSWORD: str = ""
+    DB_PORT: int = 5432
+    DB_USER: str = "postgres"
+    DB_PASSWORD: str = "darellrangga123"
     DB_NAME: str = "makarya_db"
 
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
-        """Membangun connection string MySQL otomatis"""
-        return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        """Membangun connection string PostgreSQL otomatis"""
+        return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     # JWT Security
     SECRET_KEY: str

@@ -35,10 +35,11 @@
 - [x] Buat file entry point `backend/main.py` dan verifikasi `http://localhost:8000/docs` (Status: 200 OK)
 
 ### 1.2 Database & SQLAlchemy Engine
-- [ ] Buat database lokal di MySQL: `CREATE DATABASE makarya_db;`
-- [ ] Buat `backend/app/core/database.py` (Engine, SessionLocal, Base model)
-- [ ] Setup Alembic untuk migrasi database: `alembic init alembic`
-- [ ] Hubungkan `alembic.ini` dan `alembic/env.py` ke SQLAlchemy Base Model
+- [x] Buat database lokal di PostgreSQL: `CREATE DATABASE makarya_db WITH ENCODING = 'UTF8';`
+- [x] Buat `backend/app/core/database.py` (Engine, SessionLocal, Base model, Connection Pool)
+- [x] Setup Alembic untuk migrasi database: `alembic init alembic`
+- [x] Hubungkan `alembic.ini` dan `alembic/env.py` ke SQLAlchemy Base Model & PostgreSQL URI
+- [x] Verifikasi koneksi database (Status: Connected to PostgreSQL 18.6)
 
 ### 1.3 Database Models (SQLAlchemy ORM - 3NF)
 - [ ] `app/models/user.py` → Model `User` (UUID, email, password_hash, role, is_verified, is_active)
