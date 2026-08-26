@@ -2,9 +2,12 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.database import get_db
-
+from app.core.limiter import limiter
+from app.routers import auth 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -12,6 +15,10 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+# Pasang Rate Limiter state & execption handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # setup cors Security (Hanya origin yang bisa akses api)
 app.add_middleware(
@@ -21,6 +28,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Daftarkan router auth
+app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["Authentication"])
+
 
 @app.get("/", tags=["Cek Health"])
 async def root():
