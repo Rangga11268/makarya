@@ -102,18 +102,21 @@ _Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 ### 2.4 Escrow Engine & Financial Security
 
 - [ ] `app/services/escrow_service.py`:
-  - [ ] **Pessimistic Locking (`with_for_update`)** saat lock baris wallet agar bebas race condition
-  - [ ] `hold_escrow()`: Pindahkan `saldo_aktif` UMKM ke `saldo_escrow`
-  - [ ] `release_escrow()`: Pindahkan `saldo_escrow` UMKM ke `saldo_aktif` Mahasiswa
-  - [ ] `refund_escrow()`: Kembalikan `saldo_escrow` ke `saldo_aktif` UMKM jika dibatalkan
-  - [ ] Catat setiap perpindahan ke tabel `ledger_logs` (Append-only / Immutable)
+- [x] `app/services/escrow_service.py`:
+  - [x] **Pessimistic Locking (`with_for_update`)** saat lock baris wallet agar bebas race condition
+  - [x] `hold_escrow()`: Pindahkan `saldo_aktif` UMKM ke `saldo_escrow`
+  - [x] `release_escrow()`: Pindahkan `saldo_escrow` UMKM ke `saldo_aktif` Mahasiswa
+  - [x] `refund_escrow()`: Kembalikan `saldo_escrow` ke `saldo_aktif` UMKM jika dibatalkan
+  - [x] Catat setiap perpindahan ke tabel `ledger_logs` (Append-only / Immutable)
 
-### 2.5 Submissions & Revision Constraint
+### 2.5 Submission, Review, Revision Counter & Escrow Release
 
-- [ ] `app/routers/submissions.py`:
-  - [ ] `POST /submissions` (Mahasiswa upload link deliverable Cloudinary)
-  - [ ] `PATCH /submissions/{id}/approve` (UMKM approve hasil ➔ Trigger Escrow Release)
-  - [ ] `PATCH /submissions/{id}/revise` (Validasi strict: `jumlah_revisi < 2`, jika >= 2 return 400 Bad Request)
+- [x] `app/schemas/submission.py` → Schema kirim berkas hasil kerja, catatan, dan form minta revisi
+- [x] `app/routers/submissions.py`:
+  - [x] `POST /submissions` (Mahasiswa upload link hasil kerja / status `SUBMITTED`)
+  - [x] `GET /submissions/project/{project_id}` (Melihat hasil kerja proyek)
+  - [x] `PATCH /submissions/{id}/approve` (UMKM menyetujui hasil kerja ➔ Release Escrow ke Mahasiswa + Project status `DONE`)
+  - [x] `PATCH /submissions/{id}/request-revision` (UMKM minta revisi dengan pembatasan ketat Max 2x / anti-eksploitasi mahasiswa) (Teruji 100% OK)
 
 ### 2.6 Midtrans Integration & Idempotency Webhook
 

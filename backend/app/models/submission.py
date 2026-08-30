@@ -10,7 +10,7 @@ from app.core.database import Base
 class SubmissionStatus(str, Enum):
     SUBMITTED = "SUBMITTED"
     REVISION_REQUESTED = "REVISION_REQUESTED"
-    APPROVED = "APPROVED"
+    ACCEPTED = "ACCEPTED"
 
 class Submission(Base):
     __tablename__ = "submissions"
