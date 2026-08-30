@@ -101,7 +101,7 @@ export function RegisterPage() {
           <div className="text-left space-y-2">
             <Link to="/" className="inline-block">
               <img 
-                src="/logoMakarya-noBGpng.png" 
+                src="/logo.webp" 
                 alt="Logo Makarya" 
                 className="h-14 sm:h-16 w-auto object-contain mb-3"
               />

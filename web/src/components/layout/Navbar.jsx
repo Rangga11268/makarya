@@ -72,7 +72,7 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <Link to={isAuthenticated ? (user?.role === "ADMIN" ? "/admin" : "/dashboard") : "/"} className="flex items-center group">
             <img 
-              src="/logoMakarya-noBGpng.png" 
+              src="/logo.webp" 
               alt="Logo Makarya" 
               className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
