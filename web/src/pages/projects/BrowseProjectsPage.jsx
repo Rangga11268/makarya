@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import { useSearchParams, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi } from "../../api";
 import { ProjectCard } from "../../components/features/ProjectCard";
-import { CreateProjectModal } from "../../components/features/CreateProjectModal";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { SectionHeader } from "../../components/ui/SectionHeader";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { 
-  Search, 
-  SlidersHorizontal, 
-  Compass, 
-  RotateCcw, 
-  ShieldCheck, 
-  PlusCircle 
+import {
+  Search,
+  SlidersHorizontal,
+  Compass,
+  RotateCcw,
+  ShieldCheck,
+  PlusCircle,
 } from "lucide-react";
 
 export function BrowseProjectsPage() {
@@ -30,7 +28,6 @@ export function BrowseProjectsPage() {
   const [category, setCategory] = useState(initialCategory);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [maxBudget, setMaxBudget] = useState(2000000);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const categories = [
     { key: "", label: "Semua Kategori" },
@@ -82,7 +79,6 @@ export function BrowseProjectsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
-      
       {/* Page Header */}
       <SectionHeader
         badgeText="Katalog Peluang"
@@ -90,23 +86,13 @@ export function BrowseProjectsPage() {
         subtitle="Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda dan tawarkan proposal terbaik."
         action={
           user?.role === "UMKM" ? (
-            <Button
-              variant="brand"
-              size="md"
-              
-              className="text-xs font-bold shadow-brand"
-            >
-              <PlusCircle className="w-4 h-4 mr-1.5" />
-              + Pasang Proyek Baru
-            </Button>
             <Link to="/projects/new">
               <Button
                 variant="brand"
                 size="md"
                 className="text-xs font-bold shadow-brand"
               >
-                <PlusCircle className="w-4 h-4 mr-1.5" />
-                + Pasang Proyek Baru
+                <PlusCircle className="w-4 h-4 mr-1.5" />+ Pasang Proyek Baru
               </Button>
             </Link>
           ) : (
@@ -124,7 +110,6 @@ export function BrowseProjectsPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        
         {/* Sidebar Filters */}
         <div className="lg:col-span-1 space-y-6">
           <Card className="p-5 space-y-6">
@@ -199,7 +184,8 @@ export function BrowseProjectsPage() {
               <span>Proteksi Pembayaran 100%</span>
             </div>
             <p className="text-[11px] text-brand-indigo/80 leading-relaxed">
-              Seluruh dana proyek terkunci aman di rekening bersama (*Escrow*) sebelum pekerjaan dimulai.
+              Seluruh dana proyek terkunci aman di rekening bersama (*Escrow*)
+              sebelum pekerjaan dimulai.
             </p>
           </div>
         </div>
@@ -209,7 +195,10 @@ export function BrowseProjectsPage() {
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="h-60 bg-surface rounded-card border border-border animate-pulse" />
+                <div
+                  key={n}
+                  className="h-60 bg-surface rounded-card border border-border animate-pulse"
+                />
               ))}
             </div>
           ) : projects.length === 0 ? (
@@ -217,7 +206,11 @@ export function BrowseProjectsPage() {
               title="Tidak ada proyek ditemukan"
               description="Coba ubah filter kategori atau kata kunci pencarian Anda untuk melihat peluang lainnya."
               action={
-                <Button variant="secondary" size="sm" onClick={handleResetFilter}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleResetFilter}
+                >
                   Reset Semua Filter
                 </Button>
               }
@@ -230,17 +223,7 @@ export function BrowseProjectsPage() {
             </div>
           )}
         </div>
-
       </div>
-
-      {/* Modal Pasang Proyek untuk Klien UMKM */}
-      <CreateProjectModal
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onProjectCreated={() => {
-          fetchProjects();
-        }}
-      />
     </div>
   );
 }
