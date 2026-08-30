@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.limiter import limiter
-from app.routers import auth, projects
+from app.routers import auth, projects, proposals
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -32,6 +32,7 @@ app.add_middleware(
 # Daftarkan router auth
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["Authentication"])
 app.include_router(projects.router, prefix=settings.API_V1_STR, tags=["Projects"])
+app.include_router(proposals.router, prefix=settings.API_V1_STR, tags=["Proposals"])
 
 @app.get("/", tags=["Cek Health"])
 async def root():

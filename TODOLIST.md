@@ -79,22 +79,25 @@ _Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 
 ### 2.2 Project Management & Resource Ownership
 
-- [ ] `app/schemas/project.py` → Validasi strict `budget_max <= 2000000`, deadline di masa depan
-- [ ] `app/routers/projects.py`:
-  - [ ] `POST /projects` (Hanya UMKM terverifikasi)
-  - [ ] `GET /projects` (Browse proyek OPEN dengan filter kategori, budget range, keyword)
-  - [ ] `GET /projects/{id}` (Detail proyek)
-  - [ ] `PATCH /projects/{id}` (Security: Validasi bahwa yang mengedit adalah pemilik proyek / BOLA check)
-  - [ ] `DELETE /projects/{id}` (Hanya bisa dihapus jika belum ada proposal)
+- [x] `app/schemas/project.py` → Form buat & edit proyek (validasi budget max 2jt, deadline di masa depan)
+- [x] `app/routers/projects.py`:
+  - [x] `POST /projects` (Khusus UMKM terverifikasi)
+  - [x] `GET /projects` (Browse & filter: kategori, budget range, keyword, pagination)
+  - [x] `GET /projects/my-projects` (Daftar proyek milik UMKM login)
+  - [x] `GET /projects/{id}` (Detail proyek + profil UMKM)
+  - [x] `PATCH /projects/{id}` (Security: Validasi bahwa yang mengedit adalah pemilik proyek / BOLA check)
+  - [x] `DELETE /projects/{id}` (Hanya bisa dihapus jika belum ada proposal berjalan)
 
-### 2.3 Proposal & Selection
+### 2.3 Proposal & Selection Module (Escrow Trigger)
 
-- [ ] `app/schemas/proposal.py` → Form harga tawar, cover letter, estimasi waktu
-- [ ] `app/routers/proposals.py`:
-  - [ ] `POST /proposals` (Mahasiswa melamar, tidak bisa melamar proyek sendiri)
-  - [ ] `GET /proposals/my` (Proposal milik user login)
-  - [ ] `PATCH /proposals/{id}/accept` (UMKM menerima proposal ➔ Trigger Escrow Hold)
-  - [ ] `PATCH /proposals/{id}/reject` (UMKM menolak proposal)
+- [x] `app/schemas/proposal.py` → Pydantic schema proposal (harga_tawar, cover_letter, estimasi_hari, MhsSummary)
+- [x] `app/routers/proposals.py` → Mahasiswa submit proposal (validasi budget max & status project OPEN/BIDDING)
+- [x] `app/routers/proposals.py` → UMKM accept proposal:
+  - Validasi saldo dompet UMKM cukup
+  - Hold saldo ke escrow (`saldo_aktif` -> `saldo_escrow`) dengan Pessimistic Lock (`with_for_update`)
+  - Auto-reject pelamar lain & ubah status project -> `IN_PROGRESS`
+  - Catat log transaksi di `LedgerLog` (Immutable audit trail)
+- [x] `app/routers/proposals.py` → UMKM reject proposal & Mahasiswa view my proposals (Teruji di Swagger 200/201 OK))
 
 ### 2.4 Escrow Engine & Financial Security
 
