@@ -3,18 +3,18 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
-import { 
-  Compass, 
-  Layers, 
-  Briefcase, 
-  Wallet as WalletIcon, 
-  ShieldCheck, 
-  LogOut, 
-  Menu, 
+import {
+  Compass,
+  Layers,
+  Briefcase,
+  Wallet as WalletIcon,
+  ShieldCheck,
+  LogOut,
+  Menu,
   X,
   UserCheck,
   PlusCircle,
-  ChevronDown
+  ChevronDown,
 } from "lucide-react";
 
 export function Navbar() {
@@ -37,24 +37,24 @@ export function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
     setUserDropdownOpen(false);
     setMobileMenuOpen(false);
     navigate("/");
   };
 
-  const navLinks = user?.role === "ADMIN"
-    ? [
-        { label: "Admin Overview", path: "/admin", icon: ShieldCheck },
-        { label: "Pusat Sengketa", path: "/admin/disputes", icon: Layers },
-      ]
-    : [
-        { label: "Beranda", path: "/dashboard", icon: Layers },
-        { label: "Jelajah Proyek", path: "/projects", icon: Compass },
-        { label: "Proposal", path: "/proposals", icon: Briefcase },
-        { label: "Portofolio", path: "/portfolio", icon: UserCheck },
-        { label: "Dompet", path: "/wallet", icon: WalletIcon },
-      ];
+  const navLinks =
+    user?.role === "ADMIN"
+      ? [
+          { label: "Admin Overview", path: "/admin", icon: ShieldCheck },
+          { label: "Pusat Sengketa", path: "/admin/disputes", icon: Layers },
+        ]
+      : [
+          { label: "Beranda", path: "/dashboard", icon: Layers },
+          { label: "Jelajah Proyek", path: "/projects", icon: Compass },
+          { label: "Proposal", path: "/proposals", icon: Briefcase },
+          { label: "Portofolio", path: "/portfolio", icon: UserCheck },
+          { label: "Dompet", path: "/wallet", icon: WalletIcon },
+        ];
 
   const isActive = (path) => location.pathname === path;
 
@@ -70,13 +70,21 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-md border-b border-border transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
-        
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link to={isAuthenticated ? (user?.role === "ADMIN" ? "/admin" : "/dashboard") : "/"} className="flex items-center group">
-            <img 
-              src="/logo.webp" 
-              alt="Logo Makarya" 
+          <Link
+            to={
+              isAuthenticated
+                ? user?.role === "ADMIN"
+                  ? "/admin"
+                  : "/dashboard"
+                : "/"
+            }
+            className="flex items-center group"
+          >
+            <img
+              src="/logo.webp"
+              alt="Logo Makarya"
               className="h-9 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </Link>
@@ -109,7 +117,6 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              
               {/* UMKM Quick Action */}
               {user?.role === "UMKM" && (
                 <Link to="/projects/new">
@@ -133,7 +140,10 @@ export function Navbar() {
                   <div className="w-7 h-7 rounded-full bg-dark-900 text-white flex items-center justify-center font-bold text-xs">
                     {initialLetter}
                   </div>
-                  <Badge variant={roleInfo.variant} className="hidden sm:inline-flex text-[10px] py-0 px-2">
+                  <Badge
+                    variant={roleInfo.variant}
+                    className="hidden sm:inline-flex text-[10px] py-0 px-2"
+                  >
                     {roleInfo.label}
                   </Badge>
                   <ChevronDown className="w-3.5 h-3.5 text-muted hidden sm:block mr-1" />
@@ -143,11 +153,16 @@ export function Navbar() {
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-surface rounded-2xl border border-border shadow-float p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                     <div className="px-3 py-2.5 border-b border-border">
-                      <span className="text-[11px] text-muted block">Masuk sebagai</span>
+                      <span className="text-[11px] text-muted block">
+                        Masuk sebagai
+                      </span>
                       <span className="text-xs font-bold text-dark-900 truncate block">
                         {user?.email}
                       </span>
-                      <Badge variant={roleInfo.variant} className="text-[10px] mt-1">
+                      <Badge
+                        variant={roleInfo.variant}
+                        className="text-[10px] mt-1"
+                      >
                         {roleInfo.label}
                       </Badge>
                     </div>
@@ -191,16 +206,24 @@ export function Navbar() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden p-2 rounded-full border border-border text-dark-900 hover:bg-gray-100"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </button>
             </div>
           ) : (
             <div className="flex items-center gap-2.5">
               <Link to="/login">
-                <Button variant="ghost" size="sm">Masuk</Button>
+                <Button variant="ghost" size="sm">
+                  Masuk
+                </Button>
               </Link>
               <Link to="/register">
-                <Button variant="brand" size="sm">Daftar Mahasiswa</Button>
+                <Button variant="brand" size="sm">
+                  Daftar Mahasiswa
+                </Button>
               </Link>
             </div>
           )}
@@ -220,14 +243,17 @@ export function Navbar() {
           </div>
 
           {user?.role === "UMKM" && (
-            <Link to="/projects/new" onClick={() => setMobileMenuOpen(false)} className="block mb-2">
+            <Link
+              to="/projects/new"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block mb-2"
+            >
               <Button
                 variant="brand"
                 size="sm"
                 className="w-full justify-center text-xs font-bold shadow-brand"
               >
-                <PlusCircle className="w-4 h-4 mr-2" />
-                + Pasang Proyek UMKM Baru
+                <PlusCircle className="w-4 h-4 mr-2" />+ Pasang Proyek UMKM Baru
               </Button>
             </Link>
           )}
