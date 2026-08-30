@@ -16,50 +16,88 @@ export function CategoryCard({
   projectCount = 0,
   active = false,
   onClick,
+  className
 }) {
-  const iconMap = {
-    DESIGN: Palette,
-    DESAIN: Palette,
-    UIUX: Layout,
-    PEMROGRAMAN: Code2,
-    VIDEO: Video,
-    COPYWRITING: PenTool,
-    ADMIN_DATA: Database,
+  const categoryConfig = {
+    DESIGN: {
+      icon: Palette,
+      bgClass: "bg-indigo-50/70 hover:bg-indigo-100/80 border-indigo-100/80",
+      iconBg: "bg-indigo-600 text-white",
+      textColor: "text-indigo-950",
+    },
+    DESAIN: {
+      icon: Palette,
+      bgClass: "bg-indigo-50/70 hover:bg-indigo-100/80 border-indigo-100/80",
+      iconBg: "bg-indigo-600 text-white",
+      textColor: "text-indigo-950",
+    },
+    UIUX: {
+      icon: Layout,
+      bgClass: "bg-sky-50/70 hover:bg-sky-100/80 border-sky-100/80",
+      iconBg: "bg-sky-500 text-white",
+      textColor: "text-sky-950",
+    },
+    PEMROGRAMAN: {
+      icon: Code2,
+      bgClass: "bg-emerald-50/70 hover:bg-emerald-100/80 border-emerald-100/80",
+      iconBg: "bg-emerald-600 text-white",
+      textColor: "text-emerald-950",
+    },
+    VIDEO: {
+      icon: Video,
+      bgClass: "bg-rose-50/70 hover:bg-rose-100/80 border-rose-100/80",
+      iconBg: "bg-rose-500 text-white",
+      textColor: "text-rose-950",
+    },
+    COPYWRITING: {
+      icon: PenTool,
+      bgClass: "bg-amber-50/70 hover:bg-amber-100/80 border-amber-100/80",
+      iconBg: "bg-amber-500 text-white",
+      textColor: "text-amber-950",
+    },
+    ADMIN_DATA: {
+      icon: Database,
+      bgClass: "bg-slate-100/70 hover:bg-slate-200/80 border-slate-200/80",
+      iconBg: "bg-slate-700 text-white",
+      textColor: "text-slate-950",
+    },
   };
 
-  const IconComponent = iconMap[code] || Palette;
+  const config = categoryConfig[code] || categoryConfig.DESIGN;
+  const IconComponent = config.icon;
 
   return (
     <div
       onClick={onClick}
       className={cn(
-        "group relative p-5 rounded-card border transition-all duration-200 cursor-pointer flex flex-col justify-between select-none",
+        "group relative p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between select-none shadow-xs hover:shadow-sm",
         active
-          ? "bg-brand-indigo text-white border-brand-indigo-dark shadow-brand"
-          : "bg-surface hover:bg-brand-indigo-light/30 border-border text-dark-900 shadow-xs"
+          ? "bg-dark-900 text-white border-dark-900 shadow-md"
+          : cn(config.bgClass, config.textColor),
+        className
       )}
     >
       <div className="flex items-center justify-between mb-4">
         <div
           className={cn(
-            "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-            active
-              ? "bg-white/20 text-white"
-              : "bg-canvas text-brand-indigo group-hover:bg-brand-indigo group-hover:text-white"
+            "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-2xs",
+            active ? "bg-white/20 text-white" : config.iconBg
           )}
         >
-          <IconComponent className="w-5 h-5 stroke-[1.75]" />
+          <IconComponent className="w-5 h-5 stroke-[2]" />
         </div>
-        <ArrowUpRight className={cn("w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5", active ? "text-white" : "text-muted group-hover:text-brand-indigo")} />
+        <div className={cn("w-7 h-7 rounded-full flex items-center justify-center transition-all", active ? "bg-white/10 text-white" : "bg-white/60 text-dark-900 group-hover:bg-white")}>
+          <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </div>
       </div>
 
       <div>
-        <h3 className="text-sm font-bold tracking-tight font-sans mb-1">
+        <h3 className={cn("text-sm font-bold tracking-tight font-sans mb-1 line-clamp-1", active ? "text-white" : config.textColor)}>
           {title}
         </h3>
         <span
           className={cn(
-            "text-xs font-semibold",
+            "text-xs font-semibold block",
             active ? "text-white/80" : "text-muted"
           )}
         >

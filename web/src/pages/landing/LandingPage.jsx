@@ -20,7 +20,8 @@ import {
   Building2, 
   GraduationCap, 
   Lock, 
-  PlusCircle 
+  PlusCircle,
+  ArrowUpRight
 } from "lucide-react";
 
 export function LandingPage() {
@@ -60,10 +61,38 @@ export function LandingPage() {
   ];
 
   const featuredTalents = [
-    { name: "Darell Rangga Putra", prodi: "Sistem Informasi • UBSI", rating: 5.0, totalJobs: 8, skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind"] },
-    { name: "Adelia Putri", prodi: "DKV • UBSI", rating: 4.9, totalJobs: 11, skills: ["Figma", "Branding", "Logo Design", "Illustrator"] },
-    { name: "Bima Arya", prodi: "Teknologi Informasi • UBSI", rating: 5.0, totalJobs: 6, skills: ["Landing Page", "Next.js", "WordPress", "SEO"] },
-    { name: "Siti Rahma", prodi: "Ilmu Komunikasi • UBSI", rating: 4.8, totalJobs: 9, skills: ["Copywriting", "Social Media", "Content Plan"] },
+    { 
+      name: "Darell Rangga Putra", 
+      prodi: "Sistem Informasi • UBSI", 
+      rating: 5.0, 
+      totalJobs: 8, 
+      skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind"],
+      avatarUrl: "/images/talent-darell.webp"
+    },
+    { 
+      name: "Adelia Putri", 
+      prodi: "DKV • UBSI", 
+      rating: 4.9, 
+      totalJobs: 11, 
+      skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
+      avatarUrl: "/images/talent-adelia.webp"
+    },
+    { 
+      name: "Bima Arya", 
+      prodi: "Teknologi Informasi • UBSI", 
+      rating: 5.0, 
+      totalJobs: 6, 
+      skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
+      avatarUrl: "/images/talent-bima.webp"
+    },
+    { 
+      name: "Siti Rahma", 
+      prodi: "Ilmu Komunikasi • UBSI", 
+      rating: 4.8, 
+      totalJobs: 9, 
+      skills: ["Copywriting", "Social Media", "Content Plan"],
+      avatarUrl: "/images/talent-siti.webp"
+    },
   ];
 
   return (
@@ -153,60 +182,96 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 2. MOST DEMANDING CATEGORIES */}
+      {/* 2. MOST DEMANDING CATEGORIES (3-Column Layout Matching Dribbble Reference) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          badgeText="Katalog Keahlian"
-          title="Kategori Proyek Paling Diminati"
-          subtitle="Pilih kategori yang sesuai dengan program studi dan keahlian digital yang Anda butuhkan atau kuasai."
-          action={
-            <Link to="/projects">
-              <Button variant="outline" size="sm">Lihat Semua Kategori</Button>
-            </Link>
-          }
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          
+          {/* Left Column: Editorial Headline & Context (3 cols) */}
+          <div className="lg:col-span-4 flex flex-col justify-between space-y-6 bg-surface p-7 sm:p-8 rounded-3xl border border-border shadow-xs">
+            <div className="space-y-4">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
+                Katalog Keahlian
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-normal text-dark-900 tracking-tight leading-snug">
+                Kategori Proyek Paling Diminati.
+              </h2>
+              <p className="text-xs sm:text-sm text-muted leading-relaxed font-sans font-normal">
+                Pilih bidang spesialisasi yang paling banyak dibutuhkan pelaku UMKM untuk meningkatkan daya saing bisnis dan omset penjualan mereka.
+              </p>
+            </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
-          {categories.map((cat) => (
-            <CategoryCard
-              key={cat.code}
-              code={cat.code}
-              title={cat.title}
-              projectCount={cat.count}
-              onClick={() => navigate(`/projects?category=${cat.code}`)}
+            <div className="pt-4 border-t border-border">
+              <Link to="/projects">
+                <Button variant="brand" size="md" className="w-full sm:w-auto text-xs font-bold shadow-brand">
+                  <span>Jelajah Semua Kategori</span>
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Middle Column: Featured Student Photography Card (3 cols) */}
+          <div className="lg:col-span-3 relative rounded-3xl overflow-hidden min-h-[300px] border border-border shadow-xs group">
+            <img
+              src="/images/student-workspace.webp"
+              alt="Mahasiswa Berkarya"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-          ))}
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-900/90 via-dark-900/30 to-transparent flex flex-col justify-end p-6 text-white space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold text-white w-fit border border-white/20">
+                <GraduationCap className="w-3.5 h-3.5 text-brand-cyan" />
+                Talenta Kampus Aktif
+              </div>
+              <h4 className="text-base font-bold font-sans">Ribuan Mahasiswa Siap Membantu Usaha Anda</h4>
+              <p className="text-[11px] text-slate-300 font-normal">Karya profesional, harga bersahabat, terverifikasi resmi.</p>
+            </div>
+          </div>
+
+          {/* Right Column: 2x3 Category Cards Grid (5 cols) */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {categories.map((cat) => (
+              <CategoryCard
+                key={cat.code}
+                code={cat.code}
+                title={cat.title}
+                projectCount={cat.count}
+                onClick={() => navigate(`/projects?category=${cat.code}`)}
+              />
+            ))}
+          </div>
+
         </div>
       </section>
 
-      {/* 3. HOW IT WORKS */}
+      {/* 3. HOW IT WORKS (Enhanced 3-Card Layout) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-xs">
+        <div className="bg-canvas border border-border rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
           <SectionHeader
             centered
             badgeText="Alur Pengerjaan Terpercaya"
             title="Bagaimana Makarya Melindungi Mahasiswa & UMKM?"
-            subtitle="Sistem micro-freelancing aman dan transparan mulai dari pendaftaran hingga pelepasan honor."
+            subtitle="Sistem micro-freelancing aman, transparan, dan terukur mulai dari pembuatan brief hingga honor cair ke rekening."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
             <HowItWorksStep
               stepNumber={1}
-              iconName="account"
-              title="1. Pasang Brief & Kunci Dana Escrow"
-              description="Klien UMKM memasang rincian proyek. Saat proposal disepakati, dana ditahan aman di rekening penampung Makarya."
+              iconName="escrow"
+              isHighlight={true}
+              title="1. Pasang Brief & Kunci Escrow"
+              description="Klien UMKM memasang rincian proyek. Saat proposal disepakati, dana otomatis dikunci aman di rekening penampung resmi Makarya."
             />
             <HowItWorksStep
               stepNumber={2}
-              iconName="apply"
+              iconName="work"
               title="2. Mahasiswa Mengerjakan Karya"
-              description="Mahasiswa kampus bertalenta mengerjakan pesanan sesuai kesepakatan deliverable dan tenggat waktu."
+              description="Mahasiswa kampus bertalenta mengerjakan pesanan sesuai kesepakatan deliverable, standar mutu, dan batas tenggat waktu."
             />
             <HowItWorksStep
               stepNumber={3}
               iconName="complete"
               title="3. Review Hasil & Dana Cair"
-              description="Setelah klien memeriksa dan menyetujui hasil deliverable, dana escrow otomatis diteruskan langsung ke saldo mahasiswa."
+              description="Setelah klien memeriksa dan menyetujui hasil deliverable, dana escrow otomatis diteruskan langsung ke saldo aktif mahasiswa."
             />
           </div>
         </div>
@@ -257,6 +322,7 @@ export function LandingPage() {
               rating={talent.rating}
               totalJobs={talent.totalJobs}
               skills={talent.skills}
+              avatarUrl={talent.avatarUrl}
             />
           ))}
         </div>
