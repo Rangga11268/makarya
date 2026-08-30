@@ -1,4 +1,5 @@
 # ✅ TODOLIST MAKARYA — Master Engineering Checklist
+
 **Penyusun:** Darell Rangga Putra | UBSI Kaliabang (Junior Backend Engineer)  
 **Tech Lead / Mentor:** Antigravity (Senior Developer)  
 **Arsitektur:** Python FastAPI + MySQL (3NF) | React.js (shadcn/ui style) | React Native  
@@ -13,7 +14,7 @@
   - [x] 1 Repository Monorepo: `makarya` (Root `.gitignore` melindungi `.env`, `venv/`, `node_modules/`)
   - [x] Akun 3rd Party: Midtrans Sandbox, Cloudinary, Firebase Console
 - [x] **Fase 0.2:** UI/UX Design System Specification (Minimalist Editorial / shadcn/ui style)
-- [ ] **Fase 1:** Backend Foundation & Database (MySQL + SQLAlchemy + Alembic)
+- [x] **Fase 1:** Backend Foundation & Database (PostgreSQL + SQLAlchemy + Alembic + Seeder 100% DONE)
 - [ ] **Fase 2:** Backend Core & Security Hardening (Auth, Projects, Proposals, Escrow, Idempotency)
 - [ ] **Fase 3A:** Web App Development (React + Tailwind + shadcn/ui pattern)
 - [ ] **Fase 3B:** Mobile App Development (React Native)
@@ -24,9 +25,11 @@
 ---
 
 ## 🟡 FASE 1 — BACKEND: FOUNDATION & DATABASE
-*Mode: Anda (Junior Dev) menulis kodenya berdasarkan instruksi & arsitektur dari Senior Dev.*
+
+_Mode: Anda (Junior Dev) menulis kodenya berdasarkan instruksi & arsitektur dari Senior Dev._
 
 ### 1.1 Project Initialization & Settings
+
 - [x] Buat virtual environment: `python -m venv venv` dan aktivasi
 - [x] Buat file `backend/requirements.txt` (FastAPI, SQLAlchemy, Alembic, PyMySQL, Pydantic, SlowAPI, etc.)
 - [x] Install dependencies: `pip install -r requirements.txt`
@@ -35,6 +38,7 @@
 - [x] Buat file entry point `backend/main.py` dan verifikasi `http://localhost:8000/docs` (Status: 200 OK)
 
 ### 1.2 Database & SQLAlchemy Engine
+
 - [x] Buat database lokal di PostgreSQL: `CREATE DATABASE makarya_db WITH ENCODING = 'UTF8';`
 - [x] Buat `backend/app/core/database.py` (Engine, SessionLocal, Base model, Connection Pool)
 - [x] Setup Alembic untuk migrasi database: `alembic init alembic`
@@ -42,34 +46,39 @@
 - [x] Verifikasi koneksi database (Status: Connected to PostgreSQL 18.6)
 
 ### 1.3 Database Models (SQLAlchemy ORM - 3NF)
-- [ ] `app/models/user.py` → Model `User` (UUID, email, password_hash, role, is_verified, is_active)
-- [ ] `app/models/profile.py` → Model `ProfileMhs` & `ProfileUmkm`
-- [ ] `app/models/master.py` → Model `MasterProdi` & `MasterSkill`
-- [ ] `app/models/skill.py` → Model `MhsSkill` (Junction Table)
-- [ ] `app/models/project.py` → Model `Project` (dengan check constraint budget <= 2jt)
-- [ ] `app/models/proposal.py` → Model `Proposal`
-- [ ] `app/models/submission.py` → Model `Submission` (dengan check constraint revisi <= 2)
-- [ ] `app/models/wallet.py` → Model `Wallet` (`saldo_aktif`, `saldo_escrow`) & `LedgerLog` (Immutable)
-- [ ] `app/models/rating.py` → Model `Rating`
-- [ ] `app/models/dispute.py` → Model `Dispute`
-- [ ] `app/models/notification.py` → Model `Notification`
-- [ ] Jalankan migrasi pertama: `alembic revision --autogenerate -m "Initial schema"`
-- [ ] Terapkan migrasi ke MySQL: `alembic upgrade head`
-- [ ] Seed data master: Isi awal data `master_prodi` dan `master_skills`
+
+- [x] `app/models/user.py` → Model `User` (UUID, username, email, password_hash, role, is_verified, is_active)
+- [x] `app/models/profile.py` → Model `ProfileMhs` & `ProfileUmkm`
+- [x] `app/models/master.py` → Model `MasterProdi` & `MasterSkill`
+- [x] `app/models/skill.py` → Model `MhsSkill` (Junction Table)
+- [x] `app/models/project.py` → Model `Project` (dengan check constraint budget <= 2jt)
+- [x] `app/models/proposal.py` → Model `Proposal`
+- [x] `app/models/submission.py` → Model `Submission` (dengan check constraint revisi <= 2)
+- [x] `app/models/wallet.py` → Model `Wallet` (`saldo_aktif`, `saldo_escrow`) & `LedgerLog` (Immutable)
+- [x] `app/models/rating.py` → Model `Rating` (skor 1-5, unique per user per project)
+- [x] `app/models/dispute.py` → Model `Dispute`
+- [x] `app/models/notification.py` → Model `Notification`
+- [x] `app/models/ai_req.py` → Model `AiRequirement`
+- [x] Jalankan migrasi pertama: `alembic revision --autogenerate -m "Initial 13 tables schema"`
+- [x] Terapkan migrasi ke PostgreSQL: `alembic upgrade head` (15 tabel live)
+- [x] Seed data master: `python -m app.seeds` (8 Prodi, 15 Skills terisi)
 
 ---
 
 ## 🟠 FASE 2 — BACKEND: SECURITY HARDENING & CORE APIS
-*Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns.*
+
+_Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 
 ### 2.1 Security Layer & Auth
-- [ ] `app/core/security.py` → Bcrypt hashing (rounds=12) & JWT Access/Refresh Token Generator
-- [ ] `app/core/limiter.py` → SlowAPI Rate Limiter (mencegah Brute Force & DoS)
-- [ ] `app/dependencies.py` → OAuth2 Bearer token parser, `get_current_user`, `require_role("UMKM", "MHS", "ADMIN")`
-- [ ] `app/schemas/auth.py` → Pydantic schema untuk Register UMKM, Register MHS (validasi regex `.ac.id`), Login, Token
-- [ ] `app/routers/auth.py` → Endpoint `/auth/register/umkm`, `/auth/register/mahasiswa`, `/auth/login`, `/auth/refresh`
+
+- [x] `app/core/security.py` → Bcrypt hashing (rounds=12) & JWT Access/Refresh Token Generator
+- [x] `app/core/limiter.py` → SlowAPI Rate Limiter (mencegah Brute Force & DoS)
+- [x] `app/dependencies.py` → OAuth2 Bearer token parser, `get_current_user`, `require_role("UMKM", "MHS", "ADMIN")`
+- [x] `app/schemas/auth.py` → Pydantic schema untuk Register UMKM, Register MHS (validasi regex `.ac.id`), Login, Token
+- [x] `app/routers/auth.py` → Endpoint `/auth/register/umkm`, `/auth/register/mahasiswa`, `/auth/login`, `/auth/refresh`, `/auth/me` (Teruji di Swagger 201/200 OK)
 
 ### 2.2 Project Management & Resource Ownership
+
 - [ ] `app/schemas/project.py` → Validasi strict `budget_max <= 2000000`, deadline di masa depan
 - [ ] `app/routers/projects.py`:
   - [ ] `POST /projects` (Hanya UMKM terverifikasi)
@@ -79,6 +88,7 @@
   - [ ] `DELETE /projects/{id}` (Hanya bisa dihapus jika belum ada proposal)
 
 ### 2.3 Proposal & Selection
+
 - [ ] `app/schemas/proposal.py` → Form harga tawar, cover letter, estimasi waktu
 - [ ] `app/routers/proposals.py`:
   - [ ] `POST /proposals` (Mahasiswa melamar, tidak bisa melamar proyek sendiri)
@@ -87,6 +97,7 @@
   - [ ] `PATCH /proposals/{id}/reject` (UMKM menolak proposal)
 
 ### 2.4 Escrow Engine & Financial Security
+
 - [ ] `app/services/escrow_service.py`:
   - [ ] **Pessimistic Locking (`with_for_update`)** saat lock baris wallet agar bebas race condition
   - [ ] `hold_escrow()`: Pindahkan `saldo_aktif` UMKM ke `saldo_escrow`
@@ -95,12 +106,14 @@
   - [ ] Catat setiap perpindahan ke tabel `ledger_logs` (Append-only / Immutable)
 
 ### 2.5 Submissions & Revision Constraint
+
 - [ ] `app/routers/submissions.py`:
   - [ ] `POST /submissions` (Mahasiswa upload link deliverable Cloudinary)
   - [ ] `PATCH /submissions/{id}/approve` (UMKM approve hasil ➔ Trigger Escrow Release)
   - [ ] `PATCH /submissions/{id}/revise` (Validasi strict: `jumlah_revisi < 2`, jika >= 2 return 400 Bad Request)
 
 ### 2.6 Midtrans Integration & Idempotency Webhook
+
 - [ ] `app/services/midtrans_service.py` → Create VA / QRIS Charge
 - [ ] `app/routers/payments.py`:
   - [ ] `POST /payments/topup` → Inisiasi pembayaran
@@ -111,7 +124,8 @@
 ---
 
 ## 🔴 FASE 3A — WEB APP (MAHASISWA & ADMIN)
-*Styling: Tailwind CSS + shadcn/ui aesthetic (Monochrome, Pill badges, Crisp borders).*
+
+_Styling: Tailwind CSS + shadcn/ui aesthetic (Monochrome, Pill badges, Crisp borders)._
 
 - [ ] Setup Vite + React 18 + Tailwind CSS + Lucide Icons
 - [ ] Setup shadcn/ui components (`Button`, `Card`, `Badge`, `Dialog`, `Table`, `Input`, `DropdownMenu`)
@@ -128,7 +142,8 @@
 ---
 
 ## 🔵 FASE 3B — MOBILE APP (UMKM)
-*Tech: React Native 0.73+ (Tampilan identik dengan mockup mobile).*
+
+_Tech: React Native 0.73+ (Tampilan identik dengan mockup mobile)._
 
 - [ ] Init React Native dengan package name: `npx @react-native-community/cli init MakaryaMobile --package-name com.makarya.mobile`
 - [ ] Hubungkan `google-services.json` dari Firebase Console ke `mobile/android/app/`
@@ -144,6 +159,7 @@
 ---
 
 ## 🟣 FASE 4 — TESTING & AUDIT SKRIPSI (UAT)
+
 - [ ] Test 16 Skenario Pengujian UAT (W-01 s/d W-06, M-01 s/d M-05, B-01 s/d B-05)
 - [ ] Security Verification:
   - [ ] Test bypass budget limit (> 2jt) -> Blocked

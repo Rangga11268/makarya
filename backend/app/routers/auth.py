@@ -34,7 +34,7 @@ def register_umkm(request: Request,body: RegisterUmkmRequest, db: Session = Depe
     # Buat akun user
     new_user = User(
         email=body.email,
-        password=hash_password(body.password),
+        password_hash=hash_password(body.password),
         role=UserRole.UMKM,
         is_verified=True,
         is_active=True,
@@ -83,7 +83,7 @@ def register_mahasiswa(request: Request, body: RegisterMhsRequest, db: Session =
     # Buat akun user
     new_user = User(
         email=body.email,
-        password=hash_password(body.password),
+        password_hash=hash_password(body.password),
         role=UserRole.MHS,
         is_verified=True,
         is_active=True,
