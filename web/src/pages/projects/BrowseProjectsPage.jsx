@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi } from "../../api";
 import { ProjectCard } from "../../components/features/ProjectCard";
@@ -98,6 +99,16 @@ export function BrowseProjectsPage() {
               <PlusCircle className="w-4 h-4 mr-1.5" />
               + Pasang Proyek Baru
             </Button>
+            <Link to="/projects/new">
+              <Button
+                variant="brand"
+                size="md"
+                className="text-xs font-bold shadow-brand"
+              >
+                <PlusCircle className="w-4 h-4 mr-1.5" />
+                + Pasang Proyek Baru
+              </Button>
+            </Link>
           ) : (
             <Button
               variant="outline"

@@ -6,7 +6,6 @@ import { projectApi } from "../../api";
 import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
-import { ProposalModal } from "../../components/features/ProposalModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
 import {
@@ -27,14 +26,12 @@ export function ProjectDetailPage() {
   const { addToast } = useToastStore();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
 
   const handleApplyClick = () => {
     if (!isAuthenticated) {
       addToast(
         "Silakan masuk dengan akun mahasiswa terlebih dahulu untuk mengajukan proposal.",
         "info",
-        "info"
       );
       navigate("/login");
       return;
@@ -43,11 +40,9 @@ export function ProjectDetailPage() {
       addToast(
         "Akun Klien UMKM tidak dapat mengajukan proposal proyek. Gunakan akun mahasiswa.",
         "warning",
-        "warning"
       );
       return;
     }
-    setModalOpen(true);
     navigate(`/projects/${project.id}/apply`);
   };
 
@@ -205,14 +200,6 @@ export function ProjectDetailPage() {
           </Card>
         </div>
       </div>
-
-      {/* Modal Kirim Proposal */}
-      <ProposalModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        project={project}
-        onSuccess={fetchProject}
-      />
     </div>
   );
 }
