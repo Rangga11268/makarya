@@ -24,7 +24,7 @@ import {
   GraduationCap,
   CreditCard,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 
 export function WalletPage() {
@@ -55,7 +55,6 @@ export function WalletPage() {
   });
   const [withdrawLoading, setWithdrawLoading] = useState(false);
   const [withdrawError, setWithdrawError] = useState(null);
-  const { addToast } = useToastStore();
 
   const fetchWalletData = async () => {
     try {
@@ -132,24 +131,19 @@ export function WalletPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-dark-900 tracking-tight">
-          Dompet & Keuangan Mahasiswa
-        </h1>
-        <p className="text-xs sm:text-sm text-muted">
-          Pusat saldo aktif hasil freelance, dana terkunci escrow, dan penarikan
-          ke rekening bank lokal
-        </p>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            {isUmkm ? "Manajemen Keuangan & Escrow UMKM" : "Dompet & Rekening Mahasiswa"}
+            {isUmkm
+              ? "Manajemen Keuangan & Escrow UMKM"
+              : "Dompet & Rekening Mahasiswa"}
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm ? "Dompet & Saldo Escrow UMKM" : "Dompet & Keuangan Mahasiswa"}
+            {isUmkm
+              ? "Dompet & Saldo Escrow UMKM"
+              : "Dompet & Keuangan Mahasiswa"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
@@ -165,25 +159,20 @@ export function WalletPage() {
             onClick={() => setTopUpModalOpen(true)}
             className="shadow-brand text-xs font-bold shrink-0"
           >
-            <PlusCircle className="w-4 h-4 mr-1.5" />
-            + Isi Ulang / Top-Up Saldo
+            <PlusCircle className="w-4 h-4 mr-1.5" />+ Isi Ulang / Top-Up Saldo
           </Button>
         )}
       </div>
 
       {/* Saldo Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <Card className="p-6 space-y-4 bg-dark-900 text-white">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Saldo Aktif (Siap Ditarik)
-            </span>
-            <WalletIcon className="w-5 h-5 text-emerald-400" />
         <Card className="p-6 sm:p-7 space-y-5 bg-dark-900 text-white rounded-3xl shadow-xl flex flex-col justify-between">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                {isUmkm ? "Saldo Deposit Aktif (Siap Pakai)" : "Saldo Aktif (Siap Ditarik)"}
+                {isUmkm
+                  ? "Saldo Deposit Aktif (Siap Pakai)"
+                  : "Saldo Aktif (Siap Ditarik)"}
               </span>
               <WalletIcon className="w-5 h-5 text-emerald-400" />
             </div>
@@ -199,8 +188,6 @@ export function WalletPage() {
             </p>
           </div>
 
-          <div className="text-3xl sm:text-4xl font-black tracking-tight">
-            {formatCurrency(wallet?.saldo_aktif || 0)}
           <div className="pt-2">
             {isUmkm ? (
               <Button
@@ -209,8 +196,8 @@ export function WalletPage() {
                 onClick={() => setTopUpModalOpen(true)}
                 className="w-full justify-center font-bold text-xs bg-white text-dark-900 hover:bg-slate-100"
               >
-                <PlusCircle className="w-4 h-4 mr-1.5 text-brand-indigo" />
-                + Isi Ulang / Top Up Saldo Deposit
+                <PlusCircle className="w-4 h-4 mr-1.5 text-brand-indigo" />+ Isi
+                Ulang / Top Up Saldo Deposit
               </Button>
             ) : (
               <Button
@@ -219,34 +206,20 @@ export function WalletPage() {
                 onClick={() => setWithdrawModalOpen(true)}
                 className="w-full justify-center font-bold text-xs bg-white text-dark-900 hover:bg-slate-100"
               >
-                <ArrowUpRight className="w-4 h-4 mr-1 text-emerald-600" />
-                ↗ Tarik Saldo ke Rekening Bank
+                <ArrowUpRight className="w-4 h-4 mr-1 text-emerald-600" />↗
+                Tarik Saldo ke Rekening Bank
               </Button>
             )}
           </div>
-
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => setWithdrawModalOpen(true)}
-            className="w-full justify-center font-bold text-xs"
-          >
-            <ArrowUpRight className="w-4 h-4 mr-1" />
-            Tarik Saldo ke Rekening Bank
-          </Button>
         </Card>
 
-        <Card className="p-6 space-y-4 bg-surface">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted uppercase tracking-wider">
-              Saldo Dalam Proyek (Escrow)
-            </span>
-            <Lock className="w-5 h-5 text-amber-500" />
         <Card className="p-6 sm:p-7 space-y-5 bg-surface border border-border rounded-3xl shadow-xs flex flex-col justify-between">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-muted uppercase tracking-wider">
-                {isUmkm ? "Saldo Terkunci di Escrow Holding" : "Honor dalam Pengerjaan (Escrow)"}
+                {isUmkm
+                  ? "Saldo Terkunci di Escrow Holding"
+                  : "Honor dalam Pengerjaan (Escrow)"}
               </span>
               <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center">
                 <Lock className="w-4 h-4 text-amber-600" />
@@ -264,22 +237,18 @@ export function WalletPage() {
             </p>
           </div>
 
-          <div className="text-3xl sm:text-4xl font-black text-dark-900 tracking-tight">
-            {formatCurrency(wallet?.saldo_escrow || 0)}
           <div className="pt-2 flex items-center justify-between text-xs border-t border-border">
             <span className="text-muted flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               Terproteksi Escrow 100%
             </span>
-            <Link to="/proposals" className="font-bold text-brand-indigo hover:underline flex items-center gap-1">
+            <Link
+              to="/proposals"
+              className="font-bold text-brand-indigo hover:underline flex items-center gap-1"
+            >
               Lihat Proyek Berjalan →
             </Link>
           </div>
-
-          <p className="text-xs text-muted leading-relaxed">
-            Dana yang sedang dikerjakan dan akan otomatis cair ke saldo aktif
-            setelah hasil kerja disetujui klien UMKM.
-          </p>
         </Card>
       </div>
 
@@ -287,26 +256,19 @@ export function WalletPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-dark-900 flex items-center gap-2">
-            <ReceiptText className="w-5 h-5 text-dark-900" />
             <ReceiptText className="w-5 h-5 text-brand-indigo" />
             Riwayat Mutasi Saldo (Audit Trail Immutable)
           </h2>
-          <span className="text-xs text-muted">{history.length} Transaksi</span>
           <span className="text-xs font-bold text-muted bg-canvas border border-border px-3 py-1 rounded-full">
             {history.length} Transaksi Tercatat
           </span>
         </div>
 
-        <Card className="p-0 overflow-hidden">
         <Card className="p-0 overflow-hidden rounded-2xl border border-border">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-gray-50 border-b border-border text-dark-900 uppercase font-semibold">
                 <tr>
-                  <th className="py-3 px-4">Waktu</th>
-                  <th className="py-3 px-4">Tipe Transaksi</th>
-                  <th className="py-3 px-4">Nominal</th>
-                  <th className="py-3 px-4">Keterangan</th>
                   <th className="py-3.5 px-4">Waktu</th>
                   <th className="py-3.5 px-4">Tipe Transaksi</th>
                   <th className="py-3.5 px-4">Nominal</th>
@@ -316,7 +278,6 @@ export function WalletPage() {
               <tbody className="divide-y divide-border">
                 {history.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="py-8 text-center text-muted">
                     <td colSpan="4" className="py-10 text-center text-muted">
                       Belum ada riwayat transaksi keuangan tercatat.
                     </td>
@@ -332,11 +293,11 @@ export function WalletPage() {
                       </td>
                       <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
                       <td className="py-3.5 px-4 font-bold text-dark-900 whitespace-nowrap">
-                        {log.tipe === "WITHDRAW" ? "-" : "+"}{" "}
-                        {log.tipe === "WITHDRAW" || log.tipe === "HOLD" ? "-" : "+"}{" "}
+                        {log.tipe === "WITHDRAW" || log.tipe === "HOLD"
+                          ? "-"
+                          : "+"}{" "}
                         {formatCurrency(log.nominal)}
                       </td>
-                      <td className="py-3.5 px-4 text-muted max-w-xs sm:max-w-md truncate">
                       <td className="py-3.5 px-4 text-slate-700 max-w-xs sm:max-w-md truncate">
                         {log.keterangan || "-"}
                       </td>
@@ -455,9 +416,13 @@ export function WalletPage() {
       >
         <form onSubmit={handleTopUp} className="space-y-4 font-sans">
           <div className="p-3.5 bg-indigo-50/60 border border-indigo-100 rounded-2xl text-xs space-y-1">
-            <p className="font-bold text-indigo-950">Alokasi Saldo Deposit UMKM:</p>
+            <p className="font-bold text-indigo-950">
+              Alokasi Saldo Deposit UMKM:
+            </p>
             <p className="text-indigo-900/80 leading-relaxed">
-              Saldo yang di-topup akan tersimpan di dompet usaha Anda dan digunakan untuk mengunci dana proyek (Escrow Holding) saat Anda menyetujui proposal mahasiswa.
+              Saldo yang di-topup akan tersimpan di dompet usaha Anda dan
+              digunakan untuk mengunci dana proyek (Escrow Holding) saat Anda
+              menyetujui proposal mahasiswa.
             </p>
           </div>
 

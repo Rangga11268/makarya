@@ -9,6 +9,14 @@ import {
   Database, 
   ArrowUpRight 
 } from "lucide-react";
+  CategoryDesignSvg,
+  CategoryUiUxSvg,
+  CategoryCodeSvg,
+  CategoryVideoSvg,
+  CategoryCopySvg,
+  CategoryDataSvg
+} from "../ui/CategorySvgIcons";
+import { ArrowUpRight } from "lucide-react";
 
 export function CategoryCard({
   code,
@@ -61,6 +69,25 @@ export function CategoryCard({
       iconBg: "bg-slate-700 text-white",
       textColor: "text-slate-950",
     },
+  const getCategoryIcon = (categoryCode) => {
+    switch (categoryCode) {
+      case "DESIGN":
+      case "DESAIN":
+        return <CategoryDesignSvg size={46} />;
+      case "UIUX":
+        return <CategoryUiUxSvg size={46} />;
+      case "PEMROGRAMAN":
+      case "WEB":
+        return <CategoryCodeSvg size={46} />;
+      case "VIDEO":
+        return <CategoryVideoSvg size={46} />;
+      case "COPYWRITING":
+        return <CategoryCopySvg size={46} />;
+      case "ADMIN_DATA":
+      case "ADMIN":
+      default:
+        return <CategoryDataSvg size={46} />;
+    }
   };
 
   const config = categoryConfig[code] || categoryConfig.DESIGN;
@@ -71,17 +98,29 @@ export function CategoryCard({
       onClick={onClick}
       className={cn(
         "group relative p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between select-none shadow-xs hover:shadow-sm",
+        "group relative p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between select-none shadow-xs hover:shadow-md hover:-translate-y-0.5",
         active
           ? "bg-dark-900 text-white border-dark-900 shadow-md"
           : cn(config.bgClass, config.textColor),
+          : "bg-surface border-border hover:border-brand-indigo/40 text-dark-900",
         className
       )}
     >
       <div className="flex items-center justify-between mb-4">
+        {/* Rich Vector SVG Icon */}
+        <div className="transition-transform duration-300 group-hover:scale-110 select-none">
+          {getCategoryIcon(code)}
+        </div>
+
+        {/* Action Arrow Bubble */}
         <div
           className={cn(
             "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-2xs",
             active ? "bg-white/20 text-white" : config.iconBg
+            "w-7 h-7 rounded-full flex items-center justify-center transition-all",
+            active 
+              ? "bg-white/10 text-white" 
+              : "bg-canvas text-muted group-hover:bg-brand-indigo-light group-hover:text-brand-indigo border border-border"
           )}
         >
           <IconComponent className="w-5 h-5 stroke-[2]" />
@@ -93,6 +132,12 @@ export function CategoryCard({
 
       <div>
         <h3 className={cn("text-sm font-bold tracking-tight font-sans mb-1 line-clamp-1", active ? "text-white" : config.textColor)}>
+        <h3
+          className={cn(
+            "text-sm font-bold tracking-tight font-sans mb-1 line-clamp-1",
+            active ? "text-white" : "text-dark-900"
+          )}
+        >
           {title}
         </h3>
         <span
