@@ -15,7 +15,7 @@ class ProposalCreateRequest(BaseModel):
 
 # Schema ringkas profile mahasiswa (Nested di response proposal untuk UMKM)
 class MhsSummary(BaseModel):
-    id : UUID
+    user_id : Optional[UUID] = None
     nama_lengkap : str
     nim : Optional[str] = None
     rating_avg : Decimal

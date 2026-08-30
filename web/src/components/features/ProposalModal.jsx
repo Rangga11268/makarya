@@ -25,7 +25,9 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
       return;
     }
     if (nominal > parseFloat(project.budget_max)) {
-      setError(`Penawaran tidak boleh melebihi batas budget klien (${formatCurrency(project.budget_max)})`);
+      setError(
+        `Penawaran tidak boleh melebihi batas budget klien (${formatCurrency(project.budget_max)})`,
+      );
       return;
     }
     if (coverLetter.trim().length < 20) {
@@ -65,20 +67,19 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
         <div className="bg-gray-50 border border-border p-3.5 rounded-xl text-xs space-y-1">
           <p className="text-muted">Target Proyek:</p>
           <p className="font-bold text-dark-900">{project?.judul}</p>
-          <p className="text-muted font-medium">Budget Maksimal Klien: <b className="text-dark-900">{formatCurrency(project?.budget_max)}</b></p>
+          <p className="text-muted font-medium">
+            Budget Maksimal Klien:{" "}
+            <b className="text-dark-900">
+              {formatCurrency(project?.budget_max)}
+            </b>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label="Harga Tawar (Rp)"
-            type="number"
-            placeholder="Contoh: 750000"
           <CurrencyInput
             label="Harga Tawar"
             placeholder="750.000"
             value={hargaTawar}
-            onChange={(e) => setHargaTawar(e.target.value)}
-            helperText="Maksimal seharga budget proyek"
             onChange={(val) => setHargaTawar(val)}
             helperText="Maksimal seharga batas budget proyek"
             required
@@ -106,7 +107,12 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
         />
 
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={loading}
+          >
             Batal
           </Button>
           <Button variant="primary" size="md" type="submit" loading={loading}>

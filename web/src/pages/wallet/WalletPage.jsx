@@ -9,13 +9,13 @@ import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { Modal } from "../../components/ui/Modal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
-import { 
-  Wallet as WalletIcon, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  ShieldCheck, 
-  Lock, 
-  ReceiptText 
+import {
+  Wallet as WalletIcon,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ShieldCheck,
+  Lock,
+  ReceiptText,
 } from "lucide-react";
 
 export function WalletPage() {
@@ -78,7 +78,12 @@ export function WalletPage() {
 
       addToast("Permintaan pencairan dana berhasil diproses!", "success");
       setWithdrawModalOpen(false);
-      setWithdrawForm({ nominal: "", nama_bank: "BCA", nomor_rekening: "", nama_pemilik: "" });
+      setWithdrawForm({
+        nominal: "",
+        nama_bank: "BCA",
+        nomor_rekening: "",
+        nama_pemilik: "",
+      });
       fetchWalletData();
     } catch (err) {
       const msg = err.response?.data?.detail || "Gagal melakukan penarikan.";
@@ -109,7 +114,8 @@ export function WalletPage() {
           Dompet & Keuangan Mahasiswa
         </h1>
         <p className="text-xs sm:text-sm text-muted">
-          Pusat saldo aktif hasil freelance, dana terkunci escrow, dan penarikan ke rekening bank lokal
+          Pusat saldo aktif hasil freelance, dana terkunci escrow, dan penarikan
+          ke rekening bank lokal
         </p>
       </div>
 
@@ -151,7 +157,8 @@ export function WalletPage() {
           </div>
 
           <p className="text-xs text-muted leading-relaxed">
-            Dana yang sedang dikerjakan dan akan otomatis cair ke saldo aktif setelah hasil kerja disetujui klien UMKM.
+            Dana yang sedang dikerjakan dan akan otomatis cair ke saldo aktif
+            setelah hasil kerja disetujui klien UMKM.
           </p>
         </Card>
       </div>
@@ -186,13 +193,17 @@ export function WalletPage() {
                   </tr>
                 ) : (
                   history.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr
+                      key={log.id}
+                      className="hover:bg-gray-50/50 transition-colors"
+                    >
                       <td className="py-3.5 px-4 text-muted whitespace-nowrap">
                         {formatDate(log.created_at)}
                       </td>
                       <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
                       <td className="py-3.5 px-4 font-bold text-dark-900 whitespace-nowrap">
-                        {log.tipe === "WITHDRAW" ? "-" : "+"} {formatCurrency(log.nominal)}
+                        {log.tipe === "WITHDRAW" ? "-" : "+"}{" "}
+                        {formatCurrency(log.nominal)}
                       </td>
                       <td className="py-3.5 px-4 text-muted max-w-xs sm:max-w-md truncate">
                         {log.keterangan || "-"}
@@ -221,20 +232,18 @@ export function WalletPage() {
 
           <div className="p-3 bg-gray-50 border border-border rounded-xl text-xs flex justify-between items-center">
             <span className="text-muted">Saldo Aktif Anda:</span>
-            <span className="font-black text-dark-900">{formatCurrency(wallet?.saldo_aktif || 0)}</span>
+            <span className="font-black text-dark-900">
+              {formatCurrency(wallet?.saldo_aktif || 0)}
+            </span>
           </div>
 
-          <Input
-            label="Nominal Penarikan (Rp)"
-            type="number"
-            min="25000"
-            placeholder="Minimal 25000"
           <CurrencyInput
             label="Nominal Penarikan"
             placeholder="50.000"
             value={withdrawForm.nominal}
-            onChange={(e) => setWithdrawForm({ ...withdrawForm, nominal: e.target.value })}
-            onChange={(val) => setWithdrawForm({ ...withdrawForm, nominal: val })}
+            onChange={(val) =>
+              setWithdrawForm({ ...withdrawForm, nominal: val })
+            }
             helperText="Minimal penarikan Rp 25.000"
             required
           />
@@ -245,7 +254,9 @@ export function WalletPage() {
             </label>
             <select
               value={withdrawForm.nama_bank}
-              onChange={(e) => setWithdrawForm({ ...withdrawForm, nama_bank: e.target.value })}
+              onChange={(e) =>
+                setWithdrawForm({ ...withdrawForm, nama_bank: e.target.value })
+              }
               className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-dark-800"
             >
               <option value="BCA">BCA (Bank Central Asia)</option>
@@ -262,7 +273,12 @@ export function WalletPage() {
             label="Nomor Rekening"
             placeholder="Contoh: 1234567890"
             value={withdrawForm.nomor_rekening}
-            onChange={(e) => setWithdrawForm({ ...withdrawForm, nomor_rekening: e.target.value })}
+            onChange={(e) =>
+              setWithdrawForm({
+                ...withdrawForm,
+                nomor_rekening: e.target.value,
+              })
+            }
             required
           />
 
@@ -270,15 +286,27 @@ export function WalletPage() {
             label="Nama Pemilik Rekening"
             placeholder="Harus sesuai dengan nama buku tabungan"
             value={withdrawForm.nama_pemilik}
-            onChange={(e) => setWithdrawForm({ ...withdrawForm, nama_pemilik: e.target.value })}
+            onChange={(e) =>
+              setWithdrawForm({ ...withdrawForm, nama_pemilik: e.target.value })
+            }
             required
           />
 
           <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-            <Button variant="secondary" size="md" onClick={() => setWithdrawModalOpen(false)} disabled={withdrawLoading}>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => setWithdrawModalOpen(false)}
+              disabled={withdrawLoading}
+            >
               Batal
             </Button>
-            <Button variant="primary" size="md" type="submit" loading={withdrawLoading}>
+            <Button
+              variant="primary"
+              size="md"
+              type="submit"
+              loading={withdrawLoading}
+            >
               Konfirmasi Penarikan
             </Button>
           </div>

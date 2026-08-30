@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { ToastContainer } from "./components/ui/Toast";
+import { AlertModal } from "./components/ui/AlertModal";
 import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { useAuthStore } from "./store/authStore";
 
@@ -89,6 +90,7 @@ export default function App() {
 
         <Footer />
         <ToastContainer />
+        <AlertModal />
       </div>
     </BrowserRouter>
   );

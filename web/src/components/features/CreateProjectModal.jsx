@@ -5,14 +5,14 @@ import { Modal } from "../ui/Modal";
 import { Input, TextArea } from "../ui/Input";
 import { CurrencyInput } from "../ui/CurrencyInput";
 import { Button } from "../ui/Button";
-import { 
-  Sparkles, 
-  PlusCircle, 
-  Tag, 
-  Calendar, 
-  DollarSign, 
-  ShieldCheck, 
-  FileText 
+import {
+  Sparkles,
+  PlusCircle,
+  Tag,
+  Calendar,
+  DollarSign,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 
 export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
@@ -46,7 +46,9 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
 
     const budgetNum = parseFloat(formData.budget_max);
     if (isNaN(budgetNum) || budgetNum < 50000 || budgetNum > 2000000) {
-      setError("Budget maksimal proyek berkisar antara Rp 50.000 hingga Rp 2.000.000 (Standar micro-freelancing).");
+      setError(
+        "Budget maksimal proyek berkisar antara Rp 50.000 hingga Rp 2.000.000 (Standar micro-freelancing).",
+      );
       return;
     }
 
@@ -56,7 +58,9 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
     }
 
     if (formData.deskripsi_raw.trim().length < 15) {
-      setError("Deskripsi kebutuhan proyek minimal 15 karakter agar mudah dipahami pelamar mahasiswa.");
+      setError(
+        "Deskripsi kebutuhan proyek minimal 15 karakter agar mudah dipahami pelamar mahasiswa.",
+      );
       return;
     }
 
@@ -70,11 +74,15 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
         deskripsi_raw: formData.deskripsi_raw.trim(),
       });
 
-      addToast("Proyek berhasil diterbitkan! Mahasiswa siap melamar.", "success");
+      addToast(
+        "Proyek berhasil diterbitkan! Mahasiswa siap melamar.",
+        "success",
+      );
       if (onProjectCreated) onProjectCreated(res.data);
       onClose();
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal menerbitkan proyek baru.";
+      const msg =
+        err.response?.data?.detail || "Gagal menerbitkan proyek baru.";
       setError(typeof msg === "string" ? msg : JSON.stringify(msg));
     } finally {
       setLoading(false);
@@ -82,11 +90,7 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Pasang Proyek UMKM Baru"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Pasang Proyek UMKM Baru">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
@@ -122,20 +126,10 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
             </select>
           </div>
 
-          <Input
-            label="Maksimal Budget (Rp)"
-            type="number"
-            name="budget_max"
-            min="50000"
-            max="2000000"
-            step="10000"
-            placeholder="500000"
           <CurrencyInput
             label="Maksimal Budget"
             placeholder="500.000"
             value={formData.budget_max}
-            onChange={handleChange}
-            helperText="Maksimal Rp 2.000.000"
             onChange={(val) => setFormData({ ...formData, budget_max: val })}
             helperText="Batas wajar: Maksimal Rp 2.000.000"
             required
@@ -165,15 +159,28 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
         <div className="p-3 bg-brand-indigo-light/30 border border-brand-indigo/20 rounded-xl flex items-start gap-2.5 text-xs text-brand-indigo">
           <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            <b>Jaminan Keamanan Escrow:</b> Dana proyek Anda aman. Anda baru membayarkan honor setelah memeriksa dan menyetujui hasil deliverable dari mahasiswa.
+            <b>Jaminan Keamanan Escrow:</b> Dana proyek Anda aman. Anda baru
+            membayarkan honor setelah memeriksa dan menyetujui hasil deliverable
+            dari mahasiswa.
           </p>
         </div>
 
         <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={loading}
+          >
             Batal
           </Button>
-          <Button variant="brand" size="md" type="submit" loading={loading} className="font-bold">
+          <Button
+            variant="brand"
+            size="md"
+            type="submit"
+            loading={loading}
+            className="font-bold"
+          >
             <PlusCircle className="w-4 h-4 mr-1.5" />
             Terbitkan Proyek Sekarang
           </Button>
