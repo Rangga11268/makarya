@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.limiter import limiter
-from app.routers import auth, projects, proposals, wallet, submissions,ratings
+from app.routers import auth, projects, proposals, wallet, submissions ,ratings, disputes
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -36,6 +36,8 @@ app.include_router(proposals.router, prefix=settings.API_V1_STR, tags=["Proposal
 app.include_router(wallet.router, prefix=settings.API_V1_STR, tags=["Wallet & Escrow"])
 app.include_router(submissions.router, prefix=settings.API_V1_STR, tags=["Submissions & Revision Control"])
 app.include_router(ratings.router, prefix=settings.API_V1_STR, tags=["Ratings & Reviews"])
+app.include_router(disputes.router, prefix=settings.API_V1_STR, tags=["Dispute Resolution"])
+
 
 @app.get("/", tags=["Cek Health"])
 async def root():

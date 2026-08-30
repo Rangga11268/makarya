@@ -15,7 +15,7 @@
   - [x] Akun 3rd Party: Midtrans Sandbox, Cloudinary, Firebase Console
 - [x] **Fase 0.2:** UI/UX Design System Specification (Minimalist Editorial / shadcn/ui style)
 - [x] **Fase 1:** Backend Foundation & Database (PostgreSQL + SQLAlchemy + Alembic + Seeder 100% DONE)
-- [ ] **Fase 2:** Backend Core & Security Hardening (Auth, Projects, Proposals, Escrow, Idempotency)
+- [x] **Fase 2:** Backend Core & Security Hardening (Auth, Projects, Proposals, Escrow, Submissions, Ratings, Disputes 100% DONE)
 - [ ] **Fase 3A:** Web App Development (React + Tailwind + shadcn/ui pattern)
 - [ ] **Fase 3B:** Mobile App Development (React Native)
 - [ ] **Fase 4:** Integrasi Payment Gateway & Push Notification
@@ -136,8 +136,11 @@ _Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 
 ### 2.8 Disputes & Admin Mediation
 
-- [ ] `app/schemas/dispute.py` → Schema form pelaporan sengketa & resolusi admin
-- [ ] `app/routers/disputes.py` → Endpoint pengajuan sengketa & admin split escrow resolution
+- [x] `app/schemas/dispute.py` → Schema form pelaporan sengketa & validasi split persentase total 100%
+- [x] `app/routers/disputes.py`:
+  - [x] `POST /disputes` (Pihak terlibat mengajukan tiket sengketa pada proyek)
+  - [x] `GET /disputes` (Admin melihat daftar seluruh sengketa)
+  - [x] `PATCH /disputes/{id}/resolve` (Admin memutuskan sengketa, refund ke UMKM & cairkan porsi Mahasiswa via Pessimistic Lock + LedgerLog) (Teruji 100% OK)
 
 ---
 
