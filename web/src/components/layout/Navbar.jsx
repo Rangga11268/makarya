@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   UserCheck,
+  User,
   PlusCircle,
   ChevronDown,
 } from "lucide-react";
@@ -169,6 +170,14 @@ export function Navbar() {
 
                     <div className="py-1">
                       <Link
+                        to="/profile"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-dark-900 hover:bg-canvas rounded-xl transition-all"
+                      >
+                        <User className="w-4 h-4 text-brand-indigo" />
+                        Kelola Profil Saya
+                      </Link>
+                      <Link
                         to="/wallet"
                         onClick={() => setUserDropdownOpen(false)}
                         className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-dark-900 hover:bg-canvas rounded-xl transition-all"
@@ -276,6 +285,18 @@ export function Navbar() {
               </Link>
             );
           })}
+          <Link
+            to="/profile"
+            onClick={() => setMobileMenuOpen(false)}
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-full text-xs font-bold ${
+              isActive("/profile")
+                ? "bg-dark-900 text-white"
+                : "text-muted hover:text-dark-900 hover:bg-canvas"
+            }`}
+          >
+            <User className="w-4 h-4" />
+            Kelola Profil Saya
+          </Link>
           <div className="pt-3 border-t border-border">
             <Button
               variant="outline"

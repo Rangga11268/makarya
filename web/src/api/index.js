@@ -5,6 +5,7 @@ export const authApi = {
   registerMhs: (data) => api.post("/auth/register/mahasiswa", data),
   registerUmkm: (data) => api.post("/auth/register/umkm", data),
   getMe: () => api.get("/auth/me"),
+  updateProfile: (data) => api.put("/auth/profile", data),
 };
 
 export const projectApi = {

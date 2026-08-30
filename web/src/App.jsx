@@ -16,6 +16,7 @@ import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
 import { CreateProjectPage } from "./pages/projects/CreateProjectPage";
 import { ProposalBoardPage } from "./pages/proposals/ProposalBoardPage";
 import { PortfolioPage } from "./pages/portfolio/PortfolioPage";
+import { ProfilePage } from "./pages/profile/ProfilePage";
 import { WalletPage } from "./pages/wallet/WalletPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminDisputePage } from "./pages/admin/AdminDisputePage";
@@ -71,6 +72,7 @@ export default function App() {
               <Route path="/projects/new" element={<CreateProjectPage />} />
               <Route path="/proposals" element={<ProposalBoardPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/wallet" element={<WalletPage />} />
             </Route>
 
