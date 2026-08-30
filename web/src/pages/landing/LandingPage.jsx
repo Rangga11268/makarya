@@ -67,7 +67,7 @@ export function LandingPage() {
       rating: 5.0, 
       totalJobs: 8, 
       skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind"],
-      avatarUrl: "/images/talent-darell.webp"
+      
     },
     { 
       name: "Adelia Putri", 
@@ -75,7 +75,7 @@ export function LandingPage() {
       rating: 4.9, 
       totalJobs: 11, 
       skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
-      avatarUrl: "/images/talent-adelia.webp"
+      
     },
     { 
       name: "Bima Arya", 
@@ -83,15 +83,15 @@ export function LandingPage() {
       rating: 5.0, 
       totalJobs: 6, 
       skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
-      avatarUrl: "/images/talent-bima.webp"
+      
     },
     { 
-      name: "Siti Rahma", 
+      name: "Siti Rahmawati", 
       prodi: "Ilmu Komunikasi • UBSI", 
       rating: 4.8, 
       totalJobs: 9, 
       skills: ["Copywriting", "Social Media", "Content Plan"],
-      avatarUrl: "/images/talent-siti.webp"
+      
     },
   ];
 
@@ -322,7 +322,7 @@ export function LandingPage() {
               rating={talent.rating}
               totalJobs={talent.totalJobs}
               skills={talent.skills}
-              avatarUrl={talent.avatarUrl}
+              
             />
           ))}
         </div>
