@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "../ui/Modal";
 import { Input, TextArea } from "../ui/Input";
+import { CurrencyInput } from "../ui/CurrencyInput";
 import { Button } from "../ui/Button";
 import { proposalApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
@@ -72,9 +73,14 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
             label="Harga Tawar (Rp)"
             type="number"
             placeholder="Contoh: 750000"
+          <CurrencyInput
+            label="Harga Tawar"
+            placeholder="750.000"
             value={hargaTawar}
             onChange={(e) => setHargaTawar(e.target.value)}
             helperText="Maksimal seharga budget proyek"
+            onChange={(val) => setHargaTawar(val)}
+            helperText="Maksimal seharga batas budget proyek"
             required
           />
 

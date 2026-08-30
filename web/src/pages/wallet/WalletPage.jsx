@@ -5,6 +5,7 @@ import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { Modal } from "../../components/ui/Modal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
@@ -228,8 +229,13 @@ export function WalletPage() {
             type="number"
             min="25000"
             placeholder="Minimal 25000"
+          <CurrencyInput
+            label="Nominal Penarikan"
+            placeholder="50.000"
             value={withdrawForm.nominal}
             onChange={(e) => setWithdrawForm({ ...withdrawForm, nominal: e.target.value })}
+            onChange={(val) => setWithdrawForm({ ...withdrawForm, nominal: val })}
+            helperText="Minimal penarikan Rp 25.000"
             required
           />
 

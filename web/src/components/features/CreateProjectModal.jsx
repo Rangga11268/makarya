@@ -3,6 +3,7 @@ import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { Modal } from "../ui/Modal";
 import { Input, TextArea } from "../ui/Input";
+import { CurrencyInput } from "../ui/CurrencyInput";
 import { Button } from "../ui/Button";
 import { 
   Sparkles, 
@@ -129,9 +130,14 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }) {
             max="2000000"
             step="10000"
             placeholder="500000"
+          <CurrencyInput
+            label="Maksimal Budget"
+            placeholder="500.000"
             value={formData.budget_max}
             onChange={handleChange}
             helperText="Maksimal Rp 2.000.000"
+            onChange={(val) => setFormData({ ...formData, budget_max: val })}
+            helperText="Batas wajar: Maksimal Rp 2.000.000"
             required
           />
         </div>
