@@ -443,7 +443,8 @@ export function ProposalBoardPage() {
                             </div>
 
                             {prop.status === "PENDING" &&
-                              selectedProject.status === "OPEN" && (
+                              (selectedProject.status === "OPEN" ||
+                                selectedProject.status === "BIDDING") && (
                                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
                                   <Button
                                     variant="outline"
