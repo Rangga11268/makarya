@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
 import { useAlertStore } from "../../store/alertStore";
-import { CheckCircle2, AlertCircle, AlertTriangle, Info, HelpCircle, X } from "lucide-react";
+import { 
+  AlertSuccessSvg, 
+  AlertErrorSvg, 
+  AlertWarningSvg, 
+  AlertInfoSvg, 
+  AlertConfirmSvg 
+} from "./AlertIcons";
 import { cn } from "../../utils/cn";
 
 export function AlertModal() {
@@ -46,48 +52,53 @@ export function AlertModal() {
     onCancel?.();
   };
 
+  const getAlertIcon = () => {
+    switch (type) {
+      case "success":
+        return <AlertSuccessSvg size={60} />;
+      case "error":
+        return <AlertErrorSvg size={60} />;
+      case "warning":
+        return <AlertWarningSvg size={60} />;
+      case "confirm":
+        return <AlertConfirmSvg size={60} />;
+      case "info":
+      default:
+        return <AlertInfoSvg size={60} />;
+    }
+  };
+
   const themes = {
     success: {
-      bg: "bg-emerald-50",
+      bg: "bg-emerald-50/80",
       border: "border-emerald-200",
-      iconColor: "text-emerald-600",
       buttonBg: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20",
-      Icon: CheckCircle2,
     },
     error: {
-      bg: "bg-rose-50",
+      bg: "bg-rose-50/80",
       border: "border-rose-200",
-      iconColor: "text-rose-600",
       buttonBg: "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20",
-      Icon: AlertCircle,
     },
     warning: {
-      bg: "bg-amber-50",
+      bg: "bg-amber-50/80",
       border: "border-amber-200",
-      iconColor: "text-amber-600",
       buttonBg: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20",
-      Icon: AlertTriangle,
     },
     confirm: {
-      bg: "bg-brand-indigo-light",
-      border: "border-brand-indigo/20",
-      iconColor: "text-brand-indigo",
+      bg: "bg-indigo-50/80",
+      border: "border-indigo-200",
       buttonBg: isDestructive 
         ? "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20"
         : "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",
-      Icon: HelpCircle,
     },
     info: {
-      bg: "bg-sky-50",
+      bg: "bg-sky-50/80",
       border: "border-sky-200",
-      iconColor: "text-sky-600",
       buttonBg: "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",
-      Icon: Info,
     },
   };
 
   const currentTheme = themes[type] || themes.info;
-  const IconComponent = currentTheme.Icon;
 
   return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 font-sans">
@@ -100,7 +111,7 @@ export function AlertModal() {
       {/* Centered Modal Card */}
       <div className="relative w-full max-w-[380px] bg-surface rounded-[28px] border border-border shadow-2xl p-6 sm:p-7 flex flex-col items-center text-center z-10 animate-in zoom-in-95 fade-in duration-200">
         
-        {/* Top Circular Icon Ring (Matching Tunggal Jaya Transport) */}
+        {/* Top Circular Icon Ring with Rich SVG (Tunggal Jaya Transport Style) */}
         <div
           className={cn(
             "w-20 h-20 rounded-full border-2 flex items-center justify-center mb-4.5 shadow-2xs transition-transform duration-300 hover:scale-105",
@@ -108,7 +119,7 @@ export function AlertModal() {
             currentTheme.border
           )}
         >
-          <IconComponent className={cn("w-10 h-10 stroke-[2.2]", currentTheme.iconColor)} />
+          {getAlertIcon()}
         </div>
 
         {/* Title & Message */}
