@@ -43,19 +43,6 @@ export function Navbar() {
     navigate("/");
   };
 
-  const navLinks =
-    user?.role === "ADMIN"
-      ? [
-          { label: "Admin Overview", path: "/admin", icon: ShieldCheck },
-          { label: "Pusat Sengketa", path: "/admin/disputes", icon: Layers },
-        ]
-      : [
-          { label: "Beranda", path: "/dashboard", icon: Layers },
-          { label: "Jelajah Proyek", path: "/projects", icon: Compass },
-          { label: "Proposal", path: "/proposals", icon: Briefcase },
-          { label: "Portofolio", path: "/portfolio", icon: UserCheck },
-          { label: "Dompet", path: "/wallet", icon: WalletIcon },
-        ];
   const navLinks = (() => {
     if (user?.role === "ADMIN") {
       return [
