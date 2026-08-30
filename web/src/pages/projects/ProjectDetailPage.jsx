@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { useToastStore } from "../../store/toastStore";
 import { projectApi } from "../../api";
 import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
@@ -7,22 +9,44 @@ import { Button } from "../../components/ui/Button";
 import { ProposalModal } from "../../components/features/ProposalModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  ShieldCheck, 
-  Building2, 
-  Tag, 
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  ShieldCheck,
+  Building2,
+  Tag,
   Users,
-  Send
+  Send,
 } from "lucide-react";
 
 export function ProjectDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuthStore();
+  const { addToast } = useToastStore();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      addToast(
+        "Silakan masuk dengan akun mahasiswa terlebih dahulu untuk mengajukan proposal.",
+        "info",
+      );
+      navigate("/login");
+      return;
+    }
+    if (user?.role === "UMKM") {
+      addToast(
+        "Akun Klien UMKM tidak dapat mengajukan proposal proyek. Gunakan akun mahasiswa.",
+        "warning",
+      );
+      return;
+    }
+    setModalOpen(true);
+  };
 
   const fetchProject = async () => {
     try {
@@ -53,7 +77,10 @@ export function ProjectDetailPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <h2 className="text-lg font-bold">Proyek tidak ditemukan</h2>
-        <Link to="/projects" className="text-xs text-dark-800 hover:underline mt-2 block">
+        <Link
+          to="/projects"
+          className="text-xs text-dark-800 hover:underline mt-2 block"
+        >
           Kembali ke Jelajah Proyek
         </Link>
       </div>
@@ -80,7 +107,9 @@ export function ProjectDetailPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Badge variant="dark">{project.kategori}</Badge>
-                <Badge variant={project.status === "OPEN" ? "success" : "warning"}>
+                <Badge
+                  variant={project.status === "OPEN" ? "success" : "warning"}
+                >
                   Status: {project.status}
                 </Badge>
               </div>
@@ -129,10 +158,10 @@ export function ProjectDetailPage() {
             </div>
 
             <Button
-              variant="primary"
+              variant="brand"
               size="lg"
-              onClick={() => setModalOpen(true)}
-              className="w-full text-sm font-bold shadow-md"
+              onClick={handleApplyClick}
+              className="w-full text-sm font-bold shadow-brand"
             >
               <Send className="w-4 h-4 mr-1.5" />
               Lamar Proyek Ini
@@ -144,7 +173,8 @@ export function ProjectDetailPage() {
                 Escrow Protected
               </div>
               <p className="text-[11px] text-emerald-700 leading-snug">
-                Honor kerja Anda otomatis dijamin dan dikunci di sistem saat proposal disetujui.
+                Honor kerja Anda otomatis dijamin dan dikunci di sistem saat
+                proposal disetujui.
               </p>
             </div>
           </Card>
@@ -164,7 +194,8 @@ export function ProjectDetailPage() {
                   {project.umkm_profile?.nama_usaha || "Klien UMKM"}
                 </h4>
                 <p className="text-xs text-muted">
-                  {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} • {project.umkm_profile?.kota || "Indonesia"}
+                  {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} •{" "}
+                  {project.umkm_profile?.kota || "Indonesia"}
                 </p>
               </div>
             </div>

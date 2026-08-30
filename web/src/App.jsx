@@ -7,6 +7,7 @@ import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 import { useAuthStore } from "./store/authStore";
 
 // Pages
+import { LandingPage } from "./pages/landing/LandingPage";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import { DashboardPage } from "./pages/dashboard/DashboardPage";
@@ -30,34 +31,50 @@ export default function App() {
 
         <main className="flex-1">
           <Routes>
-            {/* Landing / Root Route */}
+            {/* 1. Public Open Routes (Accessible by everyone) */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/projects" element={<BrowseProjectsPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailPage />} />
+
+            {/* 2. Auth Routes */}
             <Route
-              path="/"
+              path="/login"
               element={
                 isAuthenticated ? (
-                  <Navigate to={userRole === "ADMIN" ? "/admin" : "/dashboard"} replace />
+                  <Navigate
+                    to={userRole === "ADMIN" ? "/admin" : "/dashboard"}
+                    replace
+                  />
                 ) : (
-                  <Navigate to="/login" replace />
+                  <LoginPage />
+                )
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <RegisterPage />
                 )
               }
             />
 
-            {/* Public Auth */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-
-            {/* Mahasiswa & UMKM Portal Routes */}
-            <Route element={<ProtectedRoute allowedRoles={["MHS", "MAHASISWA", "UMKM"]} />}>
+            {/* 3. Authenticated Portal Routes (Mahasiswa & UMKM) */}
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["MHS", "MAHASISWA", "UMKM"]} />
+              }
+            >
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/projects" element={<BrowseProjectsPage />} />
               <Route path="/projects/new" element={<CreateProjectPage />} />
-              <Route path="/projects/:id" element={<ProjectDetailPage />} />
               <Route path="/proposals" element={<ProposalBoardPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/wallet" element={<WalletPage />} />
             </Route>
 
-            {/* Admin Protected Routes */}
+            {/* 4. Admin Protected Routes */}
             <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
               <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/admin/disputes" element={<AdminDisputePage />} />
