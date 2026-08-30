@@ -16,10 +16,12 @@ export function Button({
 
   const variants = {
     primary: "bg-dark-900 hover:bg-dark-800 text-white shadow-xs",
-    lime: "bg-lime hover:bg-lime-dark text-dark-950 shadow-xs font-bold",
-    secondary: "bg-surface hover:bg-canvas text-dark-900 border border-border shadow-xs",
-    outline: "bg-transparent hover:bg-surface text-dark-900 border border-border",
-    ghost: "bg-transparent hover:bg-black/5 text-dark-900",
+    brand: "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand font-bold",
+    gradient: "bg-gradient-to-r from-brand-cyan to-brand-indigo hover:opacity-95 text-white shadow-brand font-bold",
+    cyan: "bg-brand-cyan hover:bg-sky-600 text-white shadow-xs font-bold",
+    secondary: "bg-surface hover:bg-slate-100 text-dark-900 border border-border shadow-xs",
+    outline: "bg-transparent hover:bg-slate-100 hover:text-dark-900 text-dark-900 border border-border",
+    ghost: "bg-transparent hover:bg-slate-100 hover:text-dark-900 text-dark-900",
     danger: "bg-rose-600 hover:bg-rose-700 text-white shadow-xs",
   };
 
@@ -34,7 +36,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={cn(baseStyles, variants[variant] || variants.primary, sizes[size], className)}
       {...props}
     >
       {loading && (

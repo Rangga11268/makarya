@@ -8,15 +8,14 @@ import {
   Clock, 
   Tag, 
   Building2, 
-  ShieldCheck, 
-  ArrowRight,
-  Sparkles
+  ArrowRight 
 } from "lucide-react";
 
 export function ProjectCard({ project }) {
   const daysLeft = daysRemaining(project.deadline);
 
   const categoryLabels = {
+    DESIGN: "Desain Grafis",
     DESAIN: "Desain Grafis",
     UIUX: "UI/UX Design",
     PEMROGRAMAN: "Web & Coding",
@@ -31,32 +30,32 @@ export function ProjectCard({ project }) {
         {/* Top Header: UMKM Client Info & Days Left */}
         <div className="flex items-center justify-between gap-2 mb-3.5 pb-3 border-b border-border-subtle">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 rounded-full bg-surface-soft border border-border flex items-center justify-center font-bold text-xs text-dark-900 shrink-0">
-              <Building2 className="w-4 h-4 text-dark-800" />
+            <div className="w-8 h-8 rounded-full bg-brand-indigo-light text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
+              <Building2 className="w-4 h-4" />
             </div>
             <div className="truncate">
-              <h4 className="text-xs font-bold text-dark-900 truncate">
+              <h4 className="text-xs font-bold text-dark-900 truncate font-sans">
                 {project.umkm_profile?.nama_usaha || "Klien UMKM"}
               </h4>
-              <p className="text-[11px] text-muted truncate">
+              <p className="text-[11px] text-muted truncate font-sans">
                 {project.umkm_profile?.kota || "Indonesia"}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-1 text-[11px] text-muted font-medium shrink-0 bg-canvas px-2.5 py-1 rounded-full border border-border">
-            <Clock className="w-3 h-3 text-dark-800" />
+            <Clock className="w-3 h-3 text-brand-indigo" />
             <span>{daysLeft} hari</span>
           </div>
         </div>
 
         {/* Project Title */}
-        <h3 className="text-base font-bold text-dark-900 group-hover:text-dark-700 transition-colors line-clamp-2 leading-snug mb-2 font-sans">
+        <h3 className="text-base font-bold text-dark-900 group-hover:text-brand-indigo transition-colors line-clamp-2 leading-snug mb-2 font-sans">
           {project.judul}
         </h3>
 
         {/* Project Description */}
-        <p className="text-xs text-muted line-clamp-2 mb-4 leading-relaxed font-sans">
+        <p className="text-xs text-muted line-clamp-2 mb-4 leading-relaxed font-sans font-normal">
           {project.deskripsi_raw}
         </p>
       </div>
@@ -64,8 +63,8 @@ export function ProjectCard({ project }) {
       {/* Footer Meta: Category Badge, Budget, & Action */}
       <div className="pt-3 border-t border-border-subtle mt-2 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <Badge variant="default" className="text-[11px] px-2.5 py-0.5 bg-canvas">
-            <Tag className="w-3 h-3 mr-1 text-muted" />
+          <Badge variant="brand" className="text-[11px] px-2.5 py-0.5">
+            <Tag className="w-3 h-3 mr-1 text-brand-indigo" />
             {categoryLabels[project.kategori] || project.kategori}
           </Badge>
 
@@ -81,7 +80,7 @@ export function ProjectCard({ project }) {
 
         <Link
           to={`/projects/${project.id}`}
-          className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold bg-dark-900 hover:bg-lime hover:text-dark-950 text-white transition-all gap-1.5 shadow-xs"
+          className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold bg-dark-900 hover:bg-brand-indigo text-white transition-all gap-1.5 shadow-xs select-none"
         >
           <span>Detail & Lamar Proyek</span>
           <ArrowRight className="w-3.5 h-3.5" />

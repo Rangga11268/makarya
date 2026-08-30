@@ -50,7 +50,7 @@ export function PortfolioPage() {
       {/* Top Banner / Student Badge */}
       <div className="bg-surface border border-border rounded-card p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4 text-center sm:text-left">
-          <div className="w-16 h-16 rounded-full bg-dark-900 text-lime font-serif text-2xl font-bold flex items-center justify-center shrink-0 border border-dark-900">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-cyan to-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs">
             {user?.email?.charAt(0).toUpperCase()}
           </div>
           <div>
