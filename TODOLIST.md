@@ -101,13 +101,11 @@ _Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 
 ### 2.4 Escrow Engine & Financial Security
 
-- [ ] `app/services/escrow_service.py`:
-- [x] `app/services/escrow_service.py`:
+- [x] `app/services/escrow_service.py` / `app/routers/proposals.py` & `app/routers/submissions.py`:
   - [x] **Pessimistic Locking (`with_for_update`)** saat lock baris wallet agar bebas race condition
-  - [x] `hold_escrow()`: Pindahkan `saldo_aktif` UMKM ke `saldo_escrow`
-  - [x] `release_escrow()`: Pindahkan `saldo_escrow` UMKM ke `saldo_aktif` Mahasiswa
-  - [x] `refund_escrow()`: Kembalikan `saldo_escrow` ke `saldo_aktif` UMKM jika dibatalkan
-  - [x] Catat setiap perpindahan ke tabel `ledger_logs` (Append-only / Immutable)
+  - [x] `hold_escrow()`: Pindahkan `saldo_aktif` UMKM ke `saldo_escrow` saat terima proposal
+  - [x] `release_escrow()`: Pindahkan `saldo_escrow` UMKM ke `saldo_aktif` Mahasiswa saat approve
+  - [x] Catat setiap perpindahan ke tabel `ledger_logs` (Append-only / Immutable audit trail)
 
 ### 2.5 Submission, Review, Revision Counter & Escrow Release
 
@@ -120,12 +118,26 @@ _Penerapan prinsip /security-and-hardening, OWASP Top 10, dan Design Patterns._
 
 ### 2.6 Midtrans Integration & Idempotency Webhook
 
-- [ ] `app/services/midtrans_service.py` → Create VA / QRIS Charge
-- [ ] `app/routers/payments.py`:
-  - [ ] `POST /payments/topup` → Inisiasi pembayaran
-  - [ ] `POST /payments/webhook` → Menerima callback Midtrans
-  - [ ] **Idempotency Check:** Cek apakah `order_id` / transaksi sudah pernah tercatat di `ledger_logs` sebelum menambah saldo
-  - [ ] **Signature Verification:** Verifikasi hash SHA512 dari Midtrans untuk mencegah spoofing
+- [x] `app/services/midtrans.py` → Setup Snap API client (Sandbox) & Signature Verification SHA512
+- [x] `app/routers/wallet.py`:
+  - [x] `GET /wallet/me` (Cek saldo aktif & saldo escrow pengguna login)
+  - [x] `POST /wallet/topup` (Inisiasi pembayaran Snap Token Midtrans)
+  - [x] `POST /wallet/webhook/midtrans` (Menerima callback status settlement/capture dari Midtrans)
+  - [x] **Idempotency Check:** Cek apakah `order_id` sudah pernah tercatat di `ledger_logs` sebelum menambah saldo
+  - [x] `POST /wallet/withdraw` (Pencairan saldo mahasiswa ke rekening bank lokal)
+
+### 2.7 Ratings, Reviews & Reputation System
+
+- [x] `app/schemas/rating.py` → Schema rating skor 1-5 bintang & ulasan
+- [x] `app/routers/ratings.py`:
+  - [x] `POST /ratings` (Memberi rating pada proyek status DONE & update `rating_avg` serta `total_proyek_selesai` profil mahasiswa)
+  - [x] `GET /ratings/user/{user_id}` (Melihat ulasan pengguna)
+  - [x] `GET /ratings/project/{project_id}` (Melihat ulasan proyek) (Teruji 100% OK)
+
+### 2.8 Disputes & Admin Mediation
+
+- [ ] `app/schemas/dispute.py` → Schema form pelaporan sengketa & resolusi admin
+- [ ] `app/routers/disputes.py` → Endpoint pengajuan sengketa & admin split escrow resolution
 
 ---
 
