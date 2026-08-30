@@ -56,6 +56,31 @@ export function Navbar() {
           { label: "Portofolio", path: "/portfolio", icon: UserCheck },
           { label: "Dompet", path: "/wallet", icon: WalletIcon },
         ];
+  const navLinks = (() => {
+    if (user?.role === "ADMIN") {
+      return [
+        { label: "Admin Overview", path: "/admin", icon: ShieldCheck },
+        { label: "Pusat Sengketa", path: "/admin/disputes", icon: Layers },
+      ];
+    }
+    if (user?.role === "UMKM") {
+      return [
+        { label: "Beranda", path: "/dashboard", icon: Layers },
+        { label: "Katalog Proyek", path: "/projects", icon: Compass },
+        { label: "Kelola Pelamar", path: "/proposals", icon: Briefcase },
+        { label: "Profil Usaha", path: "/profile", icon: UserCheck },
+        { label: "Dompet & Escrow", path: "/wallet", icon: WalletIcon },
+      ];
+    }
+    // MAHASISWA
+    return [
+      { label: "Beranda", path: "/dashboard", icon: Layers },
+      { label: "Jelajah Proyek", path: "/projects", icon: Compass },
+      { label: "Proposal Saya", path: "/proposals", icon: Briefcase },
+      { label: "Portofolio", path: "/portfolio", icon: UserCheck },
+      { label: "Dompet Mahasiswa", path: "/wallet", icon: WalletIcon },
+    ];
+  })();
 
   const isActive = (path) => location.pathname === path;
 
