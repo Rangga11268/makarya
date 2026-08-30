@@ -6,7 +6,14 @@ import { ratingApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { Star } from "lucide-react";
 
-export function RatingModal({ isOpen, onClose, projectId, keUserId, recipientName, onSuccess }) {
+export function RatingModal({
+  isOpen,
+  onClose,
+  projectId,
+  keUserId,
+  recipientName,
+  onSuccess,
+}) {
   const [skor, setSkor] = useState(5);
   const [ulasan, setUlasan] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,7 +45,11 @@ export function RatingModal({ isOpen, onClose, projectId, keUserId, recipientNam
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Beri Ulasan untuk ${recipientName || "Partner"}`}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Beri Ulasan untuk ${recipientName || "Partner"}`}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="p-3 text-xs font-medium bg-rose-50 border border-rose-200 text-rose-700 rounded-xl">
@@ -70,7 +81,15 @@ export function RatingModal({ isOpen, onClose, projectId, keUserId, recipientNam
             ))}
           </div>
           <p className="text-xs text-muted font-medium pt-1">
-            {skor === 5 ? "Sangat Memuaskan ⭐⭐⭐⭐⭐" : skor === 4 ? "Bagus ⭐⭐⭐⭐" : skor === 3 ? "Cukup ⭐⭐⭐" : skor === 2 ? "Kurang ⭐⭐" : "Kecewa ⭐"}
+            {skor === 5
+              ? "Sangat Memuaskan (5 / 5)"
+              : skor === 4
+                ? "Bagus & Sesuai Ekspektasi (4 / 5)"
+                : skor === 3
+                  ? "Cukup Baik (3 / 5)"
+                  : skor === 2
+                    ? "Kurang Memuaskan (2 / 5)"
+                    : "Perlu Banyak Perbaikan (1 / 5)"}
           </p>
         </div>
 
@@ -83,7 +102,12 @@ export function RatingModal({ isOpen, onClose, projectId, keUserId, recipientNam
         />
 
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={loading}
+          >
             Batal
           </Button>
           <Button variant="primary" size="md" type="submit" loading={loading}>

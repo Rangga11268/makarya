@@ -16,6 +16,7 @@ import { BrowseProjectsPage } from "./pages/projects/BrowseProjectsPage";
 import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
 import { CreateProjectPage } from "./pages/projects/CreateProjectPage";
 import { ProposalBoardPage } from "./pages/proposals/ProposalBoardPage";
+import { ApplyProposalPage } from "./pages/proposals/ApplyProposalPage";
 import { PortfolioPage } from "./pages/portfolio/PortfolioPage";
 import { ProfilePage } from "./pages/profile/ProfilePage";
 import { WalletPage } from "./pages/wallet/WalletPage";
@@ -71,6 +72,10 @@ export default function App() {
             >
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/projects/new" element={<CreateProjectPage />} />
+              <Route
+                path="/projects/:id/apply"
+                element={<ApplyProposalPage />}
+              />
               <Route path="/proposals" element={<ProposalBoardPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />

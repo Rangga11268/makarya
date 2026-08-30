@@ -88,20 +88,21 @@ export function WalletPage() {
     try {
       setTopUpLoading(true);
       const res = await walletApi.requestTopUp({ nominal: nominalNum });
-      
+
       if (res.data?.snap_token) {
         addToast("Membuka gateway pembayaran Midtrans Snap...", "info");
       } else {
         showSuccess(
           "Top-Up Saldo Berhasil!",
-          `Saldo deposit usaha Anda bertambah sebesar ${formatCurrency(nominalNum)}. Siap digunakan untuk mengunci dana escrow proyek!`
+          `Saldo deposit usaha Anda bertambah sebesar ${formatCurrency(nominalNum)}. Siap digunakan untuk mengunci dana escrow proyek!`,
         );
       }
 
       setTopUpModalOpen(false);
       fetchWalletData();
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal memproses permintaan top-up.";
+      const msg =
+        err.response?.data?.detail || "Gagal memproses permintaan top-up.";
       showError("Gagal Top-Up", msg);
     } finally {
       setTopUpLoading(false);
