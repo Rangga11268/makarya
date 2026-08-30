@@ -11,6 +11,7 @@ import { Input, TextArea } from "../../components/ui/Input";
 import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { extractIdFromSlug } from "../../utils/slugify";
 import {
   ArrowLeft,
   Briefcase,
@@ -26,7 +27,7 @@ import {
   Code2,
   FileText,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 
 export function ApplyProposalPage() {
@@ -49,16 +50,25 @@ export function ApplyProposalPage() {
   const [selectedTools, setSelectedTools] = useState([]);
 
   const toolOptions = [
-    "Figma", "Adobe Illustrator", "Photoshop", "Canva",
-    "React.js", "Tailwind CSS", "Next.js", "FastAPI / Python",
-    "CapCut / Premiere", "SEO Writing", "Microsoft Excel"
+    "Figma",
+    "Adobe Illustrator",
+    "Photoshop",
+    "Canva",
+    "React.js",
+    "Tailwind CSS",
+    "Next.js",
+    "FastAPI / Python",
+    "CapCut / Premiere",
+    "SEO Writing",
+    "Microsoft Excel",
   ];
 
   useEffect(() => {
     async function loadProject() {
       try {
         setLoading(true);
-        const res = await projectApi.getDetail(id);
+        const projectId = extractIdFromSlug(id);
+        const res = await projectApi.getDetail(projectId);
         setProject(res.data);
         setHargaTawar(res.data.budget_max || "");
       } catch (err) {
@@ -82,15 +92,15 @@ export function ApplyProposalPage() {
   const applyTemplate = (type) => {
     if (type === "design") {
       setCoverLetter(
-        `Halo Klien UMKM, saya mahasiswa Desain & TI yang siap merealisasikan brief ${project?.judul || "ini"}. Saya akan membuat 2 konsep visual awal dengan layout responsif, palet warna brand terkurasi, serta aset siap pakai (SVG/WebP). Siap revisi hingga sesuai kebutuhan usaha Anda!`
+        `Halo Klien UMKM, saya mahasiswa Desain & TI yang siap merealisasikan brief ${project?.judul || "ini"}. Saya akan membuat 2 konsep visual awal dengan layout responsif, palet warna brand terkurasi, serta aset siap pakai (SVG/WebP). Siap revisi hingga sesuai kebutuhan usaha Anda!`,
       );
     } else if (type === "dev") {
       setCoverLetter(
-        `Halo Klien UMKM, saya memiliki keahlian teknis untuk mengerjakan ${project?.judul || "proyek ini"}. Saya akan membangun solusi yang rapi, cepat, responsive di HP maupun Laptop, serta mudah dirawat. Kode bersih dan bergaransi bebas error.`
+        `Halo Klien UMKM, saya memiliki keahlian teknis untuk mengerjakan ${project?.judul || "proyek ini"}. Saya akan membangun solusi yang rapi, cepat, responsive di HP maupun Laptop, serta mudah dirawat. Kode bersih dan bergaransi bebas error.`,
       );
     } else {
       setCoverLetter(
-        `Halo Klien UMKM, saya tertarik untuk membantu penulisan konten dan optimasi promosi untuk ${project?.judul || "kebutuhan ini"}. Mengedepankan struktur persuasif yang tepat sasaran bagi calon pelanggan usaha Anda.`
+        `Halo Klien UMKM, saya tertarik untuk membantu penulisan konten dan optimasi promosi untuk ${project?.judul || "kebutuhan ini"}. Mengedepankan struktur persuasif yang tepat sasaran bagi calon pelanggan usaha Anda.`,
       );
     }
   };
@@ -106,7 +116,7 @@ export function ApplyProposalPage() {
     }
     if (nominal > parseFloat(project.budget_max)) {
       setError(
-        `Penawaran tidak boleh melebihi batas budget klien (${formatCurrency(project.budget_max)})`
+        `Penawaran tidak boleh melebihi batas budget klien (${formatCurrency(project.budget_max)})`,
       );
       return;
     }
@@ -135,10 +145,11 @@ export function ApplyProposalPage() {
       showSuccess(
         "Proposal Berhasil Dikirim!",
         `Penawaran profesional Anda sebesar ${formatCurrency(nominal)} telah diajukan ke klien UMKM. Anda dapat memantau status lamaran di menu Proposal Saya.`,
-        () => navigate("/proposals")
+        () => navigate("/proposals"),
       );
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal mengirim proposal lamaran.";
+      const msg =
+        err.response?.data?.detail || "Gagal mengirim proposal lamaran.";
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -161,10 +172,16 @@ export function ApplyProposalPage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center font-sans space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
-        <h2 className="text-xl font-bold text-dark-900">Proyek Tidak Ditemukan</h2>
-        <p className="text-xs text-muted">Proyek ini mungkin sudah ditutup atau tidak menerima proposal lagi.</p>
+        <h2 className="text-xl font-bold text-dark-900">
+          Proyek Tidak Ditemukan
+        </h2>
+        <p className="text-xs text-muted">
+          Proyek ini mungkin sudah ditutup atau tidak menerima proposal lagi.
+        </p>
         <Link to="/projects">
-          <Button variant="brand" size="sm">Kembali ke Katalog Proyek</Button>
+          <Button variant="brand" size="sm">
+            Kembali ke Katalog Proyek
+          </Button>
         </Link>
       </div>
     );
@@ -174,7 +191,6 @@ export function ApplyProposalPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
-      
       {/* Back Link & Header */}
       <div className="space-y-3">
         <Link
@@ -193,20 +209,22 @@ export function ApplyProposalPage() {
             Ajukan Proposal & Penawaran Kerja
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
-            Rangkai penawaran harga, estimasi waktu, metodologi kerja, dan portofolio Anda untuk meyakinkan klien UMKM.
+            Rangkai penawaran harga, estimasi waktu, metodologi kerja, dan
+            portofolio Anda untuk meyakinkan klien UMKM.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
         {/* Left Column: Project Target Summary & Escrow Protection (4 cols) */}
         <div className="lg:col-span-4 space-y-5">
           <Card className="p-6 space-y-5 bg-surface border-border rounded-3xl shadow-xs">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Badge variant="brand">{project.kategori}</Badge>
-                <Badge variant={project.status === "OPEN" ? "success" : "warning"}>
+                <Badge
+                  variant={project.status === "OPEN" ? "success" : "warning"}
+                >
                   {project.status}
                 </Badge>
               </div>
@@ -219,22 +237,32 @@ export function ApplyProposalPage() {
             <div className="space-y-2.5 pt-3 border-t border-border text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-muted">Batas Anggaran Klien:</span>
-                <span className="font-bold text-dark-900">{formatCurrency(project.budget_max)}</span>
+                <span className="font-bold text-dark-900">
+                  {formatCurrency(project.budget_max)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted">Tenggat Waktu:</span>
-                <span className="font-semibold text-dark-900">{formatDate(project.deadline)}</span>
+                <span className="font-semibold text-dark-900">
+                  {formatDate(project.deadline)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted">Pemberi Kerja:</span>
-                <span className="font-semibold text-dark-900">{project.umkm_profile?.nama_usaha || "Klien UMKM"}</span>
+                <span className="font-semibold text-dark-900">
+                  {project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                </span>
               </div>
             </div>
 
             {/* Brief Excerpt */}
             <div className="p-3.5 bg-canvas rounded-2xl border border-border text-xs text-slate-700 leading-relaxed">
-              <span className="font-bold text-dark-900 block mb-1">Deskripsi Singkat Brief:</span>
-              <p className="line-clamp-4 font-normal">{project.deskripsi_raw}</p>
+              <span className="font-bold text-dark-900 block mb-1">
+                Deskripsi Singkat Brief:
+              </span>
+              <p className="line-clamp-4 font-normal">
+                {project.deskripsi_raw}
+              </p>
             </div>
 
             {/* Escrow Guarantee Box */}
@@ -244,7 +272,8 @@ export function ApplyProposalPage() {
                 <span>Jaminan Escrow Holding 100%</span>
               </div>
               <p className="text-[11px] text-emerald-800 leading-relaxed font-normal">
-                Jika proposal Anda diterima, klien UMKM wajib mengunci seluruh dana honor di escrow Makarya sebelum pengerjaan dimulai.
+                Jika proposal Anda diterima, klien UMKM wajib mengunci seluruh
+                dana honor di escrow Makarya sebelum pengerjaan dimulai.
               </p>
             </div>
           </Card>
@@ -254,7 +283,6 @@ export function ApplyProposalPage() {
         <div className="lg:col-span-8">
           <Card className="p-6 sm:p-8 space-y-6 bg-surface border-border rounded-3xl shadow-xs">
             <form onSubmit={handleSubmit} className="space-y-6 font-sans">
-              
               {error && (
                 <div className="p-4 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -314,8 +342,12 @@ export function ApplyProposalPage() {
                 {/* Net Income Calculation */}
                 <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div>
-                    <span className="font-bold text-indigo-950 block">Honor Bersih Diterima Mahasiswa:</span>
-                    <span className="text-[11px] text-indigo-800">Bebas potongan platform (0% Biaya Komisi Mahasiswa UBSI).</span>
+                    <span className="font-bold text-indigo-950 block">
+                      Honor Bersih Diterima Mahasiswa:
+                    </span>
+                    <span className="text-[11px] text-indigo-800">
+                      Bebas potongan platform (0% Biaya Komisi Mahasiswa UBSI).
+                    </span>
                   </div>
                   <span className="text-lg font-black text-brand-indigo font-sans">
                     {formatCurrency(parsedNominal)}
@@ -334,7 +366,9 @@ export function ApplyProposalPage() {
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-muted hidden sm:inline">Pilih Templat:</span>
+                    <span className="text-[11px] text-muted hidden sm:inline">
+                      Pilih Templat:
+                    </span>
                     <button
                       type="button"
                       onClick={() => applyTemplate("design")}
@@ -405,7 +439,12 @@ export function ApplyProposalPage() {
               {/* Submit Buttons */}
               <div className="pt-4 border-t border-border flex items-center justify-between gap-4">
                 <Link to={`/projects/${project.id}`}>
-                  <Button type="button" variant="outline" size="md" className="text-xs font-bold">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="md"
+                    className="text-xs font-bold"
+                  >
                     Batal
                   </Button>
                 </Link>
@@ -421,13 +460,10 @@ export function ApplyProposalPage() {
                   Kirim Proposal Lamaran
                 </Button>
               </div>
-
             </form>
           </Card>
         </div>
-
       </div>
-
     </div>
   );
 }

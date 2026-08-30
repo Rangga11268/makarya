@@ -4,12 +4,8 @@ import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { daysRemaining } from "../../utils/formatDate";
-import { 
-  Clock, 
-  Tag, 
-  Building2, 
-  ArrowRight 
-} from "lucide-react";
+import { getProjectUrl } from "../../utils/slugify";
+import { Clock, Tag, Building2, ArrowRight } from "lucide-react";
 
 export function ProjectCard({ project }) {
   const daysLeft = daysRemaining(project.deadline);
@@ -25,7 +21,10 @@ export function ProjectCard({ project }) {
   };
 
   return (
-    <Card hover className="flex flex-col justify-between h-full group bg-surface border-border">
+    <Card
+      hover
+      className="flex flex-col justify-between h-full group bg-surface border-border"
+    >
       <div>
         {/* Top Header: UMKM Client Info & Days Left */}
         <div className="flex items-center justify-between gap-2 mb-3.5 pb-3 border-b border-border-subtle">
@@ -79,7 +78,7 @@ export function ProjectCard({ project }) {
         </div>
 
         <Link
-          to={`/projects/${project.id}`}
+          to={getProjectUrl(project)}
           className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold bg-dark-900 hover:bg-brand-indigo text-white transition-all gap-1.5 shadow-xs select-none"
         >
           <span>Detail & Lamar Proyek</span>

@@ -8,13 +8,14 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
+import { extractIdFromSlug, getProjectUrl } from "../../utils/slugify";
 import {
   CategoryDesignSvg,
   CategoryUiUxSvg,
   CategoryCodeSvg,
   CategoryVideoSvg,
   CategoryCopySvg,
-  CategoryDataSvg
+  CategoryDataSvg,
 } from "../../components/ui/CategorySvgIcons";
 import {
   ArrowLeft,
@@ -35,7 +36,7 @@ import {
   Award,
   AlertCircle,
   MapPin,
-  Share2
+  Share2,
 } from "lucide-react";
 
 export function ProjectDetailPage() {
@@ -71,7 +72,7 @@ export function ProjectDetailPage() {
     if (!isAuthenticated) {
       addToast(
         "Silakan masuk dengan akun mahasiswa terlebih dahulu untuk mengajukan proposal.",
-        "info"
+        "info",
       );
       navigate("/login");
       return;
@@ -79,11 +80,11 @@ export function ProjectDetailPage() {
     if (user?.role === "UMKM") {
       addToast(
         "Akun Klien UMKM tidak dapat mengajukan proposal. Gunakan akun mahasiswa untuk melamar proyek.",
-        "warning"
+        "warning",
       );
       return;
     }
-    navigate(`/projects/${project.id}/apply`);
+    navigate(`/projects/${id}/apply`);
   };
 
   const handleShare = () => {
@@ -94,7 +95,8 @@ export function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       setLoading(true);
-      const res = await projectApi.getDetail(id);
+      const projectId = extractIdFromSlug(id);
+      const res = await projectApi.getDetail(projectId);
       setProject(res.data);
     } catch (err) {
       console.error("Gagal memuat detail proyek:", err);
@@ -123,10 +125,16 @@ export function ProjectDetailPage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center font-sans space-y-4">
         <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
-        <h2 className="text-xl font-bold text-dark-900">Proyek Tidak Ditemukan</h2>
-        <p className="text-xs text-muted">Proyek ini mungkin telah dihapus atau link tidak valid.</p>
+        <h2 className="text-xl font-bold text-dark-900">
+          Proyek Tidak Ditemukan
+        </h2>
+        <p className="text-xs text-muted">
+          Proyek ini mungkin telah dihapus atau link tidak valid.
+        </p>
         <Link to="/projects">
-          <Button variant="brand" size="sm">Kembali ke Katalog Proyek</Button>
+          <Button variant="brand" size="sm">
+            Kembali ke Katalog Proyek
+          </Button>
         </Link>
       </div>
     );
@@ -137,7 +145,6 @@ export function ProjectDetailPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
-      
       {/* 1. Breadcrumbs & Top Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-muted">
@@ -149,9 +156,13 @@ export function ProjectDetailPage() {
             Jelajah Proyek
           </Link>
           <span>/</span>
-          <span className="text-brand-indigo font-bold">{project.kategori}</span>
+          <span className="text-brand-indigo font-bold">
+            {project.kategori}
+          </span>
           <span>/</span>
-          <span className="text-slate-600 truncate max-w-xs">{project.judul}</span>
+          <span className="text-slate-600 truncate max-w-xs">
+            {project.judul}
+          </span>
         </div>
 
         <button
@@ -164,12 +175,10 @@ export function ProjectDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
         {/* ========================================================================= */}
         {/* LEFT COLUMN: MAIN PROJECT BRIEF & WORKFLOW ROADMAP (8 cols) */}
         {/* ========================================================================= */}
         <div className="lg:col-span-8 space-y-6">
-          
           {/* Card 1: Main Project Header & Overview */}
           <Card className="p-6 sm:p-8 space-y-6 bg-surface border-border rounded-3xl shadow-xs">
             <div className="space-y-4">
@@ -179,8 +188,18 @@ export function ProjectDetailPage() {
                   <span>{project.kategori}</span>
                 </div>
 
-                <Badge variant={project.status === "OPEN" || project.status === "BIDDING" ? "success" : "warning"}>
-                  {project.status === "OPEN" ? "Buka Lamaran" : project.status === "BIDDING" ? "Proses Seleksi Bidding" : project.status}
+                <Badge
+                  variant={
+                    project.status === "OPEN" || project.status === "BIDDING"
+                      ? "success"
+                      : "warning"
+                  }
+                >
+                  {project.status === "OPEN"
+                    ? "Buka Lamaran"
+                    : project.status === "BIDDING"
+                      ? "Proses Seleksi Bidding"
+                      : project.status}
                 </Badge>
 
                 <span className="text-xs text-muted font-mono">
@@ -208,7 +227,8 @@ export function ProjectDetailPage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-muted">
-                    {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} • {project.umkm_profile?.kota || "Indonesia"}
+                    {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} •{" "}
+                    {project.umkm_profile?.kota || "Indonesia"}
                   </p>
                 </div>
               </div>
@@ -217,28 +237,38 @@ export function ProjectDetailPage() {
             {/* 4-Stat Metrics Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border">
               <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">Batas Anggaran:</span>
+                <span className="text-[11px] font-semibold text-muted block">
+                  Batas Anggaran:
+                </span>
                 <span className="text-sm font-black text-dark-900 block mt-0.5">
                   {formatCurrency(project.budget_max)}
                 </span>
               </div>
 
               <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">Tenggat Waktu:</span>
-                <span className={`text-sm font-bold block mt-0.5 ${daysLeft <= 3 ? "text-rose-600" : "text-dark-900"}`}>
+                <span className="text-[11px] font-semibold text-muted block">
+                  Tenggat Waktu:
+                </span>
+                <span
+                  className={`text-sm font-bold block mt-0.5 ${daysLeft <= 3 ? "text-rose-600" : "text-dark-900"}`}
+                >
                   {daysLeft > 0 ? `${daysLeft} Hari Lagi` : "Hari Terakhir"}
                 </span>
               </div>
 
               <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">Total Pelamar:</span>
+                <span className="text-[11px] font-semibold text-muted block">
+                  Total Pelamar:
+                </span>
                 <span className="text-sm font-bold text-dark-900 block mt-0.5">
                   {project.total_pelamar || 0} Mahasiswa
                 </span>
               </div>
 
               <div className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-200/80">
-                <span className="text-[11px] font-semibold text-emerald-800 block">Proteksi Escrow:</span>
+                <span className="text-[11px] font-semibold text-emerald-800 block">
+                  Proteksi Escrow:
+                </span>
                 <span className="text-sm font-bold text-emerald-900 block mt-0.5 flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   100% Aman
@@ -252,12 +282,11 @@ export function ProjectDetailPage() {
                 <Layers className="w-4 h-4 text-brand-indigo" />
                 Rincian Kebutuhan & Deskripsi Brief UMKM
               </h3>
-              
+
               <div className="p-5 bg-canvas rounded-2xl border border-border text-xs text-slate-800 leading-relaxed font-normal whitespace-pre-line">
                 {project.deskripsi_raw}
               </div>
             </div>
-
           </Card>
 
           {/* Card 2: How Escrow Pengerjaan Works (Roadmap Visual) */}
@@ -275,7 +304,10 @@ export function ProjectDetailPage() {
                   1
                 </div>
                 <h4 className="font-bold text-dark-900">Ajukan Proposal</h4>
-                <p className="text-[11px] text-muted leading-snug">Mahasiswa melampirkan portofolio, harga tawar, dan rencana kerja.</p>
+                <p className="text-[11px] text-muted leading-snug">
+                  Mahasiswa melampirkan portofolio, harga tawar, dan rencana
+                  kerja.
+                </p>
               </div>
 
               <div className="p-3.5 bg-canvas rounded-2xl border border-border space-y-1.5">
@@ -283,7 +315,10 @@ export function ProjectDetailPage() {
                   2
                 </div>
                 <h4 className="font-bold text-dark-900">Kunci Escrow</h4>
-                <p className="text-[11px] text-muted leading-snug">Klien UMKM menyetujui proposal & dana honor dikunci aman di sistem.</p>
+                <p className="text-[11px] text-muted leading-snug">
+                  Klien UMKM menyetujui proposal & dana honor dikunci aman di
+                  sistem.
+                </p>
               </div>
 
               <div className="p-3.5 bg-canvas rounded-2xl border border-border space-y-1.5">
@@ -291,7 +326,9 @@ export function ProjectDetailPage() {
                   3
                 </div>
                 <h4 className="font-bold text-dark-900">Eksekusi Karya</h4>
-                <p className="text-[11px] text-muted leading-snug">Mahasiswa mengerjakan tugas dan mengunggah tautan hasil kerja.</p>
+                <p className="text-[11px] text-muted leading-snug">
+                  Mahasiswa mengerjakan tugas dan mengunggah tautan hasil kerja.
+                </p>
               </div>
 
               <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-1.5">
@@ -299,7 +336,9 @@ export function ProjectDetailPage() {
                   4
                 </div>
                 <h4 className="font-bold text-emerald-950">Pencairan Honor</h4>
-                <p className="text-[11px] text-emerald-800 leading-snug">Klien puas & honor 100% langsung cair ke dompet mahasiswa.</p>
+                <p className="text-[11px] text-emerald-800 leading-snug">
+                  Klien puas & honor 100% langsung cair ke dompet mahasiswa.
+                </p>
               </div>
             </div>
           </Card>
@@ -313,19 +352,26 @@ export function ProjectDetailPage() {
               </h3>
             </div>
             <ul className="text-xs text-indigo-900 space-y-1.5 pl-4 list-disc leading-relaxed">
-              <li>Berikan penawaran harga yang wajar sesuai kompleksitas brief UMKM.</li>
-              <li>Sertakan contoh karya nyata pada portofolio (Figma, GitHub, Behance, atau Drive).</li>
-              <li>Tuliskan rencana langkah kerja yang jelas agar klien UMKM merasa yakin atas profesionalitas Anda.</li>
+              <li>
+                Berikan penawaran harga yang wajar sesuai kompleksitas brief
+                UMKM.
+              </li>
+              <li>
+                Sertakan contoh karya nyata pada portofolio (Figma, GitHub,
+                Behance, atau Drive).
+              </li>
+              <li>
+                Tuliskan rencana langkah kerja yang jelas agar klien UMKM merasa
+                yakin atas profesionalitas Anda.
+              </li>
             </ul>
           </Card>
-
         </div>
 
         {/* ========================================================================= */}
         {/* RIGHT COLUMN: STICKY PROPOSAL ACTION & CLIENT INFO (4 cols) */}
         {/* ========================================================================= */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
-          
           {/* Card 1: Action Box (Apply Button) */}
           <Card className="p-6 space-y-5 bg-surface border-border rounded-3xl shadow-md">
             <div className="space-y-1">
@@ -342,7 +388,11 @@ export function ProjectDetailPage() {
 
             {isOwner ? (
               <Link to="/proposals">
-                <Button variant="brand" size="lg" className="w-full text-xs font-bold shadow-brand">
+                <Button
+                  variant="brand"
+                  size="lg"
+                  className="w-full text-xs font-bold shadow-brand"
+                >
                   Kelola Pelamar Proyek Ini →
                 </Button>
               </Link>
@@ -365,7 +415,8 @@ export function ProjectDetailPage() {
                 <span>Dana Terkunci di Escrow</span>
               </div>
               <p className="text-[11px] text-emerald-800 leading-snug font-normal">
-                Honor kerja Anda otomatis dijamin dan dikunci di sistem saat proposal disetujui klien.
+                Honor kerja Anda otomatis dijamin dan dikunci di sistem saat
+                proposal disetujui klien.
               </p>
             </div>
           </Card>
@@ -396,11 +447,15 @@ export function ProjectDetailPage() {
               <div className="p-3 bg-canvas rounded-xl text-xs space-y-1.5 border border-border">
                 <div className="flex justify-between">
                   <span className="text-muted">Bidang Industri:</span>
-                  <span className="font-semibold text-dark-900">{project.umkm_profile?.bidang_industri || "Usaha Mandiri"}</span>
+                  <span className="font-semibold text-dark-900">
+                    {project.umkm_profile?.bidang_industri || "Usaha Mandiri"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Status Kemitraan:</span>
-                  <span className="font-bold text-emerald-600">Terverifikasi Aktif</span>
+                  <span className="font-bold text-emerald-600">
+                    Terverifikasi Aktif
+                  </span>
                 </div>
               </div>
 
@@ -414,16 +469,22 @@ export function ProjectDetailPage() {
 
           {/* Card 3: Terms & Fair Practice Guarantee */}
           <Card className="p-5 space-y-2 bg-canvas border border-border rounded-2xl text-[11px] text-muted">
-            <span className="font-bold text-dark-900 block">Ketentuan Kemitraan:</span>
-            <p>1. Hak cipta hasil karya beralih ke UMKM setelah pembayaran disetujui.</p>
-            <p>2. Mahasiswa berhak menyertakan hasil karya di portofolio pribadi.</p>
-            <p>3. Resolusi sengketa diawasi langsung oleh sistem audit Makarya.</p>
+            <span className="font-bold text-dark-900 block">
+              Ketentuan Kemitraan:
+            </span>
+            <p>
+              1. Hak cipta hasil karya beralih ke UMKM setelah pembayaran
+              disetujui.
+            </p>
+            <p>
+              2. Mahasiswa berhak menyertakan hasil karya di portofolio pribadi.
+            </p>
+            <p>
+              3. Resolusi sengketa diawasi langsung oleh sistem audit Makarya.
+            </p>
           </Card>
-
         </div>
-
       </div>
-
     </div>
   );
 }
