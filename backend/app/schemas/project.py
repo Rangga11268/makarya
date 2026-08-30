@@ -1,15 +1,14 @@
-from datetime import date,datetime
+from datetime import date, datetime
 from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator
 from app.models.project import ProjectCategory, ProjectStatus
 
-
 # Schemas for Project Baru(KHUSUS UMKM) and Project Baru(KHUSUS UMKM) Update
 class ProjectCreateRequest(BaseModel):
     judul: str = Field(..., min_length=5, max_length=200, description="Judul project")
-    deskripsi_raw: str = Field(..., min_length=20, description="Deskripsi kebutuhan project min 20 karakter")
+    deskripsi_raw: str = Field(..., min_length=15, description="Deskripsi kebutuhan project min 15 karakter")
     kategori: ProjectCategory
     budget_max: Decimal = Field(..., gt=0, le=2000000, description="Budget maksimal project Rp 2.000.000")
     deadline: date = Field(..., description="Tenggat waktu pengerjaan project")
@@ -24,7 +23,7 @@ class ProjectCreateRequest(BaseModel):
 # Schema untuk update project (khusus UMKM)
 class ProjectUpdateRequest(BaseModel):
     judul: Optional[str] = Field(None, min_length=5, max_length=200, description="Judul project")
-    deskripsi_raw: Optional[str] = Field(None, min_length=20, description="Deskripsi kebutuhan project min 20 karakter")
+    deskripsi_raw: Optional[str] = Field(None, min_length=15, description="Deskripsi kebutuhan project min 15 karakter")
     kategori: Optional[ProjectCategory]
     budget_max: Optional[Decimal] = Field(None, gt=0, le=2000000, description="Budget maksimal project Rp 2.000.000")
     deadline: Optional[date] = Field(None, description="Tenggat waktu pengerjaan project")
@@ -36,9 +35,9 @@ class ProjectUpdateRequest(BaseModel):
             raise ValueError("Tenggat waktu harus berupa tanggal di masa depan")
         return v
 
-# Schema ringkas pemilik umkm(nasted response proyek)
+# Schema ringkas pemilik umkm(nested response proyek)
 class UmkmSummary(BaseModel):
-    id: UUID
+    user_id: Optional[UUID] = None
     nama_usaha: str
     bidang_industri: Optional[str] = None
     kota: Optional[str] = None
