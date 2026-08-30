@@ -34,6 +34,7 @@ export function ProjectDetailPage() {
       addToast(
         "Silakan masuk dengan akun mahasiswa terlebih dahulu untuk mengajukan proposal.",
         "info",
+        "info"
       );
       navigate("/login");
       return;
@@ -42,10 +43,12 @@ export function ProjectDetailPage() {
       addToast(
         "Akun Klien UMKM tidak dapat mengajukan proposal proyek. Gunakan akun mahasiswa.",
         "warning",
+        "warning"
       );
       return;
     }
     setModalOpen(true);
+    navigate(`/projects/${project.id}/apply`);
   };
 
   const fetchProject = async () => {
