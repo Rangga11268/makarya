@@ -11,12 +11,12 @@ import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
-import { 
-  Briefcase, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
-  UploadCloud, 
+import {
+  Briefcase,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  UploadCloud,
   FileText,
   AlertCircle,
   Users,
@@ -24,7 +24,8 @@ import {
   ExternalLink,
   RotateCcw,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  PlusCircle,
 } from "lucide-react";
 
 export function ProposalBoardPage() {
@@ -99,13 +100,16 @@ export function ProposalBoardPage() {
       async () => {
         try {
           await proposalApi.accept(proposal.id);
-          showSuccess("Proposal Diterima!", "Status proyek kini menjadi IN_PROGRESS dan dana escrow telah dikunci.");
+          showSuccess(
+            "Proposal Diterima!",
+            "Status proyek kini menjadi IN_PROGRESS dan dana escrow telah dikunci.",
+          );
           await loadData();
         } catch (err) {
           const msg = err.response?.data?.detail || "Gagal menerima proposal.";
           showError("Gagal Menerima Proposal", msg);
         }
-      }
+      },
     );
   };
 
@@ -124,7 +128,7 @@ export function ProposalBoardPage() {
         }
       },
       null,
-      true
+      true,
     );
   };
 
@@ -136,13 +140,19 @@ export function ProposalBoardPage() {
       async () => {
         try {
           await submissionApi.approve(submissionId);
-          showSuccess("Pekerjaan Disetujui!", "Honor kerja telah dicairkan ke saldo mahasiswa.");
+          showSuccess(
+            "Pekerjaan Disetujui!",
+            "Honor kerja telah dicairkan ke saldo mahasiswa.",
+          );
           setRatingModalOpen(true);
           await loadData();
         } catch (err) {
-          showError("Gagal Menyetujui", err.response?.data?.detail || "Gagal menyetujui hasil kerja.");
+          showError(
+            "Gagal Menyetujui",
+            err.response?.data?.detail || "Gagal menyetujui hasil kerja.",
+          );
         }
-      }
+      },
     );
   };
 
@@ -167,15 +177,18 @@ export function ProposalBoardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
-      
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            {isUmkm ? "Pusat Manajemen Proyek UMKM" : "Papan Pelamar & Pengerjaan"}
+            {isUmkm
+              ? "Pusat Manajemen Proyek UMKM"
+              : "Papan Pelamar & Pengerjaan"}
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm ? "Kelola Proyek & Pelamar Masuk" : "Proposal & Pengerjaan Proyek"}
+            {isUmkm
+              ? "Kelola Proyek & Pelamar Masuk"
+              : "Proposal & Pengerjaan Proyek"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
@@ -186,9 +199,12 @@ export function ProposalBoardPage() {
 
         {isUmkm && (
           <Link to="/projects/new">
-            <Button variant="brand" size="md" className="shadow-brand text-xs font-bold shrink-0">
-              <PlusCircle className="w-4 h-4 mr-1.5" />
-              + Pasang Proyek Baru
+            <Button
+              variant="brand"
+              size="md"
+              className="shadow-brand text-xs font-bold shrink-0"
+            >
+              <PlusCircle className="w-4 h-4 mr-1.5" />+ Pasang Proyek Baru
             </Button>
           </Link>
         )}
@@ -199,7 +215,6 @@ export function ProposalBoardPage() {
       {/* ========================================================================= */}
       {isUmkm ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
           {/* Left Column: Project Selector (4 cols) */}
           <div className="lg:col-span-4 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
@@ -209,16 +224,27 @@ export function ProposalBoardPage() {
             {loading ? (
               <div className="space-y-2.5">
                 {[1, 2, 3].map((n) => (
-                  <div key={n} className="h-20 bg-surface rounded-2xl border border-border animate-pulse" />
+                  <div
+                    key={n}
+                    className="h-20 bg-surface rounded-2xl border border-border animate-pulse"
+                  />
                 ))}
               </div>
             ) : myProjects.length === 0 ? (
               <Card className="p-6 text-center space-y-3 bg-surface border-border">
                 <Briefcase className="w-8 h-8 text-muted mx-auto opacity-40" />
-                <h4 className="text-xs font-bold text-dark-900">Belum Ada Proyek</h4>
-                <p className="text-[11px] text-muted">Pasang proyek usaha Anda untuk menerima proposal.</p>
+                <h4 className="text-xs font-bold text-dark-900">
+                  Belum Ada Proyek
+                </h4>
+                <p className="text-[11px] text-muted">
+                  Pasang proyek usaha Anda untuk menerima proposal.
+                </p>
                 <Link to="/projects/new">
-                  <Button variant="brand" size="sm" className="w-full text-xs font-bold shadow-brand">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    className="w-full text-xs font-bold shadow-brand"
+                  >
                     Pasang Proyek
                   </Button>
                 </Link>
@@ -238,17 +264,25 @@ export function ProposalBoardPage() {
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isSelected ? "bg-white/20 text-white" : "bg-canvas text-muted border border-border"}`}>
+                        <span
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isSelected ? "bg-white/20 text-white" : "bg-canvas text-muted border border-border"}`}
+                        >
                           {proj.kategori}
                         </span>
-                        <span className={`text-[11px] font-bold ${isSelected ? "text-emerald-400" : "text-emerald-700"}`}>
+                        <span
+                          className={`text-[11px] font-bold ${isSelected ? "text-emerald-400" : "text-emerald-700"}`}
+                        >
                           {proj.status}
                         </span>
                       </div>
-                      <h4 className={`text-xs sm:text-sm font-bold truncate ${isSelected ? "text-white" : "text-dark-900"}`}>
+                      <h4
+                        className={`text-xs sm:text-sm font-bold truncate ${isSelected ? "text-white" : "text-dark-900"}`}
+                      >
                         {proj.judul}
                       </h4>
-                      <div className={`text-xs font-semibold mt-1 ${isSelected ? "text-slate-300" : "text-muted"}`}>
+                      <div
+                        className={`text-xs font-semibold mt-1 ${isSelected ? "text-slate-300" : "text-muted"}`}
+                      >
                         Budget: {formatCurrency(proj.budget_max)}
                       </div>
                     </div>
@@ -262,22 +296,35 @@ export function ProposalBoardPage() {
           <div className="lg:col-span-8 space-y-6">
             {selectedProject ? (
               <div className="space-y-6">
-                
                 {/* Active Project Summary Card */}
                 <Card className="p-6 space-y-4 bg-surface border-border">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="brand">{selectedProject.kategori}</Badge>
-                        <Badge variant={selectedProject.status === "IN_PROGRESS" ? "success" : "warning"}>
+                        <Badge variant="brand">
+                          {selectedProject.kategori}
+                        </Badge>
+                        <Badge
+                          variant={
+                            selectedProject.status === "IN_PROGRESS"
+                              ? "success"
+                              : "warning"
+                          }
+                        >
                           Status: {selectedProject.status}
                         </Badge>
                       </div>
-                      <h3 className="text-lg font-bold text-dark-900 mt-1">{selectedProject.judul}</h3>
+                      <h3 className="text-lg font-bold text-dark-900 mt-1">
+                        {selectedProject.judul}
+                      </h3>
                     </div>
                     <div className="text-left sm:text-right">
-                      <span className="text-xs text-muted block">Batas Anggaran</span>
-                      <span className="text-lg font-black text-dark-900">{formatCurrency(selectedProject.budget_max)}</span>
+                      <span className="text-xs text-muted block">
+                        Batas Anggaran
+                      </span>
+                      <span className="text-lg font-black text-dark-900">
+                        {formatCurrency(selectedProject.budget_max)}
+                      </span>
                     </div>
                   </div>
 
@@ -293,16 +340,22 @@ export function ProposalBoardPage() {
                       </div>
 
                       {projectSubmissions.map((sub) => (
-                        <div key={sub.id} className="bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2">
+                        <div
+                          key={sub.id}
+                          className="bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2"
+                        >
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted">Tautan Berkas:</span>
+                            <span className="text-xs font-semibold text-muted">
+                              Tautan Berkas:
+                            </span>
                             <a
                               href={sub.url_berkas}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs font-bold text-brand-indigo hover:underline flex items-center gap-1"
                             >
-                              Buka File Deliverable <ExternalLink className="w-3.5 h-3.5" />
+                              Buka File Deliverable{" "}
+                              <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
                           {sub.catatan_pengiriman && (
@@ -338,25 +391,43 @@ export function ProposalBoardPage() {
                     {projectProposals.length === 0 ? (
                       <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-1">
                         <Users className="w-8 h-8 text-muted mx-auto opacity-40" />
-                        <p className="text-xs font-bold text-dark-900">Belum Ada Pelamar</p>
-                        <p className="text-[11px] text-muted">Proyek Anda sedang tayang di katalog terbuka mahasiswa.</p>
+                        <p className="text-xs font-bold text-dark-900">
+                          Belum Ada Pelamar
+                        </p>
+                        <p className="text-[11px] text-muted">
+                          Proyek Anda sedang tayang di katalog terbuka
+                          mahasiswa.
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-3">
                         {projectProposals.map((prop) => (
-                          <div key={prop.id} className="p-4 rounded-2xl bg-canvas border border-border space-y-3">
+                          <div
+                            key={prop.id}
+                            className="p-4 rounded-2xl bg-canvas border border-border space-y-3"
+                          >
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                               <div>
                                 <div className="flex items-center gap-2">
                                   <h5 className="text-xs font-bold text-dark-900">
-                                    {prop.mhs_profile?.nama_lengkap || "Mahasiswa Pelamar"}
+                                    {prop.mhs_profile?.nama_lengkap ||
+                                      "Mahasiswa Pelamar"}
                                   </h5>
-                                  <Badge variant={prop.status === "ACCEPTED" ? "success" : prop.status === "PENDING" ? "warning" : "danger"}>
+                                  <Badge
+                                    variant={
+                                      prop.status === "ACCEPTED"
+                                        ? "success"
+                                        : prop.status === "PENDING"
+                                          ? "warning"
+                                          : "danger"
+                                    }
+                                  >
                                     {prop.status}
                                   </Badge>
                                 </div>
                                 <span className="text-[11px] text-muted">
-                                  NIM: {prop.mhs_profile?.nim || "1221xxxx"} • Estimasi: {prop.estimasi_hari} Hari
+                                  NIM: {prop.mhs_profile?.nim || "1221xxxx"} •
+                                  Estimasi: {prop.estimasi_hari} Hari
                                 </span>
                               </div>
 
@@ -371,26 +442,27 @@ export function ProposalBoardPage() {
                               "{prop.cover_letter}"
                             </div>
 
-                            {prop.status === "PENDING" && selectedProject.status === "OPEN" && (
-                              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleRejectProposal(prop)}
-                                  className="text-xs font-bold text-rose-600 border-rose-200"
-                                >
-                                  Tolak
-                                </Button>
-                                <Button
-                                  variant="brand"
-                                  size="sm"
-                                  onClick={() => handleAcceptProposal(prop)}
-                                  className="text-xs font-bold shadow-brand"
-                                >
-                                  Terima & Kunci Escrow
-                                </Button>
-                              </div>
-                            )}
+                            {prop.status === "PENDING" &&
+                              selectedProject.status === "OPEN" && (
+                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleRejectProposal(prop)}
+                                    className="text-xs font-bold text-rose-600 border-rose-200"
+                                  >
+                                    Tolak
+                                  </Button>
+                                  <Button
+                                    variant="brand"
+                                    size="sm"
+                                    onClick={() => handleAcceptProposal(prop)}
+                                    className="text-xs font-bold shadow-brand"
+                                  >
+                                    Terima & Kunci Escrow
+                                  </Button>
+                                </div>
+                              )}
                           </div>
                         ))}
                       </div>
@@ -400,11 +472,11 @@ export function ProposalBoardPage() {
               </div>
             ) : (
               <Card className="p-12 text-center text-muted">
-                Pilih salah satu proyek di sebelah kiri untuk melihat rincian pelamar.
+                Pilih salah satu proyek di sebelah kiri untuk melihat rincian
+                pelamar.
               </Card>
             )}
           </div>
-
         </div>
       ) : (
         /* ========================================================================= */
@@ -415,9 +487,18 @@ export function ProposalBoardPage() {
           <div className="flex items-center gap-2 border-b border-border pb-3">
             {[
               { key: "ALL", label: `Semua (${proposals.length})` },
-              { key: "ACCEPTED", label: `Disetujui / Berjalan (${proposals.filter(p => p.status === "ACCEPTED").length})` },
-              { key: "PENDING", label: `Menunggu (${proposals.filter(p => p.status === "PENDING").length})` },
-              { key: "REJECTED", label: `Ditolak (${proposals.filter(p => p.status === "REJECTED").length})` },
+              {
+                key: "ACCEPTED",
+                label: `Disetujui / Berjalan (${proposals.filter((p) => p.status === "ACCEPTED").length})`,
+              },
+              {
+                key: "PENDING",
+                label: `Menunggu (${proposals.filter((p) => p.status === "PENDING").length})`,
+              },
+              {
+                key: "REJECTED",
+                label: `Ditolak (${proposals.filter((p) => p.status === "REJECTED").length})`,
+              },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -436,74 +517,99 @@ export function ProposalBoardPage() {
           {loading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((n) => (
-                <div key={n} className="h-32 bg-surface rounded-card border border-border animate-pulse" />
+                <div
+                  key={n}
+                  className="h-32 bg-surface rounded-card border border-border animate-pulse"
+                />
               ))}
             </div>
-          ) : proposals.filter(p => activeTab === "ALL" || p.status === activeTab).length === 0 ? (
+          ) : proposals.filter(
+              (p) => activeTab === "ALL" || p.status === activeTab,
+            ).length === 0 ? (
             <Card className="text-center py-16 space-y-3 bg-surface border-border">
               <Briefcase className="w-12 h-12 text-muted mx-auto opacity-40" />
-              <h3 className="text-base font-bold text-dark-900">Belum Ada Proposal pada Kategori Ini</h3>
+              <h3 className="text-base font-bold text-dark-900">
+                Belum Ada Proposal pada Kategori Ini
+              </h3>
               <p className="text-xs text-muted max-w-sm mx-auto">
-                Silakan jelajahi katalog proyek UMKM yang terbuka dan kirimkan proposal penawaran Anda.
+                Silakan jelajahi katalog proyek UMKM yang terbuka dan kirimkan
+                proposal penawaran Anda.
               </p>
               <Link to="/projects">
-                <Button variant="brand" size="sm" className="mt-2 text-xs font-bold shadow-brand">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="mt-2 text-xs font-bold shadow-brand"
+                >
                   Jelajah Proyek Terbuka
                 </Button>
               </Link>
             </Card>
           ) : (
             <div className="space-y-4">
-              {proposals.filter(p => activeTab === "ALL" || p.status === activeTab).map((proposal) => (
-                <Card key={proposal.id} className="p-5 sm:p-6 space-y-4 bg-surface border-border">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        {statusBadge(proposal.status)}
-                        <span className="text-xs text-muted">
-                          Dikirim: {formatDate(proposal.created_at)}
+              {proposals
+                .filter((p) => activeTab === "ALL" || p.status === activeTab)
+                .map((proposal) => (
+                  <Card
+                    key={proposal.id}
+                    className="p-5 sm:p-6 space-y-4 bg-surface border-border"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          {statusBadge(proposal.status)}
+                          <span className="text-xs text-muted">
+                            Dikirim: {formatDate(proposal.created_at)}
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold text-dark-900">
+                          Penawaran Proyek #{proposal.project_id.slice(0, 8)}
+                        </h3>
+                      </div>
+
+                      <div className="flex sm:flex-col items-baseline sm:items-end justify-between gap-1 text-right">
+                        <span className="text-xs text-muted uppercase tracking-wider font-semibold">
+                          Harga Tawar
+                        </span>
+                        <span className="text-lg font-black text-dark-900">
+                          {formatCurrency(proposal.harga_tawar)}
                         </span>
                       </div>
-                      <h3 className="text-base font-bold text-dark-900">
-                        Penawaran Proyek #{proposal.project_id.slice(0, 8)}
-                      </h3>
                     </div>
 
-                    <div className="flex sm:flex-col items-baseline sm:items-end justify-between gap-1 text-right">
-                      <span className="text-xs text-muted uppercase tracking-wider font-semibold">
-                        Harga Tawar
+                    <div className="bg-canvas border border-border p-3.5 rounded-xl text-xs text-dark-900/90 leading-relaxed font-normal">
+                      <span className="font-bold text-dark-900 block mb-1">
+                        Pesan & Rencana Kerja:
                       </span>
-                      <span className="text-lg font-black text-dark-900">
-                        {formatCurrency(proposal.harga_tawar)}
-                      </span>
+                      "{proposal.cover_letter}"
                     </div>
-                  </div>
 
-                  <div className="bg-canvas border border-border p-3.5 rounded-xl text-xs text-dark-900/90 leading-relaxed font-normal">
-                    <span className="font-bold text-dark-900 block mb-1">Pesan & Rencana Kerja:</span>
-                    "{proposal.cover_letter}"
-                  </div>
+                    {proposal.status === "ACCEPTED" && (
+                      <div className="pt-3 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>
+                            Dana escrow sebesar{" "}
+                            <b>{formatCurrency(proposal.harga_tawar)}</b> sudah
+                            dikunci aman oleh klien.
+                          </span>
+                        </div>
 
-                  {proposal.status === "ACCEPTED" && (
-                    <div className="pt-3 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Dana escrow sebesar <b>{formatCurrency(proposal.harga_tawar)}</b> sudah dikunci aman oleh klien.</span>
+                        <Button
+                          variant="brand"
+                          size="sm"
+                          onClick={() =>
+                            handleOpenSubmission(proposal.project_id)
+                          }
+                          className="w-full sm:w-auto text-xs font-bold shadow-brand"
+                        >
+                          <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                          Unggah / Serahkan Hasil Kerja
+                        </Button>
                       </div>
-
-                      <Button
-                        variant="brand"
-                        size="sm"
-                        onClick={() => handleOpenSubmission(proposal.project_id)}
-                        className="w-full sm:w-auto text-xs font-bold shadow-brand"
-                      >
-                        <UploadCloud className="w-3.5 h-3.5 mr-1" />
-                        Unggah / Serahkan Hasil Kerja
-                      </Button>
-                    </div>
-                  )}
-                </Card>
-              ))}
+                    )}
+                  </Card>
+                ))}
             </div>
           )}
         </div>
@@ -529,7 +635,6 @@ export function ProposalBoardPage() {
           onSuccess={loadData}
         />
       )}
-
     </div>
   );
 }

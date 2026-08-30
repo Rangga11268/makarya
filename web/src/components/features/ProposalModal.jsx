@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import React, { useState, useEffect } from "react";
 import { Modal } from "../ui/Modal";
 import { Input, TextArea } from "../ui/Input";
@@ -8,15 +7,15 @@ import { Badge } from "../ui/Badge";
 import { proposalApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { 
-  Sparkles, 
-  Clock, 
-  ShieldCheck, 
-  Briefcase, 
-  Wrench, 
-  Link as LinkIcon, 
+import {
+  Sparkles,
+  Clock,
+  ShieldCheck,
+  Briefcase,
+  Wrench,
+  Link as LinkIcon,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
@@ -37,9 +36,17 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
   }, [project, isOpen]);
 
   const toolOptions = [
-    "Figma", "Adobe Illustrator", "Photoshop", "Canva", 
-    "React.js", "Tailwind CSS", "Next.js", "Python / FastAPI",
-    "CapCut / Premiere", "SEO Writing", "Microsoft Excel"
+    "Figma",
+    "Adobe Illustrator",
+    "Photoshop",
+    "Canva",
+    "React.js",
+    "Tailwind CSS",
+    "Next.js",
+    "Python / FastAPI",
+    "CapCut / Premiere",
+    "SEO Writing",
+    "Microsoft Excel",
   ];
 
   const toggleTool = (tool) => {
@@ -53,15 +60,15 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
   const applyTemplate = (type) => {
     if (type === "design") {
       setCoverLetter(
-        `Halo Klien UMKM, saya mahasiswa Desain & TI yang siap merealisasikan brief ${project?.judul || "ini"}. Saya akan membuat 2 konsep visual awal dengan layout responsif, warna brand terkurasi, dan aset siap pakai (SVG/WebP). Siap revisi hingga sesuai kebutuhan usaha Anda!`
+        `Halo Klien UMKM, saya mahasiswa Desain & TI yang siap merealisasikan brief ${project?.judul || "ini"}. Saya akan membuat 2 konsep visual awal dengan layout responsif, warna brand terkurasi, dan aset siap pakai (SVG/WebP). Siap revisi hingga sesuai kebutuhan usaha Anda!`,
       );
     } else if (type === "dev") {
       setCoverLetter(
-        `Halo Klien UMKM, saya memiliki keahlian teknis untuk mengerjakan ${project?.judul || "proyek ini"}. Saya akan membangun solusi yang rapi, cepat, responsive di HP/Laptop, serta mudah digunakan. Kode bersih dan bergaransi bebas error.`
+        `Halo Klien UMKM, saya memiliki keahlian teknis untuk mengerjakan ${project?.judul || "proyek ini"}. Saya akan membangun solusi yang rapi, cepat, responsive di HP/Laptop, serta mudah digunakan. Kode bersih dan bergaransi bebas error.`,
       );
     } else {
       setCoverLetter(
-        `Halo Klien UMKM, saya tertarik untuk membantu pengerjaan ${project?.judul || "kebutuhan ini"}. Dengan pengalaman tugas kuliah dan project nyata, saya menjamin pengerjaan tuntas tepat waktu dengan kualitas terbaik.`
+        `Halo Klien UMKM, saya tertarik untuk membantu pengerjaan ${project?.judul || "kebutuhan ini"}. Dengan pengalaman tugas kuliah dan project nyata, saya menjamin pengerjaan tuntas tepat waktu dengan kualitas terbaik.`,
       );
     }
   };
@@ -82,7 +89,6 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
       return;
     }
     if (coverLetter.trim().length < 20) {
-      setError("Surat lamaran / deskripsi keahlian minimal 20 karakter");
       setError("Surat lamaran / pesan strategi kerja minimal 20 karakter");
       return;
     }
@@ -102,12 +108,13 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
         project_id: project.id,
         harga_tawar: nominal,
         estimasi_hari: parseInt(estimasiHari, 10),
-        cover_letter: coverLetter.trim(),
         cover_letter: fullPitch,
       });
 
-      addToast("Proposal lamaran Anda berhasil dikirim ke UMKM!", "success");
-      addToast("Proposal penawaran profesional Anda berhasil dikirim ke klien UMKM!", "success");
+      addToast(
+        "Proposal penawaran profesional Anda berhasil dikirim ke klien UMKM!",
+        "success",
+      );
       onSuccess?.();
       onClose();
     } catch (err) {
@@ -121,28 +128,15 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
   const parsedNominal = parseFloat(hargaTawar) || 0;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Kirim Proposal Lamaran">
-      <form onSubmit={handleSubmit} className="space-y-4">
     <Modal isOpen={isOpen} onClose={onClose} title="Ajukan Proposal Penawaran">
       <form onSubmit={handleSubmit} className="space-y-5 font-sans">
         {error && (
-          <div className="p-3 text-xs font-medium bg-rose-50 border border-rose-200 text-rose-700 rounded-xl">
-            {error}
           <div className="p-3.5 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <div className="bg-gray-50 border border-border p-3.5 rounded-xl text-xs space-y-1">
-          <p className="text-muted">Target Proyek:</p>
-          <p className="font-bold text-dark-900">{project?.judul}</p>
-          <p className="text-muted font-medium">
-            Budget Maksimal Klien:{" "}
-            <b className="text-dark-900">
-              {formatCurrency(project?.budget_max)}
-            </b>
-          </p>
         {/* Project Target Brief */}
         <div className="bg-canvas border border-border p-4 rounded-2xl text-xs space-y-1.5">
           <div className="flex items-center justify-between">
@@ -151,20 +145,17 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
             </span>
             <Badge variant="brand">{project?.kategori || "Umum"}</Badge>
           </div>
-          <p className="font-bold text-sm text-dark-900 line-clamp-1">{project?.judul}</p>
+          <p className="font-bold text-sm text-dark-900 line-clamp-1">
+            {project?.judul}
+          </p>
           <div className="flex items-center justify-between pt-2 border-t border-border text-[11px]">
             <span className="text-muted">Batas Anggaran Klien:</span>
-            <span className="font-bold text-dark-900">{formatCurrency(project?.budget_max)}</span>
+            <span className="font-bold text-dark-900">
+              {formatCurrency(project?.budget_max)}
+            </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <CurrencyInput
-            label="Harga Tawar"
-            placeholder="750.000"
-            value={hargaTawar}
-            onChange={(val) => setHargaTawar(val)}
-            helperText="Maksimal seharga batas budget proyek"
         {/* Financial & Time Estimates */}
         <div className="space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-dark-900 flex items-center gap-1.5">
@@ -214,9 +205,14 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
 
           {/* Income Calculator Breakdown */}
           <div className="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 flex items-center justify-between text-xs">
-            <span className="text-indigo-950 font-medium">Honor Bersih Diterima Mahasiswa:</span>
+            <span className="text-indigo-950 font-medium">
+              Honor Bersih Diterima Mahasiswa:
+            </span>
             <span className="text-sm font-black text-brand-indigo">
-              {formatCurrency(parsedNominal)} <span className="text-[10px] font-normal text-emerald-700">(0% Fee Mahasiswa)</span>
+              {formatCurrency(parsedNominal)}{" "}
+              <span className="text-[10px] font-normal text-emerald-700">
+                (0% Fee Mahasiswa)
+              </span>
             </span>
           </div>
         </div>
@@ -225,10 +221,13 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-dark-900">
-              Pesan Pitching & Rencana Eksekusi <span className="text-rose-500">*</span>
+              Pesan Pitching & Rencana Eksekusi{" "}
+              <span className="text-rose-500">*</span>
             </label>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted hidden sm:inline">Templat Cepat:</span>
+              <span className="text-[10px] text-muted hidden sm:inline">
+                Templat Cepat:
+              </span>
               <button
                 type="button"
                 onClick={() => applyTemplate("design")}
@@ -290,52 +289,32 @@ export function ProposalModal({ isOpen, onClose, project, onSuccess }) {
             Tautan Portofolio / Contoh Karya (Opsional)
           </label>
           <Input
-            label="Estimasi Pengerjaan (Hari)"
-            type="number"
-            min="1"
-            max="90"
-            placeholder="Contoh: 5"
-            value={estimasiHari}
-            onChange={(e) => setEstimasiHari(e.target.value)}
-            required
             placeholder="https://behance.net/karya atau https://github.com/projek"
             value={portfolioLink}
             onChange={(e) => setPortfolioLink(e.target.value)}
           />
         </div>
 
-        <TextArea
-          label="Surat Lamaran & Rencana Kerja"
-          rows={4}
-          placeholder="Jelaskan pengalaman relevan, portofolio singkat, dan cara Anda akan menyelesaikan proyek ini..."
-          value={coverLetter}
-          onChange={(e) => setCoverLetter(e.target.value)}
-          required
-        />
         {/* Escrow Guarantee Badge */}
         <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-start gap-2.5 text-xs text-emerald-950">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <span>
-            <b>Proteksi Escrow Makarya:</b> Jika proposal diterima, klien UMKM wajib mengunci 100% dana di escrow sebelum Anda mulai mengerjakan.
+            <b>Proteksi Escrow Makarya:</b> Jika proposal diterima, klien UMKM
+            wajib mengunci 100% dana di escrow sebelum Anda mulai mengerjakan.
           </span>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
         {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
           <Button
-            variant="secondary"
             type="button"
             variant="outline"
             size="md"
             onClick={onClose}
-            disabled={loading}
             className="text-xs font-bold"
           >
             Batal
           </Button>
-          <Button variant="primary" size="md" type="submit" loading={loading}>
-            Kirim Proposal
           <Button
             type="submit"
             variant="brand"
