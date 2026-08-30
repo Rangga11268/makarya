@@ -38,6 +38,9 @@ export function Navbar() {
   const handleLogout = () => {
     logout();
     navigate("/login");
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+    navigate("/");
   };
 
   const navLinks = user?.role === "ADMIN"
