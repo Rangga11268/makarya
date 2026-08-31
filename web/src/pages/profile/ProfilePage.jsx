@@ -6,18 +6,18 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { Alert } from "../../components/ui/Alert";
-import { 
-  User, 
-  Building2, 
-  GraduationCap, 
-  Save, 
-  Link as LinkIcon, 
-  Phone, 
-  MapPin, 
-  BookOpen, 
+import {
+  User,
+  Building2,
+  GraduationCap,
+  Save,
+  Link as LinkIcon,
+  Phone,
+  MapPin,
+  BookOpen,
   Sparkles,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -48,10 +48,23 @@ export function ProfilePage() {
   });
 
   const availableSkills = [
-    "FastAPI", "React.js", "Python", "PostgreSQL", "Tailwind CSS",
-    "Figma", "UI/UX Design", "Logo Design", "Branding", "Adobe Illustrator",
-    "Video Editing", "Reels / TikTok", "CapCut", "Copywriting", "SEO Optimization",
-    "Data Entry", "Excel / Google Sheets"
+    "FastAPI",
+    "React.js",
+    "Python",
+    "PostgreSQL",
+    "Tailwind CSS",
+    "Figma",
+    "UI/UX Design",
+    "Logo Design",
+    "Branding",
+    "Adobe Illustrator",
+    "Video Editing",
+    "Reels / TikTok",
+    "CapCut",
+    "Copywriting",
+    "SEO Optimization",
+    "Data Entry",
+    "Excel / Google Sheets",
   ];
 
   const prodiList = [
@@ -62,7 +75,7 @@ export function ProfilePage() {
     "Rekayasa Perangkat Lunak",
     "Manajemen Informatika",
     "Akuntansi",
-    "Manajemen Bisnis"
+    "Manajemen Bisnis",
   ];
 
   const industriList = [
@@ -73,7 +86,7 @@ export function ProfilePage() {
     "Kecantikan & Skincare",
     "Otomotif & Bengkel",
     "Teknologi & Digital",
-    "Agribisnis & Peternakan"
+    "Agribisnis & Peternakan",
   ];
 
   useEffect(() => {
@@ -83,9 +96,9 @@ export function ProfilePage() {
         const res = await authApi.getMe();
         if (res.data) {
           if (isUmkm && res.data.profile_umkm) {
-            setUmkmData(prev => ({ ...prev, ...res.data.profile_umkm }));
+            setUmkmData((prev) => ({ ...prev, ...res.data.profile_umkm }));
           } else if (!isUmkm && res.data.profile_mhs) {
-            setMhsData(prev => ({ ...prev, ...res.data.profile_mhs }));
+            setMhsData((prev) => ({ ...prev, ...res.data.profile_mhs }));
           }
         }
       } catch (err) {
@@ -98,10 +111,10 @@ export function ProfilePage() {
   }, [isUmkm]);
 
   const toggleSkill = (skill) => {
-    setMhsData(prev => {
+    setMhsData((prev) => {
       const exists = prev.skills.includes(skill);
       if (exists) {
-        return { ...prev, skills: prev.skills.filter(s => s !== skill) };
+        return { ...prev, skills: prev.skills.filter((s) => s !== skill) };
       } else {
         return { ...prev, skills: [...prev.skills, skill] };
       }
@@ -123,23 +136,26 @@ export function ProfilePage() {
     }
   };
 
-  const initial = isUmkm 
-    ? (umkmData.nama_usaha ? umkmData.nama_usaha.charAt(0).toUpperCase() : "U")
-    : (mhsData.nama_lengkap ? mhsData.nama_lengkap.charAt(0).toUpperCase() : "M");
+  const initial = isUmkm
+    ? umkmData.nama_usaha
+      ? umkmData.nama_usaha.charAt(0).toUpperCase()
+      : "U"
+    : mhsData.nama_lengkap
+      ? mhsData.nama_lengkap.charAt(0).toUpperCase()
+      : "M";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
-      
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
       {/* Header */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-          Pengaturan Akun
+          Pengaturan Akun & Identitas
         </span>
-        <h1 className="text-3xl sm:text-4xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
           Kelola Profil {isUmkm ? "Usaha UMKM" : "Mahasiswa"}
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
-          {isUmkm 
+          {isUmkm
             ? "Lengkapi informasi usaha Anda agar talenta mahasiswa dapat memahami kebutuhan bisnis Anda secara akurat."
             : "Perbarui keahlian, biodata, dan tautan portofolio Anda untuk memenangkan seleksi proposal proyek UMKM."}
         </p>
@@ -167,14 +183,17 @@ export function ProfilePage() {
           <p className="text-xs text-muted flex items-center justify-center sm:justify-start gap-2">
             <span>{user?.email}</span>
             <span>•</span>
-            <span>{isUmkm ? `${umkmData.bidang_industri} • ${umkmData.kota}` : `${mhsData.prodi} • NIM ${mhsData.nim}`}</span>
+            <span>
+              {isUmkm
+                ? `${umkmData.bidang_industri} • ${umkmData.kota}`
+                : `${mhsData.prodi} • NIM ${mhsData.nim}`}
+            </span>
           </p>
         </div>
       </div>
 
       {/* Main Profile Form */}
       <form onSubmit={handleSaveProfile} className="space-y-6">
-        
         {/* MAHASISWA FORM */}
         {!isUmkm ? (
           <Card className="p-6 sm:p-8 space-y-6">
@@ -184,30 +203,39 @@ export function ProfilePage() {
                 Informasi Akademik & Biodata Mahasiswa
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Data identitas kampus untuk verifikasi resmi kredibilitas mahasiswa di platform.
+                Data identitas kampus untuk verifikasi resmi kredibilitas
+                mahasiswa di platform.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">Nama Lengkap Sesuai KTM</label>
+                <label className="text-xs font-bold text-dark-900">
+                  Nama Lengkap Sesuai KTM
+                </label>
                 <input
                   type="text"
                   required
                   value={mhsData.nama_lengkap}
-                  onChange={(e) => setMhsData({ ...mhsData, nama_lengkap: e.target.value })}
+                  onChange={(e) =>
+                    setMhsData({ ...mhsData, nama_lengkap: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
                   placeholder="Masukkan nama lengkap..."
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">Nomor Induk Mahasiswa (NIM)</label>
+                <label className="text-xs font-bold text-dark-900">
+                  Nomor Induk Mahasiswa (NIM)
+                </label>
                 <input
                   type="text"
                   required
                   value={mhsData.nim}
-                  onChange={(e) => setMhsData({ ...mhsData, nim: e.target.value })}
+                  onChange={(e) =>
+                    setMhsData({ ...mhsData, nim: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono"
                   placeholder="Contoh: 12219999"
                 />
@@ -215,24 +243,34 @@ export function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">Program Studi (UBSI)</label>
+              <label className="text-xs font-bold text-dark-900">
+                Program Studi (UBSI)
+              </label>
               <select
                 value={mhsData.prodi}
-                onChange={(e) => setMhsData({ ...mhsData, prodi: e.target.value })}
+                onChange={(e) =>
+                  setMhsData({ ...mhsData, prodi: e.target.value })
+                }
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
               >
                 {prodiList.map((p, idx) => (
-                  <option key={idx} value={p}>{p}</option>
+                  <option key={idx} value={p}>
+                    {p}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">Bio Singkat / Ringkasan Diri</label>
+              <label className="text-xs font-bold text-dark-900">
+                Bio Singkat / Ringkasan Diri
+              </label>
               <textarea
                 rows={3}
                 value={mhsData.bio}
-                onChange={(e) => setMhsData({ ...mhsData, bio: e.target.value })}
+                onChange={(e) =>
+                  setMhsData({ ...mhsData, bio: e.target.value })
+                }
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
                 placeholder="Ceritakan keahlian utama, pengalaman project, atau minat pengerjaan Anda..."
               />
@@ -241,17 +279,21 @@ export function ProfilePage() {
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
                 <LinkIcon className="w-3.5 h-3.5 text-brand-indigo" />
-                Tautan Portofolio Luar (GitHub / Behance / Dribbble / Google Drive)
+                Tautan Portofolio Luar (GitHub / Behance / Dribbble / Google
+                Drive)
               </label>
               <input
                 type="url"
                 value={mhsData.url_portofolio}
-                onChange={(e) => setMhsData({ ...mhsData, url_portofolio: e.target.value })}
+                onChange={(e) =>
+                  setMhsData({ ...mhsData, url_portofolio: e.target.value })
+                }
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
                 placeholder="https://github.com/username atau https://behance.net/username"
               />
               <span className="text-[11px] text-muted block">
-                Klien UMKM dapat melihat tautan portofolio ini saat mengevaluasi proposal yang Anda kirimkan.
+                Klien UMKM dapat melihat tautan portofolio ini saat mengevaluasi
+                proposal yang Anda kirimkan.
               </span>
             </div>
 
@@ -263,7 +305,8 @@ export function ProfilePage() {
                   Keahlian & Tag Spesialisasi Digital
                 </label>
                 <p className="text-[11px] text-muted mt-0.5">
-                  Pilih skill yang Anda kuasai. Sistem Makarya akan mencocokkan skill ini dengan kebutuhan proyek UMKM.
+                  Pilih skill yang Anda kuasai. Sistem Makarya akan mencocokkan
+                  skill ini dengan kebutuhan proyek UMKM.
                 </p>
               </div>
 
@@ -287,7 +330,6 @@ export function ProfilePage() {
                 })}
               </div>
             </div>
-
           </Card>
         ) : (
           /* UMKM FORM */
@@ -298,32 +340,46 @@ export function ProfilePage() {
                 Informasi Profil Usaha UMKM
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Data usaha Anda akan tampil pada rincian proyek untuk meyakinkan mahasiswa bertalenta.
+                Data usaha Anda akan tampil pada rincian proyek untuk meyakinkan
+                mahasiswa bertalenta.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">Nama Usaha / Toko / Merek</label>
+                <label className="text-xs font-bold text-dark-900">
+                  Nama Usaha / Toko / Merek
+                </label>
                 <input
                   type="text"
                   required
                   value={umkmData.nama_usaha}
-                  onChange={(e) => setUmkmData({ ...umkmData, nama_usaha: e.target.value })}
+                  onChange={(e) =>
+                    setUmkmData({ ...umkmData, nama_usaha: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
                   placeholder="Contoh: Kopi Nusantara Jaya"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">Bidang Industri Usaha</label>
+                <label className="text-xs font-bold text-dark-900">
+                  Bidang Industri Usaha
+                </label>
                 <select
                   value={umkmData.bidang_industri}
-                  onChange={(e) => setUmkmData({ ...umkmData, bidang_industri: e.target.value })}
+                  onChange={(e) =>
+                    setUmkmData({
+                      ...umkmData,
+                      bidang_industri: e.target.value,
+                    })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
                 >
                   {industriList.map((ind, idx) => (
-                    <option key={idx} value={ind}>{ind}</option>
+                    <option key={idx} value={ind}>
+                      {ind}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -339,7 +395,9 @@ export function ProfilePage() {
                   type="text"
                   required
                   value={umkmData.kota}
-                  onChange={(e) => setUmkmData({ ...umkmData, kota: e.target.value })}
+                  onChange={(e) =>
+                    setUmkmData({ ...umkmData, kota: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
                   placeholder="Contoh: Jakarta Selatan, Bekasi, Depok"
                 />
@@ -354,7 +412,9 @@ export function ProfilePage() {
                   type="tel"
                   required
                   value={umkmData.no_kontak}
-                  onChange={(e) => setUmkmData({ ...umkmData, no_kontak: e.target.value })}
+                  onChange={(e) =>
+                    setUmkmData({ ...umkmData, no_kontak: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono"
                   placeholder="0812xxxxxxxx"
                 />
@@ -362,11 +422,15 @@ export function ProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">Alamat Lengkap Usaha</label>
+              <label className="text-xs font-bold text-dark-900">
+                Alamat Lengkap Usaha
+              </label>
               <textarea
                 rows={3}
                 value={umkmData.alamat}
-                onChange={(e) => setUmkmData({ ...umkmData, alamat: e.target.value })}
+                onChange={(e) =>
+                  setUmkmData({ ...umkmData, alamat: e.target.value })
+                }
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
                 placeholder="Alamat jalan, nomor ruko/outlet, kecamatan, dan provinsi..."
               />
@@ -387,9 +451,7 @@ export function ProfilePage() {
             {loading ? "Menyimpan Perubahan..." : "Simpan Perubahan Profil"}
           </Button>
         </div>
-
       </form>
-
     </div>
   );
 }

@@ -106,7 +106,7 @@ export function RegisterPage() {
                 className="h-14 sm:h-16 w-auto object-contain mb-3"
               />
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-dark-900 tracking-tight font-sans">
+            <h1 className="text-3xl sm:text-4xl font-serif text-dark-900 tracking-tight font-normal">
               Daftar Akun Mahasiswa
             </h1>
             <p className="text-xs sm:text-sm text-muted font-sans font-normal">

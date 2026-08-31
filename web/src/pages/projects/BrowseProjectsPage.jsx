@@ -80,12 +80,22 @@ export function BrowseProjectsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Page Header */}
-      <SectionHeader
-        badgeText="Katalog Peluang"
-        title="Jelajah Proyek UMKM Aktif"
-        subtitle="Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda dan tawarkan proposal terbaik."
-        action={
-          user?.role === "UMKM" ? (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
+            Katalog Peluang & Spesialisasi
+          </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+            Jelajah Proyek UMKM Aktif
+          </h1>
+          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
+            Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda
+            dan tawarkan proposal terbaik.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {user?.role === "UMKM" ? (
             <Link to="/projects/new">
               <Button
                 variant="brand"
@@ -100,14 +110,14 @@ export function BrowseProjectsPage() {
               variant="outline"
               size="sm"
               onClick={handleResetFilter}
-              className="text-xs text-muted"
+              className="text-xs font-bold text-muted hover:text-dark-900"
             >
               <RotateCcw className="w-3.5 h-3.5 mr-1" />
               Reset Filter
             </Button>
-          )
-        }
-      />
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Sidebar Filters */}
