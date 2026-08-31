@@ -17,6 +17,14 @@ export const useAuthStore = create((set, get) => ({
       if (token && userStr) {
         const user = JSON.parse(userStr);
         set({ token, user, isAuthenticated: true });
+        
+        // Fetch latest profile in background
+        try {
+          const meRes = await authApi.getMe();
+          const updatedUser = { ...user, ...meRes.data };
+          await AsyncStorage.setItem("makarya_user", JSON.stringify(updatedUser));
+          set({ user: updatedUser });
+        } catch (_) {}
       } else {
         set({ token: null, user: null, isAuthenticated: false });
       }
@@ -29,18 +37,28 @@ export const useAuthStore = create((set, get) => ({
 
   login: async (email, password) => {
     const res = await authApi.login({ email, password });
-    const { access_token, role, user_id } = res.data;
+    const { access_token, role, user_id, is_verified } = res.data;
 
-    const userData = {
+    let userData = {
       id: user_id,
       email,
-      role: role ? role.toUpperCase() : "UMKM",
+      role: role ? role.toUpperCase() : "MAHASISWA",
+      is_verified: !!is_verified,
     };
 
     await AsyncStorage.setItem("makarya_access_token", access_token);
     await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
 
     set({ token: access_token, user: userData, isAuthenticated: true });
+
+    // Fetch full profile info (name, university/business)
+    try {
+      const meRes = await authApi.getMe();
+      userData = { ...userData, ...meRes.data };
+      await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
+      set({ user: userData });
+    } catch (_) {}
+
     return userData;
   },
 

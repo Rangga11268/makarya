@@ -5,7 +5,7 @@ import { Badge } from "../ui/Badge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
-import { Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react-native";
+import { Calendar, Users } from "lucide-react-native";
 
 export function ProjectCard({ project, onPress }) {
   const getStatusBadge = (status) => {
@@ -51,11 +51,11 @@ export function ProjectCard({ project, onPress }) {
         </View>
 
         <View style={styles.metaItem}>
-          <Users size={13} color={COLORS.accentLime} />
+          <Users size={13} color={COLORS.brandCyan} />
           <Text
             style={[
               styles.metaText,
-              { color: COLORS.accentLime, fontWeight: "700" },
+              { color: COLORS.brandCyan, fontWeight: "700" },
             ]}
           >
             {project.total_pelamar || 0} Pelamar
@@ -68,12 +68,17 @@ export function ProjectCard({ project, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 24,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 22,
     padding: 18,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 14,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
   },
   topRow: {
     flexDirection: "row",
@@ -84,12 +89,12 @@ const styles = StyleSheet.create({
   budget: {
     fontSize: 15,
     fontWeight: "900",
-    color: COLORS.accentLime,
+    color: COLORS.brandIndigo,
   },
   title: {
     fontSize: 16,
     fontWeight: "800",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     letterSpacing: -0.3,
     marginBottom: 6,
   },

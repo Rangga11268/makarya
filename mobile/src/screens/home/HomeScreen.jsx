@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
-import { Card } from "../../components/ui/Card";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
+import { ProjectCard } from "../../components/features/ProjectCard";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi, walletApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -22,28 +22,42 @@ import {
   Wallet,
   Briefcase,
   Users,
-  ArrowUpRight,
-  TrendingUp,
+  Compass,
+  GraduationCap,
   Activity,
+  ArrowRight,
 } from "lucide-react-native";
 
 export function HomeScreen({ navigation }) {
   const { user } = useAuthStore();
   const [wallet, setWallet] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
+  const [browseProjects, setBrowseProjects] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  const isMahasiswa = user?.role === "MAHASISWA";
 
   const loadData = async () => {
     try {
       setRefreshing(true);
-      const [walletRes, projRes] = await Promise.all([
-        walletApi
-          .getMe()
-          .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
-        projectApi.getMyProjects({ limit: 5 }).catch(() => ({ data: [] })),
-      ]);
-      setWallet(walletRes.data);
-      setMyProjects(projRes.data);
+      if (isMahasiswa) {
+        const [walletRes, browseRes] = await Promise.all([
+          walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+          projectApi.browse({ limit: 4 }).catch(() => ({ data: { items: [] } })),
+        ]);
+        setWallet(walletRes.data);
+        const pItems = Array.isArray(browseRes.data)
+          ? browseRes.data
+          : browseRes.data?.items || [];
+        setBrowseProjects(pItems);
+      } else {
+        const [walletRes, projRes] = await Promise.all([
+          walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+          projectApi.getMyProjects({ limit: 5 }).catch(() => ({ data: [] })),
+        ]);
+        setWallet(walletRes.data);
+        setMyProjects(Array.isArray(projRes.data) ? projRes.data : []);
+      }
     } finally {
       setRefreshing(false);
     }
@@ -51,7 +65,7 @@ export function HomeScreen({ navigation }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [user?.role]);
 
   const talents = [
     {
@@ -101,17 +115,29 @@ export function HomeScreen({ navigation }) {
             style={styles.headerLogo}
             resizeMode="contain"
           />
-          <View style={styles.verifiedTag}>
-            <ShieldCheck size={12} color={COLORS.brandCyan} />
-            <Text style={styles.verifiedText}>Escrow Protected</Text>
-          </View>
+          {isMahasiswa ? (
+            <View style={styles.verifiedTag}>
+              <GraduationCap size={13} color={COLORS.brandIndigo} />
+              <Text style={styles.verifiedText}>Mahasiswa Terverifikasi</Text>
+            </View>
+          ) : (
+            <View style={styles.verifiedTag}>
+              <ShieldCheck size={13} color={COLORS.brandCyan} />
+              <Text style={styles.verifiedText}>Escrow Protected</Text>
+            </View>
+          )}
         </View>
 
         <Text style={styles.greeting}>
-          Halo, {user?.nama_usaha || "Pemilik UMKM"}
+          Halo,{" "}
+          {isMahasiswa
+            ? user?.nama_lengkap || user?.email?.split("@")[0] || "Mahasiswa UBSI"
+            : user?.nama_usaha || "Pemilik UMKM"}
         </Text>
         <Text style={styles.headerSubtitle}>
-          Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda.
+          {isMahasiswa
+            ? "Jelajahi proyek digital UMKM dan cairkan honor hasil karyamu."
+            : "Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda."}
         </Text>
       </View>
 
@@ -121,7 +147,9 @@ export function HomeScreen({ navigation }) {
           <View style={styles.walletIcon}>
             <Wallet size={18} color={COLORS.brandCyan} />
           </View>
-          <Text style={styles.balanceLabel}>Saldo Aktif UMKM</Text>
+          <Text style={styles.balanceLabel}>
+            {isMahasiswa ? "Saldo Dompet Mahasiswa" : "Saldo Aktif UMKM"}
+          </Text>
         </View>
 
         <Text style={styles.balanceAmount}>
@@ -130,7 +158,7 @@ export function HomeScreen({ navigation }) {
 
         <View style={styles.escrowRow}>
           <Text style={styles.escrowText}>
-            Terkunci di Escrow:{" "}
+            {isMahasiswa ? "Terkunci dalam Pengerjaan: " : "Terkunci di Escrow: "}
             <Text style={styles.escrowAmount}>
               {formatCurrency(wallet?.saldo_escrow || 0)}
             </Text>
@@ -138,61 +166,125 @@ export function HomeScreen({ navigation }) {
         </View>
 
         <View style={styles.quickActions}>
-          <Button
-            title="Pasang Proyek Baru"
-            variant="lime"
-            size="md"
-            icon={<Plus size={16} color="#FFF" strokeWidth={3} />}
-            onPress={() => navigation.navigate("PostProject")}
-            style={styles.actionBtn}
-          />
-          <Button
-            title="Top-Up"
-            variant="dark"
-            size="md"
-            onPress={() => navigation.navigate("WalletTab")}
-            style={styles.topUpBtn}
-          />
+          {isMahasiswa ? (
+            <>
+              <Button
+                title="Cari Proyek Digital"
+                variant="lime"
+                size="md"
+                icon={<Compass size={16} color="#FFF" />}
+                onPress={() => navigation.navigate("ProjectsTab")}
+                style={styles.actionBtn}
+              />
+              <Button
+                title="Tarik Dana"
+                variant="dark"
+                size="md"
+                onPress={() => navigation.navigate("WalletTab")}
+                style={styles.topUpBtn}
+              />
+            </>
+          ) : (
+            <>
+              <Button
+                title="Pasang Proyek Baru"
+                variant="lime"
+                size="md"
+                icon={<Plus size={16} color="#FFF" strokeWidth={3} />}
+                onPress={() => navigation.navigate("PostProject")}
+                style={styles.actionBtn}
+              />
+              <Button
+                title="Top-Up"
+                variant="dark"
+                size="md"
+                onPress={() => navigation.navigate("WalletTab")}
+                style={styles.topUpBtn}
+              />
+            </>
+          )}
         </View>
       </View>
 
       {/* Quick Summary Grid */}
       <View style={styles.summaryGrid}>
         <View style={styles.summaryBox}>
-          <Briefcase size={18} color={COLORS.accentCyan} />
-          <Text style={styles.summaryCount}>{myProjects.length}</Text>
-          <Text style={styles.summaryLabel}>Proyek Berjalan</Text>
+          <Briefcase size={18} color={COLORS.brandCyan} />
+          <Text style={styles.summaryCount}>
+            {isMahasiswa ? browseProjects.length : myProjects.length}
+          </Text>
+          <Text style={styles.summaryLabel}>
+            {isMahasiswa ? "Proyek Tersedia" : "Proyek Berjalan"}
+          </Text>
         </View>
 
         <View style={styles.summaryBox}>
-          <Activity size={18} color={COLORS.accentLime} />
+          <Activity size={18} color={COLORS.brandIndigo} />
           <Text style={styles.summaryCount}>
-            {myProjects.reduce((acc, p) => acc + (p.total_pelamar || 0), 0)}
+            {isMahasiswa
+              ? (wallet?.saldo_escrow ? 1 : 0)
+              : myProjects.reduce((acc, p) => acc + (p.total_pelamar || 0), 0)}
           </Text>
-          <Text style={styles.summaryLabel}>Proposal Masuk</Text>
+          <Text style={styles.summaryLabel}>
+            {isMahasiswa ? "Kontrak Aktif" : "Proposal Masuk"}
+          </Text>
         </View>
       </View>
 
-      {/* Featured Talents Section (Dribbble Bento UI) */}
-      <View style={styles.sectionHeader}>
+      {/* Main Section per Role */}
+      {isMahasiswa ? (
         <View>
-          <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
-          <Text style={styles.sectionSubtitle}>
-            Mahasiswa terverifikasi kampus dengan rekam jejak prima
-          </Text>
-        </View>
-      </View>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Rekomendasi Proyek UMKM</Text>
+              <Text style={styles.sectionSubtitle}>
+                Pilih proyek yang cocok & ajukan penawaran proposal Anda
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ProjectsTab")}
+              style={styles.seeAllBtn}
+            >
+              <Text style={styles.seeAllText}>Lihat Semua</Text>
+              <ArrowRight size={13} color={COLORS.brandIndigo} />
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.talentList}>
-        {talents.map((t, idx) => (
-          <TalentBentoCard
-            key={t.id}
-            talent={t}
-            variant={idx === 0 ? "lime" : "dark"}
-            onPress={() => navigation.navigate("PostProject")}
-          />
-        ))}
-      </View>
+          <View style={styles.projectList}>
+            {browseProjects.slice(0, 4).map((p) => (
+              <ProjectCard
+                key={p.id}
+                project={p}
+                onPress={() =>
+                  navigation.navigate("ProjectDetail", { projectId: p.id })
+                }
+              />
+            ))}
+          </View>
+        </View>
+      ) : (
+        <View>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
+              <Text style={styles.sectionSubtitle}>
+                Mahasiswa terverifikasi kampus dengan rekam jejak prima
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.talentList}>
+            {talents.map((t, idx) => (
+              <TalentBentoCard
+                key={t.id}
+                talent={t}
+                variant={idx === 0 ? "lime" : "dark"}
+                onPress={() => navigation.navigate("PostProject")}
+              />
+            ))}
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -229,23 +321,23 @@ const styles = StyleSheet.create({
   verifiedTag: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "rgba(14, 165, 233, 0.12)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    gap: 5,
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(14, 165, 233, 0.25)",
+    borderColor: "rgba(79, 70, 229, 0.2)",
   },
   verifiedText: {
     fontSize: 10,
     fontWeight: "800",
-    color: COLORS.brandCyan,
+    color: COLORS.brandIndigo,
   },
   headerSubtitle: {
     fontSize: 12,
     color: COLORS.textMuted,
-    marginTop: 2,
+    marginTop: 3,
   },
   balanceCard: {
     backgroundColor: COLORS.bgSurface,
@@ -340,6 +432,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 14,
   },
   sectionTitle: {
@@ -353,7 +448,20 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 2,
   },
+  seeAllBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  seeAllText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
   talentList: {
+    gap: 2,
+  },
+  projectList: {
     gap: 2,
   },
 });
