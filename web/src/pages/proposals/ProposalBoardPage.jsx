@@ -772,8 +772,7 @@ export function ProposalBoardPage() {
                                     "{prop.cover_letter}"
                                   </div>
 
-                                  {(selectedProject.status === "OPEN" ||
-                                    selectedProject.status === "BIDDING") &&
+                                  {selectedProject.status === "OPEN" &&
                                     prop.status === "PENDING" && (
                                       <div className="flex justify-end gap-2 pt-1">
                                         <Button
@@ -1035,7 +1034,13 @@ export function ProposalBoardPage() {
           isOpen={ratingModalOpen}
           onClose={() => setRatingModalOpen(false)}
           projectId={selectedProject.id}
-          mhsId={selectedProject.mhs_id || user.id}
+          keUserId={
+            projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_id
+          }
+          recipientName={
+            projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
+              ?.nama_lengkap || "Mahasiswa Pelaksana"
+          }
           onSuccess={loadData}
         />
       )}

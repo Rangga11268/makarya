@@ -11,9 +11,11 @@ export function RatingModal({
   onClose,
   projectId,
   keUserId,
+  mhsId,
   recipientName,
   onSuccess,
 }) {
+  const targetUserId = keUserId || mhsId;
   const [skor, setSkor] = useState(5);
   const [ulasan, setUlasan] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,11 +26,16 @@ export function RatingModal({
     e.preventDefault();
     setError(null);
 
+    if (!targetUserId) {
+      setError("Penerima ulasan tidak valid atau belum ditentukan.");
+      return;
+    }
+
     try {
       setLoading(true);
       await ratingApi.giveRating({
         project_id: projectId,
-        ke_user_id: keUserId,
+        ke_user_id: targetUserId,
         skor: parseInt(skor, 10),
         ulasan: ulasan.trim() || null,
       });
@@ -37,7 +44,12 @@ export function RatingModal({
       onSuccess?.();
       onClose();
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal memberikan ulasan.";
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail)
+        ? detail.map((d) => (typeof d === "object" ? d.msg || JSON.stringify(d) : String(d))).join(", ")
+        : typeof detail === "object" && detail !== null
+          ? detail.msg || JSON.stringify(detail)
+          : detail || "Gagal memberikan ulasan.";
       setError(msg);
     } finally {
       setLoading(false);
