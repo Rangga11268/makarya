@@ -10,6 +10,7 @@ import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatStatus } from "../../utils/formatStatus";
 import { ShieldCheck, Calendar, FileText, CheckCircle2, ExternalLink, RefreshCw } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -57,7 +58,7 @@ export function ProjectDetailScreen({ route, navigation }) {
             try {
               setActionLoading(true);
               await proposalApi.accept(proposalId);
-              showToast("Proposal disetujui! Proyek kini berstatus IN_PROGRESS.", "success");
+              showToast("Proposal disetujui! Proyek kini sedang dikerjakan.", "success");
               loadDetail();
             } catch (err) {
               showToast(err.response?.data?.detail || "Gagal menyetujui proposal", "danger");
@@ -122,7 +123,7 @@ export function ProjectDetailScreen({ route, navigation }) {
         {/* Project Hero Card */}
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
-            <Badge label={project.status} variant="lime" />
+            <Badge label={formatStatus(project.status)} variant="lime" />
             <Text style={styles.budgetText}>{formatCurrency(project.budget_max)}</Text>
           </View>
 

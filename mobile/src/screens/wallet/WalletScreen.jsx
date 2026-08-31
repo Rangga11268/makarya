@@ -9,6 +9,7 @@ import { walletApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatStatus } from "../../utils/formatStatus";
 import { Wallet, ShieldCheck, Lock, Plus, ArrowUpRight, ArrowDownLeft } from "lucide-react-native";
 
 export function WalletScreen() {
@@ -139,7 +140,7 @@ export function WalletScreen() {
                     )}
                   </View>
                   <View>
-                    <Text style={styles.txType}>{tx.tipe}</Text>
+                    <Text style={styles.txType}>{formatStatus(tx.tipe)}</Text>
                     <Text style={styles.txDate}>{formatDate(tx.created_at)}</Text>
                   </View>
                 </View>

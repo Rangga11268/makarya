@@ -9,6 +9,7 @@ import { Button } from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
 import { extractIdFromSlug, getProjectUrl } from "../../utils/slugify";
+import { formatStatus } from "../../utils/formatStatus";
 import {
   CategoryDesignSvg,
   CategoryUiUxSvg,
@@ -192,14 +193,12 @@ export function ProjectDetailPage() {
                   variant={
                     project.status === "OPEN" || project.status === "BIDDING"
                       ? "success"
-                      : "warning"
+                      : project.status === "IN_PROGRESS"
+                        ? "brand"
+                        : "warning"
                   }
                 >
-                  {project.status === "OPEN"
-                    ? "Buka Lamaran"
-                    : project.status === "BIDDING"
-                      ? "Proses Seleksi Bidding"
-                      : project.status}
+                  {formatStatus(project.status)}
                 </Badge>
 
                 <span className="text-xs text-muted font-mono">

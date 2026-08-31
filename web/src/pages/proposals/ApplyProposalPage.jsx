@@ -12,6 +12,7 @@ import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { extractIdFromSlug } from "../../utils/slugify";
+import { formatStatus } from "../../utils/formatStatus";
 import {
   ArrowLeft,
   Briefcase,
@@ -225,7 +226,7 @@ export function ApplyProposalPage() {
                 <Badge
                   variant={project.status === "OPEN" ? "success" : "warning"}
                 >
-                  {project.status}
+                  {formatStatus(project.status)}
                 </Badge>
               </div>
 

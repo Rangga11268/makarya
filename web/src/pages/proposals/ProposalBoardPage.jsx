@@ -11,6 +11,7 @@ import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatStatus } from "../../utils/formatStatus";
 import {
   Briefcase,
   Clock,
@@ -120,7 +121,7 @@ export function ProposalBoardPage() {
           await proposalApi.accept(proposal.id);
           showSuccess(
             "Proposal Diterima!",
-            "Status proyek kini menjadi IN_PROGRESS dan dana escrow telah dikunci.",
+            "Status proyek kini sedang dikerjakan dan dana escrow telah dikunci aman.",
           );
           await loadData();
         } catch (err) {
@@ -183,13 +184,20 @@ export function ProposalBoardPage() {
   const statusBadge = (status) => {
     switch (status) {
       case "ACCEPTED":
-        return <Badge variant="success">Disetujui • Proyek Berjalan</Badge>;
+        return <Badge variant="success">Disetujui • Sedang Dikerjakan</Badge>;
       case "PENDING":
         return <Badge variant="warning">Menunggu Keputusan</Badge>;
       case "REJECTED":
         return <Badge variant="danger">Ditolak</Badge>;
+      case "IN_PROGRESS":
+        return <Badge variant="brand">Sedang Dikerjakan</Badge>;
+      case "REVIEW":
+        return <Badge variant="warning">Dalam Peninjauan</Badge>;
+      case "DONE":
+      case "COMPLETED":
+        return <Badge variant="success">Selesai</Badge>;
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return <Badge variant="default">{formatStatus(status)}</Badge>;
     }
   };
 

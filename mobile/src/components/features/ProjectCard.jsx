@@ -4,16 +4,24 @@ import { COLORS } from "../../theme/colors";
 import { Badge } from "../ui/Badge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatStatus } from "../../utils/formatStatus";
 import { Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react-native";
 
 export function ProjectCard({ project, onPress }) {
   const getStatusBadge = (status) => {
     switch (status) {
-      case "OPEN": return <Badge label="Bidding Terbuka" variant="lime" />;
-      case "IN_PROGRESS": return <Badge label="Sedang Dikerjakan" variant="cyan" />;
-      case "REVIEW": return <Badge label="Perlu Review" variant="warning" />;
-      case "COMPLETED": return <Badge label="Selesai" variant="success" />;
-      default: return <Badge label={status} variant="dark" />;
+      case "OPEN":
+      case "BIDDING":
+        return <Badge label="Masa Penawaran" variant="lime" />;
+      case "IN_PROGRESS":
+        return <Badge label="Sedang Dikerjakan" variant="cyan" />;
+      case "REVIEW":
+        return <Badge label="Perlu Review" variant="warning" />;
+      case "DONE":
+      case "COMPLETED":
+        return <Badge label="Selesai" variant="success" />;
+      default:
+        return <Badge label={formatStatus(status)} variant="dark" />;
     }
   };
 
