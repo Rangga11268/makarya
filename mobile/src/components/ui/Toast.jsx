@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useToastStore } from "../../store/toastStore";
 import { COLORS } from "../../theme/colors";
 import { CheckCircle2, AlertCircle, Info } from "lucide-react-native";
@@ -17,11 +17,11 @@ export function Toast() {
       <View style={styles.pill}>
         <View style={styles.iconContainer}>
           {isSuccess ? (
-            <CheckCircle2 size={18} color={COLORS.accentLime} />
+            <CheckCircle2 size={18} color={COLORS.success} />
           ) : isDanger ? (
             <AlertCircle size={18} color={COLORS.danger} />
           ) : (
-            <Info size={18} color={COLORS.accentCyan} />
+            <Info size={18} color={COLORS.brandCyan} />
           )}
         </View>
         <Text style={styles.message} numberOfLines={2}>
@@ -44,15 +44,13 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(24, 26, 32, 0.95)",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    backgroundColor: "#0F172A", // Sleek dark slate pill with high contrast
     borderRadius: 999,
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
+    paddingHorizontal: 18,
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 8,
   },
@@ -60,9 +58,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   message: {
-    color: COLORS.textWhite,
+    color: "#FFFFFF",
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: "700",
     flexShrink: 1,
   },
 });

@@ -42,7 +42,7 @@ export function PricingSuggester({ category, budget }) {
 
       {isOptimal && (
         <View style={[styles.banner, styles.bannerSuccess]}>
-          <CheckCircle2 size={14} color={COLORS.accentLime} />
+          <CheckCircle2 size={14} color={COLORS.success} />
           <Text style={styles.bannerTextSuccess}>
             Budget optimal! Menarik minat talenta mahasiswa terbaik.
           </Text>
@@ -53,7 +53,7 @@ export function PricingSuggester({ category, budget }) {
         <View style={[styles.banner, styles.bannerDanger]}>
           <AlertCircle size={14} color={COLORS.danger} />
           <Text style={styles.bannerTextDanger}>
-            Melebihi batas pagu anggaran skripsi (Maksimal Rp 2.000.000).
+            Melebihi batas pagu anggaran platform (Maksimal Rp 2.000.000).
           </Text>
         </View>
       )}
@@ -63,7 +63,7 @@ export function PricingSuggester({ category, budget }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   range: {
     fontSize: 12,
     fontWeight: "800",
-    color: COLORS.accentLime,
+    color: COLORS.brandIndigo,
   },
   banner: {
     flexDirection: "row",
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.warningBg,
   },
   bannerSuccess: {
-    backgroundColor: "rgba(235, 255, 87, 0.15)",
+    backgroundColor: COLORS.successBg,
   },
   bannerDanger: {
     backgroundColor: COLORS.dangerBg,
@@ -109,8 +109,9 @@ const styles = StyleSheet.create({
   },
   bannerTextSuccess: {
     fontSize: 11,
-    color: COLORS.accentLime,
+    color: COLORS.success,
     flexShrink: 1,
+    fontWeight: "600",
   },
   bannerTextDanger: {
     fontSize: 11,

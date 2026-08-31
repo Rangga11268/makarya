@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "../../theme/colors";
-import { Check, Circle } from "lucide-react-native";
+import { Check } from "lucide-react-native";
 
 export function ProjectStatusBar({ currentStatus }) {
   const steps = [
@@ -13,11 +13,18 @@ export function ProjectStatusBar({ currentStatus }) {
 
   const getStepIndex = (status) => {
     switch (status) {
-      case "OPEN": return 0;
-      case "IN_PROGRESS": return 1;
-      case "REVIEW": return 2;
-      case "COMPLETED": return 3;
-      default: return 0;
+      case "OPEN":
+      case "BIDDING":
+        return 0;
+      case "IN_PROGRESS":
+        return 1;
+      case "REVIEW":
+        return 2;
+      case "DONE":
+      case "COMPLETED":
+        return 3;
+      default:
+        return 0;
     }
   };
 
@@ -37,7 +44,9 @@ export function ProjectStatusBar({ currentStatus }) {
                 <View
                   style={[
                     styles.connector,
-                    idx <= currentIndex ? styles.connectorActive : styles.connectorInactive,
+                    idx <= currentIndex
+                      ? styles.connectorActive
+                      : styles.connectorInactive,
                   ]}
                 />
               )}
@@ -53,7 +62,7 @@ export function ProjectStatusBar({ currentStatus }) {
                   ]}
                 >
                   {isDone ? (
-                    <Check size={12} color="#000" strokeWidth={3} />
+                    <Check size={12} color="#FFFFFF" strokeWidth={3} />
                   ) : (
                     <View
                       style={[
@@ -83,7 +92,7 @@ export function ProjectStatusBar({ currentStatus }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.canvasSoft,
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 16,
@@ -108,15 +117,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   circleDone: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
   },
   circleCurrent: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderWidth: 2,
-    borderColor: COLORS.accentLime,
+    borderColor: COLORS.brandIndigo,
   },
   circleInactive: {
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
@@ -126,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dotCurrent: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
   },
   dotInactive: {
     backgroundColor: COLORS.textDim,
@@ -138,7 +147,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   connectorActive: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
   },
   connectorInactive: {
     backgroundColor: COLORS.borderDark,
@@ -146,14 +155,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 10,
     fontWeight: "600",
-    color: COLORS.textDim,
+    color: COLORS.textMuted,
     marginTop: 6,
   },
   labelCurrent: {
-    color: COLORS.accentLime,
+    color: COLORS.brandIndigo,
     fontWeight: "800",
   },
   labelDone: {
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
+    fontWeight: "700",
   },
 });

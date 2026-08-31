@@ -30,7 +30,8 @@ export const walletApi = {
 
 export const submissionApi = {
   getByProject: (projectId) => api.get(`/submissions/project/${projectId}`),
-  requestRevision: (submissionId, data) => api.post(`/submissions/${submissionId}/request-revision`, data),
+  requestRevision: (submissionId, data) =>
+    api.post(`/submissions/${submissionId}/request-revision`, data),
   approve: (submissionId) => api.post(`/submissions/${submissionId}/approve`),
 };
 
