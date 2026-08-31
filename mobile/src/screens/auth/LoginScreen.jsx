@@ -59,7 +59,6 @@ export function LoginScreen({ navigation }) {
           style={styles.brandLogo}
           resizeMode="contain"
         />
-        <h1 style={styles.hiddenH1} />
         <Text style={styles.welcomeText}>Masuk ke Akun Anda</Text>
         <Text style={styles.subtitle}>
           Akses dashboard proyek, proposal, dan dompet pencairan dana escrow.
