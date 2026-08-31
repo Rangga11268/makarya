@@ -2,6 +2,7 @@ from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role
 from app.models.user import User, UserRole
@@ -14,11 +15,11 @@ from app.schemas.submission import SubmissionCreateRequest, RevisionRequest, Sub
 router = APIRouter(prefix="/submissions", tags=["Submissions & Revision Control"])
 
 
-@router.post('', response_model=SubmissionResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=SubmissionResponse, status_code=status.HTTP_201_CREATED)
 def submit_work(
     body: SubmissionCreateRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.MHS))
+    current_user: User = Depends(require_role(UserRole.MHS)),
 ):
     """Mahasiswa Mengirimkan Hasil Pekerjaan Proyek"""
     project = db.query(Project).filter(Project.id == body.project_id).first()
@@ -26,34 +27,43 @@ def submit_work(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
     if project.status != ProjectStatus.IN_PROGRESS:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Hasil kerja hanya dapat dikirimkan saat Proyek dalam status 'IN_PROGRESS' status saat ini '{ProjectStatus.value}'")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Hasil kerja hanya dapat dikirimkan saat Proyek dalam status 'IN_PROGRESS' (status saat ini: '{project.status.value}')",
+        )
 
     # Validasi pastikan mahasiswa ini adalah pekerja yang proposalnya disetujui
-    accepted_proposal = db.query(Proposal).filter(
-        Proposal.project_id == project.id,
-        Proposal.mhs_id == current_user.id,
-        Proposal.status == ProposalStatus.ACCEPTED
-    ).first()
+    accepted_proposal = (
+        db.query(Proposal)
+        .filter(
+            Proposal.project_id == project.id,
+            Proposal.mhs_id == current_user.id,
+            Proposal.status == ProposalStatus.ACCEPTED,
+        )
+        .first()
+    )
     if not accepted_proposal:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki proposal yang disetujui untuk proyek ini. Hanya mahasiswa dengan proposal yang disetujui yang dapat mengirimkan hasil kerja.")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki proposal yang disetujui untuk proyek ini. Hanya mahasiswa dengan proposal yang disetujui yang dapat mengirimkan hasil kerja.",
+        )
 
-    # Cek apakah sudah ada submission sebelumnya
-    submission = db.query(Submission).filter(Submission.project_id == project.id).first()
+    # Cek apakah sudah ada submission sebelumnya untuk proposal ini
+    submission = db.query(Submission).filter(Submission.proposal_id == accepted_proposal.id).first()
 
     if submission:
-        # Jika sudah ada submission sebelumnya, maka update submission tersebut
+        # Update submission jika sudah ada
         submission.url_berkas = body.url_berkas
         submission.catatan_pengiriman = body.catatan_pengiriman
         submission.status = SubmissionStatus.SUBMITTED
     else:
-        # Jika belum ada submission sebelumnya, maka buat submission baru
+        # Buat submission baru
         submission = Submission(
-            project_id=project.id,
-            mhs_id=current_user.id,
+            proposal_id=accepted_proposal.id,
             url_berkas=body.url_berkas,
             catatan_pengiriman=body.catatan_pengiriman,
             jumlah_revisi=0,
-            status=SubmissionStatus.SUBMITTED
+            status=SubmissionStatus.SUBMITTED,
         )
         db.add(submission)
 
@@ -61,32 +71,59 @@ def submit_work(
     db.refresh(submission)
     return submission
 
-@router.get('/project/{project_id}', response_model=SubmissionResponse)
+
+@router.get("/project/{project_id}", response_model=SubmissionResponse)
 def get_submission_by_project(
     project_id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Melihat Hasil Kerja Proyek Berdasarkan ID Proyek"""
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project tidak ditemukan untuk proyek ini")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
-    submission = db.query(Submission).filter(Submission.project_id == project_id).first()
+    # Cari proposal yang disetujui pada proyek ini
+    accepted_proposal = (
+        db.query(Proposal)
+        .filter(
+            Proposal.project_id == project_id,
+            Proposal.status == ProposalStatus.ACCEPTED,
+        )
+        .first()
+    )
+    if not accepted_proposal:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Belum ada proposal yang disetujui untuk proyek ini",
+        )
+
+    submission = db.query(Submission).filter(Submission.proposal_id == accepted_proposal.id).first()
     if not submission:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hasil kerja belum dikirimkan untuk proyek ini")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Hasil kerja belum dikirimkan untuk proyek ini",
+        )
 
-    # BOLA guard : Hanya pemilik proyek, pekerja mahasiswa terkait atau admin yang boleh melihat
-    if project.umkm_id != current_user.id and submission.mhs_id != current_user.id and current_user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini")
+    # BOLA guard : Hanya pemilik proyek UMKM, mahasiswa pekerja, atau admin yang berhak melihat
+    if (
+        project.umkm_id != current_user.id
+        and accepted_proposal.mhs_id != current_user.id
+        and current_user.role != UserRole.ADMIN
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini",
+        )
 
     return submission
 
-@router.patch('/{id}/approve', response_model=SubmissionResponse)
+
+@router.patch("/{id}/approve", response_model=SubmissionResponse)
 def approve_submission(
     id: UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role([UserRole.UMKM]))
+    current_user: User = Depends(require_role(UserRole.UMKM)),
 ):
     """
     UMKM Menyetujui Hasil Kerja & Mencairkan Dana Escrow:
@@ -100,50 +137,51 @@ def approve_submission(
     if not submission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hasil kerja tidak ditemukan")
 
-    project = db.query(Project).filter(Project.id == submission.project_id).first()
+    accepted_proposal = submission.proposal
+    project = accepted_proposal.project
+
     if project.umkm_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk menyetujui hasil kerja ini")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki izin untuk menyetujui hasil kerja ini",
+        )
 
     if submission.status == SubmissionStatus.ACCEPTED:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Hasil kerja belum diterima")
-
-    # Ambil proposal yang di setujui untuk mengetahui nominal harga tawar
-    accepted_proposal = db.query(Proposal).filter(
-        Proposal.project_id == project.id,
-        Proposal.mhs_id == submission.mhs_id,
-        Proposal.status == ProposalStatus.ACCEPTED
-    ).first()
-
-    if not accepted_proposal:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal yang disetujui untuk proyek ini tidak ditemukan")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Hasil kerja sudah disetujui sebelumnya",
+        )
 
     honor_amount = accepted_proposal.harga_tawar
 
-    # Kunci dompet UMKM dan mhs dengan pessimistic lock untuk menghindari race condition
+    # Kunci dompet UMKM dan Mahasiswa dengan pessimistic lock (anti race condition)
     umkm_wallet = db.query(Wallet).filter(Wallet.user_id == project.umkm_id).with_for_update().first()
-    mhs_wallet = db.query(Wallet).filter(Wallet.user_id == submission.mhs_id).with_for_update().first()
+    mhs_wallet = db.query(Wallet).filter(Wallet.user_id == accepted_proposal.mhs_id).with_for_update().first()
 
     if not umkm_wallet or umkm_wallet.saldo_escrow < honor_amount:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Saldo escrow UMKM tidak mencukupi untuk mencairkan dana")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Saldo escrow UMKM tidak mencukupi untuk mencairkan dana",
+        )
 
     # Pindahkan escrow dari UMKM ke saldo aktif Mahasiswa
     umkm_wallet.saldo_escrow -= honor_amount
     mhs_wallet.saldo_aktif += honor_amount
 
-    # Catat transaksi di ledger_logs
+    # Catat audit trail transaksi di ledger_logs
     log_umkm = LedgerLog(
-        user_id=project.umkm_id,
         wallet_id=umkm_wallet.id,
+        project_id=project.id,
         tipe=TransactionType.RELEASE,
         nominal=honor_amount,
-        keterangan=f"Pencairan dana escrow untuk proyek '{project.judul}' kepada mahasiswa"
+        keterangan=f"Pencairan dana escrow untuk proyek '{project.judul}' kepada mahasiswa",
     )
     log_mhs = LedgerLog(
-        user_id=submission.mhs_id,
         wallet_id=mhs_wallet.id,
-        tipe=TransactionType.RECEIVE,
+        project_id=project.id,
+        tipe=TransactionType.RELEASE,
         nominal=honor_amount,
-        keterangan=f"Penerimaan dana dari proyek '{project.judul}'"
+        keterangan=f"Penerimaan honor dari proyek '{project.judul}'",
     )
     db.add(log_umkm)
     db.add(log_mhs)
@@ -156,37 +194,48 @@ def approve_submission(
     db.refresh(submission)
     return submission
 
-@router.patch('/{id}/request-revision', response_model=SubmissionResponse)
+
+@router.patch("/{id}/request-revision", response_model=SubmissionResponse)
 def request_revision(
     id: UUID,
     body: RevisionRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role([UserRole.UMKM]))
+    current_user: User = Depends(require_role(UserRole.UMKM)),
 ):
     """
     UMKM Meminta Revisi Hasil Kerja (Maksimal 2 Kali).
     Jika sudah 2 kali revisi, UMKM wajib Approve atau ajukan Dispute.
     """
-
     submission = db.query(Submission).filter(Submission.id == id).first()
     if not submission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hasil kerja tidak ditemukan")
 
-    project = db.query(Project).filter(Project.id == submission.project_id).first()
+    accepted_proposal = submission.proposal
+    project = accepted_proposal.project
+
     if project.umkm_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk meminta revisi hasil kerja ini")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki izin untuk meminta revisi hasil kerja ini",
+        )
 
     if submission.status == SubmissionStatus.ACCEPTED:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Hasil kerja sudah diterima, tidak dapat meminta revisi")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Hasil kerja sudah diterima, tidak dapat meminta revisi",
+        )
 
-    # Pengecekan batas maksimal revisi (Maks 2 kali)
+    # Pengecekan batas maksimal revisi (Maksimal 2 kali untuk melindungi mahasiswa)
     if submission.jumlah_revisi >= 2:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Batas maksimal revisi telah tercapai. UMKM wajib Approve atau ajukan Dispute.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Batas maksimal revisi telah tercapai (Maks 2x). UMKM wajib Approve atau ajukan Dispute mediasi admin.",
+        )
 
-    # Tambah counter revisi
+    # Tambah counter revisi & perbarui status
     submission.jumlah_revisi += 1
     submission.status = SubmissionStatus.REVISION_REQUESTED
-    submission.catatan = f"[Revisi #{submission.jumlah_revisi}] diminta: {body.alasan_revisi}"
+    submission.catatan_pengiriman = f"[Revisi #{submission.jumlah_revisi}] {body.alasan_revisi}"
 
     db.commit()
     db.refresh(submission)

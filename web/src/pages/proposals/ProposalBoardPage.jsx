@@ -612,22 +612,32 @@ export function ProposalBoardPage() {
                               <div className="flex items-center gap-2">
                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-sm">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
-                                  {mhsSubmissions[proposal.project_id].status === "ACCEPTED"
+                                  {mhsSubmissions[proposal.project_id]
+                                    .status === "ACCEPTED"
                                     ? "Hasil Kerja Disetujui • Selesai"
-                                    : mhsSubmissions[proposal.project_id].status === "REVISION_REQUESTED"
+                                    : mhsSubmissions[proposal.project_id]
+                                          .status === "REVISION_REQUESTED"
                                       ? `Permintaan Revisi (Ke-${mhsSubmissions[proposal.project_id].jumlah_revisi})`
                                       : "Hasil Kerja Terkirim • Menunggu Review"}
                                 </span>
                               </div>
                               <span className="text-[11px] text-muted">
-                                Diserahkan: {formatDate(mhsSubmissions[proposal.project_id].submitted_at || mhsSubmissions[proposal.project_id].created_at)}
+                                Diserahkan:{" "}
+                                {formatDate(
+                                  mhsSubmissions[proposal.project_id]
+                                    .submitted_at ||
+                                    mhsSubmissions[proposal.project_id]
+                                      .created_at,
+                                )}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-2 p-2.5 bg-white border border-emerald-100 rounded-lg text-xs">
                               <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
                               <a
-                                href={mhsSubmissions[proposal.project_id].url_berkas}
+                                href={
+                                  mhsSubmissions[proposal.project_id].url_berkas
+                                }
                                 target="_blank"
                                 rel="noreferrer"
                                 className="font-semibold text-emerald-700 hover:underline truncate max-w-full"
@@ -636,9 +646,15 @@ export function ProposalBoardPage() {
                               </a>
                             </div>
 
-                            {mhsSubmissions[proposal.project_id].catatan_pengiriman && (
+                            {mhsSubmissions[proposal.project_id]
+                              .catatan_pengiriman && (
                               <p className="text-xs text-dark-900/80 italic bg-canvas/60 p-2 rounded border border-border/50">
-                                "{mhsSubmissions[proposal.project_id].catatan_pengiriman}"
+                                "
+                                {
+                                  mhsSubmissions[proposal.project_id]
+                                    .catatan_pengiriman
+                                }
+                                "
                               </p>
                             )}
                           </div>
@@ -647,8 +663,8 @@ export function ProposalBoardPage() {
                             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             <span>
                               Dana escrow sebesar{" "}
-                              <b>{formatCurrency(proposal.harga_tawar)}</b> sudah
-                              dikunci aman oleh klien.
+                              <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}
+                              sudah dikunci aman oleh klien.
                             </span>
                           </div>
                         )}
@@ -664,7 +680,8 @@ export function ProposalBoardPage() {
                           >
                             <UploadCloud className="w-3.5 h-3.5 mr-1" />
                             {mhsSubmissions[proposal.project_id]
-                              ? mhsSubmissions[proposal.project_id].status === "REVISION_REQUESTED"
+                              ? mhsSubmissions[proposal.project_id].status ===
+                                "REVISION_REQUESTED"
                                 ? "Kirim Revisi Hasil Kerja"
                                 : "Perbarui / Kirim Ulang Hasil Kerja"
                               : "Unggah / Serahkan Hasil Kerja"}

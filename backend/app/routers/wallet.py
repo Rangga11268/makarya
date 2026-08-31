@@ -28,7 +28,10 @@ def get_my_wallet(
     """Melihat Informasi Saldo Dompet yang Sedang Login"""
     wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).first()
     if not wallet:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dompet tidak ditemukan")
+        wallet = Wallet(user_id=current_user.id, saldo_aktif=0.0, saldo_escrow=0.0)
+        db.add(wallet)
+        db.commit()
+        db.refresh(wallet)
     return wallet
 
 

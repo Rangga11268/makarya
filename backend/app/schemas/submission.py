@@ -18,13 +18,12 @@ class RevisionRequest(BaseModel):
 # Schema respon kirim hasil kerja / minta revisi
 class SubmissionResponse(BaseModel):
     id: UUID
-    mhs_id: UUID
-    project_id: UUID
+    proposal_id: UUID
     url_berkas: str
     catatan_pengiriman: Optional[str] = None
     jumlah_revisi: int
     status: SubmissionStatus
-    created_at: datetime
+    submitted_at: datetime
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
