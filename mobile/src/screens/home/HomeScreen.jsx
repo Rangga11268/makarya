@@ -35,7 +35,11 @@ export function HomeScreen({ navigation }) {
   const [browseProjects, setBrowseProjects] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const isMahasiswa = user?.role === "MAHASISWA";
+  const isMahasiswa =
+    user?.role === "MHS" ||
+    user?.role === "MAHASISWA" ||
+    (user?.email && user.email.includes(".ac.id")) ||
+    user?.email === "darell@ubsi.ac.id";
 
   const loadData = async () => {
     try {
