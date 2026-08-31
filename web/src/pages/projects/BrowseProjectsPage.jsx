@@ -7,7 +7,6 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { SectionHeader } from "../../components/ui/SectionHeader";
-import { Pagination } from "../../components/ui/Pagination";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
   Search,
@@ -29,8 +28,6 @@ export function BrowseProjectsPage() {
   const [category, setCategory] = useState(initialCategory);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [maxBudget, setMaxBudget] = useState(2000000);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
 
   const categories = [
     { key: "", label: "Semua Kategori" },
@@ -234,27 +231,6 @@ export function BrowseProjectsPage() {
               {projects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {projects
-                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                  .map((project) => (
-                    <ProjectCard key={project.id} project={project} />
-                  ))}
-              </div>
-
-              {/* Pagination */}
-              {projects.length > itemsPerPage && (
-                <div className="bg-surface p-4 rounded-2xl border border-border">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={Math.ceil(projects.length / itemsPerPage)}
-                    totalItems={projects.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={(p) => setCurrentPage(p)}
-                  />
-                </div>
-              )}
             </div>
           )}
         </div>
