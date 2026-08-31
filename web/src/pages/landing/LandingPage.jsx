@@ -24,6 +24,9 @@ import {
   ArrowUpRight,
   TrendingUp,
   Award
+  Award,
+  ChevronDown,
+  HelpCircle,
 } from "lucide-react";
 
 export function LandingPage() {
@@ -32,6 +35,7 @@ export function LandingPage() {
   const [latestProjects, setLatestProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [openFaq, setOpenFaq] = useState(0);
 
   useEffect(() => {
     async function loadPublicData() {
@@ -329,6 +333,71 @@ export function LandingPage() {
       </section>
 
       {/* 6. PRE-FOOTER DUAL CTA CARDS */}
+      {/* 6. PERTANYAAN UMUM (FAQ) */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <SectionHeader
+          centered
+          badgeText="Pusat Informasi & Bantuan"
+          title="Pertanyaan yang Sering Diajukan"
+          subtitle="Pelajari bagaimana sistem rekening bersama (Escrow) dan standar mutu Makarya melindungi Anda."
+        />
+
+        <div className="space-y-3">
+          {[
+            {
+              q: "Bagaimana sistem Escrow Makarya melindungi dana UMKM?",
+              a: "Saat Anda menyetujui proposal mahasiswa, dana proyek otomatis dikunci di rekening bersama resmi Makarya. Dana TIDAK akan ditransfer ke mahasiswa sampai Anda memeriksa hasil kerja deliverable dan menekan tombol 'Setujui & Selesaikan'."
+            },
+            {
+              q: "Bagaimana jika hasil kerja mahasiswa tidak sesuai dengan kesepakatan?",
+              a: "Anda berhak meminta revisi resmi melalui sistem. Jika mahasiswa tetap gagal memenuhi kesepakatan brief, Anda dapat mengajukan mediasi sengketa ke Administrator Makarya untuk pengembalian dana (refund) secara proporsional."
+            },
+            {
+              q: "Apakah seluruh mahasiswa yang terdaftar terverifikasi resmi?",
+              a: "Ya. Setiap mahasiswa wajib melalui proses validasi identitas kampus (KYC) menggunakan alamat email institusi berdomain .ac.id, Nomor Induk Mahasiswa (NIM) aktif, dan Program Studi terkait."
+            },
+            {
+              q: "Apakah ada potongan biaya komisi bagi mahasiswa?",
+              a: "0% Potongan Komisi. Makarya berkomitmen penuh memberdayakan talenta muda, sehingga 100% honor yang disepakati akan diterima utuh oleh mahasiswa tanpa biaya perantara."
+            },
+            {
+              q: "Berapa batas pagu anggaran untuk proyek di Makarya?",
+              a: "Maksimal Rp 2.000.000 per proyek. Batasan ini ditetapkan untuk memastikan proyek tetap dalam ruang lingkup micro-freelancing yang adil dan terjangkau bagi pelaku UMKM."
+            }
+          ].map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                className="bg-surface rounded-2xl border border-border overflow-hidden transition-all duration-200"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-canvas/50 transition-colors"
+                >
+                  <span className="text-sm font-bold text-dark-900 flex items-center gap-2.5">
+                    <HelpCircle className="w-4 h-4 text-brand-indigo shrink-0" />
+                    {faq.q}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-muted transition-transform duration-200 shrink-0 ${
+                      isOpen ? "rotate-180 text-brand-indigo" : ""
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-1 text-xs text-muted leading-relaxed border-t border-border/50 bg-canvas/30 animate-in fade-in">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 7. PRE-FOOTER DUAL CTA CARDS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
