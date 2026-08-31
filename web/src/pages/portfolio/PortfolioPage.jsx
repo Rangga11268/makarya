@@ -290,7 +290,10 @@ export function PortfolioPage() {
                 )}
 
                 <p className="text-xs sm:text-sm text-dark-900/90 leading-relaxed font-sans italic">
-                  "{r.ulasan || "Kerjasama berjalan sangat baik, komunikatif, dan memuaskan."}"
+                  "
+                  {r.ulasan ||
+                    "Kerjasama berjalan sangat baik, komunikatif, dan memuaskan."}
+                  "
                 </p>
 
                 <div className="flex items-center justify-between text-[11px] text-muted pt-3 border-t border-border">

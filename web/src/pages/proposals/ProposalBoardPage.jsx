@@ -479,7 +479,7 @@ export function ProposalBoardPage() {
           {/* Left Column: Project Selector (4 cols) */}
           <div className="lg:col-span-4 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
-              Pilih Proyek Usaha Anda ({myProjects.length})
+              Pilih Proyek Usaha Anda ({filteredProjects.length})
             </h3>
 
             {loading ? (
@@ -510,9 +510,18 @@ export function ProposalBoardPage() {
                   </Button>
                 </Link>
               </Card>
+            ) : filteredProjects.length === 0 ? (
+              <Card className="p-6 text-center space-y-2 bg-surface border border-border">
+                <p className="text-xs font-bold text-dark-900">
+                  Tidak Ada Proyek pada Filter Ini
+                </p>
+                <p className="text-[11px] text-muted">
+                  Coba ubah tab status atau kata kunci pencarian Anda.
+                </p>
+              </Card>
             ) : (
               <div className="space-y-2.5">
-                {myProjects.map((proj) => {
+                {filteredProjects.map((proj) => {
                   const isSelected = selectedProject?.id === proj.id;
                   return (
                     <div
