@@ -32,6 +32,11 @@ import {
   ChevronDown,
   ChevronUp,
   Wallet as WalletIcon,
+  Building2,
+  GraduationCap,
+  Layers,
+  Send,
+  CheckCheck,
 } from "lucide-react";
 
 export function ProposalBoardPage() {
@@ -265,17 +270,16 @@ export function ProposalBoardPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span
-              className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                isUmkm
-                  ? "bg-dark-900 text-white border-dark-900"
-                  : "bg-surface text-dark-900 border-border"
-              }`}
-            >
-              {isUmkm ? "👑 Mode Klien UMKM" : "🎓 Mode Mahasiswa"}
-            </span>
-            <span className="text-[11px] font-semibold text-muted font-mono">
-              {isUmkm ? "Pusat Proyek Usaha" : "Papan Lamaran & Kerja"}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-canvas text-xs font-semibold text-dark-900">
+              {isUmkm ? (
+                <Building2 className="w-3.5 h-3.5 text-muted" />
+              ) : (
+                <GraduationCap className="w-3.5 h-3.5 text-muted" />
+              )}
+              <span>{isUmkm ? "Portal Klien UMKM" : "Portal Mahasiswa Freelancer"}</span>
+            </div>
+            <span className="text-[11px] font-mono text-muted">
+              {isUmkm ? "Pusat Proyek & Escrow" : "Papan Lamaran & Deliverable"}
             </span>
           </div>
 
@@ -319,51 +323,98 @@ export function ProposalBoardPage() {
         </div>
       </div>
 
-      {/* 2. Clean Bordered Metric Stats Row (No Colorful Boxes) */}
+      {/* 2. High-Craft Metric Cards (Clean, Subtle, Professional) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-slate-400 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-muted block">
-            {isUmkm ? "Total Proyek Anda" : "Total Proyek Dilamar"}
-          </span>
-          <span className="text-xl sm:text-2xl font-black text-dark-900">
-            {isUmkm ? myProjects.length : proposals.length}
-          </span>
+        {/* Metric 1 */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
+              {isUmkm ? "Total Proyek" : "Total Dilamar"}
+            </span>
+            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+              <Layers className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
+              {isUmkm ? myProjects.length : proposals.length}
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              {isUmkm ? "Inisiatif terdaftar" : "Lamaran terkirim"}
+            </p>
+          </div>
         </div>
-        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-brand-indigo space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-muted block">
-            Sedang Berjalan
-          </span>
-          <span className="text-xl sm:text-2xl font-black text-dark-900">
-            {isUmkm
-              ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
-              : proposals.filter((p) => p.status === "ACCEPTED").length}
-          </span>
+
+        {/* Metric 2 */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
+              Sedang Berjalan
+            </span>
+            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+              <Clock className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
+              {isUmkm
+                ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
+                : proposals.filter((p) => p.status === "ACCEPTED").length}
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              {isUmkm ? "Proses pengerjaan mhs" : "Proyek aktif Anda"}
+            </p>
+          </div>
         </div>
-        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-emerald-600 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-muted block">
-            Selesai / Cair
-          </span>
-          <span className="text-xl sm:text-2xl font-black text-dark-900">
-            {isUmkm
-              ? myProjects.filter(
-                  (p) => p.status === "DONE" || p.status === "COMPLETED",
-                ).length
-              : proposals.filter(
-                  (p) => mhsSubmissions[p.project_id]?.status === "APPROVED",
-                ).length}
-          </span>
+
+        {/* Metric 3 */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
+              Selesai / Cair
+            </span>
+            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+              <CheckCheck className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
+              {isUmkm
+                ? myProjects.filter(
+                    (p) => p.status === "DONE" || p.status === "COMPLETED",
+                  ).length
+                : proposals.filter(
+                    (p) => mhsSubmissions[p.project_id]?.status === "APPROVED",
+                  ).length}
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              {isUmkm ? "Deliverable diterima" : "Honor masuk dompet"}
+            </p>
+          </div>
         </div>
-        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-amber-500 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-muted block">
-            {isUmkm ? "Masa Penawaran" : "Menunggu Keputusan"}
-          </span>
-          <span className="text-xl sm:text-2xl font-black text-dark-900">
-            {isUmkm
-              ? myProjects.filter(
-                  (p) => p.status === "OPEN" || p.status === "BIDDING",
-                ).length
-              : proposals.filter((p) => p.status === "PENDING").length}
-          </span>
+
+        {/* Metric 4 */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
+              {isUmkm ? "Masa Penawaran" : "Menunggu Review"}
+            </span>
+            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+              <Send className="w-3.5 h-3.5" />
+            </div>
+          </div>
+          <div>
+            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
+              {isUmkm
+                ? myProjects.filter(
+                    (p) => p.status === "OPEN" || p.status === "BIDDING",
+                  ).length
+                : proposals.filter((p) => p.status === "PENDING").length}
+            </span>
+            <p className="text-[11px] text-muted mt-0.5">
+              {isUmkm ? "Terbuka untuk pelamar" : "Evaluasi klien"}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -633,8 +684,9 @@ export function ProposalBoardPage() {
                         <span className="font-bold block">
                           Pengerjaan Sedang Berjalan
                         </span>
-                        Mahasiswa sedang menyelesaikan proyek. Berkas deliverable
-                        akan muncul di sini begitu mahasiswa menyerahkannya.
+                        Mahasiswa sedang menyelesaikan proyek. Berkas
+                        deliverable akan muncul di sini begitu mahasiswa
+                        menyerahkannya.
                       </div>
                     </div>
                   ) : null}
