@@ -9,6 +9,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
+import { RevisionModal } from "../../components/features/RevisionModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -48,6 +49,8 @@ export function ProposalBoardPage() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [revisionModalOpen, setRevisionModalOpen] = useState(false);
+  const [selectedSubmissionForRevision, setSelectedSubmissionForRevision] = useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const loadData = async () => {
@@ -93,10 +96,11 @@ export function ProposalBoardPage() {
     try {
       const [propRes, subRes] = await Promise.all([
         proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
-        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
+        submissionApi.getByProject(projectId).catch(() => ({ data: null })),
       ]);
-      setProjectProposals(propRes.data);
-      setProjectSubmissions(subRes.data);
+      setProjectProposals(propRes.data || []);
+      const subs = subRes.data && subRes.data.id ? [subRes.data] : Array.isArray(subRes.data) ? subRes.data : [];
+      setProjectSubmissions(subs);
     } catch (err) {
       // Fallback
     }
@@ -299,7 +303,7 @@ export function ProposalBoardPage() {
                         <span
                           className={`text-[11px] font-bold ${isSelected ? "text-emerald-400" : "text-emerald-700"}`}
                         >
-                          {proj.status}
+                          {formatStatus(proj.status)}
                         </span>
                       </div>
                       <h4
@@ -333,12 +337,14 @@ export function ProposalBoardPage() {
                         </Badge>
                         <Badge
                           variant={
-                            selectedProject.status === "IN_PROGRESS"
+                            selectedProject.status === "IN_PROGRESS" ||
+                            selectedProject.status === "DONE" ||
+                            selectedProject.status === "COMPLETED"
                               ? "success"
                               : "warning"
                           }
                         >
-                          Status: {selectedProject.status}
+                          {formatStatus(selectedProject.status)}
                         </Badge>
                       </div>
                       <h3 className="text-lg font-bold text-dark-900 mt-1">
@@ -356,49 +362,82 @@ export function ProposalBoardPage() {
                   </div>
 
                   {/* Submissions Section if in progress or completed */}
-                  {projectSubmissions.length > 0 && (
-                    <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
+                  {projectSubmissions.length > 0 ? (
+                    <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
                           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          Berkas Deliverable Masuk dari Mahasiswa
+                          Berkas Hasil Kerja (Deliverable) dari Mahasiswa
                         </span>
-                        <Badge variant="success">Telah Diserahkan</Badge>
+                        <Badge variant="success">
+                          {projectSubmissions[0].status === "ACCEPTED"
+                            ? "Telah Disetujui & Selesai"
+                            : projectSubmissions[0].status === "REVISION_REQUESTED"
+                              ? `Permintaan Revisi (Ke-${projectSubmissions[0].jumlah_revisi}/2)`
+                              : "Telah Diserahkan • Siap Direview"}
+                        </Badge>
                       </div>
 
                       {projectSubmissions.map((sub) => (
                         <div
                           key={sub.id}
-                          className="bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2"
+                          className="bg-white p-4 rounded-xl border border-emerald-200 space-y-3 shadow-xs"
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-muted">
-                              Tautan Berkas:
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span className="text-xs font-bold text-dark-900">
+                              Tautan Berkas Hasil Pekerjaan:
                             </span>
                             <a
                               href={sub.url_berkas}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-xs font-bold text-brand-indigo hover:underline flex items-center gap-1"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors shadow-xs"
                             >
-                              Buka File Deliverable{" "}
+                              Buka / Unduh Berkas Deliverable
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
+
                           {sub.catatan_pengiriman && (
-                            <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg italic">
+                            <div className="text-xs text-dark-900/90 bg-canvas p-3 rounded-lg border border-border">
+                              <span className="font-bold text-dark-900 block mb-0.5">
+                                Catatan Pengiriman Mahasiswa:
+                              </span>
                               "{sub.catatan_pengiriman}"
-                            </p>
+                            </div>
                           )}
 
+                          <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
+                            <span>
+                              Jumlah Revisi Digunakan: <b>{sub.jumlah_revisi || 0} dari 2 kali</b>
+                            </span>
+                            <span>
+                              Diserahkan: {formatDate(sub.submitted_at || sub.created_at)}
+                            </span>
+                          </div>
+
                           {selectedProject.status === "IN_PROGRESS" && (
-                            <div className="pt-2 flex justify-end gap-2">
+                            <div className="pt-3 border-t border-border flex flex-col sm:flex-row justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedSubmissionForRevision(sub);
+                                  setRevisionModalOpen(true);
+                                }}
+                                disabled={sub.jumlah_revisi >= 2}
+                                className="text-xs font-bold border-amber-300 text-amber-900 hover:bg-amber-50"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                                {sub.jumlah_revisi >= 2 ? "Batas Revisi Habis (2/2)" : "Minta Revisi"}
+                              </Button>
                               <Button
                                 variant="brand"
                                 size="sm"
                                 onClick={() => handleApproveWork(sub.id)}
                                 className="text-xs font-bold shadow-brand"
                               >
+                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                                 Setujui & Cairkan Honor Escrow
                               </Button>
                             </div>
@@ -406,7 +445,15 @@ export function ProposalBoardPage() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  ) : selectedProject.status === "IN_PROGRESS" ? (
+                    <div className="p-4 bg-canvas border border-border rounded-2xl flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+                      <div className="text-xs text-dark-900">
+                        <span className="font-bold block">Pekerjaan Sedang Dikerjakan</span>
+                        Mahasiswa sedang menyelesaikan proyek ini. Tautan berkas deliverable akan otomatis tampil di sini segera setelah mahasiswa menyerahkan hasil pekerjaannya.
+                      </div>
+                    </div>
+                  ) : null}
 
                   {/* Incoming Proposals List */}
                   <div className="space-y-3 pt-2">
@@ -721,6 +768,20 @@ export function ProposalBoardPage() {
           onClose={() => setRatingModalOpen(false)}
           projectId={selectedProject.id}
           mhsId={selectedProject.mhs_id || user.id}
+          onSuccess={loadData}
+        />
+      )}
+
+      {/* Revision Modal for UMKM */}
+      {selectedSubmissionForRevision && (
+        <RevisionModal
+          isOpen={revisionModalOpen}
+          onClose={() => {
+            setRevisionModalOpen(false);
+            setSelectedSubmissionForRevision(null);
+          }}
+          submissionId={selectedSubmissionForRevision.id}
+          currentRevisions={selectedSubmissionForRevision.jumlah_revisi || 0}
           onSuccess={loadData}
         />
       )}

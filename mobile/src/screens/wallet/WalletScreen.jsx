@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Modal,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
@@ -10,7 +18,14 @@ import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
-import { Wallet, ShieldCheck, Lock, Plus, ArrowUpRight, ArrowDownLeft } from "lucide-react-native";
+import {
+  Wallet,
+  ShieldCheck,
+  Lock,
+  Plus,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from "lucide-react-native";
 
 export function WalletScreen() {
   const [wallet, setWallet] = useState(null);
@@ -52,7 +67,10 @@ export function WalletScreen() {
     try {
       setTopUpLoading(true);
       const res = await walletApi.topUp(num);
-      showToast(`Deposit Rp ${formatCurrency(num)} berhasil diproses!`, "success");
+      showToast(
+        `Deposit Rp ${formatCurrency(num)} berhasil diproses!`,
+        "success",
+      );
       setTopUpModal(false);
       loadWallet();
     } catch (e) {
@@ -91,7 +109,8 @@ export function WalletScreen() {
             {formatCurrency(wallet?.saldo_aktif || 0)}
           </Text>
           <Text style={styles.cardDescLime}>
-            Saldo siap digunakan untuk mengunci pembayaran proyek mahasiswa (*Escrow Deposit*).
+            Saldo siap digunakan untuk mengunci pembayaran proyek mahasiswa
+            (*Escrow Deposit*).
           </Text>
 
           <Button
@@ -116,7 +135,8 @@ export function WalletScreen() {
             {formatCurrency(wallet?.saldo_escrow || 0)}
           </Text>
           <Text style={styles.cardDescCyan}>
-            Dana aman tersimpan di rekening bersama dan hanya cair setelah Anda menyetujui hasil deliverable.
+            Dana aman tersimpan di rekening bersama dan hanya cair setelah Anda
+            menyetujui hasil deliverable.
           </Text>
         </View>
 
@@ -126,7 +146,9 @@ export function WalletScreen() {
 
           {history.length === 0 ? (
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>Belum ada riwayat transaksi keuangan.</Text>
+              <Text style={styles.emptyText}>
+                Belum ada riwayat transaksi keuangan.
+              </Text>
             </View>
           ) : (
             history.map((tx) => (
@@ -141,13 +163,21 @@ export function WalletScreen() {
                   </View>
                   <View>
                     <Text style={styles.txType}>{formatStatus(tx.tipe)}</Text>
-                    <Text style={styles.txDate}>{formatDate(tx.created_at)}</Text>
+                    <Text style={styles.txDate}>
+                      {formatDate(tx.created_at)}
+                    </Text>
                   </View>
                 </View>
 
                 <View style={{ alignItems: "flex-end" }}>
-                  <Text style={[styles.txNominal, tx.tipe === "HOLD" && { color: COLORS.textMuted }]}>
-                    {tx.tipe === "HOLD" || tx.tipe === "WITHDRAW" ? "-" : "+"} {formatCurrency(tx.nominal)}
+                  <Text
+                    style={[
+                      styles.txNominal,
+                      tx.tipe === "HOLD" && { color: COLORS.textMuted },
+                    ]}
+                  >
+                    {tx.tipe === "HOLD" || tx.tipe === "WITHDRAW" ? "-" : "+"}{" "}
+                    {formatCurrency(tx.nominal)}
                   </Text>
                   <Text style={styles.txDesc} numberOfLines={1}>
                     {tx.keterangan || "-"}
@@ -164,7 +194,9 @@ export function WalletScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>Deposit Saldo UMKM</Text>
-            <Text style={styles.modalSub}>Pilih atau masukkan nominal top-up saldo</Text>
+            <Text style={styles.modalSub}>
+              Pilih atau masukkan nominal top-up saldo
+            </Text>
 
             <Input
               label="Nominal Deposit (Rp)"
@@ -179,9 +211,17 @@ export function WalletScreen() {
                 <TouchableOpacity
                   key={n}
                   onPress={() => setNominal(n)}
-                  style={[styles.nomChip, nominal === n && styles.nomChipActive]}
+                  style={[
+                    styles.nomChip,
+                    nominal === n && styles.nomChipActive,
+                  ]}
                 >
-                  <Text style={[styles.nomText, nominal === n && styles.nomTextActive]}>
+                  <Text
+                    style={[
+                      styles.nomText,
+                      nominal === n && styles.nomTextActive,
+                    ]}
+                  >
                     {formatCurrency(parseInt(n, 10))}
                   </Text>
                 </TouchableOpacity>

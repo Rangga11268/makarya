@@ -33,9 +33,7 @@ export function ProjectCard({ project, onPress }) {
     >
       <View style={styles.topRow}>
         {getStatusBadge(project.status)}
-        <Text style={styles.budget}>
-          {formatCurrency(project.budget_max)}
-        </Text>
+        <Text style={styles.budget}>{formatCurrency(project.budget_max)}</Text>
       </View>
 
       <Text style={styles.title} numberOfLines={2}>
@@ -54,7 +52,12 @@ export function ProjectCard({ project, onPress }) {
 
         <View style={styles.metaItem}>
           <Users size={13} color={COLORS.accentLime} />
-          <Text style={[styles.metaText, { color: COLORS.accentLime, fontWeight: "700" }]}>
+          <Text
+            style={[
+              styles.metaText,
+              { color: COLORS.accentLime, fontWeight: "700" },
+            ]}
+          >
             {project.total_pelamar || 0} Pelamar
           </Text>
         </View>

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  Alert,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
@@ -11,7 +19,14 @@ import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
-import { ShieldCheck, Calendar, FileText, CheckCircle2, ExternalLink, RefreshCw } from "lucide-react-native";
+import {
+  ShieldCheck,
+  Calendar,
+  FileText,
+  CheckCircle2,
+  ExternalLink,
+  RefreshCw,
+} from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
   const { id } = route.params;
@@ -58,16 +73,22 @@ export function ProjectDetailScreen({ route, navigation }) {
             try {
               setActionLoading(true);
               await proposalApi.accept(proposalId);
-              showToast("Proposal disetujui! Proyek kini sedang dikerjakan.", "success");
+              showToast(
+                "Proposal disetujui! Proyek kini sedang dikerjakan.",
+                "success",
+              );
               loadDetail();
             } catch (err) {
-              showToast(err.response?.data?.detail || "Gagal menyetujui proposal", "danger");
+              showToast(
+                err.response?.data?.detail || "Gagal menyetujui proposal",
+                "danger",
+              );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -96,16 +117,22 @@ export function ProjectDetailScreen({ route, navigation }) {
             try {
               setActionLoading(true);
               await submissionApi.approve(submissionId);
-              showToast("Proyek selesai & dana escrow berhasil dicairkan!", "success");
+              showToast(
+                "Proyek selesai & dana escrow berhasil dicairkan!",
+                "success",
+              );
               loadDetail();
             } catch (err) {
-              showToast(err.response?.data?.detail || "Gagal menyetujui hasil kerja", "danger");
+              showToast(
+                err.response?.data?.detail || "Gagal menyetujui hasil kerja",
+                "danger",
+              );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -124,7 +151,9 @@ export function ProjectDetailScreen({ route, navigation }) {
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
             <Badge label={formatStatus(project.status)} variant="lime" />
-            <Text style={styles.budgetText}>{formatCurrency(project.budget_max)}</Text>
+            <Text style={styles.budgetText}>
+              {formatCurrency(project.budget_max)}
+            </Text>
           </View>
 
           <Text style={styles.projectTitle}>{project.judul}</Text>
@@ -132,11 +161,18 @@ export function ProjectDetailScreen({ route, navigation }) {
           <View style={styles.metaRow}>
             <View style={styles.metaItem}>
               <Calendar size={13} color={COLORS.textMuted} />
-              <Text style={styles.metaText}>Deadline: {formatDate(project.deadline)}</Text>
+              <Text style={styles.metaText}>
+                Deadline: {formatDate(project.deadline)}
+              </Text>
             </View>
             <View style={styles.metaItem}>
               <ShieldCheck size={13} color={COLORS.accentCyan} />
-              <Text style={[styles.metaText, { color: COLORS.accentCyan, fontWeight: "700" }]}>
+              <Text
+                style={[
+                  styles.metaText,
+                  { color: COLORS.accentCyan, fontWeight: "700" },
+                ]}
+              >
                 Escrow Protected
               </Text>
             </View>
@@ -156,18 +192,34 @@ export function ProjectDetailScreen({ route, navigation }) {
         <View style={styles.tabContainer}>
           <TouchableOpacity
             onPress={() => setActiveTab("proposals")}
-            style={[styles.tabButton, activeTab === "proposals" && styles.tabButtonActive]}
+            style={[
+              styles.tabButton,
+              activeTab === "proposals" && styles.tabButtonActive,
+            ]}
           >
-            <Text style={[styles.tabText, activeTab === "proposals" && styles.tabTextActive]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "proposals" && styles.tabTextActive,
+              ]}
+            >
               Proposal Masuk ({proposals.length})
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setActiveTab("submission")}
-            style={[styles.tabButton, activeTab === "submission" && styles.tabButtonActive]}
+            style={[
+              styles.tabButton,
+              activeTab === "submission" && styles.tabButtonActive,
+            ]}
           >
-            <Text style={[styles.tabText, activeTab === "submission" && styles.tabTextActive]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "submission" && styles.tabTextActive,
+              ]}
+            >
               Hasil Deliverable
             </Text>
           </TouchableOpacity>
@@ -178,7 +230,9 @@ export function ProjectDetailScreen({ route, navigation }) {
           <View style={styles.tabContent}>
             {proposals.length === 0 ? (
               <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>Belum ada proposal dari mahasiswa.</Text>
+                <Text style={styles.emptyText}>
+                  Belum ada proposal dari mahasiswa.
+                </Text>
               </View>
             ) : (
               proposals.map((prop) => (
@@ -200,14 +254,21 @@ export function ProjectDetailScreen({ route, navigation }) {
           <View style={styles.tabContent}>
             {submissions.length === 0 ? (
               <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>Mahasiswa belum mengunggah hasil deliverable.</Text>
+                <Text style={styles.emptyText}>
+                  Mahasiswa belum mengunggah hasil deliverable.
+                </Text>
               </View>
             ) : (
               submissions.map((sub) => (
                 <View key={sub.id} style={styles.submissionCard}>
                   <View style={styles.subHeader}>
-                    <Badge label={`Revisi Ke-${sub.jumlah_revisi || 0}`} variant="cyan" />
-                    <Text style={styles.subDate}>{formatDate(sub.created_at)}</Text>
+                    <Badge
+                      label={`Revisi Ke-${sub.jumlah_revisi || 0}`}
+                      variant="cyan"
+                    />
+                    <Text style={styles.subDate}>
+                      {formatDate(sub.created_at)}
+                    </Text>
                   </View>
 
                   <Text style={styles.subLabel}>Link Berkas Deliverable:</Text>
@@ -224,7 +285,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                   {sub.catatan_pengiriman && (
                     <View style={styles.notesBox}>
                       <Text style={styles.notesLabel}>Catatan Mahasiswa:</Text>
-                      <Text style={styles.notesText}>"{sub.catatan_pengiriman}"</Text>
+                      <Text style={styles.notesText}>
+                        "{sub.catatan_pengiriman}"
+                      </Text>
                     </View>
                   )}
 
