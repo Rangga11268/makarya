@@ -162,7 +162,7 @@ export function RegisterScreen({ navigation }) {
           size="lg"
           onPress={handleRegister}
           loading={loading}
-          iconRight={<ArrowRight size={18} color={COLORS.textInverse} />}
+          iconRight={<ArrowRight size={18} color="#FFFFFF" />}
           style={styles.registerBtn}
         />
 

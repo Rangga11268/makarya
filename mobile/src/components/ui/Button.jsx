@@ -20,7 +20,7 @@ export function Button({
   style,
   textStyle,
 }) {
-  const isLime = variant === "lime";
+  const isLime = variant === "lime" || variant === "brand";
   const isDark = variant === "dark";
   const isOutline = variant === "outline";
   const isGhost = variant === "ghost";
@@ -46,7 +46,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={isLime ? COLORS.textDark : COLORS.textWhite}
+          color={isOutline || isGhost ? COLORS.brandIndigo : COLORS.textInverse}
         />
       ) : (
         <View style={styles.content}>
@@ -74,7 +74,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 999, // Pill shape like Dribbble
+    borderRadius: 999, // Clean pill button matching web
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -93,21 +93,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
   },
   lg: {
-    paddingVertical: 16,
+    paddingVertical: 15,
     paddingHorizontal: 28,
   },
   lime: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo, // Web Indigo #4F46E5
   },
   dark: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
   outline: {
     backgroundColor: "transparent",
     borderWidth: 1.5,
-    borderColor: COLORS.accentLime,
+    borderColor: COLORS.brandIndigo,
   },
   ghost: {
     backgroundColor: "transparent",
@@ -129,22 +129,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   text_lg: {
-    fontSize: 16,
+    fontSize: 15,
   },
   textLime: {
-    color: COLORS.textWhite,
+    color: "#FFFFFF", // Crisp pure white text on Indigo button
   },
   textDarkVariant: {
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
   },
   textOutline: {
-    color: COLORS.accentLime,
+    color: COLORS.brandIndigo,
   },
   textGhost: {
     color: COLORS.textMuted,
   },
   textDanger: {
-    color: COLORS.textWhite,
+    color: "#FFFFFF",
   },
   iconLeft: {
     marginRight: 8,

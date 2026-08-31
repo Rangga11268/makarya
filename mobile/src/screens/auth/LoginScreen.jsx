@@ -1,20 +1,27 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { 
-  Sparkles, 
-  ShieldCheck, 
-  Mail, 
-  Lock, 
-  GraduationCap, 
-  UserCheck, 
+import {
+  Sparkles,
+  ShieldCheck,
+  Mail,
+  Lock,
+  GraduationCap,
+  UserCheck,
   ArrowRight,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react-native";
 
 export function LoginScreen({ navigation }) {
@@ -36,7 +43,10 @@ export function LoginScreen({ navigation }) {
       const user = await login(email.trim(), password);
       showToast(`Selamat datang kembali!`, "success");
     } catch (err) {
-      showToast(err.response?.data?.detail || "Gagal masuk. Periksa email/password.", "danger");
+      showToast(
+        err.response?.data?.detail || "Gagal masuk. Periksa email/password.",
+        "danger",
+      );
     } finally {
       setLoading(false);
     }
@@ -143,7 +153,7 @@ export function LoginScreen({ navigation }) {
           size="lg"
           onPress={handleLogin}
           loading={loading}
-          iconRight={<ArrowRight size={18} color={COLORS.textInverse} />}
+          iconRight={<ArrowRight size={18} color="#FFFFFF" />}
           style={styles.loginBtn}
         />
 
