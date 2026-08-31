@@ -12,8 +12,8 @@ import { COLORS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
-import { Badge } from "../../components/ui/Badge";
 import { walletApi } from "../../api";
+import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
@@ -25,9 +25,11 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownLeft,
+  Banknote,
 } from "lucide-react-native";
 
 export function WalletScreen() {
+  const { user } = useAuthStore();
   const [wallet, setWallet] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,17 +39,21 @@ export function WalletScreen() {
 
   const { showToast } = useToastStore();
 
+  const isMahasiswa =
+    user?.role === "MHS" ||
+    user?.role === "MAHASISWA" ||
+    (user?.email && user.email.includes(".ac.id")) ||
+    user?.email === "darell@ubsi.ac.id";
+
   const loadWallet = async () => {
     try {
       setLoading(true);
       const [wRes, hRes] = await Promise.all([
-        walletApi.getMe(),
-        walletApi.getHistory(),
+        walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+        walletApi.getHistory().catch(() => ({ data: [] })),
       ]);
       setWallet(wRes.data);
-      setHistory(hRes.data);
-    } catch (e) {
-      // fallback
+      setHistory(Array.isArray(hRes.data) ? hRes.data : []);
     } finally {
       setLoading(false);
     }
@@ -60,21 +66,23 @@ export function WalletScreen() {
   const handleTopUp = async () => {
     const num = parseInt(nominal, 10);
     if (!num || num < 50000) {
-      showToast("Minimal deposit saldo adalah Rp 50.000", "danger");
+      showToast("Minimal transaksi adalah Rp 50.000", "danger");
       return;
     }
 
     try {
       setTopUpLoading(true);
-      const res = await walletApi.topUp(num);
+      await walletApi.topUp(num);
       showToast(
-        `Deposit Rp ${formatCurrency(num)} berhasil diproses!`,
-        "success",
+        isMahasiswa
+          ? `Permintaan pencairan honor Rp ${formatCurrency(num)} diproses!`
+          : `Deposit Rp ${formatCurrency(num)} berhasil!`,
+        "success"
       );
       setTopUpModal(false);
       loadWallet();
     } catch (e) {
-      showToast("Gagal memproses deposit", "danger");
+      showToast("Gagal memproses transaksi", "danger");
     } finally {
       setTopUpLoading(false);
     }
@@ -83,8 +91,12 @@ export function WalletScreen() {
   return (
     <View style={styles.container}>
       <Header
-        title="Dompet & Rekening Bersama"
-        subtitle="Audit saldo aktif dan proteksi dana escrow proyek Anda"
+        title={isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Bersama"}
+        subtitle={
+          isMahasiswa
+            ? "Saldo honor pengerjaan & pencairan dana rekening escrow"
+            : "Audit saldo aktif dan proteksi dana escrow proyek Anda"
+        }
       />
 
       <ScrollView
@@ -93,31 +105,42 @@ export function WalletScreen() {
           <RefreshControl
             refreshing={loading}
             onRefresh={loadWallet}
-            tintColor={COLORS.accentLime}
+            tintColor={COLORS.brandIndigo}
+            colors={[COLORS.brandIndigo]}
           />
         }
       >
         {/* Card Saldo Aktif */}
         <View style={styles.cardActive}>
           <View style={styles.cardHeader}>
-            <View style={styles.iconCircleLime}>
-              <Wallet size={18} color="#000" />
+            <View style={styles.iconCircleIndigo}>
+              <Wallet size={18} color={COLORS.brandIndigo} />
             </View>
-            <Text style={styles.cardLabelLime}>Saldo Aktif UMKM</Text>
+            <Text style={styles.cardLabel}>
+              {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
+            </Text>
           </View>
-          <Text style={styles.cardAmountLime}>
+
+          <Text style={styles.cardAmount}>
             {formatCurrency(wallet?.saldo_aktif || 0)}
           </Text>
-          <Text style={styles.cardDescLime}>
-            Saldo siap digunakan untuk mengunci pembayaran proyek mahasiswa
-            (*Escrow Deposit*).
+          <Text style={styles.cardDesc}>
+            {isMahasiswa
+              ? "Honor yang telah disetujui klien dan siap dicairkan ke rekening bank Anda."
+              : "Saldo siap dialokasikan untuk mengunci pembayaran proyek mahasiswa (Escrow Deposit)."}
           </Text>
 
           <Button
-            title="Deposit Saldo UMKM"
-            variant="dark"
+            title={isMahasiswa ? "Tarik Honor ke Rekening" : "Deposit Saldo UMKM"}
+            variant="lime"
             size="md"
-            icon={<Plus size={16} color={COLORS.textWhite} />}
+            icon={
+              isMahasiswa ? (
+                <Banknote size={16} color="#FFF" />
+              ) : (
+                <Plus size={16} color="#FFF" />
+              )
+            }
             onPress={() => setTopUpModal(true)}
             style={{ marginTop: 14 }}
           />
@@ -127,22 +150,23 @@ export function WalletScreen() {
         <View style={styles.cardEscrow}>
           <View style={styles.cardHeader}>
             <View style={styles.iconCircleCyan}>
-              <Lock size={18} color="#000" />
+              <Lock size={18} color={COLORS.brandCyan} />
             </View>
             <Text style={styles.cardLabelCyan}>Saldo Terkunci di Escrow</Text>
           </View>
           <Text style={styles.cardAmountCyan}>
             {formatCurrency(wallet?.saldo_escrow || 0)}
           </Text>
-          <Text style={styles.cardDescCyan}>
-            Dana aman tersimpan di rekening bersama dan hanya cair setelah Anda
-            menyetujui hasil deliverable.
+          <Text style={styles.cardDesc}>
+            {isMahasiswa
+              ? "Honor proyek yang sedang berjalan, tersimpan aman di rekening bersama dan cair otomatis saat disetujui."
+              : "Dana aman tersimpan di rekening bersama dan hanya cair setelah Anda menyetujui hasil pengerjaan."}
           </Text>
         </View>
 
         {/* Audit Trail History */}
         <View style={styles.historySection}>
-          <Text style={styles.historyTitle}>Riwayat Mutasi Saldo</Text>
+          <Text style={styles.historyTitle}>Riwayat Mutasi Transaksi</Text>
 
           {history.length === 0 ? (
             <View style={styles.emptyBox}>
@@ -155,10 +179,10 @@ export function WalletScreen() {
               <View key={tx.id} style={styles.txRow}>
                 <View style={styles.txLeft}>
                   <View style={styles.txIcon}>
-                    {tx.tipe === "TOPUP" ? (
-                      <ArrowDownLeft size={16} color={COLORS.accentLime} />
+                    {tx.tipe === "TOPUP" || tx.tipe === "PAYOUT" ? (
+                      <ArrowDownLeft size={16} color={COLORS.success} />
                     ) : (
-                      <ArrowUpRight size={16} color={COLORS.accentCyan} />
+                      <ArrowUpRight size={16} color={COLORS.danger} />
                     )}
                   </View>
                   <View>
@@ -173,7 +197,9 @@ export function WalletScreen() {
                   <Text
                     style={[
                       styles.txNominal,
-                      tx.tipe === "HOLD" && { color: COLORS.textMuted },
+                      tx.tipe === "HOLD" || tx.tipe === "WITHDRAW"
+                        ? { color: COLORS.danger }
+                        : { color: COLORS.success },
                     ]}
                   >
                     {tx.tipe === "HOLD" || tx.tipe === "WITHDRAW" ? "-" : "+"}{" "}
@@ -189,17 +215,21 @@ export function WalletScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal Top-Up */}
+      {/* Modal Transaksi */}
       <Modal visible={topUpModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Deposit Saldo UMKM</Text>
+            <Text style={styles.modalTitle}>
+              {isMahasiswa ? "Tarik Honor Mahasiswa" : "Deposit Saldo UMKM"}
+            </Text>
             <Text style={styles.modalSub}>
-              Pilih atau masukkan nominal top-up saldo
+              {isMahasiswa
+                ? "Masukkan nominal honor yang ingin dicairkan"
+                : "Pilih atau masukkan nominal top-up saldo escrow"}
             </Text>
 
             <Input
-              label="Nominal Deposit (Rp)"
+              label="Nominal (Rp)"
               placeholder="500000"
               value={nominal}
               onChangeText={setNominal}
@@ -215,6 +245,7 @@ export function WalletScreen() {
                     styles.nomChip,
                     nominal === n && styles.nomChipActive,
                   ]}
+                  activeOpacity={0.7}
                 >
                   <Text
                     style={[
@@ -258,14 +289,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   content: {
-    padding: 20,
-    paddingBottom: 100,
+    padding: 16,
+    paddingBottom: 110,
   },
   cardActive: {
-    backgroundColor: COLORS.accentLime,
-    borderRadius: 26,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 24,
     padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
     marginBottom: 14,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   cardHeader: {
     flexDirection: "row",
@@ -273,65 +311,66 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 6,
   },
-  iconCircleLime: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(0,0,0,0.15)",
+  iconCircleIndigo: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "rgba(79, 70, 229, 0.1)",
     alignItems: "center",
     justifyContent: "center",
   },
-  cardLabelLime: {
+  cardLabel: {
     fontSize: 11,
-    fontWeight: "800",
-    color: "rgba(0,0,0,0.6)",
+    fontWeight: "700",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
-  cardAmountLime: {
-    fontSize: 30,
+  cardAmount: {
+    fontSize: 28,
     fontWeight: "900",
-    color: "#000",
+    color: COLORS.textDark,
     letterSpacing: -0.5,
   },
-  cardDescLime: {
+  cardDesc: {
     fontSize: 11,
-    color: "rgba(0,0,0,0.7)",
+    color: COLORS.textMuted,
     marginTop: 4,
     lineHeight: 16,
   },
   cardEscrow: {
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 26,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 24,
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 24,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   iconCircleCyan: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(123, 252, 236, 0.15)",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "rgba(14, 165, 233, 0.12)",
     alignItems: "center",
     justifyContent: "center",
   },
   cardLabelCyan: {
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   cardAmountCyan: {
     fontSize: 26,
     fontWeight: "900",
-    color: COLORS.accentCyan,
+    color: COLORS.brandCyan,
     letterSpacing: -0.5,
-  },
-  cardDescCyan: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 4,
-    lineHeight: 16,
   },
   historySection: {
     marginTop: 6,
@@ -339,19 +378,24 @@ const styles = StyleSheet.create({
   historyTitle: {
     fontSize: 16,
     fontWeight: "800",
-    color: COLORS.textWhite,
-    marginBottom: 14,
+    color: COLORS.textDark,
+    marginBottom: 12,
   },
   txRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 10,
+    elevation: 1,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
   },
   txLeft: {
     flexDirection: "row",
@@ -362,14 +406,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: COLORS.canvasSoft,
     alignItems: "center",
     justifyContent: "center",
   },
   txType: {
     fontSize: 13,
     fontWeight: "800",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
   },
   txDate: {
     fontSize: 10,
@@ -379,20 +423,21 @@ const styles = StyleSheet.create({
   txNominal: {
     fontSize: 14,
     fontWeight: "800",
-    color: COLORS.accentLime,
   },
   txDesc: {
     fontSize: 10,
     color: COLORS.textMuted,
-    maxWidth: 120,
+    maxWidth: 130,
     marginTop: 1,
   },
   emptyBox: {
     padding: 30,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   emptyText: {
     fontSize: 12,
@@ -400,14 +445,14 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
     justifyContent: "flex-end",
   },
   modalSheet: {
     backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 24,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 22,
     paddingBottom: 40,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
@@ -415,7 +460,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: "900",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
   },
   modalSub: {
     fontSize: 12,
@@ -433,13 +478,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
   nomChipActive: {
-    backgroundColor: COLORS.accentLime,
-    borderColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
   },
   nomText: {
     fontSize: 11,
@@ -447,7 +492,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   nomTextActive: {
-    color: "#000",
+    color: "#FFFFFF",
     fontWeight: "800",
   },
   modalActions: {

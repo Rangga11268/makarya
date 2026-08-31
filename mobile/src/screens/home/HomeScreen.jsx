@@ -46,8 +46,12 @@ export function HomeScreen({ navigation }) {
       setRefreshing(true);
       if (isMahasiswa) {
         const [walletRes, browseRes] = await Promise.all([
-          walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
-          projectApi.browse({ limit: 4 }).catch(() => ({ data: { items: [] } })),
+          walletApi
+            .getMe()
+            .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+          projectApi
+            .browse({ limit: 4 })
+            .catch(() => ({ data: { items: [] } })),
         ]);
         setWallet(walletRes.data);
         const pItems = Array.isArray(browseRes.data)
@@ -56,7 +60,9 @@ export function HomeScreen({ navigation }) {
         setBrowseProjects(pItems);
       } else {
         const [walletRes, projRes] = await Promise.all([
-          walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+          walletApi
+            .getMe()
+            .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
           projectApi.getMyProjects({ limit: 5 }).catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
@@ -135,7 +141,9 @@ export function HomeScreen({ navigation }) {
         <Text style={styles.greeting}>
           Halo,{" "}
           {isMahasiswa
-            ? user?.nama_lengkap || user?.email?.split("@")[0] || "Mahasiswa UBSI"
+            ? user?.nama_lengkap ||
+              user?.email?.split("@")[0] ||
+              "Mahasiswa UBSI"
             : user?.nama_usaha || "Pemilik UMKM"}
         </Text>
         <Text style={styles.headerSubtitle}>
@@ -162,7 +170,9 @@ export function HomeScreen({ navigation }) {
 
         <View style={styles.escrowRow}>
           <Text style={styles.escrowText}>
-            {isMahasiswa ? "Terkunci dalam Pengerjaan: " : "Terkunci di Escrow: "}
+            {isMahasiswa
+              ? "Terkunci dalam Pengerjaan: "
+              : "Terkunci di Escrow: "}
             <Text style={styles.escrowAmount}>
               {formatCurrency(wallet?.saldo_escrow || 0)}
             </Text>
@@ -226,7 +236,9 @@ export function HomeScreen({ navigation }) {
           <Activity size={18} color={COLORS.brandIndigo} />
           <Text style={styles.summaryCount}>
             {isMahasiswa
-              ? (wallet?.saldo_escrow ? 1 : 0)
+              ? wallet?.saldo_escrow
+                ? 1
+                : 0
               : myProjects.reduce((acc, p) => acc + (p.total_pelamar || 0), 0)}
           </Text>
           <Text style={styles.summaryLabel}>
@@ -270,7 +282,9 @@ export function HomeScreen({ navigation }) {
         <View>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
+              <Text style={styles.sectionTitle}>
+                Talenta Mahasiswa Unggulan
+              </Text>
               <Text style={styles.sectionSubtitle}>
                 Mahasiswa terverifikasi kampus dengan rekam jejak prima
               </Text>

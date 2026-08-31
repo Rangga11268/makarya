@@ -16,6 +16,8 @@ export const projectApi = {
 
 export const proposalApi = {
   getByProject: (projectId) => api.get(`/proposals/project/${projectId}`),
+  getMyProposals: () => api.get("/proposals/my"),
+  submit: (data) => api.post("/proposals", data),
   accept: (id) => api.post(`/proposals/${id}/accept`),
   reject: (id) => api.post(`/proposals/${id}/reject`),
 };

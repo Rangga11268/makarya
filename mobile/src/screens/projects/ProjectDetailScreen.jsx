@@ -5,16 +5,18 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Linking,
   Alert,
+  Modal,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
 import { projectApi, proposalApi, submissionApi } from "../../api";
+import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
@@ -22,34 +24,51 @@ import { formatStatus } from "../../utils/formatStatus";
 import {
   ShieldCheck,
   Calendar,
-  FileText,
-  CheckCircle2,
+  Send,
   ExternalLink,
-  RefreshCw,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
-  const { id } = route.params;
+  const { user } = useAuthStore();
+  const projectId = route.params?.id || route.params?.projectId;
+
   const [project, setProject] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("proposals"); // 'proposals' | 'submission'
+  const [activeTab, setActiveTab] = useState("proposals");
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Proposal modal for Mahasiswa
+  const [proposalModal, setProposalModal] = useState(false);
+  const [hargaTawar, setHargaTawar] = useState("");
+  const [estimasiHari, setEstimasiHari] = useState("5");
+  const [coverLetter, setCoverLetter] = useState("");
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const { showToast } = useToastStore();
 
+  const isMahasiswa =
+    user?.role === "MHS" ||
+    user?.role === "MAHASISWA" ||
+    (user?.email && user.email.includes(".ac.id")) ||
+    user?.email === "darell@ubsi.ac.id";
+
   const loadDetail = async () => {
+    if (!projectId) return;
     try {
       setLoading(true);
       const [pRes, propRes, subRes] = await Promise.all([
-        projectApi.getDetail(id),
-        proposalApi.getByProject(id).catch(() => ({ data: [] })),
-        submissionApi.getByProject(id).catch(() => ({ data: [] })),
+        projectApi.getDetail(projectId),
+        proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
+        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
       ]);
       setProject(pRes.data);
-      setProposals(propRes.data);
-      setSubmissions(subRes.data);
+      setProposals(Array.isArray(propRes.data) ? propRes.data : []);
+      setSubmissions(Array.isArray(subRes.data) ? subRes.data : []);
+      if (pRes.data?.budget_max) {
+        setHargaTawar(String(pRes.data.budget_max));
+      }
     } catch (err) {
       showToast("Gagal memuat rincian proyek", "danger");
     } finally {
@@ -59,7 +78,45 @@ export function ProjectDetailScreen({ route, navigation }) {
 
   useEffect(() => {
     loadDetail();
-  }, [id]);
+  }, [projectId]);
+
+  const handleSubmitProposal = async () => {
+    if (!hargaTawar || !coverLetter.trim()) {
+      showToast("Harga tawar dan cover letter wajib diisi", "danger");
+      return;
+    }
+
+    const harga = parseInt(hargaTawar, 10);
+    if (harga > (project?.budget_max || 0)) {
+      showToast(
+        `Harga tawar tidak boleh melebihi budget max (${formatCurrency(
+          project.budget_max
+        )})`,
+        "danger"
+      );
+      return;
+    }
+
+    try {
+      setSubmitLoading(true);
+      await proposalApi.submit({
+        project_id: projectId,
+        harga_tawar: harga,
+        estimasi_hari: parseInt(estimasiHari, 10) || 5,
+        cover_letter: coverLetter.trim(),
+      });
+      showToast("Proposal lamaran berhasil dikirim!", "success");
+      setProposalModal(false);
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal mengirim proposal",
+        "danger"
+      );
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
 
   const handleAcceptProposal = async (proposalId) => {
     Alert.alert(
@@ -75,20 +132,20 @@ export function ProjectDetailScreen({ route, navigation }) {
               await proposalApi.accept(proposalId);
               showToast(
                 "Proposal disetujui! Proyek kini sedang dikerjakan.",
-                "success",
+                "success"
               );
               loadDetail();
             } catch (err) {
               showToast(
                 err.response?.data?.detail || "Gagal menyetujui proposal",
-                "danger",
+                "danger"
               );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ],
+      ]
     );
   };
 
@@ -108,7 +165,7 @@ export function ProjectDetailScreen({ route, navigation }) {
   const handleApproveSubmission = async (submissionId) => {
     Alert.alert(
       "Penyelesaian Proyek",
-      "Apakah Anda puas dengan hasil kerja ini? Dana escrow akan dicairkan 100% ke saldo mahasiswa.",
+      "Apakah Anda puas dengan hasil kerja ini? Dana escrow akan dicairkan 100% ke saldo honor mahasiswa.",
       [
         { text: "Batal", style: "cancel" },
         {
@@ -119,30 +176,34 @@ export function ProjectDetailScreen({ route, navigation }) {
               await submissionApi.approve(submissionId);
               showToast(
                 "Proyek selesai & dana escrow berhasil dicairkan!",
-                "success",
+                "success"
               );
               loadDetail();
             } catch (err) {
               showToast(
                 err.response?.data?.detail || "Gagal menyetujui hasil kerja",
-                "danger",
+                "danger"
               );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ],
+      ]
     );
   };
 
   if (!project) return null;
 
+  const canApply =
+    isMahasiswa &&
+    (project.status === "OPEN" || project.status === "BIDDING");
+
   return (
     <View style={styles.container}>
       <Header
         title="Detail Proyek"
-        subtitle={`ID: #${project.id?.substring(0, 8)}`}
+        subtitle={`Kategori: ${project.kategori || "UMKM Digital"}`}
         onBack={() => navigation.goBack()}
       />
 
@@ -166,13 +227,8 @@ export function ProjectDetailScreen({ route, navigation }) {
               </Text>
             </View>
             <View style={styles.metaItem}>
-              <ShieldCheck size={13} color={COLORS.accentCyan} />
-              <Text
-                style={[
-                  styles.metaText,
-                  { color: COLORS.accentCyan, fontWeight: "700" },
-                ]}
-              >
+              <ShieldCheck size={13} color={COLORS.brandCyan} />
+              <Text style={[styles.metaText, { color: COLORS.brandCyan, fontWeight: "700" }]}>
                 Escrow Protected
               </Text>
             </View>
@@ -188,125 +244,168 @@ export function ProjectDetailScreen({ route, navigation }) {
           <Text style={styles.descriptionText}>{project.deskripsi_raw}</Text>
         </View>
 
-        {/* Tab Selector: Proposals vs Submissions */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            onPress={() => setActiveTab("proposals")}
-            style={[
-              styles.tabButton,
-              activeTab === "proposals" && styles.tabButtonActive,
-            ]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "proposals" && styles.tabTextActive,
-              ]}
-            >
-              Proposal Masuk ({proposals.length})
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setActiveTab("submission")}
-            style={[
-              styles.tabButton,
-              activeTab === "submission" && styles.tabButtonActive,
-            ]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "submission" && styles.tabTextActive,
-              ]}
-            >
-              Hasil Deliverable
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Content Tab 1: Proposals */}
-        {activeTab === "proposals" && (
-          <View style={styles.tabContent}>
-            {proposals.length === 0 ? (
-              <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>
-                  Belum ada proposal dari mahasiswa.
-                </Text>
-              </View>
-            ) : (
-              proposals.map((prop) => (
-                <ProposalCard
-                  key={prop.id}
-                  proposal={prop}
-                  onAccept={() => handleAcceptProposal(prop.id)}
-                  onReject={() => handleRejectProposal(prop.id)}
-                  loadingAccept={actionLoading}
-                  loadingReject={actionLoading}
-                />
-              ))
-            )}
-          </View>
+        {/* Action Button for Mahasiswa to submit proposal */}
+        {canApply && (
+          <Button
+            title="Ajukan Proposal Lamaran"
+            variant="lime"
+            size="lg"
+            icon={<Send size={18} color="#FFF" />}
+            onPress={() => setProposalModal(true)}
+            style={styles.applyBtn}
+          />
         )}
 
-        {/* Content Tab 2: Submission */}
-        {activeTab === "submission" && (
-          <View style={styles.tabContent}>
-            {submissions.length === 0 ? (
-              <View style={styles.emptyBox}>
-                <Text style={styles.emptyText}>
-                  Mahasiswa belum mengunggah hasil deliverable.
+        {/* Tab Selector: Proposals vs Submissions (for UMKM or Mahasiswa) */}
+        {!isMahasiswa && (
+          <>
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                onPress={() => setActiveTab("proposals")}
+                style={[
+                  styles.tabButton,
+                  activeTab === "proposals" && styles.tabButtonActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "proposals" && styles.tabTextActive,
+                  ]}
+                >
+                  Proposal Masuk ({proposals.length})
                 </Text>
-              </View>
-            ) : (
-              submissions.map((sub) => (
-                <View key={sub.id} style={styles.submissionCard}>
-                  <View style={styles.subHeader}>
-                    <Badge
-                      label={`Revisi Ke-${sub.jumlah_revisi || 0}`}
-                      variant="cyan"
-                    />
-                    <Text style={styles.subDate}>
-                      {formatDate(sub.created_at)}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setActiveTab("submission")}
+                style={[
+                  styles.tabButton,
+                  activeTab === "submission" && styles.tabButtonActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "submission" && styles.tabTextActive,
+                  ]}
+                >
+                  Hasil Deliverable
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Content Tab 1: Proposals */}
+            {activeTab === "proposals" && (
+              <View style={styles.tabContent}>
+                {proposals.length === 0 ? (
+                  <View style={styles.emptyBox}>
+                    <Text style={styles.emptyText}>
+                      Belum ada proposal dari mahasiswa.
                     </Text>
                   </View>
-
-                  <Text style={styles.subLabel}>Link Berkas Deliverable:</Text>
-                  <TouchableOpacity
-                    onPress={() => Linking.openURL(sub.url_berkas)}
-                    style={styles.linkRow}
-                  >
-                    <ExternalLink size={14} color={COLORS.accentLime} />
-                    <Text style={styles.linkText} numberOfLines={1}>
-                      {sub.url_berkas}
-                    </Text>
-                  </TouchableOpacity>
-
-                  {sub.catatan_pengiriman && (
-                    <View style={styles.notesBox}>
-                      <Text style={styles.notesLabel}>Catatan Mahasiswa:</Text>
-                      <Text style={styles.notesText}>
-                        "{sub.catatan_pengiriman}"
-                      </Text>
-                    </View>
-                  )}
-
-                  {project.status !== "COMPLETED" && (
-                    <Button
-                      title="Setujui Hasil & Lepas Escrow"
-                      variant="lime"
-                      size="md"
-                      onPress={() => handleApproveSubmission(sub.id)}
-                      loading={actionLoading}
-                      style={{ marginTop: 12 }}
+                ) : (
+                  proposals.map((prop) => (
+                    <ProposalCard
+                      key={prop.id}
+                      proposal={prop}
+                      onAccept={() => handleAcceptProposal(prop.id)}
+                      onReject={() => handleRejectProposal(prop.id)}
+                      loadingAccept={actionLoading}
+                      loadingReject={actionLoading}
                     />
-                  )}
-                </View>
-              ))
+                  ))
+                )}
+              </View>
             )}
-          </View>
+
+            {/* Content Tab 2: Submission */}
+            {activeTab === "submission" && (
+              <View style={styles.tabContent}>
+                {submissions.length === 0 ? (
+                  <View style={styles.emptyBox}>
+                    <Text style={styles.emptyText}>
+                      Mahasiswa belum mengunggah hasil deliverable.
+                    </Text>
+                  </View>
+                ) : (
+                  submissions.map((sub) => (
+                    <View key={sub.id} style={styles.submissionCard}>
+                      <Text style={styles.submissionTitle}>
+                        File Deliverable Proyek
+                      </Text>
+                      <Text style={styles.submissionDesc}>{sub.catatan}</Text>
+                      <Button
+                        title="Setujui & Lepas Escrow"
+                        variant="lime"
+                        size="md"
+                        onPress={() => handleApproveSubmission(sub.id)}
+                        loading={actionLoading}
+                        style={{ marginTop: 12 }}
+                      />
+                    </View>
+                  ))
+                )}
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
+
+      {/* Modal Submit Proposal Mahasiswa */}
+      <Modal visible={proposalModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
+            <Text style={styles.modalSub}>
+              Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
+            </Text>
+
+            <Input
+              label="Tawaran Honor (Rp)"
+              placeholder={String(project.budget_max)}
+              value={hargaTawar}
+              onChangeText={setHargaTawar}
+              keyboardType="numeric"
+            />
+
+            <Input
+              label="Estimasi Waktu Pengerjaan (Hari)"
+              placeholder="5"
+              value={estimasiHari}
+              onChangeText={setEstimasiHari}
+              keyboardType="numeric"
+            />
+
+            <Input
+              label="Cover Letter / Rencana Kerja"
+              placeholder="Jelaskan pengalaman Anda, portofolio yang relevan, dan bagaimana Anda akan menyelesaikan proyek ini..."
+              value={coverLetter}
+              onChangeText={setCoverLetter}
+              multiline
+              numberOfLines={4}
+            />
+
+            <View style={styles.modalActions}>
+              <Button
+                title="Batal"
+                variant="dark"
+                size="md"
+                onPress={() => setProposalModal(false)}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Kirim Lamaran"
+                variant="lime"
+                size="md"
+                onPress={handleSubmitProposal}
+                loading={submitLoading}
+                style={{ flex: 2 }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -317,41 +416,46 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   content: {
-    padding: 20,
-    paddingBottom: 60,
+    padding: 16,
+    paddingBottom: 80,
   },
   heroCard: {
     backgroundColor: COLORS.bgSurface,
     borderRadius: 24,
-    padding: 18,
+    padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 8,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   badgeRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   budgetText: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: COLORS.accentLime,
-  },
-  projectTitle: {
     fontSize: 18,
     fontWeight: "900",
-    color: COLORS.textWhite,
-    letterSpacing: -0.3,
-    marginBottom: 12,
+    color: COLORS.brandIndigo,
+  },
+  projectTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: COLORS.textDark,
+    letterSpacing: -0.5,
+    marginBottom: 14,
   },
   metaRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
     borderTopColor: COLORS.borderDark,
-    paddingTop: 10,
+    paddingTop: 12,
   },
   metaItem: {
     flexDirection: "row",
@@ -363,40 +467,52 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   sectionBox: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
-    padding: 16,
+    padding: 18,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 16,
+    elevation: 1,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
   },
   sectionTitle: {
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   descriptionText: {
     fontSize: 13,
-    color: COLORS.textWhite,
-    lineHeight: 19,
+    color: COLORS.textDark,
+    lineHeight: 20,
+  },
+  applyBtn: {
+    marginBottom: 20,
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 999,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 16,
     padding: 4,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   tabButton: {
     flex: 1,
     paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 999,
+    borderRadius: 12,
   },
   tabButtonActive: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.bgSurface,
+    elevation: 1,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
   },
   tabText: {
     fontSize: 12,
@@ -405,74 +521,70 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     color: COLORS.textDark,
+    fontWeight: "800",
   },
   tabContent: {
-    marginBottom: 20,
+    marginTop: 4,
   },
   emptyBox: {
     padding: 30,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   emptyText: {
     fontSize: 12,
     color: COLORS.textMuted,
   },
   submissionCard: {
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 22,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
     padding: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 12,
   },
-  subHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
+  submissionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: COLORS.textDark,
   },
-  subDate: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-  },
-  subLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-    marginBottom: 4,
-  },
-  linkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: COLORS.bgDark,
-    padding: 12,
-    borderRadius: 14,
-    marginBottom: 10,
-  },
-  linkText: {
+  submissionDesc: {
     fontSize: 12,
-    color: COLORS.accentLime,
-    fontWeight: "600",
+    color: COLORS.textMuted,
+    marginTop: 4,
+  },
+  modalOverlay: {
     flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    justifyContent: "flex-end",
   },
-  notesBox: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    padding: 10,
-    borderRadius: 12,
+  modalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 22,
+    paddingBottom: 40,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
-  notesLabel: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    fontWeight: "600",
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: COLORS.textDark,
   },
-  notesText: {
+  modalSub: {
     fontSize: 12,
-    color: COLORS.textWhite,
-    fontStyle: "italic",
-    marginTop: 2,
+    color: COLORS.textMuted,
+    marginTop: 4,
+    marginBottom: 18,
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 8,
   },
 });

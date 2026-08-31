@@ -7,7 +7,7 @@ import { Header } from "../../components/ui/Header";
 import { PricingSuggester } from "../../components/features/PricingSuggester";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import { ShieldCheck, Calendar, Sparkles } from "lucide-react-native";
+import { ShieldCheck, Calendar } from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
   const [judul, setJudul] = useState("");
@@ -79,6 +79,7 @@ export function PostProjectScreen({ navigation }) {
                   key={c.code}
                   onPress={() => setKategori(c.code)}
                   style={[styles.categoryChip, selected && styles.categoryChipActive]}
+                  activeOpacity={0.7}
                 >
                   <Text style={[styles.categoryText, selected && styles.categoryTextActive]}>
                     {c.label}
@@ -127,9 +128,9 @@ export function PostProjectScreen({ navigation }) {
 
         {/* Escrow Guarantee Seal */}
         <View style={styles.guaranteeBox}>
-          <ShieldCheck size={18} color={COLORS.accentCyan} />
+          <ShieldCheck size={18} color={COLORS.brandCyan} />
           <Text style={styles.guaranteeText}>
-            Dana proyek Anda hanya akan dikunci saat Anda menyetujui salah satu proposal mahasiswa.
+            Dana proyek Anda hanya akan dikunci di rekening bersama (escrow) saat Anda menyetujui salah satu proposal mahasiswa.
           </Text>
         </View>
 
@@ -161,24 +162,24 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     marginBottom: 8,
   },
   categoriesRow: {
     flexDirection: "row",
   },
   categoryChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginRight: 8,
   },
   categoryChipActive: {
-    backgroundColor: COLORS.accentLime,
-    borderColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
   },
   categoryText: {
     fontSize: 12,
@@ -186,19 +187,23 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   categoryTextActive: {
-    color: COLORS.textDark,
+    color: "#FFFFFF",
     fontWeight: "800",
   },
   guaranteeBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
     padding: 14,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 20,
+    elevation: 1,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
   },
   guaranteeText: {
     fontSize: 11,

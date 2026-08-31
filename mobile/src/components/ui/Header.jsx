@@ -13,12 +13,12 @@ export function Header({ title, subtitle, onBack, rightAction }) {
             style={styles.backButton}
             activeOpacity={0.7}
           >
-            <ArrowLeft size={20} color={COLORS.textWhite} />
+            <ArrowLeft size={18} color={COLORS.textDark} />
           </TouchableOpacity>
         )}
-        <View>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+        <View style={styles.titleContainer}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
         </View>
       </View>
       {rightAction && <View>{rightAction}</View>}
@@ -32,30 +32,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 48,
+    paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: COLORS.bgSurface, // Clean white surface
   },
   left: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.cardDark,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.canvasSoft,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
+  titleContainer: {
+    flex: 1,
+  },
   title: {
     fontSize: 18,
     fontWeight: "800",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     letterSpacing: -0.3,
   },
   subtitle: {
