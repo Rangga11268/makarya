@@ -395,6 +395,30 @@ export function ProjectDetailPage() {
                   Kelola Pelamar Proyek Ini →
                 </Button>
               </Link>
+            ) : user?.role === "UMKM" ? (
+              <div className="space-y-3">
+                <div className="p-4 bg-canvas rounded-2xl border border-border text-center space-y-1.5 shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900 mx-auto">
+                    <Building2 className="w-4 h-4 text-muted" />
+                  </div>
+                  <span className="text-xs font-bold text-dark-900 block">
+                    Mode Klien UMKM
+                  </span>
+                  <p className="text-[11px] text-muted leading-relaxed">
+                    Hanya akun mahasiswa terverifikasi yang dapat mengajukan proposal untuk proyek ini.
+                  </p>
+                </div>
+                <Link to="/projects/new">
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="w-full text-xs font-bold border-border text-dark-900 hover:bg-surface"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+                    Pasang Kebutuhan Proyek Anda
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <Button
                 variant="brand"
@@ -404,6 +428,7 @@ export function ProjectDetailPage() {
               >
                 <Send className="w-4 h-4 mr-2" />
                 Lamar Proyek Ini
+                {isAuthenticated ? "Lamar Proyek Ini" : "Masuk untuk Melamar Proyek"}
               </Button>
             )}
 

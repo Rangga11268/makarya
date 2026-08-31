@@ -65,6 +65,15 @@ export function ApplyProposalPage() {
   ];
 
   useEffect(() => {
+    if (user?.role === "UMKM") {
+      addToast(
+        "Akun Klien UMKM tidak dapat mengajukan proposal lamaran. Silakan gunakan akun mahasiswa.",
+        "warning",
+      );
+      navigate("/projects", { replace: true });
+      return;
+    }
+
     async function loadProject() {
       try {
         setLoading(true);
@@ -81,6 +90,7 @@ export function ApplyProposalPage() {
     }
     loadProject();
   }, [id]);
+  }, [id, user?.role]);
 
   const toggleTool = (tool) => {
     if (selectedTools.includes(tool)) {

@@ -65,6 +65,17 @@ export default function App() {
             />
 
             {/* 3. Authenticated Portal Routes (Mahasiswa & UMKM) */}
+            {/* 3. UMKM Exclusive Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["UMKM"]} />}>
+              <Route path="/projects/new" element={<CreateProjectPage />} />
+            </Route>
+
+            {/* 4. Mahasiswa Exclusive Routes */}
+            <Route element={<ProtectedRoute allowedRoles={["MHS", "MAHASISWA"]} />}>
+              <Route path="/projects/:id/apply" element={<ApplyProposalPage />} />
+            </Route>
+
+            {/* 5. Shared Authenticated Routes (With Role-Specific Workspaces) */}
             <Route
               element={
                 <ProtectedRoute allowedRoles={["MHS", "MAHASISWA", "UMKM"]} />
@@ -83,6 +94,7 @@ export default function App() {
             </Route>
 
             {/* 4. Admin Protected Routes */}
+            {/* 6. Admin Protected Routes */}
             <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
               <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/admin/disputes" element={<AdminDisputePage />} />
