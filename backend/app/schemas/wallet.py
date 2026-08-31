@@ -11,8 +11,8 @@ class WalletResponse(BaseModel):
     user_id: UUID
     saldo_aktif: Decimal
     saldo_escrow: Decimal
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     
     model_config = ConfigDict(from_attributes=True)
 

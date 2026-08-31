@@ -263,32 +263,40 @@ export function ProposalBoardPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* 1. Header & Quick Wallet Balance Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
-        <div className="space-y-1">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-indigo font-sans">
-            {isUmkm
-              ? "Pusat Kendali Proyek UMKM"
-              : "Papan Pelamar & Pekerjaan Mahasiswa"}
-          </span>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                isUmkm
+                  ? "bg-dark-900 text-white border-dark-900"
+                  : "bg-surface text-dark-900 border-border"
+              }`}
+            >
+              {isUmkm ? "👑 Mode Klien UMKM" : "🎓 Mode Mahasiswa"}
+            </span>
+            <span className="text-[11px] font-semibold text-muted font-mono">
+              {isUmkm ? "Pusat Proyek Usaha" : "Papan Lamaran & Kerja"}
+            </span>
+          </div>
+
           <h1 className="text-2xl sm:text-3xl font-serif text-dark-900 tracking-tight leading-tight">
-            {isUmkm
-              ? "Manajemen Proyek & Hasil Kerja"
-              : "Proposal & Status Pengerjaan"}
+            {isUmkm ? "Kelola Proyek & Verifikasi Deliverable" : "Papan Proposal & Penyerahan Hasil"}
           </h1>
           <p className="text-xs text-muted">
             {isUmkm
-              ? "Kelola penawaran mahasiswa, periksa hasil kerja (deliverable), dan cairkan honor escrow."
-              : "Pantau status pengajuan proposal, serahkan deliverable proyek, dan nikmati pencairan dana instan."}
+              ? "Tinjau proposal masuk dari mahasiswa, kunci dana aman di rekening bersama, dan setujui berkas kerja."
+              : "Pantau status penerimaan proposal, serahkan deliverable proyek yang disetujui, dan cairkan honor."}
           </p>
         </div>
 
         {/* Quick Wallet Card */}
         <div className="flex items-center gap-3 bg-canvas p-3.5 rounded-2xl border border-border shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-brand-indigo/10 flex items-center justify-center text-brand-indigo">
+          <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900">
             <WalletIcon className="w-5 h-5" />
           </div>
           <div>
             <span className="text-[10px] font-bold text-muted uppercase block">
-              {isUmkm ? "Saldo Escrow Aktif" : "Saldo Siap Tarik"}
+              {isUmkm ? "Saldo Escrow" : "Saldo Aktif"}
             </span>
             <span className="text-sm font-black text-dark-900">
               {wallet
@@ -300,9 +308,9 @@ export function ProposalBoardPage() {
           </div>
           <Link to="/wallet">
             <Button
-              variant="brand"
+              variant="outline"
               size="sm"
-              className="text-xs font-bold shadow-brand ml-2"
+              className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-2"
             >
               {isUmkm ? "Dompet" : "Tarik Dana"}
               <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -311,31 +319,31 @@ export function ProposalBoardPage() {
         </div>
       </div>
 
-      {/* 2. Top Metric Stats Row */}
+      {/* 2. Clean Bordered Metric Stats Row (No Colorful Boxes) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-surface border border-border space-y-1 shadow-xs">
+        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-slate-400 space-y-1 shadow-xs">
           <span className="text-[11px] font-bold text-muted block">
-            {isUmkm ? "Total Proyek" : "Total Dilamar"}
+            {isUmkm ? "Total Proyek Anda" : "Total Proyek Dilamar"}
           </span>
           <span className="text-xl sm:text-2xl font-black text-dark-900">
             {isUmkm ? myProjects.length : proposals.length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-amber-900 block">
+        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-brand-indigo space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-muted block">
             Sedang Berjalan
           </span>
-          <span className="text-xl sm:text-2xl font-black text-amber-950">
+          <span className="text-xl sm:text-2xl font-black text-dark-900">
             {isUmkm
               ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
               : proposals.filter((p) => p.status === "ACCEPTED").length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-900 block">
+        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-emerald-600 space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-muted block">
             Selesai / Cair
           </span>
-          <span className="text-xl sm:text-2xl font-black text-emerald-950">
+          <span className="text-xl sm:text-2xl font-black text-dark-900">
             {isUmkm
               ? myProjects.filter(
                   (p) => p.status === "DONE" || p.status === "COMPLETED",
@@ -345,11 +353,11 @@ export function ProposalBoardPage() {
                 ).length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-slate-700 block">
-            {isUmkm ? "Masa Penawaran" : "Menunggu Review"}
+        <div className="p-4 rounded-2xl bg-surface border border-border border-l-4 border-l-amber-500 space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-muted block">
+            {isUmkm ? "Masa Penawaran" : "Menunggu Keputusan"}
           </span>
-          <span className="text-xl sm:text-2xl font-black text-slate-900">
+          <span className="text-xl sm:text-2xl font-black text-dark-900">
             {isUmkm
               ? myProjects.filter(
                   (p) => p.status === "OPEN" || p.status === "BIDDING",
@@ -368,12 +376,12 @@ export function ProposalBoardPage() {
             type="text"
             placeholder={
               isUmkm
-                ? "Cari berdasarkan judul proyek atau kategori..."
-                : "Cari proposal atau pesan pengerjaan..."
+                ? "Cari judul proyek atau kategori..."
+                : "Cari lamaran atau pesan rencana kerja..."
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:border-brand-indigo"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:border-dark-900 font-sans"
           />
         </div>
 
@@ -381,13 +389,13 @@ export function ProposalBoardPage() {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {(isUmkm
             ? [
-                { key: "ALL", label: "Semua" },
-                { key: "IN_PROGRESS", label: "Sedang Dikerjakan" },
-                { key: "OPEN", label: "Penawaran" },
+                { key: "ALL", label: "Semua Proyek" },
+                { key: "IN_PROGRESS", label: "Sedang Berjalan" },
+                { key: "OPEN", label: "Penawaran Masuk" },
                 { key: "DONE", label: "Selesai" },
               ]
             : [
-                { key: "ALL", label: "Semua" },
+                { key: "ALL", label: "Semua Lamaran" },
                 { key: "ACCEPTED", label: "Disetujui / Berjalan" },
                 { key: "PENDING", label: "Menunggu" },
                 { key: "REJECTED", label: "Ditolak" },
@@ -396,10 +404,10 @@ export function ProposalBoardPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 activeTab === tab.key
-                  ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas text-muted hover:text-dark-900 border border-border"
+                  ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                  : "bg-surface text-muted hover:text-dark-900 border-border"
               }`}
             >
               {tab.label}
@@ -530,13 +538,13 @@ export function ProposalBoardPage() {
 
                   {/* Submissions Section if in progress or completed */}
                   {projectSubmissions.length > 0 ? (
-                    <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-3">
+                    <div className="p-4 bg-surface border border-border border-l-4 border-l-dark-900 rounded-2xl space-y-3 shadow-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          Berkas Hasil Kerja (Deliverable) dari Mahasiswa
+                        <span className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-dark-900" />
+                          Berkas Hasil Kerja (Deliverable) Mahasiswa
                         </span>
-                        <Badge variant="success">
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
                           {projectSubmissions[0].status === "APPROVED" ||
                           projectSubmissions[0].status === "ACCEPTED"
                             ? "Telah Disetujui & Selesai"
@@ -544,13 +552,13 @@ export function ProposalBoardPage() {
                                 "REVISION_REQUESTED"
                               ? `Permintaan Revisi (Ke-${projectSubmissions[0].jumlah_revisi}/2)`
                               : "Telah Diserahkan • Siap Direview"}
-                        </Badge>
+                        </span>
                       </div>
 
                       {projectSubmissions.map((sub) => (
                         <div
                           key={sub.id}
-                          className="bg-white p-4 rounded-xl border border-emerald-200 space-y-3 shadow-xs"
+                          className="bg-canvas p-4 rounded-xl border border-border space-y-3"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <span className="text-xs font-bold text-dark-900">
@@ -560,7 +568,7 @@ export function ProposalBoardPage() {
                               href={sub.url_berkas}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors shadow-xs"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-900 text-white text-xs font-bold hover:bg-dark-800 transition-colors shadow-xs"
                             >
                               Buka / Unduh Berkas Deliverable
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -568,7 +576,7 @@ export function ProposalBoardPage() {
                           </div>
 
                           {sub.catatan_pengiriman && (
-                            <div className="text-xs text-dark-900/90 bg-canvas p-3 rounded-lg border border-border">
+                            <div className="text-xs text-dark-900/90 bg-surface p-3 rounded-lg border border-border">
                               <span className="font-bold text-dark-900 block mb-0.5">
                                 Catatan Pengiriman Mahasiswa:
                               </span>
@@ -578,7 +586,7 @@ export function ProposalBoardPage() {
 
                           <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
                             <span>
-                              Jumlah Revisi Digunakan:{" "}
+                              Jumlah Revisi:{" "}
                               <b>{sub.jumlah_revisi || 0} dari 2 kali</b>
                             </span>
                             <span>
@@ -597,7 +605,7 @@ export function ProposalBoardPage() {
                                   setRevisionModalOpen(true);
                                 }}
                                 disabled={sub.jumlah_revisi >= 2}
-                                className="text-xs font-bold border-amber-300 text-amber-900 hover:bg-amber-50"
+                                className="text-xs font-bold border-border text-dark-900 hover:bg-surface"
                               >
                                 <RotateCcw className="w-3.5 h-3.5 mr-1" />
                                 {sub.jumlah_revisi >= 2
@@ -619,15 +627,14 @@ export function ProposalBoardPage() {
                       ))}
                     </div>
                   ) : selectedProject.status === "IN_PROGRESS" ? (
-                    <div className="p-4 bg-canvas border border-border rounded-2xl flex items-center gap-3">
-                      <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+                    <div className="p-4 bg-surface border border-border border-l-4 border-l-amber-500 rounded-2xl flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-dark-900 shrink-0" />
                       <div className="text-xs text-dark-900">
                         <span className="font-bold block">
-                          Pekerjaan Sedang Dikerjakan
+                          Pengerjaan Sedang Berjalan
                         </span>
-                        Mahasiswa sedang menyelesaikan proyek ini. Tautan berkas
-                        deliverable akan otomatis tampil di sini segera setelah
-                        mahasiswa menyerahkan hasil pekerjaannya.
+                        Mahasiswa sedang menyelesaikan proyek. Berkas deliverable
+                        akan muncul di sini begitu mahasiswa menyerahkannya.
                       </div>
                     </div>
                   ) : null}
@@ -797,12 +804,20 @@ export function ProposalBoardPage() {
                 return (
                   <Card
                     key={proposal.id}
-                    className="p-4 sm:p-5 space-y-3 bg-surface border-border shadow-xs"
+                    className={`p-4 sm:p-5 space-y-3 bg-surface border border-border shadow-xs border-l-4 ${
+                      proposal.status === "ACCEPTED"
+                        ? "border-l-dark-900"
+                        : proposal.status === "PENDING"
+                          ? "border-l-slate-400"
+                          : "border-l-rose-500"
+                    }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          {statusBadge(proposal.status)}
+                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
+                            {formatStatus(proposal.status)}
+                          </span>
                           <span className="text-[11px] text-muted">
                             Dikirim: {formatDate(proposal.created_at)}
                           </span>
@@ -823,7 +838,7 @@ export function ProposalBoardPage() {
                         </div>
                         <button
                           onClick={() => toggleCard(proposal.id)}
-                          className="px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1 hover:bg-slate-100"
+                          className="px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1 hover:bg-surface"
                         >
                           {isExpanded ? "Sembunyikan" : "Buka Detail"}
                           {isExpanded ? (
@@ -848,9 +863,9 @@ export function ProposalBoardPage() {
                         {proposal.status === "ACCEPTED" && (
                           <div className="space-y-2.5">
                             {sub ? (
-                              <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-2.5">
+                              <div className="p-3.5 bg-canvas border border-border rounded-xl space-y-2.5">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-dark-900 text-white shadow-xs">
                                     <CheckCircle2 className="w-3.5 h-3.5" />
                                     {sub.status === "APPROVED" ||
                                     sub.status === "ACCEPTED"
@@ -867,27 +882,27 @@ export function ProposalBoardPage() {
                                   </span>
                                 </div>
 
-                                <div className="flex items-center gap-2 p-2.5 bg-white border border-emerald-100 rounded-lg text-xs">
-                                  <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <div className="flex items-center gap-2 p-2.5 bg-surface border border-border rounded-lg text-xs">
+                                  <ExternalLink className="w-4 h-4 text-dark-900 shrink-0" />
                                   <a
                                     href={sub.url_berkas}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="font-semibold text-emerald-700 hover:underline truncate"
+                                    className="font-semibold text-dark-900 hover:underline truncate"
                                   >
                                     {sub.url_berkas}
                                   </a>
                                 </div>
 
                                 {sub.catatan_pengiriman && (
-                                  <p className="text-xs text-dark-900/80 italic bg-canvas/60 p-2 rounded border border-border/50">
+                                  <p className="text-xs text-dark-900/80 italic bg-surface p-2.5 rounded border border-border">
                                     "{sub.catatan_pengiriman}"
                                   </p>
                                 )}
 
                                 {isDone && (
-                                  <div className="p-2.5 bg-emerald-100/70 border border-emerald-300 rounded-xl flex items-center justify-between gap-2">
-                                    <span className="font-bold text-emerald-950">
+                                  <div className="p-3 bg-surface border border-border rounded-xl flex items-center justify-between gap-2">
+                                    <span className="font-bold text-dark-900">
                                       Honor{" "}
                                       {formatCurrency(proposal.harga_tawar)}{" "}
                                       telah masuk ke saldo aktif dompet Anda!
@@ -905,8 +920,8 @@ export function ProposalBoardPage() {
                                 )}
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <div className="flex items-center gap-2 text-xs text-dark-900 font-medium p-3 bg-surface rounded-xl border border-border">
+                                <ShieldCheck className="w-4 h-4 text-dark-900 shrink-0" />
                                 <span>
                                   Dana escrow sebesar{" "}
                                   <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}

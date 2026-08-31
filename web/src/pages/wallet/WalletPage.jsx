@@ -29,7 +29,7 @@ import {
   Search,
   Filter,
   Printer,
-  FileCheck
+  FileCheck,
 } from "lucide-react";
 
 export function WalletPage() {
@@ -97,7 +97,7 @@ export function WalletPage() {
     if (!nominal || nominal < 50000) {
       showError(
         "Nominal Tidak Valid",
-        "Minimal top-up saldo dompet adalah Rp 50.000."
+        "Minimal top-up saldo dompet adalah Rp 50.000.",
       );
       return;
     }
@@ -114,7 +114,7 @@ export function WalletPage() {
             setTopUpModalOpen(false);
             showSuccess(
               "Top-Up Berhasil Diproses",
-              `Deposit saldo Rp ${formatCurrency(nominal)} berhasil masuk.`
+              `Deposit saldo Rp ${formatCurrency(nominal)} berhasil masuk.`,
             );
             fetchWalletData();
           },
@@ -122,7 +122,7 @@ export function WalletPage() {
             setTopUpModalOpen(false);
             showSuccess(
               "Menunggu Pembayaran",
-              `Selesaikan pembayaran via VA/QRIS sebelum batas waktu.`
+              `Selesaikan pembayaran via VA/QRIS sebelum batas waktu.`,
             );
             fetchWalletData();
           },
@@ -138,14 +138,15 @@ export function WalletPage() {
         setTopUpModalOpen(false);
         showSuccess(
           "Simulasi Top-Up Berhasil",
-          `Order ID ${order_id} sebesar ${formatCurrency(nominal)} berhasil diproses via simulasi.`
+          `Order ID ${order_id} sebesar ${formatCurrency(nominal)} berhasil diproses via simulasi.`,
         );
         fetchWalletData();
       }
     } catch (err) {
       showError(
         "Gagal Memproses Top-Up",
-        err.response?.data?.detail || "Terjadi kendala pada gateway pembayaran."
+        err.response?.data?.detail ||
+          "Terjadi kendala pada gateway pembayaran.",
       );
     } finally {
       setTopUpLoading(false);
@@ -180,7 +181,7 @@ export function WalletPage() {
       setWithdrawModalOpen(false);
       showSuccess(
         "Permintaan Penarikan Berhasil",
-        `Dana ${formatCurrency(nominal)} sedang diproses transfer ke rekening ${withdrawForm.nama_bank} (${withdrawForm.nomor_rekening}).`
+        `Dana ${formatCurrency(nominal)} sedang diproses transfer ke rekening ${withdrawForm.nama_bank} (${withdrawForm.nomor_rekening}).`,
       );
       setWithdrawForm({
         nominal: "",
@@ -191,7 +192,7 @@ export function WalletPage() {
       fetchWalletData();
     } catch (err) {
       setWithdrawError(
-        err.response?.data?.detail || "Gagal mengajukan penarikan dana"
+        err.response?.data?.detail || "Gagal mengajukan penarikan dana",
       );
     } finally {
       setWithdrawLoading(false);
@@ -229,7 +230,7 @@ export function WalletPage() {
   const totalTxPages = Math.ceil(filteredHistory.length / txPerPage) || 1;
   const paginatedHistory = filteredHistory.slice(
     (txPage - 1) * txPerPage,
-    txPage * txPerPage
+    txPage * txPerPage,
   );
 
   return (
@@ -244,7 +245,8 @@ export function WalletPage() {
             Dompet & Keuangan Makarya
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
-            Pengelolaan saldo operasional, proteksi escrow holding, dan riwayat mutasi transaksi keuangan Anda.
+            Pengelolaan saldo operasional, proteksi escrow holding, dan riwayat
+            mutasi transaksi keuangan Anda.
           </p>
         </div>
 
@@ -440,7 +442,10 @@ export function WalletPage() {
               paginatedHistory.map((log) => {
                 const isDeduct = log.tipe === "WITHDRAW" || log.tipe === "HOLD";
                 return (
-                  <div key={log.id} className="p-4 space-y-2.5 bg-surface hover:bg-canvas/50 transition-colors">
+                  <div
+                    key={log.id}
+                    className="p-4 space-y-2.5 bg-surface hover:bg-canvas/50 transition-colors"
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {getBadgeType(log.tipe)}
@@ -500,7 +505,8 @@ export function WalletPage() {
                   </tr>
                 ) : (
                   paginatedHistory.map((log) => {
-                    const isDeduct = log.tipe === "WITHDRAW" || log.tipe === "HOLD";
+                    const isDeduct =
+                      log.tipe === "WITHDRAW" || log.tipe === "HOLD";
                     return (
                       <tr
                         key={log.id}
@@ -509,14 +515,17 @@ export function WalletPage() {
                         <td className="py-3.5 px-4 text-muted whitespace-nowrap font-mono text-[11px]">
                           {formatDate(log.created_at)}
                         </td>
-                        <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
+                        <td className="py-3.5 px-4">
+                          {getBadgeType(log.tipe)}
+                        </td>
                         <td
                           className={`py-3.5 px-4 font-bold whitespace-nowrap font-sans ${
-                            isDeduct ? "text-dark-900" : "text-emerald-600 font-extrabold"
+                            isDeduct
+                              ? "text-dark-900"
+                              : "text-emerald-600 font-extrabold"
                           }`}
                         >
-                          {isDeduct ? "-" : "+"}{" "}
-                          {formatCurrency(log.nominal)}
+                          {isDeduct ? "-" : "+"} {formatCurrency(log.nominal)}
                         </td>
                         <td className="py-3.5 px-4 text-dark-900 max-w-xs sm:max-w-md truncate font-normal">
                           {log.keterangan || "-"}
@@ -574,7 +583,9 @@ export function WalletPage() {
                   </span>
                 </div>
                 <div className="text-right">
-                  <Badge variant="success" className="text-[10px]">TERVERIFIKASI</Badge>
+                  <Badge variant="success" className="text-[10px]">
+                    TERVERIFIKASI
+                  </Badge>
                   <span className="text-[10px] font-mono text-muted block mt-1">
                     ID #{selectedReceipt.id.substring(0, 8)}
                   </span>
@@ -585,19 +596,27 @@ export function WalletPage() {
               <div className="space-y-2.5">
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span className="text-muted">Tanggal Transaksi</span>
-                  <span className="font-semibold text-dark-900">{formatDate(selectedReceipt.created_at)}</span>
+                  <span className="font-semibold text-dark-900">
+                    {formatDate(selectedReceipt.created_at)}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span className="text-muted">Tipe Mutasi</span>
-                  <span className="font-bold text-dark-900">{selectedReceipt.tipe}</span>
+                  <span className="font-bold text-dark-900">
+                    {selectedReceipt.tipe}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span className="text-muted">Akun Pengguna</span>
-                  <span className="font-semibold text-dark-900">{user?.nama_lengkap || user?.email}</span>
+                  <span className="font-semibold text-dark-900">
+                    {user?.nama_lengkap || user?.email}
+                  </span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span className="text-muted">Keterangan</span>
-                  <span className="font-medium text-dark-900 max-w-xs text-right">{selectedReceipt.keterangan || "-"}</span>
+                  <span className="font-medium text-dark-900 max-w-xs text-right">
+                    {selectedReceipt.keterangan || "-"}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2 pt-3 border-t border-border text-sm">
                   <span className="font-bold text-dark-900">Total Nominal</span>
@@ -610,7 +629,10 @@ export function WalletPage() {
               {/* Seal Footer */}
               <div className="p-3 bg-brand-indigo-light/30 border border-brand-indigo/20 rounded-xl flex items-center gap-2 text-[11px] text-brand-indigo">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
-                <span>Transaksi diamankan oleh Sistem Rekening Bersama (Escrow Holding) Makarya.</span>
+                <span>
+                  Transaksi diamankan oleh Sistem Rekening Bersama (Escrow
+                  Holding) Makarya.
+                </span>
               </div>
             </div>
 
@@ -747,7 +769,8 @@ export function WalletPage() {
               <span>Proteksi 100% Rekening Bersama (Escrow)</span>
             </div>
             <p className="text-brand-indigo/80 text-[11px] leading-relaxed">
-              Saldo yang Anda depositkan akan tersimpan aman dan hanya dikunci saat Anda menyetujui proposal mahasiswa.
+              Saldo yang Anda depositkan akan tersimpan aman dan hanya dikunci
+              saat Anda menyetujui proposal mahasiswa.
             </p>
           </div>
 
