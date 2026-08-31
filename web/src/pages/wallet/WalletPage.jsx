@@ -428,7 +428,57 @@ export function WalletPage() {
         </div>
 
         <Card className="p-0 overflow-hidden rounded-2xl border border-border shadow-xs">
-          <div className="overflow-x-auto">
+          {/* Mobile View: Clean Transaction Cards (sm:hidden) */}
+          <div className="block sm:hidden divide-y divide-border">
+            {paginatedHistory.length === 0 ? (
+              <div className="py-12 px-4 text-center text-muted text-xs">
+                {txSearch || txTypeFilter !== "ALL"
+                  ? "Tidak ada transaksi yang cocok dengan filter pencarian."
+                  : "Belum ada riwayat transaksi keuangan tercatat."}
+              </div>
+            ) : (
+              paginatedHistory.map((log) => {
+                const isDeduct = log.tipe === "WITHDRAW" || log.tipe === "HOLD";
+                return (
+                  <div key={log.id} className="p-4 space-y-2.5 bg-surface hover:bg-canvas/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {getBadgeType(log.tipe)}
+                        <span className="text-[10px] text-muted font-mono">
+                          {formatDate(log.created_at)}
+                        </span>
+                      </div>
+                      <span
+                        className={`text-sm font-black font-sans ${
+                          isDeduct ? "text-dark-900" : "text-emerald-600"
+                        }`}
+                      >
+                        {isDeduct ? "-" : "+"} {formatCurrency(log.nominal)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 text-xs">
+                      <p className="text-dark-900/90 flex-1 leading-snug">
+                        {log.keterangan || "-"}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedReceipt(log)}
+                        className="text-[11px] py-1 px-2.5 font-bold shrink-0"
+                      >
+                        <Printer className="w-3.5 h-3.5 mr-1" />
+                        Struk
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Desktop View: Spacious Data Table (hidden sm:block) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-canvas border-b border-border text-dark-900 uppercase font-bold text-[10px] tracking-wider">
                 <tr>
@@ -449,37 +499,42 @@ export function WalletPage() {
                     </td>
                   </tr>
                 ) : (
-                  paginatedHistory.map((log) => (
-                    <tr
-                      key={log.id}
-                      className="hover:bg-canvas/50 transition-colors"
-                    >
-                      <td className="py-3.5 px-4 text-muted whitespace-nowrap font-mono text-[11px]">
-                        {formatDate(log.created_at)}
-                      </td>
-                      <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
-                      <td className="py-3.5 px-4 font-bold text-dark-900 whitespace-nowrap font-sans">
-                        {log.tipe === "WITHDRAW" || log.tipe === "HOLD"
-                          ? "-"
-                          : "+"}{" "}
-                        {formatCurrency(log.nominal)}
-                      </td>
-                      <td className="py-3.5 px-4 text-dark-900 max-w-xs sm:max-w-md truncate font-normal">
-                        {log.keterangan || "-"}
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedReceipt(log)}
-                          className="text-[11px] py-1 px-2.5 font-bold"
+                  paginatedHistory.map((log) => {
+                    const isDeduct = log.tipe === "WITHDRAW" || log.tipe === "HOLD";
+                    return (
+                      <tr
+                        key={log.id}
+                        className="hover:bg-canvas/50 transition-colors"
+                      >
+                        <td className="py-3.5 px-4 text-muted whitespace-nowrap font-mono text-[11px]">
+                          {formatDate(log.created_at)}
+                        </td>
+                        <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
+                        <td
+                          className={`py-3.5 px-4 font-bold whitespace-nowrap font-sans ${
+                            isDeduct ? "text-dark-900" : "text-emerald-600 font-extrabold"
+                          }`}
                         >
-                          <Printer className="w-3.5 h-3.5 mr-1" />
-                          Struk
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
+                          {isDeduct ? "-" : "+"}{" "}
+                          {formatCurrency(log.nominal)}
+                        </td>
+                        <td className="py-3.5 px-4 text-dark-900 max-w-xs sm:max-w-md truncate font-normal">
+                          {log.keterangan || "-"}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedReceipt(log)}
+                            className="text-[11px] py-1 px-2.5 font-bold"
+                          >
+                            <Printer className="w-3.5 h-3.5 mr-1" />
+                            Struk
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

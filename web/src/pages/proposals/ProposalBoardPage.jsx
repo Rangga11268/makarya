@@ -244,14 +244,16 @@ export function ProposalBoardPage() {
     const matchTab =
       activeTab === "ALL" ||
       (activeTab === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
-      (activeTab === "DONE" && (p.status === "DONE" || p.status === "COMPLETED")) ||
+      (activeTab === "DONE" &&
+        (p.status === "DONE" || p.status === "COMPLETED")) ||
       (activeTab === "OPEN" && (p.status === "OPEN" || p.status === "BIDDING"));
     return matchSearch && matchTab;
   });
 
   const filteredProposals = proposals.filter((p) => {
     const matchSearch =
-      (p.cover_letter && p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (p.cover_letter &&
+        p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
       p.project_id.toLowerCase().includes(searchQuery.toLowerCase());
     const matchTab = activeTab === "ALL" || p.status === activeTab;
     return matchSearch && matchTab;
@@ -263,10 +265,14 @@ export function ProposalBoardPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
         <div className="space-y-1">
           <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-indigo font-sans">
-            {isUmkm ? "Pusat Kendali Proyek UMKM" : "Papan Pelamar & Pekerjaan Mahasiswa"}
+            {isUmkm
+              ? "Pusat Kendali Proyek UMKM"
+              : "Papan Pelamar & Pekerjaan Mahasiswa"}
           </span>
           <h1 className="text-2xl sm:text-3xl font-serif text-dark-900 tracking-tight leading-tight">
-            {isUmkm ? "Manajemen Proyek & Hasil Kerja" : "Proposal & Status Pengerjaan"}
+            {isUmkm
+              ? "Manajemen Proyek & Hasil Kerja"
+              : "Proposal & Status Pengerjaan"}
           </h1>
           <p className="text-xs text-muted">
             {isUmkm
@@ -285,11 +291,19 @@ export function ProposalBoardPage() {
               {isUmkm ? "Saldo Escrow Aktif" : "Saldo Siap Tarik"}
             </span>
             <span className="text-sm font-black text-dark-900">
-              {wallet ? formatCurrency(isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif) : "Rp 0"}
+              {wallet
+                ? formatCurrency(
+                    isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif,
+                  )
+                : "Rp 0"}
             </span>
           </div>
           <Link to="/wallet">
-            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand ml-2">
+            <Button
+              variant="brand"
+              size="sm"
+              className="text-xs font-bold shadow-brand ml-2"
+            >
               {isUmkm ? "Dompet" : "Tarik Dana"}
               <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
@@ -308,7 +322,9 @@ export function ProposalBoardPage() {
           </span>
         </div>
         <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-amber-900 block">Sedang Berjalan</span>
+          <span className="text-[11px] font-bold text-amber-900 block">
+            Sedang Berjalan
+          </span>
           <span className="text-xl sm:text-2xl font-black text-amber-950">
             {isUmkm
               ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
@@ -316,11 +332,17 @@ export function ProposalBoardPage() {
           </span>
         </div>
         <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-900 block">Selesai / Cair</span>
+          <span className="text-[11px] font-bold text-emerald-900 block">
+            Selesai / Cair
+          </span>
           <span className="text-xl sm:text-2xl font-black text-emerald-950">
             {isUmkm
-              ? myProjects.filter((p) => p.status === "DONE" || p.status === "COMPLETED").length
-              : proposals.filter((p) => mhsSubmissions[p.project_id]?.status === "APPROVED").length}
+              ? myProjects.filter(
+                  (p) => p.status === "DONE" || p.status === "COMPLETED",
+                ).length
+              : proposals.filter(
+                  (p) => mhsSubmissions[p.project_id]?.status === "APPROVED",
+                ).length}
           </span>
         </div>
         <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 shadow-xs">
@@ -329,7 +351,9 @@ export function ProposalBoardPage() {
           </span>
           <span className="text-xl sm:text-2xl font-black text-slate-900">
             {isUmkm
-              ? myProjects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length
+              ? myProjects.filter(
+                  (p) => p.status === "OPEN" || p.status === "BIDDING",
+                ).length
               : proposals.filter((p) => p.status === "PENDING").length}
           </span>
         </div>
