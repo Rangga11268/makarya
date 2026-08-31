@@ -1,12 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS } from "../../theme/colors";
-import { Badge } from "../ui/Badge";
-import { Star, GraduationCap, ArrowUpRight } from "lucide-react-native";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { Star, ArrowUpRight } from "lucide-react-native";
 
-export function TalentBentoCard({ talent, onPress, variant = "lime" }) {
-  const isLime = variant === "lime";
+export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
+  const isFeatured = variant === "lime" || variant === "featured";
 
   return (
     <TouchableOpacity
@@ -14,39 +12,85 @@ export function TalentBentoCard({ talent, onPress, variant = "lime" }) {
       onPress={onPress}
       style={[
         styles.card,
-        isLime ? styles.cardLime : styles.cardDark,
+        isFeatured ? styles.cardFeatured : styles.cardStandard,
       ]}
     >
       {/* Top row: Avatar + Name + Rating */}
       <View style={styles.topRow}>
-        <View style={styles.avatarPlaceholder}>
-          <Text style={styles.avatarText}>
+        <View
+          style={[
+            styles.avatarPlaceholder,
+            isFeatured ? styles.avatarFeatured : styles.avatarStandard,
+          ]}
+        >
+          <Text
+            style={[
+              styles.avatarText,
+              isFeatured ? styles.avatarTextFeatured : styles.avatarTextStandard,
+            ]}
+          >
             {talent.name ? talent.name.charAt(0) : "M"}
           </Text>
         </View>
+
         <View style={styles.info}>
           <Text
-            style={[styles.name, isLime ? styles.textDark : styles.textWhite]}
+            style={[
+              styles.name,
+              isFeatured ? styles.textWhite : styles.textDark,
+            ]}
             numberOfLines={1}
           >
             {talent.name}
           </Text>
-          <Text style={[styles.prodi, isLime ? styles.textDim : styles.textMuted]}>
+          <Text
+            style={[
+              styles.prodi,
+              isFeatured ? styles.textMutedFeatured : styles.textMuted,
+            ]}
+          >
             {talent.prodi}
           </Text>
         </View>
-        <View style={styles.ratingBadge}>
-          <Star size={12} color="#000" fill="#000" />
-          <Text style={styles.ratingText}>{talent.rating?.toFixed(1) || "5.0"}</Text>
+
+        <View
+          style={[
+            styles.ratingBadge,
+            isFeatured ? styles.ratingBadgeFeatured : styles.ratingBadgeStandard,
+          ]}
+        >
+          <Star
+            size={12}
+            color={isFeatured ? "#F59E0B" : "#F59E0B"}
+            fill={isFeatured ? "#F59E0B" : "#F59E0B"}
+          />
+          <Text
+            style={[
+              styles.ratingText,
+              isFeatured ? styles.ratingTextFeatured : styles.ratingTextStandard,
+            ]}
+          >
+            {talent.rating?.toFixed(1) || "5.0"}
+          </Text>
         </View>
       </View>
 
       {/* Role / Expertise */}
       <View style={styles.roleContainer}>
-        <Text style={[styles.roleLabel, isLime ? styles.textDim : styles.textMuted]}>
+        <Text
+          style={[
+            styles.roleLabel,
+            isFeatured ? styles.roleLabelFeatured : styles.roleLabelStandard,
+          ]}
+        >
           Keahlian Utama
         </Text>
-        <Text style={[styles.roleValue, isLime ? styles.textDark : styles.textWhite]}>
+        <Text
+          style={[
+            styles.roleValue,
+            isFeatured ? styles.textWhite : styles.textDark,
+          ]}
+        >
           {talent.skills?.[0] || "Desain Grafis & Web"}
         </Text>
       </View>
@@ -58,10 +102,15 @@ export function TalentBentoCard({ talent, onPress, variant = "lime" }) {
             key={idx}
             style={[
               styles.skillChip,
-              isLime ? styles.skillChipLime : styles.skillChipDark,
+              isFeatured ? styles.skillChipFeatured : styles.skillChipStandard,
             ]}
           >
-            <Text style={[styles.skillText, isLime ? styles.textDark : styles.textWhite]}>
+            <Text
+              style={[
+                styles.skillText,
+                isFeatured ? styles.skillTextFeatured : styles.skillTextStandard,
+              ]}
+            >
               {s}
             </Text>
           </View>
@@ -69,21 +118,49 @@ export function TalentBentoCard({ talent, onPress, variant = "lime" }) {
       </View>
 
       {/* Bottom Row: Stats & Action */}
-      <View style={styles.bottomRow}>
+      <View
+        style={[
+          styles.bottomRow,
+          isFeatured ? styles.bottomRowFeatured : styles.bottomRowStandard,
+        ]}
+      >
         <View>
-          <Text style={[styles.statLabel, isLime ? styles.textDim : styles.textMuted]}>
+          <Text
+            style={[
+              styles.statLabel,
+              isFeatured ? styles.statLabelFeatured : styles.statLabelStandard,
+            ]}
+          >
             Proyek Selesai
           </Text>
-          <Text style={[styles.statValue, isLime ? styles.textDark : styles.textWhite]}>
+          <Text
+            style={[
+              styles.statValue,
+              isFeatured ? styles.textWhite : styles.textDark,
+            ]}
+          >
             {talent.totalJobs || 0} Proyek
           </Text>
         </View>
 
-        <View style={[styles.actionBtn, isLime ? styles.actionBtnDark : styles.actionBtnLime]}>
-          <Text style={[styles.actionText, isLime ? styles.textWhite : styles.textDark]}>
+        <View
+          style={[
+            styles.actionBtn,
+            isFeatured ? styles.actionBtnFeatured : styles.actionBtnStandard,
+          ]}
+        >
+          <Text
+            style={[
+              styles.actionText,
+              isFeatured ? styles.actionTextFeatured : styles.actionTextStandard,
+            ]}
+          >
             Lihat Profil
           </Text>
-          <ArrowUpRight size={14} color={isLime ? COLORS.textWhite : COLORS.textDark} />
+          <ArrowUpRight
+            size={14}
+            color={isFeatured ? COLORS.brandIndigo : "#FFFFFF"}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -92,17 +169,22 @@ export function TalentBentoCard({ talent, onPress, variant = "lime" }) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 26,
+    borderRadius: 24,
     padding: 18,
     marginBottom: 14,
   },
-  cardLime: {
-    backgroundColor: COLORS.accentLime,
+  cardFeatured: {
+    backgroundColor: COLORS.brandIndigo, // Deep Brand Indigo card
   },
-  cardDark: {
-    backgroundColor: COLORS.cardDark,
+  cardStandard: {
+    backgroundColor: COLORS.bgSurface, // Crisp white card
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
   },
   topRow: {
     flexDirection: "row",
@@ -113,15 +195,25 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "rgba(0,0,0,0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
   },
+  avatarFeatured: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  },
+  avatarStandard: {
+    backgroundColor: COLORS.canvasSoft,
+  },
   avatarText: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "800",
-    color: "#000",
+  },
+  avatarTextFeatured: {
+    color: "#FFFFFF",
+  },
+  avatarTextStandard: {
+    color: COLORS.textDark,
   },
   info: {
     flex: 1,
@@ -135,28 +227,58 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
   },
+  textWhite: {
+    color: "#FFFFFF",
+  },
+  textDark: {
+    color: COLORS.textDark,
+  },
+  textMutedFeatured: {
+    color: "rgba(255, 255, 255, 0.75)",
+  },
+  textMuted: {
+    color: COLORS.textMuted,
+  },
   ratingBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.6)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 999,
     gap: 4,
   },
+  ratingBadgeFeatured: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  },
+  ratingBadgeStandard: {
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
   ratingText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#000",
+  },
+  ratingTextFeatured: {
+    color: "#FFFFFF",
+  },
+  ratingTextStandard: {
+    color: COLORS.textDark,
   },
   roleContainer: {
-    marginVertical: 6,
+    marginVertical: 4,
   },
   roleLabel: {
     fontSize: 10,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
+  },
+  roleLabelFeatured: {
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  roleLabelStandard: {
+    color: COLORS.textMuted,
   },
   roleValue: {
     fontSize: 18,
@@ -175,15 +297,23 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 999,
   },
-  skillChipLime: {
-    backgroundColor: "rgba(0,0,0,0.1)",
+  skillChipFeatured: {
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
   },
-  skillChipDark: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+  skillChipStandard: {
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   skillText: {
     fontSize: 11,
     fontWeight: "600",
+  },
+  skillTextFeatured: {
+    color: "#FFFFFF",
+  },
+  skillTextStandard: {
+    color: COLORS.textDark,
   },
   bottomRow: {
     flexDirection: "row",
@@ -192,11 +322,22 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.08)",
+  },
+  bottomRowFeatured: {
+    borderTopColor: "rgba(255, 255, 255, 0.15)",
+  },
+  bottomRowStandard: {
+    borderTopColor: COLORS.borderDark,
   },
   statLabel: {
     fontSize: 10,
     fontWeight: "600",
+  },
+  statLabelFeatured: {
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  statLabelStandard: {
+    color: COLORS.textMuted,
   },
   statValue: {
     fontSize: 13,
@@ -211,26 +352,20 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
   },
-  actionBtnDark: {
-    backgroundColor: COLORS.bgDark,
+  actionBtnFeatured: {
+    backgroundColor: "#FFFFFF", // Crisp white pill button inside featured indigo card
   },
-  actionBtnLime: {
-    backgroundColor: COLORS.accentLime,
+  actionBtnStandard: {
+    backgroundColor: COLORS.brandIndigo, // Brand Indigo pill button inside white card
   },
   actionText: {
     fontSize: 12,
     fontWeight: "800",
   },
-  textWhite: {
-    color: COLORS.textWhite,
+  actionTextFeatured: {
+    color: COLORS.brandIndigo, // Indigo text on white button
   },
-  textDark: {
-    color: COLORS.textDark,
-  },
-  textMuted: {
-    color: COLORS.textMuted,
-  },
-  textDim: {
-    color: "rgba(0,0,0,0.6)",
+  actionTextStandard: {
+    color: "#FFFFFF", // Pure white text on Indigo button
   },
 });

@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 100,
+    paddingTop: 54,
+    paddingBottom: 110,
   },
   topHeader: {
     marginBottom: 20,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 22,
     fontWeight: "900",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     letterSpacing: -0.5,
   },
   verifiedTag: {
@@ -249,11 +249,16 @@ const styles = StyleSheet.create({
   },
   balanceCard: {
     backgroundColor: COLORS.bgSurface,
-    borderRadius: 26,
+    borderRadius: 24,
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   balanceHeader: {
     flexDirection: "row",
@@ -279,7 +284,7 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 28,
     fontWeight: "900",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     letterSpacing: -0.5,
   },
   escrowRow: {
@@ -291,7 +296,7 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   escrowAmount: {
-    color: COLORS.accentCyan,
+    color: COLORS.brandCyan,
     fontWeight: "800",
   },
   quickActions: {
@@ -311,16 +316,21 @@ const styles = StyleSheet.create({
   },
   summaryBox: {
     flex: 1,
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 22,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
     padding: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    elevation: 1,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
   },
   summaryCount: {
     fontSize: 22,
     fontWeight: "900",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     marginTop: 8,
     marginBottom: 2,
   },
@@ -335,7 +345,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     letterSpacing: -0.3,
   },
   sectionSubtitle: {

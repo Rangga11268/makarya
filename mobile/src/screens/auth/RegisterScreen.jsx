@@ -12,7 +12,14 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { Building2, Mail, Lock, Phone, MapPin, ArrowRight } from "lucide-react-native";
+import {
+  Building2,
+  Mail,
+  Lock,
+  Phone,
+  MapPin,
+  ArrowRight,
+} from "lucide-react-native";
 
 export function RegisterScreen({ navigation }) {
   const [namaUsaha, setNamaUsaha] = useState("");

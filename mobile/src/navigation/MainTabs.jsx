@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/home/HomeScreen";
 import { ProjectListScreen } from "../screens/projects/ProjectListScreen";
@@ -28,7 +28,7 @@ export function MainTabs() {
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Briefcase
                 size={20}
-                color={focused ? COLORS.textWhite : COLORS.textMuted}
+                color={focused ? "#FFFFFF" : "#94A3B8"}
               />
             </View>
           ),
@@ -42,7 +42,7 @@ export function MainTabs() {
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Search
                 size={20}
-                color={focused ? COLORS.textWhite : COLORS.textMuted}
+                color={focused ? "#FFFFFF" : "#94A3B8"}
               />
             </View>
           ),
@@ -56,7 +56,7 @@ export function MainTabs() {
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Activity
                 size={20}
-                color={focused ? COLORS.textWhite : COLORS.textMuted}
+                color={focused ? "#FFFFFF" : "#94A3B8"}
               />
             </View>
           ),
@@ -70,7 +70,7 @@ export function MainTabs() {
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <Wallet
                 size={20}
-                color={focused ? COLORS.textWhite : COLORS.textMuted}
+                color={focused ? "#FFFFFF" : "#94A3B8"}
               />
             </View>
           ),
@@ -84,7 +84,7 @@ export function MainTabs() {
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
               <User
                 size={20}
-                color={focused ? COLORS.textWhite : COLORS.textMuted}
+                color={focused ? "#FFFFFF" : "#94A3B8"}
               />
             </View>
           ),
@@ -97,20 +97,20 @@ export function MainTabs() {
 const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
-    bottom: 24,
+    bottom: 22,
     left: 20,
     right: 20,
     height: 64,
-    backgroundColor: "rgba(15, 23, 42, 0.95)", // Web dark-900 with glass effect
+    backgroundColor: "#0F172A", // Dark-900 floating capsule
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    paddingHorizontal: 12,
-    elevation: 10,
-    shadowColor: "#000",
+    borderColor: "rgba(255, 255, 255, 0.08)",
+    paddingHorizontal: 10,
+    elevation: 12,
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
   },
   iconWrapper: {
     width: 44,
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   iconActive: {
-    backgroundColor: COLORS.brandIndigo, // Web Primary Indigo
+    backgroundColor: COLORS.brandIndigo, // Active Indigo badge
   },
 });
