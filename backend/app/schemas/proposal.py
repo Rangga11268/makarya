@@ -38,5 +38,10 @@ class ProposalResponse(BaseModel):
     created_at : datetime
     updated_at : datetime
     mhs_profile : Optional[MhsSummary] = None
+    project_judul : Optional[str] = None
+    project_kategori : Optional[str] = None
+    project_status : Optional[str] = None
+    project_budget_max : Optional[Decimal] = None
+    project_umkm_nama : Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

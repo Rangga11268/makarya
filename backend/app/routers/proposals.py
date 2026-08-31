@@ -83,10 +83,15 @@ def get_my_proposals(
 ):
     # Melihat seluruh proposal yang dikirim oleh mahasiswa yang sedang login
     proposals = db.query(Proposal).filter(Proposal.mhs_id == current_user.id).all()
+    proposals = db.query(Proposal).filter(Proposal.mhs_id == current_user.id).order_by(Proposal.created_at.desc()).all()
     profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
     mhs_summary = MhsSummary.model_validate(profile) if profile else None
 
     return [ProposalResponse(
+    results = []
+    for proposal in proposals:
+        proj = proposal.project
+        results.append(ProposalResponse(
             id=proposal.id,
             project_id=proposal.project_id,
             mhs_id=proposal.mhs_id,
@@ -98,6 +103,14 @@ def get_my_proposals(
             updated_at=proposal.updated_at,
             mhs_profile=mhs_summary
         ) for proposal in proposals]
+            mhs_profile=mhs_summary,
+            project_judul=proj.judul if proj else None,
+            project_kategori=proj.kategori.value if proj and proj.kategori else None,
+            project_status=proj.status.value if proj and proj.status else None,
+            project_budget_max=proj.budget_max if proj else None,
+            project_umkm_nama=proj.umkm.email.split("@")[0] if proj and proj.umkm else None,
+        ))
+    return results
 
 @router.get("/project/{project_id}", response_model=List[ProposalResponse])
 def get_proposals_by_project(
@@ -115,6 +128,7 @@ def get_proposals_by_project(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk melihat proposal proyek ini")
 
     proposals = db.query(Proposal).filter(Proposal.project_id == project_id).all()
+    proposals = db.query(Proposal).filter(Proposal.project_id == project_id).order_by(Proposal.created_at.desc()).all()
     results = []
     for proposal in proposals:
         profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == proposal.mhs_id).first()
@@ -130,6 +144,12 @@ def get_proposals_by_project(
             created_at=proposal.created_at,
             updated_at=proposal.updated_at,
             mhs_profile=mhs_summary
+            mhs_profile=mhs_summary,
+            project_judul=project.judul,
+            project_kategori=project.kategori.value if project.kategori else None,
+            project_status=project.status.value if project.status else None,
+            project_budget_max=project.budget_max,
+            project_umkm_nama=project.umkm.email.split("@")[0] if project.umkm else None,
         ))
     return results
 

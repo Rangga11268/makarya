@@ -320,7 +320,6 @@ export function ProposalBoardPage() {
               size="sm"
               className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-2"
             >
-              {isUmkm ? "Dompet" : "Tarik Dana"}
               {isUmkm
                 ? "Dompet"
                 : Number(wallet?.saldo_aktif || 0) > 0
@@ -866,6 +865,7 @@ export function ProposalBoardPage() {
             </Card>
           ) : (
             <div className="space-y-3">
+            <div className="space-y-4">
               {filteredProposals.map((proposal) => {
                 const isExpanded = expandedCards[proposal.id];
                 const sub = mhsSubmissions[proposal.project_id];
@@ -873,6 +873,7 @@ export function ProposalBoardPage() {
 
                 return (
                   <Card
+                  <div
                     key={proposal.id}
                     className={`p-4 sm:p-5 space-y-3 bg-surface border border-border shadow-xs border-l-4 ${
                       proposal.status === "ACCEPTED"
@@ -881,16 +882,61 @@ export function ProposalBoardPage() {
                           ? "border-l-slate-400"
                           : "border-l-rose-500"
                     }`}
+                    className="p-5 sm:p-6 space-y-4 bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 rounded-2xl shadow-xs"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    {/* Top Metadata Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        {proposal.project_kategori && (
+                          <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-canvas border border-border text-dark-900 tracking-wider">
+                            {proposal.project_kategori}
+                          </span>
+                        )}
+                        <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
+                          {formatStatus(proposal.status)}
+                        </span>
+                        <span className="text-[11px] text-muted hidden sm:inline">
+                          Dikirim: {formatDate(proposal.created_at)}
+                        </span>
+                      </div>
+
+                      <span className="text-[11px] font-medium text-muted">
+                        Estimasi Pengerjaan: <b className="text-dark-900">{proposal.estimasi_hari} Hari</b>
+                      </span>
+                    </div>
+
+                    {/* Main Title & Financial Row */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
                             {formatStatus(proposal.status)}
+                        <h3 className="text-base sm:text-lg font-bold text-dark-900 font-sans tracking-tight">
+                          {proposal.project_judul ||
+                            `Lamaran Proyek #${proposal.project_id.slice(0, 8)}`}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-muted">
+                          <span>
+                            Klien UMKM:{" "}
+                            <b className="text-dark-900">
+                              {proposal.project_umkm_nama || "Mitra Makarya"}
+                            </b>
                           </span>
                           <span className="text-[11px] text-muted">
                             Dikirim: {formatDate(proposal.created_at)}
                           </span>
+                          {proposal.project_budget_max && (
+                            <>
+                              <span>•</span>
+                              <span>
+                                Budget Proyek:{" "}
+                                <b className="text-dark-900">
+                                  {formatCurrency(proposal.project_budget_max)}
+                                </b>
+                              </span>
+                            </>
+                          )}
                         </div>
                         <h3 className="text-sm sm:text-base font-bold text-dark-900">
                           Lamaran Proyek #{proposal.project_id.slice(0, 8)}
@@ -898,19 +944,25 @@ export function ProposalBoardPage() {
                       </div>
 
                       <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0">
+                      <div className="flex items-center justify-between sm:justify-end gap-3.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
                         <div className="text-left sm:text-right">
                           <span className="text-[10px] text-muted uppercase font-semibold block">
                             Harga Tawar
+                          <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">
+                            Harga Tawar Anda
                           </span>
                           <span className="text-sm sm:text-base font-black text-dark-900">
+                          <span className="text-lg sm:text-xl font-extrabold text-dark-900 font-sans tracking-tight">
                             {formatCurrency(proposal.harga_tawar)}
                           </span>
                         </div>
                         <button
                           onClick={() => toggleCard(proposal.id)}
                           className="px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1 hover:bg-surface"
+                          className="px-3.5 py-2 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1.5 hover:bg-surface hover:border-dark-900/30 transition-all shrink-0"
                         >
                           {isExpanded ? "Sembunyikan" : "Buka Detail"}
+                          {isExpanded ? "Tutup" : "Rincian & Aksi"}
                           {isExpanded ? (
                             <ChevronUp className="w-3.5 h-3.5" />
                           ) : (
@@ -971,21 +1023,6 @@ export function ProposalBoardPage() {
                                 )}
 
                                 {isDone && (
-                                  <div className="p-3 bg-surface border border-border rounded-xl flex items-center justify-between gap-2">
-                                    <span className="font-bold text-dark-900">
-                                      Honor{" "}
-                                      {formatCurrency(proposal.harga_tawar)}{" "}
-                                      telah masuk ke saldo aktif dompet Anda!
-                                    </span>
-                                    <Link to="/wallet">
-                                      <Button
-                                        variant="brand"
-                                        size="sm"
-                                        className="text-xs font-bold shadow-brand shrink-0"
-                                      >
-                                        Tarik Saldo
-                                      </Button>
-                                    </Link>
                                   <div className="p-3 bg-surface border border-border rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                                     <div className="flex items-center gap-2">
                                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -1051,6 +1088,8 @@ export function ProposalBoardPage() {
                     )}
                   </Card>
                 );
+                    </div>
+                  );
               })}
             </div>
           )}
