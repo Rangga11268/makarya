@@ -319,12 +319,22 @@ export function WalletPage() {
               ) : (
                 <Button
                   variant="brand"
+                  variant={
+                    Number(wallet?.saldo_aktif || 0) > 0 ? "brand" : "secondary"
+                  }
                   size="sm"
+                  disabled={Number(wallet?.saldo_aktif || 0) <= 0}
                   onClick={() => setWithdrawModalOpen(true)}
                   className="text-xs font-bold shadow-brand"
+                  className={`text-xs font-bold ${
+                    Number(wallet?.saldo_aktif || 0) > 0 ? "shadow-brand" : "opacity-50 cursor-not-allowed"
+                  }`}
                 >
                   <ArrowDownLeft className="w-3.5 h-3.5 mr-1" />
                   Tarik Saldo
+                  {Number(wallet?.saldo_aktif || 0) > 0
+                    ? "Tarik Saldo"
+                    : "Saldo Kosong"}
                 </Button>
               )}
             </div>
