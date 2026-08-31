@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from app.models.project import ProjectCategory, ProjectStatus
 
 # Schemas for Project Baru(KHUSUS UMKM) and Project Baru(KHUSUS UMKM) Update
@@ -42,8 +42,7 @@ class UmkmSummary(BaseModel):
     bidang_industri: Optional[str] = None
     kota: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Schema response proyek lengkap
 class ProjectResponse(BaseModel):
@@ -60,5 +59,4 @@ class ProjectResponse(BaseModel):
     umkm_profile: Optional[UmkmSummary] = None
     total_pelamar: int = 0
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

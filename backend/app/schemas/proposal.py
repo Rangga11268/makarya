@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.models.proposal import ProposalStatus
 
 # Schema request kirim proposal (Khusus mhs)
@@ -23,8 +23,7 @@ class MhsSummary(BaseModel):
     url_foto : Optional[str] = None
     url_portofolio  : Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Schema response proposal lengkap
 
@@ -40,5 +39,4 @@ class ProposalResponse(BaseModel):
     updated_at : datetime
     mhs_profile : Optional[MhsSummary] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

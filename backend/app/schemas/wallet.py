@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.models.wallet import TransactionType
 
 # Schema respon dompet
@@ -14,8 +14,7 @@ class WalletResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # Schema request topup saldo(Khusus UMKM)
 class TopUpRequest(BaseModel):
@@ -45,7 +44,6 @@ class LedgerLogResponse(BaseModel):
     keterangan: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
