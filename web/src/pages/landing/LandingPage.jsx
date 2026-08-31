@@ -9,21 +9,20 @@ import { CategoryCard } from "../../components/features/CategoryCard";
 import { HowItWorksStep } from "../../components/features/HowItWorksStep";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { TalentCard } from "../../components/features/TalentCard";
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Compass, 
-  ShieldCheck, 
-  Search, 
-  CheckCircle2, 
-  Users, 
-  Building2, 
-  GraduationCap, 
-  Lock, 
+import {
+  Sparkles,
+  ArrowRight,
+  Compass,
+  ShieldCheck,
+  Search,
+  CheckCircle2,
+  Users,
+  Building2,
+  GraduationCap,
+  Lock,
   PlusCircle,
   ArrowUpRight,
   TrendingUp,
-  Award
   Award,
   ChevronDown,
   HelpCircle,
@@ -67,39 +66,38 @@ export function LandingPage() {
   ];
 
   const featuredTalents = [
-    { 
-      name: "Darell Rangga Putra", 
-      prodi: "Sistem Informasi • UBSI", 
-      rating: 5.0, 
-      totalJobs: 8, 
+    {
+      name: "Darell Rangga Putra",
+      prodi: "Sistem Informasi • UBSI",
+      rating: 5.0,
+      totalJobs: 8,
       skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind"],
     },
-    { 
-      name: "Adelia Putri", 
-      prodi: "DKV • UBSI", 
-      rating: 4.9, 
-      totalJobs: 11, 
+    {
+      name: "Adelia Putri",
+      prodi: "DKV • UBSI",
+      rating: 4.9,
+      totalJobs: 11,
       skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
     },
-    { 
-      name: "Bima Arya", 
-      prodi: "Teknologi Informasi • UBSI", 
-      rating: 5.0, 
-      totalJobs: 6, 
+    {
+      name: "Bima Arya",
+      prodi: "Teknologi Informasi • UBSI",
+      rating: 5.0,
+      totalJobs: 6,
       skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
     },
-    { 
-      name: "Siti Rahmawati", 
-      prodi: "Ilmu Komunikasi • UBSI", 
-      rating: 4.8, 
-      totalJobs: 9, 
+    {
+      name: "Siti Rahmawati",
+      prodi: "Ilmu Komunikasi • UBSI",
+      rating: 4.8,
+      totalJobs: 9,
       skills: ["Copywriting", "Social Media", "Content Plan"],
     },
   ];
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
-      
       {/* 1. HERO SECTION */}
       <section className="bg-dark-900 text-white pt-12 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
@@ -108,7 +106,6 @@ export function LandingPage() {
         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-indigo/30 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10 space-y-8 text-center sm:text-left">
-          
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-semibold text-brand-cyan">
             <Sparkles className="w-3.5 h-3.5" />
             Platform Micro-freelancing Mahasiswa & Solusi Digital UMKM
@@ -116,16 +113,23 @@ export function LandingPage() {
 
           <div className="max-w-4xl space-y-4">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-[1.1] text-white font-normal">
-              Solusi Digital UMKM dari Mahasiswa Berbakat, Aman dengan Rekening Bersama.
+              Solusi Digital UMKM dari Mahasiswa Berbakat, Aman dengan Rekening
+              Bersama.
             </h1>
             <p className="text-sm sm:text-base text-slate-300 font-sans max-w-2xl leading-relaxed font-normal">
-              Dapatkan desain logo, kemasan produk, website landing page, dan konten video promosi berkualitas tanpa tarif mahal agency. Dana Anda aman terkunci di sistem Escrow hingga pekerjaan selesai dan Anda setujui.
+              Dapatkan desain logo, kemasan produk, website landing page, dan
+              konten video promosi berkualitas tanpa tarif mahal agency. Dana
+              Anda aman terkunci di sistem Escrow hingga pekerjaan selesai dan
+              Anda setujui.
             </p>
           </div>
 
           {/* Search Bar & Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-            <form onSubmit={handleSearchSubmit} className="w-full max-w-2xl bg-surface p-2 rounded-full border border-border shadow-float flex items-center gap-2">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="w-full max-w-2xl bg-surface p-2 rounded-full border border-border shadow-float flex items-center gap-2"
+            >
               <div className="flex items-center gap-2 pl-4 flex-1">
                 <Search className="w-4 h-4 text-muted shrink-0" />
                 <input
@@ -136,12 +140,25 @@ export function LandingPage() {
                   className="w-full text-xs sm:text-sm text-dark-900 bg-transparent placeholder:text-muted/60 focus:outline-none font-sans"
                 />
               </div>
-              <Button variant="gradient" size="md" type="submit" className="shrink-0 text-xs sm:text-sm font-bold rounded-full">
+              <Button
+                variant="gradient"
+                size="md"
+                type="submit"
+                className="shrink-0 text-xs sm:text-sm font-bold rounded-full"
+              >
                 Cari Proyek
               </Button>
             </form>
 
-            <Link to={isAuthenticated ? (user?.role === "UMKM" ? "/projects/new" : "/projects") : "/login"}>
+            <Link
+              to={
+                isAuthenticated
+                  ? user?.role === "UMKM"
+                    ? "/projects/new"
+                    : "/projects"
+                  : "/login"
+              }
+            >
               <Button
                 variant="brand"
                 size="lg"
@@ -156,38 +173,44 @@ export function LandingPage() {
           {/* Key Trust Stats Bar */}
           <div className="pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs text-left">
             <div>
-              <span className="text-slate-400 block font-normal">Jaminan Keamanan</span>
+              <span className="text-slate-400 block font-normal">
+                Jaminan Keamanan
+              </span>
               <span className="text-base sm:text-lg font-bold font-sans text-emerald-400 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4" /> 100% Proteksi Escrow
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-normal">Identitas Terverifikasi</span>
+              <span className="text-slate-400 block font-normal">
+                Identitas Terverifikasi
+              </span>
               <span className="text-base sm:text-lg font-bold font-sans text-brand-cyan flex items-center gap-1.5">
                 <GraduationCap className="w-4 h-4" /> Email Kampus .ac.id
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-normal">Pagu Anggaran Wajar</span>
+              <span className="text-slate-400 block font-normal">
+                Pagu Anggaran Wajar
+              </span>
               <span className="text-base sm:text-lg font-bold font-sans text-white">
                 Maksimal Rp 2 Juta
               </span>
             </div>
             <div>
-              <span className="text-slate-400 block font-normal">Komisi Mahasiswa</span>
+              <span className="text-slate-400 block font-normal">
+                Komisi Mahasiswa
+              </span>
               <span className="text-base sm:text-lg font-bold font-sans text-emerald-400 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" /> 0% Potongan Honor
               </span>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* 2. MOST DEMANDING CATEGORIES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          
           {/* Left Column: Editorial Headline */}
           <div className="lg:col-span-4 flex flex-col justify-between space-y-6 bg-surface p-7 sm:p-8 rounded-3xl border border-border shadow-xs">
             <div className="space-y-4">
@@ -198,13 +221,19 @@ export function LandingPage() {
                 Kategori Layanan Paling Dibutuhkan UMKM.
               </h2>
               <p className="text-xs sm:text-sm text-muted leading-relaxed font-sans font-normal">
-                Pilih spesialisasi yang tepat untuk memperkuat citra merek, menjangkau lebih banyak pelanggan, dan mendongkrak omset usaha Anda.
+                Pilih spesialisasi yang tepat untuk memperkuat citra merek,
+                menjangkau lebih banyak pelanggan, dan mendongkrak omset usaha
+                Anda.
               </p>
             </div>
 
             <div className="pt-4 border-t border-border">
               <Link to="/projects">
-                <Button variant="brand" size="md" className="w-full sm:w-auto text-xs font-bold shadow-brand rounded-full">
+                <Button
+                  variant="brand"
+                  size="md"
+                  className="w-full sm:w-auto text-xs font-bold shadow-brand rounded-full"
+                >
                   <span>Jelajah Semua Kategori</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
@@ -224,8 +253,12 @@ export function LandingPage() {
                 <GraduationCap className="w-3.5 h-3.5 text-brand-cyan" />
                 Talenta Kampus Aktif
               </div>
-              <h4 className="text-base font-bold font-sans">Ribuan Mahasiswa Siap Membantu Usaha Anda</h4>
-              <p className="text-[11px] text-slate-300 font-normal">Karya profesional, harga bersahabat, terverifikasi resmi.</p>
+              <h4 className="text-base font-bold font-sans">
+                Ribuan Mahasiswa Siap Membantu Usaha Anda
+              </h4>
+              <p className="text-[11px] text-slate-300 font-normal">
+                Karya profesional, harga bersahabat, terverifikasi resmi.
+              </p>
             </div>
           </div>
 
@@ -241,7 +274,6 @@ export function LandingPage() {
               />
             ))}
           </div>
-
         </div>
       </section>
 
@@ -287,7 +319,11 @@ export function LandingPage() {
           subtitle="Tinjau kebutuhan digital terbaru dari pemilik usaha lokal dan ajukan penawaran terbaik Anda."
           action={
             <Link to="/projects">
-              <Button variant="outline" size="sm" className="text-xs font-bold rounded-full">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-bold rounded-full"
+              >
                 Lihat Semua Proyek
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
@@ -298,7 +334,10 @@ export function LandingPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="h-64 bg-surface rounded-card border border-border animate-pulse" />
+              <div
+                key={n}
+                className="h-64 bg-surface rounded-card border border-border animate-pulse"
+              />
             ))}
           </div>
         ) : (
@@ -332,7 +371,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 6. PRE-FOOTER DUAL CTA CARDS */}
       {/* 6. PERTANYAAN UMUM (FAQ) */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <SectionHeader
@@ -346,24 +384,24 @@ export function LandingPage() {
           {[
             {
               q: "Bagaimana sistem Escrow Makarya melindungi dana UMKM?",
-              a: "Saat Anda menyetujui proposal mahasiswa, dana proyek otomatis dikunci di rekening bersama resmi Makarya. Dana TIDAK akan ditransfer ke mahasiswa sampai Anda memeriksa hasil kerja deliverable dan menekan tombol 'Setujui & Selesaikan'."
+              a: "Saat Anda menyetujui proposal mahasiswa, dana proyek otomatis dikunci di rekening bersama resmi Makarya. Dana TIDAK akan ditransfer ke mahasiswa sampai Anda memeriksa hasil kerja deliverable dan menekan tombol 'Setujui & Selesaikan'.",
             },
             {
               q: "Bagaimana jika hasil kerja mahasiswa tidak sesuai dengan kesepakatan?",
-              a: "Anda berhak meminta revisi resmi melalui sistem. Jika mahasiswa tetap gagal memenuhi kesepakatan brief, Anda dapat mengajukan mediasi sengketa ke Administrator Makarya untuk pengembalian dana (refund) secara proporsional."
+              a: "Anda berhak meminta revisi resmi melalui sistem. Jika mahasiswa tetap gagal memenuhi kesepakatan brief, Anda dapat mengajukan mediasi sengketa ke Administrator Makarya untuk pengembalian dana (refund) secara proporsional.",
             },
             {
               q: "Apakah seluruh mahasiswa yang terdaftar terverifikasi resmi?",
-              a: "Ya. Setiap mahasiswa wajib melalui proses validasi identitas kampus (KYC) menggunakan alamat email institusi berdomain .ac.id, Nomor Induk Mahasiswa (NIM) aktif, dan Program Studi terkait."
+              a: "Ya. Setiap mahasiswa wajib melalui proses validasi identitas kampus (KYC) menggunakan alamat email institusi berdomain .ac.id, Nomor Induk Mahasiswa (NIM) aktif, dan Program Studi terkait.",
             },
             {
               q: "Apakah ada potongan biaya komisi bagi mahasiswa?",
-              a: "0% Potongan Komisi. Makarya berkomitmen penuh memberdayakan talenta muda, sehingga 100% honor yang disepakati akan diterima utuh oleh mahasiswa tanpa biaya perantara."
+              a: "0% Potongan Komisi. Makarya berkomitmen penuh memberdayakan talenta muda, sehingga 100% honor yang disepakati akan diterima utuh oleh mahasiswa tanpa biaya perantara.",
             },
             {
               q: "Berapa batas pagu anggaran untuk proyek di Makarya?",
-              a: "Maksimal Rp 2.000.000 per proyek. Batasan ini ditetapkan untuk memastikan proyek tetap dalam ruang lingkup micro-freelancing yang adil dan terjangkau bagi pelaku UMKM."
-            }
+              a: "Maksimal Rp 2.000.000 per proyek. Batasan ini ditetapkan untuk memastikan proyek tetap dalam ruang lingkup micro-freelancing yang adil dan terjangkau bagi pelaku UMKM.",
+            },
           ].map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
@@ -400,19 +438,28 @@ export function LandingPage() {
       {/* 7. PRE-FOOTER DUAL CTA CARDS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
           {/* UMKM Card */}
           <div className="bg-brand-indigo text-white p-8 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 shadow-brand">
             <div className="space-y-2 relative z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">Untuk Pelaku Usaha UMKM</span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-normal">Tingkatkan Citra Usaha Anda Tanpa Biaya Mahal Agency.</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">
+                Untuk Pelaku Usaha UMKM
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-serif font-normal">
+                Tingkatkan Citra Usaha Anda Tanpa Biaya Mahal Agency.
+              </h3>
               <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
-                Dapatkan logo, kemasan produk, website responsif, atau video promosi dari mahasiswa kreatif dengan harga terjangkau dan jaminan dana aman 100%.
+                Dapatkan logo, kemasan produk, website responsif, atau video
+                promosi dari mahasiswa kreatif dengan harga terjangkau dan
+                jaminan dana aman 100%.
               </p>
             </div>
             <div className="relative z-10">
               <Link to="/login">
-                <Button variant="gradient" size="lg" className="font-bold text-xs sm:text-sm rounded-full">
+                <Button
+                  variant="gradient"
+                  size="lg"
+                  className="font-bold text-xs sm:text-sm rounded-full"
+                >
                   <span>Pasang Kebutuhan Proyek</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
@@ -423,25 +470,33 @@ export function LandingPage() {
           {/* Mahasiswa Card */}
           <div className="bg-dark-900 text-white p-8 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 border border-border">
             <div className="space-y-2 relative z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">Untuk Mahasiswa Bertalenta</span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-normal">Ubah Keterampilan Kampus Menjadi Penghasilan & Portofolio.</h3>
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">
+                Untuk Mahasiswa Bertalenta
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-serif font-normal">
+                Ubah Keterampilan Kampus Menjadi Penghasilan & Portofolio.
+              </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Bantu UMKM lokal bertumbuh, dapatkan bayaran utuh tanpa potongan komisi, dan otomatis miliki portofolio profesional untuk melamar kerja.
+                Bantu UMKM lokal bertumbuh, dapatkan bayaran utuh tanpa potongan
+                komisi, dan otomatis miliki portofolio profesional untuk melamar
+                kerja.
               </p>
             </div>
             <div className="relative z-10">
               <Link to="/register">
-                <Button variant="brand" size="lg" className="font-bold text-xs sm:text-sm shadow-brand rounded-full">
+                <Button
+                  variant="brand"
+                  size="lg"
+                  className="font-bold text-xs sm:text-sm shadow-brand rounded-full"
+                >
                   <span>Daftar Akun Mahasiswa</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
               </Link>
             </div>
           </div>
-
         </div>
       </section>
-
     </div>
   );
 }
