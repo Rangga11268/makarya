@@ -7,6 +7,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { SectionHeader } from "../../components/ui/SectionHeader";
+import { Pagination } from "../../components/ui/Pagination";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { 
@@ -34,6 +35,8 @@ import {
   Building2,
   Clock,
   Eye
+  Eye,
+  RotateCcw
 } from "lucide-react";
 
 export function AdminDashboardPage() {
@@ -47,18 +50,43 @@ export function AdminDashboardPage() {
   const [mediationNote, setMediationNote] = useState("");
   const [mediationSubmitting, setMediationSubmitting] = useState(false);
 
+  // Escrow Tab State
+  const [escrowSearch, setEscrowSearch] = useState("");
+  const [escrowStatus, setEscrowStatus] = useState("ALL");
+  const [escrowPage, setEscrowPage] = useState(1);
+  const escrowPerPage = 5;
+
+  // KYC Tab State
+  const [kycSearch, setKycSearch] = useState("");
+  const [kycStatus, setKycStatus] = useState("ALL");
+  const [kycProdi, setKycProdi] = useState("ALL");
+  const [kycPage, setKycPage] = useState(1);
+  const kycPerPage = 5;
+
+  // Projects Moderation Tab State
+  const [projSearch, setProjSearch] = useState("");
+  const [projCategory, setProjCategory] = useState("ALL");
+  const [projStatus, setProjStatus] = useState("ALL");
+  const [projPage, setProjPage] = useState(1);
+  const projPerPage = 6;
+
   const [students, setStudents] = useState([
     { id: "1", name: "Darell Rangga Putra", email: "darell@ubsi.ac.id", nim: "12219999", prodi: "Sistem Informasi", campus: "UBSI Kaliabang", status: "VERIFIED", joinedAt: "2026-08-20" },
     { id: "2", name: "Adelia Putri", email: "adelia@ubsi.ac.id", nim: "12218888", prodi: "DKV", campus: "UBSI Fatmawati", status: "VERIFIED", joinedAt: "2026-08-22" },
     { id: "3", name: "Bima Arya", email: "bima@ubsi.ac.id", nim: "12217777", prodi: "Teknologi Informasi", campus: "UBSI Margonda", status: "PENDING", joinedAt: "2026-08-28" },
     { id: "4", name: "Siti Rahma", email: "siti.rahma@ubsi.ac.id", nim: "12216666", prodi: "Ilmu Komunikasi", campus: "UBSI Cengkareng", status: "PENDING", joinedAt: "2026-08-29" },
     { id: "5", name: "Fajar Pratama", email: "fajar@ui.ac.id", nim: "22061234", prodi: "Ilmu Komputer", campus: "Universitas Indonesia", status: "VERIFIED", joinedAt: "2026-08-15" },
+    { id: "6", name: "Reza Rahardian", email: "reza@ubsi.ac.id", nim: "12215555", prodi: "Rekayasa Perangkat Lunak", campus: "UBSI Kaliabang", status: "VERIFIED", joinedAt: "2026-08-10" },
+    { id: "7", name: "Nadia Safitri", email: "nadia@ubsi.ac.id", nim: "12214444", prodi: "Akuntansi", campus: "UBSI Kramat 98", status: "PENDING", joinedAt: "2026-08-30" },
+    { id: "8", name: "Deni Kurniawan", email: "deni@ubsi.ac.id", nim: "12213333", prodi: "Manajemen Bisnis", campus: "UBSI BSD", status: "VERIFIED", joinedAt: "2026-08-18" },
   ]);
 
   const [payouts, setPayouts] = useState([
     { id: "PO-881", mhsName: "Darell Rangga Putra", bank: "BCA (8720192831)", amount: 650000, fee: 32500, net: 617500, date: "2026-08-29", status: "PENDING" },
     { id: "PO-882", mhsName: "Adelia Putri", bank: "Bank Mandiri (157000982716)", amount: 400000, fee: 20000, net: 380000, date: "2026-08-30", status: "PENDING" },
     { id: "PO-880", mhsName: "Fajar Pratama", bank: "GoPay / 081298761234", amount: 1200000, fee: 60000, net: 1140000, date: "2026-08-27", status: "COMPLETED" },
+    { id: "PO-879", mhsName: "Reza Rahardian", bank: "BCA (8720334411)", amount: 800000, fee: 40000, net: 760000, date: "2026-08-25", status: "COMPLETED" },
+    { id: "PO-878", mhsName: "Deni Kurniawan", bank: "BNI (0239182390)", amount: 500000, fee: 25000, net: 475000, date: "2026-08-24", status: "COMPLETED" },
   ]);
 
   const loadAdminData = async () => {
@@ -417,8 +445,141 @@ export function AdminDashboardPage() {
                   ))}
                 </tbody>
               </table>
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+              {[
+                { id: "ALL", label: "Semua Status" },
+                { id: "PENDING", label: "Menunggu Approval" },
+                { id: "COMPLETED", label: "Telah Ditransfer" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setEscrowStatus(tab.id);
+                    setEscrowPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+                    escrowStatus === tab.id
+                      ? "bg-dark-900 text-white shadow-xs"
+                      : "text-muted hover:text-dark-900 hover:bg-canvas"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </Card>
+
+            <div className="relative min-w-[240px]">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari ID transaksi / nama / rekening..."
+                value={escrowSearch}
+                onChange={(e) => {
+                  setEscrowSearch(e.target.value);
+                  setEscrowPage(1);
+                }}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo font-sans"
+              />
+            </div>
+          </div>
+
+          {(() => {
+            const filteredPayouts = payouts.filter((po) => {
+              const matchStatus = escrowStatus === "ALL" || po.status === escrowStatus;
+              const searchLower = escrowSearch.trim().toLowerCase();
+              const matchSearch =
+                !searchLower ||
+                po.id.toLowerCase().includes(searchLower) ||
+                po.mhsName.toLowerCase().includes(searchLower) ||
+                po.bank.toLowerCase().includes(searchLower);
+              return matchStatus && matchSearch;
+            });
+
+            const totalEscrowPages = Math.ceil(filteredPayouts.length / escrowPerPage) || 1;
+            const paginatedPayouts = filteredPayouts.slice(
+              (escrowPage - 1) * escrowPerPage,
+              escrowPage * escrowPerPage
+            );
+
+            return (
+              <Card className="p-0 overflow-hidden rounded-2xl border border-border shadow-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-canvas border-b border-border text-dark-900 uppercase font-bold text-[10px] tracking-wider">
+                      <tr>
+                        <th className="py-3.5 px-4">ID Transaksi</th>
+                        <th className="py-3.5 px-4">Nama Mahasiswa</th>
+                        <th className="py-3.5 px-4">Tujuan Rekening Bank / E-Wallet</th>
+                        <th className="py-3.5 px-4">Total Bruto</th>
+                        <th className="py-3.5 px-4">Fee Platform (5%)</th>
+                        <th className="py-3.5 px-4">Net Cair</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Aksi Tindakan</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {paginatedPayouts.length === 0 ? (
+                        <tr>
+                          <td colSpan="8" className="py-10 text-center text-muted">
+                            Tidak ada data pencairan yang sesuai dengan filter pencarian.
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedPayouts.map((po) => (
+                          <tr key={po.id} className="hover:bg-canvas/50 transition-colors">
+                            <td className="py-3.5 px-4 font-mono font-bold text-dark-900">{po.id}</td>
+                            <td className="py-3.5 px-4 font-semibold text-dark-900">{po.mhsName}</td>
+                            <td className="py-3.5 px-4 text-muted">{po.bank}</td>
+                            <td className="py-3.5 px-4 font-semibold text-dark-900">{formatCurrency(po.amount)}</td>
+                            <td className="py-3.5 px-4 text-rose-600 font-medium">-{formatCurrency(po.fee)}</td>
+                            <td className="py-3.5 px-4 font-bold text-emerald-800">{formatCurrency(po.net)}</td>
+                            <td className="py-3.5 px-4">
+                              {po.status === "COMPLETED" ? (
+                                <Badge variant="success" className="text-[10px]">Telah Ditransfer</Badge>
+                              ) : (
+                                <Badge variant="warning" className="text-[10px]">Menunggu Approval</Badge>
+                              )}
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              {po.status === "PENDING" ? (
+                                <Button
+                                  variant="brand"
+                                  size="sm"
+                                  onClick={() => handleApprovePayout(po.id)}
+                                  className="text-[11px] font-bold py-1 px-3 shadow-xs"
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                                  Approve & Release
+                                </Button>
+                              ) : (
+                                <span className="text-[11px] text-muted font-medium">Selesai</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {filteredPayouts.length > 0 && (
+                  <div className="p-4 bg-surface border-t border-border">
+                    <Pagination
+                      currentPage={escrowPage}
+                      totalPages={totalEscrowPages}
+                      totalItems={filteredPayouts.length}
+                      itemsPerPage={escrowPerPage}
+                      onPageChange={(p) => setEscrowPage(p)}
+                    />
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
         </div>
       )}
 
@@ -561,8 +722,156 @@ export function AdminDashboardPage() {
                   ))}
                 </tbody>
               </table>
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+              {[
+                { id: "ALL", label: "Semua Status" },
+                { id: "PENDING", label: "Menunggu Validasi" },
+                { id: "VERIFIED", label: "Terverifikasi" },
+                { id: "REJECTED", label: "Ditolak" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setKycStatus(tab.id);
+                    setKycPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+                    kycStatus === tab.id
+                      ? "bg-dark-900 text-white shadow-xs"
+                      : "text-muted hover:text-dark-900 hover:bg-canvas"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </Card>
+
+            <div className="relative min-w-[240px]">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari nama / email / NIM / prodi..."
+                value={kycSearch}
+                onChange={(e) => {
+                  setKycSearch(e.target.value);
+                  setKycPage(1);
+                }}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo font-sans"
+              />
+            </div>
+          </div>
+
+          {(() => {
+            const filteredStudents = students.filter((mhs) => {
+              const matchStatus = kycStatus === "ALL" || mhs.status === kycStatus;
+              const searchLower = kycSearch.trim().toLowerCase();
+              const matchSearch =
+                !searchLower ||
+                mhs.name.toLowerCase().includes(searchLower) ||
+                mhs.email.toLowerCase().includes(searchLower) ||
+                mhs.nim.toLowerCase().includes(searchLower) ||
+                mhs.prodi.toLowerCase().includes(searchLower) ||
+                mhs.campus.toLowerCase().includes(searchLower);
+              return matchStatus && matchSearch;
+            });
+
+            const totalKycPages = Math.ceil(filteredStudents.length / kycPerPage) || 1;
+            const paginatedStudents = filteredStudents.slice(
+              (kycPage - 1) * kycPerPage,
+              kycPage * kycPerPage
+            );
+
+            return (
+              <Card className="p-0 overflow-hidden rounded-2xl border border-border shadow-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-canvas border-b border-border text-dark-900 uppercase font-bold text-[10px] tracking-wider">
+                      <tr>
+                        <th className="py-3.5 px-4">Nama Mahasiswa</th>
+                        <th className="py-3.5 px-4">Email Kampus (.ac.id)</th>
+                        <th className="py-3.5 px-4">NIM</th>
+                        <th className="py-3.5 px-4">Program Studi</th>
+                        <th className="py-3.5 px-4">Kampus</th>
+                        <th className="py-3.5 px-4">Status Akun</th>
+                        <th className="py-3.5 px-4 text-right">Verifikasi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {paginatedStudents.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="py-10 text-center text-muted">
+                            Tidak ada data mahasiswa yang sesuai dengan filter pencarian.
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedStudents.map((mhs) => (
+                          <tr key={mhs.id} className="hover:bg-canvas/50 transition-colors">
+                            <td className="py-3.5 px-4 font-bold text-dark-900">{mhs.name}</td>
+                            <td className="py-3.5 px-4 font-mono text-brand-indigo font-medium">{mhs.email}</td>
+                            <td className="py-3.5 px-4 font-mono text-muted">{mhs.nim}</td>
+                            <td className="py-3.5 px-4 text-dark-900 font-semibold">{mhs.prodi}</td>
+                            <td className="py-3.5 px-4 text-muted">{mhs.campus}</td>
+                            <td className="py-3.5 px-4">
+                              {mhs.status === "VERIFIED" ? (
+                                <Badge variant="success" className="text-[10px]">Terverifikasi</Badge>
+                              ) : (
+                                mhs.status === "REJECTED" ? (
+                                  <Badge variant="danger" className="text-[10px]">Ditolak</Badge>
+                                ) : (
+                                  <Badge variant="warning" className="text-[10px]">Menunggu Validasi</Badge>
+                                )
+                              )}
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              {mhs.status === "PENDING" ? (
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <Button
+                                    variant="brand"
+                                    size="sm"
+                                    onClick={() => handleVerifyStudent(mhs.id)}
+                                    className="text-[10px] font-bold py-1 px-2.5"
+                                  >
+                                    <CheckCircle2 className="w-3 h-3 mr-1" />
+                                    Verifikasi
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleRejectStudent(mhs.id)}
+                                    className="text-[10px] font-bold py-1 px-2 text-rose-600 border-rose-200 hover:bg-rose-50"
+                                  >
+                                    Tolak
+                                  </Button>
+                                </div>
+                              ) : (
+                                <span className="text-[11px] text-muted">Selesai</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {filteredStudents.length > 0 && (
+                  <div className="p-4 bg-surface border-t border-border">
+                    <Pagination
+                      currentPage={kycPage}
+                      totalPages={totalKycPages}
+                      totalItems={filteredStudents.length}
+                      itemsPerPage={kycPerPage}
+                      onPageChange={(p) => setKycPage(p)}
+                    />
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
         </div>
       )}
 
@@ -612,8 +921,131 @@ export function AdminDashboardPage() {
                   ))}
                 </tbody>
               </table>
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+              {[
+                { id: "ALL", label: "Semua Kategori" },
+                { id: "DESIGN", label: "Desain Grafis" },
+                { id: "UIUX", label: "UI/UX" },
+                { id: "PEMROGRAMAN", label: "Web Coding" },
+                { id: "VIDEO", label: "Video" },
+                { id: "COPYWRITING", label: "Copywriting" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setProjCategory(tab.id);
+                    setProjPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+                    projCategory === tab.id
+                      ? "bg-dark-900 text-white shadow-xs"
+                      : "text-muted hover:text-dark-900 hover:bg-canvas"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </Card>
+
+            <div className="relative min-w-[240px]">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari judul / deskripsi proyek..."
+                value={projSearch}
+                onChange={(e) => {
+                  setProjSearch(e.target.value);
+                  setProjPage(1);
+                }}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo font-sans"
+              />
+            </div>
+          </div>
+
+          {(() => {
+            const filteredProjects = projects.filter((proj) => {
+              const matchCategory = projCategory === "ALL" || proj.kategori === projCategory;
+              const matchStatus = projStatus === "ALL" || proj.status === projStatus;
+              const searchLower = projSearch.trim().toLowerCase();
+              const matchSearch =
+                !searchLower ||
+                proj.judul.toLowerCase().includes(searchLower) ||
+                (proj.deskripsi_raw || "").toLowerCase().includes(searchLower);
+              return matchCategory && matchStatus && matchSearch;
+            });
+
+            const totalProjPages = Math.ceil(filteredProjects.length / projPerPage) || 1;
+            const paginatedProjects = filteredProjects.slice(
+              (projPage - 1) * projPerPage,
+              projPage * projPerPage
+            );
+
+            return (
+              <Card className="p-0 overflow-hidden rounded-2xl border border-border shadow-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-canvas border-b border-border text-dark-900 uppercase font-bold text-[10px] tracking-wider">
+                      <tr>
+                        <th className="py-3.5 px-4">Judul Kebutuhan</th>
+                        <th className="py-3.5 px-4">Kategori</th>
+                        <th className="py-3.5 px-4">Maks Budget</th>
+                        <th className="py-3.5 px-4">Tenggat Waktu</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {paginatedProjects.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" className="py-10 text-center text-muted">
+                            Tidak ada proyek yang sesuai dengan filter pencarian.
+                          </td>
+                        </tr>
+                      ) : (
+                        paginatedProjects.map((proj) => (
+                          <tr key={proj.id} className="hover:bg-canvas/50 transition-colors">
+                            <td className="py-3.5 px-4 font-bold text-dark-900 max-w-xs truncate">{proj.judul}</td>
+                            <td className="py-3.5 px-4">
+                              <Badge variant="brand" className="text-[10px]">{proj.kategori}</Badge>
+                            </td>
+                            <td className="py-3.5 px-4 font-bold font-sans text-dark-900">{formatCurrency(proj.budget_max)}</td>
+                            <td className="py-3.5 px-4 text-muted">{proj.deadline}</td>
+                            <td className="py-3.5 px-4">
+                              <Badge variant="success" className="text-[10px]">{proj.status}</Badge>
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <Link to={`/projects/${proj.id}`}>
+                                <Button variant="outline" size="sm" className="text-[11px] py-1 px-3">
+                                  <Eye className="w-3.5 h-3.5 mr-1" />
+                                  Inspeksi Proyek
+                                </Button>
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {filteredProjects.length > 0 && (
+                  <div className="p-4 bg-surface border-t border-border">
+                    <Pagination
+                      currentPage={projPage}
+                      totalPages={totalProjPages}
+                      totalItems={filteredProjects.length}
+                      itemsPerPage={projPerPage}
+                      onPageChange={(p) => setProjPage(p)}
+                    />
+                  </div>
+                )}
+              </Card>
+            );
+          })()}
         </div>
       )}
 

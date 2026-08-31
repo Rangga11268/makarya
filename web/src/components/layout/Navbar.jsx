@@ -17,7 +17,7 @@ import {
   PlusCircle,
   ChevronDown,
   Sparkles,
-  Search
+  Search,
 } from "lucide-react";
 
 export function Navbar() {
@@ -72,7 +72,11 @@ export function Navbar() {
   })();
 
   const isActive = (path) => {
-    if (path === "/projects" && (location.pathname.startsWith("/projects/") && location.pathname !== "/projects/new")) {
+    if (
+      path === "/projects" &&
+      location.pathname.startsWith("/projects/") &&
+      location.pathname !== "/projects/new"
+    ) {
       return true;
     }
     return location.pathname === path;
@@ -90,7 +94,6 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-border/80 transition-all shadow-2xs font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
-        
         {/* Left: Brand Logo & Campus Badge */}
         <div className="flex items-center gap-6">
           <Link
@@ -127,7 +130,9 @@ export function Navbar() {
                       : "text-slate-600 hover:text-dark-900 hover:bg-white/60 font-semibold"
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${active ? "text-brand-indigo" : "text-slate-500"}`} />
+                  <Icon
+                    className={`w-3.5 h-3.5 ${active ? "text-brand-indigo" : "text-slate-500"}`}
+                  />
                   <span>{link.label}</span>
                 </Link>
               );
@@ -139,7 +144,6 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
-              
               {/* UMKM Quick Action: Pasang Proyek */}
               {user?.role === "UMKM" && (
                 <Link to="/projects/new">
@@ -148,8 +152,6 @@ export function Navbar() {
                     size="sm"
                     className="hidden sm:inline-flex text-xs font-bold shadow-brand py-2 px-4 rounded-full"
                   >
-                    <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
-                    + Pasang Proyek
                     <PlusCircle className="w-4 h-4 mr-1.5" />
                     Pasang Proyek
                   </Button>
@@ -267,14 +269,17 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link to="/register">
-                <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand rounded-full">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="text-xs font-bold shadow-brand rounded-full"
+                >
                   Daftar Mahasiswa
                 </Button>
               </Link>
             </div>
           )}
         </div>
-
       </div>
 
       {/* Mobile Navigation Drawer */}
@@ -331,7 +336,6 @@ export function Navbar() {
                       className="w-full text-xs font-bold shadow-brand"
                     >
                       <PlusCircle className="w-4 h-4 mr-1.5" />
-                      + Pasang Proyek Baru
                       Pasang Proyek Baru
                     </Button>
                   </Link>
@@ -355,7 +359,11 @@ export function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block"
               >
-                <Button variant="outline" size="md" className="w-full text-xs font-bold">
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="w-full text-xs font-bold"
+                >
                   Masuk ke Akun
                 </Button>
               </Link>
@@ -364,7 +372,11 @@ export function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block"
               >
-                <Button variant="brand" size="md" className="w-full text-xs font-bold shadow-brand">
+                <Button
+                  variant="brand"
+                  size="md"
+                  className="w-full text-xs font-bold shadow-brand"
+                >
                   Daftar Akun Mahasiswa
                 </Button>
               </Link>

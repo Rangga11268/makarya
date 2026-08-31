@@ -298,6 +298,19 @@ export function WalletPage() {
           </h2>
           <span className="text-xs font-bold text-muted bg-canvas border border-border px-3 py-1 rounded-full">
             {history.length} Transaksi Tercatat
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-dark-900 flex items-center gap-2 font-sans">
+              <ReceiptText className="w-5 h-5 text-brand-indigo" />
+              Riwayat Mutasi Saldo (Audit Trail Immutable)
+            </h2>
+            <p className="text-xs text-muted mt-0.5">
+              Seluruh arus kas masuk, holding escrow, dan pencairan dana dicatat secara permanen.
+            </p>
+          </div>
+
+          <span className="text-xs font-bold text-muted bg-canvas border border-border px-3 py-1 rounded-full self-start sm:self-auto">
+            {history.length} Total Mutasi
           </span>
         </div>
 
@@ -338,6 +351,79 @@ export function WalletPage() {
                       <td className="py-3.5 px-4 text-slate-700 max-w-xs sm:max-w-md truncate">
                         {log.keterangan || "-"}
                       </td>
+        {/* Filter & Search Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
+          {/* Type Filter Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+            {[
+              { id: "ALL", label: "Semua Tipe" },
+              { id: "TOPUP", label: "Top-Up" },
+              { id: "HOLD", label: "Escrow Hold" },
+              { id: "RELEASE", label: "Pencairan Escrow" },
+              { id: "WITHDRAW", label: "Tarik Bank" },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setTxTypeFilter(tab.id);
+                  setTxPage(1);
+                }}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all shrink-0 cursor-pointer ${
+                  txTypeFilter === tab.id
+                    ? "bg-dark-900 text-white shadow-xs"
+                    : "text-muted hover:text-dark-900 hover:bg-canvas"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative min-w-[220px]">
+            <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Cari transaksi / keterangan..."
+              value={txSearch}
+              onChange={(e) => {
+                setTxSearch(e.target.value);
+                setTxPage(1);
+              }}
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo font-sans"
+            />
+          </div>
+        </div>
+
+        {/* Ledger Table */}
+        {(() => {
+          const filteredHistory = history.filter((log) => {
+            const matchType = txTypeFilter === "ALL" || log.tipe === txTypeFilter;
+            const searchLower = txSearch.trim().toLowerCase();
+            const matchSearch =
+              !searchLower ||
+              (log.keterangan || "").toLowerCase().includes(searchLower) ||
+              (log.id || "").toLowerCase().includes(searchLower);
+            return matchType && matchSearch;
+          });
+
+          const totalTxPages = Math.ceil(filteredHistory.length / txPerPage) || 1;
+          const paginatedHistory = filteredHistory.slice(
+            (txPage - 1) * txPerPage,
+            txPage * txPerPage
+          );
+
+          return (
+            <Card className="p-0 overflow-hidden rounded-2xl border border-border shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-canvas border-b border-border text-dark-900 uppercase font-bold text-[10px] tracking-wider">
+                    <tr>
+                      <th className="py-3.5 px-4">Waktu</th>
+                      <th className="py-3.5 px-4">Tipe Transaksi</th>
+                      <th className="py-3.5 px-4">Nominal</th>
+                      <th className="py-3.5 px-4">Keterangan</th>
                     </tr>
                   ))
                 )}
@@ -345,6 +431,57 @@ export function WalletPage() {
             </table>
           </div>
         </Card>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {paginatedHistory.length === 0 ? (
+                      <tr>
+                        <td colSpan="4" className="py-10 text-center text-muted">
+                          {txSearch || txTypeFilter !== "ALL"
+                            ? "Tidak ada transaksi yang cocok dengan filter pencarian."
+                            : "Belum ada riwayat transaksi keuangan tercatat."}
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedHistory.map((log) => (
+                        <tr
+                          key={log.id}
+                          className="hover:bg-canvas/50 transition-colors"
+                        >
+                          <td className="py-3.5 px-4 text-muted whitespace-nowrap">
+                            {formatDate(log.created_at)}
+                          </td>
+                          <td className="py-3.5 px-4">{getBadgeType(log.tipe)}</td>
+                          <td className="py-3.5 px-4 font-bold text-dark-900 whitespace-nowrap">
+                            {log.tipe === "WITHDRAW" || log.tipe === "HOLD"
+                              ? "-"
+                              : "+"}{" "}
+                            {formatCurrency(log.nominal)}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-700 max-w-xs sm:max-w-md truncate">
+                            {log.keterangan || "-"}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {filteredHistory.length > 0 && (
+                <div className="p-4 bg-surface border-t border-border">
+                  <Pagination
+                    currentPage={txPage}
+                    totalPages={totalTxPages}
+                    totalItems={filteredHistory.length}
+                    itemsPerPage={txPerPage}
+                    onPageChange={(p) => setTxPage(p)}
+                  />
+                </div>
+              )}
+            </Card>
+          );
+        })()}
       </div>
 
       {/* Modal Withdraw */}

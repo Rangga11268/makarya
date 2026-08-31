@@ -204,7 +204,6 @@ export function ProposalBoardPage() {
               size="md"
               className="shadow-brand text-xs font-bold shrink-0"
             >
-              <PlusCircle className="w-4 h-4 mr-1.5" />+ Pasang Proyek Baru
               <PlusCircle className="w-4 h-4 mr-1.5" />
               Pasang Proyek Baru
             </Button>
