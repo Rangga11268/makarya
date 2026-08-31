@@ -46,7 +46,11 @@ export function RatingModal({
     } catch (err) {
       const detail = err.response?.data?.detail;
       const msg = Array.isArray(detail)
-        ? detail.map((d) => (typeof d === "object" ? d.msg || JSON.stringify(d) : String(d))).join(", ")
+        ? detail
+            .map((d) =>
+              typeof d === "object" ? d.msg || JSON.stringify(d) : String(d),
+            )
+            .join(", ")
         : typeof detail === "object" && detail !== null
           ? detail.msg || JSON.stringify(detail)
           : detail || "Gagal memberikan ulasan.";

@@ -20,5 +20,7 @@ class RatingResponse(BaseModel):
     skor: int
     ulasan: Optional[str] = None
     created_at: datetime
+    project_judul: Optional[str] = None
+    dari_nama: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

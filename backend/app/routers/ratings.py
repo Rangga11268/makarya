@@ -78,16 +78,52 @@ def give_rating(body: RatingCreateRequest, db: Session = Depends(get_db), curren
 
     db.commit() 
     db.refresh(new_rating)
-    return new_rating
+    return RatingResponse(
+        id=new_rating.id,
+        project_id=new_rating.project_id,
+        dari_user_id=new_rating.dari_user_id,
+        ke_user_id=new_rating.ke_user_id,
+        skor=new_rating.skor,
+        ulasan=new_rating.ulasan,
+        created_at=new_rating.created_at,
+        project_judul=project.judul,
+        dari_nama=current_user.email.split("@")[0],
+    )
 
 @router.get("/user/{user_id}", response_model=List[RatingResponse])
 def get_user_ratings(user_id: UUID, db: Session = Depends(get_db)):
     """Melihat Seluruh Ulasan yang Diterima oleh Suatu Pengguna"""
-    ratings = db.query(Rating).filter(Rating.ke_user_id == user_id).all()
-    return ratings
+    ratings = db.query(Rating).filter(Rating.ke_user_id == user_id).order_by(Rating.created_at.desc()).all()
+    results = []
+    for r in ratings:
+        results.append(RatingResponse(
+            id=r.id,
+            project_id=r.project_id,
+            dari_user_id=r.dari_user_id,
+            ke_user_id=r.ke_user_id,
+            skor=r.skor,
+            ulasan=r.ulasan,
+            created_at=r.created_at,
+            project_judul=r.project.judul if r.project else None,
+            dari_nama=r.dari_user.email.split("@")[0] if r.dari_user else None,
+        ))
+    return results
 
 @router.get("/project/{project_id}", response_model=List[RatingResponse])
 def get_project_ratings(project_id: UUID, db: Session = Depends(get_db)):
     """Melihat Seluruh Ulasan yang Diterima oleh Suatu Proyek"""
-    ratings = db.query(Rating).filter(Rating.project_id == project_id).all()
-    return ratings
+    ratings = db.query(Rating).filter(Rating.project_id == project_id).order_by(Rating.created_at.desc()).all()
+    results = []
+    for r in ratings:
+        results.append(RatingResponse(
+            id=r.id,
+            project_id=r.project_id,
+            dari_user_id=r.dari_user_id,
+            ke_user_id=r.ke_user_id,
+            skor=r.skor,
+            ulasan=r.ulasan,
+            created_at=r.created_at,
+            project_judul=r.project.judul if r.project else None,
+            dari_nama=r.dari_user.email.split("@")[0] if r.dari_user else None,
+        ))
+    return results

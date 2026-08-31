@@ -274,28 +274,38 @@ export function PortfolioPage() {
             {ratings.map((r) => (
               <Card
                 key={r.id}
-                className="p-6 space-y-3 bg-surface border-border"
+                className="p-5 sm:p-6 space-y-3 bg-surface border border-border shadow-xs hover:border-dark-900/30 transition-all rounded-2xl"
               >
                 <div className="flex items-center justify-between">
                   <StarRating rating={r.skor} size="sm" />
-                  <span className="text-xs text-muted">
+                  <span className="text-xs text-muted font-mono">
                     {formatDate(r.created_at)}
                   </span>
                 </div>
 
+                {r.project_judul && (
+                  <h4 className="text-xs font-bold text-dark-900 line-clamp-1">
+                    {r.project_judul}
+                  </h4>
+                )}
+
                 <p className="text-xs sm:text-sm text-dark-900/90 leading-relaxed font-sans italic">
-                  "
-                  {r.ulasan ||
-                    "Kerjasama berjalan sangat baik, komunikatif, dan memuaskan."}
-                  "
+                  "{r.ulasan || "Kerjasama berjalan sangat baik, komunikatif, dan memuaskan."}"
                 </p>
 
-                <div className="flex items-center gap-1.5 text-[11px] text-muted pt-3 border-t border-border-subtle">
-                  <Building2 className="w-3.5 h-3.5 text-muted" />
-                  <span>Proyek Terverifikasi: </span>
-                  <span className="font-mono text-dark-900 font-semibold">
-                    #{r.project_id.slice(0, 8)}
-                  </span>
+                <div className="flex items-center justify-between text-[11px] text-muted pt-3 border-t border-border">
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-muted" />
+                    <span>Proyek Terverifikasi:</span>
+                    <span className="font-mono text-dark-900 font-semibold">
+                      #{r.project_id.slice(0, 8)}
+                    </span>
+                  </div>
+                  {r.dari_nama && (
+                    <span className="text-muted font-medium">
+                      Oleh: <b className="text-dark-900">{r.dari_nama}</b>
+                    </span>
+                  )}
                 </div>
               </Card>
             ))}
