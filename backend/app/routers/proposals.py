@@ -176,7 +176,12 @@ def accept_proposal(
     # Cek saldo aktif UMKM dengan pessimitic Lock
     wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).with_for_update().first()
     if not wallet or wallet.saldo_aktif < proposal.harga_tawar:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Saldo aktif anda (Rp {wallet.saldo_aktif if wallet else 0:,0f}) tidak mencukupi untuk menerima proposal ini dengan harga tawar Rp {proposal.harga_tawar:,0f}")
+        saldo_saat_ini = int(wallet.saldo_aktif) if wallet and wallet.saldo_aktif else 0
+        tawaran = int(proposal.harga_tawar)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Saldo aktif Anda (Rp {saldo_saat_ini:,}) tidak mencukupi untuk mengunci escrow proposal ini (Rp {tawaran:,}). Silakan top-up saldo terlebih dahulu di menu Dompet."
+        )
 
     # Pindahkan saldo aktif -> saldo escrow (HOLD)
     wallet.saldo_aktif -= proposal.harga_tawar
