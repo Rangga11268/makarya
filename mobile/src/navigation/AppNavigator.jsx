@@ -5,6 +5,7 @@ import { AuthStack } from "./AuthStack";
 import { MainTabs } from "./MainTabs";
 import { PostProjectScreen } from "../screens/projects/PostProjectScreen";
 import { ProjectDetailScreen } from "../screens/projects/ProjectDetailScreen";
+import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { useAuthStore } from "../store/authStore";
 import { COLORS } from "../theme/colors";
 
@@ -20,7 +21,7 @@ export function AppNavigator() {
   if (loading) {
     return (
       <View style={styles.splash}>
-        <ActivityIndicator size="large" color={COLORS.accentLime} />
+        <ActivityIndicator size="large" color={COLORS.brandIndigo} />
       </View>
     );
   }
@@ -32,6 +33,7 @@ export function AppNavigator() {
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="PostProject" component={PostProjectScreen} />
           <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
         </>
       ) : (
         <Stack.Screen name="Auth" component={AuthStack} />

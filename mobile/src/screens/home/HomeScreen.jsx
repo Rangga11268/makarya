@@ -125,17 +125,31 @@ export function HomeScreen({ navigation }) {
             style={styles.headerLogo}
             resizeMode="contain"
           />
-          {isMahasiswa ? (
-            <View style={styles.verifiedTag}>
-              <GraduationCap size={13} color={COLORS.brandIndigo} />
-              <Text style={styles.verifiedText}>Mahasiswa Terverifikasi</Text>
-            </View>
-          ) : (
-            <View style={styles.verifiedTag}>
-              <ShieldCheck size={13} color={COLORS.brandCyan} />
-              <Text style={styles.verifiedText}>Escrow Protected</Text>
-            </View>
-          )}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            {isMahasiswa ? (
+              <View style={styles.verifiedTag}>
+                <GraduationCap size={13} color={COLORS.brandIndigo} />
+                <Text style={styles.verifiedText}>Mahasiswa</Text>
+              </View>
+            ) : (
+              <View style={styles.verifiedTag}>
+                <ShieldCheck size={13} color={COLORS.brandCyan} />
+                <Text style={styles.verifiedText}>UMKM Escrow</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Profile")}
+              style={styles.headerAvatarBtn}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.headerAvatarText}>
+                {isMahasiswa
+                  ? user?.nama_lengkap?.charAt(0) || "D"
+                  : user?.nama_usaha?.charAt(0) || "U"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <Text style={styles.greeting}>
@@ -481,5 +495,18 @@ const styles = StyleSheet.create({
   },
   projectList: {
     gap: 2,
+  },
+  headerAvatarBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.brandIndigo,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerAvatarText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "800",
   },
 });
