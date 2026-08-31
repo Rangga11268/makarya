@@ -35,7 +35,19 @@ export default function App() {
         <main className="flex-1">
           <Routes>
             {/* 1. Public Open Routes (Accessible by everyone) */}
-            <Route path="/" element={<LandingPage />} />
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? (
+                  <Navigate
+                    to={userRole === "ADMIN" ? "/admin" : "/dashboard"}
+                    replace
+                  />
+                ) : (
+                  <LandingPage />
+                )
+              }
+            />
             <Route path="/projects" element={<BrowseProjectsPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
 
@@ -57,7 +69,10 @@ export default function App() {
               path="/register"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/dashboard" replace />
+                  <Navigate
+                    to={userRole === "ADMIN" ? "/admin" : "/dashboard"}
+                    replace
+                  />
                 ) : (
                   <RegisterPage />
                 )

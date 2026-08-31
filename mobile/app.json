@@ -1,4 +1,19 @@
 {
-  "name": "MakaryaMobile",
-  "displayName": "Makarya UMKM"
+  "expo": {
+    "name": "Makarya Mobile",
+    "slug": "makarya-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.makarya.mobile"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
 }

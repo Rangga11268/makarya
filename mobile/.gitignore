@@ -1,4 +1,10 @@
-# React Native .gitignore
+# Expo
+.expo/
+dist/
+web-build/
+dist_test/
+
+# React Native / Node
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -18,6 +24,8 @@ android/app/.cxx/
 android/app/release/
 *.apk
 *.aab
+*.jks
+*.keystore
 android/app/google-services.json
 
 # iOS
@@ -29,12 +37,6 @@ ios/DerivedData/
 
 # Metro bundler
 .metro-health-check*
-
-# Fastlane
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots
-fastlane/test_output
 
 # Editor / OS
 .DS_Store

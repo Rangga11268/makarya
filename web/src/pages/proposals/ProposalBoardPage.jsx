@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
@@ -37,7 +37,15 @@ import {
   Layers,
   Send,
   CheckCheck,
+  ChevronLeft,
+  ChevronRight,
+  HelpCircle,
+  Check,
+  CircleDot,
+  FileCheck2,
 } from "lucide-react";
+
+const ITEMS_PER_PAGE = 6;
 
 export function ProposalBoardPage() {
   const { user } = useAuthStore();
@@ -57,8 +65,10 @@ export function ProposalBoardPage() {
   // Quick Wallet State
   const [wallet, setWallet] = useState(null);
 
-  // Search, Filter & Accordion states
+  // Search, Filter, Pagination & Accordion states
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
   const [expandedCards, setExpandedCards] = useState({});
 
   const toggleCard = (id) => {
@@ -69,7 +79,6 @@ export function ProposalBoardPage() {
   };
 
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("ALL");
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
@@ -146,6 +155,11 @@ export function ProposalBoardPage() {
     loadData();
   }, [isUmkm]);
 
+  // Reset page when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
+
   const handleSelectProject = async (proj) => {
     setSelectedProject(proj);
     await loadProjectDetails(proj.id);
@@ -221,48 +235,77 @@ export function ProposalBoardPage() {
     setSubmissionModalOpen(true);
   };
 
-  const statusBadge = (status) => {
-    switch (status) {
-      case "ACCEPTED":
-        return <Badge variant="success">Disetujui • Sedang Dikerjakan</Badge>;
-      case "PENDING":
-        return <Badge variant="warning">Menunggu Keputusan</Badge>;
-      case "REJECTED":
-        return <Badge variant="danger">Ditolak</Badge>;
-      case "IN_PROGRESS":
-        return <Badge variant="brand">Sedang Dikerjakan</Badge>;
-      case "REVIEW":
-        return <Badge variant="warning">Dalam Peninjauan</Badge>;
-      case "DONE":
-      case "COMPLETED":
-        return <Badge variant="success">Selesai</Badge>;
-      default:
-        return <Badge variant="default">{formatStatus(status)}</Badge>;
-    }
+  // Filtered lists
+  const filteredProjects = useMemo(() => {
+    return myProjects.filter((p) => {
+      const matchSearch =
+        p.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.kategori.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchTab =
+        activeTab === "ALL" ||
+        (activeTab === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
+        (activeTab === "COMPLETED" &&
+          (p.status === "DONE" || p.status === "COMPLETED")) ||
+        (activeTab === "OPEN" && (p.status === "OPEN" || p.status === "BIDDING"));
+      return matchSearch && matchTab;
+    });
+  }, [myProjects, searchQuery, activeTab]);
+
+  const filteredProposals = useMemo(() => {
+    return proposals.filter((p) => {
+      const matchSearch =
+        (p.cover_letter &&
+          p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (p.project_judul &&
+          p.project_judul.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        p.project_id.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const sub = mhsSubmissions[p.project_id];
+      const isApproved = sub?.status === "APPROVED" || p.status === "COMPLETED";
+
+      let matchTab = true;
+      if (activeTab === "PENDING") {
+        matchTab = p.status === "PENDING";
+      } else if (activeTab === "IN_PROGRESS") {
+        matchTab = p.status === "ACCEPTED" && !isApproved;
+      } else if (activeTab === "COMPLETED") {
+        matchTab = isApproved;
+      } else if (activeTab === "REJECTED") {
+        matchTab = p.status === "REJECTED";
+      }
+
+      return matchSearch && matchTab;
+    });
+  }, [proposals, searchQuery, activeTab, mhsSubmissions]);
+
+  // Paginated Slices
+  const totalProjectPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE) || 1;
+  const paginatedProjects = filteredProjects.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  const totalProposalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE) || 1;
+  const paginatedProposals = filteredProposals.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  // Counts for tabs
+  const projectCounts = {
+    all: myProjects.length,
+    open: myProjects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length,
+    inProgress: myProjects.filter((p) => p.status === "IN_PROGRESS").length,
+    completed: myProjects.filter((p) => p.status === "DONE" || p.status === "COMPLETED").length,
   };
 
-  // Filtered lists
-  const filteredProjects = myProjects.filter((p) => {
-    const matchSearch =
-      p.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.kategori.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchTab =
-      activeTab === "ALL" ||
-      (activeTab === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
-      (activeTab === "DONE" &&
-        (p.status === "DONE" || p.status === "COMPLETED")) ||
-      (activeTab === "OPEN" && (p.status === "OPEN" || p.status === "BIDDING"));
-    return matchSearch && matchTab;
-  });
-
-  const filteredProposals = proposals.filter((p) => {
-    const matchSearch =
-      (p.cover_letter &&
-        p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      p.project_id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchTab = activeTab === "ALL" || p.status === activeTab;
-    return matchSearch && matchTab;
-  });
+  const proposalCounts = {
+    all: proposals.length,
+    pending: proposals.filter((p) => p.status === "PENDING").length,
+    inProgress: proposals.filter((p) => p.status === "ACCEPTED" && mhsSubmissions[p.project_id]?.status !== "APPROVED").length,
+    completed: proposals.filter((p) => mhsSubmissions[p.project_id]?.status === "APPROVED" || p.status === "COMPLETED").length,
+    rejected: proposals.filter((p) => p.status === "REJECTED").length,
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
@@ -331,7 +374,97 @@ export function ProposalBoardPage() {
         </div>
       </div>
 
-      {/* 2. High-Craft Metric Cards (Clean, Subtle, Professional) */}
+      {/* 2. Visual Step-by-Step Workflow Guide */}
+      <div className="bg-canvas p-4 rounded-2xl border border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <HelpCircle className="w-4 h-4 text-brand-indigo" />
+          <span className="text-xs font-bold uppercase tracking-wider text-dark-900">
+            {isUmkm ? "Alur Kerja Klien UMKM" : "Alur Kerja Mahasiswa"}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {isUmkm ? (
+            <>
+              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  1
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-dark-900 block">Pilih Pelamar & Kunci Escrow</span>
+                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
+                    Review proposal masuk, klik terima untuk mengunci dana aman di rekening bersama.
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  2
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-dark-900 block">Pantau Pengerjaan & Deliverable</span>
+                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
+                    Mahasiswa mengerjakan tugas sesuai tenggat dan mengunggah berkas hasil kerja.
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-surface p-3 rounded-xl border border-emerald-200 bg-emerald-50/20 flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  3
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-emerald-950 block">Setujui & Rilis Dana</span>
+                  <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">
+                    Periksa berkas, minta revisi jika perlu, atau setujui untuk mencairkan honor ke mahasiswa.
+                  </span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  1
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-dark-900 block">Ajukan Penawaran</span>
+                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
+                    Kirim pesan penawaran dan harga tawar realistis di katalog proyek UMKM.
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  2
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-dark-900 block">Kerjakan & Serahkan Hasil</span>
+                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
+                    Saat diterima, dana escrow terkunci. Kerjakan proyek lalu unggah berkas hasil deliverable.
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-surface p-3 rounded-xl border border-emerald-200 bg-emerald-50/20 flex items-start gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                  3
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-emerald-950 block">Persetujuan & Honor Cair</span>
+                  <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">
+                    Klien menyetujui berkas dan honor 100% otomatis masuk ke saldo dompet Anda untuk ditarik.
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 3. Metric Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {/* Metric 1 */}
         <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
@@ -359,15 +492,13 @@ export function ProposalBoardPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
               Sedang Berjalan
             </span>
-            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-brand-indigo">
               <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
             <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm
-                ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
-                : proposals.filter((p) => p.status === "ACCEPTED").length}
+              {isUmkm ? projectCounts.inProgress : proposalCounts.inProgress}
             </span>
             <p className="text-[11px] text-muted mt-0.5">
               {isUmkm ? "Proses pengerjaan mhs" : "Proyek aktif Anda"}
@@ -376,27 +507,21 @@ export function ProposalBoardPage() {
         </div>
 
         {/* Metric 3 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-emerald-200 hover:border-emerald-400 transition-all duration-200 space-y-2.5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
-              Selesai / Cair
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block">
+              Selesai & Lunas
             </span>
-            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
               <CheckCheck className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm
-                ? myProjects.filter(
-                    (p) => p.status === "DONE" || p.status === "COMPLETED",
-                  ).length
-                : proposals.filter(
-                    (p) => mhsSubmissions[p.project_id]?.status === "APPROVED",
-                  ).length}
+            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-sans tracking-tight">
+              {isUmkm ? projectCounts.completed : proposalCounts.completed}
             </span>
-            <p className="text-[11px] text-muted mt-0.5">
-              {isUmkm ? "Deliverable diterima" : "Honor masuk dompet"}
+            <p className="text-[11px] text-emerald-700/80 mt-0.5 font-medium">
+              {isUmkm ? "Deliverable disetujui" : "Honor masuk dompet"}
             </p>
           </div>
         </div>
@@ -405,7 +530,7 @@ export function ProposalBoardPage() {
         <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
-              {isUmkm ? "Masa Penawaran" : "Menunggu Review"}
+              {isUmkm ? "Masa Penawaran" : "Menunggu Seleksi"}
             </span>
             <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
               <Send className="w-3.5 h-3.5" />
@@ -413,11 +538,7 @@ export function ProposalBoardPage() {
           </div>
           <div>
             <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm
-                ? myProjects.filter(
-                    (p) => p.status === "OPEN" || p.status === "BIDDING",
-                  ).length
-                : proposals.filter((p) => p.status === "PENDING").length}
+              {isUmkm ? projectCounts.open : proposalCounts.pending}
             </span>
             <p className="text-[11px] text-muted mt-0.5">
               {isUmkm ? "Terbuka untuk pelamar" : "Evaluasi klien"}
@@ -426,7 +547,7 @@ export function ProposalBoardPage() {
         </div>
       </div>
 
-      {/* 3. Search Bar & Status Filter Tabs */}
+      {/* 4. Search Bar & Status Filter Tabs */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
         {/* Search Input */}
         <div className="relative flex-1">
@@ -436,7 +557,7 @@ export function ProposalBoardPage() {
             placeholder={
               isUmkm
                 ? "Cari judul proyek atau kategori..."
-                : "Cari lamaran atau pesan rencana kerja..."
+                : "Cari judul proyek, pesan penawaran..."
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -448,43 +569,63 @@ export function ProposalBoardPage() {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {(isUmkm
             ? [
-                { key: "ALL", label: "Semua Proyek" },
-                { key: "IN_PROGRESS", label: "Sedang Berjalan" },
-                { key: "OPEN", label: "Penawaran Masuk" },
-                { key: "DONE", label: "Selesai" },
+                { key: "ALL", label: "Semua Proyek", count: projectCounts.all },
+                { key: "OPEN", label: "Penawaran Masuk", count: projectCounts.open },
+                { key: "IN_PROGRESS", label: "Sedang Berjalan", count: projectCounts.inProgress },
+                { key: "COMPLETED", label: "Selesai", count: projectCounts.completed, isGreen: true },
               ]
             : [
-                { key: "ALL", label: "Semua Lamaran" },
-                { key: "ACCEPTED", label: "Disetujui / Berjalan" },
-                { key: "PENDING", label: "Menunggu" },
-                { key: "REJECTED", label: "Ditolak" },
+                { key: "ALL", label: "Semua Lamaran", count: proposalCounts.all },
+                { key: "PENDING", label: "Menunggu Seleksi", count: proposalCounts.pending },
+                { key: "IN_PROGRESS", label: "Sedang Dikerjakan", count: proposalCounts.inProgress },
+                { key: "COMPLETED", label: "Selesai", count: proposalCounts.completed, isGreen: true },
+                { key: "REJECTED", label: "Ditolak", count: proposalCounts.rejected },
               ]
-          ).map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
-                activeTab === tab.key
-                  ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                  : "bg-surface text-muted hover:text-dark-900 border-border"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          ).map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
+                  isActive
+                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                    : tab.isGreen
+                      ? "bg-surface text-emerald-800 border-border hover:border-emerald-300"
+                      : "bg-surface text-muted hover:text-dark-900 border-border"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-canvas text-muted border border-border"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 1. UMKM VIEW (Manage Projects, Incoming Proposals, & Deliverables) */}
+      {/* 5. UMKM VIEW (Manage Projects, Incoming Proposals, & Deliverables) */}
       {/* ========================================================================= */}
       {isUmkm ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: Project Selector (4 cols) */}
           <div className="lg:col-span-4 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
-              Pilih Proyek Usaha Anda ({filteredProjects.length})
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
+                Pilih Proyek ({filteredProjects.length})
+              </h3>
+              <span className="text-[11px] text-muted">
+                Hal {currentPage} dari {totalProjectPages}
+              </span>
+            </div>
 
             {loading ? (
               <div className="space-y-2.5">
@@ -515,18 +656,20 @@ export function ProposalBoardPage() {
                 </Link>
               </Card>
             ) : filteredProjects.length === 0 ? (
-              <Card className="p-6 text-center space-y-2 bg-surface border border-border">
+              <Card className="p-6 text-center space-y-2 bg-surface border-border">
                 <p className="text-xs font-bold text-dark-900">
                   Tidak Ada Proyek pada Filter Ini
                 </p>
                 <p className="text-[11px] text-muted">
-                  Coba ubah tab status atau kata kunci pencarian Anda.
+                  Coba ubah tab filter atau kata kunci pencarian Anda.
                 </p>
               </Card>
             ) : (
               <div className="space-y-2.5">
-                {filteredProjects.map((proj) => {
+                {paginatedProjects.map((proj) => {
                   const isSelected = selectedProject?.id === proj.id;
+                  const isDone = proj.status === "DONE" || proj.status === "COMPLETED";
+
                   return (
                     <div
                       key={proj.id}
@@ -539,29 +682,98 @@ export function ProposalBoardPage() {
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span
-                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${isSelected ? "bg-white/20 text-white" : "bg-canvas text-muted border border-border"}`}
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                            isSelected
+                              ? "bg-white/20 text-white"
+                              : "bg-canvas text-muted border border-border"
+                          }`}
                         >
                           {proj.kategori}
                         </span>
+
                         <span
-                          className={`text-[11px] font-bold ${isSelected ? "text-emerald-400" : "text-emerald-700"}`}
+                          className={`text-[11px] font-extrabold flex items-center gap-1 ${
+                            isSelected
+                              ? "text-emerald-400"
+                              : isDone
+                                ? "text-emerald-700"
+                                : "text-dark-900"
+                          }`}
                         >
-                          {formatStatus(proj.status)}
+                          {isDone ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              Selesai & Lunas
+                            </>
+                          ) : (
+                            formatStatus(proj.status)
+                          )}
                         </span>
                       </div>
+
                       <h4
-                        className={`text-xs sm:text-sm font-bold truncate ${isSelected ? "text-white" : "text-dark-900"}`}
+                        className={`text-xs sm:text-sm font-bold truncate ${
+                          isSelected ? "text-white" : "text-dark-900"
+                        }`}
                       >
                         {proj.judul}
                       </h4>
-                      <div
-                        className={`text-xs font-semibold mt-1 ${isSelected ? "text-slate-300" : "text-muted"}`}
-                      >
-                        Budget: {formatCurrency(proj.budget_max)}
+
+                      <div className="flex items-center justify-between mt-1 text-xs">
+                        <span
+                          className={`font-semibold ${
+                            isSelected ? "text-slate-300" : "text-muted"
+                          }`}
+                        >
+                          Budget: {formatCurrency(proj.budget_max)}
+                        </span>
                       </div>
                     </div>
                   );
                 })}
+
+                {/* Left Column Pagination Controls */}
+                {totalProjectPages > 1 && (
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="text-xs px-2.5 py-1 h-auto border-border"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5 mr-0.5" />
+                      Prev
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalProjectPages }, (_, i) => i + 1).map((pg) => (
+                        <button
+                          key={pg}
+                          onClick={() => setCurrentPage(pg)}
+                          className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
+                            currentPage === pg
+                              ? "bg-dark-900 text-white"
+                              : "bg-surface text-muted hover:text-dark-900 border border-border"
+                          }`}
+                        >
+                          {pg}
+                        </button>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(totalProjectPages, p + 1))}
+                      disabled={currentPage === totalProjectPages}
+                      className="text-xs px-2.5 py-1 h-auto border-border"
+                    >
+                      Next
+                      <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -580,14 +792,16 @@ export function ProposalBoardPage() {
                         </Badge>
                         <Badge
                           variant={
-                            selectedProject.status === "IN_PROGRESS" ||
-                            selectedProject.status === "DONE" ||
-                            selectedProject.status === "COMPLETED"
+                            selectedProject.status === "DONE" || selectedProject.status === "COMPLETED"
                               ? "success"
-                              : "warning"
+                              : selectedProject.status === "IN_PROGRESS"
+                                ? "brand"
+                                : "warning"
                           }
                         >
-                          {formatStatus(selectedProject.status)}
+                          {selectedProject.status === "DONE" || selectedProject.status === "COMPLETED"
+                            ? "Selesai & Lunas"
+                            : formatStatus(selectedProject.status)}
                         </Badge>
                       </div>
                       <h3 className="text-lg font-bold text-dark-900 mt-1">
@@ -609,15 +823,29 @@ export function ProposalBoardPage() {
                     <div className="p-4 bg-surface border border-border border-l-4 border-l-dark-900 rounded-2xl space-y-3 shadow-xs">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-4 h-4 text-dark-900" />
+                          <CheckCircle2
+                            className={`w-4 h-4 ${
+                              projectSubmissions[0].status === "APPROVED"
+                                ? "text-emerald-600"
+                                : "text-dark-900"
+                            }`}
+                          />
                           Berkas Hasil Kerja (Deliverable) Mahasiswa
                         </span>
-                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
+                        <span
+                          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            projectSubmissions[0].status === "APPROVED" ||
+                            projectSubmissions[0].status === "ACCEPTED"
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : projectSubmissions[0].status === "REVISION_REQUESTED"
+                                ? "border-amber-200 bg-amber-50 text-amber-900"
+                                : "border-border bg-canvas text-dark-900"
+                          }`}
+                        >
                           {projectSubmissions[0].status === "APPROVED" ||
                           projectSubmissions[0].status === "ACCEPTED"
                             ? "Telah Disetujui & Selesai"
-                            : projectSubmissions[0].status ===
-                                "REVISION_REQUESTED"
+                            : projectSubmissions[0].status === "REVISION_REQUESTED"
                               ? `Permintaan Revisi (Ke-${projectSubmissions[0].jumlah_revisi}/2)`
                               : "Telah Diserahkan • Siap Direview"}
                         </span>
@@ -663,7 +891,10 @@ export function ProposalBoardPage() {
                             </span>
                           </div>
 
-                          {selectedProject.status === "IN_PROGRESS" && (
+                          {/* Approval and Revision Actions (ONLY if IN_PROGRESS and NOT yet approved) */}
+                          {selectedProject.status === "IN_PROGRESS" &&
+                          sub.status !== "APPROVED" &&
+                          sub.status !== "COMPLETED" && (
                             <div className="pt-3 border-t border-border flex flex-col sm:flex-row justify-end gap-2">
                               <Button
                                 variant="outline"
@@ -691,6 +922,29 @@ export function ProposalBoardPage() {
                               </Button>
                             </div>
                           )}
+
+                          {/* Completed Success Banner */}
+                          {(sub.status === "APPROVED" ||
+                            sub.status === "COMPLETED" ||
+                            selectedProject.status === "COMPLETED" ||
+                            selectedProject.status === "DONE") && (
+                            <div className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-900 bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                                <div>
+                                  <span className="font-bold block">
+                                    Hasil pekerjaan disetujui & Proyek Selesai!
+                                  </span>
+                                  <span className="text-[11px] text-emerald-800">
+                                    Dana honor escrow telah 100% diteruskan ke saldo dompet mahasiswa.
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="font-extrabold uppercase text-[10px] px-2.5 py-1 rounded-full bg-emerald-600 text-white shrink-0 self-start sm:self-auto shadow-xs">
+                                Lunas & Tuntas
+                              </span>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -703,9 +957,7 @@ export function ProposalBoardPage() {
                         <span className="font-bold block">
                           Pengerjaan Sedang Berjalan
                         </span>
-                        Mahasiswa sedang menyelesaikan proyek. Berkas
-                        deliverable akan muncul di sini begitu mahasiswa
-                        menyerahkannya.
+                        Mahasiswa sedang menyelesaikan proyek. Berkas deliverable akan muncul di sini begitu mahasiswa menyerahkannya.
                       </div>
                     </div>
                   ) : null}
@@ -724,48 +976,68 @@ export function ProposalBoardPage() {
                           Belum Ada Pelamar
                         </p>
                         <p className="text-[11px] text-muted">
-                          Proyek Anda sedang tayang di katalog terbuka
-                          mahasiswa.
+                          Proyek Anda sedang tayang di katalog terbuka mahasiswa.
                         </p>
                       </div>
                     ) : (
-                      <div className="space-y-2.5">
+                      <div className="space-y-3">
                         {projectProposals.map((prop) => {
+                          const isAccepted = prop.status === "ACCEPTED";
+                          const isRejected = prop.status === "REJECTED";
                           const isExpanded = expandedCards[prop.id];
+
                           return (
                             <div
                               key={prop.id}
-                              className="p-3.5 rounded-2xl bg-canvas border border-border space-y-2.5 transition-all"
+                              className={`p-4 rounded-xl border transition-all ${
+                                isAccepted
+                                  ? "bg-emerald-50/20 border-emerald-200 shadow-xs"
+                                  : isRejected
+                                    ? "bg-canvas border-border opacity-70"
+                                    : "bg-canvas border-border hover:border-dark-900/30"
+                              }`}
                             >
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                  <h5 className="text-xs font-bold text-dark-900">
-                                    {prop.mhs_profile?.nama_lengkap ||
-                                      "Mahasiswa Pelamar"}
-                                  </h5>
-                                  <Badge
-                                    variant={
-                                      prop.status === "ACCEPTED"
-                                        ? "success"
-                                        : prop.status === "PENDING"
-                                          ? "warning"
-                                          : "danger"
-                                    }
-                                  >
-                                    {formatStatus(prop.status)}
-                                  </Badge>
-                                  <span className="text-[11px] text-muted hidden sm:inline">
-                                    • Estimasi: {prop.estimasi_hari} Hari
-                                  </span>
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-dark-900">
+                                      {prop.mhs_profile?.nama_lengkap ||
+                                        "Mahasiswa Pelamar"}
+                                    </span>
+                                    <span
+                                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                        isAccepted
+                                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                          : isRejected
+                                            ? "bg-rose-50 text-rose-800 border-rose-200"
+                                            : "bg-surface text-muted border-border"
+                                      }`}
+                                    >
+                                      {isAccepted
+                                        ? "Disetujui"
+                                        : isRejected
+                                          ? "Ditolak"
+                                          : "Menunggu Seleksi"}
+                                    </span>
+                                    <span className="text-[11px] text-muted hidden sm:inline">
+                                      • Estimasi: {prop.estimasi_hari} Hari
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-muted">
+                                    {prop.mhs_profile?.asal_kampus ||
+                                      "Perguruan Tinggi"}
+                                  </p>
                                 </div>
 
                                 <div className="flex items-center justify-between sm:justify-end gap-3">
-                                  <span className="text-xs sm:text-sm font-black text-dark-900">
-                                    {formatCurrency(prop.harga_tawar)}
-                                  </span>
+                                  <div className="text-left sm:text-right">
+                                    <span className="text-sm font-extrabold text-dark-900">
+                                      {formatCurrency(prop.harga_tawar)}
+                                    </span>
+                                  </div>
                                   <button
                                     onClick={() => toggleCard(prop.id)}
-                                    className="text-[11px] font-bold text-brand-indigo flex items-center gap-0.5 hover:underline"
+                                    className="text-xs font-bold text-dark-900 hover:underline flex items-center gap-0.5"
                                   >
                                     {isExpanded ? "Tutup" : "Rincian"}
                                     {isExpanded ? (
@@ -777,9 +1049,8 @@ export function ProposalBoardPage() {
                                 </div>
                               </div>
 
-                              {/* Collapsible Details */}
                               {isExpanded && (
-                                <div className="space-y-2.5 pt-2 border-t border-border/70 text-xs">
+                                <div className="space-y-3 pt-3 mt-3 border-t border-border text-xs">
                                   <div className="bg-surface p-3 rounded-xl border border-border text-dark-900/90 leading-relaxed">
                                     <span className="font-bold text-dark-900 block mb-0.5">
                                       Rencana Kerja:
@@ -825,24 +1096,34 @@ export function ProposalBoardPage() {
                 </Card>
               </div>
             ) : (
-              <Card className="p-12 text-center text-muted">
-                Pilih salah satu proyek di sebelah kiri untuk melihat rincian
-                pelamar.
+              <Card className="p-12 text-center text-muted bg-surface border-border">
+                Pilih salah satu proyek di sebelah kiri untuk melihat rincian pelamar.
               </Card>
             )}
           </div>
         </div>
       ) : (
         /* ========================================================================= */
-        /* 2. MAHASISWA VIEW (My Submitted Proposals & Work Submissions) */
+        /* 6. MAHASISWA VIEW (Linear-Style Modern Data List)                         */
         /* ========================================================================= */
         <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
+              Daftar Lamaran Proposal ({filteredProposals.length})
+            </h3>
+            {totalProposalPages > 1 && (
+              <span className="text-[11px] text-muted">
+                Halaman {currentPage} dari {totalProposalPages}
+              </span>
+            )}
+          </div>
+
           {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((n) => (
+            <div className="space-y-2">
+              {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="h-24 bg-surface rounded-2xl border border-border animate-pulse"
+                  className="h-16 bg-surface rounded-2xl border border-border animate-pulse"
                 />
               ))}
             </div>
@@ -853,8 +1134,7 @@ export function ProposalBoardPage() {
                 Belum Ada Lamaran Proposal pada Filter Ini
               </h3>
               <p className="text-xs text-muted max-w-sm mx-auto">
-                Silakan jelajahi katalog proyek UMKM yang terbuka untuk mulai
-                mengajukan penawaran.
+                Silakan jelajahi katalog proyek UMKM yang terbuka untuk mulai mengajukan penawaran.
               </p>
               <Link to="/projects">
                 <Button
@@ -867,167 +1147,264 @@ export function ProposalBoardPage() {
               </Link>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {filteredProposals.map((proposal) => {
+            <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-xs divide-y divide-border">
+              {paginatedProposals.map((proposal) => {
                 const isExpanded = expandedCards[proposal.id];
                 const sub = mhsSubmissions[proposal.project_id];
-                const isDone = sub?.status === "APPROVED";
+                const isDone = sub?.status === "APPROVED" || proposal.status === "COMPLETED";
+
+                const clientName = proposal.project_umkm_nama || "Mitra UMKM";
+                const clientInitials = clientName
+                  .split(" ")
+                  .map((w) => w[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase() || "UM";
 
                 return (
                   <div
                     key={proposal.id}
-                    className="p-5 sm:p-6 space-y-4 bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 rounded-2xl shadow-xs"
+                    className={`transition-colors duration-150 ${
+                      isExpanded ? "bg-canvas/60" : "hover:bg-slate-50/70"
+                    }`}
                   >
-                    {/* Top Metadata Row */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        {proposal.project_kategori && (
-                          <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-canvas border border-border text-dark-900 tracking-wider">
-                            {proposal.project_kategori}
-                          </span>
-                        )}
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
-                          {formatStatus(proposal.status)}
-                        </span>
-                        <span className="text-[11px] text-muted hidden sm:inline">
-                          Dikirim: {formatDate(proposal.created_at)}
-                        </span>
-                      </div>
+                    {/* Linear-Style Row */}
+                    <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                      {/* Left: Client Avatar + Project Title & Details */}
+                      <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 border ${
+                            isDone
+                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                              : proposal.status === "ACCEPTED"
+                                ? "bg-dark-900 text-white border-dark-900"
+                                : "bg-canvas text-dark-900 border-border"
+                          }`}
+                        >
+                          {clientInitials}
+                        </div>
 
-                      <span className="text-[11px] font-medium text-muted">
-                        Estimasi Pengerjaan:{" "}
-                        <b className="text-dark-900">
-                          {proposal.estimasi_hari} Hari
-                        </b>
-                      </span>
-                    </div>
-
-                    {/* Main Title & Financial Row */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-                      <div className="space-y-1">
-                        <h3 className="text-base sm:text-lg font-bold text-dark-900 font-sans tracking-tight">
-                          {proposal.project_judul ||
-                            `Lamaran Proyek #${proposal.project_id.slice(0, 8)}`}
-                        </h3>
-                        <div className="flex items-center gap-2 text-xs text-muted">
-                          <span>
-                            Klien UMKM:{" "}
-                            <b className="text-dark-900">
-                              {proposal.project_umkm_nama || "Mitra Makarya"}
-                            </b>
-                          </span>
-                          {proposal.project_budget_max && (
-                            <>
-                              <span>•</span>
-                              <span>
-                                Budget Proyek:{" "}
-                                <b className="text-dark-900">
-                                  {formatCurrency(proposal.project_budget_max)}
-                                </b>
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {proposal.project_kategori && (
+                              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-canvas border border-border text-dark-900 tracking-wider">
+                                {proposal.project_kategori}
                               </span>
-                            </>
-                          )}
+                            )}
+                            <h4 className="text-sm font-bold text-dark-900 truncate">
+                              {proposal.project_judul ||
+                                `Lamaran Proyek #${proposal.project_id.slice(0, 8)}`}
+                            </h4>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-muted">
+                            <span>
+                              Klien: <b className="text-dark-900 font-semibold">{clientName}</b>
+                            </span>
+                            <span>•</span>
+                            <span>
+                              Estimasi: <b className="text-dark-900">{proposal.estimasi_hari} Hari</b>
+                            </span>
+                            <span>•</span>
+                            <span>Dikirim: {formatDate(proposal.created_at)}</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-3.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
-                        <div className="text-left sm:text-right">
-                          <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">
-                            Harga Tawar Anda
+                      {/* Middle: Micro Workflow Stepper (Linear-Style Tracker) */}
+                      <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-[11px] font-semibold text-muted shrink-0 select-none">
+                        <span className="flex items-center gap-1 text-dark-900 font-bold">
+                          <CircleDot className="w-3 h-3 text-dark-900" />
+                          1. Dilamar
+                        </span>
+                        <span className="text-muted/40 font-mono">→</span>
+                        <span
+                          className={`flex items-center gap-1 ${
+                            proposal.status === "ACCEPTED" || isDone
+                              ? "text-dark-900 font-bold"
+                              : "opacity-40"
+                          }`}
+                        >
+                          <CircleDot
+                            className={`w-3 h-3 ${
+                              proposal.status === "ACCEPTED" || isDone
+                                ? "text-dark-900"
+                                : "text-muted"
+                            }`}
+                          />
+                          2. Pengerjaan
+                        </span>
+                        <span className="text-muted/40 font-mono">→</span>
+                        <span
+                          className={`flex items-center gap-1 ${
+                            isDone ? "text-emerald-700 font-extrabold" : "opacity-40"
+                          }`}
+                        >
+                          <CheckCircle2
+                            className={`w-3 h-3 ${
+                              isDone ? "text-emerald-600" : "text-muted"
+                            }`}
+                          />
+                          3. Honor Cair
+                        </span>
+                      </div>
+
+                      {/* Right: Nominal Honor + Status Pill + Expand Button */}
+                      <div className="flex items-center justify-between lg:justify-end gap-3.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-border">
+                        <div className="text-left lg:text-right">
+                          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
+                            Harga Tawar
                           </span>
-                          <span className="text-lg sm:text-xl font-extrabold text-dark-900 font-sans tracking-tight">
+                          <span
+                            className={`text-base sm:text-lg font-extrabold font-sans tracking-tight ${
+                              isDone ? "text-emerald-700" : "text-dark-900"
+                            }`}
+                          >
                             {formatCurrency(proposal.harga_tawar)}
                           </span>
                         </div>
-                        <button
-                          onClick={() => toggleCard(proposal.id)}
-                          className="px-3.5 py-2 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1.5 hover:bg-surface hover:border-dark-900/30 transition-all shrink-0"
-                        >
-                          {isExpanded ? "Tutup" : "Rincian & Aksi"}
-                          {isExpanded ? (
-                            <ChevronUp className="w-3.5 h-3.5" />
-                          ) : (
-                            <ChevronDown className="w-3.5 h-3.5" />
-                          )}
-                        </button>
+
+                        <div className="flex items-center gap-2">
+                          {/* Modern Status Badge with Dot Indicator */}
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                              isDone
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                : proposal.status === "ACCEPTED"
+                                  ? "bg-dark-900 text-white border-dark-900"
+                                  : proposal.status === "REJECTED"
+                                    ? "bg-rose-50 text-rose-800 border-rose-200"
+                                    : "bg-canvas text-dark-900 border-border"
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isDone
+                                  ? "bg-emerald-500"
+                                  : proposal.status === "ACCEPTED"
+                                    ? "bg-emerald-400"
+                                    : proposal.status === "REJECTED"
+                                      ? "bg-rose-500"
+                                      : "bg-amber-500"
+                              }`}
+                            />
+                            {isDone
+                              ? "Selesai & Cair"
+                              : proposal.status === "ACCEPTED"
+                                ? "Sedang Dikerjakan"
+                                : formatStatus(proposal.status)}
+                          </span>
+
+                          <button
+                            onClick={() => toggleCard(proposal.id)}
+                            className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all ${
+                              isExpanded
+                                ? "bg-dark-900 text-white border-dark-900"
+                                : "bg-canvas border-border text-dark-900 hover:bg-surface"
+                            }`}
+                          >
+                            {isExpanded ? "Tutup" : "Rincian"}
+                            {isExpanded ? (
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            ) : (
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Expandable Accordion Body */}
+                    {/* Expandable Inline Detail Panel */}
                     {isExpanded && (
-                      <div className="space-y-3 pt-3 border-t border-border text-xs">
-                        <div className="bg-canvas border border-border p-3 rounded-xl text-dark-900/90 leading-relaxed">
-                          <span className="font-bold text-dark-900 block mb-0.5">
-                            Pesan Penawaran Anda:
+                      <div className="p-4 sm:p-5 pt-0 border-t border-border/80 bg-canvas/40 space-y-3.5 text-xs">
+                        <div className="bg-surface p-4 rounded-xl border border-border space-y-1">
+                          <span className="font-bold text-dark-900 block text-xs">
+                            Pesan Penawaran & Rencana Kerja Anda:
                           </span>
-                          "{proposal.cover_letter}"
+                          <p className="text-dark-900/90 leading-relaxed">
+                            "{proposal.cover_letter}"
+                          </p>
                         </div>
 
                         {proposal.status === "ACCEPTED" && (
-                          <div className="space-y-2.5">
+                          <div className="space-y-3">
                             {sub ? (
-                              <div className="p-3.5 bg-canvas border border-border rounded-xl space-y-2.5">
+                              <div className="p-4 rounded-xl border border-border bg-surface space-y-3">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-dark-900 text-white shadow-xs">
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                    {sub.status === "APPROVED" ||
-                                    sub.status === "ACCEPTED"
-                                      ? "Hasil Kerja Disetujui • Selesai"
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-dark-900">
+                                    <FileCheck2 className="w-4 h-4 text-emerald-600" />
+                                    {isDone
+                                      ? "Hasil Pekerjaan Disetujui • Selesai"
                                       : sub.status === "REVISION_REQUESTED"
-                                        ? `Permintaan Revisi (Ke-${sub.jumlah_revisi}/2)`
-                                        : "Deliverable Terkirim • Menunggu Review"}
+                                        ? `Permintaan Revisi dari Klien (Ke-${sub.jumlah_revisi}/2)`
+                                        : "Berkas Deliverable Terkirim • Menunggu Review"}
                                   </span>
                                   <span className="text-[11px] text-muted">
-                                    Diserahkan:{" "}
-                                    {formatDate(
-                                      sub.submitted_at || sub.created_at,
-                                    )}
+                                    Diserahkan: {formatDate(sub.submitted_at || sub.created_at)}
                                   </span>
                                 </div>
 
-                                <div className="flex items-center gap-2 p-2.5 bg-surface border border-border rounded-lg text-xs">
-                                  <ExternalLink className="w-4 h-4 text-dark-900 shrink-0" />
+                                <div className="flex items-center justify-between gap-2 p-3 bg-canvas border border-border rounded-lg text-xs">
+                                  <div className="flex items-center gap-2 truncate">
+                                    <ExternalLink className="w-4 h-4 text-dark-900 shrink-0" />
+                                    <a
+                                      href={sub.url_berkas}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="font-semibold text-dark-900 hover:underline truncate"
+                                    >
+                                      {sub.url_berkas}
+                                    </a>
+                                  </div>
                                   <a
                                     href={sub.url_berkas}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="font-semibold text-dark-900 hover:underline truncate"
+                                    className="px-2.5 py-1 rounded-md bg-dark-900 text-white text-[11px] font-bold hover:bg-dark-800 shrink-0"
                                   >
-                                    {sub.url_berkas}
+                                    Buka
                                   </a>
                                 </div>
 
                                 {sub.catatan_pengiriman && (
-                                  <p className="text-xs text-dark-900/80 italic bg-surface p-2.5 rounded border border-border">
+                                  <p className="text-xs text-dark-900/80 italic bg-canvas p-3 rounded-lg border border-border">
                                     "{sub.catatan_pengiriman}"
                                   </p>
                                 )}
 
                                 {isDone && (
-                                  <div className="p-3 bg-surface border border-border rounded-xl flex items-center justify-between gap-2.5">
-                                    <div className="flex items-center gap-2">
-                                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                                      <span className="font-bold text-dark-900 text-xs">
-                                        Honor{" "}
-                                        {formatCurrency(proposal.harga_tawar)}{" "}
-                                        telah disetujui & masuk ke saldo dompet.
-                                      </span>
+                                  <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div className="flex items-center gap-2.5">
+                                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                                      <div>
+                                        <span className="font-extrabold text-emerald-950 text-xs block">
+                                          Proyek Selesai! Honor {formatCurrency(proposal.harga_tawar)} Telah Cair.
+                                        </span>
+                                        <span className="text-[11px] text-emerald-800">
+                                          Dana telah masuk 100% ke saldo dompet aktif Anda dan dapat langsung ditarik.
+                                        </span>
+                                      </div>
                                     </div>
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-lg shrink-0">
-                                      <CheckCircle2 className="w-3 h-3" />
-                                      Cair ke Dompet
-                                    </span>
+                                    <Link to="/wallet" className="shrink-0 self-start sm:self-auto">
+                                      <Button
+                                        variant="brand"
+                                        size="sm"
+                                        className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white"
+                                      >
+                                        Buka Dompet
+                                        <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                                      </Button>
+                                    </Link>
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 text-xs text-dark-900 font-medium p-3 bg-surface rounded-xl border border-border">
-                                <ShieldCheck className="w-4 h-4 text-dark-900 shrink-0" />
+                              <div className="flex items-center gap-2.5 text-xs text-dark-900 font-medium p-3.5 bg-surface rounded-xl border border-border">
+                                <ShieldCheck className="w-5 h-5 text-dark-900 shrink-0" />
                                 <span>
                                   Dana escrow sebesar{" "}
                                   <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}
-                                  telah dikunci aman oleh klien. Silakan unggah
-                                  berkas hasil kerja saat sudah selesai.
+                                  telah dikunci aman oleh klien. Silakan unggah berkas hasil kerja saat sudah selesai.
                                 </span>
                               </div>
                             )}
@@ -1037,12 +1414,10 @@ export function ProposalBoardPage() {
                                 <Button
                                   variant="brand"
                                   size="sm"
-                                  onClick={() =>
-                                    handleOpenSubmission(proposal.project_id)
-                                  }
+                                  onClick={() => handleOpenSubmission(proposal.project_id)}
                                   className="w-full sm:w-auto text-xs font-bold shadow-brand"
                                 >
-                                  <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                                  <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
                                   {sub
                                     ? sub.status === "REVISION_REQUESTED"
                                       ? "Kirim Revisi Hasil Kerja"
@@ -1058,6 +1433,49 @@ export function ProposalBoardPage() {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Mahasiswa Proposal List Pagination Controls */}
+          {totalProposalPages > 1 && (
+            <div className="flex items-center justify-between pt-2 border-t border-border bg-surface p-4 rounded-2xl">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="text-xs font-bold border-border"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Sebelumnya
+              </Button>
+
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: totalProposalPages }, (_, i) => i + 1).map((pg) => (
+                  <button
+                    key={pg}
+                    onClick={() => setCurrentPage(pg)}
+                    className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
+                      currentPage === pg
+                        ? "bg-dark-900 text-white shadow-xs"
+                        : "bg-canvas text-muted hover:text-dark-900 border border-border"
+                    }`}
+                  >
+                    {pg}
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalProposalPages, p + 1))}
+                disabled={currentPage === totalProposalPages}
+                className="text-xs font-bold border-border"
+              >
+                Berikutnya
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
             </div>
           )}
         </div>

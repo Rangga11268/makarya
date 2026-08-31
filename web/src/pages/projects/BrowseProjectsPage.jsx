@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi } from "../../api";
@@ -6,15 +6,17 @@ import { ProjectCard } from "../../components/features/ProjectCard";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { SectionHeader } from "../../components/ui/SectionHeader";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { daysRemaining } from "../../utils/formatDate";
 import {
   Search,
-  SlidersHorizontal,
-  Compass,
   RotateCcw,
   ShieldCheck,
   PlusCircle,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Layers,
 } from "lucide-react";
 
 export function BrowseProjectsPage() {
@@ -28,6 +30,9 @@ export function BrowseProjectsPage() {
   const [category, setCategory] = useState(initialCategory);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [maxBudget, setMaxBudget] = useState(2000000);
+  const [sortBy, setSortBy] = useState("newest"); // newest | budget_desc | budget_asc | deadline_soon
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const categories = [
     { key: "", label: "Semua Kategori" },
@@ -51,6 +56,7 @@ export function BrowseProjectsPage() {
 
       const res = await projectApi.browse(params);
       setProjects(res.data);
+      setCurrentPage(1); // Reset page on new search/filter
     } catch (err) {
       console.error("Gagal memuat proyek:", err);
     } finally {
@@ -74,11 +80,51 @@ export function BrowseProjectsPage() {
     setCategory("");
     setKeyword("");
     setMaxBudget(2000000);
+    setSortBy("newest");
+    setCurrentPage(1);
     setSearchParams({});
   };
 
+  // Sorted Projects
+  const sortedProjects = useMemo(() => {
+    const list = [...projects];
+    if (sortBy === "newest") {
+      return list.sort(
+        (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0),
+      );
+    }
+    if (sortBy === "budget_desc") {
+      return list.sort(
+        (a, b) => Number(b.budget_max || 0) - Number(a.budget_max || 0),
+      );
+    }
+    if (sortBy === "budget_asc") {
+      return list.sort(
+        (a, b) => Number(a.budget_max || 0) - Number(b.budget_max || 0),
+      );
+    }
+    if (sortBy === "deadline_soon") {
+      return list.sort(
+        (a, b) => daysRemaining(a.deadline) - daysRemaining(b.deadline),
+      );
+    }
+    return list;
+  }, [projects, sortBy]);
+
+  // Pagination Slice
+  const totalPages = Math.ceil(sortedProjects.length / itemsPerPage) || 1;
+  const paginatedProjects = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return sortedProjects.slice(start, start + itemsPerPage);
+  }, [sortedProjects, currentPage, itemsPerPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 80, behavior: "smooth" });
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-sans">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -154,7 +200,7 @@ export function BrowseProjectsPage() {
                     }}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
                       category === c.key
-                        ? "bg-dark-900 text-white"
+                        ? "bg-dark-900 text-white shadow-xs"
                         : "text-muted hover:bg-canvas hover:text-dark-900"
                     }`}
                   >
@@ -189,30 +235,75 @@ export function BrowseProjectsPage() {
             </div>
           </Card>
 
-          <div className="p-4 rounded-2xl bg-brand-indigo-light/30 border border-brand-indigo/20 space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-brand-indigo">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Proteksi Pembayaran 100%</span>
+          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Garansi Escrow 100%</span>
             </div>
-            <p className="text-[11px] text-brand-indigo/80 leading-relaxed">
-              Seluruh dana proyek terkunci aman di rekening bersama (*Escrow*)
-              sebelum pekerjaan dimulai.
+            <p className="text-[11px] text-emerald-800 leading-relaxed">
+              Seluruh dana proyek dijamin dan dikunci aman oleh sistem sebelum
+              Anda memulai pengerjaan.
             </p>
           </div>
         </div>
 
-        {/* Project Cards Grid */}
-        <div className="lg:col-span-3">
+        {/* Project Content Area */}
+        <div className="lg:col-span-3 space-y-5">
+          {/* Top Control Bar: Total Count & Sort By Dropdown */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-surface border border-border rounded-2xl shadow-xs">
+            <div className="flex items-center gap-2 text-xs text-muted font-medium">
+              <Layers className="w-4 h-4 text-dark-900" />
+              <span>
+                Menampilkan{" "}
+                <b className="text-dark-900">
+                  {sortedProjects.length > 0
+                    ? `${(currentPage - 1) * itemsPerPage + 1} - ${Math.min(
+                        currentPage * itemsPerPage,
+                        sortedProjects.length,
+                      )}`
+                    : "0"}
+                </b>{" "}
+                dari <b className="text-dark-900">{sortedProjects.length}</b>{" "}
+                Proyek Terbuka
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <label
+                htmlFor="sort-select"
+                className="text-xs font-semibold text-muted flex items-center gap-1 shrink-0"
+              >
+                <ArrowUpDown className="w-3.5 h-3.5 text-muted" />
+                <span>Urutkan:</span>
+              </label>
+              <select
+                id="sort-select"
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="text-xs font-bold bg-canvas border border-border rounded-xl px-3 py-1.5 text-dark-900 focus:outline-none focus:border-brand-indigo cursor-pointer shadow-xs"
+              >
+                <option value="newest">Terbaru Ditambahkan</option>
+                <option value="deadline_soon">Tenggat Waktu Terdekat</option>
+                <option value="budget_desc">Budget Tertinggi</option>
+                <option value="budget_asc">Budget Terendah</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Project Cards Grid */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="h-60 bg-surface rounded-card border border-border animate-pulse"
+                  className="h-60 bg-surface rounded-3xl border border-border animate-pulse"
                 />
               ))}
             </div>
-          ) : projects.length === 0 ? (
+          ) : paginatedProjects.length === 0 ? (
             <EmptyState
               title="Tidak ada proyek ditemukan"
               description="Coba ubah filter kategori atau kata kunci pencarian Anda untuk melihat peluang lainnya."
@@ -228,9 +319,59 @@ export function BrowseProjectsPage() {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {projects.map((project) => (
+              {paginatedProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
+            </div>
+          )}
+
+          {/* Pagination Controls Bar */}
+          {!loading && totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
+              <span className="text-xs text-muted font-medium order-2 sm:order-1">
+                Halaman <b className="text-dark-900">{currentPage}</b> dari{" "}
+                <b className="text-dark-900">{totalPages}</b>
+              </span>
+
+              <div className="flex items-center gap-1.5 order-1 sm:order-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-2.5 py-1.5 text-xs font-bold disabled:opacity-40"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5 mr-1" />
+                  Sebelumnya
+                </Button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
+                        currentPage === pageNum
+                          ? "bg-dark-900 text-white shadow-xs"
+                          : "bg-surface hover:bg-canvas text-dark-900 border border-border"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ),
+                )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-2.5 py-1.5 text-xs font-bold disabled:opacity-40"
+                >
+                  Berikutnya
+                  <ChevronRight className="w-3.5 h-3.5 ml-1" />
+                </Button>
+              </div>
             </div>
           )}
         </div>

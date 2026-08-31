@@ -18,6 +18,8 @@ import {
   ChevronDown,
   Sparkles,
   Search,
+  GraduationCap,
+  HelpCircle,
 } from "lucide-react";
 
 export function Navbar() {
@@ -54,6 +56,7 @@ export function Navbar() {
     }
     if (user?.role === "UMKM") {
       return [
+        { label: "Dashboard", path: "/dashboard", icon: Layers },
         {
           label: "Kelola Proyek & Pelamar",
           path: "/proposals",
@@ -65,12 +68,21 @@ export function Navbar() {
     }
     // MAHASISWA
     return [
+      { label: "Dashboard", path: "/dashboard", icon: Layers },
       { label: "Jelajah Proyek", path: "/projects", icon: Compass },
       { label: "Papan Kerja & Hasil", path: "/proposals", icon: Briefcase },
       { label: "Portofolio & Rating", path: "/portfolio", icon: UserCheck },
       { label: "Dompet Mahasiswa", path: "/wallet", icon: WalletIcon },
     ];
   })();
+
+  const publicNavLinks = [
+    { label: "Katalog Proyek", path: "/projects", icon: Compass },
+    { label: "Kategori Layanan", path: "/#kategori", icon: Layers },
+    { label: "Cara Kerja & Escrow", path: "/#cara-kerja", icon: ShieldCheck },
+    { label: "Talenta Mahasiswa", path: "/#talenta", icon: GraduationCap },
+    { label: "FAQ", path: "/#faq", icon: HelpCircle },
+  ];
 
   const isActive = (path) => {
     if (
@@ -95,8 +107,7 @@ export function Navbar() {
   const getHomeTarget = () => {
     if (!isAuthenticated) return "/";
     if (user?.role === "ADMIN") return "/admin";
-    if (user?.role === "UMKM") return "/proposals";
-    return "/projects";
+    return "/dashboard";
   };
 
   return (
@@ -117,30 +128,58 @@ export function Navbar() {
         </div>
 
         {/* Center: Modern Floating Pill Navigation */}
-        {isAuthenticated && (
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80 backdrop-blur-md shadow-2xs">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const active = isActive(link.path);
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all select-none ${
-                    active
-                      ? "bg-white text-dark-900 font-bold shadow-xs border border-slate-200/60"
-                      : "text-slate-600 hover:text-dark-900 hover:bg-white/60 font-semibold"
-                  }`}
-                >
-                  <Icon
-                    className={`w-3.5 h-3.5 ${active ? "text-brand-indigo" : "text-slate-500"}`}
-                  />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        )}
+        <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80 backdrop-blur-md shadow-2xs">
+          {isAuthenticated
+            ? navLinks.map((link) => {
+                const Icon = link.icon;
+                const active = isActive(link.path);
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all select-none ${
+                      active
+                        ? "bg-white text-dark-900 font-bold shadow-xs border border-slate-200/60"
+                        : "text-slate-600 hover:text-dark-900 hover:bg-white/60 font-semibold"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-3.5 h-3.5 ${active ? "text-brand-indigo" : "text-slate-500"}`}
+                    />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })
+            : publicNavLinks.map((link) => {
+                const Icon = link.icon;
+                const isAnchor = link.path.includes("#");
+                return isAnchor ? (
+                  <a
+                    key={link.label}
+                    href={link.path}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs text-slate-600 hover:text-dark-900 hover:bg-white/60 font-semibold transition-all select-none"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{link.label}</span>
+                  </a>
+                ) : (
+                  <Link
+                    key={link.label}
+                    to={link.path}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs transition-all select-none ${
+                      location.pathname === link.path
+                        ? "bg-white text-dark-900 font-bold shadow-xs border border-slate-200/60"
+                        : "text-slate-600 hover:text-dark-900 hover:bg-white/60 font-semibold"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-3.5 h-3.5 ${location.pathname === link.path ? "text-brand-indigo" : "text-slate-500"}`}
+                    />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+        </nav>
 
         {/* Right: Quick Action & User Profile Dropdown */}
         <div className="flex items-center gap-3">
@@ -157,16 +196,6 @@ export function Navbar() {
                     <PlusCircle className="w-4 h-4 mr-1.5" />
                     Pasang Proyek
                   </Button>
-                </Link>
-              )}
-
-              {/* Mahasiswa Quick Action: Jelajah Proyek */}
-              {user?.role === "MHS" && (
-                <Link to="/projects" className="hidden sm:inline-flex">
-                  <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs font-bold text-dark-900 transition-all select-none">
-                    <Search className="w-3.5 h-3.5 text-brand-indigo" />
-                    <span>Cari Proyek</span>
-                  </button>
                 </Link>
               )}
 
@@ -264,10 +293,24 @@ export function Navbar() {
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="text-xs font-bold">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs font-bold text-dark-900"
+                >
                   Masuk
+                </Button>
+              </Link>
+              <Link to="/login" className="hidden sm:inline-flex">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs font-bold border-dark-900/20 hover:border-dark-900 text-dark-900 rounded-full"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Pasang Proyek UMKM
                 </Button>
               </Link>
               <Link to="/register">
@@ -279,6 +322,19 @@ export function Navbar() {
                   Daftar Mahasiswa
                 </Button>
               </Link>
+
+              {/* Mobile Menu Toggle Button for Guests */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-full border border-border text-dark-900 hover:bg-canvas transition-colors ml-1"
+                aria-label="Menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
             </div>
           )}
         </div>
@@ -355,33 +411,63 @@ export function Navbar() {
               </div>
             </>
           ) : (
-            <div className="space-y-2 pt-1">
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block"
-              >
-                <Button
-                  variant="outline"
-                  size="md"
-                  className="w-full text-xs font-bold"
+            <div className="space-y-3 pt-1">
+              <div className="space-y-1">
+                {publicNavLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isAnchor = link.path.includes("#");
+                  return isAnchor ? (
+                    <a
+                      key={link.label}
+                      href={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-canvas transition-all"
+                    >
+                      <Icon className="w-4 h-4 text-muted" />
+                      <span>{link.label}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      key={link.label}
+                      to={link.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-canvas transition-all"
+                    >
+                      <Icon className="w-4 h-4 text-muted" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="pt-2 border-t border-border space-y-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block"
                 >
-                  Masuk ke Akun
-                </Button>
-              </Link>
-              <Link
-                to="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block"
-              >
-                <Button
-                  variant="brand"
-                  size="md"
-                  className="w-full text-xs font-bold shadow-brand"
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="w-full text-xs font-bold rounded-xl"
+                  >
+                    Masuk ke Akun
+                  </Button>
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block"
                 >
-                  Daftar Akun Mahasiswa
-                </Button>
-              </Link>
+                  <Button
+                    variant="brand"
+                    size="md"
+                    className="w-full text-xs font-bold shadow-brand rounded-xl"
+                  >
+                    Daftar Akun Mahasiswa
+                  </Button>
+                </Link>
+              </div>
             </div>
           )}
         </div>

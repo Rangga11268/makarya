@@ -44,9 +44,13 @@ yarn-error.log*
 pnpm-debug.log*
 
 # ------------------------------------------
-# Mobile (React Native / Android)
+# Mobile (Expo / React Native)
 # ------------------------------------------
 mobile/node_modules/
+**/.expo/
+mobile/dist/
+mobile/dist_test/
+mobile/web-build/
 mobile/android/app/build/
 mobile/android/build/
 mobile/android/.gradle/
@@ -54,6 +58,8 @@ mobile/android/app/.cxx/
 mobile/android/app/release/
 *.apk
 *.aab
+*.jks
+*.keystore
 mobile/android/app/google-services.json
 mobile/ios/Pods/
 mobile/ios/build/

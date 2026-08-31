@@ -209,7 +209,10 @@ export function LandingPage() {
       </section>
 
       {/* 2. MOST DEMANDING CATEGORIES */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        id="kategori"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left Column: Editorial Headline */}
           <div className="lg:col-span-4 flex flex-col justify-between space-y-6 bg-surface p-7 sm:p-8 rounded-3xl border border-border shadow-xs">
@@ -278,7 +281,10 @@ export function LandingPage() {
       </section>
 
       {/* 3. HOW IT WORKS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        id="cara-kerja"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
+      >
         <div className="bg-canvas border border-border rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
           <SectionHeader
             centered
@@ -312,7 +318,10 @@ export function LandingPage() {
       </section>
 
       {/* 4. LATEST LIVE PROJECTS PREVIEW */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        id="proyek"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
+      >
         <SectionHeader
           badgeText="Peluang Terbaru"
           title="Proyek UMKM Siap Dikerjakan"
@@ -350,7 +359,10 @@ export function LandingPage() {
       </section>
 
       {/* 5. TALENT SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        id="talenta"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
+      >
         <SectionHeader
           badgeText="Talenta Kampus Teruji"
           title="Mahasiswa Berprestasi & Terverifikasi"
@@ -372,7 +384,10 @@ export function LandingPage() {
       </section>
 
       {/* 6. PERTANYAAN UMUM (FAQ) */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section
+        id="faq"
+        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24"
+      >
         <SectionHeader
           centered
           badgeText="Pusat Informasi & Bantuan"
