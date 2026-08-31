@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -38,14 +38,21 @@ export function LoginScreen({ navigation }) {
     >
       {/* Top Header & Branding */}
       <View style={styles.header}>
-        <View style={styles.badge}>
-          <Sparkles size={13} color={COLORS.accentLime} />
-          <Text style={styles.badgeText}>Portal Klien UMKM</Text>
+        <View style={styles.topLogoRow}>
+          <Image
+            source={require("../../../assets/logo.webp")}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
+          <View style={styles.badge}>
+            <Sparkles size={12} color={COLORS.brandCyan} />
+            <Text style={styles.badgeText}>Portal UMKM</Text>
+          </View>
         </View>
 
-        <Text style={styles.logoTitle}>MAKARYA</Text>
+        <Text style={styles.welcomeText}>Masuk ke Akun</Text>
         <Text style={styles.subtitle}>
-          Solusi digital bisnis UMKM bersama ribuan mahasiswa kampus bertalenta.
+          Akses dashboard manajemen proyek & kolaborasi mahasiswa bertalenta.
         </Text>
       </View>
 
@@ -108,7 +115,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   header: {
-    marginBottom: 30,
+    marginBottom: 28,
+  },
+  topLogoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  brandLogo: {
+    width: 140,
+    height: 42,
   },
   badge: {
     flexDirection: "row",
@@ -117,26 +134,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: "rgba(235, 255, 87, 0.12)",
-    alignSelf: "flex-start",
-    marginBottom: 16,
+    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(14, 165, 233, 0.25)",
   },
   badgeText: {
     fontSize: 11,
     fontWeight: "700",
-    color: COLORS.accentLime,
+    color: COLORS.brandCyan,
     letterSpacing: 0.2,
   },
-  logoTitle: {
-    fontSize: 34,
+  welcomeText: {
+    fontSize: 28,
     fontWeight: "900",
     color: COLORS.textWhite,
-    letterSpacing: -1,
+    letterSpacing: -0.8,
   },
   subtitle: {
     fontSize: 13,
     color: COLORS.textMuted,
-    marginTop: 8,
+    marginTop: 6,
     lineHeight: 20,
   },
   formContainer: {
@@ -163,7 +180,7 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 12,
     fontWeight: "800",
-    color: COLORS.accentLime,
+    color: COLORS.brandCyan,
   },
   footerNotice: {
     flexDirection: "row",

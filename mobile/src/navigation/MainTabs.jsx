@@ -26,7 +26,7 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Briefcase size={20} color={focused ? "#000" : COLORS.textMuted} />
+              <Briefcase size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
             </View>
           ),
         }}
@@ -37,7 +37,7 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Search size={20} color={focused ? "#000" : COLORS.textMuted} />
+              <Search size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
             </View>
           ),
         }}
@@ -48,7 +48,7 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Activity size={20} color={focused ? "#000" : COLORS.textMuted} />
+              <Activity size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
             </View>
           ),
         }}
@@ -59,7 +59,7 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Wallet size={20} color={focused ? "#000" : COLORS.textMuted} />
+              <Wallet size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
             </View>
           ),
         }}
@@ -70,7 +70,7 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <User size={20} color={focused ? "#000" : COLORS.textMuted} />
+              <User size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
             </View>
           ),
         }}
@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     height: 64,
-    backgroundColor: "rgba(24, 26, 32, 0.96)",
-    borderRadius: 999, // Pill shape from Dribbble reference
+    backgroundColor: "rgba(15, 23, 42, 0.95)", // Web dark-900 with glass effect
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     paddingHorizontal: 12,
@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   iconActive: {
-    backgroundColor: COLORS.accentLime, // Neon yellow highlight pill
+    backgroundColor: COLORS.brandIndigo, // Web Primary Indigo
   },
 });

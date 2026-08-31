@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   textLime: {
-    color: COLORS.textDark,
+    color: COLORS.textWhite,
   },
   textDarkVariant: {
     color: COLORS.textWhite,

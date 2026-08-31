@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Image } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
@@ -78,32 +78,36 @@ export function HomeScreen({ navigation }) {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={loadData}
-          tintColor={COLORS.accentLime}
-          colors={[COLORS.accentLime]}
+          tintColor={COLORS.brandCyan}
+          colors={[COLORS.brandIndigo]}
         />
       }
     >
       {/* Top Header */}
       <View style={styles.topHeader}>
-        <View>
-          <View style={styles.greetingRow}>
-            <Text style={styles.greeting}>Halo, {user?.nama_usaha || "Pemilik UMKM"}</Text>
-            <View style={styles.verifiedTag}>
-              <ShieldCheck size={12} color="#000" />
-              <Text style={styles.verifiedText}>Escrow Protected</Text>
-            </View>
+        <View style={styles.headerTitleRow}>
+          <Image
+            source={require("../../../assets/logo.webp")}
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
+          <View style={styles.verifiedTag}>
+            <ShieldCheck size={12} color={COLORS.brandCyan} />
+            <Text style={styles.verifiedText}>Escrow Protected</Text>
           </View>
-          <Text style={styles.headerSubtitle}>
-            Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda.
-          </Text>
         </View>
+
+        <Text style={styles.greeting}>Halo, {user?.nama_usaha || "Pemilik UMKM"}</Text>
+        <Text style={styles.headerSubtitle}>
+          Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda.
+        </Text>
       </View>
 
       {/* Saldo & Quick Action Card */}
       <View style={styles.balanceCard}>
         <View style={styles.balanceHeader}>
           <View style={styles.walletIcon}>
-            <Wallet size={18} color={COLORS.accentLime} />
+            <Wallet size={18} color={COLORS.brandCyan} />
           </View>
           <Text style={styles.balanceLabel}>Saldo Aktif UMKM</Text>
         </View>
@@ -123,7 +127,7 @@ export function HomeScreen({ navigation }) {
             title="Pasang Proyek Baru"
             variant="lime"
             size="md"
-            icon={<Plus size={16} color="#000" strokeWidth={3} />}
+            icon={<Plus size={16} color="#FFF" strokeWidth={3} />}
             onPress={() => navigation.navigate("PostProject")}
             style={styles.actionBtn}
           />
@@ -189,11 +193,15 @@ const styles = StyleSheet.create({
   topHeader: {
     marginBottom: 20,
   },
-  greetingRow: {
+  headerTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 4,
+    marginBottom: 12,
+  },
+  headerLogo: {
+    width: 120,
+    height: 36,
   },
   greeting: {
     fontSize: 22,
@@ -205,15 +213,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: "rgba(14, 165, 233, 0.12)",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(14, 165, 233, 0.25)",
   },
   verifiedText: {
     fontSize: 10,
     fontWeight: "800",
-    color: "#000",
+    color: COLORS.brandCyan,
   },
   headerSubtitle: {
     fontSize: 12,
@@ -238,7 +248,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "rgba(235, 255, 87, 0.15)",
+    backgroundColor: "rgba(14, 165, 233, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },

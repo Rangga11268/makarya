@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -48,6 +48,11 @@ export function RegisterScreen({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
+        <Image
+          source={require("../../../assets/logo.webp")}
+          style={styles.brandLogo}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Daftar Akun UMKM</Text>
         <Text style={styles.subtitle}>
           Mulai pasang proyek digital dan temukan mahasiswa berbakat untuk bisnis Anda.
@@ -150,6 +155,11 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 24,
   },
+  brandLogo: {
+    width: 140,
+    height: 42,
+    marginBottom: 16,
+  },
   title: {
     fontSize: 28,
     fontWeight: "900",
@@ -191,8 +201,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   industryChipActive: {
-    backgroundColor: COLORS.accentLime,
-    borderColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
   },
   industryText: {
     fontSize: 12,
@@ -200,7 +210,7 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   industryTextActive: {
-    color: COLORS.textDark,
+    color: COLORS.textWhite,
     fontWeight: "800",
   },
   registerBtn: {
@@ -219,6 +229,6 @@ const styles = StyleSheet.create({
   loginLink: {
     fontSize: 12,
     fontWeight: "800",
-    color: COLORS.accentLime,
+    color: COLORS.brandCyan,
   },
 });

@@ -1,34 +1,41 @@
 export const COLORS = {
-  // Primary Canvases
-  bgDark: "#121316",
-  bgSurface: "#181A20",
-  cardDark: "#1F222A",
-  cardDarkHover: "#262A34",
-  cardCream: "#F1F0E6",
+  // Primary Canvases & Dark Hierarchy (Aligned with Web dark-950, dark-900, dark-800)
+  bgDark: "#090D16",
+  bgSurface: "#0F172A",
+  cardDark: "#1E293B",
+  cardDarkHover: "#334155",
+  cardCream: "#F8FAFC",
+  canvasSoft: "#F1F5F9",
+  surfaceLight: "#FFFFFF",
   
-  // Vibrant Accents (Dribbble Palette Reference)
-  accentLime: "#EBFF57",
-  accentCyan: "#7BFCEC",
-  accentPurple: "#B39DDB",
-  brandIndigo: "#6366F1",
+  // Brand Colors (Aligned with Web brand.indigo #4F46E5 & brand.cyan #0EA5E9)
+  brandIndigo: "#4F46E5",
+  brandIndigoDark: "#4338CA",
+  brandIndigoLight: "#EEF2FF",
+  brandCyan: "#0EA5E9",
+  brandCyanLight: "#E0F2FE",
+  accentLime: "#4F46E5", // Harmonized with Web Primary Brand Indigo
+  accentCyan: "#0EA5E9", // Harmonized with Web Primary Brand Cyan
+  accentPurple: "#818CF8",
   
   // Monochromes & Text
   textWhite: "#FFFFFF",
-  textDark: "#121316",
-  textMuted: "#8E929C",
-  textDim: "#5C606C",
+  textDark: "#090D16",
+  textMuted: "#94A3B8",
+  textDim: "#64748B",
   
   // Borders & Dividers
-  borderDark: "#262A35",
-  borderLight: "#E2E0D4",
+  borderDark: "#1E293B",
+  borderSubtle: "#334155",
+  borderLight: "#E2E8F0",
   
-  // Status Colors
+  // Status Colors (Aligned with Web accent.emerald, amber, rose)
   success: "#10B981",
   successBg: "rgba(16, 185, 129, 0.15)",
   warning: "#F59E0B",
   warningBg: "rgba(245, 158, 11, 0.15)",
   danger: "#EF4444",
   dangerBg: "rgba(239, 68, 68, 0.15)",
-  info: "#3B82F6",
-  infoBg: "rgba(59, 130, 246, 0.15)",
+  info: "#0EA5E9",
+  infoBg: "rgba(14, 165, 233, 0.15)",
 };
