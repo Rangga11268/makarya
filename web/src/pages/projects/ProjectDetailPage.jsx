@@ -38,7 +38,6 @@ import {
   AlertCircle,
   MapPin,
   Share2,
-  PlusCircle,
 } from "lucide-react";
 
 export function ProjectDetailPage() {

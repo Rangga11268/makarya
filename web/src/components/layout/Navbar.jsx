@@ -54,27 +54,21 @@ export function Navbar() {
     }
     if (user?.role === "UMKM") {
       return [
-        { label: "Beranda", path: "/dashboard", icon: Layers },
-        { label: "Katalog Proyek", path: "/projects", icon: Compass },
-        { label: "Kelola Pelamar", path: "/proposals", icon: Briefcase },
-        { label: "Pusat Proyek & Pelamar", path: "/proposals", icon: Briefcase },
-        { label: "Pasang Proyek Baru", path: "/projects/new", icon: PlusCircle },
+        {
+          label: "Kelola Proyek & Pelamar",
+          path: "/proposals",
+          icon: Briefcase,
+        },
         { label: "Dompet & Escrow", path: "/wallet", icon: WalletIcon },
         { label: "Profil Usaha", path: "/profile", icon: UserCheck },
-        { label: "Dompet & Escrow", path: "/wallet", icon: WalletIcon },
       ];
     }
     // MAHASISWA
     return [
-      { label: "Beranda", path: "/dashboard", icon: Layers },
       { label: "Jelajah Proyek", path: "/projects", icon: Compass },
-      { label: "Proposal Saya", path: "/proposals", icon: Briefcase },
-      { label: "Portofolio", path: "/portfolio", icon: UserCheck },
-      { label: "Jelajah Peluang Proyek", path: "/projects", icon: Compass },
-      { label: "Papan Kerja Saya", path: "/proposals", icon: Briefcase },
+      { label: "Papan Kerja & Hasil", path: "/proposals", icon: Briefcase },
       { label: "Portofolio & Rating", path: "/portfolio", icon: UserCheck },
       { label: "Dompet Mahasiswa", path: "/wallet", icon: WalletIcon },
-      { label: "Profil Saya", path: "/profile", icon: User },
     ];
   })();
 
@@ -111,13 +105,6 @@ export function Navbar() {
         {/* Left: Brand Logo & Campus Badge */}
         <div className="flex items-center gap-6">
           <Link
-            to={
-              isAuthenticated
-                ? user?.role === "ADMIN"
-                  ? "/admin"
-                  : "/dashboard"
-                : "/"
-            }
             to={getHomeTarget()}
             className="flex items-center gap-2.5 group select-none"
           >
