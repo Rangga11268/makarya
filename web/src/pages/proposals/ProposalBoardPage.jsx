@@ -895,7 +895,10 @@ export function ProposalBoardPage() {
                       </div>
 
                       <span className="text-[11px] font-medium text-muted">
-                        Estimasi Pengerjaan: <b className="text-dark-900">{proposal.estimasi_hari} Hari</b>
+                        Estimasi Pengerjaan:{" "}
+                        <b className="text-dark-900">
+                          {proposal.estimasi_hari} Hari
+                        </b>
                       </span>
                     </div>
 
@@ -1064,8 +1067,8 @@ export function ProposalBoardPage() {
                         )}
                       </div>
                     )}
-                    </div>
-                  );
+                  </div>
+                );
               })}
             </div>
           )}
