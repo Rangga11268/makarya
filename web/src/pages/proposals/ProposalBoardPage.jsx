@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { proposalApi, projectApi, submissionApi } from "../../api";
+import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { useAlertStore } from "../../store/alertStore";
@@ -28,6 +28,10 @@ import {
   Sparkles,
   ArrowRight,
   PlusCircle,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Wallet as WalletIcon,
 } from "lucide-react";
 
 export function ProposalBoardPage() {
@@ -45,6 +49,20 @@ export function ProposalBoardPage() {
   const [projectSubmissions, setProjectSubmissions] = useState([]);
   const [mhsSubmissions, setMhsSubmissions] = useState({});
 
+  // Quick Wallet State
+  const [wallet, setWallet] = useState(null);
+
+  // Search, Filter & Accordion states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedCards, setExpandedCards] = useState({});
+
+  const toggleCard = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL");
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
@@ -57,6 +75,13 @@ export function ProposalBoardPage() {
   const loadData = async () => {
     try {
       setLoading(true);
+
+      // Load wallet data for quick overview
+      walletApi
+        .getMe()
+        .then((res) => setWallet(res.data))
+        .catch(() => {});
+
       if (isUmkm) {
         const res = await projectApi.getMyProjects();
         setMyProjects(res.data);
@@ -211,40 +236,152 @@ export function ProposalBoardPage() {
     }
   };
 
+  // Filtered lists
+  const filteredProjects = myProjects.filter((p) => {
+    const matchSearch =
+      p.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.kategori.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchTab =
+      activeTab === "ALL" ||
+      (activeTab === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
+      (activeTab === "DONE" && (p.status === "DONE" || p.status === "COMPLETED")) ||
+      (activeTab === "OPEN" && (p.status === "OPEN" || p.status === "BIDDING"));
+    return matchSearch && matchTab;
+  });
+
+  const filteredProposals = proposals.filter((p) => {
+    const matchSearch =
+      (p.cover_letter && p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      p.project_id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchTab = activeTab === "ALL" || p.status === activeTab;
+    return matchSearch && matchTab;
+  });
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            {isUmkm
-              ? "Pusat Manajemen Proyek UMKM"
-              : "Papan Pelamar & Pengerjaan"}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
+      {/* 1. Header & Quick Wallet Balance Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
+        <div className="space-y-1">
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-indigo font-sans">
+            {isUmkm ? "Pusat Kendali Proyek UMKM" : "Papan Pelamar & Pekerjaan Mahasiswa"}
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm
-              ? "Kelola Proyek & Pelamar Masuk"
-              : "Proposal & Pengerjaan Proyek"}
+          <h1 className="text-2xl sm:text-3xl font-serif text-dark-900 tracking-tight leading-tight">
+            {isUmkm ? "Manajemen Proyek & Hasil Kerja" : "Proposal & Status Pengerjaan"}
           </h1>
-          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
+          <p className="text-xs text-muted">
             {isUmkm
-              ? "Evaluasi proposal masuk dari mahasiswa, setujui penawaran untuk mengunci dana escrow, dan periksa berkas deliverable."
-              : "Pantau status lamaran kerja, penawaran harga, dan serahkan hasil deliverable untuk pencairan honor escrow."}
+              ? "Kelola penawaran mahasiswa, periksa hasil kerja (deliverable), dan cairkan honor escrow."
+              : "Pantau status pengajuan proposal, serahkan deliverable proyek, dan nikmati pencairan dana instan."}
           </p>
         </div>
 
-        {isUmkm && (
-          <Link to="/projects/new">
-            <Button
-              variant="brand"
-              size="md"
-              className="shadow-brand text-xs font-bold shrink-0"
-            >
-              <PlusCircle className="w-4 h-4 mr-1.5" />
-              Pasang Proyek Baru
+        {/* Quick Wallet Card */}
+        <div className="flex items-center gap-3 bg-canvas p-3.5 rounded-2xl border border-border shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-brand-indigo/10 flex items-center justify-center text-brand-indigo">
+            <WalletIcon className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-muted uppercase block">
+              {isUmkm ? "Saldo Escrow Aktif" : "Saldo Siap Tarik"}
+            </span>
+            <span className="text-sm font-black text-dark-900">
+              {wallet ? formatCurrency(isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif) : "Rp 0"}
+            </span>
+          </div>
+          <Link to="/wallet">
+            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand ml-2">
+              {isUmkm ? "Dompet" : "Tarik Dana"}
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
           </Link>
-        )}
+        </div>
+      </div>
+
+      {/* 2. Top Metric Stats Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 rounded-2xl bg-surface border border-border space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-muted block">
+            {isUmkm ? "Total Proyek" : "Total Dilamar"}
+          </span>
+          <span className="text-xl sm:text-2xl font-black text-dark-900">
+            {isUmkm ? myProjects.length : proposals.length}
+          </span>
+        </div>
+        <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-amber-900 block">Sedang Berjalan</span>
+          <span className="text-xl sm:text-2xl font-black text-amber-950">
+            {isUmkm
+              ? myProjects.filter((p) => p.status === "IN_PROGRESS").length
+              : proposals.filter((p) => p.status === "ACCEPTED").length}
+          </span>
+        </div>
+        <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-emerald-900 block">Selesai / Cair</span>
+          <span className="text-xl sm:text-2xl font-black text-emerald-950">
+            {isUmkm
+              ? myProjects.filter((p) => p.status === "DONE" || p.status === "COMPLETED").length
+              : proposals.filter((p) => mhsSubmissions[p.project_id]?.status === "APPROVED").length}
+          </span>
+        </div>
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 shadow-xs">
+          <span className="text-[11px] font-bold text-slate-700 block">
+            {isUmkm ? "Masa Penawaran" : "Menunggu Review"}
+          </span>
+          <span className="text-xl sm:text-2xl font-black text-slate-900">
+            {isUmkm
+              ? myProjects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length
+              : proposals.filter((p) => p.status === "PENDING").length}
+          </span>
+        </div>
+      </div>
+
+      {/* 3. Search Bar & Status Filter Tabs */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
+        {/* Search Input */}
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder={
+              isUmkm
+                ? "Cari berdasarkan judul proyek atau kategori..."
+                : "Cari proposal atau pesan pengerjaan..."
+            }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:border-brand-indigo"
+          />
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+          {(isUmkm
+            ? [
+                { key: "ALL", label: "Semua" },
+                { key: "IN_PROGRESS", label: "Sedang Dikerjakan" },
+                { key: "OPEN", label: "Penawaran" },
+                { key: "DONE", label: "Selesai" },
+              ]
+            : [
+                { key: "ALL", label: "Semua" },
+                { key: "ACCEPTED", label: "Disetujui / Berjalan" },
+                { key: "PENDING", label: "Menunggu" },
+                { key: "REJECTED", label: "Ditolak" },
+              ]
+          ).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                activeTab === tab.key
+                  ? "bg-dark-900 text-white shadow-xs"
+                  : "bg-canvas text-muted hover:text-dark-900 border border-border"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ========================================================================= */}
@@ -490,14 +627,15 @@ export function ProposalBoardPage() {
                         </p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
-                        {projectProposals.map((prop) => (
-                          <div
-                            key={prop.id}
-                            className="p-4 rounded-2xl bg-canvas border border-border space-y-3"
-                          >
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <div>
+                      <div className="space-y-2.5">
+                        {projectProposals.map((prop) => {
+                          const isExpanded = expandedCards[prop.id];
+                          return (
+                            <div
+                              key={prop.id}
+                              className="p-3.5 rounded-2xl bg-canvas border border-border space-y-2.5 transition-all"
+                            >
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                   <h5 className="text-xs font-bold text-dark-900">
                                     {prop.mhs_profile?.nama_lengkap ||
@@ -512,50 +650,72 @@ export function ProposalBoardPage() {
                                           : "danger"
                                     }
                                   >
-                                    {prop.status}
+                                    {formatStatus(prop.status)}
                                   </Badge>
+                                  <span className="text-[11px] text-muted hidden sm:inline">
+                                    • Estimasi: {prop.estimasi_hari} Hari
+                                  </span>
                                 </div>
-                                <span className="text-[11px] text-muted">
-                                  NIM: {prop.mhs_profile?.nim || "1221xxxx"} •
-                                  Estimasi: {prop.estimasi_hari} Hari
-                                </span>
+
+                                <div className="flex items-center justify-between sm:justify-end gap-3">
+                                  <span className="text-xs sm:text-sm font-black text-dark-900">
+                                    {formatCurrency(prop.harga_tawar)}
+                                  </span>
+                                  <button
+                                    onClick={() => toggleCard(prop.id)}
+                                    className="text-[11px] font-bold text-brand-indigo flex items-center gap-0.5 hover:underline"
+                                  >
+                                    {isExpanded ? "Tutup" : "Rincian"}
+                                    {isExpanded ? (
+                                      <ChevronUp className="w-3.5 h-3.5" />
+                                    ) : (
+                                      <ChevronDown className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+                                </div>
                               </div>
 
-                              <div className="text-left sm:text-right">
-                                <span className="text-sm font-black text-dark-900">
-                                  {formatCurrency(prop.harga_tawar)}
-                                </span>
-                              </div>
-                            </div>
+                              {/* Collapsible Details */}
+                              {isExpanded && (
+                                <div className="space-y-2.5 pt-2 border-t border-border/70 text-xs">
+                                  <div className="bg-surface p-3 rounded-xl border border-border text-dark-900/90 leading-relaxed">
+                                    <span className="font-bold text-dark-900 block mb-0.5">
+                                      Rencana Kerja:
+                                    </span>
+                                    "{prop.cover_letter}"
+                                  </div>
 
-                            <div className="bg-surface p-3 rounded-xl border border-border text-xs text-slate-700 leading-relaxed font-normal">
-                              "{prop.cover_letter}"
-                            </div>
-
-                            {prop.status === "PENDING" &&
-                              (selectedProject.status === "OPEN" ||
-                                selectedProject.status === "BIDDING") && (
-                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleRejectProposal(prop)}
-                                    className="text-xs font-bold text-rose-600 border-rose-200"
-                                  >
-                                    Tolak
-                                  </Button>
-                                  <Button
-                                    variant="brand"
-                                    size="sm"
-                                    onClick={() => handleAcceptProposal(prop)}
-                                    className="text-xs font-bold shadow-brand"
-                                  >
-                                    Terima & Kunci Escrow
-                                  </Button>
+                                  {selectedProject.status === "OPEN" &&
+                                    prop.status === "PENDING" && (
+                                      <div className="flex justify-end gap-2 pt-1">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleRejectProposal(prop)
+                                          }
+                                          className="text-xs font-bold text-rose-600 border-rose-200 hover:bg-rose-50"
+                                        >
+                                          Tolak
+                                        </Button>
+                                        <Button
+                                          variant="brand"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleAcceptProposal(prop)
+                                          }
+                                          className="text-xs font-bold shadow-brand"
+                                        >
+                                          <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                                          Terima & Kunci Escrow
+                                        </Button>
+                                      </div>
+                                    )}
                                 </div>
                               )}
-                          </div>
-                        ))}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -573,195 +733,191 @@ export function ProposalBoardPage() {
         /* ========================================================================= */
         /* 2. MAHASISWA VIEW (My Submitted Proposals & Work Submissions) */
         /* ========================================================================= */
-        <div className="space-y-6">
-          {/* Tabs Filter */}
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            {[
-              { key: "ALL", label: `Semua (${proposals.length})` },
-              {
-                key: "ACCEPTED",
-                label: `Disetujui / Berjalan (${proposals.filter((p) => p.status === "ACCEPTED").length})`,
-              },
-              {
-                key: "PENDING",
-                label: `Menunggu (${proposals.filter((p) => p.status === "PENDING").length})`,
-              },
-              {
-                key: "REJECTED",
-                label: `Ditolak (${proposals.filter((p) => p.status === "REJECTED").length})`,
-              },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  activeTab === tab.key
-                    ? "bg-dark-900 text-white"
-                    : "text-muted hover:text-dark-900 hover:bg-gray-100"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
+        <div className="space-y-4">
           {loading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="h-32 bg-surface rounded-card border border-border animate-pulse"
+                  className="h-24 bg-surface rounded-2xl border border-border animate-pulse"
                 />
               ))}
             </div>
-          ) : proposals.filter(
-              (p) => activeTab === "ALL" || p.status === activeTab,
-            ).length === 0 ? (
-            <Card className="text-center py-16 space-y-3 bg-surface border-border">
-              <Briefcase className="w-12 h-12 text-muted mx-auto opacity-40" />
-              <h3 className="text-base font-bold text-dark-900">
-                Belum Ada Proposal pada Kategori Ini
+          ) : filteredProposals.length === 0 ? (
+            <Card className="text-center py-12 space-y-3 bg-surface border-border">
+              <Briefcase className="w-10 h-10 text-muted mx-auto opacity-40" />
+              <h3 className="text-sm font-bold text-dark-900">
+                Belum Ada Lamaran Proposal pada Filter Ini
               </h3>
               <p className="text-xs text-muted max-w-sm mx-auto">
-                Silakan jelajahi katalog proyek UMKM yang terbuka dan kirimkan
-                proposal penawaran Anda.
+                Silakan jelajahi katalog proyek UMKM yang terbuka untuk mulai
+                mengajukan penawaran.
               </p>
               <Link to="/projects">
                 <Button
                   variant="brand"
                   size="sm"
-                  className="mt-2 text-xs font-bold shadow-brand"
+                  className="mt-1 text-xs font-bold shadow-brand"
                 >
                   Jelajah Proyek Terbuka
                 </Button>
               </Link>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {proposals
-                .filter((p) => activeTab === "ALL" || p.status === activeTab)
-                .map((proposal) => (
+            <div className="space-y-3">
+              {filteredProposals.map((proposal) => {
+                const isExpanded = expandedCards[proposal.id];
+                const sub = mhsSubmissions[proposal.project_id];
+                const isDone = sub?.status === "APPROVED";
+
+                return (
                   <Card
                     key={proposal.id}
-                    className="p-5 sm:p-6 space-y-4 bg-surface border-border"
+                    className="p-4 sm:p-5 space-y-3 bg-surface border-border shadow-xs"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           {statusBadge(proposal.status)}
-                          <span className="text-xs text-muted">
+                          <span className="text-[11px] text-muted">
                             Dikirim: {formatDate(proposal.created_at)}
                           </span>
                         </div>
-                        <h3 className="text-base font-bold text-dark-900">
-                          Penawaran Proyek #{proposal.project_id.slice(0, 8)}
+                        <h3 className="text-sm sm:text-base font-bold text-dark-900">
+                          Lamaran Proyek #{proposal.project_id.slice(0, 8)}
                         </h3>
                       </div>
 
-                      <div className="flex sm:flex-col items-baseline sm:items-end justify-between gap-1 text-right">
-                        <span className="text-xs text-muted uppercase tracking-wider font-semibold">
-                          Harga Tawar
-                        </span>
-                        <span className="text-lg font-black text-dark-900">
-                          {formatCurrency(proposal.harga_tawar)}
-                        </span>
+                      <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0">
+                        <div className="text-left sm:text-right">
+                          <span className="text-[10px] text-muted uppercase font-semibold block">
+                            Harga Tawar
+                          </span>
+                          <span className="text-sm sm:text-base font-black text-dark-900">
+                            {formatCurrency(proposal.harga_tawar)}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => toggleCard(proposal.id)}
+                          className="px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1 hover:bg-slate-100"
+                        >
+                          {isExpanded ? "Sembunyikan" : "Buka Detail"}
+                          {isExpanded ? (
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          ) : (
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          )}
+                        </button>
                       </div>
                     </div>
 
-                    <div className="bg-canvas border border-border p-3.5 rounded-xl text-xs text-dark-900/90 leading-relaxed font-normal">
-                      <span className="font-bold text-dark-900 block mb-1">
-                        Pesan & Rencana Kerja:
-                      </span>
-                      "{proposal.cover_letter}"
-                    </div>
+                    {/* Expandable Accordion Body */}
+                    {isExpanded && (
+                      <div className="space-y-3 pt-3 border-t border-border text-xs">
+                        <div className="bg-canvas border border-border p-3 rounded-xl text-dark-900/90 leading-relaxed">
+                          <span className="font-bold text-dark-900 block mb-0.5">
+                            Pesan Penawaran Anda:
+                          </span>
+                          "{proposal.cover_letter}"
+                        </div>
 
-                    {proposal.status === "ACCEPTED" && (
-                      <div className="pt-3 border-t border-border space-y-3">
-                        {mhsSubmissions[proposal.project_id] ? (
-                          <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-2.5">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-sm">
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
-                                  {mhsSubmissions[proposal.project_id].status === "APPROVED" ||
-                                  mhsSubmissions[proposal.project_id].status === "ACCEPTED"
-                                    ? "Hasil Kerja Disetujui • Selesai"
-                                    : mhsSubmissions[proposal.project_id]
-                                          .status === "REVISION_REQUESTED"
-                                      ? `Permintaan Revisi (Ke-${mhsSubmissions[proposal.project_id].jumlah_revisi})`
-                                      : "Hasil Kerja Terkirim • Menunggu Review"}
+                        {proposal.status === "ACCEPTED" && (
+                          <div className="space-y-2.5">
+                            {sub ? (
+                              <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-2.5">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    {sub.status === "APPROVED" ||
+                                    sub.status === "ACCEPTED"
+                                      ? "Hasil Kerja Disetujui • Selesai"
+                                      : sub.status === "REVISION_REQUESTED"
+                                        ? `Permintaan Revisi (Ke-${sub.jumlah_revisi}/2)`
+                                        : "Deliverable Terkirim • Menunggu Review"}
+                                  </span>
+                                  <span className="text-[11px] text-muted">
+                                    Diserahkan:{" "}
+                                    {formatDate(
+                                      sub.submitted_at || sub.created_at,
+                                    )}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-2 p-2.5 bg-white border border-emerald-100 rounded-lg text-xs">
+                                  <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
+                                  <a
+                                    href={sub.url_berkas}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="font-semibold text-emerald-700 hover:underline truncate"
+                                  >
+                                    {sub.url_berkas}
+                                  </a>
+                                </div>
+
+                                {sub.catatan_pengiriman && (
+                                  <p className="text-xs text-dark-900/80 italic bg-canvas/60 p-2 rounded border border-border/50">
+                                    "{sub.catatan_pengiriman}"
+                                  </p>
+                                )}
+
+                                {isDone && (
+                                  <div className="p-2.5 bg-emerald-100/70 border border-emerald-300 rounded-xl flex items-center justify-between gap-2">
+                                    <span className="font-bold text-emerald-950">
+                                      Honor{" "}
+                                      {formatCurrency(proposal.harga_tawar)}{" "}
+                                      telah masuk ke saldo aktif dompet Anda!
+                                    </span>
+                                    <Link to="/wallet">
+                                      <Button
+                                        variant="brand"
+                                        size="sm"
+                                        className="text-xs font-bold shadow-brand shrink-0"
+                                      >
+                                        Tarik Saldo
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span>
+                                  Dana escrow sebesar{" "}
+                                  <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}
+                                  telah dikunci aman oleh klien. Silakan unggah
+                                  berkas hasil kerja saat sudah selesai.
                                 </span>
                               </div>
-                              <span className="text-[11px] text-muted">
-                                Diserahkan:{" "}
-                                {formatDate(
-                                  mhsSubmissions[proposal.project_id]
-                                    .submitted_at ||
-                                    mhsSubmissions[proposal.project_id]
-                                      .created_at,
-                                )}
-                              </span>
-                            </div>
+                            )}
 
-                            <div className="flex items-center gap-2 p-2.5 bg-white border border-emerald-100 rounded-lg text-xs">
-                              <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
-                              <a
-                                href={
-                                  mhsSubmissions[proposal.project_id].url_berkas
-                                }
-                                target="_blank"
-                                rel="noreferrer"
-                                className="font-semibold text-emerald-700 hover:underline truncate max-w-full"
-                              >
-                                {mhsSubmissions[proposal.project_id].url_berkas}
-                              </a>
-                            </div>
-
-                            {mhsSubmissions[proposal.project_id]
-                              .catatan_pengiriman && (
-                              <p className="text-xs text-dark-900/80 italic bg-canvas/60 p-2 rounded border border-border/50">
-                                "
-                                {
-                                  mhsSubmissions[proposal.project_id]
-                                    .catatan_pengiriman
-                                }
-                                "
-                              </p>
+                            {!isDone && (
+                              <div className="flex justify-end pt-1">
+                                <Button
+                                  variant="brand"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleOpenSubmission(proposal.project_id)
+                                  }
+                                  className="w-full sm:w-auto text-xs font-bold shadow-brand"
+                                >
+                                  <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                                  {sub
+                                    ? sub.status === "REVISION_REQUESTED"
+                                      ? "Kirim Revisi Hasil Kerja"
+                                      : "Perbarui / Kirim Ulang Deliverable"
+                                    : "Unggah / Serahkan Hasil Kerja"}
+                                </Button>
+                              </div>
                             )}
                           </div>
-                        ) : (
-                          <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                            <span>
-                              Dana escrow sebesar{" "}
-                              <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}
-                              sudah dikunci aman oleh klien.
-                            </span>
-                          </div>
                         )}
-
-                        <div className="flex justify-end">
-                          <Button
-                            variant="brand"
-                            size="sm"
-                            onClick={() =>
-                              handleOpenSubmission(proposal.project_id)
-                            }
-                            className="w-full sm:w-auto text-xs font-bold shadow-brand"
-                          >
-                            <UploadCloud className="w-3.5 h-3.5 mr-1" />
-                            {mhsSubmissions[proposal.project_id]
-                              ? mhsSubmissions[proposal.project_id].status ===
-                                "REVISION_REQUESTED"
-                                ? "Kirim Revisi Hasil Kerja"
-                                : "Perbarui / Kirim Ulang Hasil Kerja"
-                              : "Unggah / Serahkan Hasil Kerja"}
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </Card>
-                ))}
+                );
+              })}
             </div>
           )}
         </div>
