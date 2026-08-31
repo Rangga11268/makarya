@@ -17,6 +17,7 @@ export const STATUS_LABELS = {
   // Submission Status
   SUBMITTED: "Hasil Diserahkan",
   REVISION_REQUESTED: "Permintaan Revisi",
+  APPROVED: "Disetujui",
 
   // Transaction / Ledger Types
   TOPUP: "Deposit Saldo",

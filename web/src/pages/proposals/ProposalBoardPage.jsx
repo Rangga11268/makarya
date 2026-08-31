@@ -50,7 +50,8 @@ export function ProposalBoardPage() {
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
-  const [selectedSubmissionForRevision, setSelectedSubmissionForRevision] = useState(null);
+  const [selectedSubmissionForRevision, setSelectedSubmissionForRevision] =
+    useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const loadData = async () => {
@@ -99,7 +100,12 @@ export function ProposalBoardPage() {
         submissionApi.getByProject(projectId).catch(() => ({ data: null })),
       ]);
       setProjectProposals(propRes.data || []);
-      const subs = subRes.data && subRes.data.id ? [subRes.data] : Array.isArray(subRes.data) ? subRes.data : [];
+      const subs =
+        subRes.data && subRes.data.id
+          ? [subRes.data]
+          : Array.isArray(subRes.data)
+            ? subRes.data
+            : [];
       setProjectSubmissions(subs);
     } catch (err) {
       // Fallback
@@ -370,9 +376,11 @@ export function ProposalBoardPage() {
                           Berkas Hasil Kerja (Deliverable) dari Mahasiswa
                         </span>
                         <Badge variant="success">
-                          {projectSubmissions[0].status === "ACCEPTED"
+                          {projectSubmissions[0].status === "APPROVED" ||
+                          projectSubmissions[0].status === "ACCEPTED"
                             ? "Telah Disetujui & Selesai"
-                            : projectSubmissions[0].status === "REVISION_REQUESTED"
+                            : projectSubmissions[0].status ===
+                                "REVISION_REQUESTED"
                               ? `Permintaan Revisi (Ke-${projectSubmissions[0].jumlah_revisi}/2)`
                               : "Telah Diserahkan • Siap Direview"}
                         </Badge>
@@ -409,10 +417,12 @@ export function ProposalBoardPage() {
 
                           <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
                             <span>
-                              Jumlah Revisi Digunakan: <b>{sub.jumlah_revisi || 0} dari 2 kali</b>
+                              Jumlah Revisi Digunakan:{" "}
+                              <b>{sub.jumlah_revisi || 0} dari 2 kali</b>
                             </span>
                             <span>
-                              Diserahkan: {formatDate(sub.submitted_at || sub.created_at)}
+                              Diserahkan:{" "}
+                              {formatDate(sub.submitted_at || sub.created_at)}
                             </span>
                           </div>
 
@@ -429,7 +439,9 @@ export function ProposalBoardPage() {
                                 className="text-xs font-bold border-amber-300 text-amber-900 hover:bg-amber-50"
                               >
                                 <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                                {sub.jumlah_revisi >= 2 ? "Batas Revisi Habis (2/2)" : "Minta Revisi"}
+                                {sub.jumlah_revisi >= 2
+                                  ? "Batas Revisi Habis (2/2)"
+                                  : "Minta Revisi"}
                               </Button>
                               <Button
                                 variant="brand"
@@ -449,8 +461,12 @@ export function ProposalBoardPage() {
                     <div className="p-4 bg-canvas border border-border rounded-2xl flex items-center gap-3">
                       <Clock className="w-5 h-5 text-amber-600 shrink-0" />
                       <div className="text-xs text-dark-900">
-                        <span className="font-bold block">Pekerjaan Sedang Dikerjakan</span>
-                        Mahasiswa sedang menyelesaikan proyek ini. Tautan berkas deliverable akan otomatis tampil di sini segera setelah mahasiswa menyerahkan hasil pekerjaannya.
+                        <span className="font-bold block">
+                          Pekerjaan Sedang Dikerjakan
+                        </span>
+                        Mahasiswa sedang menyelesaikan proyek ini. Tautan berkas
+                        deliverable akan otomatis tampil di sini segera setelah
+                        mahasiswa menyerahkan hasil pekerjaannya.
                       </div>
                     </div>
                   ) : null}
@@ -667,8 +683,8 @@ export function ProposalBoardPage() {
                               <div className="flex items-center gap-2">
                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-sm">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
-                                  {mhsSubmissions[proposal.project_id]
-                                    .status === "ACCEPTED"
+                                  {mhsSubmissions[proposal.project_id].status === "APPROVED" ||
+                                  mhsSubmissions[proposal.project_id].status === "ACCEPTED"
                                     ? "Hasil Kerja Disetujui • Selesai"
                                     : mhsSubmissions[proposal.project_id]
                                           .status === "REVISION_REQUESTED"

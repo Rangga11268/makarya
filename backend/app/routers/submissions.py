@@ -146,7 +146,7 @@ def approve_submission(
             detail="Anda tidak memiliki izin untuk menyetujui hasil kerja ini",
         )
 
-    if submission.status == SubmissionStatus.ACCEPTED:
+    if submission.status == SubmissionStatus.APPROVED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Hasil kerja sudah disetujui sebelumnya",
@@ -158,10 +158,21 @@ def approve_submission(
     umkm_wallet = db.query(Wallet).filter(Wallet.user_id == project.umkm_id).with_for_update().first()
     mhs_wallet = db.query(Wallet).filter(Wallet.user_id == accepted_proposal.mhs_id).with_for_update().first()
 
-    if not umkm_wallet or umkm_wallet.saldo_escrow < honor_amount:
+    # Guard: Inisialisasi otomatis jika dompet belum pernah dibuat
+    if not umkm_wallet:
+        umkm_wallet = Wallet(user_id=project.umkm_id, saldo_aktif=0.0, saldo_escrow=0.0)
+        db.add(umkm_wallet)
+        db.flush()
+
+    if not mhs_wallet:
+        mhs_wallet = Wallet(user_id=accepted_proposal.mhs_id, saldo_aktif=0.0, saldo_escrow=0.0)
+        db.add(mhs_wallet)
+        db.flush()
+
+    if umkm_wallet.saldo_escrow < honor_amount:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Saldo escrow UMKM tidak mencukupi untuk mencairkan dana",
+            detail=f"Saldo escrow UMKM ({umkm_wallet.saldo_escrow}) tidak mencukupi untuk mencairkan honor ({honor_amount})",
         )
 
     # Pindahkan escrow dari UMKM ke saldo aktif Mahasiswa
@@ -187,7 +198,7 @@ def approve_submission(
     db.add(log_mhs)
 
     # Update status proyek dan submission
-    submission.status = SubmissionStatus.ACCEPTED
+    submission.status = SubmissionStatus.APPROVED
     project.status = ProjectStatus.DONE
 
     db.commit()
@@ -219,7 +230,7 @@ def request_revision(
             detail="Anda tidak memiliki izin untuk meminta revisi hasil kerja ini",
         )
 
-    if submission.status == SubmissionStatus.ACCEPTED:
+    if submission.status == SubmissionStatus.APPROVED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Hasil kerja sudah diterima, tidak dapat meminta revisi",
