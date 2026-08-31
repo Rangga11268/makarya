@@ -276,7 +276,9 @@ export function ProposalBoardPage() {
               ) : (
                 <GraduationCap className="w-3.5 h-3.5 text-muted" />
               )}
-              <span>{isUmkm ? "Portal Klien UMKM" : "Portal Mahasiswa Freelancer"}</span>
+              <span>
+                {isUmkm ? "Portal Klien UMKM" : "Portal Mahasiswa Freelancer"}
+              </span>
             </div>
             <span className="text-[11px] font-mono text-muted">
               {isUmkm ? "Pusat Proyek & Escrow" : "Papan Lamaran & Deliverable"}
@@ -284,7 +286,9 @@ export function ProposalBoardPage() {
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-serif text-dark-900 tracking-tight leading-tight">
-            {isUmkm ? "Kelola Proyek & Verifikasi Deliverable" : "Papan Proposal & Penyerahan Hasil"}
+            {isUmkm
+              ? "Kelola Proyek & Verifikasi Deliverable"
+              : "Papan Proposal & Penyerahan Hasil"}
           </h1>
           <p className="text-xs text-muted">
             {isUmkm
@@ -768,7 +772,8 @@ export function ProposalBoardPage() {
                                     "{prop.cover_letter}"
                                   </div>
 
-                                  {selectedProject.status === "OPEN" &&
+                                  {(selectedProject.status === "OPEN" ||
+                                    selectedProject.status === "BIDDING") &&
                                     prop.status === "PENDING" && (
                                       <div className="flex justify-end gap-2 pt-1">
                                         <Button
