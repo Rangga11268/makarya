@@ -27,6 +27,12 @@ export default function App() {
   const { isAuthenticated, user } = useAuthStore();
   const userRole = user?.role?.toUpperCase();
 
+  const getRoleHome = () => {
+    if (userRole === "ADMIN") return "/admin";
+    if (userRole === "UMKM") return "/proposals";
+    return "/projects";
+  };
+
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen bg-canvas text-dark-900">
@@ -36,6 +42,17 @@ export default function App() {
           <Routes>
             {/* 1. Public Open Routes (Accessible by everyone) */}
             <Route path="/" element={<LandingPage />} />
+            {/* 1. Public Marketing Landing Page (Only for Unauthenticated Visitors) */}
+            <Route
+              path="/"
+              element={
+                isAuthenticated ? (
+                  <Navigate to={getRoleHome()} replace />
+                ) : (
+                  <LandingPage />
+                )
+              }
+            />
             <Route path="/projects" element={<BrowseProjectsPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
 
@@ -48,6 +65,7 @@ export default function App() {
                     to={userRole === "ADMIN" ? "/admin" : "/dashboard"}
                     replace
                   />
+                  <Navigate to={getRoleHome()} replace />
                 ) : (
                   <LoginPage />
                 )
@@ -58,6 +76,7 @@ export default function App() {
               element={
                 isAuthenticated ? (
                   <Navigate to="/dashboard" replace />
+                  <Navigate to={getRoleHome()} replace />
                 ) : (
                   <RegisterPage />
                 )
@@ -86,6 +105,10 @@ export default function App() {
               }
             >
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route
+                path="/dashboard"
+                element={<Navigate to={getRoleHome()} replace />}
+              />
               <Route path="/proposals" element={<ProposalBoardPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />

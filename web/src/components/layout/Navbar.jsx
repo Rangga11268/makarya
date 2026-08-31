@@ -57,6 +57,9 @@ export function Navbar() {
         { label: "Beranda", path: "/dashboard", icon: Layers },
         { label: "Katalog Proyek", path: "/projects", icon: Compass },
         { label: "Kelola Pelamar", path: "/proposals", icon: Briefcase },
+        { label: "Pusat Proyek & Pelamar", path: "/proposals", icon: Briefcase },
+        { label: "Pasang Proyek Baru", path: "/projects/new", icon: PlusCircle },
+        { label: "Dompet & Escrow", path: "/wallet", icon: WalletIcon },
         { label: "Profil Usaha", path: "/profile", icon: UserCheck },
         { label: "Dompet & Escrow", path: "/wallet", icon: WalletIcon },
       ];
@@ -67,7 +70,11 @@ export function Navbar() {
       { label: "Jelajah Proyek", path: "/projects", icon: Compass },
       { label: "Proposal Saya", path: "/proposals", icon: Briefcase },
       { label: "Portofolio", path: "/portfolio", icon: UserCheck },
+      { label: "Jelajah Peluang Proyek", path: "/projects", icon: Compass },
+      { label: "Papan Kerja Saya", path: "/proposals", icon: Briefcase },
+      { label: "Portofolio & Rating", path: "/portfolio", icon: UserCheck },
       { label: "Dompet Mahasiswa", path: "/wallet", icon: WalletIcon },
+      { label: "Profil Saya", path: "/profile", icon: User },
     ];
   })();
 
@@ -91,6 +98,13 @@ export function Navbar() {
   const roleInfo = getRoleBadge(user?.role);
   const initialLetter = user?.email ? user.email.charAt(0).toUpperCase() : "U";
 
+  const getHomeTarget = () => {
+    if (!isAuthenticated) return "/";
+    if (user?.role === "ADMIN") return "/admin";
+    if (user?.role === "UMKM") return "/proposals";
+    return "/projects";
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-border/80 transition-all shadow-2xs font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
@@ -104,6 +118,7 @@ export function Navbar() {
                   : "/dashboard"
                 : "/"
             }
+            to={getHomeTarget()}
             className="flex items-center gap-2.5 group select-none"
           >
             <img
