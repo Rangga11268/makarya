@@ -41,6 +41,7 @@ export function ProposalBoardPage() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectProposals, setProjectProposals] = useState([]);
   const [projectSubmissions, setProjectSubmissions] = useState([]);
+  const [mhsSubmissions, setMhsSubmissions] = useState({});
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL");
@@ -62,6 +63,23 @@ export function ProposalBoardPage() {
       } else {
         const res = await proposalApi.getMyProposals();
         setMyProposals(res.data);
+
+        // Load submission for accepted proposals
+        const accepted = res.data.filter((p) => p.status === "ACCEPTED");
+        const subMap = {};
+        await Promise.all(
+          accepted.map(async (p) => {
+            try {
+              const subRes = await submissionApi.getByProject(p.project_id);
+              if (subRes.data) {
+                subMap[p.project_id] = subRes.data;
+              }
+            } catch (e) {
+              // Not submitted yet
+            }
+          }),
+        );
+        setMhsSubmissions(subMap);
       }
     } catch (err) {
       console.error("Gagal memuat papan proposal:", err);
@@ -587,27 +605,71 @@ export function ProposalBoardPage() {
                     </div>
 
                     {proposal.status === "ACCEPTED" && (
-                      <div className="pt-3 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                          <span>
-                            Dana escrow sebesar{" "}
-                            <b>{formatCurrency(proposal.harga_tawar)}</b> sudah
-                            dikunci aman oleh klien.
-                          </span>
-                        </div>
+                      <div className="pt-3 border-t border-border space-y-3">
+                        {mhsSubmissions[proposal.project_id] ? (
+                          <div className="p-3.5 bg-emerald-50/60 border border-emerald-200/80 rounded-xl space-y-2.5">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-sm">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  {mhsSubmissions[proposal.project_id].status === "ACCEPTED"
+                                    ? "Hasil Kerja Disetujui • Selesai"
+                                    : mhsSubmissions[proposal.project_id].status === "REVISION_REQUESTED"
+                                      ? `Permintaan Revisi (Ke-${mhsSubmissions[proposal.project_id].jumlah_revisi})`
+                                      : "Hasil Kerja Terkirim • Menunggu Review"}
+                                </span>
+                              </div>
+                              <span className="text-[11px] text-muted">
+                                Diserahkan: {formatDate(mhsSubmissions[proposal.project_id].submitted_at || mhsSubmissions[proposal.project_id].created_at)}
+                              </span>
+                            </div>
 
-                        <Button
-                          variant="brand"
-                          size="sm"
-                          onClick={() =>
-                            handleOpenSubmission(proposal.project_id)
-                          }
-                          className="w-full sm:w-auto text-xs font-bold shadow-brand"
-                        >
-                          <UploadCloud className="w-3.5 h-3.5 mr-1" />
-                          Unggah / Serahkan Hasil Kerja
-                        </Button>
+                            <div className="flex items-center gap-2 p-2.5 bg-white border border-emerald-100 rounded-lg text-xs">
+                              <ExternalLink className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <a
+                                href={mhsSubmissions[proposal.project_id].url_berkas}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-semibold text-emerald-700 hover:underline truncate max-w-full"
+                              >
+                                {mhsSubmissions[proposal.project_id].url_berkas}
+                              </a>
+                            </div>
+
+                            {mhsSubmissions[proposal.project_id].catatan_pengiriman && (
+                              <p className="text-xs text-dark-900/80 italic bg-canvas/60 p-2 rounded border border-border/50">
+                                "{mhsSubmissions[proposal.project_id].catatan_pengiriman}"
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-xs text-emerald-700 font-medium">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>
+                              Dana escrow sebesar{" "}
+                              <b>{formatCurrency(proposal.harga_tawar)}</b> sudah
+                              dikunci aman oleh klien.
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-end">
+                          <Button
+                            variant="brand"
+                            size="sm"
+                            onClick={() =>
+                              handleOpenSubmission(proposal.project_id)
+                            }
+                            className="w-full sm:w-auto text-xs font-bold shadow-brand"
+                          >
+                            <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                            {mhsSubmissions[proposal.project_id]
+                              ? mhsSubmissions[proposal.project_id].status === "REVISION_REQUESTED"
+                                ? "Kirim Revisi Hasil Kerja"
+                                : "Perbarui / Kirim Ulang Hasil Kerja"
+                              : "Unggah / Serahkan Hasil Kerja"}
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </Card>
