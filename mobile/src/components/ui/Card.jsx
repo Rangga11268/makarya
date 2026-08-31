@@ -20,19 +20,26 @@ export function Card({ children, variant = "dark", style }) {
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 24, // Dribbble squircle
+    borderRadius: 22,
     padding: 18,
     overflow: "hidden",
   },
   dark: {
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+  },
+  cream: {
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
-  cream: {
-    backgroundColor: COLORS.cardCream,
-  },
   lime: {
-    backgroundColor: COLORS.accentLime,
+    backgroundColor: COLORS.brandIndigo,
   },
 });

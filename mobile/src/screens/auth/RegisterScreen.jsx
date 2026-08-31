@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { Building2, Mail, Lock, Phone, MapPin } from "lucide-react-native";
+import { Building2, Mail, Lock, Phone, MapPin, ArrowRight } from "lucide-react-native";
 
 export function RegisterScreen({ navigation }) {
   const [namaUsaha, setNamaUsaha] = useState("");
@@ -37,16 +44,28 @@ export function RegisterScreen({ navigation }) {
       });
       showToast("Akun UMKM berhasil terdaftar!", "success");
     } catch (err) {
-      showToast(err.response?.data?.detail || "Pendaftaran gagal. Silakan coba lagi.", "danger");
+      showToast(
+        err.response?.data?.detail || "Pendaftaran gagal. Silakan coba lagi.",
+        "danger",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const industries = ["Kuliner & F&B", "Fashion & Retail", "Jasa & Layanan", "Teknologi", "Kerajinan & Kriya"];
+  const industries = [
+    "Kuliner & F&B",
+    "Fashion & Retail",
+    "Jasa & Layanan",
+    "Teknologi",
+    "Kerajinan & Kriya",
+  ];
 
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.header}>
         <Image
           source={require("../../../assets/logo.webp")}
@@ -55,7 +74,8 @@ export function RegisterScreen({ navigation }) {
         />
         <Text style={styles.title}>Daftar Akun UMKM</Text>
         <Text style={styles.subtitle}>
-          Mulai pasang proyek digital dan temukan mahasiswa berbakat untuk bisnis Anda.
+          Mulai pasang proyek digital dan temukan mahasiswa bertalenta untuk
+          bisnis Anda.
         </Text>
       </View>
 
@@ -71,16 +91,28 @@ export function RegisterScreen({ navigation }) {
         {/* Bidang Industri Chips */}
         <View style={styles.industryContainer}>
           <Text style={styles.label}>Bidang Industri</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.industryScroll}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.industryScroll}
+          >
             {industries.map((ind) => {
               const selected = bidangIndustri === ind;
               return (
                 <TouchableOpacity
                   key={ind}
                   onPress={() => setBidangIndustri(ind)}
-                  style={[styles.industryChip, selected && styles.industryChipActive]}
+                  style={[
+                    styles.industryChip,
+                    selected && styles.industryChipActive,
+                  ]}
                 >
-                  <Text style={[styles.industryText, selected && styles.industryTextActive]}>
+                  <Text
+                    style={[
+                      styles.industryText,
+                      selected && styles.industryTextActive,
+                    ]}
+                  >
                     {ind}
                   </Text>
                 </TouchableOpacity>
@@ -130,6 +162,7 @@ export function RegisterScreen({ navigation }) {
           size="lg"
           onPress={handleRegister}
           loading={loading}
+          iconRight={<ArrowRight size={18} color={COLORS.textInverse} />}
           style={styles.registerBtn}
         />
 
@@ -147,24 +180,25 @@ export function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: COLORS.bgDark,
-    paddingHorizontal: 24,
+    backgroundColor: COLORS.bgDark, // Clean light canvas #F8FAFC
+    paddingHorizontal: 22,
     paddingTop: 50,
-    paddingBottom: 40,
+    paddingBottom: 36,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   brandLogo: {
-    width: 140,
-    height: 42,
+    width: 150,
+    height: 46,
     marginBottom: 16,
+    alignSelf: "flex-start",
   },
   title: {
     fontSize: 28,
     fontWeight: "900",
-    color: COLORS.textWhite,
-    letterSpacing: -0.5,
+    color: COLORS.textDark,
+    letterSpacing: -0.6,
   },
   subtitle: {
     fontSize: 13,
@@ -174,10 +208,15 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     backgroundColor: COLORS.bgSurface,
-    borderRadius: 28,
-    padding: 22,
+    borderRadius: 24,
+    padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    elevation: 2,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   industryContainer: {
     marginBottom: 16,
@@ -185,17 +224,18 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "700",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     marginBottom: 8,
+    letterSpacing: 0.2,
   },
   industryScroll: {
     flexDirection: "row",
   },
   industryChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
     borderRadius: 999,
-    backgroundColor: COLORS.cardDark,
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginRight: 8,
@@ -210,11 +250,12 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   industryTextActive: {
-    color: COLORS.textWhite,
+    color: COLORS.textInverse,
     fontWeight: "800",
   },
   registerBtn: {
     marginTop: 8,
+    backgroundColor: COLORS.brandIndigo,
   },
   loginRow: {
     flexDirection: "row",
@@ -229,6 +270,6 @@ const styles = StyleSheet.create({
   loginLink: {
     fontSize: 12,
     fontWeight: "800",
-    color: COLORS.brandCyan,
+    color: COLORS.brandIndigo,
   },
 });

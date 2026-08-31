@@ -8,7 +8,7 @@ import { Toast } from "./src/components/ui/Toast";
 export default function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <NavigationContainer>
         <AppNavigator />
         <Toast />

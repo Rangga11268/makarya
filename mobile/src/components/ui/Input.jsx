@@ -61,18 +61,18 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "700",
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     marginBottom: 8,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.cardDark,
-    borderRadius: 18,
+    backgroundColor: COLORS.bgDark, // Clean light slate #F8FAFC
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
   },
   multilineWrapper: {
     alignItems: "flex-start",
@@ -83,9 +83,9 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: COLORS.textWhite,
+    color: COLORS.textDark,
     fontSize: 14,
-    paddingVertical: 14,
+    paddingVertical: 13,
   },
   multilineInput: {
     height: 100,

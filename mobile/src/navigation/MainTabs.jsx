@@ -26,7 +26,10 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Briefcase size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
+              <Briefcase
+                size={20}
+                color={focused ? COLORS.textWhite : COLORS.textMuted}
+              />
             </View>
           ),
         }}
@@ -37,7 +40,10 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Search size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
+              <Search
+                size={20}
+                color={focused ? COLORS.textWhite : COLORS.textMuted}
+              />
             </View>
           ),
         }}
@@ -48,7 +54,10 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Activity size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
+              <Activity
+                size={20}
+                color={focused ? COLORS.textWhite : COLORS.textMuted}
+              />
             </View>
           ),
         }}
@@ -59,7 +68,10 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <Wallet size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
+              <Wallet
+                size={20}
+                color={focused ? COLORS.textWhite : COLORS.textMuted}
+              />
             </View>
           ),
         }}
@@ -70,7 +82,10 @@ export function MainTabs() {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={[styles.iconWrapper, focused && styles.iconActive]}>
-              <User size={20} color={focused ? COLORS.textWhite : COLORS.textMuted} />
+              <User
+                size={20}
+                color={focused ? COLORS.textWhite : COLORS.textMuted}
+              />
             </View>
           ),
         }}

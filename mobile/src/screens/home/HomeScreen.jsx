@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Image,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
@@ -7,16 +15,16 @@ import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi, walletApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { 
-  Sparkles, 
-  Plus, 
-  ShieldCheck, 
-  Wallet, 
-  Briefcase, 
-  Users, 
+import {
+  Sparkles,
+  Plus,
+  ShieldCheck,
+  Wallet,
+  Briefcase,
+  Users,
   ArrowUpRight,
   TrendingUp,
-  Activity
+  Activity,
 } from "lucide-react-native";
 
 export function HomeScreen({ navigation }) {
@@ -29,7 +37,9 @@ export function HomeScreen({ navigation }) {
     try {
       setRefreshing(true);
       const [walletRes, projRes] = await Promise.all([
-        walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+        walletApi
+          .getMe()
+          .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
         projectApi.getMyProjects({ limit: 5 }).catch(() => ({ data: [] })),
       ]);
       setWallet(walletRes.data);
@@ -97,7 +107,9 @@ export function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        <Text style={styles.greeting}>Halo, {user?.nama_usaha || "Pemilik UMKM"}</Text>
+        <Text style={styles.greeting}>
+          Halo, {user?.nama_usaha || "Pemilik UMKM"}
+        </Text>
         <Text style={styles.headerSubtitle}>
           Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda.
         </Text>
@@ -118,7 +130,10 @@ export function HomeScreen({ navigation }) {
 
         <View style={styles.escrowRow}>
           <Text style={styles.escrowText}>
-            Terkunci di Escrow: <Text style={styles.escrowAmount}>{formatCurrency(wallet?.saldo_escrow || 0)}</Text>
+            Terkunci di Escrow:{" "}
+            <Text style={styles.escrowAmount}>
+              {formatCurrency(wallet?.saldo_escrow || 0)}
+            </Text>
           </Text>
         </View>
 
@@ -162,7 +177,9 @@ export function HomeScreen({ navigation }) {
       <View style={styles.sectionHeader}>
         <View>
           <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
-          <Text style={styles.sectionSubtitle}>Mahasiswa terverifikasi kampus dengan rekam jejak prima</Text>
+          <Text style={styles.sectionSubtitle}>
+            Mahasiswa terverifikasi kampus dengan rekam jejak prima
+          </Text>
         </View>
       </View>
 
