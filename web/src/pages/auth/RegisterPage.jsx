@@ -7,15 +7,15 @@ import { Card } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { AuthArtwork } from "../../components/features/AuthArtwork";
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  GraduationCap, 
-  ShieldCheck, 
+import {
+  User,
+  Mail,
+  Lock,
+  GraduationCap,
+  ShieldCheck,
   ArrowRight,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 
 export function RegisterPage() {
@@ -55,7 +55,9 @@ export function RegisterPage() {
 
     const emailClean = formData.email.trim().toLowerCase();
     if (!emailClean.endsWith(".ac.id") && !emailClean.endsWith(".edu")) {
-      setError("Pendaftaran mahasiswa wajib menggunakan email kampus resmi (akhiran .ac.id atau .edu)");
+      setError(
+        "Pendaftaran mahasiswa wajib menggunakan email kampus resmi (akhiran .ac.id atau .edu)",
+      );
       return;
     }
     if (formData.password.length < 8) {
@@ -87,7 +89,6 @@ export function RegisterPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-[calc(100vh-5rem)] flex items-center justify-center">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch w-full max-w-5xl">
-        
         {/* Left Column: Visual Artwork Banner */}
         <div className="lg:col-span-6 flex">
           <AuthArtwork
@@ -100,9 +101,9 @@ export function RegisterPage() {
         <div className="lg:col-span-6 flex flex-col justify-center space-y-6">
           <div className="text-left space-y-2">
             <Link to="/" className="inline-block">
-              <img 
-                src="/logo.webp" 
-                alt="Logo Makarya" 
+              <img
+                src="/logo.webp"
+                alt="Logo Makarya"
                 className="h-14 sm:h-16 w-auto object-contain mb-3"
               />
             </Link>
@@ -155,7 +156,11 @@ export function RegisterPage() {
                     className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all font-sans"
                   />
                 </div>
-                <p className="text-[11px] text-muted">Domain wajib berakhiran <code className="font-bold text-dark-900">.ac.id</code> atau <code className="font-bold text-dark-900">.edu</code></p>
+                <p className="text-[11px] text-muted">
+                  Domain wajib berakhiran{" "}
+                  <code className="font-bold text-dark-900">.ac.id</code> atau{" "}
+                  <code className="font-bold text-dark-900">.edu</code>
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -211,7 +216,11 @@ export function RegisterPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -230,7 +239,10 @@ export function RegisterPage() {
 
             <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
               Sudah memiliki akun?{" "}
-              <Link to="/login" className="font-bold text-brand-indigo hover:underline">
+              <Link
+                to="/login"
+                className="font-bold text-brand-indigo hover:underline"
+              >
                 Masuk di sini
               </Link>
             </div>
@@ -241,7 +253,6 @@ export function RegisterPage() {
             <span>Verifikasi Kampus Resmi & Proteksi Escrow Terintegrasi</span>
           </div>
         </div>
-
       </div>
     </div>
   );

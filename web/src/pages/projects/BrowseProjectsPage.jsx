@@ -103,6 +103,8 @@ export function BrowseProjectsPage() {
                 className="text-xs font-bold shadow-brand"
               >
                 <PlusCircle className="w-4 h-4 mr-1.5" />+ Pasang Proyek Baru
+                <PlusCircle className="w-4 h-4 mr-1.5" />
+                Pasang Proyek Baru
               </Button>
             </Link>
           ) : (

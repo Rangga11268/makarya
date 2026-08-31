@@ -193,6 +193,8 @@ export function WalletPage() {
             className="shadow-brand text-xs font-bold shrink-0"
           >
             <PlusCircle className="w-4 h-4 mr-1.5" />+ Isi Ulang / Top-Up Saldo
+            <PlusCircle className="w-4 h-4 mr-1.5" />
+            Isi Ulang Saldo Deposit
           </Button>
         )}
       </div>
@@ -231,6 +233,8 @@ export function WalletPage() {
               >
                 <PlusCircle className="w-4 h-4 mr-1.5 text-brand-indigo" />+ Isi
                 Ulang / Top Up Saldo Deposit
+                <PlusCircle className="w-4 h-4 mr-1.5 text-brand-indigo" />
+                Isi Ulang Saldo Deposit
               </Button>
             ) : (
               <Button

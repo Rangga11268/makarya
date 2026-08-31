@@ -7,16 +7,16 @@ import { Card } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { AuthArtwork } from "../../components/features/AuthArtwork";
-import { 
-  ShieldCheck, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Sparkles, 
-  UserCheck, 
+import {
+  ShieldCheck,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+  UserCheck,
   ArrowRight,
-  GraduationCap
+  GraduationCap,
 } from "lucide-react";
 
 export function LoginPage() {
@@ -62,7 +62,6 @@ export function LoginPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-[calc(100vh-5rem)] flex items-center justify-center">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch w-full max-w-5xl">
-        
         {/* Left Column: Visual Artwork & Social Proof Banner */}
         <div className="lg:col-span-6 flex">
           <AuthArtwork
@@ -75,9 +74,9 @@ export function LoginPage() {
         <div className="lg:col-span-6 flex flex-col justify-center space-y-6">
           <div className="text-left space-y-2">
             <Link to="/" className="inline-block">
-              <img 
-                src="/logo.webp" 
-                alt="Logo Makarya" 
+              <img
+                src="/logo.webp"
+                alt="Logo Makarya"
                 className="h-14 sm:h-16 w-auto object-contain mb-3"
               />
             </Link>
@@ -96,7 +95,9 @@ export function LoginPage() {
                 <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
                 Pilih Akun Uji Coba Cepat:
               </span>
-              <span className="text-[10px] text-muted">Password: password123</span>
+              <span className="text-[10px] text-muted">
+                Password: password123
+              </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               <button
@@ -170,7 +171,11 @@ export function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -189,7 +194,10 @@ export function LoginPage() {
 
             <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
               Belum memiliki akun mahasiswa?{" "}
-              <Link to="/register" className="font-bold text-brand-indigo hover:underline">
+              <Link
+                to="/register"
+                className="font-bold text-brand-indigo hover:underline"
+              >
                 Daftar Mahasiswa (.ac.id)
               </Link>
             </div>
@@ -198,10 +206,11 @@ export function LoginPage() {
           {/* Security Trust Badge */}
           <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Garansi Rekening Bersama (Escrow) & Keamanan Data OWASP Top 10</span>
+            <span>
+              Garansi Rekening Bersama (Escrow) & Keamanan Data OWASP Top 10
+            </span>
           </div>
         </div>
-
       </div>
     </div>
   );

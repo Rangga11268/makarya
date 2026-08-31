@@ -133,6 +133,7 @@ export function DashboardPage() {
                 >
                   <PlusCircle className="w-4 h-4 mr-1.5" />
                   + Pasang Proyek UMKM Baru
+                  Pasang Proyek UMKM Baru
                 </Button>
               </Link>
             )}

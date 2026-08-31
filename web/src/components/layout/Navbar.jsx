@@ -150,6 +150,8 @@ export function Navbar() {
                   >
                     <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
                     + Pasang Proyek
+                    <PlusCircle className="w-4 h-4 mr-1.5" />
+                    Pasang Proyek
                   </Button>
                 </Link>
               )}
@@ -330,6 +332,7 @@ export function Navbar() {
                     >
                       <PlusCircle className="w-4 h-4 mr-1.5" />
                       + Pasang Proyek Baru
+                      Pasang Proyek Baru
                     </Button>
                   </Link>
                 </div>
