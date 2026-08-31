@@ -82,12 +82,10 @@ def get_my_proposals(
     current_user: User = Depends(require_role(UserRole.MHS))
 ):
     # Melihat seluruh proposal yang dikirim oleh mahasiswa yang sedang login
-    proposals = db.query(Proposal).filter(Proposal.mhs_id == current_user.id).all()
     proposals = db.query(Proposal).filter(Proposal.mhs_id == current_user.id).order_by(Proposal.created_at.desc()).all()
     profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
     mhs_summary = MhsSummary.model_validate(profile) if profile else None
 
-    return [ProposalResponse(
     results = []
     for proposal in proposals:
         proj = proposal.project
@@ -101,8 +99,6 @@ def get_my_proposals(
             status=proposal.status,
             created_at=proposal.created_at,
             updated_at=proposal.updated_at,
-            mhs_profile=mhs_summary
-        ) for proposal in proposals]
             mhs_profile=mhs_summary,
             project_judul=proj.judul if proj else None,
             project_kategori=proj.kategori.value if proj and proj.kategori else None,
@@ -127,7 +123,6 @@ def get_proposals_by_project(
     if project.umkm_id != current_user.id and current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk melihat proposal proyek ini")
 
-    proposals = db.query(Proposal).filter(Proposal.project_id == project_id).all()
     proposals = db.query(Proposal).filter(Proposal.project_id == project_id).order_by(Proposal.created_at.desc()).all()
     results = []
     for proposal in proposals:
@@ -143,7 +138,6 @@ def get_proposals_by_project(
             status=proposal.status,
             created_at=proposal.created_at,
             updated_at=proposal.updated_at,
-            mhs_profile=mhs_summary
             mhs_profile=mhs_summary,
             project_judul=project.judul,
             project_kategori=project.kategori.value if project.kategori else None,
