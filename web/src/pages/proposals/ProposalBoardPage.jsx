@@ -867,52 +867,80 @@ export function ProposalBoardPage() {
               </Link>
             </Card>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredProposals.map((proposal) => {
                 const isExpanded = expandedCards[proposal.id];
                 const sub = mhsSubmissions[proposal.project_id];
                 const isDone = sub?.status === "APPROVED";
 
                 return (
-                  <Card
+                  <div
                     key={proposal.id}
-                    className={`p-4 sm:p-5 space-y-3 bg-surface border border-border shadow-xs border-l-4 ${
-                      proposal.status === "ACCEPTED"
-                        ? "border-l-dark-900"
-                        : proposal.status === "PENDING"
-                          ? "border-l-slate-400"
-                          : "border-l-rose-500"
-                    }`}
+                    className="p-5 sm:p-6 space-y-4 bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 rounded-2xl shadow-xs"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
-                            {formatStatus(proposal.status)}
+                    {/* Top Metadata Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        {proposal.project_kategori && (
+                          <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-canvas border border-border text-dark-900 tracking-wider">
+                            {proposal.project_kategori}
                           </span>
-                          <span className="text-[11px] text-muted">
-                            Dikirim: {formatDate(proposal.created_at)}
-                          </span>
-                        </div>
-                        <h3 className="text-sm sm:text-base font-bold text-dark-900">
-                          Lamaran Proyek #{proposal.project_id.slice(0, 8)}
-                        </h3>
+                        )}
+                        <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-border bg-canvas text-dark-900">
+                          {formatStatus(proposal.status)}
+                        </span>
+                        <span className="text-[11px] text-muted hidden sm:inline">
+                          Dikirim: {formatDate(proposal.created_at)}
+                        </span>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0">
-                        <div className="text-left sm:text-right">
-                          <span className="text-[10px] text-muted uppercase font-semibold block">
-                            Harga Tawar
+                      <span className="text-[11px] font-medium text-muted">
+                        Estimasi Pengerjaan: <b className="text-dark-900">{proposal.estimasi_hari} Hari</b>
+                      </span>
+                    </div>
+
+                    {/* Main Title & Financial Row */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+                      <div className="space-y-1">
+                        <h3 className="text-base sm:text-lg font-bold text-dark-900 font-sans tracking-tight">
+                          {proposal.project_judul ||
+                            `Lamaran Proyek #${proposal.project_id.slice(0, 8)}`}
+                        </h3>
+                        <div className="flex items-center gap-2 text-xs text-muted">
+                          <span>
+                            Klien UMKM:{" "}
+                            <b className="text-dark-900">
+                              {proposal.project_umkm_nama || "Mitra Makarya"}
+                            </b>
                           </span>
-                          <span className="text-sm sm:text-base font-black text-dark-900">
+                          {proposal.project_budget_max && (
+                            <>
+                              <span>•</span>
+                              <span>
+                                Budget Proyek:{" "}
+                                <b className="text-dark-900">
+                                  {formatCurrency(proposal.project_budget_max)}
+                                </b>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-3.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
+                        <div className="text-left sm:text-right">
+                          <span className="text-[10px] text-muted uppercase font-bold tracking-wider block">
+                            Harga Tawar Anda
+                          </span>
+                          <span className="text-lg sm:text-xl font-extrabold text-dark-900 font-sans tracking-tight">
                             {formatCurrency(proposal.harga_tawar)}
                           </span>
                         </div>
                         <button
                           onClick={() => toggleCard(proposal.id)}
-                          className="px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1 hover:bg-surface"
+                          className="px-3.5 py-2 rounded-xl bg-canvas border border-border text-xs font-bold text-dark-900 flex items-center gap-1.5 hover:bg-surface hover:border-dark-900/30 transition-all shrink-0"
                         >
-                          {isExpanded ? "Sembunyikan" : "Buka Detail"}
+                          {isExpanded ? "Tutup" : "Rincian & Aksi"}
                           {isExpanded ? (
                             <ChevronUp className="w-3.5 h-3.5" />
                           ) : (
@@ -1036,8 +1064,8 @@ export function ProposalBoardPage() {
                         )}
                       </div>
                     )}
-                  </Card>
-                );
+                    </div>
+                  );
               })}
             </div>
           )}
