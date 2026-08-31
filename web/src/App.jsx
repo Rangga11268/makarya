@@ -64,15 +64,19 @@ export default function App() {
               }
             />
 
-            {/* 3. Authenticated Portal Routes (Mahasiswa & UMKM) */}
             {/* 3. UMKM Exclusive Routes */}
             <Route element={<ProtectedRoute allowedRoles={["UMKM"]} />}>
               <Route path="/projects/new" element={<CreateProjectPage />} />
             </Route>
 
             {/* 4. Mahasiswa Exclusive Routes */}
-            <Route element={<ProtectedRoute allowedRoles={["MHS", "MAHASISWA"]} />}>
-              <Route path="/projects/:id/apply" element={<ApplyProposalPage />} />
+            <Route
+              element={<ProtectedRoute allowedRoles={["MHS", "MAHASISWA"]} />}
+            >
+              <Route
+                path="/projects/:id/apply"
+                element={<ApplyProposalPage />}
+              />
             </Route>
 
             {/* 5. Shared Authenticated Routes (With Role-Specific Workspaces) */}
@@ -82,18 +86,12 @@ export default function App() {
               }
             >
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/projects/new" element={<CreateProjectPage />} />
-              <Route
-                path="/projects/:id/apply"
-                element={<ApplyProposalPage />}
-              />
               <Route path="/proposals" element={<ProposalBoardPage />} />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/wallet" element={<WalletPage />} />
             </Route>
 
-            {/* 4. Admin Protected Routes */}
             {/* 6. Admin Protected Routes */}
             <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
               <Route path="/admin" element={<AdminDashboardPage />} />

@@ -84,7 +84,6 @@ export function ProjectCard({ project }) {
           to={getProjectUrl(project)}
           className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold bg-dark-900 hover:bg-brand-indigo text-white transition-all gap-1.5 shadow-xs select-none"
         >
-          <span>Detail & Lamar Proyek</span>
           <span>{isMhs ? "Rincian & Lamar" : "Lihat Rincian Proyek"}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>

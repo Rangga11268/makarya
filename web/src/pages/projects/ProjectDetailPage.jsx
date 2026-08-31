@@ -405,7 +405,8 @@ export function ProjectDetailPage() {
                     Mode Klien UMKM
                   </span>
                   <p className="text-[11px] text-muted leading-relaxed">
-                    Hanya akun mahasiswa terverifikasi yang dapat mengajukan proposal untuk proyek ini.
+                    Hanya akun mahasiswa terverifikasi yang dapat mengajukan
+                    proposal untuk proyek ini.
                   </p>
                 </div>
                 <Link to="/projects/new">
@@ -427,8 +428,9 @@ export function ProjectDetailPage() {
                 className="w-full text-xs sm:text-sm font-bold shadow-brand py-3.5"
               >
                 <Send className="w-4 h-4 mr-2" />
-                Lamar Proyek Ini
-                {isAuthenticated ? "Lamar Proyek Ini" : "Masuk untuk Melamar Proyek"}
+                {isAuthenticated
+                  ? "Lamar Proyek Ini"
+                  : "Masuk untuk Melamar Proyek"}
               </Button>
             )}
 

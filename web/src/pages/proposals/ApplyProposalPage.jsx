@@ -89,7 +89,6 @@ export function ApplyProposalPage() {
       }
     }
     loadProject();
-  }, [id]);
   }, [id, user?.role]);
 
   const toggleTool = (tool) => {

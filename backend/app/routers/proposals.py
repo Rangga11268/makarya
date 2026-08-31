@@ -215,6 +215,12 @@ def accept_proposal(
     profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == proposal.mhs_id).first()
     mhs_summary = MhsSummary.model_validate(profile) if profile else None
 
+    umkm_nama = (
+        project.umkm.profile_umkm.nama_usaha
+        if (project and project.umkm and project.umkm.profile_umkm)
+        else (project.umkm.username if (project and project.umkm) else None)
+    )
+
     return ProposalResponse(
         id=proposal.id,
         project_id=proposal.project_id,
@@ -225,7 +231,12 @@ def accept_proposal(
         status=proposal.status,
         created_at=proposal.created_at,
         updated_at=proposal.updated_at,
-        mhs_profile=mhs_summary
+        mhs_profile=mhs_summary,
+        project_judul=project.judul if project else None,
+        project_kategori=project.kategori.value if (project and project.kategori) else None,
+        project_status=project.status.value if (project and project.status) else None,
+        project_budget_max=project.budget_max if project else None,
+        project_umkm_nama=umkm_nama,
     )
 
 @router.patch("/{id}/reject", response_model=ProposalResponse)
@@ -254,6 +265,12 @@ def reject_proposal(
     profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == proposal.mhs_id).first()
     mhs_summary = MhsSummary.model_validate(profile) if profile else None
 
+    umkm_nama = (
+        project.umkm.profile_umkm.nama_usaha
+        if (project and project.umkm and project.umkm.profile_umkm)
+        else (project.umkm.username if (project and project.umkm) else None)
+    )
+
     return ProposalResponse(
         id=proposal.id,
         project_id=proposal.project_id,
@@ -264,5 +281,10 @@ def reject_proposal(
         status=proposal.status,
         created_at=proposal.created_at,
         updated_at=proposal.updated_at,
-        mhs_profile=mhs_summary
+        mhs_profile=mhs_summary,
+        project_judul=project.judul if project else None,
+        project_kategori=project.kategori.value if (project and project.kategori) else None,
+        project_status=project.status.value if (project and project.status) else None,
+        project_budget_max=project.budget_max if project else None,
+        project_umkm_nama=umkm_nama,
     )
