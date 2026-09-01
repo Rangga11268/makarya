@@ -11,6 +11,7 @@ import {
   Dimensions,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { Header } from "../../components/ui/Header";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { CategoryChip } from "../../components/ui/CategoryChip";
@@ -140,74 +141,42 @@ export function HomeScreen({ navigation }) {
   });
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={loadData}
-          tintColor={COLORS.brandIndigo}
-          colors={[COLORS.brandIndigo]}
-        />
-      }
-    >
-      {/* 1. Modern Clean Header (Avatar with verified badge + User Info + Notification Bell) */}
-      <View style={styles.topHeader}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-          style={styles.userProfileSection}
-          activeOpacity={0.8}
-        >
-          <View style={styles.avatarWrapper}>
-            <View
-              style={[
-                styles.avatarCircle,
-                isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-              ]}
-            >
-              <Text style={styles.avatarText}>
-                {isMahasiswa
-                  ? user?.nama_lengkap?.charAt(0) || "D"
-                  : user?.nama_usaha?.charAt(0) || "U"}
-              </Text>
-            </View>
-            <View style={styles.verifiedCheckBadge}>
-              <CheckCircle2
-                size={11}
-                color="#FFFFFF"
-                fill={COLORS.brandIndigo}
-              />
-            </View>
-          </View>
+    <View style={styles.container}>
+      {/* Universal Consistent Header */}
+      <Header
+        userProfile={{
+          initial: isMahasiswa
+            ? user?.nama_lengkap?.charAt(0) || "D"
+            : user?.nama_usaha?.charAt(0) || "U",
+          name: isMahasiswa
+            ? user?.nama_lengkap || "Darell Rangga"
+            : user?.nama_usaha || "Brand UMKM Anda",
+          roleText: isMahasiswa
+            ? "UI/UX & Web Developer • UBSI"
+            : "Klien UMKM Terverifikasi",
+          isMahasiswa,
+        }}
+        onProfilePress={() => navigation.navigate("ProfileTab")}
+        showBell={true}
+        onBellPress={() => setIsNotificationOpen(true)}
+        unreadCount={unreadNotifications}
+      />
 
-          <View style={styles.userInfo}>
-            <Text style={styles.userName} numberOfLines={1}>
-              {isMahasiswa
-                ? user?.nama_lengkap || "Darell Rangga"
-                : user?.nama_usaha || "Brand UMKM Anda"}
-            </Text>
-            <Text style={styles.userRole}>
-              {isMahasiswa
-                ? "UI/UX & Web Developer • UBSI"
-                : "Klien UMKM Terverifikasi"}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.notificationBtn}
-          onPress={() => setIsNotificationOpen(true)}
-          activeOpacity={0.75}
-        >
-          <Bell size={20} color={COLORS.textDark} />
-          {unreadNotifications > 0 && <View style={styles.unreadDot} />}
-        </TouchableOpacity>
-      </View>
-
-      {/* 2. Hero Bento Grid Section (Reference Mockup Style) */}
-      <View style={styles.bentoSection}>
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={loadData}
+            tintColor={COLORS.brandIndigo}
+            colors={[COLORS.brandIndigo]}
+          />
+        }
+      >
+        {/* 2. Hero Bento Grid Section (Reference Mockup Style) */}
+        <View style={styles.bentoSection}>
         <View style={styles.bentoHeaderRow}>
           <Text style={styles.bentoSectionTitle}>
             {isMahasiswa ? "Dashboard Mahasiswa" : "Dashboard Klien UMKM"}
@@ -514,12 +483,13 @@ export function HomeScreen({ navigation }) {
         </View>
       )}
 
-      {/* Working Notification Modal */}
-      <NotificationModal
-        visible={isNotificationOpen}
-        onClose={() => setIsNotificationOpen(false)}
-      />
-    </ScrollView>
+        {/* Working Notification Modal */}
+        <NotificationModal
+          visible={isNotificationOpen}
+          onClose={() => setIsNotificationOpen(false)}
+        />
+      </ScrollView>
+    </View>
   );
 }
 

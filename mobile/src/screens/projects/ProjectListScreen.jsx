@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { Header } from "../../components/ui/Header";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { CategoryChip } from "../../components/ui/CategoryChip";
 import { SearchBar } from "../../components/ui/SearchBar";
@@ -137,38 +138,29 @@ export function ProjectListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Header Bar */}
-      <View style={styles.topHeader}>
-        <View>
-          <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Eksplor Proyek UMKM" : "Kelola Proyek"}
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {isMahasiswa
-              ? "Temukan peluang proyek digital dan kirim proposalmu"
-              : "Pantau pesanan proyek & seleksi proposal mahasiswa"}
-          </Text>
-        </View>
-
-        {!isMahasiswa ? (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("PostProject")}
-            style={styles.fabHeader}
-            activeOpacity={0.8}
-          >
-            <Plus size={18} color="#FFFFFF" strokeWidth={3} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => setIsNotificationOpen(true)}
-            style={styles.bellBtn}
-            activeOpacity={0.75}
-          >
-            <Bell size={20} color={COLORS.textDark} />
-            {unreadNotifications > 0 && <View style={styles.unreadDot} />}
-          </TouchableOpacity>
-        )}
-      </View>
+      {/* 1. Universal Header Bar */}
+      <Header
+        title={isMahasiswa ? "Eksplor Proyek UMKM" : "Kelola Proyek"}
+        subtitle={
+          isMahasiswa
+            ? "Temukan peluang proyek digital dan kirim proposalmu"
+            : "Pantau pesanan proyek & seleksi proposal mahasiswa"
+        }
+        showBell={isMahasiswa}
+        onBellPress={() => setIsNotificationOpen(true)}
+        unreadCount={unreadNotifications}
+        rightAction={
+          !isMahasiswa ? (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("PostProject")}
+              style={styles.fabHeader}
+              activeOpacity={0.8}
+            >
+              <Plus size={18} color="#FFFFFF" strokeWidth={3} />
+            </TouchableOpacity>
+          ) : null
+        }
+      />
 
       {/* 2. Reusable SearchBar Component with Filter Button */}
       <View style={styles.searchContainer}>

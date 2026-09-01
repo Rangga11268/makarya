@@ -55,13 +55,16 @@ export const useNotificationStore = create((set, get) => ({
   ],
 
   getUnreadCount: (role) => {
-    const isMhs = role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
+    const isMhs =
+      role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
     const targetRole = isMhs ? "MHS" : "UMKM";
-    return get().notifications.filter((n) => n.role === targetRole && !n.isRead).length;
+    return get().notifications.filter((n) => n.role === targetRole && !n.isRead)
+      .length;
   },
 
   getRoleNotifications: (role) => {
-    const isMhs = role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
+    const isMhs =
+      role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
     const targetRole = isMhs ? "MHS" : "UMKM";
     return get().notifications.filter((n) => n.role === targetRole);
   },
@@ -69,16 +72,17 @@ export const useNotificationStore = create((set, get) => ({
   markAsRead: (id) =>
     set((state) => ({
       notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, isRead: true } : n
+        n.id === id ? { ...n, isRead: true } : n,
       ),
     })),
 
   markAllAsRead: (role) => {
-    const isMhs = role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
+    const isMhs =
+      role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
     const targetRole = isMhs ? "MHS" : "UMKM";
     set((state) => ({
       notifications: state.notifications.map((n) =>
-        n.role === targetRole ? { ...n, isRead: true } : n
+        n.role === targetRole ? { ...n, isRead: true } : n,
       ),
     }));
   },

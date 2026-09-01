@@ -98,7 +98,8 @@ export function NotificationModal({ visible, onClose }) {
                 <Bell size={36} color={COLORS.textDim} />
                 <Text style={styles.emptyTitle}>Belum Ada Notifikasi</Text>
                 <Text style={styles.emptySub}>
-                  Pemberitahuan aktivitas proyek dan transaksi escrow akan muncul di sini.
+                  Pemberitahuan aktivitas proyek dan transaksi escrow akan
+                  muncul di sini.
                 </Text>
               </View>
             ) : (

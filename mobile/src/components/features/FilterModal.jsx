@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../ui/Button";
 import { X } from "lucide-react-native";
