@@ -42,7 +42,7 @@ export function OnboardingScreen({ navigation, onComplete }) {
       title: "Garansi 100% Rekening Bersama",
       subtitle:
         "Honor pengerjaan dijamin tersimpan aman di rekening escrow dan cair otomatis saat hasil deliverable disetujui.",
-      badge: "Escrow Holding Protected",
+      badge: "Garansi Rekening Bersama",
       visual: "escrow",
     },
     {
@@ -50,7 +50,7 @@ export function OnboardingScreen({ navigation, onComplete }) {
       title: "Kolaborasi Cepat & Terpercaya",
       subtitle:
         "Kirim proposal penawaran, pantau progres milestone pengerjaan secara real-time langsung dari genggamanmu.",
-      badge: "Real-time Tracker",
+      badge: "Pelacakan Real-Time",
       visual: "collaboration",
     },
   ];
@@ -88,7 +88,7 @@ export function OnboardingScreen({ navigation, onComplete }) {
         />
         <View style={styles.topTag}>
           <GraduationCap size={12} color={COLORS.brandIndigo} />
-          <Text style={styles.topTagText}>UBSI Verified</Text>
+          <Text style={styles.topTagText}>Terverifikasi UBSI</Text>
         </View>
       </View>
 
@@ -158,7 +158,7 @@ export function OnboardingScreen({ navigation, onComplete }) {
           <View style={[styles.mockupFloatingCard, styles.mockupCardSky]}>
             <View style={styles.mockupInnerHeader}>
               <Compass size={16} color="#7DD3FC" />
-              <Text style={styles.mockupTagSky}>Live Milestone Tracker</Text>
+              <Text style={styles.mockupTagSky}>Pelacakan Real-Time</Text>
             </View>
 
             <Text style={styles.mockupAmount}>Pengerjaan Cepat</Text>

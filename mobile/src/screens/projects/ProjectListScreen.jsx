@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   TextInput,
+  Modal,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { ProjectCard } from "../../components/features/ProjectCard";
@@ -15,6 +16,7 @@ import { CATEGORIES } from "../../constants/categories";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
+import { formatCurrency } from "../../utils/formatCurrency";
 import {
   Plus,
   Search,
@@ -22,6 +24,10 @@ import {
   X,
   SlidersHorizontal,
   Bell,
+  Check,
+  RotateCcw,
+  Banknote,
+  Layers,
 } from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
@@ -31,6 +37,11 @@ export function ProjectListScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'BUDGET'
   const [categoryFilter, setCategoryFilter] = useState("ALL");
+  
+  // Filter Modal States
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const [selectedBudgetRange, setSelectedBudgetRange] = useState("ALL");
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -70,38 +81,88 @@ export function ProjectListScreen({ navigation }) {
     { id: "BUDGET", label: "Anggaran Tertinggi" },
   ];
 
+  const statusOptions = [
+    { id: "ALL", label: "Semua Status" },
+    { id: "OPEN", label: "Bidding Terbuka" },
+    { id: "IN_PROGRESS", label: "Sedang Dikerjakan" },
+    { id: "REVIEW", label: "Dalam Review" },
+    { id: "DONE", label: "Selesai" },
+  ];
+
+  const budgetOptions = [
+    { id: "ALL", label: "Semua Anggaran" },
+    { id: "UNDER_300K", label: "< Rp 300.000" },
+    { id: "300K_1M", label: "Rp 300.000 - Rp 1.000.000" },
+    { id: "ABOVE_1M", label: "> Rp 1.000.000" },
+  ];
+
+  const activeFilterCount =
+    (selectedStatus !== "ALL" ? 1 : 0) +
+    (selectedBudgetRange !== "ALL" ? 1 : 0) +
+    (categoryFilter !== "ALL" ? 1 : 0);
+
+  const resetFilters = () => {
+    setSelectedStatus("ALL");
+    setSelectedBudgetRange("ALL");
+    setCategoryFilter("ALL");
+  };
+
   const filteredProjects = projects
     .filter((p) => {
+      // Category Filter
       const matchesCategory =
         categoryFilter === "ALL" || p.kategori === categoryFilter;
 
+      // Search Query
       const matchesSearch =
         !searchQuery.trim() ||
         p.judul?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.deskripsi_raw?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.kategori?.toLowerCase().includes(searchQuery.toLowerCase());
+        p.kategori?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.umkm_nama?.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesCategory && matchesSearch;
+      // Status Filter
+      const matchesStatus =
+        selectedStatus === "ALL" ||
+        p.status === selectedStatus ||
+        (selectedStatus === "OPEN" && p.status === "BIDDING") ||
+        (selectedStatus === "DONE" && p.status === "COMPLETED");
+
+      // Budget Range Filter
+      let matchesBudget = true;
+      const budget = p.budget_max || 0;
+      if (selectedBudgetRange === "UNDER_300K") {
+        matchesBudget = budget < 300000;
+      } else if (selectedBudgetRange === "300K_1M") {
+        matchesBudget = budget >= 300000 && budget <= 1000000;
+      } else if (selectedBudgetRange === "ABOVE_1M") {
+        matchesBudget = budget > 1000000;
+      }
+
+      return matchesCategory && matchesSearch && matchesStatus && matchesBudget;
     })
     .sort((a, b) => {
       if (activeTab === "BUDGET") {
         return (b.budget_max || 0) - (a.budget_max || 0);
+      }
+      if (activeTab === "RECENT") {
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
       }
       return 0;
     });
 
   return (
     <View style={styles.container}>
-      {/* 1. Header Bar: Discover Jobs + Bell */}
+      {/* 1. Header Bar: Eksplor Proyek UMKM */}
       <View style={styles.topHeader}>
         <View>
           <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Discover Jobs" : "Daftar Proyek"}
+            {isMahasiswa ? "Eksplor Proyek UMKM" : "Kelola Proyek"}
           </Text>
           <Text style={styles.headerSubtitle}>
             {isMahasiswa
-              ? "Temukan ribuan proyek digital UMKM terverifikasi"
-              : "Kelola pesanan & seleksi proposal mahasiswa"}
+              ? "Temukan peluang proyek digital dan kirim proposalmu"
+              : "Pantau pesanan proyek & seleksi proposal mahasiswa"}
           </Text>
         </View>
 
@@ -130,7 +191,7 @@ export function ProjectListScreen({ navigation }) {
         <View style={styles.searchBar}>
           <Search size={16} color={COLORS.brandIndigo} />
           <TextInput
-            placeholder="Search for jobs, design, web..."
+            placeholder="Cari desain logo, website, video..."
             placeholderTextColor={COLORS.textDim}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -143,12 +204,27 @@ export function ProjectListScreen({ navigation }) {
           )}
         </View>
 
-        <TouchableOpacity style={styles.filterSettingsBtn} activeOpacity={0.8}>
-          <SlidersHorizontal size={18} color={COLORS.textDark} />
+        <TouchableOpacity
+          style={[
+            styles.filterSettingsBtn,
+            activeFilterCount > 0 && styles.filterSettingsBtnActive,
+          ]}
+          activeOpacity={0.8}
+          onPress={() => setIsFilterModalOpen(true)}
+        >
+          <SlidersHorizontal
+            size={18}
+            color={activeFilterCount > 0 ? "#FFFFFF" : COLORS.textDark}
+          />
+          {activeFilterCount > 0 && (
+            <View style={styles.filterBadgeCount}>
+              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
-      {/* 3. Segmented Navigation Tabs (Matching Reference Underline Tabs) */}
+      {/* 3. Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -210,24 +286,24 @@ export function ProjectListScreen({ navigation }) {
             <View style={styles.emptyState}>
               <Compass size={44} color={COLORS.brandIndigo} />
               <Text style={styles.emptyTitle}>
-                {searchQuery
+                {searchQuery || activeFilterCount > 0
                   ? "Proyek Tidak Ditemukan"
                   : "Belum Ada Proyek Tersedia"}
               </Text>
               <Text style={styles.emptyDesc}>
-                {searchQuery
-                  ? "Coba gunakan kata kunci pencarian atau filter kategori yang lain."
+                {searchQuery || activeFilterCount > 0
+                  ? "Coba ubah kata kunci atau atur ulang filter pencarian Anda."
                   : isMahasiswa
-                    ? "Proyek UMKM baru akan segera muncul di sini."
-                    : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
+                  ? "Proyek UMKM baru akan segera muncul di sini."
+                  : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
               </Text>
-              {!isMahasiswa && (
+              {activeFilterCount > 0 && (
                 <Button
-                  title="Pasang Proyek Pertama"
-                  variant="brand"
-                  size="md"
-                  icon={<Plus size={16} color="#FFF" />}
-                  onPress={() => navigation.navigate("PostProject")}
+                  title="Atur Ulang Filter"
+                  variant="secondary"
+                  size="sm"
+                  icon={<RotateCcw size={14} color={COLORS.textDark} />}
+                  onPress={resetFilters}
                   style={styles.emptyBtn}
                 />
               )}
@@ -246,6 +322,102 @@ export function ProjectListScreen({ navigation }) {
           />
         )}
       />
+
+      {/* 6. Filter Bottom Sheet Modal */}
+      <Modal visible={isFilterModalOpen} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>Filter Pencarian Proyek</Text>
+                <Text style={styles.modalSub}>
+                  Saring berdasarkan status pengerjaan dan pagu anggaran
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsFilterModalOpen(false)}
+                style={styles.modalCloseBtn}
+              >
+                <X size={18} color={COLORS.textDark} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Status Proyek Section */}
+            <Text style={styles.filterSectionTitle}>Status Proyek</Text>
+            <View style={styles.filterChipGrid}>
+              {statusOptions.map((opt) => {
+                const isSelected = selectedStatus === opt.id;
+                return (
+                  <TouchableOpacity
+                    key={opt.id}
+                    onPress={() => setSelectedStatus(opt.id)}
+                    style={[
+                      styles.modalOptionChip,
+                      isSelected && styles.modalOptionChipActive,
+                    ]}
+                    activeOpacity={0.75}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        isSelected && styles.modalOptionTextActive,
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Rentang Anggaran Section */}
+            <Text style={styles.filterSectionTitle}>Pagu Anggaran</Text>
+            <View style={styles.filterChipGrid}>
+              {budgetOptions.map((opt) => {
+                const isSelected = selectedBudgetRange === opt.id;
+                return (
+                  <TouchableOpacity
+                    key={opt.id}
+                    onPress={() => setSelectedBudgetRange(opt.id)}
+                    style={[
+                      styles.modalOptionChip,
+                      isSelected && styles.modalOptionChipActive,
+                    ]}
+                    activeOpacity={0.75}
+                  >
+                    <Text
+                      style={[
+                        styles.modalOptionText,
+                        isSelected && styles.modalOptionTextActive,
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Modal Actions */}
+            <View style={styles.modalActions}>
+              <Button
+                title="Reset"
+                variant="secondary"
+                size="md"
+                onPress={resetFilters}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Terapkan Filter"
+                variant="brand"
+                size="md"
+                onPress={() => setIsFilterModalOpen(false)}
+                style={{ flex: 2 }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -340,6 +512,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    position: "relative",
+  },
+  filterSettingsBtnActive: {
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
+  },
+  filterBadgeCount: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    backgroundColor: "#F43F5E",
+    borderRadius: 9,
+    width: 18,
+    height: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+  filterBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "900",
   },
   segmentedContainer: {
     flexDirection: "row",
@@ -381,30 +576,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     gap: 6,
   },
-  categoryChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: COLORS.canvasSoft,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginRight: 4,
-  },
-  categoryChipActive: {
-    backgroundColor: COLORS.brandIndigoLight,
-    borderColor: "rgba(79, 70, 229, 0.2)",
-  },
-  categoryText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textSecondary,
-  },
-  categoryTextActive: {
-    color: COLORS.brandIndigo,
-  },
   listContent: {
     paddingHorizontal: 18,
     paddingTop: 12,
@@ -436,6 +607,86 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   emptyBtn: {
+    marginTop: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.65)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 24,
+    paddingBottom: 40,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    ...SHADOWS.lg,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 18,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: COLORS.textDark,
+  },
+  modalSub: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  filterSectionTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: COLORS.textDark,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  filterChipGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 14,
+  },
+  modalOptionChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  modalOptionChipActive: {
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
+  },
+  modalOptionText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  modalOptionTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "800",
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: 10,
     marginTop: 18,
   },
 });

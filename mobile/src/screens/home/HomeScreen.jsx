@@ -204,7 +204,7 @@ export function HomeScreen({ navigation }) {
       <View style={styles.bentoSection}>
         <View style={styles.bentoHeaderRow}>
           <Text style={styles.bentoSectionTitle}>
-            {isMahasiswa ? "Top Level Freelancer" : "Dashboard Klien UMKM"}
+            {isMahasiswa ? "Dashboard Mahasiswa" : "Dashboard Klien UMKM"}
           </Text>
           <Text style={styles.bentoDateText}>31 Agu 2026</Text>
         </View>
