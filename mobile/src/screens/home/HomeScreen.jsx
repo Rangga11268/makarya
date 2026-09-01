@@ -413,7 +413,10 @@ export function HomeScreen({ navigation }) {
                 decelerationRate="fast"
               >
                 {filteredBrowseProjects.slice(0, 5).map((p) => (
-                  <View key={p.id} style={{ width: CARD_WIDTH, marginRight: 12 }}>
+                  <View
+                    key={p.id}
+                    style={{ width: CARD_WIDTH, marginRight: 12 }}
+                  >
                     <ProjectCard
                       project={p}
                       onPress={() =>
@@ -428,7 +431,10 @@ export function HomeScreen({ navigation }) {
 
                 {/* Carousel End-Cap Action Card */}
                 <TouchableOpacity
-                  style={[styles.carouselEndCapCard, { width: CARD_WIDTH * 0.75 }]}
+                  style={[
+                    styles.carouselEndCapCard,
+                    { width: CARD_WIDTH * 0.75 },
+                  ]}
                   onPress={() => navigation.navigate("ProjectsTab")}
                   activeOpacity={0.85}
                 >
@@ -841,30 +847,6 @@ const styles = StyleSheet.create({
   },
   categoryList: {
     gap: 8,
-  },
-  categoryChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.sm,
-  },
-  categoryChipActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  categoryTextActive: {
-    color: "#FFFFFF",
   },
   feedSection: {
     marginBottom: 20,
