@@ -9,7 +9,8 @@ import {
   Calendar,
   Users,
   ShieldCheck,
-  ArrowRight,
+  Building2,
+  Clock,
   Briefcase,
 } from "lucide-react-native";
 
@@ -31,24 +32,26 @@ export function ProjectCard({ project, onPress }) {
     }
   };
 
-  const getCategoryLabel = (kategori) => {
+  const getSkillsFromCategory = (kategori) => {
     switch (kategori) {
       case "DESIGN":
-        return "Desain & Logo";
+        return ["Desain Grafis", "Logo & Brand", "Packaging"];
       case "UIUX":
-        return "UI/UX App";
+        return ["UI/UX Design", "Figma App", "Mobile UI"];
       case "PEMROGRAMAN":
-        return "Web & Coding";
+        return ["Web Development", "React & Node", "FastAPI"];
       case "VIDEO":
-        return "Video Reels";
+        return ["Video Editing", "Reels & TikTok", "Animasi"];
       case "COPYWRITING":
-        return "Copywriting";
+        return ["Copywriting", "Artikel SEO", "Social Caption"];
       case "ADMIN_DATA":
-        return "Admin & Data";
+        return ["Admin Data", "Excel Spreadsheets", "Data Entry"];
       default:
-        return kategori || "Digital UMKM";
+        return ["Digital UMKM", "Freelance"];
     }
   };
+
+  const skillPills = getSkillsFromCategory(project.kategori);
 
   return (
     <TouchableOpacity
@@ -56,15 +59,21 @@ export function ProjectCard({ project, onPress }) {
       onPress={onPress}
       style={styles.card}
     >
-      {/* Top row: Status Badge & Escrow Seal */}
-      <View style={styles.topRow}>
-        <View style={styles.badgeGroup}>
-          {getStatusBadge(project.status)}
-          <View style={styles.categoryPill}>
-            <Text style={styles.categoryText}>
-              {getCategoryLabel(project.kategori)}
-            </Text>
-          </View>
+      {/* 1. Client Header: Avatar + Client Name + Time ago */}
+      <View style={styles.clientHeader}>
+        <View style={styles.clientAvatar}>
+          <Text style={styles.clientAvatarText}>
+            {project.umkm_nama ? project.umkm_nama.charAt(0) : "K"}
+          </Text>
+        </View>
+
+        <View style={styles.clientInfo}>
+          <Text style={styles.clientName}>
+            {project.umkm_nama || "Klien UMKM Terverifikasi"}
+          </Text>
+          <Text style={styles.postedTime}>
+            Tenggat: {formatDate(project.deadline)}
+          </Text>
         </View>
 
         <View style={styles.escrowChip}>
@@ -73,38 +82,38 @@ export function ProjectCard({ project, onPress }) {
         </View>
       </View>
 
-      {/* Project Title */}
+      {/* 2. Project Title */}
       <Text style={styles.title} numberOfLines={2}>
         {project.judul}
       </Text>
 
-      {/* Description Snippet */}
-      {project.deskripsi_raw ? (
-        <Text style={styles.description} numberOfLines={2}>
-          {project.deskripsi_raw}
-        </Text>
-      ) : null}
-
-      {/* Footer Info: Budget + Applicants & Deadline */}
-      <View style={styles.footerRow}>
-        <View>
-          <Text style={styles.budgetLabel}>Pagu Anggaran</Text>
-          <Text style={styles.budget}>{formatCurrency(project.budget_max)}</Text>
+      {/* 3. Two-Column Specs Grid (Budget & Level) */}
+      <View style={styles.specsGrid}>
+        <View style={styles.specItem}>
+          <Text style={styles.specLabel}>Pagu Anggaran</Text>
+          <Text style={styles.specBudgetValue}>
+            {formatCurrency(project.budget_max)}
+          </Text>
         </View>
 
-        <View style={styles.rightMeta}>
-          <View style={styles.metaItem}>
+        <View style={styles.specItemRight}>
+          <Text style={styles.specLabel}>Pelamar Aktif</Text>
+          <View style={styles.applicantRow}>
             <Users size={12} color={COLORS.textMuted} />
-            <Text style={styles.metaText}>
-              {project.total_pelamar || 0} Pelamar
+            <Text style={styles.specLevelValue}>
+              {project.total_pelamar || 0} Mahasiswa
             </Text>
           </View>
-
-          <View style={styles.metaItem}>
-            <Calendar size={12} color={COLORS.textMuted} />
-            <Text style={styles.metaText}>{formatDate(project.deadline)}</Text>
-          </View>
         </View>
+      </View>
+
+      {/* 4. Skill Tags Pills */}
+      <View style={styles.skillsRow}>
+        {skillPills.map((skill, idx) => (
+          <View key={idx} style={styles.skillPill}>
+            <Text style={styles.skillPillText}>{skill}</Text>
+          </View>
+        ))}
       </View>
     </TouchableOpacity>
   );
@@ -120,28 +129,37 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     ...SHADOWS.sm,
   },
-  topRow: {
+  clientHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
-  badgeGroup: {
-    flexDirection: "row",
+  clientAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
-    gap: 6,
-    flexWrap: "wrap",
+    justifyContent: "center",
+    marginRight: 10,
   },
-  categoryPill: {
-    backgroundColor: COLORS.canvasSoft,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
+  clientAvatarText: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: COLORS.brandIndigo,
   },
-  categoryText: {
-    fontSize: 10,
+  clientInfo: {
+    flex: 1,
+  },
+  clientName: {
+    fontSize: 12,
     fontWeight: "700",
-    color: COLORS.textSecondary,
+    color: COLORS.textDark,
+  },
+  postedTime: {
+    fontSize: 10,
+    color: COLORS.textMuted,
+    marginTop: 1,
   },
   escrowChip: {
     flexDirection: "row",
@@ -163,49 +181,62 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     letterSpacing: -0.3,
     lineHeight: 21,
-    marginBottom: 6,
-  },
-  description: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    lineHeight: 17,
     marginBottom: 12,
   },
-  footerRow: {
+  specsGrid: {
     flexDirection: "row",
-    alignItems: "flex-end",
     justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-    paddingTop: 10,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
+    padding: 10,
+    marginBottom: 12,
   },
-  budgetLabel: {
-    fontSize: 10,
-    fontWeight: "600",
+  specItem: {
+    flex: 1,
+  },
+  specItemRight: {
+    flex: 1,
+    alignItems: "flex-end",
+  },
+  specLabel: {
+    fontSize: 9,
+    fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
+    marginBottom: 2,
   },
-  budget: {
-    fontSize: 15,
+  specBudgetValue: {
+    fontSize: 13,
     fontWeight: "900",
     color: COLORS.brandIndigo,
-    letterSpacing: -0.3,
-    marginTop: 1,
   },
-  rightMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  metaItem: {
+  applicantRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  metaText: {
+  specLevelValue: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  skillsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  skillPill: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  skillPillText: {
     fontSize: 11,
     fontWeight: "600",
-    color: COLORS.textMuted,
+    color: COLORS.textSecondary,
   },
 });

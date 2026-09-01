@@ -9,12 +9,12 @@ import {
   Image,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
-import { Button } from "../../components/ui/Button";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { useAuthStore } from "../../store/authStore";
-import { projectApi, walletApi } from "../../api";
+import { projectApi, walletApi, proposalApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { formatDate } from "../../utils/formatDate";
 import {
   Sparkles,
   Plus,
@@ -23,11 +23,9 @@ import {
   Compass,
   GraduationCap,
   ArrowRight,
-  TrendingUp,
   Briefcase,
   Layers,
   Banknote,
-  Search,
   Palette,
   Smartphone,
   Code2,
@@ -35,6 +33,13 @@ import {
   PenTool,
   FileSpreadsheet,
   Lock,
+  Bell,
+  Star,
+  CheckCircle2,
+  Clock,
+  MoreVertical,
+  Activity,
+  Award,
 } from "lucide-react-native";
 
 export function HomeScreen({ navigation }) {
@@ -42,6 +47,7 @@ export function HomeScreen({ navigation }) {
   const [wallet, setWallet] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
   const [browseProjects, setBrowseProjects] = useState([]);
+  const [myProposals, setMyProposals] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,19 +61,23 @@ export function HomeScreen({ navigation }) {
     try {
       setRefreshing(true);
       if (isMahasiswa) {
-        const [walletRes, browseRes] = await Promise.all([
+        const [walletRes, browseRes, propRes] = await Promise.all([
           walletApi
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
           projectApi
             .browse({ limit: 6 })
             .catch(() => ({ data: { items: [] } })),
+          proposalApi
+            .getMyProposals()
+            .catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
         const pItems = Array.isArray(browseRes.data)
           ? browseRes.data
           : browseRes.data?.items || [];
         setBrowseProjects(pItems);
+        setMyProposals(Array.isArray(propRes.data) ? propRes.data : []);
       } else {
         const [walletRes, myProjRes] = await Promise.all([
           walletApi
@@ -96,7 +106,7 @@ export function HomeScreen({ navigation }) {
     { id: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
     { id: "VIDEO", label: "Video Reels", Icon: Video },
     { id: "COPYWRITING", label: "Copywriting", Icon: PenTool },
-    { id: "ADMIN_DATA", label: "Admin & Data", Icon: FileSpreadsheet },
+    { id: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
   ];
 
   const featuredTalents = [
@@ -145,143 +155,206 @@ export function HomeScreen({ navigation }) {
         />
       }
     >
-      {/* 1. Header Bar: Logo + Verified Pill + User Avatar */}
+      {/* 1. Modern Clean Header (Avatar with verified badge + User Info + Notification Bell) */}
       <View style={styles.topHeader}>
-        <View style={styles.headerTitleRow}>
-          <Image
-            source={require("../../../assets/logo.webp")}
-            style={styles.headerLogo}
-            resizeMode="contain"
-          />
-
-          <View style={styles.headerRight}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Profile")}
+          style={styles.userProfileSection}
+          activeOpacity={0.8}
+        >
+          <View style={styles.avatarWrapper}>
             <View
               style={[
-                styles.verifiedTag,
-                isMahasiswa ? styles.verifiedTagMhs : styles.verifiedTagUmkm,
+                styles.avatarCircle,
+                isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
               ]}
-            >
-              {isMahasiswa ? (
-                <GraduationCap size={12} color={COLORS.brandIndigo} />
-              ) : (
-                <ShieldCheck size={12} color={COLORS.brandCyan} />
-              )}
-              <Text
-                style={[
-                  styles.verifiedText,
-                  isMahasiswa
-                    ? styles.verifiedTextMhs
-                    : styles.verifiedTextUmkm,
-                ]}
-              >
-                {isMahasiswa ? "Mahasiswa UBSI" : "UMKM Terverifikasi"}
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Profile")}
-              style={styles.avatarBtn}
-              activeOpacity={0.8}
             >
               <Text style={styles.avatarText}>
                 {isMahasiswa
                   ? user?.nama_lengkap?.charAt(0) || "D"
                   : user?.nama_usaha?.charAt(0) || "U"}
               </Text>
+            </View>
+            <View style={styles.verifiedCheckBadge}>
+              <CheckCircle2 size={11} color="#FFFFFF" fill={COLORS.brandIndigo} />
+            </View>
+          </View>
+
+          <View style={styles.userInfo}>
+            <Text style={styles.userName} numberOfLines={1}>
+              {isMahasiswa
+                ? user?.nama_lengkap || "Darell Rangga"
+                : user?.nama_usaha || "Brand UMKM Anda"}
+            </Text>
+            <Text style={styles.userRole}>
+              {isMahasiswa
+                ? "UI/UX & Web Developer • UBSI"
+                : "Klien UMKM Terverifikasi"}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.notificationBtn}
+          onPress={() => navigation.navigate("Profile")}
+          activeOpacity={0.75}
+        >
+          <Bell size={20} color={COLORS.textDark} />
+          <View style={styles.unreadDot} />
+        </TouchableOpacity>
+      </View>
+
+      {/* 2. Hero Bento Grid Section (Reference Mockup Style) */}
+      <View style={styles.bentoSection}>
+        <View style={styles.bentoHeaderRow}>
+          <Text style={styles.bentoSectionTitle}>
+            {isMahasiswa ? "Top Level Freelancer" : "Dashboard Klien UMKM"}
+          </Text>
+          <Text style={styles.bentoDateText}>31 Agu 2026</Text>
+        </View>
+
+        <View style={styles.bentoGridRow}>
+          {/* Left Large Bento Card: Earnings / Saldo */}
+          <TouchableOpacity
+            style={styles.bentoEarningsCard}
+            activeOpacity={0.9}
+            onPress={() => navigation.navigate("WalletTab")}
+          >
+            <View style={styles.earningsTopRow}>
+              <Text style={styles.earningsLabel}>
+                {isMahasiswa ? "Saldo Honor" : "Saldo Escrow"}
+              </Text>
+              <Text style={styles.earningsDetailsLink}>Rincian</Text>
+            </View>
+
+            <Text style={styles.earningsAmount}>
+              {formatCurrency(wallet?.saldo_aktif || 0)}
+            </Text>
+            <Text style={styles.earningsSub}>
+              {wallet?.saldo_aktif > 0
+                ? "+12% dari bulan lalu"
+                : "Siap dicairkan ke rekening"}
+            </Text>
+
+            {/* Nested Mini Target / Escrow Card */}
+            <View style={styles.nestedEscrowCard}>
+              <View style={styles.nestedIconCircle}>
+                <Lock size={12} color="#FFFFFF" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nestedEscrowLabel}>
+                  {isMahasiswa ? "Escrow Pengerjaan" : "Escrow Terkunci"}
+                </Text>
+                <Text style={styles.nestedEscrowValue}>
+                  {formatCurrency(wallet?.saldo_escrow || 0)}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          {/* Right Column Stack (2 Metric Cards) */}
+          <View style={styles.bentoRightColumn}>
+            {/* Top Metric: 100% On-Time / Escrow Safe */}
+            <View style={styles.bentoMiniCard}>
+              <View style={styles.progressRingRow}>
+                <View style={styles.progressRingCircle}>
+                  <Text style={styles.progressRingText}>100%</Text>
+                </View>
+              </View>
+              <Text style={styles.miniCardLabel}>Jaminan Escrow Aman</Text>
+            </View>
+
+            {/* Bottom Metric: Star Rating */}
+            <View style={styles.bentoMiniCard}>
+              <View style={styles.ratingRow}>
+                <Star size={15} color="#F59E0B" fill="#F59E0B" />
+                <Text style={styles.ratingValue}>5.0</Text>
+                <Text style={styles.ratingMax}>/5.0</Text>
+              </View>
+              <Text style={styles.miniCardLabel}>Rating Positif</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* 3. Ongoing Projects Section (Matching Mockup "Ongoing Project") */}
+      {isMahasiswa && myProposals.length > 0 && (
+        <View style={styles.ongoingSection}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Proyek Berjalan</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("TrackerTab")}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.seeMoreLink}>Lihat Semua</Text>
             </TouchableOpacity>
           </View>
+
+          {myProposals.slice(0, 2).map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.ongoingProjectCard}
+              activeOpacity={0.88}
+              onPress={() =>
+                navigation.navigate("ProjectDetail", {
+                  id: item.project_id,
+                  projectId: item.project_id,
+                })
+              }
+            >
+              <View style={styles.ongoingHeader}>
+                <View style={styles.ongoingCategoryIconBox}>
+                  <Palette size={16} color={COLORS.brandIndigo} />
+                </View>
+
+                <View style={styles.ongoingTitleWrapper}>
+                  <Text style={styles.ongoingTitle} numberOfLines={1}>
+                    {item.project_judul || "Pengembangan Web UMKM"}
+                  </Text>
+                  <Text style={styles.ongoingClientName}>
+                    {item.project_umkm_nama || "Klien UMKM"}
+                  </Text>
+                </View>
+
+                <Text style={styles.ongoingPrice}>
+                  {formatCurrency(item.harga_tawar)}
+                </Text>
+              </View>
+
+              <View style={styles.ongoingFooter}>
+                <View
+                  style={[
+                    styles.statusPill,
+                    item.status === "ACCEPTED"
+                      ? styles.statusPillActive
+                      : styles.statusPillPending,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.statusPillText,
+                      item.status === "ACCEPTED"
+                        ? styles.statusTextActive
+                        : styles.statusTextPending,
+                    ]}
+                  >
+                    {item.status === "ACCEPTED" ? "Sedang Dikerjakan" : "Review Proposal"}
+                  </Text>
+                </View>
+
+                <View style={styles.ongoingDateRow}>
+                  <Clock size={11} color={COLORS.textMuted} />
+                  <Text style={styles.ongoingDateText}>
+                    {item.estimasi_hari || 5} Hari Kerja
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
+      )}
 
-        <Text style={styles.greeting}>
-          Halo,{" "}
-          {isMahasiswa
-            ? user?.nama_lengkap?.split(" ")[0] || "Darell"
-            : user?.nama_usaha || "Pemilik UMKM"}
-        </Text>
-        <Text style={styles.headerSubtitle}>
-          {isMahasiswa
-            ? "Raih penghasilan & pengalaman nyata dari proyek digital UMKM."
-            : "Temukan talenta mahasiswa terbaik dengan jaminan rekening bersama (Escrow)."}
-        </Text>
-      </View>
-
-      {/* 2. Hero Fintech Wallet & Stats Card */}
-      <View style={styles.heroCard}>
-        <View style={styles.heroCardHeader}>
-          <View style={styles.walletBadge}>
-            <Wallet size={15} color="#FFFFFF" />
-            <Text style={styles.walletBadgeText}>
-              {isMahasiswa ? "Dompet Honor Mahasiswa" : "Saldo Escrow Aktif"}
-            </Text>
-          </View>
-
-          <View style={styles.escrowProtectedPill}>
-            <ShieldCheck size={12} color="#A7F3D0" />
-            <Text style={styles.escrowProtectedText}>100% Escrow</Text>
-          </View>
-        </View>
-
-        <Text style={styles.heroBalanceLabel}>Saldo Siap Dicairkan</Text>
-        <Text style={styles.heroBalanceAmount}>
-          {formatCurrency(wallet?.saldo_aktif || 0)}
-        </Text>
-
-        {wallet?.saldo_escrow > 0 && (
-          <View style={styles.escrowHoldingRow}>
-            <Lock size={12} color="#CBD5E1" />
-            <Text style={styles.escrowHoldingText}>
-              {formatCurrency(wallet?.saldo_escrow)} terkunci di escrow
-            </Text>
-          </View>
-        )}
-
-        {/* Quick Action Buttons */}
-        <View style={styles.heroActionsRow}>
-          {isMahasiswa ? (
-            <>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ProjectsTab")}
-                style={[styles.heroBtn, styles.heroBtnPrimary]}
-                activeOpacity={0.85}
-              >
-                <Compass size={16} color={COLORS.brandIndigo} />
-                <Text style={styles.heroBtnPrimaryText}>Cari Proyek</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate("WalletTab")}
-                style={[styles.heroBtn, styles.heroBtnSecondary]}
-                activeOpacity={0.85}
-              >
-                <Banknote size={16} color="#FFFFFF" />
-                <Text style={styles.heroBtnSecondaryText}>Tarik Dana</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("PostProject")}
-                style={[styles.heroBtn, styles.heroBtnPrimary]}
-                activeOpacity={0.85}
-              >
-                <Plus size={16} color={COLORS.brandIndigo} strokeWidth={3} />
-                <Text style={styles.heroBtnPrimaryText}>Pasang Proyek</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => navigation.navigate("WalletTab")}
-                style={[styles.heroBtn, styles.heroBtnSecondary]}
-                activeOpacity={0.85}
-              >
-                <Banknote size={16} color="#FFFFFF" />
-                <Text style={styles.heroBtnSecondaryText}>Top-Up</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </View>
-
-      {/* 3. Category Selector Chips Carousel */}
+      {/* 4. Category Selector Chips */}
       <View style={styles.categoriesSection}>
         <ScrollView
           horizontal
@@ -319,16 +392,15 @@ export function HomeScreen({ navigation }) {
         </ScrollView>
       </View>
 
-      {/* 4. Dynamic Feed per Role */}
+      {/* 5. Discover Projects (Eksplor Proyek UMKM) */}
       {isMahasiswa ? (
-        /* Mahasiswa Feed: Rekomendasi Proyek UMKM Siap Dilamar */
         <View style={styles.feedSection}>
-          <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderRow}>
             <View>
               <Text style={styles.sectionTitle}>
                 {selectedCategory === "ALL"
                   ? "Rekomendasi Proyek Terbaru"
-                  : `Proyek ${categories.find((c) => c.id === selectedCategory)?.label}`}
+                  : `Kategori ${categories.find((c) => c.id === selectedCategory)?.label}`}
               </Text>
               <Text style={styles.sectionSubtitle}>
                 Pilih proyek UMKM dan ajukan penawaran terbaikmu
@@ -369,9 +441,9 @@ export function HomeScreen({ navigation }) {
           )}
         </View>
       ) : (
-        /* UMKM Feed: Proyek Saya & Talenta Mahasiswa */
+        /* UMKM Feed */
         <View style={styles.feedSection}>
-          <View style={styles.sectionHeader}>
+          <View style={styles.sectionHeaderRow}>
             <View>
               <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
               <Text style={styles.sectionSubtitle}>
@@ -406,175 +478,331 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   content: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     paddingTop: 50,
     paddingBottom: 110,
   },
   topHeader: {
-    marginBottom: 18,
-  },
-  headerTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 20,
   },
-  headerLogo: {
-    width: 145,
+  userProfileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flex: 1,
+  },
+  avatarWrapper: {
+    position: "relative",
+  },
+  avatarCircle: {
+    width: 44,
     height: 44,
-    marginLeft: -4,
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  verifiedTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    borderWidth: 1,
-  },
-  verifiedTagMhs: {
-    backgroundColor: COLORS.brandIndigoLight,
-    borderColor: "rgba(79, 70, 229, 0.2)",
-  },
-  verifiedTagUmkm: {
-    backgroundColor: COLORS.brandCyanLight,
-    borderColor: "rgba(14, 165, 233, 0.2)",
-  },
-  verifiedText: {
-    fontSize: 10,
-    fontWeight: "800",
-  },
-  verifiedTextMhs: {
-    color: COLORS.brandIndigo,
-  },
-  verifiedTextUmkm: {
-    color: COLORS.brandCyan,
-  },
-  avatarBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.brandIndigo,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 2,
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+  },
+  avatarMhs: {
+    backgroundColor: COLORS.brandIndigo,
+  },
+  avatarUmkm: {
+    backgroundColor: COLORS.brandCyan,
   },
   avatarText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "800",
+    fontSize: 18,
+    fontWeight: "900",
   },
-  greeting: {
-    fontSize: 24,
+  verifiedCheckBadge: {
+    position: "absolute",
+    bottom: -2,
+    right: -2,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: 16,
     fontWeight: "900",
     color: COLORS.textDark,
-    letterSpacing: -0.6,
+    letterSpacing: -0.3,
   },
-  headerSubtitle: {
-    fontSize: 12,
+  userRole: {
+    fontSize: 11,
     color: COLORS.textMuted,
-    marginTop: 3,
-    lineHeight: 18,
+    marginTop: 2,
+    fontWeight: "600",
   },
-  heroCard: {
-    backgroundColor: "#1E1B4B", // Deep Royal Indigo background for high-tech fintech look
-    borderRadius: 24,
-    padding: 20,
-    marginBottom: 18,
+  notificationBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.bgSurface,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    position: "relative",
+    ...SHADOWS.sm,
+  },
+  unreadDot: {
+    position: "absolute",
+    top: 8,
+    right: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#F43F5E", // Vibrant pink/red notification dot
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+  bentoSection: {
+    marginBottom: 22,
+  },
+  bentoHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  bentoSectionTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: COLORS.textDark,
+    letterSpacing: -0.2,
+  },
+  bentoDateText: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  bentoGridRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  bentoEarningsCard: {
+    flex: 1.35,
+    backgroundColor: "#2563EB", // Vibrant Royal Blue / Indigo gradient look
+    borderRadius: 22,
+    padding: 16,
+    justifyContent: "space-between",
     ...SHADOWS.md,
   },
-  heroCardHeader: {
+  earningsTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  earningsLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "rgba(255, 255, 255, 0.8)",
+  },
+  earningsDetailsLink: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#93C5FD",
+  },
+  earningsAmount: {
+    fontSize: 24,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: -0.5,
+    marginTop: 8,
+  },
+  earningsSub: {
+    fontSize: 10,
+    color: "rgba(255, 255, 255, 0.75)",
+    marginTop: 2,
+    marginBottom: 12,
+  },
+  nestedEscrowCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.16)",
+    padding: 10,
+    borderRadius: 14,
+  },
+  nestedIconCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  nestedEscrowLabel: {
+    fontSize: 9,
+    fontWeight: "700",
+    color: "rgba(255, 255, 255, 0.8)",
+    textTransform: "uppercase",
+  },
+  nestedEscrowValue: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#FFFFFF",
+  },
+  bentoRightColumn: {
+    flex: 0.95,
+    gap: 12,
+  },
+  bentoMiniCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
+    padding: 14,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    ...SHADOWS.sm,
+  },
+  progressRingRow: {
+    alignItems: "flex-start",
+    marginBottom: 6,
+  },
+  progressRingCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 3,
+    borderColor: COLORS.success,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressRingText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: COLORS.success,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 6,
+  },
+  ratingValue: {
+    fontSize: 17,
+    fontWeight: "900",
+    color: COLORS.textDark,
+  },
+  ratingMax: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+  },
+  miniCardLabel: {
+    fontSize: 10,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+  },
+  ongoingSection: {
+    marginBottom: 22,
+  },
+  sectionHeaderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
   },
-  walletBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: COLORS.textDark,
+    letterSpacing: -0.3,
   },
-  walletBadgeText: {
+  sectionSubtitle: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  seeMoreLink: {
     fontSize: 12,
     fontWeight: "700",
-    color: "rgba(255, 255, 255, 0.8)",
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
+    color: COLORS.brandIndigo,
   },
-  escrowProtectedPill: {
+  ongoingProjectCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 10,
+    ...SHADOWS.sm,
+  },
+  ongoingHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "rgba(16, 185, 129, 0.2)",
-    paddingHorizontal: 8,
+    gap: 10,
+  },
+  ongoingCategoryIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ongoingTitleWrapper: {
+    flex: 1,
+  },
+  ongoingTitle: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: COLORS.textDark,
+  },
+  ongoingClientName: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  ongoingPrice: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: COLORS.success,
+  },
+  ongoingFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+  },
+  statusPill: {
+    paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 999,
   },
-  escrowProtectedText: {
+  statusPillActive: {
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  statusPillPending: {
+    backgroundColor: COLORS.warningBg,
+  },
+  statusPillText: {
     fontSize: 10,
-    fontWeight: "800",
-    color: "#A7F3D0",
+    fontWeight: "700",
   },
-  heroBalanceLabel: {
-    fontSize: 11,
-    color: "rgba(255, 255, 255, 0.65)",
-    fontWeight: "600",
-  },
-  heroBalanceAmount: {
-    fontSize: 30,
-    fontWeight: "900",
-    color: "#FFFFFF",
-    letterSpacing: -0.8,
-    marginTop: 2,
-  },
-  escrowHoldingRow: {
-    marginTop: 6,
-  },
-  escrowHoldingText: {
-    fontSize: 11,
-    color: "#CBD5E1",
-    fontWeight: "600",
-  },
-  heroActionsRow: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 18,
-  },
-  heroBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 11,
-    borderRadius: 14,
-  },
-  heroBtnPrimary: {
-    backgroundColor: "#FFFFFF",
-  },
-  heroBtnPrimaryText: {
-    fontSize: 13,
-    fontWeight: "800",
+  statusTextActive: {
     color: COLORS.brandIndigo,
   },
-  heroBtnSecondary: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+  statusTextPending: {
+    color: COLORS.warning,
   },
-  heroBtnSecondaryText: {
-    fontSize: 13,
-    fontWeight: "800",
-    color: "#FFFFFF",
+  ongoingDateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  ongoingDateText: {
+    fontSize: 10,
+    color: COLORS.textMuted,
+    fontWeight: "600",
   },
   categoriesSection: {
     marginBottom: 20,
@@ -598,9 +826,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
-  categoryIcon: {
-    fontSize: 12,
-  },
   categoryText: {
     fontSize: 12,
     fontWeight: "700",
@@ -611,23 +836,6 @@ const styles = StyleSheet.create({
   },
   feedSection: {
     marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 14,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    letterSpacing: -0.3,
-  },
-  sectionSubtitle: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 2,
   },
   seeAllBtn: {
     flexDirection: "row",

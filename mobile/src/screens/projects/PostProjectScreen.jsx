@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -63,7 +69,10 @@ export function PostProjectScreen({ navigation }) {
       showToast("Proyek berhasil diterbitkan!", "success");
       navigation.navigate("ProjectsTab");
     } catch (err) {
-      showToast(err.response?.data?.detail || "Gagal menerbitkan proyek", "danger");
+      showToast(
+        err.response?.data?.detail || "Gagal menerbitkan proyek",
+        "danger",
+      );
     } finally {
       setLoading(false);
     }
@@ -161,7 +170,8 @@ export function PostProjectScreen({ navigation }) {
         <View style={styles.guaranteeBox}>
           <ShieldCheck size={18} color={COLORS.brandCyan} />
           <Text style={styles.guaranteeText}>
-            Dana proyek Anda hanya akan dikunci di rekening bersama (escrow) saat Anda menyetujui salah satu proposal mahasiswa.
+            Dana proyek Anda hanya akan dikunci di rekening bersama (escrow)
+            saat Anda menyetujui salah satu proposal mahasiswa.
           </Text>
         </View>
 

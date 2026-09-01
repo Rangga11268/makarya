@@ -45,7 +45,7 @@ export function LoginScreen({ navigation }) {
         useAuthStore.getState().logout();
         showToast(
           "Akun Administrator hanya dapat diakses melalui portal web.",
-          "danger"
+          "danger",
         );
         return;
       }
@@ -53,7 +53,7 @@ export function LoginScreen({ navigation }) {
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal masuk. Periksa email/password.",
-        "danger"
+        "danger",
       );
     } finally {
       setLoading(false);

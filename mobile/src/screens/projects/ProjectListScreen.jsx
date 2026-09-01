@@ -9,7 +9,6 @@ import {
   TextInput,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
-import { Header } from "../../components/ui/Header";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
@@ -20,6 +19,7 @@ import {
   Compass,
   X,
   SlidersHorizontal,
+  Bell,
   Sparkles,
   Palette,
   Smartphone,
@@ -34,7 +34,7 @@ export function ProjectListScreen({ navigation }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'BUDGET'
   const [categoryFilter, setCategoryFilter] = useState("ALL");
 
   const isMahasiswa =
@@ -79,60 +79,73 @@ export function ProjectListScreen({ navigation }) {
     { id: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
   ];
 
-  const filterTabs = [
-    { id: "ALL", label: "Semua Status" },
-    { id: "OPEN", label: "Bidding Terbuka" },
-    { id: "IN_PROGRESS", label: "Dikerjakan" },
-    { id: "REVIEW", label: "Review" },
-    { id: "COMPLETED", label: "Selesai" },
+  const segmentedTabs = [
+    { id: "MATCH", label: "Paling Cocok" },
+    { id: "RECENT", label: "Terbaru" },
+    { id: "BUDGET", label: "Anggaran Tertinggi" },
   ];
 
-  const filteredProjects = projects.filter((p) => {
-    const matchesStatus =
-      statusFilter === "ALL" ||
-      p.status === statusFilter ||
-      (statusFilter === "COMPLETED" && p.status === "DONE");
+  const filteredProjects = projects
+    .filter((p) => {
+      const matchesCategory =
+        categoryFilter === "ALL" || p.kategori === categoryFilter;
 
-    const matchesCategory =
-      categoryFilter === "ALL" || p.kategori === categoryFilter;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        p.judul?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.deskripsi_raw?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.kategori?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesSearch =
-      !searchQuery.trim() ||
-      p.judul?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.deskripsi_raw?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.kategori?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesStatus && matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (activeTab === "BUDGET") {
+        return (b.budget_max || 0) - (a.budget_max || 0);
+      }
+      return 0;
+    });
 
   return (
     <View style={styles.container}>
-      <Header
-        title={isMahasiswa ? "Eksplor Proyek UMKM" : "Daftar Proyek Saya"}
-        subtitle={
-          isMahasiswa
-            ? "Temukan proyek digital & ajukan proposal terbaikmu"
-            : "Kelola pesanan dan seleksi proposal mahasiswa"
-        }
-        rightAction={
-          !isMahasiswa ? (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("PostProject")}
-              style={styles.fabHeader}
-              activeOpacity={0.8}
-            >
-              <Plus size={18} color="#FFFFFF" strokeWidth={3} />
-            </TouchableOpacity>
-          ) : null
-        }
-      />
+      {/* 1. Header Bar: Discover Jobs + Bell */}
+      <View style={styles.topHeader}>
+        <View>
+          <Text style={styles.headerTitle}>
+            {isMahasiswa ? "Discover Jobs" : "Daftar Proyek"}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {isMahasiswa
+              ? "Temukan ribuan proyek digital UMKM terverifikasi"
+              : "Kelola pesanan & seleksi proposal mahasiswa"}
+          </Text>
+        </View>
 
-      {/* Search Input Section */}
+        {!isMahasiswa ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("PostProject")}
+            style={styles.fabHeader}
+            activeOpacity={0.8}
+          >
+            <Plus size={18} color="#FFFFFF" strokeWidth={3} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            style={styles.bellBtn}
+            activeOpacity={0.75}
+          >
+            <Bell size={20} color={COLORS.textDark} />
+            <View style={styles.unreadDot} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* 2. Search Bar + Filter Settings Button */}
       <View style={styles.searchSection}>
         <View style={styles.searchBar}>
           <Search size={16} color={COLORS.brandIndigo} />
           <TextInput
-            placeholder="Cari desain logo, website, video..."
+            placeholder="Search for jobs, design, web..."
             placeholderTextColor={COLORS.textDim}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -144,9 +157,38 @@ export function ProjectListScreen({ navigation }) {
             </TouchableOpacity>
           )}
         </View>
+
+        <TouchableOpacity style={styles.filterSettingsBtn} activeOpacity={0.8}>
+          <SlidersHorizontal size={18} color={COLORS.textDark} />
+        </TouchableOpacity>
       </View>
 
-      {/* Category Pills Slider */}
+      {/* 3. Segmented Navigation Tabs (Matching Reference Underline Tabs) */}
+      <View style={styles.segmentedContainer}>
+        {segmentedTabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <TouchableOpacity
+              key={tab.id}
+              onPress={() => setActiveTab(tab.id)}
+              style={styles.segmentedTabItem}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.segmentedTabText,
+                  isActive && styles.segmentedTabTextActive,
+                ]}
+              >
+                {tab.label}
+              </Text>
+              {isActive && <View style={styles.activeUnderlineBar} />}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* 4. Category Pills Slider */}
       <View style={styles.categoryContainer}>
         <FlatList
           horizontal
@@ -184,47 +226,7 @@ export function ProjectListScreen({ navigation }) {
         />
       </View>
 
-      {/* Status Filter Tabs */}
-      <View style={styles.filterContainer}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={filterTabs}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => {
-            const selected = statusFilter === item.id;
-            return (
-              <TouchableOpacity
-                onPress={() => setStatusFilter(item.id)}
-                style={[
-                  styles.filterChip,
-                  selected && styles.filterChipActive,
-                ]}
-                activeOpacity={0.75}
-              >
-                <Text
-                  style={[
-                    styles.filterText,
-                    selected && styles.filterTextActive,
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-          contentContainerStyle={styles.filterList}
-        />
-      </View>
-
-      {/* Results Header Count */}
-      <View style={styles.resultsInfoRow}>
-        <Text style={styles.resultsCountText}>
-          Menampilkan {filteredProjects.length} proyek ditemukan
-        </Text>
-      </View>
-
-      {/* Projects List */}
+      {/* 5. Projects List */}
       <FlatList
         data={filteredProjects}
         keyExtractor={(item) => item.id}
@@ -287,28 +289,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bgDark,
   },
+  topHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingTop: 50,
+    paddingBottom: 14,
+    backgroundColor: COLORS.bgSurface,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: COLORS.textDark,
+    letterSpacing: -0.5,
+  },
+  headerSubtitle: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
   fabHeader: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
     ...SHADOWS.brandGlow,
   },
+  bellBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  unreadDot: {
+    position: "absolute",
+    top: 8,
+    right: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#F43F5E",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
   searchSection: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     backgroundColor: COLORS.bgSurface,
   },
   searchBar: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.canvasSoft,
     borderRadius: 16,
     paddingHorizontal: 14,
-    paddingVertical: 9,
+    paddingVertical: 10,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     gap: 8,
@@ -320,12 +365,54 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     fontWeight: "500",
   },
+  filterSettingsBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  segmentedContainer: {
+    flexDirection: "row",
+    backgroundColor: COLORS.bgSurface,
+    paddingHorizontal: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderDark,
+  },
+  segmentedTabItem: {
+    marginRight: 24,
+    paddingVertical: 12,
+    position: "relative",
+  },
+  segmentedTabText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+  },
+  segmentedTabTextActive: {
+    color: COLORS.brandIndigo,
+    fontWeight: "900",
+  },
+  activeUnderlineBar: {
+    position: "absolute",
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: COLORS.brandIndigo,
+    borderRadius: 2,
+  },
   categoryContainer: {
     backgroundColor: COLORS.bgSurface,
-    paddingVertical: 8,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderDark,
   },
   categoryList: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     gap: 6,
   },
   categoryChip: {
@@ -352,50 +439,9 @@ const styles = StyleSheet.create({
   categoryTextActive: {
     color: COLORS.brandIndigo,
   },
-  filterContainer: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
-    backgroundColor: COLORS.bgSurface,
-  },
-  filterList: {
-    paddingHorizontal: 16,
-    gap: 6,
-  },
-  filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 999,
-    backgroundColor: COLORS.bgSurface,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginRight: 4,
-  },
-  filterChipActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-  },
-  filterText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: COLORS.textMuted,
-  },
-  filterTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "800",
-  },
-  resultsInfoRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  resultsCountText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: COLORS.textMuted,
-  },
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 2,
+    paddingHorizontal: 18,
+    paddingTop: 12,
     paddingBottom: 110,
   },
   emptyState: {
