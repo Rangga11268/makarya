@@ -6,28 +6,23 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
-  TextInput,
-  Modal,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { CategoryChip } from "../../components/ui/CategoryChip";
+import { SearchBar } from "../../components/ui/SearchBar";
+import { FilterModal } from "../../components/features/FilterModal";
+import { NotificationModal } from "../../components/features/NotificationModal";
 import { CATEGORIES } from "../../constants/categories";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { useNotificationStore } from "../../store/notificationStore";
 import {
   Plus,
-  Search,
   Compass,
-  X,
-  SlidersHorizontal,
   Bell,
-  Check,
   RotateCcw,
-  Banknote,
-  Layers,
 } from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
@@ -37,11 +32,15 @@ export function ProjectListScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'BUDGET'
   const [categoryFilter, setCategoryFilter] = useState("ALL");
-  
-  // Filter Modal States
+
+  // Modals
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [selectedBudgetRange, setSelectedBudgetRange] = useState("ALL");
+
+  const { getUnreadCount } = useNotificationStore();
+  const unreadNotifications = getUnreadCount(user?.role);
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -79,21 +78,6 @@ export function ProjectListScreen({ navigation }) {
     { id: "MATCH", label: "Paling Cocok" },
     { id: "RECENT", label: "Terbaru" },
     { id: "BUDGET", label: "Anggaran Tertinggi" },
-  ];
-
-  const statusOptions = [
-    { id: "ALL", label: "Semua Status" },
-    { id: "OPEN", label: "Bidding Terbuka" },
-    { id: "IN_PROGRESS", label: "Sedang Dikerjakan" },
-    { id: "REVIEW", label: "Dalam Review" },
-    { id: "DONE", label: "Selesai" },
-  ];
-
-  const budgetOptions = [
-    { id: "ALL", label: "Semua Anggaran" },
-    { id: "UNDER_300K", label: "< Rp 300.000" },
-    { id: "300K_1M", label: "Rp 300.000 - Rp 1.000.000" },
-    { id: "ABOVE_1M", label: "> Rp 1.000.000" },
   ];
 
   const activeFilterCount =
@@ -153,7 +137,7 @@ export function ProjectListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Header Bar: Eksplor Proyek UMKM */}
+      {/* 1. Header Bar */}
       <View style={styles.topHeader}>
         <View>
           <Text style={styles.headerTitle}>
@@ -176,52 +160,27 @@ export function ProjectListScreen({ navigation }) {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            onPress={() => navigation.navigate("Profile")}
+            onPress={() => setIsNotificationOpen(true)}
             style={styles.bellBtn}
             activeOpacity={0.75}
           >
             <Bell size={20} color={COLORS.textDark} />
-            <View style={styles.unreadDot} />
+            {unreadNotifications > 0 && <View style={styles.unreadDot} />}
           </TouchableOpacity>
         )}
       </View>
 
-      {/* 2. Search Bar + Filter Settings Button */}
-      <View style={styles.searchSection}>
-        <View style={styles.searchBar}>
-          <Search size={16} color={COLORS.brandIndigo} />
-          <TextInput
-            placeholder="Cari desain logo, website, video..."
-            placeholderTextColor={COLORS.textDim}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={styles.searchInput}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery("")}>
-              <X size={16} color={COLORS.textMuted} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <TouchableOpacity
-          style={[
-            styles.filterSettingsBtn,
-            activeFilterCount > 0 && styles.filterSettingsBtnActive,
-          ]}
-          activeOpacity={0.8}
-          onPress={() => setIsFilterModalOpen(true)}
-        >
-          <SlidersHorizontal
-            size={18}
-            color={activeFilterCount > 0 ? "#FFFFFF" : COLORS.textDark}
-          />
-          {activeFilterCount > 0 && (
-            <View style={styles.filterBadgeCount}>
-              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+      {/* 2. Reusable SearchBar Component with Filter Button */}
+      <View style={styles.searchContainer}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onClear={() => setSearchQuery("")}
+          placeholder="Cari desain logo, website, video..."
+          showFilterBtn={true}
+          onFilterPress={() => setIsFilterModalOpen(true)}
+          activeFilterCount={activeFilterCount}
+        />
       </View>
 
       {/* 3. Segmented Navigation Tabs */}
@@ -323,101 +282,22 @@ export function ProjectListScreen({ navigation }) {
         )}
       />
 
-      {/* 6. Filter Bottom Sheet Modal */}
-      <Modal visible={isFilterModalOpen} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
-            <View style={styles.modalHeader}>
-              <View>
-                <Text style={styles.modalTitle}>Filter Pencarian Proyek</Text>
-                <Text style={styles.modalSub}>
-                  Saring berdasarkan status pengerjaan dan pagu anggaran
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setIsFilterModalOpen(false)}
-                style={styles.modalCloseBtn}
-              >
-                <X size={18} color={COLORS.textDark} />
-              </TouchableOpacity>
-            </View>
+      {/* 6. Reusable FilterModal Component */}
+      <FilterModal
+        visible={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        selectedStatus={selectedStatus}
+        onSelectStatus={setSelectedStatus}
+        selectedBudgetRange={selectedBudgetRange}
+        onSelectBudgetRange={setSelectedBudgetRange}
+        onReset={resetFilters}
+      />
 
-            {/* Status Proyek Section */}
-            <Text style={styles.filterSectionTitle}>Status Proyek</Text>
-            <View style={styles.filterChipGrid}>
-              {statusOptions.map((opt) => {
-                const isSelected = selectedStatus === opt.id;
-                return (
-                  <TouchableOpacity
-                    key={opt.id}
-                    onPress={() => setSelectedStatus(opt.id)}
-                    style={[
-                      styles.modalOptionChip,
-                      isSelected && styles.modalOptionChipActive,
-                    ]}
-                    activeOpacity={0.75}
-                  >
-                    <Text
-                      style={[
-                        styles.modalOptionText,
-                        isSelected && styles.modalOptionTextActive,
-                      ]}
-                    >
-                      {opt.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            {/* Rentang Anggaran Section */}
-            <Text style={styles.filterSectionTitle}>Pagu Anggaran</Text>
-            <View style={styles.filterChipGrid}>
-              {budgetOptions.map((opt) => {
-                const isSelected = selectedBudgetRange === opt.id;
-                return (
-                  <TouchableOpacity
-                    key={opt.id}
-                    onPress={() => setSelectedBudgetRange(opt.id)}
-                    style={[
-                      styles.modalOptionChip,
-                      isSelected && styles.modalOptionChipActive,
-                    ]}
-                    activeOpacity={0.75}
-                  >
-                    <Text
-                      style={[
-                        styles.modalOptionText,
-                        isSelected && styles.modalOptionTextActive,
-                      ]}
-                    >
-                      {opt.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            {/* Modal Actions */}
-            <View style={styles.modalActions}>
-              <Button
-                title="Reset"
-                variant="secondary"
-                size="md"
-                onPress={resetFilters}
-                style={{ flex: 1 }}
-              />
-              <Button
-                title="Terapkan Filter"
-                variant="brand"
-                size="md"
-                onPress={() => setIsFilterModalOpen(false)}
-                style={{ flex: 2 }}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {/* 7. Working Notification Modal */}
+      <NotificationModal
+        visible={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
     </View>
   );
 }
@@ -476,65 +356,10 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
-  searchSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
+  searchContainer: {
     paddingHorizontal: 18,
     paddingVertical: 10,
     backgroundColor: COLORS.bgSurface,
-  },
-  searchBar: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.canvasSoft,
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    gap: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 13,
-    color: COLORS.textDark,
-    paddingVertical: 2,
-    fontWeight: "500",
-  },
-  filterSettingsBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    position: "relative",
-  },
-  filterSettingsBtnActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-  },
-  filterBadgeCount: {
-    position: "absolute",
-    top: -4,
-    right: -4,
-    backgroundColor: "#F43F5E",
-    borderRadius: 9,
-    width: 18,
-    height: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
-  },
-  filterBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontWeight: "900",
   },
   segmentedContainer: {
     flexDirection: "row",
@@ -607,86 +432,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   emptyBtn: {
-    marginTop: 18,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.65)",
-    justifyContent: "flex-end",
-  },
-  modalSheet: {
-    backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 40,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.lg,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 18,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "900",
-    color: COLORS.textDark,
-  },
-  modalSub: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  modalCloseBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  filterSectionTitle: {
-    fontSize: 12,
-    fontWeight: "800",
-    color: COLORS.textDark,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  filterChipGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 14,
-  },
-  modalOptionChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: COLORS.canvasSoft,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-  },
-  modalOptionChipActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-  },
-  modalOptionText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  modalOptionTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "800",
-  },
-  modalActions: {
-    flexDirection: "row",
-    gap: 10,
     marginTop: 18,
   },
 });

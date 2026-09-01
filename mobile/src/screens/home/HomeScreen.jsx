@@ -14,8 +14,10 @@ import { COLORS, SHADOWS } from "../../theme/colors";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { CategoryChip } from "../../components/ui/CategoryChip";
+import { NotificationModal } from "../../components/features/NotificationModal";
 import { CATEGORIES } from "../../constants/categories";
 import { useAuthStore } from "../../store/authStore";
+import { useNotificationStore } from "../../store/notificationStore";
 import { projectApi, walletApi, proposalApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
@@ -56,6 +58,10 @@ export function HomeScreen({ navigation }) {
   const [myProposals, setMyProposals] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const { getUnreadCount } = useNotificationStore();
+  const unreadNotifications = getUnreadCount(user?.role);
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -192,11 +198,11 @@ export function HomeScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.notificationBtn}
-          onPress={() => navigation.navigate("Profile")}
+          onPress={() => setIsNotificationOpen(true)}
           activeOpacity={0.75}
         >
           <Bell size={20} color={COLORS.textDark} />
-          <View style={styles.unreadDot} />
+          {unreadNotifications > 0 && <View style={styles.unreadDot} />}
         </TouchableOpacity>
       </View>
 
@@ -507,6 +513,12 @@ export function HomeScreen({ navigation }) {
           ))}
         </View>
       )}
+
+      {/* Working Notification Modal */}
+      <NotificationModal
+        visible={isNotificationOpen}
+        onClose={() => setIsNotificationOpen(false)}
+      />
     </ScrollView>
   );
 }
