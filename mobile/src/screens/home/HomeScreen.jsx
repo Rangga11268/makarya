@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Image,
 } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
@@ -20,12 +20,14 @@ import {
   Plus,
   ShieldCheck,
   Wallet,
-  Briefcase,
-  Users,
   Compass,
   GraduationCap,
-  Activity,
   ArrowRight,
+  TrendingUp,
+  Briefcase,
+  Layers,
+  Banknote,
+  Search,
 } from "lucide-react-native";
 
 export function HomeScreen({ navigation }) {
@@ -33,6 +35,7 @@ export function HomeScreen({ navigation }) {
   const [wallet, setWallet] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
   const [browseProjects, setBrowseProjects] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
 
   const isMahasiswa =
@@ -50,7 +53,7 @@ export function HomeScreen({ navigation }) {
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
           projectApi
-            .browse({ limit: 4 })
+            .browse({ limit: 6 })
             .catch(() => ({ data: { items: [] } })),
         ]);
         setWallet(walletRes.data);
@@ -59,14 +62,16 @@ export function HomeScreen({ navigation }) {
           : browseRes.data?.items || [];
         setBrowseProjects(pItems);
       } else {
-        const [walletRes, projRes] = await Promise.all([
+        const [walletRes, myProjRes] = await Promise.all([
           walletApi
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
-          projectApi.getMyProjects({ limit: 5 }).catch(() => ({ data: [] })),
+          projectApi
+            .getMyProjects()
+            .catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
-        setMyProjects(Array.isArray(projRes.data) ? projRes.data : []);
+        setMyProjects(Array.isArray(myProjRes.data) ? myProjRes.data : []);
       }
     } finally {
       setRefreshing(false);
@@ -77,14 +82,24 @@ export function HomeScreen({ navigation }) {
     loadData();
   }, [user?.role]);
 
-  const talents = [
+  const categories = [
+    { id: "ALL", label: "Semua", icon: "✨" },
+    { id: "DESIGN", label: "Desain & Logo", icon: "🎨" },
+    { id: "UIUX", label: "UI/UX App", icon: "📱" },
+    { id: "PEMROGRAMAN", label: "Web & Coding", icon: "💻" },
+    { id: "VIDEO", label: "Video Reels", icon: "🎬" },
+    { id: "COPYWRITING", label: "Copywriting", icon: "✍️" },
+    { id: "ADMIN_DATA", label: "Admin & Data", icon: "📊" },
+  ];
+
+  const featuredTalents = [
     {
       id: "1",
       name: "Darell Rangga Putra",
       prodi: "Sistem Informasi • UBSI",
       rating: 5.0,
-      totalJobs: 8,
-      skills: ["FastAPI", "React Native", "PostgreSQL"],
+      totalJobs: 14,
+      skills: ["Fullstack Web", "React & FastAPI", "UI Design"],
     },
     {
       id: "2",
@@ -92,32 +107,38 @@ export function HomeScreen({ navigation }) {
       prodi: "DKV • UBSI",
       rating: 4.9,
       totalJobs: 11,
-      skills: ["Branding", "Logo Design", "Packaging"],
+      skills: ["Branding", "Packaging", "Logo Vector"],
     },
     {
       id: "3",
       name: "Bima Arya",
       prodi: "Teknologi Informasi • UBSI",
       rating: 5.0,
-      totalJobs: 6,
+      totalJobs: 8,
       skills: ["Landing Page", "Next.js", "WordPress"],
     },
   ];
+
+  const filteredBrowseProjects = browseProjects.filter((p) => {
+    if (selectedCategory === "ALL") return true;
+    return p.kategori === selectedCategory;
+  });
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={loadData}
-          tintColor={COLORS.brandCyan}
+          tintColor={COLORS.brandIndigo}
           colors={[COLORS.brandIndigo]}
         />
       }
     >
-      {/* Top Header */}
+      {/* 1. Header Bar: Logo + Verified Pill + User Avatar */}
       <View style={styles.topHeader}>
         <View style={styles.headerTitleRow}>
           <Image
@@ -125,25 +146,37 @@ export function HomeScreen({ navigation }) {
             style={styles.headerLogo}
             resizeMode="contain"
           />
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {isMahasiswa ? (
-              <View style={styles.verifiedTag}>
-                <GraduationCap size={13} color={COLORS.brandIndigo} />
-                <Text style={styles.verifiedText}>Mahasiswa</Text>
-              </View>
-            ) : (
-              <View style={styles.verifiedTag}>
-                <ShieldCheck size={13} color={COLORS.brandCyan} />
-                <Text style={styles.verifiedText}>UMKM Escrow</Text>
-              </View>
-            )}
+
+          <View style={styles.headerRight}>
+            <View
+              style={[
+                styles.verifiedTag,
+                isMahasiswa ? styles.verifiedTagMhs : styles.verifiedTagUmkm,
+              ]}
+            >
+              {isMahasiswa ? (
+                <GraduationCap size={12} color={COLORS.brandIndigo} />
+              ) : (
+                <ShieldCheck size={12} color={COLORS.brandCyan} />
+              )}
+              <Text
+                style={[
+                  styles.verifiedText,
+                  isMahasiswa
+                    ? styles.verifiedTextMhs
+                    : styles.verifiedTextUmkm,
+                ]}
+              >
+                {isMahasiswa ? "Mahasiswa UBSI" : "UMKM Terverifikasi"}
+              </Text>
+            </View>
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Profile")}
-              style={styles.headerAvatarBtn}
+              style={styles.avatarBtn}
               activeOpacity={0.8}
             >
-              <Text style={styles.headerAvatarText}>
+              <Text style={styles.avatarText}>
                 {isMahasiswa
                   ? user?.nama_lengkap?.charAt(0) || "D"
                   : user?.nama_usaha?.charAt(0) || "U"}
@@ -155,166 +188,200 @@ export function HomeScreen({ navigation }) {
         <Text style={styles.greeting}>
           Halo,{" "}
           {isMahasiswa
-            ? user?.nama_lengkap ||
-              user?.email?.split("@")[0] ||
-              "Mahasiswa UBSI"
+            ? user?.nama_lengkap?.split(" ")[0] || "Darell"
             : user?.nama_usaha || "Pemilik UMKM"}
         </Text>
         <Text style={styles.headerSubtitle}>
           {isMahasiswa
-            ? "Jelajahi proyek digital UMKM dan cairkan honor hasil karyamu."
-            : "Temukan talenta mahasiswa terbaik untuk kebutuhan usaha Anda."}
+            ? "Raih penghasilan & pengalaman nyata dari proyek digital UMKM."
+            : "Temukan talenta mahasiswa terbaik dengan jaminan rekening bersama (Escrow)."}
         </Text>
       </View>
 
-      {/* Saldo & Quick Action Card */}
-      <View style={styles.balanceCard}>
-        <View style={styles.balanceHeader}>
-          <View style={styles.walletIcon}>
-            <Wallet size={18} color={COLORS.brandCyan} />
+      {/* 2. Hero Fintech Wallet & Stats Card */}
+      <View style={styles.heroCard}>
+        <View style={styles.heroCardHeader}>
+          <View style={styles.walletBadge}>
+            <Wallet size={15} color="#FFFFFF" />
+            <Text style={styles.walletBadgeText}>
+              {isMahasiswa ? "Dompet Honor Mahasiswa" : "Saldo Escrow Aktif"}
+            </Text>
           </View>
-          <Text style={styles.balanceLabel}>
-            {isMahasiswa ? "Saldo Dompet Mahasiswa" : "Saldo Aktif UMKM"}
-          </Text>
+
+          <View style={styles.escrowProtectedPill}>
+            <ShieldCheck size={12} color="#A7F3D0" />
+            <Text style={styles.escrowProtectedText}>100% Escrow</Text>
+          </View>
         </View>
 
-        <Text style={styles.balanceAmount}>
+        <Text style={styles.heroBalanceLabel}>Saldo Siap Dicairkan</Text>
+        <Text style={styles.heroBalanceAmount}>
           {formatCurrency(wallet?.saldo_aktif || 0)}
         </Text>
 
-        <View style={styles.escrowRow}>
-          <Text style={styles.escrowText}>
-            {isMahasiswa
-              ? "Terkunci dalam Pengerjaan: "
-              : "Terkunci di Escrow: "}
-            <Text style={styles.escrowAmount}>
-              {formatCurrency(wallet?.saldo_escrow || 0)}
+        {wallet?.saldo_escrow > 0 && (
+          <View style={styles.escrowHoldingRow}>
+            <Text style={styles.escrowHoldingText}>
+              🔒 {formatCurrency(wallet?.saldo_escrow)} terkunci di escrow
             </Text>
-          </Text>
-        </View>
+          </View>
+        )}
 
-        <View style={styles.quickActions}>
+        {/* Quick Action Buttons */}
+        <View style={styles.heroActionsRow}>
           {isMahasiswa ? (
             <>
-              <Button
-                title="Cari Proyek Digital"
-                variant="lime"
-                size="md"
-                icon={<Compass size={16} color="#FFF" />}
+              <TouchableOpacity
                 onPress={() => navigation.navigate("ProjectsTab")}
-                style={styles.actionBtn}
-              />
-              <Button
-                title="Tarik Dana"
-                variant="dark"
-                size="md"
+                style={[styles.heroBtn, styles.heroBtnPrimary]}
+                activeOpacity={0.85}
+              >
+                <Compass size={16} color={COLORS.brandIndigo} />
+                <Text style={styles.heroBtnPrimaryText}>Cari Proyek</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => navigation.navigate("WalletTab")}
-                style={styles.topUpBtn}
-              />
+                style={[styles.heroBtn, styles.heroBtnSecondary]}
+                activeOpacity={0.85}
+              >
+                <Banknote size={16} color="#FFFFFF" />
+                <Text style={styles.heroBtnSecondaryText}>Tarik Dana</Text>
+              </TouchableOpacity>
             </>
           ) : (
             <>
-              <Button
-                title="Pasang Proyek Baru"
-                variant="lime"
-                size="md"
-                icon={<Plus size={16} color="#FFF" strokeWidth={3} />}
+              <TouchableOpacity
                 onPress={() => navigation.navigate("PostProject")}
-                style={styles.actionBtn}
-              />
-              <Button
-                title="Top-Up"
-                variant="dark"
-                size="md"
+                style={[styles.heroBtn, styles.heroBtnPrimary]}
+                activeOpacity={0.85}
+              >
+                <Plus size={16} color={COLORS.brandIndigo} strokeWidth={3} />
+                <Text style={styles.heroBtnPrimaryText}>Pasang Proyek</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => navigation.navigate("WalletTab")}
-                style={styles.topUpBtn}
-              />
+                style={[styles.heroBtn, styles.heroBtnSecondary]}
+                activeOpacity={0.85}
+              >
+                <Banknote size={16} color="#FFFFFF" />
+                <Text style={styles.heroBtnSecondaryText}>Top-Up</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
       </View>
 
-      {/* Quick Summary Grid */}
-      <View style={styles.summaryGrid}>
-        <View style={styles.summaryBox}>
-          <Briefcase size={18} color={COLORS.brandCyan} />
-          <Text style={styles.summaryCount}>
-            {isMahasiswa ? browseProjects.length : myProjects.length}
-          </Text>
-          <Text style={styles.summaryLabel}>
-            {isMahasiswa ? "Proyek Tersedia" : "Proyek Berjalan"}
-          </Text>
-        </View>
-
-        <View style={styles.summaryBox}>
-          <Activity size={18} color={COLORS.brandIndigo} />
-          <Text style={styles.summaryCount}>
-            {isMahasiswa
-              ? wallet?.saldo_escrow
-                ? 1
-                : 0
-              : myProjects.reduce((acc, p) => acc + (p.total_pelamar || 0), 0)}
-          </Text>
-          <Text style={styles.summaryLabel}>
-            {isMahasiswa ? "Kontrak Aktif" : "Proposal Masuk"}
-          </Text>
-        </View>
+      {/* 3. Category Selector Chips Carousel */}
+      <View style={styles.categoriesSection}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryList}
+        >
+          {categories.map((c) => {
+            const isSelected = selectedCategory === c.id;
+            return (
+              <TouchableOpacity
+                key={c.id}
+                onPress={() => setSelectedCategory(c.id)}
+                style={[
+                  styles.categoryChip,
+                  isSelected && styles.categoryChipActive,
+                ]}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.categoryIcon}>{c.icon}</Text>
+                <Text
+                  style={[
+                    styles.categoryText,
+                    isSelected && styles.categoryTextActive,
+                  ]}
+                >
+                  {c.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
-      {/* Main Section per Role */}
+      {/* 4. Dynamic Feed per Role */}
       {isMahasiswa ? (
-        <View>
+        /* Mahasiswa Feed: Rekomendasi Proyek UMKM Siap Dilamar */
+        <View style={styles.feedSection}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionTitle}>Rekomendasi Proyek UMKM</Text>
+              <Text style={styles.sectionTitle}>
+                {selectedCategory === "ALL"
+                  ? "Rekomendasi Proyek Terbaru"
+                  : `Proyek ${categories.find((c) => c.id === selectedCategory)?.label}`}
+              </Text>
               <Text style={styles.sectionSubtitle}>
-                Pilih proyek yang cocok & ajukan penawaran proposal Anda
+                Pilih proyek UMKM dan ajukan penawaran terbaikmu
               </Text>
             </View>
+
             <TouchableOpacity
               onPress={() => navigation.navigate("ProjectsTab")}
               style={styles.seeAllBtn}
+              activeOpacity={0.7}
             >
-              <Text style={styles.seeAllText}>Lihat Semua</Text>
-              <ArrowRight size={13} color={COLORS.brandIndigo} />
+              <Text style={styles.seeAllText}>Semua</Text>
+              <ArrowRight size={14} color={COLORS.brandIndigo} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.projectList}>
-            {browseProjects.slice(0, 4).map((p) => (
+          {filteredBrowseProjects.length === 0 ? (
+            <View style={styles.emptyBox}>
+              <Briefcase size={36} color={COLORS.textDim} />
+              <Text style={styles.emptyTitle}>Belum Ada Proyek</Text>
+              <Text style={styles.emptySubtitle}>
+                Coba pilih kategori lain atau periksa kembali nanti.
+              </Text>
+            </View>
+          ) : (
+            filteredBrowseProjects.map((p) => (
               <ProjectCard
                 key={p.id}
                 project={p}
                 onPress={() =>
-                  navigation.navigate("ProjectDetail", { projectId: p.id })
+                  navigation.navigate("ProjectDetail", {
+                    id: p.id,
+                    projectId: p.id,
+                  })
                 }
               />
-            ))}
-          </View>
+            ))
+          )}
         </View>
       ) : (
-        <View>
+        /* UMKM Feed: Proyek Saya & Talenta Mahasiswa */
+        <View style={styles.feedSection}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionTitle}>
-                Talenta Mahasiswa Unggulan
-              </Text>
+              <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
               <Text style={styles.sectionSubtitle}>
-                Mahasiswa terverifikasi kampus dengan rekam jejak prima
+                Mahasiswa terverifikasi dengan portofolio & ulasan terbaik
               </Text>
             </View>
           </View>
 
-          <View style={styles.talentList}>
-            {talents.map((t, idx) => (
-              <TalentBentoCard
-                key={t.id}
-                talent={t}
-                variant={idx === 0 ? "lime" : "dark"}
-                onPress={() => navigation.navigate("PostProject")}
-              />
-            ))}
-          </View>
+          <TalentBentoCard
+            talent={featuredTalents[0]}
+            variant="featured"
+            onPress={() => navigation.navigate("ProjectsTab")}
+          />
+
+          {featuredTalents.slice(1).map((t) => (
+            <TalentBentoCard
+              key={t.id}
+              talent={t}
+              variant="standard"
+              onPress={() => navigation.navigate("ProjectsTab")}
+            />
+          ))}
         </View>
       )}
     </ScrollView>
@@ -327,23 +394,72 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   content: {
-    paddingHorizontal: 20,
-    paddingTop: 54,
+    paddingHorizontal: 16,
+    paddingTop: 50,
     paddingBottom: 110,
   },
   topHeader: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   headerTitleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 14,
+    marginBottom: 12,
   },
   headerLogo: {
     width: 145,
     height: 44,
     marginLeft: -4,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  verifiedTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  verifiedTagMhs: {
+    backgroundColor: COLORS.brandIndigoLight,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+  },
+  verifiedTagUmkm: {
+    backgroundColor: COLORS.brandCyanLight,
+    borderColor: "rgba(14, 165, 233, 0.2)",
+  },
+  verifiedText: {
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  verifiedTextMhs: {
+    color: COLORS.brandIndigo,
+  },
+  verifiedTextUmkm: {
+    color: COLORS.brandCyan,
+  },
+  avatarBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.brandIndigo,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: COLORS.brandIndigo,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+  },
+  avatarText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "800",
   },
   greeting: {
     fontSize: 24,
@@ -351,127 +467,147 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     letterSpacing: -0.6,
   },
-  verifiedTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
-  },
-  verifiedText: {
-    fontSize: 11,
-    fontWeight: "800",
-    color: COLORS.brandIndigo,
-  },
   headerSubtitle: {
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 3,
+    lineHeight: 18,
   },
-  balanceCard: {
-    backgroundColor: COLORS.bgSurface,
+  heroCard: {
+    backgroundColor: "#1E1B4B", // Deep Royal Indigo background for high-tech fintech look
     borderRadius: 24,
     padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    marginBottom: 18,
+    ...SHADOWS.md,
   },
-  balanceHeader: {
+  heroCardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  walletBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginBottom: 6,
+    gap: 6,
   },
-  walletIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(14, 165, 233, 0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  balanceLabel: {
-    fontSize: 11,
+  walletBadgeText: {
+    fontSize: 12,
     fontWeight: "700",
-    color: COLORS.textMuted,
+    color: "rgba(255, 255, 255, 0.8)",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
-  balanceAmount: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: COLORS.textDark,
-    letterSpacing: -0.5,
+  escrowProtectedPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.2)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
-  escrowRow: {
-    marginTop: 6,
-    marginBottom: 16,
-  },
-  escrowText: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-  },
-  escrowAmount: {
-    color: COLORS.brandCyan,
+  escrowProtectedText: {
+    fontSize: 10,
     fontWeight: "800",
+    color: "#A7F3D0",
   },
-  quickActions: {
+  heroBalanceLabel: {
+    fontSize: 11,
+    color: "rgba(255, 255, 255, 0.65)",
+    fontWeight: "600",
+  },
+  heroBalanceAmount: {
+    fontSize: 30,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: -0.8,
+    marginTop: 2,
+  },
+  escrowHoldingRow: {
+    marginTop: 6,
+  },
+  escrowHoldingText: {
+    fontSize: 11,
+    color: "#CBD5E1",
+    fontWeight: "600",
+  },
+  heroActionsRow: {
     flexDirection: "row",
     gap: 10,
+    marginTop: 18,
   },
-  actionBtn: {
-    flex: 2,
-  },
-  topUpBtn: {
+  heroBtn: {
     flex: 1,
-  },
-  summaryGrid: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 11,
+    borderRadius: 14,
   },
-  summaryBox: {
-    flex: 1,
+  heroBtnPrimary: {
+    backgroundColor: "#FFFFFF",
+  },
+  heroBtnPrimaryText: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: COLORS.brandIndigo,
+  },
+  heroBtnSecondary: {
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  heroBtnSecondaryText: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#FFFFFF",
+  },
+  categoriesSection: {
+    marginBottom: 20,
+  },
+  categoryList: {
+    gap: 8,
+  },
+  categoryChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
-    padding: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
+    ...SHADOWS.sm,
   },
-  summaryCount: {
-    fontSize: 22,
-    fontWeight: "900",
+  categoryChipActive: {
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
+  },
+  categoryIcon: {
+    fontSize: 12,
+  },
+  categoryText: {
+    fontSize: 12,
+    fontWeight: "700",
     color: COLORS.textDark,
-    marginTop: 8,
-    marginBottom: 2,
   },
-  summaryLabel: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: "600",
+  categoryTextActive: {
+    color: "#FFFFFF",
+  },
+  feedSection: {
+    marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "flex-end",
     marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "800",
     color: COLORS.textDark,
     letterSpacing: -0.3,
@@ -484,30 +620,33 @@ const styles = StyleSheet.create({
   seeAllBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 3,
   },
   seeAllText: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "800",
     color: COLORS.brandIndigo,
   },
-  talentList: {
-    gap: 2,
-  },
-  projectList: {
-    gap: 2,
-  },
-  headerAvatarBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: COLORS.brandIndigo,
+  emptyBox: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
+    padding: 30,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    ...SHADOWS.sm,
   },
-  headerAvatarText: {
-    color: "#FFFFFF",
-    fontSize: 14,
+  emptyTitle: {
+    fontSize: 15,
     fontWeight: "800",
+    color: COLORS.textDark,
+    marginTop: 10,
+  },
+  emptySubtitle: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+    marginTop: 4,
+    textAlign: "center",
   },
 });

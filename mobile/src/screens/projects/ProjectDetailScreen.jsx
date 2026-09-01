@@ -8,7 +8,7 @@ import {
   Alert,
   Modal,
 } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -25,7 +25,11 @@ import {
   ShieldCheck,
   Calendar,
   Send,
-  ExternalLink,
+  Building2,
+  CheckCircle2,
+  FileCheck,
+  Clock,
+  Briefcase,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -207,11 +211,14 @@ export function ProjectDetailScreen({ route, navigation }) {
         onBack={() => navigation.goBack()}
       />
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Project Hero Card */}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* 1. Hero Summary Card */}
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
-            <Badge label={formatStatus(project.status)} variant="lime" />
+            <Badge label={formatStatus(project.status)} variant="brand" />
             <Text style={styles.budgetText}>
               {formatCurrency(project.budget_max)}
             </Text>
@@ -226,29 +233,43 @@ export function ProjectDetailScreen({ route, navigation }) {
                 Deadline: {formatDate(project.deadline)}
               </Text>
             </View>
-            <View style={styles.metaItem}>
+
+            <View style={styles.escrowPill}>
               <ShieldCheck size={13} color={COLORS.brandCyan} />
-              <Text style={[styles.metaText, { color: COLORS.brandCyan, fontWeight: "700" }]}>
-                Escrow Protected
-              </Text>
+              <Text style={styles.escrowPillText}>Escrow Guaranteed</Text>
             </View>
           </View>
         </View>
 
-        {/* 4-Step Escrow Status Bar */}
+        {/* 2. Escrow Progress Stepper */}
         <ProjectStatusBar currentStatus={project.status} />
 
-        {/* Description */}
+        {/* 3. Description & Scope */}
         <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>Deskripsi Kebutuhan</Text>
+          <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
           <Text style={styles.descriptionText}>{project.deskripsi_raw}</Text>
         </View>
 
-        {/* Action Button for Mahasiswa to submit proposal */}
+        {/* 4. Escrow Protection Assurance Banner */}
+        <View style={styles.guaranteeBox}>
+          <ShieldCheck size={20} color={COLORS.success} />
+          <View style={styles.guaranteeContent}>
+            <Text style={styles.guaranteeTitle}>
+              Proteksi Rekening Bersama (Escrow)
+            </Text>
+            <Text style={styles.guaranteeDesc}>
+              {isMahasiswa
+                ? "Honor Anda dijamin 100% aman tersimpan di platform dan cair otomatis setelah deliverable disetujui."
+                : "Dana Anda baru cair ke mahasiswa setelah hasil pengerjaan proyek disetujui."}
+            </Text>
+          </View>
+        </View>
+
+        {/* 5. Mahasiswa Apply CTA */}
         {canApply && (
           <Button
             title="Ajukan Proposal Lamaran"
-            variant="lime"
+            variant="brand"
             size="lg"
             icon={<Send size={18} color="#FFF" />}
             onPress={() => setProposalModal(true)}
@@ -256,9 +277,9 @@ export function ProjectDetailScreen({ route, navigation }) {
           />
         )}
 
-        {/* Tab Selector: Proposals vs Submissions (for UMKM or Mahasiswa) */}
+        {/* 6. Tabs for Proposals vs Deliverables (UMKM & Review) */}
         {!isMahasiswa && (
-          <>
+          <View style={styles.managementSection}>
             <View style={styles.tabContainer}>
               <TouchableOpacity
                 onPress={() => setActiveTab("proposals")}
@@ -266,6 +287,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                   styles.tabButton,
                   activeTab === "proposals" && styles.tabButtonActive,
                 ]}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -283,6 +305,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                   styles.tabButton,
                   activeTab === "submission" && styles.tabButtonActive,
                 ]}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -295,13 +318,14 @@ export function ProjectDetailScreen({ route, navigation }) {
               </TouchableOpacity>
             </View>
 
-            {/* Content Tab 1: Proposals */}
+            {/* Tab 1: Proposals List */}
             {activeTab === "proposals" && (
               <View style={styles.tabContent}>
                 {proposals.length === 0 ? (
                   <View style={styles.emptyBox}>
+                    <Briefcase size={32} color={COLORS.textDim} />
                     <Text style={styles.emptyText}>
-                      Belum ada proposal dari mahasiswa.
+                      Belum ada proposal masuk dari mahasiswa.
                     </Text>
                   </View>
                 ) : (
@@ -319,11 +343,12 @@ export function ProjectDetailScreen({ route, navigation }) {
               </View>
             )}
 
-            {/* Content Tab 2: Submission */}
+            {/* Tab 2: Submission Deliverable */}
             {activeTab === "submission" && (
               <View style={styles.tabContent}>
                 {submissions.length === 0 ? (
                   <View style={styles.emptyBox}>
+                    <FileCheck size={32} color={COLORS.textDim} />
                     <Text style={styles.emptyText}>
                       Mahasiswa belum mengunggah hasil deliverable.
                     </Text>
@@ -337,8 +362,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                       <Text style={styles.submissionDesc}>{sub.catatan}</Text>
                       <Button
                         title="Setujui & Lepas Escrow"
-                        variant="lime"
+                        variant="brand"
                         size="md"
+                        icon={<CheckCircle2 size={16} color="#FFF" />}
                         onPress={() => handleApproveSubmission(sub.id)}
                         loading={actionLoading}
                         style={{ marginTop: 12 }}
@@ -348,11 +374,11 @@ export function ProjectDetailScreen({ route, navigation }) {
                 )}
               </View>
             )}
-          </>
+          </View>
         )}
       </ScrollView>
 
-      {/* Modal Submit Proposal Mahasiswa */}
+      {/* Modal Proposal Sheet */}
       <Modal visible={proposalModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
@@ -379,7 +405,7 @@ export function ProjectDetailScreen({ route, navigation }) {
 
             <Input
               label="Cover Letter / Rencana Kerja"
-              placeholder="Jelaskan pengalaman Anda, portofolio yang relevan, dan bagaimana Anda akan menyelesaikan proyek ini..."
+              placeholder="Jelaskan portofolio yang relevan dan bagaimana Anda akan menyelesaikan proyek ini..."
               value={coverLetter}
               onChangeText={setCoverLetter}
               multiline
@@ -389,14 +415,14 @@ export function ProjectDetailScreen({ route, navigation }) {
             <View style={styles.modalActions}>
               <Button
                 title="Batal"
-                variant="dark"
+                variant="secondary"
                 size="md"
                 onPress={() => setProposalModal(false)}
                 style={{ flex: 1 }}
               />
               <Button
                 title="Kirim Lamaran"
-                variant="lime"
+                variant="brand"
                 size="md"
                 onPress={handleSubmitProposal}
                 loading={submitLoading}
@@ -425,12 +451,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    marginBottom: 14,
+    ...SHADOWS.sm,
   },
   badgeRow: {
     flexDirection: "row",
@@ -442,19 +464,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "900",
     color: COLORS.brandIndigo,
+    letterSpacing: -0.3,
   },
   projectTitle: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: "900",
     color: COLORS.textDark,
     letterSpacing: -0.5,
-    marginBottom: 14,
+    marginBottom: 12,
+    lineHeight: 26,
   },
   metaRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
+    borderTopColor: COLORS.borderSubtle,
     paddingTop: 12,
   },
   metaItem: {
@@ -465,6 +490,21 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 11,
     color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  escrowPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.brandCyanLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  escrowPillText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: COLORS.brandCyan,
   },
   sectionBox: {
     backgroundColor: COLORS.bgSurface,
@@ -472,27 +512,53 @@ const styles = StyleSheet.create({
     padding: 18,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
+    marginBottom: 14,
+    ...SHADOWS.sm,
   },
   sectionTitle: {
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
+    letterSpacing: 0.5,
     marginBottom: 8,
   },
   descriptionText: {
     fontSize: 13,
     color: COLORS.textDark,
-    lineHeight: 20,
+    lineHeight: 21,
+    fontWeight: "500",
+  },
+  guaranteeBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    backgroundColor: COLORS.successBg,
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.successBorder,
+    marginBottom: 18,
+  },
+  guaranteeContent: {
+    flex: 1,
+  },
+  guaranteeTitle: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#065F46",
+    marginBottom: 2,
+  },
+  guaranteeDesc: {
+    fontSize: 11,
+    color: "#047857",
+    lineHeight: 16,
   },
   applyBtn: {
     marginBottom: 20,
+  },
+  managementSection: {
+    marginTop: 4,
   },
   tabContainer: {
     flexDirection: "row",
@@ -509,10 +575,7 @@ const styles = StyleSheet.create({
   },
   tabButtonActive: {
     backgroundColor: COLORS.bgSurface,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    ...SHADOWS.sm,
   },
   tabText: {
     fontSize: 12,
@@ -534,6 +597,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    gap: 8,
   },
   emptyText: {
     fontSize: 12,
@@ -546,6 +610,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 12,
+    ...SHADOWS.sm,
   },
   submissionTitle: {
     fontSize: 14,
@@ -556,25 +621,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 4,
+    lineHeight: 18,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    backgroundColor: "rgba(15, 23, 42, 0.65)",
     justifyContent: "flex-end",
   },
   modalSheet: {
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    padding: 22,
+    padding: 24,
     paddingBottom: 40,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    ...SHADOWS.lg,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: "900",
     color: COLORS.textDark,
+    letterSpacing: -0.4,
   },
   modalSub: {
     fontSize: 12,

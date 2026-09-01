@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { X } from "lucide-react-native";
 
 export function Input({
   label,
@@ -17,6 +18,8 @@ export function Input({
   style,
   inputStyle,
 }) {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <View style={[styles.container, style]}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -24,6 +27,7 @@ export function Input({
         style={[
           styles.inputWrapper,
           multiline && styles.multilineWrapper,
+          isFocused && styles.inputFocused,
           error ? styles.inputError : null,
         ]}
       >
@@ -37,12 +41,23 @@ export function Input({
           keyboardType={keyboardType}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           style={[
             styles.input,
             multiline && styles.multilineInput,
             inputStyle,
           ]}
         />
+        {!multiline && value && value.length > 0 && (
+          <TouchableOpacity
+            onPress={() => onChangeText("")}
+            style={styles.clearBtn}
+            activeOpacity={0.7}
+          >
+            <X size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        )}
       </View>
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
@@ -62,17 +77,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textDark,
-    marginBottom: 8,
-    letterSpacing: 0.2,
+    marginBottom: 7,
+    letterSpacing: 0.1,
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.bgDark, // Clean light slate #F8FAFC
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 16,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: COLORS.borderDark,
     paddingHorizontal: 14,
+  },
+  inputFocused: {
+    borderColor: COLORS.brandIndigo,
+    backgroundColor: "#FFFFFF",
   },
   multilineWrapper: {
     alignItems: "flex-start",
@@ -85,12 +104,22 @@ const styles = StyleSheet.create({
     flex: 1,
     color: COLORS.textDark,
     fontSize: 14,
-    paddingVertical: 13,
+    paddingVertical: 12,
+    fontWeight: "500",
   },
   multilineInput: {
-    height: 100,
+    height: 90,
     textAlignVertical: "top",
     paddingVertical: 0,
+  },
+  clearBtn: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 6,
   },
   inputError: {
     borderColor: COLORS.danger,
@@ -100,6 +129,7 @@ const styles = StyleSheet.create({
     color: COLORS.danger,
     marginTop: 4,
     marginLeft: 4,
+    fontWeight: "600",
   },
   helperText: {
     fontSize: 11,

@@ -8,13 +8,13 @@ import {
   RefreshControl,
   TextInput,
 } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
-import { Plus, Briefcase, Search, Compass, X } from "lucide-react-native";
+import { Plus, Search, Compass, X, SlidersHorizontal } from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
   const { user } = useAuthStore();
@@ -22,6 +22,7 @@ export function ProjectListScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [categoryFilter, setCategoryFilter] = useState("ALL");
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -55,9 +56,19 @@ export function ProjectListScreen({ navigation }) {
     loadProjects();
   }, [searchQuery, user?.role]);
 
+  const categories = [
+    { id: "ALL", label: "Semua Kategori" },
+    { id: "DESIGN", label: "🎨 Desain & Logo" },
+    { id: "UIUX", label: "📱 UI/UX App" },
+    { id: "PEMROGRAMAN", label: "💻 Web & Coding" },
+    { id: "VIDEO", label: "🎬 Video Reels" },
+    { id: "COPYWRITING", label: "✍️ Copywriting" },
+    { id: "ADMIN_DATA", label: "📊 Admin Data" },
+  ];
+
   const filterTabs = [
-    { id: "ALL", label: "Semua" },
-    { id: "OPEN", label: "Bidding" },
+    { id: "ALL", label: "Semua Status" },
+    { id: "OPEN", label: "Bidding Terbuka" },
     { id: "IN_PROGRESS", label: "Dikerjakan" },
     { id: "REVIEW", label: "Review" },
     { id: "COMPLETED", label: "Selesai" },
@@ -69,13 +80,16 @@ export function ProjectListScreen({ navigation }) {
       p.status === statusFilter ||
       (statusFilter === "COMPLETED" && p.status === "DONE");
 
+    const matchesCategory =
+      categoryFilter === "ALL" || p.kategori === categoryFilter;
+
     const matchesSearch =
       !searchQuery.trim() ||
       p.judul?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.deskripsi_raw?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.kategori?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesStatus && matchesSearch;
+    return matchesStatus && matchesCategory && matchesSearch;
   });
 
   return (
@@ -100,12 +114,12 @@ export function ProjectListScreen({ navigation }) {
         }
       />
 
-      {/* Search Bar for exploring */}
+      {/* Search Input Section */}
       <View style={styles.searchSection}>
         <View style={styles.searchBar}>
-          <Search size={16} color={COLORS.textMuted} />
+          <Search size={16} color={COLORS.brandIndigo} />
           <TextInput
-            placeholder="Cari desain, web, video, copywriting..."
+            placeholder="Cari desain logo, website, video..."
             placeholderTextColor={COLORS.textDim}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -119,7 +133,40 @@ export function ProjectListScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Filter Tabs */}
+      {/* Category Pills Slider */}
+      <View style={styles.categoryContainer}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={categories}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            const selected = categoryFilter === item.id;
+            return (
+              <TouchableOpacity
+                onPress={() => setCategoryFilter(item.id)}
+                style={[
+                  styles.categoryChip,
+                  selected && styles.categoryChipActive,
+                ]}
+                activeOpacity={0.75}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selected && styles.categoryTextActive,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
+          contentContainerStyle={styles.categoryList}
+        />
+      </View>
+
+      {/* Status Filter Tabs */}
       <View style={styles.filterContainer}>
         <FlatList
           horizontal
@@ -135,7 +182,7 @@ export function ProjectListScreen({ navigation }) {
                   styles.filterChip,
                   selected && styles.filterChipActive,
                 ]}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
               >
                 <Text
                   style={[
@@ -150,6 +197,13 @@ export function ProjectListScreen({ navigation }) {
           }}
           contentContainerStyle={styles.filterList}
         />
+      </View>
+
+      {/* Results Header Count */}
+      <View style={styles.resultsInfoRow}>
+        <Text style={styles.resultsCountText}>
+          Menampilkan {filteredProjects.length} proyek ditemukan
+        </Text>
       </View>
 
       {/* Projects List */}
@@ -168,7 +222,7 @@ export function ProjectListScreen({ navigation }) {
         ListEmptyComponent={
           !loading && (
             <View style={styles.emptyState}>
-              <Compass size={40} color={COLORS.brandIndigo} />
+              <Compass size={44} color={COLORS.brandIndigo} />
               <Text style={styles.emptyTitle}>
                 {searchQuery
                   ? "Proyek Tidak Ditemukan"
@@ -176,7 +230,7 @@ export function ProjectListScreen({ navigation }) {
               </Text>
               <Text style={styles.emptyDesc}>
                 {searchQuery
-                  ? "Coba gunakan kata kunci pencarian yang lain."
+                  ? "Coba gunakan kata kunci pencarian atau filter kategori yang lain."
                   : isMahasiswa
                   ? "Proyek UMKM baru akan segera muncul di sini."
                   : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
@@ -184,7 +238,7 @@ export function ProjectListScreen({ navigation }) {
               {!isMahasiswa && (
                 <Button
                   title="Pasang Proyek Pertama"
-                  variant="lime"
+                  variant="brand"
                   size="md"
                   icon={<Plus size={16} color="#FFF" />}
                   onPress={() => navigation.navigate("PostProject")}
@@ -222,10 +276,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
+    ...SHADOWS.brandGlow,
   },
   searchSection: {
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 10,
     paddingBottom: 4,
     backgroundColor: COLORS.bgSurface,
   },
@@ -234,8 +289,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.canvasSoft,
     borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     gap: 8,
@@ -245,32 +300,62 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textDark,
     paddingVertical: 2,
+    fontWeight: "500",
+  },
+  categoryContainer: {
+    backgroundColor: COLORS.bgSurface,
+    paddingVertical: 8,
+  },
+  categoryList: {
+    paddingHorizontal: 16,
+    gap: 6,
+  },
+  categoryChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginRight: 4,
+  },
+  categoryChipActive: {
+    backgroundColor: COLORS.brandIndigoLight,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+  },
+  categoryText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.textSecondary,
+  },
+  categoryTextActive: {
+    color: COLORS.brandIndigo,
   },
   filterContainer: {
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
     backgroundColor: COLORS.bgSurface,
   },
   filterList: {
     paddingHorizontal: 16,
-    gap: 8,
+    gap: 6,
   },
   filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 999,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: COLORS.bgSurface,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginRight: 6,
+    marginRight: 4,
   },
   filterChipActive: {
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   filterText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "600",
     color: COLORS.textMuted,
   },
@@ -278,14 +363,30 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "800",
   },
+  resultsInfoRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  resultsCountText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: COLORS.textMuted,
+  },
   listContent: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 2,
     paddingBottom: 110,
   },
   emptyState: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 24,
+    padding: 36,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    ...SHADOWS.sm,
   },
   emptyTitle: {
     fontSize: 16,

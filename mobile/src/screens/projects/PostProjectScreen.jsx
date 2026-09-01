@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Header } from "../../components/ui/Header";
 import { PricingSuggester } from "../../components/features/PricingSuggester";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import { ShieldCheck, Calendar } from "lucide-react-native";
+import { ShieldCheck, Calendar, Sparkles } from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
   const [judul, setJudul] = useState("");
@@ -20,12 +20,12 @@ export function PostProjectScreen({ navigation }) {
   const { showToast } = useToastStore();
 
   const categories = [
-    { code: "DESIGN", label: "Desain Grafis & Logo" },
-    { code: "UIUX", label: "UI/UX App & Web" },
-    { code: "PEMROGRAMAN", label: "Website & Coding" },
-    { code: "VIDEO", label: "Video Promosi Reels" },
-    { code: "COPYWRITING", label: "Copywriting & Artikel" },
-    { code: "ADMIN_DATA", label: "Admin & Excel" },
+    { code: "DESIGN", label: "🎨 Desain & Logo" },
+    { code: "UIUX", label: "📱 UI/UX App" },
+    { code: "PEMROGRAMAN", label: "💻 Web & Coding" },
+    { code: "VIDEO", label: "🎬 Video Reels" },
+    { code: "COPYWRITING", label: "✍️ Copywriting" },
+    { code: "ADMIN_DATA", label: "📊 Admin Data" },
   ];
 
   const handlePost = async () => {
@@ -67,21 +67,37 @@ export function PostProjectScreen({ navigation }) {
         onBack={() => navigation.goBack()}
       />
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         {/* Kategori Selector Pills */}
         <View style={styles.formSection}>
           <Text style={styles.sectionLabel}>Pilih Kategori Keahlian</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesRow}
+          >
             {categories.map((c) => {
               const selected = kategori === c.code;
               return (
                 <TouchableOpacity
                   key={c.code}
                   onPress={() => setKategori(c.code)}
-                  style={[styles.categoryChip, selected && styles.categoryChipActive]}
-                  activeOpacity={0.7}
+                  style={[
+                    styles.categoryChip,
+                    selected && styles.categoryChipActive,
+                  ]}
+                  activeOpacity={0.75}
                 >
-                  <Text style={[styles.categoryText, selected && styles.categoryTextActive]}>
+                  <Text
+                    style={[
+                      styles.categoryText,
+                      selected && styles.categoryTextActive,
+                    ]}
+                  >
                     {c.label}
                   </Text>
                 </TouchableOpacity>
@@ -136,7 +152,7 @@ export function PostProjectScreen({ navigation }) {
 
         <Button
           title="Terbitkan Proyek Sekarang"
-          variant="lime"
+          variant="brand"
           size="lg"
           onPress={handlePost}
           loading={loading}
@@ -153,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   content: {
-    padding: 20,
+    padding: 16,
     paddingBottom: 60,
   },
   formSection: {
@@ -172,10 +188,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: COLORS.bgSurface,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginRight: 8,
+    ...SHADOWS.sm,
   },
   categoryChipActive: {
     backgroundColor: COLORS.brandIndigo,
@@ -183,12 +200,11 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textMuted,
+    fontWeight: "700",
+    color: COLORS.textSecondary,
   },
   categoryTextActive: {
     color: "#FFFFFF",
-    fontWeight: "800",
   },
   guaranteeBox: {
     flexDirection: "row",
@@ -200,16 +216,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 20,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
+    ...SHADOWS.sm,
   },
   guaranteeText: {
     fontSize: 11,
     color: COLORS.textMuted,
     flex: 1,
     lineHeight: 16,
+    fontWeight: "500",
   },
   submitBtn: {
     marginBottom: 20,

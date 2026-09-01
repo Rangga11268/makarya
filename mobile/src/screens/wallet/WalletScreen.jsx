@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Modal,
 } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -26,6 +26,10 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Banknote,
+  Eye,
+  EyeOff,
+  History,
+  TrendingUp,
 } from "lucide-react-native";
 
 export function WalletScreen() {
@@ -33,6 +37,7 @@ export function WalletScreen() {
   const [wallet, setWallet] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showBalance, setShowBalance] = useState(true);
   const [topUpModal, setTopUpModal] = useState(false);
   const [nominal, setNominal] = useState("500000");
   const [topUpLoading, setTopUpLoading] = useState(false);
@@ -49,7 +54,9 @@ export function WalletScreen() {
     try {
       setLoading(true);
       const [wRes, hRes] = await Promise.all([
-        walletApi.getMe().catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
+        walletApi
+          .getMe()
+          .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
         walletApi.getHistory().catch(() => ({ data: [] })),
       ]);
       setWallet(wRes.data);
@@ -63,7 +70,7 @@ export function WalletScreen() {
     loadWallet();
   }, []);
 
-  const handleTopUp = async () => {
+  const handleTransaction = async () => {
     const num = parseInt(nominal, 10);
     if (!num || num < 50000) {
       showToast("Minimal transaksi adalah Rp 50.000", "danger");
@@ -91,16 +98,17 @@ export function WalletScreen() {
   return (
     <View style={styles.container}>
       <Header
-        title={isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Bersama"}
+        title={isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Escrow"}
         subtitle={
           isMahasiswa
-            ? "Saldo honor pengerjaan & pencairan dana rekening escrow"
-            : "Audit saldo aktif dan proteksi dana escrow proyek Anda"
+            ? "Saldo honor pengerjaan & audit pencairan rekening escrow"
+            : "Manajemen saldo deposit dan proteksi pembayaran proyek"
         }
       />
 
       <ScrollView
         contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -110,75 +118,104 @@ export function WalletScreen() {
           />
         }
       >
-        {/* Card Saldo Aktif */}
-        <View style={styles.cardActive}>
-          <View style={styles.cardHeader}>
-            <View style={styles.iconCircleIndigo}>
-              <Wallet size={18} color={COLORS.brandIndigo} />
+        {/* 1. Main Fintech Balance Card */}
+        <View style={styles.heroBalanceCard}>
+          <View style={styles.balanceHeader}>
+            <View style={styles.balanceTag}>
+              <Wallet size={14} color="#FFFFFF" />
+              <Text style={styles.balanceTagText}>
+                {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
+              </Text>
             </View>
-            <Text style={styles.cardLabel}>
-              {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
-            </Text>
+
+            <TouchableOpacity
+              onPress={() => setShowBalance(!showBalance)}
+              style={styles.eyeBtn}
+              activeOpacity={0.7}
+            >
+              {showBalance ? (
+                <Eye size={16} color="rgba(255, 255, 255, 0.7)" />
+              ) : (
+                <EyeOff size={16} color="rgba(255, 255, 255, 0.7)" />
+              )}
+            </TouchableOpacity>
           </View>
 
-          <Text style={styles.cardAmount}>
-            {formatCurrency(wallet?.saldo_aktif || 0)}
+          <Text style={styles.balanceAmount}>
+            {showBalance
+              ? formatCurrency(wallet?.saldo_aktif || 0)
+              : "Rp ••••••••"}
           </Text>
-          <Text style={styles.cardDesc}>
+
+          <Text style={styles.balanceSubtitle}>
             {isMahasiswa
-              ? "Honor yang telah disetujui klien dan siap dicairkan ke rekening bank Anda."
-              : "Saldo siap dialokasikan untuk mengunci pembayaran proyek mahasiswa (Escrow Deposit)."}
+              ? "Honor yang telah disetujui klien dan siap ditransfer ke rekening Anda."
+              : "Saldo aktif siap dialokasikan untuk mengunci pesanan proyek mahasiswa."}
           </Text>
 
           <Button
             title={isMahasiswa ? "Tarik Honor ke Rekening" : "Deposit Saldo UMKM"}
-            variant="lime"
+            variant="brand"
             size="md"
             icon={
               isMahasiswa ? (
                 <Banknote size={16} color="#FFF" />
               ) : (
-                <Plus size={16} color="#FFF" />
+                <Plus size={16} color="#FFF" strokeWidth={3} />
               )
             }
             onPress={() => setTopUpModal(true)}
-            style={{ marginTop: 14 }}
+            style={styles.heroActionBtn}
           />
         </View>
 
-        {/* Card Saldo Escrow */}
-        <View style={styles.cardEscrow}>
-          <View style={styles.cardHeader}>
+        {/* 2. Escrow Protection Holding Card */}
+        <View style={styles.escrowCard}>
+          <View style={styles.escrowHeader}>
             <View style={styles.iconCircleCyan}>
-              <Lock size={18} color={COLORS.brandCyan} />
+              <Lock size={15} color={COLORS.brandCyan} />
             </View>
-            <Text style={styles.cardLabelCyan}>Saldo Terkunci di Escrow</Text>
+            <Text style={styles.escrowLabel}>Saldo Terkunci di Escrow</Text>
           </View>
-          <Text style={styles.cardAmountCyan}>
-            {formatCurrency(wallet?.saldo_escrow || 0)}
+
+          <Text style={styles.escrowAmount}>
+            {showBalance
+              ? formatCurrency(wallet?.saldo_escrow || 0)
+              : "Rp ••••••••"}
           </Text>
-          <Text style={styles.cardDesc}>
+
+          <Text style={styles.escrowDesc}>
             {isMahasiswa
-              ? "Honor proyek yang sedang berjalan, tersimpan aman di rekening bersama dan cair otomatis saat disetujui."
-              : "Dana aman tersimpan di rekening bersama dan hanya cair setelah Anda menyetujui hasil pengerjaan."}
+              ? "Honor proyek dalam pengerjaan, aman di rekening bersama dan cair otomatis saat disetujui."
+              : "Dana aman tersimpan di pihak ketiga dan hanya cair setelah Anda menyetujui hasil deliverable."}
           </Text>
         </View>
 
-        {/* Audit Trail History */}
+        {/* 3. Transaction History Section */}
         <View style={styles.historySection}>
-          <Text style={styles.historyTitle}>Riwayat Mutasi Transaksi</Text>
+          <View style={styles.historyHeader}>
+            <Text style={styles.historyTitle}>Riwayat Mutasi Saldo</Text>
+            <History size={16} color={COLORS.textMuted} />
+          </View>
 
           {history.length === 0 ? (
             <View style={styles.emptyBox}>
               <Text style={styles.emptyText}>
-                Belum ada riwayat transaksi keuangan.
+                Belum ada riwayat mutasi transaksi keuangan.
               </Text>
             </View>
           ) : (
             history.map((tx) => (
               <View key={tx.id} style={styles.txRow}>
                 <View style={styles.txLeft}>
-                  <View style={styles.txIcon}>
+                  <View
+                    style={[
+                      styles.txIcon,
+                      tx.tipe === "TOPUP" || tx.tipe === "PAYOUT"
+                        ? styles.txIconGreen
+                        : styles.txIconRed,
+                    ]}
+                  >
                     {tx.tipe === "TOPUP" || tx.tipe === "PAYOUT" ? (
                       <ArrowDownLeft size={16} color={COLORS.success} />
                     ) : (
@@ -215,7 +252,7 @@ export function WalletScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal Transaksi */}
+      {/* Modal Transaksi Top-Up / Penarikan */}
       <Modal visible={topUpModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
@@ -224,12 +261,12 @@ export function WalletScreen() {
             </Text>
             <Text style={styles.modalSub}>
               {isMahasiswa
-                ? "Masukkan nominal honor yang ingin dicairkan"
-                : "Pilih atau masukkan nominal top-up saldo escrow"}
+                ? "Masukkan nominal honor yang ingin dicairkan ke bank Anda"
+                : "Pilih atau masukkan nominal top-up saldo escrow proyek"}
             </Text>
 
             <Input
-              label="Nominal (Rp)"
+              label="Nominal Transaksi (Rp)"
               placeholder="500000"
               value={nominal}
               onChangeText={setNominal}
@@ -262,16 +299,16 @@ export function WalletScreen() {
             <View style={styles.modalActions}>
               <Button
                 title="Batal"
-                variant="dark"
+                variant="secondary"
                 size="md"
                 onPress={() => setTopUpModal(false)}
                 style={{ flex: 1 }}
               />
               <Button
                 title="Konfirmasi"
-                variant="lime"
+                variant="brand"
                 size="md"
-                onPress={handleTopUp}
+                onPress={handleTransaction}
                 loading={topUpLoading}
                 style={{ flex: 2 }}
               />
@@ -292,94 +329,106 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 110,
   },
-  cardActive: {
-    backgroundColor: COLORS.bgSurface,
+  heroBalanceCard: {
+    backgroundColor: "#1E1B4B", // High-tech Deep Indigo card
     borderRadius: 24,
-    padding: 20,
+    padding: 22,
+    marginBottom: 14,
+    ...SHADOWS.md,
+  },
+  balanceHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  balanceTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  balanceTagText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "rgba(255, 255, 255, 0.75)",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  eyeBtn: {
+    padding: 4,
+  },
+  balanceAmount: {
+    fontSize: 32,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    letterSpacing: -0.8,
+    marginVertical: 4,
+  },
+  balanceSubtitle: {
+    fontSize: 12,
+    color: "rgba(255, 255, 255, 0.7)",
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  heroActionBtn: {
+    backgroundColor: "#FFFFFF",
+  },
+  escrowCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 22,
+    padding: 18,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 14,
-    elevation: 2,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
+    marginBottom: 20,
+    ...SHADOWS.sm,
   },
-  cardHeader: {
+  escrowHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     marginBottom: 6,
   },
-  iconCircleIndigo: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "rgba(79, 70, 229, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  cardAmount: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: COLORS.textDark,
-    letterSpacing: -0.5,
-  },
-  cardDesc: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 4,
-    lineHeight: 16,
-  },
-  cardEscrow: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 24,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-  },
   iconCircleCyan: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.brandCyanLight,
     alignItems: "center",
     justifyContent: "center",
   },
-  cardLabelCyan: {
+  escrowLabel: {
     fontSize: 11,
     fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.4,
   },
-  cardAmountCyan: {
-    fontSize: 26,
+  escrowAmount: {
+    fontSize: 24,
     fontWeight: "900",
     color: COLORS.brandCyan,
     letterSpacing: -0.5,
+    marginVertical: 2,
+  },
+  escrowDesc: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+    lineHeight: 16,
   },
   historySection: {
-    marginTop: 6,
+    marginTop: 4,
+  },
+  historyHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
   },
   historyTitle: {
     fontSize: 16,
     fontWeight: "800",
     color: COLORS.textDark,
-    marginBottom: 12,
   },
   txRow: {
     flexDirection: "row",
@@ -391,11 +440,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 10,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
+    ...SHADOWS.sm,
   },
   txLeft: {
     flexDirection: "row",
@@ -403,12 +448,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   txIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
+  },
+  txIconGreen: {
+    backgroundColor: COLORS.successBg,
+  },
+  txIconRed: {
+    backgroundColor: COLORS.dangerBg,
   },
   txType: {
     fontSize: 13,
@@ -445,17 +495,18 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    backgroundColor: "rgba(15, 23, 42, 0.65)",
     justifyContent: "flex-end",
   },
   modalSheet: {
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    padding: 22,
+    padding: 24,
     paddingBottom: 40,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
+    ...SHADOWS.lg,
   },
   modalTitle: {
     fontSize: 20,
