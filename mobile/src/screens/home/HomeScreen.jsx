@@ -42,6 +42,7 @@ import {
   CheckCircle2,
   Clock,
   Award,
+  Search,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
