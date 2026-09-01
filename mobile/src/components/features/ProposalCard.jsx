@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
@@ -117,6 +118,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   header: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
@@ -131,6 +133,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   avatarText: {
+    fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "800",
@@ -139,16 +142,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 14,
     fontWeight: "800",
     color: COLORS.textDark,
   },
   prodi: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 1,
   },
   ratingBadge: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.canvasSoft,
@@ -160,6 +166,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   ratingText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "800",
     color: COLORS.textDark,
@@ -174,22 +181,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   offerLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   offerPrice: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "900",
     color: COLORS.brandIndigo,
     marginTop: 2,
   },
   durationBadge: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
   durationText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textDark,
@@ -198,12 +209,14 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   letterLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     fontWeight: "600",
     color: COLORS.textMuted,
     marginBottom: 4,
   },
   letterText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textDark,
     lineHeight: 18,

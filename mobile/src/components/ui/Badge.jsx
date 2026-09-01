@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 
 export function Badge({ label, variant = "neutral", style, textStyle }) {
   const getColors = () => {
@@ -76,12 +77,14 @@ export function Badge({ label, variant = "neutral", style, textStyle }) {
 
 const styles = StyleSheet.create({
   badge: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,
     alignSelf: "flex-start",
   },
   text: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 0.1,

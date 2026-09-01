@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { CategoryChip } from "../../components/ui/CategoryChip";
@@ -19,12 +20,7 @@ import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import {
-  Plus,
-  Compass,
-  Bell,
-  RotateCcw,
-} from "lucide-react-native";
+import { Plus, Compass, Bell, RotateCcw } from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
   const { user } = useAuthStore();
@@ -245,8 +241,8 @@ export function ProjectListScreen({ navigation }) {
                 {searchQuery || activeFilterCount > 0
                   ? "Coba ubah kata kunci atau atur ulang filter pencarian Anda."
                   : isMahasiswa
-                  ? "Proyek UMKM baru akan segera muncul di sini."
-                  : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
+                    ? "Proyek UMKM baru akan segera muncul di sini."
+                    : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
               </Text>
               {activeFilterCount > 0 && (
                 <Button
@@ -300,6 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
   topHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -309,17 +306,20 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgSurface,
   },
   headerTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 22,
     fontWeight: "900",
     color: COLORS.textDark,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
   },
   fabHeader: {
+    fontFamily: FONTS.bodyRegular,
     width: 38,
     height: 38,
     borderRadius: 19,
@@ -366,11 +366,13 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   segmentedTabText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
+    fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
     fontWeight: "900",
   },
@@ -399,6 +401,7 @@ const styles = StyleSheet.create({
     paddingBottom: 110,
   },
   emptyState: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.bgSurface,
     borderRadius: 24,
     padding: 36,
@@ -410,12 +413,14 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   emptyTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "800",
     color: COLORS.textDark,
     marginTop: 12,
   },
   emptyDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     textAlign: "center",

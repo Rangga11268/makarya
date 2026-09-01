@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textDark,
@@ -169,6 +171,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   categoryChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
@@ -179,15 +182,18 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   categoryChipActive: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   categoryText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textSecondary,
   },
   categoryTextActive: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   guaranteeBox: {
@@ -203,6 +209,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   guaranteeText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     flex: 1,
@@ -210,6 +217,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   submitBtn: {
+    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
 });

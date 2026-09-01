@@ -1,48 +1,74 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
-import { ShieldCheck, GraduationCap } from "lucide-react-native";
+import React, { useEffect, useRef } from "react";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Animated,
+  StatusBar,
+  Text,
+} from "react-native";
+import { COLORS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 
 export function SplashScreen({ onFinish }) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.92)).current;
+
   useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 650,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 7,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
     const timer = setTimeout(() => {
       if (onFinish) onFinish();
-    }, 2000);
+    }, 1800);
+
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.centerContent}>
-        {/* Brand Logo */}
-        <View style={styles.logoCard}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+      {/* Dead Center App Monogram Icon & Title */}
+      <View style={styles.centerBox}>
+        <Animated.View
+          style={[
+            styles.logoContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        >
           <Image
-            source={require("../../../assets/logo.webp")}
-            style={styles.logo}
+            source={require("../../../assets/logo-icon.webp")}
+            style={styles.logoIcon}
             resizeMode="contain"
           />
-        </View>
-
-        {/* Tagline */}
-        <Text style={styles.brandTitle}>Makarya Mobile</Text>
-        <Text style={styles.tagline}>
-          Platform Marketplace Talenta Mahasiswa & UMKM Terverifikasi
-        </Text>
-
-        {/* Security Badge */}
-        <View style={styles.securityBadge}>
-          <ShieldCheck size={14} color={COLORS.brandCyan} />
-          <Text style={styles.securityText}>100% Escrow Holding Protected</Text>
-        </View>
+          <Text style={styles.brandTitle}>Makarya</Text>
+          <Text style={styles.tagline}>
+            Marketplace Talenta Mahasiswa & UMKM
+          </Text>
+        </Animated.View>
       </View>
 
-      {/* Bottom Loading Indicator & Copyright */}
-      <View style={styles.bottomFooter}>
-        <ActivityIndicator size="small" color={COLORS.brandIndigo} />
-        <Text style={styles.copyrightText}>
-          Karya Inovasi Digital Mahasiswa Indonesia
+      {/* Subtle Minimalist Bottom Footer */}
+      <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
+        <Text style={styles.footerCampus}>
+          Universitas Bina Sarana Informatika
         </Text>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -50,68 +76,49 @@ export function SplashScreen({ onFinish }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 24,
+    paddingVertical: 50,
   },
-  centerContent: {
+  centerBox: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  logoCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 28,
-    paddingHorizontal: 28,
-    paddingVertical: 20,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 20,
-    ...SHADOWS.md,
+  logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
   },
-  logo: {
-    width: 160,
-    height: 50,
+  logoIcon: {
+    width: 104,
+    height: 104,
+    borderRadius: 24,
+    marginBottom: 16,
   },
   brandTitle: {
-    fontSize: 22,
-    fontWeight: "900",
-    color: COLORS.textDark,
+    fontFamily: FONTS.displayBold,
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#0F172A",
     letterSpacing: -0.5,
   },
   tagline: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 13,
-    color: COLORS.textMuted,
-    textAlign: "center",
-    marginTop: 8,
-    maxWidth: 280,
-    lineHeight: 19,
     fontWeight: "500",
+    color: "#64748B",
+    marginTop: 6,
+    letterSpacing: -0.1,
   },
-  securityBadge: {
-    flexDirection: "row",
+  footer: {
     alignItems: "center",
-    gap: 6,
-    backgroundColor: COLORS.brandCyanLight,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginTop: 20,
   },
-  securityText: {
+  footerCampus: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    fontWeight: "800",
-    color: COLORS.brandCyan,
-  },
-  bottomFooter: {
-    alignItems: "center",
-    gap: 12,
-  },
-  copyrightText: {
-    fontSize: 11,
-    color: COLORS.textDim,
-    fontWeight: "600",
+    fontWeight: "500",
+    color: "#94A3B8",
+    letterSpacing: 0.2,
   },
 });

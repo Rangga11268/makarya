@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 
 export function Button({
   title,
@@ -20,7 +21,8 @@ export function Button({
   style,
   textStyle,
 }) {
-  const isBrand = variant === "brand" || variant === "lime" || variant === "primary";
+  const isBrand =
+    variant === "brand" || variant === "lime" || variant === "primary";
   const isSecondary = variant === "secondary" || variant === "dark";
   const isOutline = variant === "outline";
   const isSoft = variant === "soft";
@@ -138,34 +140,44 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   text: {
-    fontWeight: "800",
-    letterSpacing: -0.2,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "600",
+    letterSpacing: -0.1,
   },
   text_sm: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
   },
   text_md: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 14,
   },
   text_lg: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 15,
   },
   textBrand: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   textSecondary: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   textOutline: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.brandIndigo,
   },
   textSoft: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.brandIndigo,
   },
   textGhost: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   textDanger: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   iconLeft: {

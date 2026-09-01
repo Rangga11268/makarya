@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Search, X, SlidersHorizontal } from "lucide-react-native";
 
 export function SearchBar({
@@ -79,6 +80,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   input: {
+    fontFamily: FONTS.bodyMedium,
     flex: 1,
     fontSize: 13,
     color: COLORS.textDark,
@@ -101,6 +103,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.brandIndigo,
   },
   badgeCount: {
+    fontFamily: FONTS.bodyRegular,
     position: "absolute",
     top: -4,
     right: -4,
@@ -114,6 +117,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
   },
   badgeText: {
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "900",

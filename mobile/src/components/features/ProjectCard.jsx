@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Badge } from "../ui/Badge";
 import { getCategorySkills } from "../../constants/categories";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -112,6 +113,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   clientHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
@@ -126,24 +128,28 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   clientAvatarText: {
+    fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   clientInfo: {
     flex: 1,
   },
   clientName: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.textDark,
   },
   postedTime: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
     marginTop: 1,
   },
   escrowChip: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
@@ -153,13 +159,15 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   escrowText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandCyan,
   },
   title: {
+    fontFamily: FONTS.displayBold,
     fontSize: 15,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.3,
     lineHeight: 21,
@@ -181,16 +189,18 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   specLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 9,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.3,
     marginBottom: 2,
   },
   specBudgetValue: {
+    fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   applicantRow: {
@@ -199,8 +209,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   specLevelValue: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.textDark,
   },
   skillsRow: {
@@ -209,6 +220,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   skillPill: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -217,8 +229,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   skillPillText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: "500",
     color: COLORS.textSecondary,
   },
 });

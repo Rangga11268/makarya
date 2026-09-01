@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
@@ -159,7 +160,7 @@ export function RegisterScreen({ navigation }) {
           placeholder="Minimal 6 karakter"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          isPassword={true}
           icon={<Lock size={18} color={COLORS.textMuted} />}
         />
 
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   header: {
+    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
   brandLogo: {
@@ -202,12 +204,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   title: {
+    fontFamily: FONTS.displayBold,
     fontSize: 28,
     fontWeight: "900",
     color: COLORS.textDark,
     letterSpacing: -0.6,
   },
   subtitle: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 13,
     color: COLORS.textMuted,
     marginTop: 6,
@@ -229,6 +233,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textDark,
@@ -239,6 +244,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   industryChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 13,
     paddingVertical: 7,
     borderRadius: 999,
@@ -248,15 +254,18 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   industryChipActive: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   industryText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
     fontWeight: "600",
     color: COLORS.textMuted,
   },
   industryTextActive: {
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textInverse,
     fontWeight: "800",
   },
@@ -271,10 +280,12 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   loginText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
   },
   loginLink: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "800",
     color: COLORS.brandIndigo,

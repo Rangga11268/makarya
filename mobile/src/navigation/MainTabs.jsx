@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Platform } from "react-native";
+import { FONTS } from "../theme/fonts";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/home/HomeScreen";
 import { ProjectListScreen } from "../screens/projects/ProjectListScreen";
@@ -146,6 +147,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
     fontWeight: "700",
     letterSpacing: 0.1,

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../ui/Button";
 import { X } from "lucide-react-native";
@@ -144,17 +145,20 @@ const styles = StyleSheet.create({
     ...SHADOWS.lg,
   },
   modalHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
     marginBottom: 18,
   },
   modalTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 18,
     fontWeight: "900",
     color: COLORS.textDark,
   },
   modalSub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
@@ -168,6 +172,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   filterSectionTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "800",
     color: COLORS.textDark,
@@ -177,12 +182,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   filterChipGrid: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
     marginBottom: 14,
   },
   modalOptionChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
@@ -191,15 +198,18 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   modalOptionChipActive: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   modalOptionText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textDark,
   },
   modalOptionTextActive: {
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontWeight: "800",
   },

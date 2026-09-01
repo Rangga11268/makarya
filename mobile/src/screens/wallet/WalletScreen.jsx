@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -84,7 +85,7 @@ export function WalletScreen() {
         isMahasiswa
           ? `Permintaan pencairan honor Rp ${formatCurrency(num)} diproses!`
           : `Deposit Rp ${formatCurrency(num)} berhasil!`,
-        "success"
+        "success",
       );
       setTopUpModal(false);
       loadWallet();
@@ -98,7 +99,9 @@ export function WalletScreen() {
   return (
     <View style={styles.container}>
       <Header
-        title={isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Escrow"}
+        title={
+          isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Escrow"
+        }
         subtitle={
           isMahasiswa
             ? "Saldo honor pengerjaan & audit pencairan rekening escrow"
@@ -153,20 +156,20 @@ export function WalletScreen() {
               : "Saldo aktif siap dialokasikan untuk mengunci pesanan proyek mahasiswa."}
           </Text>
 
-          <Button
-            title={isMahasiswa ? "Tarik Honor ke Rekening" : "Deposit Saldo UMKM"}
-            variant="brand"
-            size="md"
-            icon={
-              isMahasiswa ? (
-                <Banknote size={16} color="#FFF" />
-              ) : (
-                <Plus size={16} color="#FFF" strokeWidth={3} />
-              )
-            }
-            onPress={() => setTopUpModal(true)}
+          <TouchableOpacity
             style={styles.heroActionBtn}
-          />
+            onPress={() => setTopUpModal(true)}
+            activeOpacity={0.85}
+          >
+            {isMahasiswa ? (
+              <Banknote size={18} color={COLORS.brandIndigo} />
+            ) : (
+              <Plus size={18} color={COLORS.brandIndigo} strokeWidth={3} />
+            )}
+            <Text style={styles.heroActionBtnText}>
+              {isMahasiswa ? "Tarik Honor ke Rekening" : "Deposit Saldo UMKM"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* 2. Escrow Protection Holding Card */}
@@ -337,17 +340,20 @@ const styles = StyleSheet.create({
     ...SHADOWS.md,
   },
   balanceHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
   balanceTag: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   balanceTagText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "700",
     color: "rgba(255, 255, 255, 0.75)",
@@ -358,6 +364,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   balanceAmount: {
+    fontFamily: FONTS.displayBold,
     fontSize: 32,
     fontWeight: "900",
     color: "#FFFFFF",
@@ -365,6 +372,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   balanceSubtitle: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: "rgba(255, 255, 255, 0.7)",
     lineHeight: 18,
@@ -372,6 +380,21 @@ const styles = StyleSheet.create({
   },
   heroActionBtn: {
     backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    marginTop: 6,
+    ...SHADOWS.sm,
+  },
+  heroActionBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 14,
+    fontWeight: "900",
+    color: COLORS.brandIndigo,
   },
   escrowCard: {
     backgroundColor: COLORS.bgSurface,
@@ -383,6 +406,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   escrowHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -397,6 +421,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   escrowLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "700",
     color: COLORS.textMuted,
@@ -404,6 +429,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   escrowAmount: {
+    fontFamily: FONTS.displayBold,
     fontSize: 24,
     fontWeight: "900",
     color: COLORS.brandCyan,
@@ -411,6 +437,7 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   escrowDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
@@ -420,12 +447,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   historyHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
   },
   historyTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "800",
     color: COLORS.textDark,
@@ -461,20 +490,24 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.dangerBg,
   },
   txType: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "800",
     color: COLORS.textDark,
   },
   txDate: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
     marginTop: 1,
   },
   txNominal: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 14,
     fontWeight: "800",
   },
   txDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
     maxWidth: 130,
@@ -490,6 +523,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   emptyText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
   },
@@ -509,11 +543,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.lg,
   },
   modalTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 20,
     fontWeight: "900",
     color: COLORS.textDark,
   },
   modalSub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 4,
@@ -526,6 +562,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   nomChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
@@ -534,15 +571,18 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   nomChipActive: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   nomText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     color: COLORS.textMuted,
     fontWeight: "700",
   },
   nomTextActive: {
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontWeight: "800",
   },

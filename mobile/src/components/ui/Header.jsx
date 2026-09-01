@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { ArrowLeft, Bell, CheckCircle2 } from "lucide-react-native";
 
 export function Header({
@@ -13,6 +14,7 @@ export function Header({
   unreadCount = 0,
   userProfile,
   onProfilePress,
+  showBrandLogo = false,
 }) {
   return (
     <View style={styles.header}>
@@ -28,8 +30,20 @@ export function Header({
           </TouchableOpacity>
         )}
 
-        {/* User Profile Header (for HomeScreen) */}
-        {userProfile ? (
+        {/* Brand Logo Mode */}
+        {showBrandLogo ? (
+          <View style={styles.brandGroup}>
+            <Image
+              source={require("../../../assets/logo.webp")}
+              style={styles.brandLogo}
+              resizeMode="contain"
+            />
+            <View style={styles.brandBadge}>
+              <Text style={styles.brandBadgeText}>UBSI</Text>
+            </View>
+          </View>
+        ) : userProfile ? (
+          /* User Profile Header */
           <TouchableOpacity
             onPress={onProfilePress}
             style={styles.userProfileSection}
@@ -39,10 +53,14 @@ export function Header({
               <View
                 style={[
                   styles.avatarCircle,
-                  userProfile.isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                  userProfile.isMahasiswa
+                    ? styles.avatarMhs
+                    : styles.avatarUmkm,
                 ]}
               >
-                <Text style={styles.avatarText}>{userProfile.initial || "U"}</Text>
+                <Text style={styles.avatarText}>
+                  {userProfile.initial || "U"}
+                </Text>
               </View>
               <View style={styles.verifiedCheckBadge}>
                 <CheckCircle2
@@ -77,20 +95,48 @@ export function Header({
         )}
       </View>
 
-      {/* 2. Right Section (Notification Bell or Custom Action) */}
+      {/* 2. Right Section (Notification Bell or User Mini Avatar or Custom Action) */}
       <View style={styles.right}>
+        {showBrandLogo && userProfile && (
+          <TouchableOpacity
+            onPress={onProfilePress}
+            style={styles.userMiniAvatar}
+            activeOpacity={0.8}
+          >
+            <View
+              style={[
+                styles.miniAvatarCircle,
+                userProfile.isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+              ]}
+            >
+              <Text style={styles.miniAvatarText}>
+                {userProfile.initial || "U"}
+              </Text>
+            </View>
+            <View style={styles.miniVerifiedBadge}>
+              <CheckCircle2
+                size={10}
+                color="#FFFFFF"
+                fill={COLORS.brandIndigo}
+              />
+            </View>
+          </TouchableOpacity>
+        )}
+
         {showBell && (
           <TouchableOpacity
             onPress={onBellPress}
             style={styles.bellBtn}
             activeOpacity={0.75}
           >
-            <Bell size={20} color={COLORS.textDark} />
+            <Bell size={19} color={COLORS.textDark} />
             {unreadCount > 0 && <View style={styles.unreadDot} />}
           </TouchableOpacity>
         )}
 
-        {rightAction && <View style={styles.rightActionWrapper}>{rightAction}</View>}
+        {rightAction && (
+          <View style={styles.rightActionWrapper}>{rightAction}</View>
+        )}
       </View>
     </View>
   );
@@ -98,6 +144,7 @@ export function Header({
 
 const styles = StyleSheet.create({
   header: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -112,7 +159,32 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
-    paddingRight: 10,
+    paddingRight: 8,
+  },
+  brandGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  brandLogo: {
+    width: 110,
+    height: 30,
+  },
+  brandBadge: {
+    fontFamily: FONTS.bodyRegular,
+    backgroundColor: COLORS.brandIndigoLight,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+  },
+  brandBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+    letterSpacing: 0.5,
   },
   backButton: {
     width: 38,
@@ -126,19 +198,22 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   titleContainer: {
+    fontFamily: FONTS.bodyRegular,
     flex: 1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "900",
+    fontFamily: FONTS.displayBold,
+    fontSize: 18,
+    fontWeight: "700",
     color: COLORS.textDark,
-    letterSpacing: -0.4,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 2,
-    fontWeight: "500",
+    fontWeight: "400",
   },
   userProfileSection: {
     flexDirection: "row",
@@ -163,11 +238,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandCyan,
   },
   avatarText: {
+    fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "700",
   },
   verifiedCheckBadge: {
+    fontFamily: FONTS.bodyRegular,
     position: "absolute",
     bottom: -2,
     right: -2,
@@ -178,21 +255,47 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    fontSize: 16,
-    fontWeight: "900",
+    fontFamily: FONTS.displayBold,
+    fontSize: 15,
+    fontWeight: "700",
     color: COLORS.textDark,
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
   },
   userRole: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
-    fontWeight: "600",
+    fontWeight: "500",
   },
   right: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  userMiniAvatar: {
+    position: "relative",
+  },
+  miniAvatarCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  miniAvatarText: {
+    fontFamily: FONTS.displayBold,
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  miniVerifiedBadge: {
+    fontFamily: FONTS.bodyRegular,
+    position: "absolute",
+    bottom: -1,
+    right: -1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 6,
   },
   bellBtn: {
     width: 40,

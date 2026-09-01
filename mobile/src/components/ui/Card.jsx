@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 
 export function Card({ children, variant = "dark", style }) {

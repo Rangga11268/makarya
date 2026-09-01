@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { useToastStore } from "../../store/toastStore";
 import { COLORS } from "../../theme/colors";
 import { CheckCircle2, AlertCircle, Info } from "lucide-react-native";
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   pill: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#0F172A", // Sleek dark slate pill with high contrast
@@ -58,6 +60,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   message: {
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "700",

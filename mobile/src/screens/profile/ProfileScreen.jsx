@@ -4,13 +4,15 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Alert,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { useAuthStore } from "../../store/authStore";
+import { showConfirm } from "../../store/dialogStore";
 import {
   Building2,
   Mail,
@@ -34,14 +36,15 @@ export function ProfileScreen({ navigation }) {
     user?.email === "darell@ubsi.ac.id";
 
   const handleLogout = () => {
-    Alert.alert(
-      "Konfirmasi Keluar",
-      "Apakah Anda yakin ingin keluar dari akun ini?",
-      [
-        { text: "Batal", style: "cancel" },
-        { text: "Ya, Keluar", style: "destructive", onPress: logout },
-      ],
-    );
+    showConfirm({
+      title: "Konfirmasi Keluar",
+      message:
+        "Apakah Anda yakin ingin mengakhiri sesi dan keluar dari akun Makarya?",
+      type: "danger",
+      confirmText: "Ya, Keluar",
+      cancelText: "Batal",
+      onConfirm: logout,
+    });
   };
 
   const canGoBack = navigation?.canGoBack && navigation.canGoBack();
@@ -191,7 +194,26 @@ export function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 3. Logout Action */}
+        {/* 3. Makarya Official Brand Footer Card */}
+        <View style={styles.brandCard}>
+          <Image
+            source={require("../../../assets/logo.webp")}
+            style={styles.brandLogoImage}
+            resizeMode="contain"
+          />
+          <Text style={styles.brandAppTitle}>Makarya Mobile v2.0</Text>
+          <Text style={styles.brandAppSubtitle}>
+            Platform Kolaborasi Mahasiswa & Klien UMKM Terverifikasi UBSI
+          </Text>
+          <View style={styles.brandShieldPill}>
+            <ShieldCheck size={13} color={COLORS.success} />
+            <Text style={styles.brandShieldText}>
+              Dilindungi Sistem Escrow Pintar
+            </Text>
+          </View>
+        </View>
+
+        {/* 4. Logout Action */}
         <Button
           title="Keluar dari Akun"
           variant="danger"
@@ -240,23 +262,27 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandCyan,
   },
   avatarInitial: {
+    fontFamily: FONTS.displayBold,
     fontSize: 30,
     fontWeight: "900",
     color: "#FFFFFF",
   },
   userName: {
+    fontFamily: FONTS.displayBold,
     fontSize: 20,
     fontWeight: "900",
     color: COLORS.textDark,
     letterSpacing: -0.4,
   },
   userEmail: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 2,
     marginBottom: 10,
   },
   roleTag: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
@@ -269,6 +295,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   roleText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "800",
   },
@@ -292,11 +319,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   metricValue: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "900",
     color: COLORS.textDark,
   },
   metricLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "600",
@@ -317,6 +346,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   sectionTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
@@ -333,14 +363,17 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.borderSubtle,
   },
   detailTextWrapper: {
+    fontFamily: FONTS.bodyRegular,
     flex: 1,
   },
   detailLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   detailValue: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
@@ -348,5 +381,52 @@ const styles = StyleSheet.create({
   },
   logoutBtn: {
     marginBottom: 20,
+  },
+  brandCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 22,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 16,
+    ...SHADOWS.sm,
+  },
+  brandLogoImage: {
+    width: 140,
+    height: 38,
+    marginBottom: 8,
+  },
+  brandAppTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "900",
+    color: COLORS.textDark,
+  },
+  brandAppSubtitle: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    marginTop: 3,
+    marginBottom: 12,
+    lineHeight: 16,
+  },
+  brandShieldPill: {
+    fontFamily: FONTS.bodyRegular,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: COLORS.successLight,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  brandShieldText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.success,
   },
 });

@@ -7,6 +7,7 @@ import { PostProjectScreen } from "../screens/projects/PostProjectScreen";
 import { ProjectDetailScreen } from "../screens/projects/ProjectDetailScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { SplashScreen } from "../screens/onboarding/SplashScreen";
+import { CustomDialog } from "../components/ui/CustomDialog";
 import { useAuthStore } from "../store/authStore";
 import { COLORS } from "../theme/colors";
 
@@ -25,17 +26,25 @@ export function AppNavigator() {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <>
-          <Stack.Screen name="Main" component={MainTabs} />
-          <Stack.Screen name="PostProject" component={PostProjectScreen} />
-          <Stack.Screen name="ProjectDetail" component={ProjectDetailScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-        </>
-      ) : (
-        <Stack.Screen name="Auth" component={AuthStack} />
-      )}
-    </Stack.Navigator>
+    <View style={{ flex: 1 }}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen name="PostProject" component={PostProjectScreen} />
+            <Stack.Screen
+              name="ProjectDetail"
+              component={ProjectDetailScreen}
+            />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+          </>
+        ) : (
+          <Stack.Screen name="Auth" component={AuthStack} />
+        )}
+      </Stack.Navigator>
+
+      {/* Global Custom Alert & Confirm Dialog */}
+      <CustomDialog />
+    </View>
   );
 }

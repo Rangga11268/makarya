@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { COLORS } from "../../theme/colors";
-import { X } from "lucide-react-native";
+import { FONTS } from "../../theme/fonts";
+import { X, Eye, EyeOff } from "lucide-react-native";
 
 export function Input({
   label,
@@ -9,6 +16,8 @@ export function Input({
   onChangeText,
   placeholder,
   secureTextEntry,
+  isPassword = false,
+  allowClear = true,
   keyboardType = "default",
   multiline = false,
   numberOfLines = 1,
@@ -17,8 +26,12 @@ export function Input({
   icon: Icon,
   style,
   inputStyle,
+  ...rest
 }) {
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isSecure = isPassword ? !showPassword : secureTextEntry;
 
   return (
     <View style={[styles.container, style]}>
@@ -37,28 +50,41 @@ export function Input({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={COLORS.textDim}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={isSecure}
           keyboardType={keyboardType}
           multiline={multiline}
           numberOfLines={numberOfLines}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          style={[
-            styles.input,
-            multiline && styles.multilineInput,
-            inputStyle,
-          ]}
+          style={[styles.input, multiline && styles.multilineInput, inputStyle]}
+          {...rest}
         />
-        {!multiline && value && value.length > 0 && (
+
+        {/* 1. Password Eye / EyeOff Toggle */}
+        {isPassword ? (
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.actionBtn}
+            activeOpacity={0.7}
+          >
+            {showPassword ? (
+              <EyeOff size={18} color={COLORS.textMuted} />
+            ) : (
+              <Eye size={18} color={COLORS.textMuted} />
+            )}
+          </TouchableOpacity>
+        ) : /* 2. Clear Button (Only for non-password fields) */
+        allowClear && !multiline && value && value.length > 0 ? (
           <TouchableOpacity
             onPress={() => onChangeText("")}
             style={styles.clearBtn}
             activeOpacity={0.7}
           >
-            <X size={14} color={COLORS.textMuted} />
+            <X size={13} color={COLORS.textMuted} />
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
+
       {error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : helperText ? (
@@ -74,8 +100,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.textDark,
     marginBottom: 7,
     letterSpacing: 0.1,
@@ -102,6 +129,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textDark,
     fontSize: 14,
     paddingVertical: 12,
@@ -111,6 +139,12 @@ const styles = StyleSheet.create({
     height: 90,
     textAlignVertical: "top",
     paddingVertical: 0,
+  },
+  actionBtn: {
+    padding: 6,
+    marginLeft: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
   clearBtn: {
     width: 20,
@@ -125,6 +159,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.danger,
   },
   errorText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.danger,
     marginTop: 4,
@@ -132,6 +167,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   helperText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 4,

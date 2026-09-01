@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Star, ArrowUpRight } from "lucide-react-native";
 
@@ -206,40 +207,50 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.canvasSoft,
   },
   avatarText: {
+    fontFamily: FONTS.displayBold,
     fontSize: 17,
     fontWeight: "800",
   },
   avatarTextFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   avatarTextStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   info: {
     flex: 1,
   },
   name: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: -0.3,
   },
   prodi: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     marginTop: 2,
   },
   textWhite: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   textDark: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   textMutedFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.75)",
   },
   textMuted: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   ratingBadge: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 8,
@@ -248,39 +259,49 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   ratingBadgeFeatured: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   ratingBadgeStandard: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
   ratingText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "800",
   },
   ratingTextFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   ratingTextStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   roleContainer: {
+    fontFamily: FONTS.bodyRegular,
     marginVertical: 4,
   },
   roleLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   roleLabelFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.7)",
   },
   roleLabelStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   roleValue: {
+    fontFamily: FONTS.displayBold,
     fontSize: 18,
     fontWeight: "900",
     letterSpacing: -0.5,
@@ -293,26 +314,32 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   skillChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
   },
   skillChipFeatured: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: "rgba(255, 255, 255, 0.18)",
   },
   skillChipStandard: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
   skillText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     fontWeight: "600",
   },
   skillTextFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   skillTextStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   bottomRow: {
@@ -330,16 +357,20 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.borderDark,
   },
   statLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     fontWeight: "600",
   },
   statLabelFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.7)",
   },
   statLabelStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   statValue: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "800",
     marginTop: 1,
@@ -359,13 +390,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo, // Brand Indigo pill button inside white card
   },
   actionText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "800",
   },
   actionTextFeatured: {
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.brandIndigo, // Indigo text on white button
   },
   actionTextStandard: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF", // Pure white text on Indigo button
   },
 });

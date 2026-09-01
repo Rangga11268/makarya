@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { useNotificationStore } from "../../store/notificationStore";
 import { useAuthStore } from "../../store/authStore";
 import {
@@ -153,12 +154,14 @@ const styles = StyleSheet.create({
     ...SHADOWS.lg,
   },
   modalHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
   },
   headerTitleGroup: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
@@ -184,11 +187,13 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
   },
   modalTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 18,
     fontWeight: "900",
     color: COLORS.textDark,
   },
   modalSub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 1,
@@ -211,6 +216,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   markAllText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "700",
     color: COLORS.brandIndigo,
@@ -252,21 +258,25 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   itemTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 13,
     fontWeight: "800",
     color: COLORS.textDark,
   },
   itemTime: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   itemMessage: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textSecondary,
     lineHeight: 17,
   },
   activePillDot: {
+    fontFamily: FONTS.bodyRegular,
     width: 7,
     height: 7,
     borderRadius: 3.5,
@@ -279,12 +289,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   emptyTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 15,
     fontWeight: "800",
     color: COLORS.textDark,
     marginTop: 10,
   },
   emptySub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     textAlign: "center",

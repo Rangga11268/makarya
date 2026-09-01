@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Check } from "lucide-react-native";
 
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   timeline: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -153,16 +155,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.borderDark,
   },
   label: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     fontWeight: "600",
     color: COLORS.textMuted,
     marginTop: 6,
   },
   labelCurrent: {
+    fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
     fontWeight: "800",
   },
   labelDone: {
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textDark,
     fontWeight: "700",
   },

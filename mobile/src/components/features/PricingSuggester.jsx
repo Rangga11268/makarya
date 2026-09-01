@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { AlertCircle, CheckCircle2 } from "lucide-react-native";
@@ -71,16 +72,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   header: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   title: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   range: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "800",
     color: COLORS.brandIndigo,
@@ -103,17 +107,20 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.dangerBg,
   },
   bannerTextWarn: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.warning,
     flexShrink: 1,
   },
   bannerTextSuccess: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.success,
     flexShrink: 1,
     fontWeight: "600",
   },
   bannerTextDanger: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.danger,
     flexShrink: 1,

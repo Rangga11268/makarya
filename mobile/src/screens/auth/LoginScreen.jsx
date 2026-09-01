@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
@@ -20,21 +21,18 @@ import {
   GraduationCap,
   UserCheck,
   ArrowRight,
-  Eye,
-  EyeOff,
 } from "lucide-react-native";
 
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuthStore();
   const { showToast } = useToastStore();
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      showToast("Email dan password wajib diisi", "danger");
+      showToast("Email dan kata sandi wajib diisi", "danger");
       return;
     }
 
@@ -49,10 +47,10 @@ export function LoginScreen({ navigation }) {
         );
         return;
       }
-      showToast(`Selamat datang kembali!`, "success");
+      showToast("Selamat datang kembali!", "success");
     } catch (err) {
       showToast(
-        err.response?.data?.detail || "Gagal masuk. Periksa email/password.",
+        err.response?.data?.detail || "Gagal masuk. Periksa email/kata sandi.",
         "danger",
       );
     } finally {
@@ -69,6 +67,7 @@ export function LoginScreen({ navigation }) {
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
     >
       {/* Top Header & Branding */}
       <View style={styles.header}>
@@ -125,30 +124,18 @@ export function LoginScreen({ navigation }) {
           icon={<Mail size={18} color={COLORS.textMuted} />}
         />
 
-        <View style={styles.passwordWrapper}>
-          <Input
-            label="Kata Sandi"
-            placeholder="Masukkan password akun"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-            icon={<Lock size={18} color={COLORS.textMuted} />}
-          />
-          <TouchableOpacity
-            style={styles.eyeBtn}
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff size={18} color={COLORS.textMuted} />
-            ) : (
-              <Eye size={18} color={COLORS.textMuted} />
-            )}
-          </TouchableOpacity>
-        </View>
+        <Input
+          label="Kata Sandi"
+          placeholder="Masukkan kata sandi akun"
+          value={password}
+          onChangeText={setPassword}
+          isPassword={true}
+          icon={<Lock size={18} color={COLORS.textMuted} />}
+        />
 
         <Button
           title="Masuk Sekarang"
-          variant="lime"
+          variant="brand"
           size="lg"
           onPress={handleLogin}
           loading={loading}
@@ -169,7 +156,8 @@ export function LoginScreen({ navigation }) {
       <View style={styles.footerNotice}>
         <ShieldCheck size={16} color={COLORS.success} />
         <Text style={styles.footerText}>
-          Garansi Rekening Bersama (Escrow) & Keamanan Data Resmi Makarya.
+          Garansi Rekening Bersama (Escrow) & Keamanan Data Mahasiswa Kampus
+          UBSI.
         </Text>
       </View>
     </ScrollView>
@@ -179,87 +167,90 @@ export function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: COLORS.bgDark, // Clean light canvas #F8FAFC
+    backgroundColor: COLORS.bgDark,
     paddingHorizontal: 22,
-    paddingTop: 50,
+    paddingTop: 54,
     paddingBottom: 36,
   },
   header: {
+    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
   brandLogo: {
-    width: 150,
-    height: 46,
-    marginBottom: 16,
+    width: 130,
+    height: 38,
+    marginBottom: 14,
     alignSelf: "flex-start",
   },
   welcomeText: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: COLORS.textDark,
-    letterSpacing: -0.6,
+    fontFamily: FONTS.displayBold,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#0F172A",
+    letterSpacing: -0.4,
   },
   subtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 14,
+    color: "#64748B",
     marginTop: 6,
-    lineHeight: 19,
-  },
-  hiddenH1: {
-    display: "none",
+    lineHeight: 21,
   },
   testAccountBox: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderRadius: 20,
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 20,
+    marginBottom: 18,
   },
   testHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 10,
   },
   testTitleRow: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   testTitle: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
     color: COLORS.textDark,
   },
   testPassNotice: {
-    fontSize: 10,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
     color: COLORS.textMuted,
   },
   chipRow: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
   },
   chip: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 6,
     backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 11,
-    paddingVertical: 7,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    elevation: 1,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
   },
   chipText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    fontWeight: "600",
     color: COLORS.textDark,
   },
   formContainer: {
@@ -268,25 +259,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-  },
-  passwordWrapper: {
-    position: "relative",
-  },
-  eyeBtn: {
-    position: "absolute",
-    right: 14,
-    top: 38,
-    padding: 4,
+    marginBottom: 18,
   },
   loginBtn: {
     marginTop: 6,
-    backgroundColor: COLORS.brandIndigo,
   },
   registerRow: {
     flexDirection: "row",
@@ -295,12 +271,14 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   registerText: {
-    fontSize: 12,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
     color: COLORS.textMuted,
   },
   registerLink: {
-    fontSize: 12,
-    fontWeight: "800",
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   footerNotice: {
@@ -315,6 +293,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   footerText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
     flex: 1,

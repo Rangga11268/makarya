@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -455,18 +456,21 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   badgeRow: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
   },
   budgetText: {
+    fontFamily: FONTS.displayBold,
     fontSize: 18,
     fontWeight: "900",
     color: COLORS.brandIndigo,
     letterSpacing: -0.3,
   },
   projectTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 19,
     fontWeight: "900",
     color: COLORS.textDark,
@@ -488,11 +492,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   metaText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   escrowPill: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
@@ -502,6 +508,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   escrowPillText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
     fontWeight: "800",
     color: COLORS.brandCyan,
@@ -516,6 +523,7 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   sectionTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
@@ -524,6 +532,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   descriptionText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 13,
     color: COLORS.textDark,
     lineHeight: 21,
@@ -544,12 +553,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   guaranteeTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 13,
     fontWeight: "800",
     color: "#065F46",
     marginBottom: 2,
   },
   guaranteeDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#047857",
     lineHeight: 16,
@@ -578,11 +589,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   tabText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
   },
   tabTextActive: {
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textDark,
     fontWeight: "800",
   },
@@ -600,10 +613,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
   },
   submissionCard: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
     padding: 16,
@@ -613,11 +628,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   submissionTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 14,
     fontWeight: "800",
     color: COLORS.textDark,
   },
   submissionDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 4,
@@ -639,12 +656,14 @@ const styles = StyleSheet.create({
     ...SHADOWS.lg,
   },
   modalTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 20,
     fontWeight: "900",
     color: COLORS.textDark,
     letterSpacing: -0.4,
   },
   modalSub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 4,

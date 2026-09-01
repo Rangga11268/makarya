@@ -29,11 +29,10 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000,*"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://localhost:8081,http://localhost:19006,http://127.0.0.1:5173,http://127.0.0.1:3000,http://127.0.0.1:8081,http://127.0.0.1:19006"
     @property
     def CORS_ORIGINS(self) -> List[str]:
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip() and origin.strip() != "*"]
 
     # 3rd Party Keys
     MIDTRANS_SERVER_KEY: str = ""

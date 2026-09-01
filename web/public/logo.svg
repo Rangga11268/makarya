@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" fill="none">
+  <defs>
+    <linearGradient id="hIndigoGrad" x1="40" y1="40" x2="320" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#4338CA" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+    <linearGradient id="hCyanGrad" x1="80" y1="120" x2="280" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00F2FE" />
+      <stop offset="60%" stop-color="#4FACFE" />
+      <stop offset="100%" stop-color="#00C0FF" />
+    </linearGradient>
+    <filter id="hShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#1E1B4B" flood-opacity="0.10" />
+    </filter>
+  </defs>
+
+  <!-- Left Icon Mark -->
+  <g transform="translate(10, 0) scale(0.65)">
+    <!-- Outer M Arch -->
+    <path d="M 88 380 L 88 160 C 88 118, 140 100, 172 135 L 256 226 L 340 135 C 372 100, 424 118, 424 160 L 424 380" 
+          stroke="url(#hIndigoGrad)" 
+          stroke-width="48" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#hShadow)" />
+
+    <!-- Inner Infinity Loop -->
+    <path d="M 256 280 C 200 210, 120 210, 120 280 C 120 350, 200 350, 256 280 C 312 210, 392 210, 392 280 C 392 350, 312 350, 256 280 Z" 
+          stroke="url(#hCyanGrad)" 
+          stroke-width="42" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <!-- Bottom Arch -->
+    <path d="M 180 300 C 205 350, 307 350, 332 300" 
+          stroke="url(#hIndigoGrad)" 
+          stroke-width="48" 
+          stroke-linecap="round" />
+  </g>
+
+  <!-- Right Typography: Makarya -->
+  <text x="360" y="210" 
+        font-family="System-UI, -apple-system, 'Satoshi', 'General Sans', sans-serif" 
+        font-size="142" 
+        font-weight="900" 
+        letter-spacing="-3" 
+        fill="#0F172A">Makarya</text>
+        
+  <!-- Subtle Dot Accent -->
+  <circle cx="940" cy="200" r="12" fill="#4F46E5" />
+</svg>

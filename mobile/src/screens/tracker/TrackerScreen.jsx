@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { Badge } from "../../components/ui/Badge";
@@ -258,6 +259,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   filterChip: {
+    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 999,
@@ -267,15 +269,18 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   filterChipActive: {
+    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   filterText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
     fontWeight: "700",
     color: COLORS.textMuted,
   },
   filterTextActive: {
+    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   listContent: {
@@ -292,11 +297,13 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   cardHeader: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   badgeRow: {
+    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -304,11 +311,13 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   dateText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   cardTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 15,
     fontWeight: "800",
     color: COLORS.textDark,
@@ -322,16 +331,19 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   offerLabel: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     fontWeight: "600",
   },
   cardBudget: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "800",
     color: COLORS.brandIndigo,
   },
   offerDuration: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
     fontWeight: "600",
@@ -345,6 +357,7 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.brandIndigo,
   },
   coverLetterLabel: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
     fontWeight: "700",
     color: COLORS.textMuted,
@@ -352,6 +365,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   coverLetterText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textDark,
     fontStyle: "italic",
@@ -370,12 +384,14 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   emptyTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "800",
     color: COLORS.textDark,
     marginTop: 12,
   },
   emptyDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     textAlign: "center",
