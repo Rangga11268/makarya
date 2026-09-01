@@ -4,9 +4,11 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  FlatList,
   TouchableOpacity,
   RefreshControl,
   Image,
+  Dimensions,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
@@ -39,10 +41,11 @@ import {
   Star,
   CheckCircle2,
   Clock,
-  MoreVertical,
-  Activity,
   Award,
 } from "lucide-react-native";
+
+const { width } = Dimensions.get("window");
+const CARD_WIDTH = Math.min(width * 0.82, 330);
 
 export function HomeScreen({ navigation }) {
   const { user } = useAuthStore();
@@ -377,7 +380,7 @@ export function HomeScreen({ navigation }) {
                   : `Kategori ${CATEGORIES.find((c) => c.id === selectedCategory)?.label}`}
               </Text>
               <Text style={styles.sectionSubtitle}>
-                Pilih proyek UMKM dan ajukan penawaran terbaikmu
+                Geser ke samping untuk melihat proyek pilihan
               </Text>
             </View>
 
@@ -386,7 +389,7 @@ export function HomeScreen({ navigation }) {
               style={styles.seeAllBtn}
               activeOpacity={0.7}
             >
-              <Text style={styles.seeAllText}>Semua</Text>
+              <Text style={styles.seeAllText}>Lihat Semua</Text>
               <ArrowRight size={14} color={COLORS.brandIndigo} />
             </TouchableOpacity>
           </View>
@@ -400,18 +403,71 @@ export function HomeScreen({ navigation }) {
               </Text>
             </View>
           ) : (
-            filteredBrowseProjects.map((p) => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                onPress={() =>
-                  navigation.navigate("ProjectDetail", {
-                    id: p.id,
-                    projectId: p.id,
-                  })
-                }
-              />
-            ))
+            <>
+              {/* 1. Horizontal Snap Carousel */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalProjectList}
+                snapToInterval={CARD_WIDTH + 12}
+                decelerationRate="fast"
+              >
+                {filteredBrowseProjects.slice(0, 5).map((p) => (
+                  <View key={p.id} style={{ width: CARD_WIDTH, marginRight: 12 }}>
+                    <ProjectCard
+                      project={p}
+                      onPress={() =>
+                        navigation.navigate("ProjectDetail", {
+                          id: p.id,
+                          projectId: p.id,
+                        })
+                      }
+                    />
+                  </View>
+                ))}
+
+                {/* Carousel End-Cap Action Card */}
+                <TouchableOpacity
+                  style={[styles.carouselEndCapCard, { width: CARD_WIDTH * 0.75 }]}
+                  onPress={() => navigation.navigate("ProjectsTab")}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.endCapIconCircle}>
+                    <Compass size={24} color={COLORS.brandIndigo} />
+                  </View>
+                  <Text style={styles.endCapTitle}>Jelajahi Semua Proyek</Text>
+                  <Text style={styles.endCapSubtitle}>
+                    Buka katalog lengkap dengan filter keahlian & pagu anggaran
+                  </Text>
+                  <View style={styles.endCapBtn}>
+                    <Text style={styles.endCapBtnText}>Buka Eksplor</Text>
+                    <ArrowRight size={14} color="#FFFFFF" />
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
+
+              {/* 2. Quick Search Banner */}
+              <TouchableOpacity
+                style={styles.exploreBanner}
+                onPress={() => navigation.navigate("ProjectsTab")}
+                activeOpacity={0.88}
+              >
+                <View style={styles.exploreBannerLeft}>
+                  <View style={styles.exploreBannerIcon}>
+                    <Search size={18} color={COLORS.brandIndigo} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.exploreBannerTitle}>
+                      Cari Kebutuhan Spesifik?
+                    </Text>
+                    <Text style={styles.exploreBannerSub}>
+                      Gunakan filter kategori & kata kunci di tab Eksplor
+                    </Text>
+                  </View>
+                </View>
+                <ArrowRight size={18} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </>
           )}
         </View>
       ) : (
@@ -844,5 +900,92 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 4,
     textAlign: "center",
+  },
+  horizontalProjectList: {
+    paddingVertical: 4,
+    paddingRight: 8,
+  },
+  carouselEndCapCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+    ...SHADOWS.sm,
+  },
+  endCapIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  endCapTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: COLORS.textDark,
+    textAlign: "center",
+  },
+  endCapSubtitle: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    marginTop: 4,
+    marginBottom: 16,
+    lineHeight: 16,
+  },
+  endCapBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: 999,
+  },
+  endCapBtnText: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: "#FFFFFF",
+  },
+  exploreBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginTop: 14,
+    ...SHADOWS.sm,
+  },
+  exploreBannerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flex: 1,
+  },
+  exploreBannerIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  exploreBannerTitle: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: COLORS.textDark,
+  },
+  exploreBannerSub: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
   },
 });
