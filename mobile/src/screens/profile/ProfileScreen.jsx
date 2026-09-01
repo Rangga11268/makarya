@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
@@ -33,7 +40,7 @@ export function ProfileScreen({ navigation }) {
       [
         { text: "Batal", style: "cancel" },
         { text: "Ya, Keluar", style: "destructive", onPress: logout },
-      ]
+      ],
     );
   };
 
@@ -86,7 +93,9 @@ export function ProfileScreen({ navigation }) {
             <Text
               style={[
                 styles.roleText,
-                isMahasiswa ? { color: COLORS.brandIndigo } : { color: COLORS.brandCyan },
+                isMahasiswa
+                  ? { color: COLORS.brandIndigo }
+                  : { color: COLORS.brandCyan },
               ]}
             >
               {isMahasiswa
@@ -108,9 +117,7 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.metricDivider} />
 
             <View style={styles.metricItem}>
-              <Text style={styles.metricValue}>
-                {isMahasiswa ? "14" : "8"}
-              </Text>
+              <Text style={styles.metricValue}>{isMahasiswa ? "14" : "8"}</Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
               </Text>
@@ -158,7 +165,9 @@ export function ProfileScreen({ navigation }) {
               <Building2 size={16} color={COLORS.brandIndigo} />
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Nama Usaha</Text>
-                <Text style={styles.detailValue}>{user?.nama_usaha || "-"}</Text>
+                <Text style={styles.detailValue}>
+                  {user?.nama_usaha || "-"}
+                </Text>
               </View>
             </View>
           )}

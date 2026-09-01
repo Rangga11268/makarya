@@ -2,7 +2,12 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 
-export function CategoryChip({ category, isSelected, onPress, variant = "default" }) {
+export function CategoryChip({
+  category,
+  isSelected,
+  onPress,
+  variant = "default",
+}) {
   const IconComp = category.Icon;
 
   return (

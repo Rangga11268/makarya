@@ -218,8 +218,8 @@ export function ProjectListScreen({ navigation }) {
                 {searchQuery
                   ? "Coba gunakan kata kunci pencarian atau filter kategori yang lain."
                   : isMahasiswa
-                  ? "Proyek UMKM baru akan segera muncul di sini."
-                  : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
+                    ? "Proyek UMKM baru akan segera muncul di sini."
+                    : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
               </Text>
               {!isMahasiswa && (
                 <Button

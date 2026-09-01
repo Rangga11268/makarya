@@ -70,9 +70,7 @@ export function HomeScreen({ navigation }) {
           projectApi
             .browse({ limit: 6 })
             .catch(() => ({ data: { items: [] } })),
-          proposalApi
-            .getMyProposals()
-            .catch(() => ({ data: [] })),
+          proposalApi.getMyProposals().catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
         const pItems = Array.isArray(browseRes.data)
@@ -85,9 +83,7 @@ export function HomeScreen({ navigation }) {
           walletApi
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
-          projectApi
-            .getMyProjects()
-            .catch(() => ({ data: [] })),
+          projectApi.getMyProjects().catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
         setMyProjects(Array.isArray(myProjRes.data) ? myProjRes.data : []);
@@ -168,7 +164,11 @@ export function HomeScreen({ navigation }) {
               </Text>
             </View>
             <View style={styles.verifiedCheckBadge}>
-              <CheckCircle2 size={11} color="#FFFFFF" fill={COLORS.brandIndigo} />
+              <CheckCircle2
+                size={11}
+                color="#FFFFFF"
+                fill={COLORS.brandIndigo}
+              />
             </View>
           </View>
 
@@ -330,7 +330,9 @@ export function HomeScreen({ navigation }) {
                         : styles.statusTextPending,
                     ]}
                   >
-                    {item.status === "ACCEPTED" ? "Sedang Dikerjakan" : "Review Proposal"}
+                    {item.status === "ACCEPTED"
+                      ? "Sedang Dikerjakan"
+                      : "Review Proposal"}
                   </Text>
                 </View>
 
@@ -417,7 +419,9 @@ export function HomeScreen({ navigation }) {
         <View style={styles.feedSection}>
           <View style={styles.sectionHeaderRow}>
             <View>
-              <Text style={styles.sectionTitle}>Talenta Mahasiswa Unggulan</Text>
+              <Text style={styles.sectionTitle}>
+                Talenta Mahasiswa Unggulan
+              </Text>
               <Text style={styles.sectionSubtitle}>
                 Mahasiswa terverifikasi dengan portofolio & ulasan terbaik
               </Text>

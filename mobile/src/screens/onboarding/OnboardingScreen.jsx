@@ -20,6 +20,7 @@ import {
   Star,
   Layers,
   GraduationCap,
+  TrendingUp,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -91,21 +92,27 @@ export function OnboardingScreen({ navigation, onComplete }) {
         </View>
       </View>
 
-      {/* Hero Visual Presentation (Matching Reference Mockup Phone 1) */}
+      {/* Hero Visual Presentation (High-Contrast Rich Cards) */}
       <View style={styles.visualContainer}>
+        {/* Slide 1: Earnings Bento Card (Royal Indigo) */}
         {activeSlide.visual === "earnings" && (
-          <View style={styles.mockupFloatingCard}>
+          <View style={[styles.mockupFloatingCard, styles.mockupCardIndigo]}>
             <View style={styles.mockupInnerHeader}>
-              <Text style={styles.mockupEarningsTitle}>Saldo Honor</Text>
-              <Text style={styles.mockupDetails}>Rincian</Text>
+              <Text style={styles.mockupTagIndigo}>Saldo Honor Mahasiswa</Text>
+              <Text style={styles.mockupDetailsIndigo}>Rincian</Text>
             </View>
 
             <Text style={styles.mockupAmount}>Rp 850.000</Text>
-            <Text style={styles.mockupTrend}>+12% dari bulan lalu</Text>
+            <View style={styles.trendRow}>
+              <TrendingUp size={13} color="#93C5FD" />
+              <Text style={styles.mockupTrendIndigo}>+12% dari bulan lalu</Text>
+            </View>
 
-            <View style={styles.mockupMiniPill}>
-              <Wallet size={12} color="#FFFFFF" />
-              <Text style={styles.mockupMiniText}>Target: Rp 1.000.000</Text>
+            <View style={styles.mockupMiniPillIndigo}>
+              <Wallet size={13} color="#FFFFFF" />
+              <Text style={styles.mockupMiniTextIndigo}>
+                Target: Rp 1.000.000 / Bulan
+              </Text>
             </View>
 
             <View style={styles.mockupDotsRow}>
@@ -116,46 +123,60 @@ export function OnboardingScreen({ navigation, onComplete }) {
           </View>
         )}
 
+        {/* Slide 2: Escrow Protection Card (Deep Emerald Green) */}
         {activeSlide.visual === "escrow" && (
           <View style={[styles.mockupFloatingCard, styles.mockupCardEmerald]}>
             <View style={styles.mockupInnerHeader}>
               <View style={styles.escrowIconBadge}>
-                <ShieldCheck size={18} color="#065F46" />
+                <ShieldCheck size={16} color="#A7F3D0" />
               </View>
-              <Text style={styles.escrowStatusTitle}>
-                Rekening Bersama Aktif
+              <Text style={styles.mockupTagEmerald}>Proteksi Transaksi</Text>
+            </View>
+
+            <Text style={styles.mockupAmount}>100% Rekening Bersama</Text>
+            <Text style={styles.mockupTrendEmerald}>
+              Dana terkunci aman & anti-gagal bayar
+            </Text>
+
+            <View style={styles.mockupMiniPillEmerald}>
+              <CheckCircle2 size={13} color="#6EE7B7" />
+              <Text style={styles.mockupMiniTextEmerald}>
+                Garansi Resmi Kampus & Escrow
               </Text>
             </View>
 
-            <Text style={styles.mockupAmount}>100% Proteksi</Text>
-            <Text style={styles.mockupTrend}>Dana aman & anti gagal bayar</Text>
-
-            <View style={[styles.mockupMiniPill, styles.mockupMiniPillEmerald]}>
-              <CheckCircle2 size={12} color="#065F46" />
-              <Text style={styles.mockupMiniTextEmerald}>
-                Terverifikasi Lembaga Kampus
-              </Text>
+            <View style={styles.mockupDotsRow}>
+              <View style={styles.mockupDot} />
+              <View style={[styles.mockupDot, styles.mockupDotActive]} />
+              <View style={styles.mockupDot} />
             </View>
           </View>
         )}
 
+        {/* Slide 3: Live Milestone Collaboration Card (Midnight Sky) */}
         {activeSlide.visual === "collaboration" && (
           <View style={[styles.mockupFloatingCard, styles.mockupCardSky]}>
             <View style={styles.mockupInnerHeader}>
-              <Compass size={18} color="#0369A1" />
-              <Text style={styles.mockupDetailsSky}>Live Milestone</Text>
+              <Compass size={16} color="#7DD3FC" />
+              <Text style={styles.mockupTagSky}>Live Milestone Tracker</Text>
             </View>
 
             <Text style={styles.mockupAmount}>Pengerjaan Cepat</Text>
-            <Text style={styles.mockupTrend}>
-              Review & serah terima otomatis
+            <Text style={styles.mockupTrendSky}>
+              Review & serah terima proyek otomatis
             </Text>
 
-            <View style={[styles.mockupMiniPill, styles.mockupMiniPillSky]}>
-              <Star size={12} color="#F59E0B" fill="#F59E0B" />
+            <View style={styles.mockupMiniPillSky}>
+              <Star size={13} color="#F59E0B" fill="#F59E0B" />
               <Text style={styles.mockupMiniTextSky}>
-                Rating 5.0 Kepuasan Klien
+                Rating 5.0 Kepuasan Klien UMKM
               </Text>
+            </View>
+
+            <View style={styles.mockupDotsRow}>
+              <View style={styles.mockupDot} />
+              <View style={styles.mockupDot} />
+              <View style={[styles.mockupDot, styles.mockupDotActive]} />
             </View>
           </View>
         )}
@@ -243,97 +264,131 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   mockupFloatingCard: {
-    width: width * 0.76,
-    backgroundColor: "#2563EB", // Royal Blue
+    width: width * 0.78,
     borderRadius: 24,
-    padding: 20,
+    padding: 22,
     ...SHADOWS.lg,
   },
+  mockupCardIndigo: {
+    backgroundColor: "#1E1B4B", // Deep Royal Indigo
+  },
   mockupCardEmerald: {
-    backgroundColor: "#ECFDF5",
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
+    backgroundColor: "#064E3B", // Deep Emerald
   },
   mockupCardSky: {
-    backgroundColor: "#F0F9FF",
-    borderWidth: 1,
-    borderColor: "#BAE6FD",
+    backgroundColor: "#0F172A", // Deep Midnight Slate
   },
   mockupInnerHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
   },
-  mockupEarningsTitle: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "rgba(255, 255, 255, 0.8)",
-  },
-  mockupDetails: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#93C5FD",
-  },
-  mockupDetailsSky: {
+  mockupTagIndigo: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#0284C7",
+    color: "#C7D2FE",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+  mockupDetailsIndigo: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#93C5FD",
+  },
+  mockupTagEmerald: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#A7F3D0",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+  mockupTagSky: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#BAE6FD",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
   escrowIconBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#D1FAE5",
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: "rgba(167, 243, 208, 0.2)",
     alignItems: "center",
     justifyContent: "center",
   },
-  escrowStatusTitle: {
-    fontSize: 11,
-    fontWeight: "800",
-    color: "#065F46",
-  },
   mockupAmount: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "900",
-    color: "#FFFFFF",
-    marginTop: 10,
+    color: "#FFFFFF", // Crisp 100% white on dark background
     letterSpacing: -0.5,
+    marginVertical: 4,
   },
-  mockupTrend: {
+  trendRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 12,
+  },
+  mockupTrendIndigo: {
     fontSize: 11,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginTop: 2,
-    marginBottom: 14,
+    color: "#CBD5E1",
+    fontWeight: "600",
   },
-  mockupMiniPill: {
+  mockupTrendEmerald: {
+    fontSize: 11,
+    color: "#D1FAE5",
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  mockupTrendSky: {
+    fontSize: 11,
+    color: "#CBD5E1",
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  mockupMiniPillIndigo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.16)",
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
   },
   mockupMiniPillEmerald: {
-    backgroundColor: "#D1FAE5",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
   mockupMiniPillSky: {
-    backgroundColor: "#E0F2FE",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
-  mockupMiniText: {
+  mockupMiniTextIndigo: {
     fontSize: 11,
     fontWeight: "700",
     color: "#FFFFFF",
   },
   mockupMiniTextEmerald: {
     fontSize: 11,
-    fontWeight: "800",
-    color: "#065F46",
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
   mockupMiniTextSky: {
     fontSize: 11,
-    fontWeight: "800",
-    color: "#0369A1",
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
   mockupDotsRow: {
     flexDirection: "row",

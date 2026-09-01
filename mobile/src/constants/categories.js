@@ -12,10 +12,25 @@ export const CATEGORIES = [
   { id: "ALL", code: "ALL", label: "Semua", Icon: Sparkles },
   { id: "DESIGN", code: "DESIGN", label: "Desain & Logo", Icon: Palette },
   { id: "UIUX", code: "UIUX", label: "UI/UX App", Icon: Smartphone },
-  { id: "PEMROGRAMAN", code: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
+  {
+    id: "PEMROGRAMAN",
+    code: "PEMROGRAMAN",
+    label: "Web & Coding",
+    Icon: Code2,
+  },
   { id: "VIDEO", code: "VIDEO", label: "Video Reels", Icon: Video },
-  { id: "COPYWRITING", code: "COPYWRITING", label: "Copywriting", Icon: PenTool },
-  { id: "ADMIN_DATA", code: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
+  {
+    id: "COPYWRITING",
+    code: "COPYWRITING",
+    label: "Copywriting",
+    Icon: PenTool,
+  },
+  {
+    id: "ADMIN_DATA",
+    code: "ADMIN_DATA",
+    label: "Admin Data",
+    Icon: FileSpreadsheet,
+  },
 ];
 
 export const getCategorySkills = (kategori) => {

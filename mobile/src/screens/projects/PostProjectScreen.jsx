@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -14,10 +9,7 @@ import { CategoryChip } from "../../components/ui/CategoryChip";
 import { CATEGORIES } from "../../constants/categories";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import {
-  ShieldCheck,
-  Calendar,
-} from "lucide-react-native";
+import { ShieldCheck, Calendar } from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
   const [judul, setJudul] = useState("");
