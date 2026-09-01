@@ -11,6 +11,8 @@ import {
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
+import { CategoryChip } from "../../components/ui/CategoryChip";
+import { CATEGORIES } from "../../constants/categories";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi, walletApi, proposalApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -98,16 +100,6 @@ export function HomeScreen({ navigation }) {
   useEffect(() => {
     loadData();
   }, [user?.role]);
-
-  const categories = [
-    { id: "ALL", label: "Semua", Icon: Sparkles },
-    { id: "DESIGN", label: "Desain & Logo", Icon: Palette },
-    { id: "UIUX", label: "UI/UX App", Icon: Smartphone },
-    { id: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
-    { id: "VIDEO", label: "Video Reels", Icon: Video },
-    { id: "COPYWRITING", label: "Copywriting", Icon: PenTool },
-    { id: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
-  ];
 
   const featuredTalents = [
     {
@@ -361,34 +353,14 @@ export function HomeScreen({ navigation }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoryList}
         >
-          {categories.map((c) => {
-            const isSelected = selectedCategory === c.id;
-            const IconComp = c.Icon;
-            return (
-              <TouchableOpacity
-                key={c.id}
-                onPress={() => setSelectedCategory(c.id)}
-                style={[
-                  styles.categoryChip,
-                  isSelected && styles.categoryChipActive,
-                ]}
-                activeOpacity={0.75}
-              >
-                <IconComp
-                  size={14}
-                  color={isSelected ? "#FFFFFF" : COLORS.brandIndigo}
-                />
-                <Text
-                  style={[
-                    styles.categoryText,
-                    isSelected && styles.categoryTextActive,
-                  ]}
-                >
-                  {c.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          {CATEGORIES.map((c) => (
+            <CategoryChip
+              key={c.id}
+              category={c}
+              isSelected={selectedCategory === c.id}
+              onPress={() => setSelectedCategory(c.id)}
+            />
+          ))}
         </ScrollView>
       </View>
 
@@ -400,7 +372,7 @@ export function HomeScreen({ navigation }) {
               <Text style={styles.sectionTitle}>
                 {selectedCategory === "ALL"
                   ? "Rekomendasi Proyek Terbaru"
-                  : `Kategori ${categories.find((c) => c.id === selectedCategory)?.label}`}
+                  : `Kategori ${CATEGORIES.find((c) => c.id === selectedCategory)?.label}`}
               </Text>
               <Text style={styles.sectionSubtitle}>
                 Pilih proyek UMKM dan ajukan penawaran terbaikmu

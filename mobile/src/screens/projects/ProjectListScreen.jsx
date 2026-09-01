@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { ProjectCard } from "../../components/features/ProjectCard";
+import { CategoryChip } from "../../components/ui/CategoryChip";
+import { CATEGORIES } from "../../constants/categories";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
@@ -20,13 +22,6 @@ import {
   X,
   SlidersHorizontal,
   Bell,
-  Sparkles,
-  Palette,
-  Smartphone,
-  Code2,
-  Video,
-  PenTool,
-  FileSpreadsheet,
 } from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
@@ -68,16 +63,6 @@ export function ProjectListScreen({ navigation }) {
   useEffect(() => {
     loadProjects();
   }, [searchQuery, user?.role]);
-
-  const categories = [
-    { id: "ALL", label: "Semua", Icon: Sparkles },
-    { id: "DESIGN", label: "Desain & Logo", Icon: Palette },
-    { id: "UIUX", label: "UI/UX App", Icon: Smartphone },
-    { id: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
-    { id: "VIDEO", label: "Video Reels", Icon: Video },
-    { id: "COPYWRITING", label: "Copywriting", Icon: PenTool },
-    { id: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
-  ];
 
   const segmentedTabs = [
     { id: "MATCH", label: "Paling Cocok" },
@@ -193,35 +178,16 @@ export function ProjectListScreen({ navigation }) {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={categories}
+          data={CATEGORIES}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => {
-            const selected = categoryFilter === item.id;
-            const IconComp = item.Icon;
-            return (
-              <TouchableOpacity
-                onPress={() => setCategoryFilter(item.id)}
-                style={[
-                  styles.categoryChip,
-                  selected && styles.categoryChipActive,
-                ]}
-                activeOpacity={0.75}
-              >
-                <IconComp
-                  size={13}
-                  color={selected ? COLORS.brandIndigo : COLORS.textMuted}
-                />
-                <Text
-                  style={[
-                    styles.categoryText,
-                    selected && styles.categoryTextActive,
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
+          renderItem={({ item }) => (
+            <CategoryChip
+              category={item}
+              isSelected={categoryFilter === item.id}
+              onPress={() => setCategoryFilter(item.id)}
+              variant="soft"
+            />
+          )}
           contentContainerStyle={styles.categoryList}
         />
       </View>

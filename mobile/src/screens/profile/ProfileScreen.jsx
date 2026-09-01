@@ -17,7 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react-native";
 
-export function ProfileScreen() {
+export function ProfileScreen({ navigation }) {
   const { user, logout } = useAuthStore();
 
   const isMahasiswa =
@@ -37,6 +37,8 @@ export function ProfileScreen() {
     );
   };
 
+  const canGoBack = navigation?.canGoBack && navigation.canGoBack();
+
   return (
     <View style={styles.container}>
       <Header
@@ -46,6 +48,7 @@ export function ProfileScreen() {
             ? "Identitas talenta & portofolio kampus terverifikasi"
             : "Informasi bisnis & manajemen akun UMKM"
         }
+        onBack={canGoBack ? () => navigation.goBack() : undefined}
       />
 
       <ScrollView

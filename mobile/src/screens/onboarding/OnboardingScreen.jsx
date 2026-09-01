@@ -122,13 +122,13 @@ export function OnboardingScreen({ navigation, onComplete }) {
               <View style={styles.escrowIconBadge}>
                 <ShieldCheck size={18} color="#065F46" />
               </View>
-              <Text style={styles.escrowStatusTitle}>Rekening Bersama Aktif</Text>
+              <Text style={styles.escrowStatusTitle}>
+                Rekening Bersama Aktif
+              </Text>
             </View>
 
             <Text style={styles.mockupAmount}>100% Proteksi</Text>
-            <Text style={styles.mockupTrend}>
-              Dana aman & anti gagal bayar
-            </Text>
+            <Text style={styles.mockupTrend}>Dana aman & anti gagal bayar</Text>
 
             <View style={[styles.mockupMiniPill, styles.mockupMiniPillEmerald]}>
               <CheckCircle2 size={12} color="#065F46" />
@@ -191,7 +191,9 @@ export function OnboardingScreen({ navigation, onComplete }) {
           </TouchableOpacity>
 
           <Button
-            title={currentSlide === slides.length - 1 ? "Mulai Sekarang" : "Lanjut"}
+            title={
+              currentSlide === slides.length - 1 ? "Mulai Sekarang" : "Lanjut"
+            }
             variant="brand"
             size="md"
             iconRight={<ArrowRight size={16} color="#FFFFFF" />}

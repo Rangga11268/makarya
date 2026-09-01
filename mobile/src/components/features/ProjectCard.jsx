@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Badge } from "../ui/Badge";
+import { getCategorySkills } from "../../constants/categories";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -32,26 +33,7 @@ export function ProjectCard({ project, onPress }) {
     }
   };
 
-  const getSkillsFromCategory = (kategori) => {
-    switch (kategori) {
-      case "DESIGN":
-        return ["Desain Grafis", "Logo & Brand", "Packaging"];
-      case "UIUX":
-        return ["UI/UX Design", "Figma App", "Mobile UI"];
-      case "PEMROGRAMAN":
-        return ["Web Development", "React & Node", "FastAPI"];
-      case "VIDEO":
-        return ["Video Editing", "Reels & TikTok", "Animasi"];
-      case "COPYWRITING":
-        return ["Copywriting", "Artikel SEO", "Social Caption"];
-      case "ADMIN_DATA":
-        return ["Admin Data", "Excel Spreadsheets", "Data Entry"];
-      default:
-        return ["Digital UMKM", "Freelance"];
-    }
-  };
-
-  const skillPills = getSkillsFromCategory(project.kategori);
+  const skillPills = getCategorySkills(project.kategori);
 
   return (
     <TouchableOpacity

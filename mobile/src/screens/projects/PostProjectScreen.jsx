@@ -4,25 +4,19 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Header } from "../../components/ui/Header";
 import { PricingSuggester } from "../../components/features/PricingSuggester";
+import { CategoryChip } from "../../components/ui/CategoryChip";
+import { CATEGORIES } from "../../constants/categories";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import {
   ShieldCheck,
   Calendar,
-  Sparkles,
-  Palette,
-  Smartphone,
-  Code2,
-  Video,
-  PenTool,
-  FileSpreadsheet,
 } from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
@@ -35,14 +29,7 @@ export function PostProjectScreen({ navigation }) {
 
   const { showToast } = useToastStore();
 
-  const categories = [
-    { code: "DESIGN", label: "Desain & Logo", Icon: Palette },
-    { code: "UIUX", label: "UI/UX App", Icon: Smartphone },
-    { code: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
-    { code: "VIDEO", label: "Video Reels", Icon: Video },
-    { code: "COPYWRITING", label: "Copywriting", Icon: PenTool },
-    { code: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
-  ];
+  const selectableCategories = CATEGORIES.filter((c) => c.id !== "ALL");
 
   const handlePost = async () => {
     if (!judul.trim() || !deskripsi.trim() || !budgetMax) {
@@ -99,34 +86,14 @@ export function PostProjectScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             style={styles.categoriesRow}
           >
-            {categories.map((c) => {
-              const selected = kategori === c.code;
-              const IconComp = c.Icon;
-              return (
-                <TouchableOpacity
-                  key={c.code}
-                  onPress={() => setKategori(c.code)}
-                  style={[
-                    styles.categoryChip,
-                    selected && styles.categoryChipActive,
-                  ]}
-                  activeOpacity={0.75}
-                >
-                  <IconComp
-                    size={14}
-                    color={selected ? "#FFFFFF" : COLORS.brandIndigo}
-                  />
-                  <Text
-                    style={[
-                      styles.categoryText,
-                      selected && styles.categoryTextActive,
-                    ]}
-                  >
-                    {c.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+            {selectableCategories.map((c) => (
+              <CategoryChip
+                key={c.code}
+                category={c}
+                isSelected={kategori === c.code}
+                onPress={() => setKategori(c.code)}
+              />
+            ))}
           </ScrollView>
         </View>
 
