@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AuthStack } from "./AuthStack";
 import { MainTabs } from "./MainTabs";
 import { PostProjectScreen } from "../screens/projects/PostProjectScreen";
 import { ProjectDetailScreen } from "../screens/projects/ProjectDetailScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
+import { SplashScreen } from "../screens/onboarding/SplashScreen";
 import { useAuthStore } from "../store/authStore";
 import { COLORS } from "../theme/colors";
 
@@ -13,17 +14,14 @@ const Stack = createStackNavigator();
 
 export function AppNavigator() {
   const { isAuthenticated, loading, initializeAuth } = useAuthStore();
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     initializeAuth();
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.splash}>
-        <ActivityIndicator size="large" color={COLORS.brandIndigo} />
-      </View>
-    );
+  if (loading || showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
 
   return (
@@ -41,12 +39,3 @@ export function AppNavigator() {
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  splash: {
-    flex: 1,
-    backgroundColor: COLORS.bgDark,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
