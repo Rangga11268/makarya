@@ -7,7 +7,17 @@ import { Header } from "../../components/ui/Header";
 import { PricingSuggester } from "../../components/features/PricingSuggester";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import { ShieldCheck, Calendar, Sparkles } from "lucide-react-native";
+import {
+  ShieldCheck,
+  Calendar,
+  Sparkles,
+  Palette,
+  Smartphone,
+  Code2,
+  Video,
+  PenTool,
+  FileSpreadsheet,
+} from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
   const [judul, setJudul] = useState("");
@@ -20,12 +30,12 @@ export function PostProjectScreen({ navigation }) {
   const { showToast } = useToastStore();
 
   const categories = [
-    { code: "DESIGN", label: "🎨 Desain & Logo" },
-    { code: "UIUX", label: "📱 UI/UX App" },
-    { code: "PEMROGRAMAN", label: "💻 Web & Coding" },
-    { code: "VIDEO", label: "🎬 Video Reels" },
-    { code: "COPYWRITING", label: "✍️ Copywriting" },
-    { code: "ADMIN_DATA", label: "📊 Admin Data" },
+    { code: "DESIGN", label: "Desain & Logo", Icon: Palette },
+    { code: "UIUX", label: "UI/UX App", Icon: Smartphone },
+    { code: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
+    { code: "VIDEO", label: "Video Reels", Icon: Video },
+    { code: "COPYWRITING", label: "Copywriting", Icon: PenTool },
+    { code: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
   ];
 
   const handlePost = async () => {
@@ -82,6 +92,7 @@ export function PostProjectScreen({ navigation }) {
           >
             {categories.map((c) => {
               const selected = kategori === c.code;
+              const IconComp = c.Icon;
               return (
                 <TouchableOpacity
                   key={c.code}
@@ -92,6 +103,10 @@ export function PostProjectScreen({ navigation }) {
                   ]}
                   activeOpacity={0.75}
                 >
+                  <IconComp
+                    size={14}
+                    color={selected ? "#FFFFFF" : COLORS.brandIndigo}
+                  />
                   <Text
                     style={[
                       styles.categoryText,

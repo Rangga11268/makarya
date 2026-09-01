@@ -28,6 +28,13 @@ import {
   Layers,
   Banknote,
   Search,
+  Palette,
+  Smartphone,
+  Code2,
+  Video,
+  PenTool,
+  FileSpreadsheet,
+  Lock,
 } from "lucide-react-native";
 
 export function HomeScreen({ navigation }) {
@@ -83,13 +90,13 @@ export function HomeScreen({ navigation }) {
   }, [user?.role]);
 
   const categories = [
-    { id: "ALL", label: "Semua", icon: "✨" },
-    { id: "DESIGN", label: "Desain & Logo", icon: "🎨" },
-    { id: "UIUX", label: "UI/UX App", icon: "📱" },
-    { id: "PEMROGRAMAN", label: "Web & Coding", icon: "💻" },
-    { id: "VIDEO", label: "Video Reels", icon: "🎬" },
-    { id: "COPYWRITING", label: "Copywriting", icon: "✍️" },
-    { id: "ADMIN_DATA", label: "Admin & Data", icon: "📊" },
+    { id: "ALL", label: "Semua", Icon: Sparkles },
+    { id: "DESIGN", label: "Desain & Logo", Icon: Palette },
+    { id: "UIUX", label: "UI/UX App", Icon: Smartphone },
+    { id: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
+    { id: "VIDEO", label: "Video Reels", Icon: Video },
+    { id: "COPYWRITING", label: "Copywriting", Icon: PenTool },
+    { id: "ADMIN_DATA", label: "Admin & Data", Icon: FileSpreadsheet },
   ];
 
   const featuredTalents = [
@@ -221,8 +228,9 @@ export function HomeScreen({ navigation }) {
 
         {wallet?.saldo_escrow > 0 && (
           <View style={styles.escrowHoldingRow}>
+            <Lock size={12} color="#CBD5E1" />
             <Text style={styles.escrowHoldingText}>
-              🔒 {formatCurrency(wallet?.saldo_escrow)} terkunci di escrow
+              {formatCurrency(wallet?.saldo_escrow)} terkunci di escrow
             </Text>
           </View>
         )}
@@ -282,6 +290,7 @@ export function HomeScreen({ navigation }) {
         >
           {categories.map((c) => {
             const isSelected = selectedCategory === c.id;
+            const IconComp = c.Icon;
             return (
               <TouchableOpacity
                 key={c.id}
@@ -292,7 +301,10 @@ export function HomeScreen({ navigation }) {
                 ]}
                 activeOpacity={0.75}
               >
-                <Text style={styles.categoryIcon}>{c.icon}</Text>
+                <IconComp
+                  size={14}
+                  color={isSelected ? "#FFFFFF" : COLORS.brandIndigo}
+                />
                 <Text
                   style={[
                     styles.categoryText,

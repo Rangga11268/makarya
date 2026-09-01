@@ -40,12 +40,20 @@ export function LoginScreen({ navigation }) {
 
     try {
       setLoading(true);
-      const user = await login(email.trim(), password);
+      const loggedUser = await login(email.trim(), password);
+      if (loggedUser?.role === "ADMIN") {
+        useAuthStore.getState().logout();
+        showToast(
+          "Akun Administrator hanya dapat diakses melalui portal web.",
+          "danger"
+        );
+        return;
+      }
       showToast(`Selamat datang kembali!`, "success");
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal masuk. Periksa email/password.",
-        "danger",
+        "danger"
       );
     } finally {
       setLoading(false);
@@ -75,7 +83,7 @@ export function LoginScreen({ navigation }) {
         </Text>
       </View>
 
-      {/* Quick Fill Test Accounts Chips (Same as Web) */}
+      {/* Quick Fill Test Accounts Chips (Mahasiswa & Klien UMKM Only) */}
       <View style={styles.testAccountBox}>
         <View style={styles.testHeader}>
           <View style={styles.testTitleRow}>
@@ -102,15 +110,6 @@ export function LoginScreen({ navigation }) {
           >
             <UserCheck size={13} color={COLORS.success} />
             <Text style={styles.chipText}>Klien UMKM (Kopi)</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.chip}
-            onPress={() => fillTestAccount("admin@makarya.id")}
-            activeOpacity={0.7}
-          >
-            <ShieldCheck size={13} color={COLORS.danger} />
-            <Text style={styles.chipText}>Admin Platform</Text>
           </TouchableOpacity>
         </View>
       </View>

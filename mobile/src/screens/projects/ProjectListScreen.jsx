@@ -14,7 +14,20 @@ import { ProjectCard } from "../../components/features/ProjectCard";
 import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
-import { Plus, Search, Compass, X, SlidersHorizontal } from "lucide-react-native";
+import {
+  Plus,
+  Search,
+  Compass,
+  X,
+  SlidersHorizontal,
+  Sparkles,
+  Palette,
+  Smartphone,
+  Code2,
+  Video,
+  PenTool,
+  FileSpreadsheet,
+} from "lucide-react-native";
 
 export function ProjectListScreen({ navigation }) {
   const { user } = useAuthStore();
@@ -57,13 +70,13 @@ export function ProjectListScreen({ navigation }) {
   }, [searchQuery, user?.role]);
 
   const categories = [
-    { id: "ALL", label: "Semua Kategori" },
-    { id: "DESIGN", label: "🎨 Desain & Logo" },
-    { id: "UIUX", label: "📱 UI/UX App" },
-    { id: "PEMROGRAMAN", label: "💻 Web & Coding" },
-    { id: "VIDEO", label: "🎬 Video Reels" },
-    { id: "COPYWRITING", label: "✍️ Copywriting" },
-    { id: "ADMIN_DATA", label: "📊 Admin Data" },
+    { id: "ALL", label: "Semua", Icon: Sparkles },
+    { id: "DESIGN", label: "Desain & Logo", Icon: Palette },
+    { id: "UIUX", label: "UI/UX App", Icon: Smartphone },
+    { id: "PEMROGRAMAN", label: "Web & Coding", Icon: Code2 },
+    { id: "VIDEO", label: "Video Reels", Icon: Video },
+    { id: "COPYWRITING", label: "Copywriting", Icon: PenTool },
+    { id: "ADMIN_DATA", label: "Admin Data", Icon: FileSpreadsheet },
   ];
 
   const filterTabs = [
@@ -142,6 +155,7 @@ export function ProjectListScreen({ navigation }) {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
             const selected = categoryFilter === item.id;
+            const IconComp = item.Icon;
             return (
               <TouchableOpacity
                 onPress={() => setCategoryFilter(item.id)}
@@ -151,6 +165,10 @@ export function ProjectListScreen({ navigation }) {
                 ]}
                 activeOpacity={0.75}
               >
+                <IconComp
+                  size={13}
+                  color={selected ? COLORS.brandIndigo : COLORS.textMuted}
+                />
                 <Text
                   style={[
                     styles.categoryText,
@@ -311,6 +329,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   categoryChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
