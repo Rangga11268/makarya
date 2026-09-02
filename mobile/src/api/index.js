@@ -26,9 +26,11 @@ export const walletApi = {
   getMe: () => api.get("/wallet/me"),
   getHistory: () => api.get("/wallet/history"),
   topUp: (nominal) => api.post("/wallet/topup", { nominal }),
+  withdraw: (data) => api.post("/wallet/withdraw", data),
 };
 
 export const submissionApi = {
+  submitWork: (data) => api.post("/submissions", data),
   getByProject: (projectId) => api.get(`/submissions/project/${projectId}`),
   requestRevision: (submissionId, data) =>
     api.post(`/submissions/${submissionId}/request-revision`, data),

@@ -2,45 +2,74 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
-import { Check } from "lucide-react-native";
+import { Check, ShieldCheck } from "lucide-react-native";
 
 export function ProjectStatusBar({ currentStatus }) {
   const steps = [
-    { key: "OPEN", label: "Bidding" },
-    { key: "IN_PROGRESS", label: "Pengerjaan" },
-    { key: "REVIEW", label: "Review" },
-    { key: "COMPLETED", label: "Selesai" },
+    { key: "BIDDING", label: "Bidding", sub: "Seleksi" },
+    { key: "IN_PROGRESS", label: "Pengerjaan", sub: "Escrow Aktif" },
+    { key: "REVIEW", label: "Review", sub: "Deliverable" },
+    { key: "COMPLETED", label: "Selesai", sub: "Honor Cair" },
   ];
 
   const getStepIndex = (status) => {
-    switch (status) {
-      case "OPEN":
-      case "BIDDING":
-        return 0;
-      case "IN_PROGRESS":
-        return 1;
-      case "REVIEW":
-        return 2;
-      case "DONE":
-      case "COMPLETED":
-        return 3;
-      default:
-        return 0;
-    }
+    const s = String(status || "").toUpperCase();
+    if (s === "COMPLETED" || s === "DONE" || s === "SELESAI") return 3;
+    if (s === "REVIEW" || s === "SUBMITTED" || s === "REVISION") return 2;
+    if (s === "IN_PROGRESS" || s === "ACCEPTED" || s === "ONGOING") return 1;
+    return 0; // OPEN, BIDDING, TERBUKA, PENDING
   };
 
   const currentIndex = getStepIndex(currentStatus);
+  const statusUpper = String(currentStatus || "").toUpperCase();
+  const isAllCompleted =
+    currentIndex === 3 &&
+    (statusUpper === "COMPLETED" ||
+      statusUpper === "DONE" ||
+      statusUpper === "SELESAI");
+
+  const getProgressPercentage = () => {
+    switch (currentIndex) {
+      case 0:
+        return "25%";
+      case 1:
+        return "50%";
+      case 2:
+        return "75%";
+      case 3:
+        return "100%";
+      default:
+        return "25%";
+    }
+  };
 
   return (
     <View style={styles.container}>
+      {/* Header Info */}
+      <View style={styles.headerRow}>
+        <View style={styles.headerLeft}>
+          <ShieldCheck size={14} color={COLORS.brandIndigo} />
+          <Text style={styles.headerTitle}>Alur Proteksi Escrow</Text>
+        </View>
+        <Text
+          style={[
+            styles.headerProgressText,
+            isAllCompleted && styles.headerProgressCompleted,
+          ]}
+        >
+          Progres: {getProgressPercentage()}
+        </Text>
+      </View>
+
+      {/* Stepper Timeline */}
       <View style={styles.timeline}>
         {steps.map((step, idx) => {
-          const isDone = idx < currentIndex;
-          const isCurrent = idx === currentIndex;
+          const isDone = idx < currentIndex || (isAllCompleted && idx === 3);
+          const isCurrent = idx === currentIndex && !isAllCompleted;
 
           return (
             <React.Fragment key={step.key}>
-              {/* Line connector */}
+              {/* Connector line */}
               {idx > 0 && (
                 <View
                   style={[
@@ -52,7 +81,7 @@ export function ProjectStatusBar({ currentStatus }) {
                 />
               )}
 
-              {/* Step circle */}
+              {/* Step Circle & Label */}
               <View style={styles.stepWrapper}>
                 <View
                   style={[
@@ -64,15 +93,13 @@ export function ProjectStatusBar({ currentStatus }) {
                 >
                   {isDone ? (
                     <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                  ) : isCurrent ? (
+                    <View style={styles.dotCurrent} />
                   ) : (
-                    <View
-                      style={[
-                        styles.dot,
-                        isCurrent ? styles.dotCurrent : styles.dotInactive,
-                      ]}
-                    />
+                    <View style={styles.dotInactive} />
                   )}
                 </View>
+
                 <Text
                   style={[
                     styles.label,
@@ -82,6 +109,7 @@ export function ProjectStatusBar({ currentStatus }) {
                 >
                   {step.label}
                 </Text>
+                <Text style={styles.subLabel}>{step.sub}</Text>
               </View>
             </React.Fragment>
           );
@@ -93,23 +121,57 @@ export function ProjectStatusBar({ currentStatus }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginVertical: 12,
+    marginBottom: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+    elevation: 1,
   },
-  timeline: {
-    fontFamily: FONTS.bodyRegular,
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  headerTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  headerProgressText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  headerProgressCompleted: {
+    color: COLORS.success,
+  },
+  timeline: {
+    flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
   },
   stepWrapper: {
     alignItems: "center",
     zIndex: 2,
+    width: 62,
   },
   circle: {
     width: 26,
@@ -117,9 +179,10 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 6,
   },
   circleDone: {
-    backgroundColor: COLORS.brandIndigo,
+    backgroundColor: COLORS.success,
   },
   circleCurrent: {
     backgroundColor: COLORS.bgSurface,
@@ -131,44 +194,53 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
-  dot: {
+  dotCurrent: {
     width: 8,
     height: 8,
     borderRadius: 4,
-  },
-  dotCurrent: {
     backgroundColor: COLORS.brandIndigo,
   },
   dotInactive: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: COLORS.textDim,
   },
   connector: {
     flex: 1,
     height: 2,
-    marginHorizontal: -6,
+    marginTop: 12,
+    marginHorizontal: -12,
     zIndex: 1,
   },
   connectorActive: {
-    backgroundColor: COLORS.brandIndigo,
+    backgroundColor: COLORS.success,
   },
   connectorInactive: {
     backgroundColor: COLORS.borderDark,
   },
   label: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "600",
     color: COLORS.textMuted,
-    marginTop: 6,
+    textAlign: "center",
   },
   labelCurrent: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   labelDone: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.textDark,
     fontWeight: "700",
+  },
+  subLabel: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 9,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    marginTop: 1,
   },
 });

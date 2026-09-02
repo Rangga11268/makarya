@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,17 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Switch,
+  Modal,
+  Platform,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
+import { useToastStore } from "../../store/toastStore";
 import { showConfirm } from "../../store/dialogStore";
 import {
   Building2,
@@ -24,14 +29,45 @@ import {
   CheckCircle2,
   Award,
   ChevronRight,
+  Code2,
+  Palette,
+  Globe,
+  Github,
+  Linkedin,
+  CreditCard,
+  Bell,
+  Lock,
+  HelpCircle,
+  Phone,
+  FileText,
+  ExternalLink,
+  Plus,
+  Check,
 } from "lucide-react-native";
 
 export function ProfileScreen({ navigation }) {
   const { user, logout } = useAuthStore();
+  const { showToast } = useToastStore();
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [escrowAlertsEnabled, setEscrowAlertsEnabled] = useState(true);
+
+  // Skill Modal
+  const [skillModal, setSkillModal] = useState(false);
+  const [newSkill, setNewSkill] = useState("");
+  const [skillsList, setSkillsList] = useState([
+    "UI/UX Design",
+    "Figma",
+    "React Native",
+    "FastAPI",
+    "Tailwind CSS",
+    "Wireframing",
+  ]);
 
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
+    !user?.role ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
@@ -47,15 +83,32 @@ export function ProfileScreen({ navigation }) {
     });
   };
 
+  const handleAddSkill = () => {
+    if (!newSkill.trim()) return;
+    if (skillsList.includes(newSkill.trim())) {
+      showToast("Keahlian sudah ada dalam daftar", "info");
+      return;
+    }
+    setSkillsList([...skillsList, newSkill.trim()]);
+    setNewSkill("");
+    setSkillModal(false);
+    showToast("Keahlian baru berhasil ditambahkan!", "success");
+  };
+
+  const handleRemoveSkill = (skillToRemove) => {
+    setSkillsList(skillsList.filter((s) => s !== skillToRemove));
+    showToast("Keahlian dihapus", "info");
+  };
+
   const canGoBack = navigation?.canGoBack && navigation.canGoBack();
 
   return (
     <View style={styles.container}>
       <Header
-        title={isMahasiswa ? "Profil Mahasiswa" : "Profil Akun UMKM"}
+        title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
           isMahasiswa
-            ? "Identitas talenta & portofolio kampus terverifikasi"
+            ? "Identitas akademik, portofolio & kredensial UBSI"
             : "Informasi bisnis & manajemen akun UMKM"
         }
         onBack={canGoBack ? () => navigation.goBack() : undefined}
@@ -137,83 +190,212 @@ export function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 2. Account Details Section */}
-        <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>
-            {isMahasiswa ? "Informasi Akademik" : "Rincian Identitas Usaha"}
-          </Text>
-
-          {isMahasiswa ? (
-            <>
-              <View style={styles.detailRow}>
-                <GraduationCap size={16} color={COLORS.brandIndigo} />
-                <View style={styles.detailTextWrapper}>
-                  <Text style={styles.detailLabel}>Perguruan Tinggi</Text>
-                  <Text style={styles.detailValue}>
-                    Universitas Bina Sarana Informatika
-                  </Text>
-                </View>
+        {/* 2. Mahasiswa Academic Credentials Card */}
+        {isMahasiswa && (
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Kredensial Akademik UBSI</Text>
+              <View style={styles.verifiedCampusTag}>
+                <CheckCircle2 size={11} color={COLORS.success} />
+                <Text style={styles.verifiedCampusText}>Terhubung SIAKAD</Text>
               </View>
+            </View>
 
-              <View style={styles.detailRow}>
-                <Sparkles size={16} color={COLORS.brandCyan} />
-                <View style={styles.detailTextWrapper}>
-                  <Text style={styles.detailLabel}>Program Studi</Text>
-                  <Text style={styles.detailValue}>Sistem Informasi (S1)</Text>
-                </View>
-              </View>
-            </>
-          ) : (
             <View style={styles.detailRow}>
-              <Building2 size={16} color={COLORS.brandIndigo} />
+              <GraduationCap size={16} color={COLORS.brandIndigo} />
               <View style={styles.detailTextWrapper}>
-                <Text style={styles.detailLabel}>Nama Usaha</Text>
+                <Text style={styles.detailLabel}>Perguruan Tinggi</Text>
                 <Text style={styles.detailValue}>
-                  {user?.nama_usaha || "-"}
+                  Universitas Bina Sarana Informatika
                 </Text>
               </View>
             </View>
-          )}
 
-          <View style={styles.detailRow}>
-            <Mail size={16} color={COLORS.textMuted} />
-            <View style={styles.detailTextWrapper}>
-              <Text style={styles.detailLabel}>Email Akun</Text>
-              <Text style={styles.detailValue}>{user?.email || "-"}</Text>
+            <View style={styles.detailRow}>
+              <Sparkles size={16} color={COLORS.brandCyan} />
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>Program Studi & Jenjang</Text>
+                <Text style={styles.detailValue}>Sistem Informasi (S1)</Text>
+              </View>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Award size={16} color="#F59E0B" />
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>NIM & Status Akademik</Text>
+                <Text style={styles.detailValue}>
+                  12220491 • Semester 6 (Aktif)
+                </Text>
+              </View>
             </View>
           </View>
+        )}
 
-          <View style={styles.detailRow}>
-            <ShieldCheck size={16} color={COLORS.success} />
-            <View style={styles.detailTextWrapper}>
-              <Text style={styles.detailLabel}>Perlindungan Transaksi</Text>
-              <Text style={[styles.detailValue, { color: COLORS.success }]}>
-                100% Rekening Bersama (Escrow Holding)
+        {/* 3. Skills & Keahlian Management (Mahasiswa Only) */}
+        {isMahasiswa && (
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Keahlian & Bidang Fokus</Text>
+              <TouchableOpacity
+                onPress={() => setSkillModal(true)}
+                style={styles.addSkillLink}
+                activeOpacity={0.7}
+              >
+                <Plus size={13} color={COLORS.brandIndigo} />
+                <Text style={styles.addSkillLinkText}>Tambah</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.skillsWrap}>
+              {skillsList.map((skill) => (
+                <TouchableOpacity
+                  key={skill}
+                  style={styles.skillPill}
+                  onPress={() => handleRemoveSkill(skill)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.skillPillText}>{skill}</Text>
+                  <Text style={styles.skillRemoveCross}>×</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* 4. Digital Portofolio Links (Mahasiswa Only) */}
+        {isMahasiswa && (
+          <View style={styles.sectionBox}>
+            <Text style={styles.sectionTitle}>Tautan Portofolio & Repositori</Text>
+
+            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+              <View style={styles.linkIconWrap}>
+                <Github size={16} color={COLORS.textDark} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.linkTitle}>GitHub Profile</Text>
+                <Text style={styles.linkUrl}>github.com/Rangga11268</Text>
+              </View>
+              <ExternalLink size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+              <View style={styles.linkIconWrap}>
+                <Palette size={16} color="#EA4C89" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.linkTitle}>Figma / Dribbble Showcase</Text>
+                <Text style={styles.linkUrl}>figma.com/@darell_ux</Text>
+              </View>
+              <ExternalLink size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+              <View style={styles.linkIconWrap}>
+                <Globe size={16} color={COLORS.brandCyan} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.linkTitle}>Website Portofolio Pribadi</Text>
+                <Text style={styles.linkUrl}>darellputra.dev</Text>
+              </View>
+              <ExternalLink size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* 5. Rekening Pencairan Honor Terdaftar */}
+        <View style={styles.sectionBox}>
+          <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
+
+          <View style={styles.bankAccountRow}>
+            <View style={styles.bankIconCircle}>
+              <CreditCard size={18} color={COLORS.brandIndigo} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={styles.bankNameRow}>
+                <Text style={styles.bankNameText}>Bank Central Asia (BCA)</Text>
+                <View style={styles.verifiedBankPill}>
+                  <Check size={9} color={COLORS.success} strokeWidth={3} />
+                  <Text style={styles.verifiedBankPillText}>Terverifikasi</Text>
+                </View>
+              </View>
+              <Text style={styles.bankAccountDetail}>
+                8270-3491-8821 • {user?.nama_lengkap || "Darell Rangga"}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* 3. Makarya Official Brand Footer Card */}
-        <View style={styles.brandCard}>
-          <Image
-            source={require("../../../assets/logo.webp")}
-            style={styles.brandLogoImage}
-            resizeMode="contain"
-          />
-          <Text style={styles.brandAppTitle}>Makarya Mobile v2.0</Text>
-          <Text style={styles.brandAppSubtitle}>
-            Platform Kolaborasi Mahasiswa & Klien UMKM Terverifikasi UBSI
-          </Text>
-          <View style={styles.brandShieldPill}>
-            <ShieldCheck size={13} color={COLORS.success} />
-            <Text style={styles.brandShieldText}>
-              Dilindungi Sistem Escrow Pintar
-            </Text>
+        {/* 6. Settings & Security */}
+        <View style={styles.sectionBox}>
+          <Text style={styles.sectionTitle}>Pengaturan & Notifikasi</Text>
+
+          <View style={styles.settingToggleRow}>
+            <View style={styles.settingIconWrap}>
+              <Bell size={16} color={COLORS.brandIndigo} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingMainText}>Notifikasi Proyek Baru</Text>
+              <Text style={styles.settingSubText}>
+                Dapatkan info saat tawaran proyek baru sesuai keahlianmu dibuka
+              </Text>
+            </View>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={setNotificationsEnabled}
+              trackColor={{ false: COLORS.borderDark, true: COLORS.brandIndigo }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
+
+          <View style={styles.settingToggleRow}>
+            <View style={styles.settingIconWrap}>
+              <ShieldCheck size={16} color={COLORS.success} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingMainText}>Notifikasi Saldo Escrow</Text>
+              <Text style={styles.settingSubText}>
+                Pemberitahuan instan saat dana dikunci & dicairkan
+              </Text>
+            </View>
+            <Switch
+              value={escrowAlertsEnabled}
+              onValueChange={setEscrowAlertsEnabled}
+              trackColor={{ false: COLORS.borderDark, true: COLORS.brandIndigo }}
+              thumbColor="#FFFFFF"
+            />
           </View>
         </View>
 
-        {/* 4. Logout Action */}
+        {/* 7. Help Center & Support */}
+        <View style={styles.sectionBox}>
+          <Text style={styles.sectionTitle}>Bantuan & Layanan Kampus</Text>
+
+          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+            <View style={styles.menuIconWrap}>
+              <Phone size={15} color={COLORS.brandIndigo} />
+            </View>
+            <Text style={styles.menuItemTitle}>Hubungi Admin UBSI Hub</Text>
+            <ChevronRight size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+            <View style={styles.menuIconWrap}>
+              <FileText size={15} color={COLORS.brandIndigo} />
+            </View>
+            <Text style={styles.menuItemTitle}>Ketentuan Rekening Escrow</Text>
+            <ChevronRight size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+            <View style={styles.menuIconWrap}>
+              <HelpCircle size={15} color={COLORS.brandIndigo} />
+            </View>
+            <Text style={styles.menuItemTitle}>Panduan Penggunaan Makarya</Text>
+            <ChevronRight size={14} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+
+        {/* 8. Logout Button */}
         <Button
           title="Keluar dari Akun"
           variant="danger"
@@ -222,7 +404,45 @@ export function ProfileScreen({ navigation }) {
           onPress={handleLogout}
           style={styles.logoutBtn}
         />
+
+        <View style={{ height: 30 }} />
       </ScrollView>
+
+      {/* Modal Tambah Skill */}
+      <Modal visible={skillModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.modalTitle}>Tambah Keahlian Baru</Text>
+            <Text style={styles.modalSub}>
+              Tambahkan keahlian teknis atau desain untuk meningkatkan peluang terpilih
+            </Text>
+
+            <Input
+              label="Nama Keahlian"
+              placeholder="Contoh: Flutter, Next.js, Motion Graphic..."
+              value={newSkill}
+              onChangeText={setNewSkill}
+            />
+
+            <View style={styles.modalActions}>
+              <Button
+                title="Batal"
+                variant="secondary"
+                size="md"
+                onPress={() => setSkillModal(false)}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Simpan Keahlian"
+                variant="brand"
+                size="md"
+                onPress={handleAddSkill}
+                style={{ flex: 2 }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -234,7 +454,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 110,
+    paddingBottom: 32,
   },
   profileCard: {
     backgroundColor: COLORS.bgSurface,
@@ -244,7 +464,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginBottom: 16,
-    ...SHADOWS.sm,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
   avatarCircle: {
     width: 72,
@@ -253,7 +477,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
-    ...SHADOWS.brandGlow,
   },
   avatarMhs: {
     backgroundColor: COLORS.brandIndigo,
@@ -282,7 +505,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   roleTag: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
@@ -336,14 +558,26 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: COLORS.borderDark,
   },
+
+  // Section Box
   sectionBox: {
     backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
-    padding: 18,
+    padding: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 20,
-    ...SHADOWS.sm,
+    marginBottom: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
   },
   sectionTitle: {
     fontFamily: FONTS.displayBold,
@@ -352,18 +586,31 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    marginBottom: 12,
+  },
+  verifiedCampusTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  verifiedCampusText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: COLORS.success,
+    fontWeight: "700",
   },
   detailRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 11,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
   },
   detailTextWrapper: {
-    fontFamily: FONTS.bodyRegular,
     flex: 1,
   },
   detailLabel: {
@@ -379,54 +626,217 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     marginTop: 1,
   },
-  logoutBtn: {
-    marginBottom: 20,
-  },
-  brandCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 22,
-    padding: 20,
+
+  // Skills
+  addSkillLink: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    ...SHADOWS.sm,
+    gap: 3,
   },
-  brandLogoImage: {
-    width: 140,
-    height: 38,
-    marginBottom: 8,
-  },
-  brandAppTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "900",
-    color: COLORS.textDark,
-  },
-  brandAppSubtitle: {
-    fontFamily: FONTS.bodyRegular,
+  addSkillLinkText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    color: COLORS.textMuted,
-    textAlign: "center",
-    marginTop: 3,
-    marginBottom: 12,
-    lineHeight: 16,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
-  brandShieldPill: {
-    fontFamily: FONTS.bodyRegular,
+  skillsWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 4,
+  },
+  skillPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: COLORS.successLight,
+    backgroundColor: COLORS.brandIndigoLight,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
   },
-  brandShieldText: {
+  skillPillText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
+    color: COLORS.brandIndigo,
     fontWeight: "700",
+  },
+  skillRemoveCross: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    color: COLORS.textMuted,
+    fontWeight: "800",
+  },
+
+  // Links
+  linkRowItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  linkIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 9,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  linkTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  linkUrl: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 1,
+  },
+
+  // Bank
+  bankAccountRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingTop: 6,
+  },
+  bankIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bankNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  bankNameText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  verifiedBankPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 999,
+  },
+  verifiedBankPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
     color: COLORS.success,
+    fontWeight: "700",
+  },
+  bankAccountDetail: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+
+  // Settings
+  settingToggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  settingIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 9,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  settingMainText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  settingSubText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+    marginTop: 1,
+    paddingRight: 6,
+  },
+
+  // Menu
+  menuRowItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  menuIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  menuItemTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.textDark,
+    flex: 1,
+  },
+
+  logoutBtn: {
+    marginTop: 6,
+    marginBottom: 20,
+  },
+
+  // Modal Sheet
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
+  },
+  modalTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    marginBottom: 4,
+  },
+  modalSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textMuted,
+    marginBottom: 16,
+  },
+  modalActions: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
   },
 });

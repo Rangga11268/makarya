@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Modal,
+  Platform,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -31,17 +32,24 @@ import {
   EyeOff,
   History,
   TrendingUp,
+  Building2,
+  CheckCircle2,
+  ArrowRight,
+  ChevronRight,
+  CreditCard,
 } from "lucide-react-native";
 
-export function WalletScreen() {
+export function WalletScreen({ navigation }) {
   const { user } = useAuthStore();
   const [wallet, setWallet] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showBalance, setShowBalance] = useState(true);
-  const [topUpModal, setTopUpModal] = useState(false);
+  const [txModal, setTxModal] = useState(false);
+  const [txType, setTxType] = useState("WITHDRAW"); // 'WITHDRAW' | 'TOPUP'
   const [nominal, setNominal] = useState("500000");
-  const [topUpLoading, setTopUpLoading] = useState(false);
+  const [txLoading, setTxLoading] = useState(false);
+  const [historyTab, setHistoryTab] = useState("ALL"); // 'ALL' | 'IN' | 'OUT'
 
   const { showToast } = useToastStore();
 
@@ -78,38 +86,67 @@ export function WalletScreen() {
       return;
     }
 
+    if (txType === "WITHDRAW" && num > (wallet?.saldo_aktif || 0)) {
+      showToast("Saldo aktif tidak mencukupi untuk penarikan ini", "danger");
+      return;
+    }
+
     try {
-      setTopUpLoading(true);
+      setTxLoading(true);
       await walletApi.topUp(num);
       showToast(
-        isMahasiswa
-          ? `Permintaan pencairan honor Rp ${formatCurrency(num)} diproses!`
-          : `Deposit Rp ${formatCurrency(num)} berhasil!`,
-        "success",
+        txType === "WITHDRAW"
+          ? `Permintaan pencairan honor Rp ${formatCurrency(num)} berhasil diproses!`
+          : `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
+        "success"
       );
-      setTopUpModal(false);
+      setTxModal(false);
       loadWallet();
     } catch (e) {
       showToast("Gagal memproses transaksi", "danger");
     } finally {
-      setTopUpLoading(false);
+      setTxLoading(false);
     }
   };
 
+  const filteredHistory = history.filter((tx) => {
+    if (historyTab === "IN")
+      return tx.tipe === "TOPUP" || tx.tipe === "PAYOUT";
+    if (historyTab === "OUT")
+      return tx.tipe === "HOLD" || tx.tipe === "WITHDRAW";
+    return true;
+  });
+
+  const totalPayout = history
+    .filter((tx) => tx.tipe === "PAYOUT" || tx.tipe === "TOPUP")
+    .reduce((acc, curr) => acc + (curr.nominal || 0), 0);
+
   return (
     <View style={styles.container}>
-      <Header
-        title={
-          isMahasiswa ? "Dompet Honor Mahasiswa" : "Dompet & Rekening Escrow"
-        }
-        subtitle={
-          isMahasiswa
-            ? "Saldo honor pengerjaan & audit pencairan rekening escrow"
-            : "Manajemen saldo deposit dan proteksi pembayaran proyek"
-        }
-      />
+      {/* 1. Universal Top Header */}
+      <View style={styles.header}>
+        <View style={styles.headerTitleGroup}>
+          <Text style={styles.headerTitle}>
+            {isMahasiswa ? "Dompet Honor" : "Dompet & Escrow"}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {isMahasiswa
+              ? "Saldo honor & pencairan rekening terproteksi"
+              : "Saldo deposit & proteksi transaksi proyek"}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => loadWallet()}
+          style={styles.refreshIconBtn}
+          activeOpacity={0.7}
+        >
+          <History size={18} color={COLORS.textDark} />
+        </TouchableOpacity>
+      </View>
 
       <ScrollView
+        style={styles.scrollArea}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -121,14 +158,14 @@ export function WalletScreen() {
           />
         }
       >
-        {/* 1. Main Fintech Balance Card */}
-        <View style={styles.heroBalanceCard}>
-          <View style={styles.balanceHeader}>
-            <View style={styles.balanceTag}>
-              <Wallet size={14} color="#FFFFFF" />
-              <Text style={styles.balanceTagText}>
-                {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
-              </Text>
+        {/* 2. Velvet Indigo Fintech Card */}
+        <View style={styles.heroCard}>
+          {/* Top Pill & Privacy Eye */}
+          <View style={styles.heroTopRow}>
+            <View style={styles.escrowBadge}>
+              <View style={styles.liveGreenDot} />
+              <ShieldCheck size={13} color="#34D399" />
+              <Text style={styles.escrowBadgeText}>100% Escrow Protected</Text>
             </View>
 
             <TouchableOpacity
@@ -137,135 +174,241 @@ export function WalletScreen() {
               activeOpacity={0.7}
             >
               {showBalance ? (
-                <Eye size={16} color="rgba(255, 255, 255, 0.7)" />
+                <Eye size={17} color="rgba(255, 255, 255, 0.8)" />
               ) : (
-                <EyeOff size={16} color="rgba(255, 255, 255, 0.7)" />
+                <EyeOff size={17} color="rgba(255, 255, 255, 0.8)" />
               )}
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.balanceAmount}>
+          {/* Big Balance Amount */}
+          <Text style={styles.balanceLabel}>
+            {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
+          </Text>
+          <Text style={styles.balanceAmountText}>
             {showBalance
               ? formatCurrency(wallet?.saldo_aktif || 0)
               : "Rp ••••••••"}
           </Text>
 
-          <Text style={styles.balanceSubtitle}>
+          <Text style={styles.balanceSubText}>
             {isMahasiswa
-              ? "Honor yang telah disetujui klien dan siap ditransfer ke rekening Anda."
-              : "Saldo aktif siap dialokasikan untuk mengunci pesanan proyek mahasiswa."}
+              ? "Dana honor aman yang siap dicairkan ke rekening bank Anda"
+              : "Saldo aktif siap dialokasikan untuk pengerjaan proyek mahasiswa"}
           </Text>
 
-          <TouchableOpacity
-            style={styles.heroActionBtn}
-            onPress={() => setTopUpModal(true)}
-            activeOpacity={0.85}
-          >
-            {isMahasiswa ? (
-              <Banknote size={18} color={COLORS.brandIndigo} />
-            ) : (
-              <Plus size={18} color={COLORS.brandIndigo} strokeWidth={3} />
-            )}
-            <Text style={styles.heroActionBtnText}>
-              {isMahasiswa ? "Tarik Honor ke Rekening" : "Deposit Saldo UMKM"}
-            </Text>
-          </TouchableOpacity>
+          {/* Quick Action Buttons Row */}
+          <View style={styles.heroActionsRow}>
+            <TouchableOpacity
+              style={styles.primaryPillBtn}
+              onPress={() => {
+                setTxType("WITHDRAW");
+                setTxModal(true);
+              }}
+              activeOpacity={0.88}
+            >
+              <Banknote size={16} color={COLORS.brandIndigo} />
+              <Text style={styles.primaryPillBtnText}>Tarik Saldo</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryGlassBtn}
+              onPress={() => {
+                setTxType("TOPUP");
+                setTxModal(true);
+              }}
+              activeOpacity={0.88}
+            >
+              <Plus size={16} color="#FFFFFF" strokeWidth={2.5} />
+              <Text style={styles.secondaryGlassBtnText}>
+                {isMahasiswa ? "Isi Saldo" : "Deposit Proyek"}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* 2. Escrow Protection Holding Card */}
-        <View style={styles.escrowCard}>
-          <View style={styles.escrowHeader}>
-            <View style={styles.iconCircleCyan}>
-              <Lock size={15} color={COLORS.brandCyan} />
+        {/* 3. Dual Metric Cards (Escrow Holding & Total Payout) */}
+        <View style={styles.metricGridRow}>
+          {/* Card 1: Escrow Holding */}
+          <View style={styles.metricCard}>
+            <View style={styles.metricCardTop}>
+              <View style={styles.metricIconWrapCyan}>
+                <Lock size={15} color={COLORS.brandCyan} />
+              </View>
+              <Text style={styles.metricCardTag}>Escrow Terkunci</Text>
             </View>
-            <Text style={styles.escrowLabel}>Saldo Terkunci di Escrow</Text>
+            <Text style={styles.metricCardValue}>
+              {showBalance
+                ? formatCurrency(wallet?.saldo_escrow || 0)
+                : "Rp ••••••••"}
+            </Text>
+            <Text style={styles.metricCardSub}>
+              {isMahasiswa
+                ? "Dalam tahap pengerjaan"
+                : "Aman di rekening bersama"}
+            </Text>
           </View>
 
-          <Text style={styles.escrowAmount}>
-            {showBalance
-              ? formatCurrency(wallet?.saldo_escrow || 0)
-              : "Rp ••••••••"}
-          </Text>
-
-          <Text style={styles.escrowDesc}>
-            {isMahasiswa
-              ? "Honor proyek dalam pengerjaan, aman di rekening bersama dan cair otomatis saat disetujui."
-              : "Dana aman tersimpan di pihak ketiga dan hanya cair setelah Anda menyetujui hasil deliverable."}
-          </Text>
+          {/* Card 2: Total Settled / Payout */}
+          <View style={styles.metricCard}>
+            <View style={styles.metricCardTop}>
+              <View style={styles.metricIconWrapGreen}>
+                <TrendingUp size={15} color={COLORS.success} />
+              </View>
+              <Text style={styles.metricCardTag}>Total Mutasi</Text>
+            </View>
+            <Text style={styles.metricCardValue}>
+              {showBalance ? formatCurrency(totalPayout) : "Rp ••••••••"}
+            </Text>
+            <Text style={styles.metricCardSub}>
+              {history.length} Transaksi Selesai
+            </Text>
+          </View>
         </View>
 
-        {/* 3. Transaction History Section */}
+        {/* 4. Registered Bank Account Card */}
+        <View style={styles.bankCard}>
+          <View style={styles.bankCardLeft}>
+            <View style={styles.bankIconCircle}>
+              <Building2 size={18} color={COLORS.brandIndigo} />
+            </View>
+            <View>
+              <View style={styles.bankNameRow}>
+                <Text style={styles.bankName}>Bank Central Asia (BCA)</Text>
+                <View style={styles.verifiedBankBadge}>
+                  <CheckCircle2 size={10} color={COLORS.success} />
+                  <Text style={styles.verifiedBankText}>Terverifikasi</Text>
+                </View>
+              </View>
+              <Text style={styles.bankAccountNo}>
+                8270-3491-8821 • {user?.nama_lengkap || "Darell Rangga"}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* 5. Transaction History Section */}
         <View style={styles.historySection}>
-          <View style={styles.historyHeader}>
+          <View style={styles.historyHeaderRow}>
             <Text style={styles.historyTitle}>Riwayat Mutasi Saldo</Text>
-            <History size={16} color={COLORS.textMuted} />
+            <Text style={styles.historyCountText}>
+              {filteredHistory.length} Transaksi
+            </Text>
           </View>
 
-          {history.length === 0 ? (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>
-                Belum ada riwayat mutasi transaksi keuangan.
+          {/* Segmented History Filter Tabs */}
+          <View style={styles.historyTabsRow}>
+            {[
+              { id: "ALL", label: "Semua" },
+              { id: "IN", label: "Penerimaan (+)" },
+              { id: "OUT", label: "Penarikan (-)" },
+            ].map((tab) => {
+              const isActive = historyTab === tab.id;
+              return (
+                <TouchableOpacity
+                  key={tab.id}
+                  onPress={() => setHistoryTab(tab.id)}
+                  style={[
+                    styles.historyTabPill,
+                    isActive && styles.historyTabPillActive,
+                  ]}
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    style={[
+                      styles.historyTabText,
+                      isActive && styles.historyTabTextActive,
+                    ]}
+                  >
+                    {tab.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Transactions List */}
+          {filteredHistory.length === 0 ? (
+            <View style={styles.emptyHistoryBox}>
+              <History size={32} color={COLORS.textDim} />
+              <Text style={styles.emptyHistoryTitle}>
+                Belum Ada Mutasi Rekening
+              </Text>
+              <Text style={styles.emptyHistorySub}>
+                Transaksi penerimaan honor & deposit proyek akan otomatis tercatat
+                di sini.
               </Text>
             </View>
           ) : (
-            history.map((tx) => (
-              <View key={tx.id} style={styles.txRow}>
-                <View style={styles.txLeft}>
-                  <View
-                    style={[
-                      styles.txIcon,
-                      tx.tipe === "TOPUP" || tx.tipe === "PAYOUT"
-                        ? styles.txIconGreen
-                        : styles.txIconRed,
-                    ]}
-                  >
-                    {tx.tipe === "TOPUP" || tx.tipe === "PAYOUT" ? (
-                      <ArrowDownLeft size={16} color={COLORS.success} />
-                    ) : (
-                      <ArrowUpRight size={16} color={COLORS.danger} />
-                    )}
+            filteredHistory.map((tx) => {
+              const isIncome = tx.tipe === "TOPUP" || tx.tipe === "PAYOUT";
+              return (
+                <View key={tx.id} style={styles.txItemCard}>
+                  <View style={styles.txItemLeft}>
+                    <View
+                      style={[
+                        styles.txIconBox,
+                        isIncome ? styles.txIconGreen : styles.txIconRed,
+                      ]}
+                    >
+                      {isIncome ? (
+                        <ArrowDownLeft size={16} color={COLORS.success} />
+                      ) : (
+                        <ArrowUpRight size={16} color={COLORS.danger} />
+                      )}
+                    </View>
+                    <View style={styles.txInfoGroup}>
+                      <Text style={styles.txTypeTitle}>
+                        {formatStatus(tx.tipe)}
+                      </Text>
+                      <Text style={styles.txDescText} numberOfLines={1}>
+                        {tx.keterangan || "Transaksi Rekening Escrow"}
+                      </Text>
+                      <Text style={styles.txDateText}>
+                        {formatDate(tx.created_at)}
+                      </Text>
+                    </View>
                   </View>
-                  <View>
-                    <Text style={styles.txType}>{formatStatus(tx.tipe)}</Text>
-                    <Text style={styles.txDate}>
-                      {formatDate(tx.created_at)}
-                    </Text>
-                  </View>
-                </View>
 
-                <View style={{ alignItems: "flex-end" }}>
-                  <Text
-                    style={[
-                      styles.txNominal,
-                      tx.tipe === "HOLD" || tx.tipe === "WITHDRAW"
-                        ? { color: COLORS.danger }
-                        : { color: COLORS.success },
-                    ]}
-                  >
-                    {tx.tipe === "HOLD" || tx.tipe === "WITHDRAW" ? "-" : "+"}{" "}
-                    {formatCurrency(tx.nominal)}
-                  </Text>
-                  <Text style={styles.txDesc} numberOfLines={1}>
-                    {tx.keterangan || "-"}
-                  </Text>
+                  <View style={styles.txItemRight}>
+                    <Text
+                      style={[
+                        styles.txAmountText,
+                        isIncome
+                          ? { color: COLORS.success }
+                          : { color: COLORS.textDark },
+                      ]}
+                    >
+                      {isIncome ? "+" : "-"} {formatCurrency(tx.nominal)}
+                    </Text>
+                    <View style={styles.txStatusPill}>
+                      <Text style={styles.txStatusPillText}>Berhasil</Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
-            ))
+              );
+            })
           )}
         </View>
+
+        <View style={{ height: 30 }} />
       </ScrollView>
 
-      {/* Modal Transaksi Top-Up / Penarikan */}
-      <Modal visible={topUpModal} transparent animationType="slide">
+      {/* 6. Transaction Modal (Withdraw / Deposit Sheet) */}
+      <Modal visible={txModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>
-              {isMahasiswa ? "Tarik Honor Mahasiswa" : "Deposit Saldo UMKM"}
+              {txType === "WITHDRAW"
+                ? "Tarik Saldo ke Rekening"
+                : isMahasiswa
+                  ? "Isi Saldo Dompet"
+                  : "Deposit Saldo Proyek"}
             </Text>
             <Text style={styles.modalSub}>
-              {isMahasiswa
-                ? "Masukkan nominal honor yang ingin dicairkan ke bank Anda"
-                : "Pilih atau masukkan nominal top-up saldo escrow proyek"}
+              {txType === "WITHDRAW"
+                ? "Honor akan ditransfer ke rekening Bank BCA Anda tanpa potongan"
+                : "Deposit akan disimpan aman di sistem rekening bersama escrow"}
             </Text>
 
             <Input
@@ -276,21 +419,22 @@ export function WalletScreen() {
               keyboardType="numeric"
             />
 
-            <View style={styles.quickNominals}>
+            {/* Quick Chips */}
+            <View style={styles.quickNominalsRow}>
               {["100000", "250000", "500000", "1000000"].map((n) => (
                 <TouchableOpacity
                   key={n}
                   onPress={() => setNominal(n)}
                   style={[
-                    styles.nomChip,
-                    nominal === n && styles.nomChipActive,
+                    styles.quickNomChip,
+                    nominal === n && styles.quickNomChipActive,
                   ]}
                   activeOpacity={0.7}
                 >
                   <Text
                     style={[
-                      styles.nomText,
-                      nominal === n && styles.nomTextActive,
+                      styles.quickNomText,
+                      nominal === n && styles.quickNomTextActive,
                     ]}
                   >
                     {formatCurrency(parseInt(n, 10))}
@@ -299,20 +443,20 @@ export function WalletScreen() {
               ))}
             </View>
 
-            <View style={styles.modalActions}>
+            <View style={styles.modalActionsRow}>
               <Button
                 title="Batal"
                 variant="secondary"
                 size="md"
-                onPress={() => setTopUpModal(false)}
+                onPress={() => setTxModal(false)}
                 style={{ flex: 1 }}
               />
               <Button
-                title="Konfirmasi"
+                title={txType === "WITHDRAW" ? "Konfirmasi Tarik" : "Konfirmasi Deposit"}
                 variant="brand"
                 size="md"
                 onPress={handleTransaction}
-                loading={topUpLoading}
+                loading={txLoading}
                 style={{ flex: 2 }}
               />
             </View>
@@ -328,158 +472,354 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bgDark,
   },
-  content: {
-    padding: 16,
-    paddingBottom: 110,
-  },
-  heroBalanceCard: {
-    backgroundColor: "#1E1B4B", // High-tech Deep Indigo card
-    borderRadius: 24,
-    padding: 22,
-    marginBottom: 14,
-    ...SHADOWS.md,
-  },
-  balanceHeader: {
-    fontFamily: FONTS.bodyRegular,
+
+  // 1. Header
+  header: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "ios" ? 54 : 44,
+    paddingBottom: 12,
+    backgroundColor: COLORS.bgSurface,
   },
-  balanceTag: {
+  headerTitleGroup: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 22,
+    fontWeight: "800",
+    color: COLORS.textDark,
+    letterSpacing: -0.5,
+  },
+  headerSubtitle: {
     fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  refreshIconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Scroll Content
+  scrollArea: {
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+
+  // 2. Velvet Indigo Hero Card
+  heroCard: {
+    backgroundColor: "#1E1B4B",
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: "#312E81",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  heroTopRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    justifyContent: "space-between",
+    marginBottom: 14,
   },
-  balanceTagText: {
+  escrowBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "rgba(16, 185, 129, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.3)",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  liveGreenDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#10B981",
+  },
+  escrowBadgeText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
+    fontSize: 10,
+    color: "#34D399",
     fontWeight: "700",
-    color: "rgba(255, 255, 255, 0.75)",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
   },
   eyeBtn: {
     padding: 4,
   },
-  balanceAmount: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#FFFFFF",
-    letterSpacing: -0.8,
-    marginVertical: 4,
-  },
-  balanceSubtitle: {
+  balanceLabel: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.7)",
-    lineHeight: 18,
-    marginBottom: 16,
+    color: "rgba(255, 255, 255, 0.75)",
   },
-  heroActionBtn: {
-    backgroundColor: "#FFFFFF",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 13,
-    paddingHorizontal: 20,
-    borderRadius: 999,
-    marginTop: 6,
-    ...SHADOWS.sm,
-  },
-  heroActionBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 14,
-    fontWeight: "900",
-    color: COLORS.brandIndigo,
-  },
-  escrowCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 22,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 20,
-    ...SHADOWS.sm,
-  },
-  escrowHeader: {
-    fontFamily: FONTS.bodyRegular,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 6,
-  },
-  iconCircleCyan: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: COLORS.brandCyanLight,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  escrowLabel: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  escrowAmount: {
+  balanceAmountText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 24,
-    fontWeight: "900",
-    color: COLORS.brandCyan,
-    letterSpacing: -0.5,
-    marginVertical: 2,
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#FFFFFF",
+    letterSpacing: -0.6,
+    marginVertical: 4,
   },
-  escrowDesc: {
+  balanceSubText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 2,
+    color: "rgba(255, 255, 255, 0.7)",
+    marginBottom: 18,
     lineHeight: 16,
   },
-  historySection: {
-    marginTop: 4,
-  },
-  historyHeader: {
-    fontFamily: FONTS.bodyRegular,
+  heroActionsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    gap: 10,
   },
-  historyTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    fontWeight: "800",
-    color: COLORS.textDark,
-  },
-  txRow: {
+  primaryPillBtn: {
+    flex: 1.2,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 11,
+    borderRadius: 999,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  primaryPillBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  secondaryGlassBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+    paddingVertical: 11,
+    borderRadius: 999,
+  },
+  secondaryGlassBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+
+  // 3. Dual Metric Cards
+  metricGridRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 16,
+  },
+  metricCard: {
+    flex: 1,
     backgroundColor: COLORS.bgSurface,
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 10,
-    ...SHADOWS.sm,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  txLeft: {
+  metricCardTop: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 6,
+    marginBottom: 8,
   },
-  txIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+  metricIconWrapCyan: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: COLORS.brandCyanLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  metricIconWrapGreen: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: COLORS.successBg,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  metricCardTag: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  metricCardValue: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    marginBottom: 2,
+  },
+  metricCardSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+  },
+
+  // 4. Bank Card
+  bankCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 20,
+  },
+  bankCardLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  bankIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bankNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  bankName: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  verifiedBankBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 999,
+  },
+  verifiedBankText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+  bankAccountNo: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+
+  // 5. Transaction History
+  historySection: {
+    marginBottom: 20,
+  },
+  historyHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  historyTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    letterSpacing: -0.3,
+  },
+  historyCountText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  historyTabsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 12,
+  },
+  historyTabPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  historyTabPillActive: {
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
+  },
+  historyTabText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  historyTabTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+
+  txItemCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  txItemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flex: 1,
+  },
+  txIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -489,105 +829,131 @@ const styles = StyleSheet.create({
   txIconRed: {
     backgroundColor: COLORS.dangerBg,
   },
-  txType: {
+  txInfoGroup: {
+    flex: 1,
+  },
+  txTypeTitle: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
-  txDate: {
+  txDescText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 1,
+  },
+  txDateText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
-    marginTop: 1,
+    marginTop: 2,
   },
-  txNominal: {
-    fontFamily: FONTS.bodyBold,
+  txItemRight: {
+    alignItems: "flex-end",
+  },
+  txAmountText: {
+    fontFamily: FONTS.displayBold,
     fontSize: 14,
-    fontWeight: "800",
+    fontWeight: "700",
   },
-  txDesc: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: COLORS.textMuted,
-    maxWidth: 130,
-    marginTop: 1,
+  txStatusPill: {
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
   },
-  emptyBox: {
-    padding: 30,
+  txStatusPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+
+  emptyHistoryBox: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 18,
+    padding: 24,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
-  emptyText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
+  emptyHistoryTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    marginTop: 8,
   },
+  emptyHistorySub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    marginTop: 4,
+    maxWidth: 260,
+  },
+
+  // Modal Sheet
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.65)",
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
     justifyContent: "flex-end",
   },
   modalSheet: {
     backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 40,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.lg,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
   },
   modalTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 20,
-    fontWeight: "900",
+    fontSize: 18,
+    fontWeight: "700",
     color: COLORS.textDark,
+    marginBottom: 4,
   },
   modalSub: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
-    marginTop: 4,
-    marginBottom: 18,
+    marginBottom: 16,
   },
-  quickNominals: {
+  quickNominalsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: 20,
+    marginVertical: 12,
   },
-  nomChip: {
-    fontFamily: FONTS.bodyRegular,
+  quickNomChip: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
+    paddingVertical: 7,
+    borderRadius: 10,
     backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
-  nomChipActive: {
-    fontFamily: FONTS.bodyRegular,
-    backgroundColor: COLORS.brandIndigo,
+  quickNomChipActive: {
+    backgroundColor: COLORS.brandIndigoLight,
     borderColor: COLORS.brandIndigo,
   },
-  nomText: {
-    fontFamily: FONTS.bodyBold,
+  quickNomText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: COLORS.textDark,
+    fontWeight: "600",
+  },
+  quickNomTextActive: {
+    color: COLORS.brandIndigo,
     fontWeight: "700",
   },
-  nomTextActive: {
-    fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
-    fontWeight: "800",
-  },
-  modalActions: {
+  modalActionsRow: {
     flexDirection: "row",
     gap: 10,
+    marginTop: 14,
   },
 });

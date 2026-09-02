@@ -6,12 +6,11 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Header } from "../../components/ui/Header";
 import { ProjectCard } from "../../components/features/ProjectCard";
-import { CategoryChip } from "../../components/ui/CategoryChip";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { FilterModal } from "../../components/features/FilterModal";
 import { NotificationModal } from "../../components/features/NotificationModal";
@@ -20,15 +19,24 @@ import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import { Plus, Compass, Bell, RotateCcw } from "lucide-react-native";
+import {
+  Plus,
+  Compass,
+  Bell,
+  RotateCcw,
+  X,
+  SlidersHorizontal,
+} from "lucide-react-native";
 
-export function ProjectListScreen({ navigation }) {
+export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'BUDGET'
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'NEW'
+  const [categoryFilter, setCategoryFilter] = useState(
+    route?.params?.category || "ALL"
+  );
 
   // Modals
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -44,6 +52,12 @@ export function ProjectListScreen({ navigation }) {
     user?.role === "MAHASISWA" ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+
+  useEffect(() => {
+    if (route?.params?.category) {
+      setCategoryFilter(route.params.category);
+    }
+  }, [route?.params?.category]);
 
   const loadProjects = async () => {
     try {
@@ -72,9 +86,9 @@ export function ProjectListScreen({ navigation }) {
   }, [searchQuery, user?.role]);
 
   const segmentedTabs = [
-    { id: "MATCH", label: "Paling Cocok" },
-    { id: "RECENT", label: "Terbaru" },
-    { id: "BUDGET", label: "Anggaran Tertinggi" },
+    { id: "MATCH", label: "Best Match" },
+    { id: "RECENT", label: "Most Recent" },
+    { id: "NEW", label: "New Post" },
   ];
 
   const activeFilterCount =
@@ -123,7 +137,7 @@ export function ProjectListScreen({ navigation }) {
       return matchesCategory && matchesSearch && matchesStatus && matchesBudget;
     })
     .sort((a, b) => {
-      if (activeTab === "BUDGET") {
+      if (activeTab === "NEW") {
         return (b.budget_max || 0) - (a.budget_max || 0);
       }
       if (activeTab === "RECENT") {
@@ -132,46 +146,63 @@ export function ProjectListScreen({ navigation }) {
       return 0;
     });
 
+  const getCategoryLabel = (catId) => {
+    const found = CATEGORIES.find((c) => c.id === catId);
+    return found ? found.label : catId;
+  };
+
   return (
     <View style={styles.container}>
-      {/* 1. Universal Header Bar */}
-      <Header
-        title={isMahasiswa ? "Eksplor Proyek UMKM" : "Kelola Proyek"}
-        subtitle={
-          isMahasiswa
-            ? "Temukan peluang proyek digital dan kirim proposalmu"
-            : "Pantau pesanan proyek & seleksi proposal mahasiswa"
-        }
-        showBell={isMahasiswa}
-        onBellPress={() => setIsNotificationOpen(true)}
-        unreadCount={unreadNotifications}
-        rightAction={
-          !isMahasiswa ? (
+      {/* 1. Header (Matching Mockup Screen 3 "Discover Jobs") */}
+      <View style={styles.header}>
+        <View style={styles.headerTitleGroup}>
+          <Text style={styles.headerTitle}>
+            {isMahasiswa ? "Discover Jobs" : "Kelola Proyek"}
+          </Text>
+          <Text style={styles.headerSubtitle}>
+            {isMahasiswa
+              ? "Temukan peluang proyek & kirim proposalmu"
+              : "Pantau pesanan proyek & seleksi talenta"}
+          </Text>
+        </View>
+
+        <View style={styles.headerRightGroup}>
+          {!isMahasiswa ? (
             <TouchableOpacity
               onPress={() => navigation.navigate("PostProject")}
-              style={styles.fabHeader}
+              style={styles.postProjectBtn}
+              activeOpacity={0.85}
+            >
+              <Plus size={16} color="#FFFFFF" />
+              <Text style={styles.postProjectBtnText}>Pasang</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.bellBtn}
+              onPress={() => setIsNotificationOpen(true)}
               activeOpacity={0.8}
             >
-              <Plus size={18} color="#FFFFFF" strokeWidth={3} />
+              <Bell size={20} color={COLORS.textDark} />
+              {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
             </TouchableOpacity>
-          ) : null
-        }
-      />
+          )}
+        </View>
+      </View>
 
-      {/* 2. Reusable SearchBar Component with Filter Button */}
-      <View style={styles.searchContainer}>
+      {/* 2. Search Bar with Filter Tuning Button */}
+      <View style={styles.searchSection}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery("")}
-          placeholder="Cari desain logo, website, video..."
+          placeholder="Search for job or skill..."
           showFilterBtn={true}
           onFilterPress={() => setIsFilterModalOpen(true)}
           activeFilterCount={activeFilterCount}
         />
       </View>
 
-      {/* 3. Segmented Navigation Tabs */}
+      {/* 3. Underline Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -196,26 +227,51 @@ export function ProjectListScreen({ navigation }) {
         })}
       </View>
 
-      {/* 4. Category Pills Slider */}
-      <View style={styles.categoryContainer}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={CATEGORIES}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <CategoryChip
-              category={item}
-              isSelected={categoryFilter === item.id}
-              onPress={() => setCategoryFilter(item.id)}
-              variant="soft"
-            />
+      {/* 4. Active Filter Tag Bar (Shown ONLY when a filter is active) */}
+      {activeFilterCount > 0 && (
+        <View style={styles.activeFilterBar}>
+          <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
+          {categoryFilter !== "ALL" && (
+            <View style={styles.activeFilterPill}>
+              <Text style={styles.activeFilterPillText}>
+                {getCategoryLabel(categoryFilter)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setCategoryFilter("ALL")}
+                activeOpacity={0.7}
+              >
+                <X size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </View>
           )}
-          contentContainerStyle={styles.categoryList}
-        />
-      </View>
+          {selectedBudgetRange !== "ALL" && (
+            <View style={styles.activeFilterPill}>
+              <Text style={styles.activeFilterPillText}>
+                {selectedBudgetRange === "UNDER_300K"
+                  ? "< Rp 300rb"
+                  : selectedBudgetRange === "300K_1M"
+                    ? "Rp 300rb - 1jt"
+                    : "> Rp 1jt"}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setSelectedBudgetRange("ALL")}
+                activeOpacity={0.7}
+              >
+                <X size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </View>
+          )}
+          <TouchableOpacity
+            onPress={resetFilters}
+            style={styles.resetFilterTextBtn}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.resetFilterText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
-      {/* 5. Projects List */}
+      {/* 5. Projects Feed List */}
       <FlatList
         data={filteredProjects}
         keyExtractor={(item) => item.id}
@@ -231,7 +287,7 @@ export function ProjectListScreen({ navigation }) {
         ListEmptyComponent={
           !loading && (
             <View style={styles.emptyState}>
-              <Compass size={44} color={COLORS.brandIndigo} />
+              <Compass size={40} color={COLORS.brandIndigo} />
               <Text style={styles.emptyTitle}>
                 {searchQuery || activeFilterCount > 0
                   ? "Proyek Tidak Ditemukan"
@@ -258,30 +314,35 @@ export function ProjectListScreen({ navigation }) {
           )
         }
         renderItem={({ item }) => (
-          <ProjectCard
-            project={item}
-            onPress={() =>
-              navigation.navigate("ProjectDetail", {
-                id: item.id,
-                projectId: item.id,
-              })
-            }
-          />
+          <View style={styles.projectCardWrapper}>
+            <ProjectCard
+              project={item}
+              onPress={() =>
+                navigation.navigate("ProjectDetail", {
+                  id: item.id,
+                  projectId: item.id,
+                })
+              }
+            />
+          </View>
         )}
       />
 
-      {/* 6. Reusable FilterModal Component */}
+      {/* Filter Bottom Sheet Modal */}
       <FilterModal
         visible={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
+        selectedCategory={categoryFilter}
+        onSelectCategory={setCategoryFilter}
         selectedStatus={selectedStatus}
         onSelectStatus={setSelectedStatus}
         selectedBudgetRange={selectedBudgetRange}
         onSelectBudgetRange={setSelectedBudgetRange}
         onReset={resetFilters}
+        categories={CATEGORIES}
       />
 
-      {/* 7. Working Notification Modal */}
+      {/* Notification Center Modal */}
       <NotificationModal
         visible={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
@@ -295,129 +356,190 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bgDark,
   },
-  topHeader: {
-    fontFamily: FONTS.bodyRegular,
+
+  // 1. Header (Mockup Screen 3 Style)
+  header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 18,
-    paddingTop: 50,
-    paddingBottom: 14,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "ios" ? 54 : 44,
+    paddingBottom: 12,
     backgroundColor: COLORS.bgSurface,
+  },
+  headerTitleGroup: {
+    flex: 1,
   },
   headerTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
-    fontWeight: "900",
+    fontWeight: "800",
     color: COLORS.textDark,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 2,
   },
-  fabHeader: {
-    fontFamily: FONTS.bodyRegular,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: COLORS.brandIndigo,
+  headerRightGroup: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    ...SHADOWS.brandGlow,
+    gap: 8,
   },
   bellBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
   },
-  unreadDot: {
+  bellRedDot: {
     position: "absolute",
-    top: 8,
-    right: 9,
+    top: 9,
+    right: 10,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#F43F5E",
+    backgroundColor: COLORS.danger,
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
-  searchContainer: {
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+  postProjectBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+  },
+  postProjectBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+
+  // 2. Search Section
+  searchSection: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 8,
     backgroundColor: COLORS.bgSurface,
   },
+
+  // 3. Segmented Navigation Tabs (Underline Style)
   segmentedContainer: {
     flexDirection: "row",
     backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
   },
   segmentedTabItem: {
-    marginRight: 24,
+    flex: 1,
     paddingVertical: 12,
+    alignItems: "center",
     position: "relative",
   },
   segmentedTabText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "500",
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
-    fontWeight: "900",
+    fontWeight: "700",
   },
   activeUnderlineBar: {
     position: "absolute",
     bottom: -1,
-    left: 0,
-    right: 0,
+    left: 12,
+    right: 12,
     height: 3,
-    backgroundColor: COLORS.brandIndigo,
     borderRadius: 2,
+    backgroundColor: COLORS.brandIndigo,
   },
-  categoryContainer: {
-    backgroundColor: COLORS.bgSurface,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+
+  // 4. Active Filter Tag Bar
+  activeFilterBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: COLORS.canvasSoft,
+    gap: 8,
+    flexWrap: "wrap",
   },
-  categoryList: {
-    paddingHorizontal: 18,
-    gap: 6,
+  activeFilterLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "600",
   },
+  activeFilterPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.brandIndigoLight,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+  },
+  activeFilterPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.brandIndigo,
+    fontWeight: "600",
+  },
+  resetFilterTextBtn: {
+    marginLeft: "auto",
+  },
+  resetFilterText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.danger,
+    fontWeight: "700",
+  },
+
+  // 5. Feed List
   listContent: {
-    paddingHorizontal: 18,
-    paddingTop: 12,
-    paddingBottom: 110,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 32,
   },
+  projectCardWrapper: {
+    marginBottom: 14,
+  },
+
+  // Empty State
   emptyState: {
-    fontFamily: FONTS.bodyRegular,
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 24,
-    padding: 36,
+    padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    ...SHADOWS.sm,
+    marginTop: 20,
   },
   emptyTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    fontWeight: "800",
+    fontSize: 15,
+    fontWeight: "700",
     color: COLORS.textDark,
     marginTop: 12,
+    textAlign: "center",
   },
   emptyDesc: {
     fontFamily: FONTS.bodyRegular,
@@ -425,10 +547,10 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textAlign: "center",
     marginTop: 4,
-    maxWidth: 260,
     lineHeight: 18,
+    maxWidth: 260,
   },
   emptyBtn: {
-    marginTop: 18,
+    marginTop: 16,
   },
 });

@@ -16,11 +16,10 @@
 - [x] **Fase 0.2:** UI/UX Design System Specification (Minimalist Editorial / shadcn/ui style)
 - [x] **Fase 1:** Backend Foundation & Database (PostgreSQL + SQLAlchemy + Alembic + Seeder 100% DONE)
 - [x] **Fase 2:** Backend Core & Security Hardening (Auth, Projects, Proposals, Escrow, Submissions, Ratings, Disputes 100% DONE)
-- [x] **Fase 3A:** Web App Development (React + Tailwind + Editorial Minimalist Dribbble Style 100% DONE)
-- [ ] **Fase 3B:** Mobile App Development (React Native)
-- [ ] **Fase 4:** Integrasi Payment Gateway & Push Notification
-- [ ] **Fase 5:** Admin Dashboard & Final Polish
-- [ ] **Fase 6:** UAT & Finalisasi Skripsi
+- [x] **Fase 3A:** Web App Development (React + Tailwind + Editorial Minimalist Glassmorphism Dock 100% DONE)
+- [x] **Fase 3B:** Mobile App Development (React Native + Vector Bento Hub + Zero AI Slop 100% DONE)
+- [ ] **Fase 4:** Testing & Audit Skripsi (UAT)
+- [ ] **Fase 5:** Pengembangan Fitur Lanjutan (High-Impact Suite: QRIS, Realtime Chat, Ratings, WhatsApp Alerts, SPK Generator)
 
 ---
 
@@ -213,3 +212,58 @@ _Tech: React Native + React Navigation + Zustand + Axios + Dribbble Satoshi Them
   - [ ] Test SQL Injection & XSS payload -> Sanitized by SQLAlchemy & Pydantic
 - [ ] Build Demo APK & Deploy Backend ke Cloud (Railway/VPS)
 - [ ] Finalisasi penulisan skripsi BAB 1 s/d BAB 5
+
+---
+
+## 🔮 FASE 5 — PENGEMBANGAN FITUR LANJUTAN (HIGH-IMPACT SUITE)
+
+_Fitur pengembangan bernilai tinggi untuk Mahasiswa & Klien UMKM. Backend melibatkan pengerjaan langsung oleh Anda (Junior Dev) dengan instruksi dan arsitektur dari Senior Dev._
+
+### 5.1 💳 Payment Gateway QRIS & Otomasi Payout (Escrow)
+
+- **📱 Frontend (Mobile & Web)**:
+  - [ ] Modal Interaktif Pembayaran QRIS Dinamis & Virtual Account di layar Dompet.
+  - [ ] Form Penarikan Dana Fleksibel (Bank BCA/Mandiri/BRI atau E-Wallet DANA/GoPay/OVO/ShopeePay).
+  - [ ] Invoice / Bukti Resi Digital instan berstatus sukses.
+- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
+  - [ ] Cek konfigurasi `.env` backend untuk `MIDTRANS_SERVER_KEY` dan `MIDTRANS_CLIENT_KEY`.
+  - [ ] Uji endpoint `POST /wallet/withdraw` dengan input nama bank/e-wallet, nomor rekening, dan nama pemilik.
+  - [ ] Webhook URL handler `POST /wallet/webhook/midtrans` untuk auto-settlement.
+
+### 5.2 💬 In-App Realtime Collaboration Chat & File Sharing
+
+- **📱 Frontend (Mobile & Web)**:
+  - [ ] Layar Chat Room Proyek (`ChatScreen.jsx`) dengan bubble pesan modern, timestamp, dan avatar.
+  - [ ] Tombol pintas lampiran: _[ 🔗 Kirim Link Figma / Drive ]_, _[ 📸 Kirim Tangkapan Layar ]_, dan _[ 📋 Status Escrow ]_.
+  - [ ] Indikator badge pesan belum dibaca di tab navigasi.
+- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
+  - [ ] Buat model SQLAlchemy `ChatMessage` di `app/models/chat.py`.
+  - [ ] Buat WebSocket endpoint `@router.websocket("/ws/chat/{project_id}")` di `app/routers/chat.py`.
+  - [ ] Buat REST endpoint `GET /chat/project/{project_id}/messages` untuk riwayat pesan.
+
+### 5.3 🌟 Sistem Rating Bintang & Galeri Portofolio Publik
+
+- **📱 Frontend (Mobile & Web)**:
+  - [ ] Modal Review Bintang 1–5 saat proyek selesai (Kualitas Desain/Kode, Kecepatan, Komunikasi).
+  - [ ] Tab Portofolio Publik & Testimoni Klien di Profil Mahasiswa.
+  - [ ] Lencana _Verified Escrow Review_ pada setiap ulasan.
+- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
+  - [ ] Buat tabel `project_reviews` (project_id, mhs_id, umkm_id, rating_score, review_text).
+  - [ ] Buat endpoint `POST /ratings` (validasi status proyek `COMPLETED`).
+
+### 5.4 🔔 Notifikasi Real-time & WhatsApp Alerts
+
+- **📱 Frontend (Mobile & Web)**:
+  - [ ] Integrasi Expo Push Notification listener di `mobile/App.jsx`.
+  - [ ] In-app toast notification saat ada aktivitas proyek baru.
+- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
+  - [ ] Dispatcher event notifikasi saat proposal disetujui, deliverable diunggah, dan honor cair.
+  - [ ] Integrasi webhook WhatsApp Gateway (Fonnte/Twilio) untuk notifikasi instan.
+
+### 5.5 📄 Generator Surat Perjanjian Kerja (SPK) & Kontrak PDF
+
+- **📱 Frontend (Mobile & Web)**:
+  - [ ] Tombol _[ 📄 Unduh Surat Kontrak Kerja (SPK) ]_ di layar Detail Proyek & Workspace.
+- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
+  - [ ] Install library `reportlab` di backend (`pip install reportlab`).
+  - [ ] Buat endpoint `GET /projects/{id}/contract-pdf` untuk generate surat perjanjian resmi ber-watermark.
