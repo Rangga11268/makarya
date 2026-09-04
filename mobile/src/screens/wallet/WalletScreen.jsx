@@ -165,7 +165,7 @@ export function WalletScreen({ navigation }) {
             <View style={styles.escrowBadge}>
               <View style={styles.liveGreenDot} />
               <ShieldCheck size={13} color="#34D399" />
-              <Text style={styles.escrowBadgeText}>100% Escrow Protected</Text>
+              <Text style={styles.escrowBadgeText}>100% Terproteksi Escrow</Text>
             </View>
 
             <TouchableOpacity
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.5,
   },
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
   balanceAmountText: {
     fontFamily: FONTS.displayBold,
     fontSize: 28,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "#FFFFFF",
     letterSpacing: -0.6,
     marginVertical: 4,

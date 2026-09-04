@@ -48,7 +48,6 @@ export function CategoryChip({
 
 const styles = StyleSheet.create({
   chip: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -62,29 +61,27 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   chipActive: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   chipActiveSoft: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigoLight,
     borderColor: "rgba(79, 70, 229, 0.25)",
   },
   text: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "500",
     color: COLORS.textDark,
   },
   textActive: {
     fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
-    fontWeight: "800",
+    fontWeight: "700",
   },
   textActiveSoft: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
-    fontWeight: "800",
+    fontWeight: "700",
   },
 });

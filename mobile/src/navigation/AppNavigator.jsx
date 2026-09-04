@@ -6,6 +6,7 @@ import { MainTabs } from "./MainTabs";
 import { PostProjectScreen } from "../screens/projects/PostProjectScreen";
 import { ProjectDetailScreen } from "../screens/projects/ProjectDetailScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
+import { ChatScreen } from "../screens/chat/ChatScreen";
 import { SplashScreen } from "../screens/onboarding/SplashScreen";
 import { CustomDialog } from "../components/ui/CustomDialog";
 import { useAuthStore } from "../store/authStore";
@@ -36,6 +37,7 @@ export function AppNavigator() {
               name="ProjectDetail"
               component={ProjectDetailScreen}
             />
+            <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
           </>
         ) : (

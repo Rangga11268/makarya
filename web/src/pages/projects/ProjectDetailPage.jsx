@@ -38,7 +38,10 @@ import {
   AlertCircle,
   MapPin,
   Share2,
+  MessageSquare,
+  PlusCircle,
 } from "lucide-react";
+import { ProjectChatModal } from "../../components/features/ProjectChatModal";
 
 export function ProjectDetailPage() {
   const { id } = useParams();
@@ -47,6 +50,7 @@ export function ProjectDetailPage() {
   const { addToast } = useToastStore();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [chatModalOpen, setChatModalOpen] = useState(false);
 
   const getCategorySvg = (catCode) => {
     switch (catCode) {
@@ -285,6 +289,42 @@ export function ProjectDetailPage() {
               <div className="p-5 bg-canvas rounded-2xl border border-border text-xs text-slate-800 leading-relaxed font-normal whitespace-pre-line">
                 {project.deskripsi_raw}
               </div>
+
+              {/* Realtime Chat Banner */}
+              <div className="p-4 bg-indigo-50/60 border border-indigo-200/70 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-dark-900">
+                      Ruang Diskusi & Kolaborasi Realtime
+                    </h4>
+                    <p className="text-[11px] text-muted">
+                      Bahas kebutuhan brief, klarifikasi teknis, atau kirim
+                      tautan Figma langsung dengan mitra.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="brand"
+                  size="sm"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      addToast(
+                        "Silakan masuk terlebih dahulu untuk membuka ruang obrolan.",
+                        "info",
+                      );
+                      navigate("/login");
+                      return;
+                    }
+                    setChatModalOpen(true);
+                  }}
+                  className="shrink-0 text-xs font-bold py-2 px-4 shadow-brand"
+                >
+                  Buka Obrolan
+                </Button>
+              </div>
             </div>
           </Card>
 
@@ -434,6 +474,27 @@ export function ProjectDetailPage() {
               </Button>
             )}
 
+            {/* Tombol Buka Ruang Obrolan */}
+            <Button
+              variant="outline"
+              size="md"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  addToast(
+                    "Silakan masuk terlebih dahulu untuk membuka ruang kerja & obrolan.",
+                    "info",
+                  );
+                  navigate("/login");
+                  return;
+                }
+                navigate(`/proposals?project=${project.id}`);
+              }}
+              className="w-full text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 py-3 flex items-center justify-center gap-2 rounded-2xl"
+            >
+              <MessageSquare className="w-4 h-4 text-brand-indigo" />
+              <span>Buka Ruang Kerja & Obrolan</span>
+            </Button>
+
             {/* Escrow Guarantee Pill */}
             <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-1 text-xs text-emerald-950">
               <div className="flex items-center gap-1.5 font-bold text-emerald-900">
@@ -511,6 +572,20 @@ export function ProjectDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* Realtime Project Collaboration Chat Modal */}
+      <ProjectChatModal
+        isOpen={chatModalOpen}
+        onClose={() => setChatModalOpen(false)}
+        projectId={project?.id}
+        projectTitle={project?.judul}
+        partnerName={
+          isOwner
+            ? "Mahasiswa Talenta"
+            : project?.umkm_profile?.nama_usaha || "Klien UMKM"
+        }
+        partnerRole={isOwner ? "MHS" : "UMKM"}
+      />
     </div>
   );
 }

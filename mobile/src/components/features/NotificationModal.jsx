@@ -154,14 +154,12 @@ const styles = StyleSheet.create({
     ...SHADOWS.lg,
   },
   modalHeader: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 14,
   },
   headerTitleGroup: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
@@ -189,7 +187,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   modalSub: {
@@ -260,7 +258,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   itemTime: {
@@ -276,7 +274,6 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
   activePillDot: {
-    fontFamily: FONTS.bodyRegular,
     width: 7,
     height: 7,
     borderRadius: 3.5,
@@ -291,7 +288,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 15,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     marginTop: 10,
   },

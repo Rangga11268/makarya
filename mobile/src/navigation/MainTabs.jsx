@@ -8,13 +8,7 @@ import { TrackerScreen } from "../screens/tracker/TrackerScreen";
 import { WalletScreen } from "../screens/wallet/WalletScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { COLORS } from "../theme/colors";
-import {
-  LayoutGrid,
-  Compass,
-  Layers,
-  Wallet,
-  User,
-} from "lucide-react-native";
+import { LayoutGrid, Compass, Layers, Wallet, User } from "lucide-react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,12 +25,12 @@ export function MainTabs() {
         tabBarItemStyle: styles.tabItem,
       }}
     >
-      {/* 1. Beranda */}
+      {/* 1. Home */}
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: "Beranda",
+          tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
             <View style={focused ? styles.activeIconContainer : null}>
               <LayoutGrid
@@ -49,12 +43,12 @@ export function MainTabs() {
         }}
       />
 
-      {/* 2. Eksplor Proyek */}
+      {/* 2. Explore Projects */}
       <Tab.Screen
         name="ProjectsTab"
         component={ProjectListScreen}
         options={{
-          tabBarLabel: "Eksplor",
+          tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
             <View style={focused ? styles.activeIconContainer : null}>
               <Compass
@@ -67,7 +61,7 @@ export function MainTabs() {
         }}
       />
 
-      {/* 3. Workspace / Status Proyek */}
+      {/* 3. Workspace */}
       <Tab.Screen
         name="TrackerTab"
         component={TrackerScreen}
@@ -85,12 +79,12 @@ export function MainTabs() {
         }}
       />
 
-      {/* 4. Dompet & Escrow */}
+      {/* 4. Wallet */}
       <Tab.Screen
         name="WalletTab"
         component={WalletScreen}
         options={{
-          tabBarLabel: "Dompet",
+          tabBarLabel: "Wallet",
           tabBarIcon: ({ focused }) => (
             <View style={focused ? styles.activeIconContainer : null}>
               <Wallet
@@ -103,12 +97,12 @@ export function MainTabs() {
         }}
       />
 
-      {/* 5. Profil Akun Pengguna (Akses Jelas & Permanen) */}
+      {/* 5. Profile */}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
         options={{
-          tabBarLabel: "Profil",
+          tabBarLabel: "Profile",
           tabBarIcon: ({ focused }) => (
             <View style={focused ? styles.activeIconContainer : null}>
               <User
@@ -140,20 +134,18 @@ const styles = StyleSheet.create({
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05,
-    shadowRadius: 16,
+    shadowRadius: 12,
   },
   tabItem: {
     paddingVertical: 2,
-    alignItems: "center",
   },
   tabLabel: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
-    fontWeight: "700",
-    letterSpacing: 0.1,
+    fontWeight: "600",
     marginTop: 2,
   },
   activeIconContainer: {
-    transform: [{ scale: 1.08 }],
+    transform: [{ scale: 1.05 }],
   },
 });

@@ -230,16 +230,26 @@ _Fitur pengembangan bernilai tinggi untuk Mahasiswa & Klien UMKM. Backend meliba
   - [ ] Uji endpoint `POST /wallet/withdraw` dengan input nama bank/e-wallet, nomor rekening, dan nama pemilik.
   - [ ] Webhook URL handler `POST /wallet/webhook/midtrans` untuk auto-settlement.
 
-### 5.2 💬 In-App Realtime Collaboration Chat & File Sharing
+### 5.2 💬 In-App Realtime Collaboration Chat & Unified Workroom (100% SELESAI)
 
 - **📱 Frontend (Mobile & Web)**:
-  - [ ] Layar Chat Room Proyek (`ChatScreen.jsx`) dengan bubble pesan modern, timestamp, dan avatar.
-  - [ ] Tombol pintas lampiran: _[ 🔗 Kirim Link Figma / Drive ]_, _[ 📸 Kirim Tangkapan Layar ]_, dan _[ 📋 Status Escrow ]_.
-  - [ ] Indikator badge pesan belum dibaca di tab navigasi.
-- **⚙️ Backend (Tugas Anda dengan Panduan Senior Dev)**:
-  - [ ] Buat model SQLAlchemy `ChatMessage` di `app/models/chat.py`.
-  - [ ] Buat WebSocket endpoint `@router.websocket("/ws/chat/{project_id}")` di `app/routers/chat.py`.
-  - [ ] Buat REST endpoint `GET /chat/project/{project_id}/messages` untuk riwayat pesan.
+  - [x] Layar Chat Room Proyek Mobile (`ChatScreen.jsx`) dengan bubble pesan modern, timestamp, dan avatar.
+  - [x] Redesign Web: **Unified 2-Pane Workroom** (`ProposalBoardPage.jsx` & `WorkroomChatPanel.jsx`) ala Linear & Upwork Workroom dengan chat real-time terintegrasi langsung di canvas panggung kerja tanpa modal popup mengambang.
+  - [x] Tab terpadu di Ruang Kerja: _[ 💬 Obrolan Realtime ]_, _[ 📦 Berkas Deliverable & Revisi ]_, _[ 👥 Pelamar Masuk ]_, dan _[ 📋 Rincian Kontrak ]_.
+  - [x] Tombol pintas lampiran: _[ 🔗 Kirim Link Figma / Drive ]_, timestamp aman, dan indikator status live WebSocket.
+  - [x] **Perbaikan & Optimalisasi Mobile Workspace**:
+    - [x] Memperbaiki freeze/stuck 100% bundle Metro dengan menghapus deklarasi ganda sintaks (`myExistingProposal`, `isAcceptedProposal`, `canApply`) di `ProjectDetailScreen.jsx`.
+    - [x] Memperbaiki data passing kosong di Workspace UMKM (`/projects/my` vs `/projects/my-projects`).
+    - [x] Memperbaiki HTTP method `PATCH` untuk terima proposal, tolak proposal, dan setujui hasil kerja di `mobile/src/api/index.js`.
+    - [x] Menambahkan auto-reload `useFocusEffect` pada `TrackerScreen.jsx` dan `ProjectDetailScreen.jsx`.
+
+    - [x] **Audit & Standardisasi Tipografi / fontWeight Seluruh Mobile App**: Memperbaiki bug font override pada Button.jsx dan modifier styles (di mana bodyRegular menimpa bodyBold), menghapus fontFamily ilegal pada elemen View, dan standardisasi bobot (700 untuk Bold, 500 untuk Medium).
+    - [x] **Redesign Modern Workspace Screen & Natural English Copywriting**: Merombak tampilan Workspace mobile (tata letak ramping & breathable bebas tumpukan, pill-based tab filter, integrasi tombol cepat Chat langsung di kartu, dan metadata ringkas) serta mengadopsi copywriting Bahasa Inggris profesional yang natural (Workspace, In Progress, Under Review, Completed, Discover Jobs, Best Match, dsb).
+- **⚙️ Backend**:
+  - [x] Model SQLAlchemy `ChatMessage` di `app/models/chat.py` & migrasi database Alembic.
+  - [x] WebSocket endpoint `@router.websocket("/ws/project/{project_id}")` di `app/routers/chat.py`.
+  - [x] REST endpoint `GET /chat/project/{project_id}/messages` & `POST` sender di `app/routers/chat.py`.
+  - [x] Alias endpoint `@router.get("/my")` dan `@router.get("/my-projects")` di `app/routers/projects.py`.
 
 ### 5.3 🌟 Sistem Rating Bintang & Galeri Portofolio Publik
 

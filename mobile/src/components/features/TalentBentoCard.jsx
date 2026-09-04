@@ -209,14 +209,12 @@ const styles = StyleSheet.create({
   avatarText: {
     fontFamily: FONTS.displayBold,
     fontSize: 17,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   avatarTextFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   avatarTextStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   info: {
@@ -225,7 +223,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: FONTS.displayBold,
     fontSize: 16,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: -0.3,
   },
   prodi: {
@@ -234,23 +232,18 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   textWhite: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   textDark: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   textMutedFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.75)",
   },
   textMuted: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   ratingBadge: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 8,
@@ -259,11 +252,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   ratingBadgeFeatured: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   ratingBadgeStandard: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
@@ -271,18 +262,15 @@ const styles = StyleSheet.create({
   ratingText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   ratingTextFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   ratingTextStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   roleContainer: {
-    fontFamily: FONTS.bodyRegular,
     marginVertical: 4,
   },
   roleLabel: {
@@ -293,17 +281,15 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   roleLabelFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.7)",
   },
   roleLabelStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   roleValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: -0.5,
     marginTop: 2,
   },
@@ -314,17 +300,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   skillChip: {
-    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
   },
   skillChipFeatured: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: "rgba(255, 255, 255, 0.18)",
   },
   skillChipStandard: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
@@ -335,11 +318,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   skillTextFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   skillTextStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
   },
   bottomRow: {
@@ -362,17 +343,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   statLabelFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: "rgba(255, 255, 255, 0.7)",
   },
   statLabelStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   statValue: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     marginTop: 1,
   },
   actionBtn: {
@@ -392,7 +371,7 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   actionTextFeatured: {
     fontFamily: FONTS.bodyRegular,

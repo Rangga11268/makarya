@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   brandTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 28,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "#0F172A",
     letterSpacing: -0.5,
   },

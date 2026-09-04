@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   header: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
   range: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   banner: {

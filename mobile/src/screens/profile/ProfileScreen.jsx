@@ -272,7 +272,7 @@ export function ProfileScreen({ navigation }) {
                 <Github size={16} color={COLORS.textDark} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.linkTitle}>GitHub Profile</Text>
+                <Text style={styles.linkTitle}>Profil GitHub</Text>
                 <Text style={styles.linkUrl}>github.com/Rangga11268</Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
@@ -283,7 +283,7 @@ export function ProfileScreen({ navigation }) {
                 <Palette size={16} color="#EA4C89" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.linkTitle}>Figma / Dribbble Showcase</Text>
+                <Text style={styles.linkTitle}>Portofolio Desain Figma</Text>
                 <Text style={styles.linkUrl}>figma.com/@darell_ux</Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
@@ -487,13 +487,13 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontFamily: FONTS.displayBold,
     fontSize: 30,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#FFFFFF",
   },
   userName: {
     fontFamily: FONTS.displayBold,
     fontSize: 20,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.4,
   },
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   roleText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   metricsGrid: {
     flexDirection: "row",
@@ -543,7 +543,7 @@ const styles = StyleSheet.create({
   metricValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   metricLabel: {
@@ -666,7 +666,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
     color: COLORS.textMuted,
-    fontWeight: "800",
+    fontWeight: "700",
   },
 
   // Links

@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   header: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   info: {
     flex: 1,
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: FONTS.bodyBold,
     fontSize: 14,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   prodi: {
@@ -154,7 +153,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   ratingBadge: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.canvasSoft,
@@ -168,7 +166,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   offerRow: {
@@ -189,12 +187,11 @@ const styles = StyleSheet.create({
   offerPrice: {
     fontFamily: FONTS.displayBold,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
     marginTop: 2,
   },
   durationBadge: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,

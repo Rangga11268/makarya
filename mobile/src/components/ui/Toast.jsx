@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   pill: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#0F172A", // Sleek dark slate pill with high contrast

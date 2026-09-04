@@ -19,7 +19,7 @@ export function FilterModal({
     { id: "ALL", label: "Semua Status" },
     { id: "OPEN", label: "Bidding Terbuka" },
     { id: "IN_PROGRESS", label: "Sedang Dikerjakan" },
-    { id: "REVIEW", label: "Dalam Review" },
+    { id: "REVIEW", label: "Pemeriksaan Hasil" },
     { id: "DONE", label: "Selesai" },
   ];
 
@@ -102,25 +102,27 @@ export function FilterModal({
             })}
           </View>
 
-          {/* Modal Actions */}
+          {/* Modal Action Buttons */}
           <View style={styles.modalActions}>
-            <Button
-              title="Reset"
-              variant="secondary"
-              size="md"
-              onPress={onReset}
-              style={{ flex: 1 }}
-            />
-            <Button
-              title="Terapkan Filter"
-              variant="brand"
-              size="md"
-              onPress={() => {
-                if (onApply) onApply();
-                onClose();
-              }}
-              style={{ flex: 2 }}
-            />
+            <View style={{ flex: 1 }}>
+              <Button
+                title="Atur Ulang"
+                variant="outline"
+                size="md"
+                onPress={onReset}
+              />
+            </View>
+            <View style={{ flex: 1.4 }}>
+              <Button
+                title="Terapkan Filter"
+                variant="brand"
+                size="md"
+                onPress={() => {
+                  if (onApply) onApply();
+                  onClose();
+                }}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -131,21 +133,18 @@ export function FilterModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.65)",
+    backgroundColor: "rgba(15, 23, 42, 0.4)",
     justifyContent: "flex-end",
   },
   modalSheet: {
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 40,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.lg,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 36,
   },
   modalHeader: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   modalSub: {
@@ -172,9 +171,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   filterSectionTitle: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     textTransform: "uppercase",
     letterSpacing: 0.4,
@@ -182,14 +181,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   filterChipGrid: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
     marginBottom: 14,
   },
   modalOptionChip: {
-    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
@@ -198,20 +195,19 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   modalOptionChipActive: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   modalOptionText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "500",
     color: COLORS.textDark,
   },
   modalOptionTextActive: {
     fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
-    fontWeight: "800",
+    fontWeight: "700",
   },
   modalActions: {
     flexDirection: "row",

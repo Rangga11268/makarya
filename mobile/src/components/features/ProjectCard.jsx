@@ -25,7 +25,7 @@ export function ProjectCard({ project, onPress }) {
       case "IN_PROGRESS":
         return <Badge label="Sedang Dikerjakan" variant="cyan" />;
       case "REVIEW":
-        return <Badge label="Review Hasil" variant="warning" />;
+        return <Badge label="Pemeriksaan Hasil" variant="warning" />;
       case "DONE":
       case "COMPLETED":
         return <Badge label="Selesai" variant="success" />;
@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
     ...SHADOWS.sm,
   },
   clientHeader: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
@@ -149,7 +148,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   escrowChip: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
@@ -220,7 +218,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   skillPill: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     paddingHorizontal: 10,
     paddingVertical: 4,

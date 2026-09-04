@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.limiter import limiter
-from app.routers import auth, projects, proposals, wallet, submissions ,ratings, disputes
+from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -38,6 +38,7 @@ app.include_router(wallet.router, prefix=settings.API_V1_STR, tags=["Wallet & Es
 app.include_router(submissions.router, prefix=settings.API_V1_STR, tags=["Submissions & Revision Control"])
 app.include_router(ratings.router, prefix=settings.API_V1_STR, tags=["Ratings & Reviews"])
 app.include_router(disputes.router, prefix=settings.API_V1_STR, tags=["Dispute Resolution"])
+app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["Realtime Collaboration Chat"])
 
 
 @app.get("/", tags=["Cek Health"])

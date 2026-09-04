@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
     textAlign: "center",
     letterSpacing: -0.3,
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   confirmBtn: {
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   confirmBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#FFFFFF",
   },
 });

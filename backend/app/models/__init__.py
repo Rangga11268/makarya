@@ -10,6 +10,7 @@ from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.rating import Rating
 from app.models.dispute import Dispute, DisputeStatus
 from app.models.notification import Notification, NotificationType
+from app.models.chat import ChatMessage
 
 __all__ = [
     "User",
@@ -35,5 +36,6 @@ __all__ = [
     "Dispute",
     "DisputeStatus",
     "Notification",
-    "NotificationType"
+    "NotificationType",
+    "ChatMessage",
 ]

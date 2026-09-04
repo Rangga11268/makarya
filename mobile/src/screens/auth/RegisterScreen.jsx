@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   header: {
-    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
   brandLogo: {
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.displayBold,
     fontSize: 28,
-    fontWeight: "900",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.6,
   },
@@ -244,7 +243,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   industryChip: {
-    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 13,
     paddingVertical: 7,
     borderRadius: 999,
@@ -267,7 +265,7 @@ const styles = StyleSheet.create({
   industryTextActive: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.textInverse,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   registerBtn: {
     marginTop: 8,
@@ -287,7 +285,7 @@ const styles = StyleSheet.create({
   loginLink: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
 });

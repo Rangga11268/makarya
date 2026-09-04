@@ -144,7 +144,6 @@ export function Header({
 
 const styles = StyleSheet.create({
   header: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -171,7 +170,6 @@ const styles = StyleSheet.create({
     height: 30,
   },
   brandBadge: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigoLight,
     paddingHorizontal: 7,
     paddingVertical: 2.5,
@@ -198,7 +196,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   titleContainer: {
-    fontFamily: FONTS.bodyRegular,
     flex: 1,
   },
   title: {
@@ -244,7 +241,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   verifiedCheckBadge: {
-    fontFamily: FONTS.bodyRegular,
     position: "absolute",
     bottom: -2,
     right: -2,
@@ -290,7 +286,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   miniVerifiedBadge: {
-    fontFamily: FONTS.bodyRegular,
     position: "absolute",
     bottom: -1,
     right: -1,

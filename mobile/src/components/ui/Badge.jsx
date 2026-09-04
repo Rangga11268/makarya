@@ -77,7 +77,6 @@ export function Badge({ label, variant = "neutral", style, textStyle }) {
 
 const styles = StyleSheet.create({
   badge: {
-    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 999,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -10,6 +10,7 @@ import { Button } from "../../components/ui/Button";
 import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
 import { RevisionModal } from "../../components/features/RevisionModal";
+import { WorkroomChatPanel } from "../../components/features/WorkroomChatPanel";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -43,42 +44,62 @@ import {
   Check,
   CircleDot,
   FileCheck2,
+  MessageSquare,
 } from "lucide-react";
 
-const ITEMS_PER_PAGE = 6;
+function parseCoverLetter(rawText) {
+  if (!rawText) return { text: "", tools: [], portfolio: null };
+
+  let text = rawText;
+  let tools = [];
+  let portfolio = null;
+
+  // Extract tools
+  const toolsMatch = text.match(/\[Tools & Keahlian:\s*([^\]]+)\]/i);
+  if (toolsMatch) {
+    tools = toolsMatch[1]
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    text = text.replace(toolsMatch[0], "").trim();
+  }
+
+  // Extract portfolio
+  const portMatch = text.match(/\[Tautan Portofolio Pendukung:\s*([^\]]+)\]/i);
+  if (portMatch) {
+    portfolio = portMatch[1].trim();
+    text = text.replace(portMatch[0], "").trim();
+  }
+
+  return { text, tools, portfolio };
+}
 
 export function ProposalBoardPage() {
   const { user } = useAuthStore();
   const { addToast } = useToastStore();
   const { showConfirm, showSuccess, showError } = useAlertStore();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isUmkm = user?.role === "UMKM";
 
-  // State for MHS
+  // Data states
   const [proposals, setMyProposals] = useState([]);
-  // State for UMKM
   const [myProjects, setMyProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProposal, setSelectedProposal] = useState(null);
   const [projectProposals, setProjectProposals] = useState([]);
   const [projectSubmissions, setProjectSubmissions] = useState([]);
   const [mhsSubmissions, setMhsSubmissions] = useState({});
-
-  // Quick Wallet State
   const [wallet, setWallet] = useState(null);
-
-  // Search, Filter, Pagination & Accordion states
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("ALL");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [expandedCards, setExpandedCards] = useState({});
-
-  const toggleCard = (id) => {
-    setExpandedCards((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   const [loading, setLoading] = useState(true);
+
+  // Active Stage Sub-tab: 'chat' | 'deliverable' | 'brief' | 'applicants'
+  const [activeStageTab, setActiveStageTab] = useState("chat");
+
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("ALL");
+
+  // Modals
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
@@ -86,23 +107,31 @@ export function ProposalBoardPage() {
     useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
+  // 1. Initial Data Loading
   const loadData = async () => {
     try {
       setLoading(true);
 
-      // Load wallet data for quick overview
+      // Load wallet data
       walletApi
         .getMe()
         .then((res) => setWallet(res.data))
         .catch(() => {});
 
+      const targetProjectId = searchParams.get("project");
+
       if (isUmkm) {
         const res = await projectApi.getMyProjects();
         setMyProjects(res.data);
+
         if (res.data.length > 0) {
-          const defaultProj = selectedProject || res.data[0];
-          setSelectedProject(defaultProj);
-          await loadProjectDetails(defaultProj.id);
+          let chosen = res.data[0];
+          if (targetProjectId) {
+            const found = res.data.find((p) => p.id === targetProjectId);
+            if (found) chosen = found;
+          }
+          setSelectedProject(chosen);
+          await loadProjectDetails(chosen.id);
         }
       } else {
         const res = await proposalApi.getMyProposals();
@@ -124,9 +153,20 @@ export function ProposalBoardPage() {
           }),
         );
         setMhsSubmissions(subMap);
+
+        if (res.data.length > 0) {
+          let chosen = res.data[0];
+          if (targetProjectId) {
+            const found = res.data.find(
+              (p) => p.project_id === targetProjectId,
+            );
+            if (found) chosen = found;
+          }
+          setSelectedProposal(chosen);
+        }
       }
     } catch (err) {
-      console.error("Gagal memuat papan proposal:", err);
+      console.error("Gagal memuat papan kerja:", err);
     } finally {
       setLoading(false);
     }
@@ -147,7 +187,7 @@ export function ProposalBoardPage() {
             : [];
       setProjectSubmissions(subs);
     } catch (err) {
-      // Fallback
+      console.warn("Gagal memuat rincian proyek:", err);
     }
   };
 
@@ -155,29 +195,42 @@ export function ProposalBoardPage() {
     loadData();
   }, [isUmkm]);
 
-  // Reset page when filter or search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab, searchQuery]);
+  // Handle UMKM selecting another project from left list
+  const handleSelectProject = async (project) => {
+    setSelectedProject(project);
+    setSearchParams({ project: project.id });
+    await loadProjectDetails(project.id);
+    // Auto switch tab: if open/bidding with proposals, show applicants, else chat
+    if (project.status === "OPEN" || project.status === "BIDDING") {
+      setActiveStageTab("applicants");
+    } else {
+      setActiveStageTab("chat");
+    }
+  };
 
-  const handleSelectProject = async (proj) => {
-    setSelectedProject(proj);
-    await loadProjectDetails(proj.id);
+  // Handle Mahasiswa selecting another proposal from left list
+  const handleSelectProposal = (proposal) => {
+    setSelectedProposal(proposal);
+    setSearchParams({ project: proposal.project_id });
+    setActiveStageTab("chat");
   };
 
   // UMKM: Accept Proposal Action
   const handleAcceptProposal = (proposal) => {
     showConfirm(
-      "Terima Proposal Mahasiswa?",
-      `Anda akan menerima proposal dari mahasiswa ini seharga ${formatCurrency(proposal.harga_tawar)}. Dana akan dikunci aman di Escrow Makarya hingga hasil kerja selesai.`,
+      "Terima Proposal & Kunci Escrow?",
+      `Anda akan memilih tawaran ${formatCurrency(
+        proposal.harga_tawar,
+      )}. Saldo escrow Anda akan diamankan untuk proyek ini hingga mahasiswa menyelesaikan tugas.`,
       async () => {
         try {
           await proposalApi.accept(proposal.id);
           showSuccess(
-            "Proposal Diterima!",
-            "Status proyek kini sedang dikerjakan dan dana escrow telah dikunci aman.",
+            "Proposal Berhasil Diterima!",
+            "Proyek kini beralih ke status Dalam Pengerjaan (IN_PROGRESS).",
           );
           await loadData();
+          setActiveStageTab("chat");
         } catch (err) {
           const msg = err.response?.data?.detail || "Gagal menerima proposal.";
           showError("Gagal Menerima Proposal", msg);
@@ -209,7 +262,7 @@ export function ProposalBoardPage() {
   const handleApproveWork = (submissionId) => {
     showConfirm(
       "Setujui Hasil Kerja & Cairkan Honor?",
-      "Setelah disetujui, dana escrow akan otomatis diteruskan ke saldo dompet mahasiswa.",
+      "Setelah disetujui, dana escrow akan otomatis dicairkan ke dompet saldo mahasiswa.",
       async () => {
         try {
           await submissionApi.approve(submissionId);
@@ -229,27 +282,30 @@ export function ProposalBoardPage() {
     );
   };
 
-  // MHS: Open Submission
+  // MHS: Open Submission Modal
   const handleOpenSubmission = (projectId) => {
     setSelectedProjectId(projectId);
     setSubmissionModalOpen(true);
   };
 
-  // Filtered lists
+  // Filtered lists for left navigator
   const filteredProjects = useMemo(() => {
     return myProjects.filter((p) => {
       const matchSearch =
         p.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.kategori.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchTab =
-        activeTab === "ALL" ||
-        (activeTab === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
-        (activeTab === "COMPLETED" &&
+
+      const matchFilter =
+        activeFilter === "ALL" ||
+        (activeFilter === "IN_PROGRESS" && p.status === "IN_PROGRESS") ||
+        (activeFilter === "COMPLETED" &&
           (p.status === "DONE" || p.status === "COMPLETED")) ||
-        (activeTab === "OPEN" && (p.status === "OPEN" || p.status === "BIDDING"));
-      return matchSearch && matchTab;
+        (activeFilter === "OPEN" &&
+          (p.status === "OPEN" || p.status === "BIDDING"));
+
+      return matchSearch && matchFilter;
     });
-  }, [myProjects, searchQuery, activeTab]);
+  }, [myProjects, searchQuery, activeFilter]);
 
   const filteredProposals = useMemo(() => {
     return proposals.filter((p) => {
@@ -257,99 +313,89 @@ export function ProposalBoardPage() {
         (p.cover_letter &&
           p.cover_letter.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (p.project_judul &&
-          p.project_judul.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        p.project_id.toLowerCase().includes(searchQuery.toLowerCase());
-      
+          p.project_judul.toLowerCase().includes(searchQuery.toLowerCase()));
+
       const sub = mhsSubmissions[p.project_id];
       const isApproved = sub?.status === "APPROVED" || p.status === "COMPLETED";
 
-      let matchTab = true;
-      if (activeTab === "PENDING") {
-        matchTab = p.status === "PENDING";
-      } else if (activeTab === "IN_PROGRESS") {
-        matchTab = p.status === "ACCEPTED" && !isApproved;
-      } else if (activeTab === "COMPLETED") {
-        matchTab = isApproved;
-      } else if (activeTab === "REJECTED") {
-        matchTab = p.status === "REJECTED";
+      let matchFilter = true;
+      if (activeFilter === "PENDING") {
+        matchFilter = p.status === "PENDING";
+      } else if (activeFilter === "IN_PROGRESS") {
+        matchFilter = p.status === "ACCEPTED" && !isApproved;
+      } else if (activeFilter === "COMPLETED") {
+        matchFilter = isApproved;
+      } else if (activeFilter === "REJECTED") {
+        matchFilter = p.status === "REJECTED";
       }
 
-      return matchSearch && matchTab;
+      return matchSearch && matchFilter;
     });
-  }, [proposals, searchQuery, activeTab, mhsSubmissions]);
+  }, [proposals, searchQuery, activeFilter, mhsSubmissions]);
 
-  // Paginated Slices
-  const totalProjectPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE) || 1;
-  const paginatedProjects = filteredProjects.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  // Current active entity details
+  const activeProjectId = isUmkm
+    ? selectedProject?.id
+    : selectedProposal?.project_id;
 
-  const totalProposalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE) || 1;
-  const paginatedProposals = filteredProposals.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  const activeProjectTitle = isUmkm
+    ? selectedProject?.judul
+    : selectedProposal?.project_judul || "Proyek Kolaborasi";
 
-  // Counts for tabs
-  const projectCounts = {
-    all: myProjects.length,
-    open: myProjects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length,
-    inProgress: myProjects.filter((p) => p.status === "IN_PROGRESS").length,
-    completed: myProjects.filter((p) => p.status === "DONE" || p.status === "COMPLETED").length,
-  };
+  const activePartnerName = isUmkm
+    ? projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
+        ?.nama_lengkap || "Mahasiswa Talenta"
+    : selectedProposal?.project_umkm_nama || "Klien UMKM";
 
-  const proposalCounts = {
-    all: proposals.length,
-    pending: proposals.filter((p) => p.status === "PENDING").length,
-    inProgress: proposals.filter((p) => p.status === "ACCEPTED" && mhsSubmissions[p.project_id]?.status !== "APPROVED").length,
-    completed: proposals.filter((p) => mhsSubmissions[p.project_id]?.status === "APPROVED" || p.status === "COMPLETED").length,
-    rejected: proposals.filter((p) => p.status === "REJECTED").length,
-  };
+  const activePartnerRole = isUmkm ? "MHS" : "UMKM";
+
+  const activeDeliverable = isUmkm
+    ? projectSubmissions[0]
+    : mhsSubmissions[selectedProposal?.project_id];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
-      {/* 1. Header & Quick Wallet Balance Bar */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 font-sans">
+      {/* 1. Header Bar: Workspace Title & Wallet Summary */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-border bg-canvas text-xs font-semibold text-dark-900">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-border bg-canvas text-xs font-semibold text-dark-900">
               {isUmkm ? (
-                <Building2 className="w-3.5 h-3.5 text-muted" />
+                <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
               ) : (
-                <GraduationCap className="w-3.5 h-3.5 text-muted" />
+                <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
               )}
               <span>
-                {isUmkm ? "Portal Klien UMKM" : "Portal Mahasiswa Freelancer"}
+                {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
               </span>
-            </div>
-            <span className="text-[11px] font-mono text-muted">
-              {isUmkm ? "Pusat Proyek & Escrow" : "Papan Lamaran & Deliverable"}
+            </span>
+            <span className="text-[11px] text-muted">
+              Pusat Kolaborasi Real-Time & Garansi Escrow
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-serif text-dark-900 tracking-tight leading-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight">
             {isUmkm
-              ? "Kelola Proyek & Verifikasi Deliverable"
-              : "Papan Proposal & Penyerahan Hasil"}
+              ? "Kelola Proyek & Ruang Diskusi Terpadu"
+              : "Papan Proyek, Obrolan & Deliverable"}
           </h1>
           <p className="text-xs text-muted">
             {isUmkm
-              ? "Tinjau proposal masuk dari mahasiswa, kunci dana aman di rekening bersama, dan setujui berkas kerja."
-              : "Pantau status penerimaan proposal, serahkan deliverable proyek yang disetujui, dan cairkan honor."}
+              ? "Bahas brief secara langsung, evaluasi tawaran pelamar, dan rilis honor saat pekerjaan tuntas."
+              : "Berdiskusi langsung dengan klien, bagikan tautan Figma/Drive, dan serahkan hasil deliverable."}
           </p>
         </div>
 
-        {/* Quick Wallet Card */}
-        <div className="flex items-center gap-3 bg-canvas p-3.5 rounded-2xl border border-border shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900">
-            <WalletIcon className="w-5 h-5" />
+        {/* Quick Balance Chip */}
+        <div className="flex items-center gap-3 bg-canvas p-3 rounded-2xl border border-border shrink-0 self-start md:self-auto">
+          <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900">
+            <WalletIcon className="w-4 h-4" />
           </div>
           <div>
             <span className="text-[10px] font-bold text-muted uppercase block">
-              {isUmkm ? "Saldo Escrow" : "Saldo Aktif"}
+              {isUmkm ? "Dana Escrow Aktif" : "Saldo Dompet Anda"}
             </span>
-            <span className="text-sm font-black text-dark-900">
+            <span className="text-xs sm:text-sm font-black text-dark-900">
               {wallet
                 ? formatCurrency(
                     isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif,
@@ -361,1166 +407,823 @@ export function ProposalBoardPage() {
             <Button
               variant="outline"
               size="sm"
-              className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-2"
+              className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-1 px-2.5 py-1"
             >
-              {isUmkm
-                ? "Dompet"
-                : Number(wallet?.saldo_aktif || 0) > 0
-                  ? "Tarik Dana"
-                  : "Lihat Dompet"}
-              <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              <span>Dompet</span>
+              <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* 2. Visual Step-by-Step Workflow Guide */}
-      <div className="bg-canvas p-4 rounded-2xl border border-border">
-        <div className="flex items-center gap-2 mb-3">
-          <HelpCircle className="w-4 h-4 text-brand-indigo" />
-          <span className="text-xs font-bold uppercase tracking-wider text-dark-900">
-            {isUmkm ? "Alur Kerja Klien UMKM" : "Alur Kerja Mahasiswa"}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {isUmkm ? (
-            <>
-              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  1
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-dark-900 block">Pilih Pelamar & Kunci Escrow</span>
-                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
-                    Review proposal masuk, klik terima untuk mengunci dana aman di rekening bersama.
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  2
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-dark-900 block">Pantau Pengerjaan & Deliverable</span>
-                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
-                    Mahasiswa mengerjakan tugas sesuai tenggat dan mengunggah berkas hasil kerja.
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-emerald-200 bg-emerald-50/20 flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  3
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-emerald-950 block">Setujui & Rilis Dana</span>
-                  <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">
-                    Periksa berkas, minta revisi jika perlu, atau setujui untuk mencairkan honor ke mahasiswa.
-                  </span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  1
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-dark-900 block">Ajukan Penawaran</span>
-                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
-                    Kirim pesan penawaran dan harga tawar realistis di katalog proyek UMKM.
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-border flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-dark-900 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  2
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-dark-900 block">Kerjakan & Serahkan Hasil</span>
-                  <span className="text-[11px] text-muted leading-tight block mt-0.5">
-                    Saat diterima, dana escrow terkunci. Kerjakan proyek lalu unggah berkas hasil deliverable.
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-surface p-3 rounded-xl border border-emerald-200 bg-emerald-50/20 flex items-start gap-2.5">
-                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
-                  3
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-emerald-950 block">Persetujuan & Honor Cair</span>
-                  <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">
-                    Klien menyetujui berkas dan honor 100% otomatis masuk ke saldo dompet Anda untuk ditarik.
-                  </span>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* 3. Metric Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        {/* Metric 1 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
-              {isUmkm ? "Total Proyek" : "Total Dilamar"}
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
-              <Layers className="w-3.5 h-3.5" />
-            </div>
+      {/* 2. Unified 2-Pane Workroom Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* ========================================================================= */}
+        {/* LEFT PANE: Project & Contract Navigator (4 cols on lg) */}
+        {/* ========================================================================= */}
+        <div className="lg:col-span-4 bg-surface rounded-3xl border border-border p-4 space-y-3.5 shadow-xs">
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={
+                isUmkm ? "Cari judul proyek..." : "Cari lamaran & proyek..."
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans"
+            />
           </div>
-          <div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm ? myProjects.length : proposals.length}
-            </span>
-            <p className="text-[11px] text-muted mt-0.5">
-              {isUmkm ? "Inisiatif terdaftar" : "Lamaran terkirim"}
-            </p>
-          </div>
-        </div>
 
-        {/* Metric 2 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
-              Sedang Berjalan
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-brand-indigo">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm ? projectCounts.inProgress : proposalCounts.inProgress}
-            </span>
-            <p className="text-[11px] text-muted mt-0.5">
-              {isUmkm ? "Proses pengerjaan mhs" : "Proyek aktif Anda"}
-            </p>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-emerald-200 hover:border-emerald-400 transition-all duration-200 space-y-2.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block">
-              Selesai & Lunas
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
-              <CheckCheck className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-sans tracking-tight">
-              {isUmkm ? projectCounts.completed : proposalCounts.completed}
-            </span>
-            <p className="text-[11px] text-emerald-700/80 mt-0.5 font-medium">
-              {isUmkm ? "Deliverable disetujui" : "Honor masuk dompet"}
-            </p>
-          </div>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border hover:border-dark-900/30 transition-all duration-200 space-y-2.5 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted block">
-              {isUmkm ? "Masa Penawaran" : "Menunggu Seleksi"}
-            </span>
-            <div className="w-7 h-7 rounded-lg bg-canvas border border-border/80 flex items-center justify-center text-dark-900">
-              <Send className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-dark-900 font-sans tracking-tight">
-              {isUmkm ? projectCounts.open : proposalCounts.pending}
-            </span>
-            <p className="text-[11px] text-muted mt-0.5">
-              {isUmkm ? "Terbuka untuk pelamar" : "Evaluasi klien"}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Search Bar & Status Filter Tabs */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder={
-              isUmkm
-                ? "Cari judul proyek atau kategori..."
-                : "Cari judul proyek, pesan penawaran..."
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:border-dark-900 font-sans"
-          />
-        </div>
-
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          {(isUmkm
-            ? [
-                { key: "ALL", label: "Semua Proyek", count: projectCounts.all },
-                { key: "OPEN", label: "Penawaran Masuk", count: projectCounts.open },
-                { key: "IN_PROGRESS", label: "Sedang Berjalan", count: projectCounts.inProgress },
-                { key: "COMPLETED", label: "Selesai", count: projectCounts.completed, isGreen: true },
-              ]
-            : [
-                { key: "ALL", label: "Semua Lamaran", count: proposalCounts.all },
-                { key: "PENDING", label: "Menunggu Seleksi", count: proposalCounts.pending },
-                { key: "IN_PROGRESS", label: "Sedang Dikerjakan", count: proposalCounts.inProgress },
-                { key: "COMPLETED", label: "Selesai", count: proposalCounts.completed, isGreen: true },
-                { key: "REJECTED", label: "Ditolak", count: proposalCounts.rejected },
-              ]
-          ).map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
+          {/* Filter Pills */}
+          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]">
+            {(isUmkm
+              ? [
+                  { key: "ALL", label: "Semua" },
+                  { key: "IN_PROGRESS", label: "Aktif" },
+                  { key: "OPEN", label: "Pelamar" },
+                  { key: "COMPLETED", label: "Selesai" },
+                ]
+              : [
+                  { key: "ALL", label: "Semua" },
+                  { key: "IN_PROGRESS", label: "Dikerjakan" },
+                  { key: "PENDING", label: "Seleksi" },
+                  { key: "COMPLETED", label: "Selesai" },
+                ]
+            ).map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
-                  isActive
-                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                    : tab.isGreen
-                      ? "bg-surface text-emerald-800 border-border hover:border-emerald-300"
-                      : "bg-surface text-muted hover:text-dark-900 border-border"
+                onClick={() => setActiveFilter(tab.key)}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
+                  activeFilter === tab.key
+                    ? "bg-dark-900 text-white shadow-xs"
+                    : "bg-canvas text-muted hover:text-dark-900 border border-border"
                 }`}
               >
-                <span>{tab.label}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                    isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-canvas text-muted border border-border"
-                  }`}
-                >
-                  {tab.count}
-                </span>
+                {tab.label}
               </button>
-            );
-          })}
-        </div>
-      </div>
+            ))}
+          </div>
 
-      {/* ========================================================================= */}
-      {/* 5. UMKM VIEW (Manage Projects, Incoming Proposals, & Deliverables) */}
-      {/* ========================================================================= */}
-      {isUmkm ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Project Selector (4 cols) */}
-          <div className="lg:col-span-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
-                Pilih Proyek ({filteredProjects.length})
-              </h3>
-              <span className="text-[11px] text-muted">
-                Hal {currentPage} dari {totalProjectPages}
-              </span>
-            </div>
-
+          {/* Items List */}
+          <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
             {loading ? (
-              <div className="space-y-2.5">
-                {[1, 2, 3].map((n) => (
-                  <div
-                    key={n}
-                    className="h-20 bg-surface rounded-2xl border border-border animate-pulse"
-                  />
-                ))}
+              <div className="p-8 text-center text-xs text-muted">
+                <div className="w-5 h-5 border-2 border-brand-indigo border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                Memuat daftar pengerjaan...
               </div>
-            ) : myProjects.length === 0 ? (
-              <Card className="p-6 text-center space-y-3 bg-surface border-border">
-                <Briefcase className="w-8 h-8 text-muted mx-auto opacity-40" />
-                <h4 className="text-xs font-bold text-dark-900">
-                  Belum Ada Proyek
-                </h4>
-                <p className="text-[11px] text-muted">
-                  Pasang proyek usaha Anda untuk menerima proposal.
-                </p>
-                <Link to="/projects/new">
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    className="w-full text-xs font-bold shadow-brand"
-                  >
-                    Pasang Proyek
-                  </Button>
-                </Link>
-              </Card>
-            ) : filteredProjects.length === 0 ? (
-              <Card className="p-6 text-center space-y-2 bg-surface border-border">
-                <p className="text-xs font-bold text-dark-900">
-                  Tidak Ada Proyek pada Filter Ini
-                </p>
-                <p className="text-[11px] text-muted">
-                  Coba ubah tab filter atau kata kunci pencarian Anda.
-                </p>
-              </Card>
-            ) : (
-              <div className="space-y-2.5">
-                {paginatedProjects.map((proj) => {
+            ) : isUmkm ? (
+              filteredProjects.length === 0 ? (
+                <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
+                  Tidak ada proyek yang sesuai filter.
+                </div>
+              ) : (
+                filteredProjects.map((proj) => {
                   const isSelected = selectedProject?.id === proj.id;
-                  const isDone = proj.status === "DONE" || proj.status === "COMPLETED";
+                  const isDone =
+                    proj.status === "DONE" || proj.status === "COMPLETED";
 
                   return (
                     <div
                       key={proj.id}
                       onClick={() => handleSelectProject(proj)}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer select-none ${
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-150 ${
                         isSelected
-                          ? "bg-dark-900 text-white border-dark-900 shadow-md"
-                          : "bg-surface hover:bg-slate-50 border-border text-dark-900"
+                          ? "bg-indigo-50/40 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
+                          : "bg-canvas border-border hover:bg-surface hover:border-dark-900/20"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span
-                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
-                            isSelected
-                              ? "bg-white/20 text-white"
-                              : "bg-canvas text-muted border border-border"
-                          }`}
-                        >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted truncate">
                           {proj.kategori}
                         </span>
-
                         <span
-                          className={`text-[11px] font-extrabold flex items-center gap-1 ${
-                            isSelected
-                              ? "text-emerald-400"
-                              : isDone
-                                ? "text-emerald-700"
-                                : "text-dark-900"
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            isDone
+                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                              : proj.status === "IN_PROGRESS"
+                                ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                                : "bg-amber-50 text-amber-800 border-amber-200"
                           }`}
                         >
-                          {isDone ? (
-                            <>
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                              Selesai & Lunas
-                            </>
-                          ) : (
-                            formatStatus(proj.status)
-                          )}
+                          {isDone ? "Selesai" : formatStatus(proj.status)}
                         </span>
                       </div>
 
-                      <h4
-                        className={`text-xs sm:text-sm font-bold truncate ${
-                          isSelected ? "text-white" : "text-dark-900"
-                        }`}
-                      >
+                      <h4 className="text-xs sm:text-sm font-bold text-dark-900 line-clamp-1">
                         {proj.judul}
                       </h4>
 
-                      <div className="flex items-center justify-between mt-1 text-xs">
-                        <span
-                          className={`font-semibold ${
-                            isSelected ? "text-slate-300" : "text-muted"
-                          }`}
-                        >
-                          Budget: {formatCurrency(proj.budget_max)}
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/60 text-[11px] text-muted">
+                        <span className="font-extrabold text-dark-900">
+                          {formatCurrency(proj.budget_max)}
                         </span>
+                        <span>{formatDate(proj.created_at)}</span>
                       </div>
                     </div>
                   );
-                })}
-
-                {/* Left Column Pagination Controls */}
-                {totalProjectPages > 1 && (
-                  <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="text-xs px-2.5 py-1 h-auto border-border"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5 mr-0.5" />
-                      Prev
-                    </Button>
-
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: totalProjectPages }, (_, i) => i + 1).map((pg) => (
-                        <button
-                          key={pg}
-                          onClick={() => setCurrentPage(pg)}
-                          className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
-                            currentPage === pg
-                              ? "bg-dark-900 text-white"
-                              : "bg-surface text-muted hover:text-dark-900 border border-border"
-                          }`}
-                        >
-                          {pg}
-                        </button>
-                      ))}
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage((p) => Math.min(totalProjectPages, p + 1))}
-                      disabled={currentPage === totalProjectPages}
-                      className="text-xs px-2.5 py-1 h-auto border-border"
-                    >
-                      Next
-                      <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Project Inspection & Proposals List (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
-            {selectedProject ? (
-              <div className="space-y-6">
-                {/* Active Project Summary Card */}
-                <Card className="p-6 space-y-4 bg-surface border-border">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="brand">
-                          {selectedProject.kategori}
-                        </Badge>
-                        <Badge
-                          variant={
-                            selectedProject.status === "DONE" || selectedProject.status === "COMPLETED"
-                              ? "success"
-                              : selectedProject.status === "IN_PROGRESS"
-                                ? "brand"
-                                : "warning"
-                          }
-                        >
-                          {selectedProject.status === "DONE" || selectedProject.status === "COMPLETED"
-                            ? "Selesai & Lunas"
-                            : formatStatus(selectedProject.status)}
-                        </Badge>
-                      </div>
-                      <h3 className="text-lg font-bold text-dark-900 mt-1">
-                        {selectedProject.judul}
-                      </h3>
-                    </div>
-                    <div className="text-left sm:text-right">
-                      <span className="text-xs text-muted block">
-                        Batas Anggaran
-                      </span>
-                      <span className="text-lg font-black text-dark-900">
-                        {formatCurrency(selectedProject.budget_max)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Submissions Section if in progress or completed */}
-                  {projectSubmissions.length > 0 ? (
-                    <div className="p-4 bg-surface border border-border border-l-4 border-l-dark-900 rounded-2xl space-y-3 shadow-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                          <CheckCircle2
-                            className={`w-4 h-4 ${
-                              projectSubmissions[0].status === "APPROVED"
-                                ? "text-emerald-600"
-                                : "text-dark-900"
-                            }`}
-                          />
-                          Berkas Hasil Kerja (Deliverable) Mahasiswa
-                        </span>
-                        <span
-                          className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
-                            projectSubmissions[0].status === "APPROVED" ||
-                            projectSubmissions[0].status === "ACCEPTED"
-                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                              : projectSubmissions[0].status === "REVISION_REQUESTED"
-                                ? "border-amber-200 bg-amber-50 text-amber-900"
-                                : "border-border bg-canvas text-dark-900"
-                          }`}
-                        >
-                          {projectSubmissions[0].status === "APPROVED" ||
-                          projectSubmissions[0].status === "ACCEPTED"
-                            ? "Telah Disetujui & Selesai"
-                            : projectSubmissions[0].status === "REVISION_REQUESTED"
-                              ? `Permintaan Revisi (Ke-${projectSubmissions[0].jumlah_revisi}/2)`
-                              : "Telah Diserahkan • Siap Direview"}
-                        </span>
-                      </div>
-
-                      {projectSubmissions.map((sub) => (
-                        <div
-                          key={sub.id}
-                          className="bg-canvas p-4 rounded-xl border border-border space-y-3"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <span className="text-xs font-bold text-dark-900">
-                              Tautan Berkas Hasil Pekerjaan:
-                            </span>
-                            <a
-                              href={sub.url_berkas}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-900 text-white text-xs font-bold hover:bg-dark-800 transition-colors shadow-xs"
-                            >
-                              Buka / Unduh Berkas Deliverable
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-
-                          {sub.catatan_pengiriman && (
-                            <div className="text-xs text-dark-900/90 bg-surface p-3 rounded-lg border border-border">
-                              <span className="font-bold text-dark-900 block mb-0.5">
-                                Catatan Pengiriman Mahasiswa:
-                              </span>
-                              "{sub.catatan_pengiriman}"
-                            </div>
-                          )}
-
-                          <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
-                            <span>
-                              Jumlah Revisi:{" "}
-                              <b>{sub.jumlah_revisi || 0} dari 2 kali</b>
-                            </span>
-                            <span>
-                              Diserahkan:{" "}
-                              {formatDate(sub.submitted_at || sub.created_at)}
-                            </span>
-                          </div>
-
-                          {/* Approval and Revision Actions (ONLY if IN_PROGRESS and NOT yet approved) */}
-                          {selectedProject.status === "IN_PROGRESS" &&
-                          sub.status !== "APPROVED" &&
-                          sub.status !== "COMPLETED" && (
-                            <div className="pt-3 border-t border-border flex flex-col sm:flex-row justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedSubmissionForRevision(sub);
-                                  setRevisionModalOpen(true);
-                                }}
-                                disabled={sub.jumlah_revisi >= 2}
-                                className="text-xs font-bold border-border text-dark-900 hover:bg-surface"
-                              >
-                                <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                                {sub.jumlah_revisi >= 2
-                                  ? "Batas Revisi Habis (2/2)"
-                                  : "Minta Revisi"}
-                              </Button>
-                              <Button
-                                variant="brand"
-                                size="sm"
-                                onClick={() => handleApproveWork(sub.id)}
-                                className="text-xs font-bold shadow-brand"
-                              >
-                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                                Setujui & Cairkan Honor Escrow
-                              </Button>
-                            </div>
-                          )}
-
-                          {/* Completed Success Banner */}
-                          {(sub.status === "APPROVED" ||
-                            sub.status === "COMPLETED" ||
-                            selectedProject.status === "COMPLETED" ||
-                            selectedProject.status === "DONE") && (
-                            <div className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-900 bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200">
-                              <div className="flex items-center gap-2">
-                                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                                <div>
-                                  <span className="font-bold block">
-                                    Hasil pekerjaan disetujui & Proyek Selesai!
-                                  </span>
-                                  <span className="text-[11px] text-emerald-800">
-                                    Dana honor escrow telah 100% diteruskan ke saldo dompet mahasiswa.
-                                  </span>
-                                </div>
-                              </div>
-                              <span className="font-extrabold uppercase text-[10px] px-2.5 py-1 rounded-full bg-emerald-600 text-white shrink-0 self-start sm:self-auto shadow-xs">
-                                Lunas & Tuntas
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : selectedProject.status === "IN_PROGRESS" ? (
-                    <div className="p-4 bg-canvas border border-border rounded-2xl flex items-center gap-3 shadow-xs">
-                      <div className="w-8 h-8 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900 shrink-0">
-                        <Clock className="w-4 h-4" />
-                      </div>
-                      <div className="text-xs text-dark-900">
-                        <span className="font-bold block">
-                          Pengerjaan Sedang Berjalan
-                        </span>
-                        Mahasiswa sedang menyelesaikan proyek. Berkas deliverable akan muncul di sini begitu mahasiswa menyerahkannya.
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {/* Incoming Proposals List */}
-                  <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-dark-900 flex items-center gap-1.5">
-                      <Users className="w-4 h-4 text-brand-indigo" />
-                      Pelamar Mahasiswa yang Masuk ({projectProposals.length})
-                    </h4>
-
-                    {projectProposals.length === 0 ? (
-                      <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-1">
-                        <Users className="w-8 h-8 text-muted mx-auto opacity-40" />
-                        <p className="text-xs font-bold text-dark-900">
-                          Belum Ada Pelamar
-                        </p>
-                        <p className="text-[11px] text-muted">
-                          Proyek Anda sedang tayang di katalog terbuka mahasiswa.
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {projectProposals.map((prop) => {
-                          const isAccepted = prop.status === "ACCEPTED";
-                          const isRejected = prop.status === "REJECTED";
-                          const isExpanded = expandedCards[prop.id];
-
-                          return (
-                            <div
-                              key={prop.id}
-                              className={`p-4 rounded-xl border transition-all ${
-                                isAccepted
-                                  ? "bg-emerald-50/20 border-emerald-200 shadow-xs"
-                                  : isRejected
-                                    ? "bg-canvas border-border opacity-70"
-                                    : "bg-canvas border-border hover:border-dark-900/30"
-                              }`}
-                            >
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <div className="space-y-0.5">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-dark-900">
-                                      {prop.mhs_profile?.nama_lengkap ||
-                                        "Mahasiswa Pelamar"}
-                                    </span>
-                                    <span
-                                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                        isAccepted
-                                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                                          : isRejected
-                                            ? "bg-rose-50 text-rose-800 border-rose-200"
-                                            : "bg-surface text-muted border-border"
-                                      }`}
-                                    >
-                                      {isAccepted
-                                        ? "Disetujui"
-                                        : isRejected
-                                          ? "Ditolak"
-                                          : "Menunggu Seleksi"}
-                                    </span>
-                                    <span className="text-[11px] text-muted hidden sm:inline">
-                                      • Estimasi: {prop.estimasi_hari} Hari
-                                    </span>
-                                  </div>
-                                  <p className="text-[11px] text-muted">
-                                    {prop.mhs_profile?.asal_kampus ||
-                                      "Perguruan Tinggi"}
-                                  </p>
-                                </div>
-
-                                <div className="flex items-center justify-between sm:justify-end gap-3">
-                                  <div className="text-left sm:text-right">
-                                    <span className="text-sm font-extrabold text-dark-900">
-                                      {formatCurrency(prop.harga_tawar)}
-                                    </span>
-                                  </div>
-                                  <button
-                                    onClick={() => toggleCard(prop.id)}
-                                    className="text-xs font-bold text-dark-900 hover:underline flex items-center gap-0.5"
-                                  >
-                                    {isExpanded ? "Tutup" : "Rincian"}
-                                    {isExpanded ? (
-                                      <ChevronUp className="w-3.5 h-3.5" />
-                                    ) : (
-                                      <ChevronDown className="w-3.5 h-3.5" />
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-
-                              {isExpanded && (
-                                <div className="space-y-3 pt-3 mt-3 border-t border-border text-xs">
-                                  <div className="bg-surface p-3 rounded-xl border border-border text-dark-900/90 leading-relaxed">
-                                    <span className="font-bold text-dark-900 block mb-0.5">
-                                      Rencana Kerja:
-                                    </span>
-                                    "{prop.cover_letter}"
-                                  </div>
-
-                                  {(selectedProject.status === "OPEN" ||
-                                    selectedProject.status === "BIDDING") &&
-                                    prop.status === "PENDING" && (
-                                      <div className="flex justify-end gap-2 pt-1">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() =>
-                                            handleRejectProposal(prop)
-                                          }
-                                          className="text-xs font-bold text-rose-600 border-rose-200 hover:bg-rose-50"
-                                        >
-                                          Tolak
-                                        </Button>
-                                        <Button
-                                          variant="brand"
-                                          size="sm"
-                                          onClick={() =>
-                                            handleAcceptProposal(prop)
-                                          }
-                                          className="text-xs font-bold shadow-brand"
-                                        >
-                                          <ShieldCheck className="w-3.5 h-3.5 mr-1" />
-                                          Terima & Kunci Escrow
-                                        </Button>
-                                      </div>
-                                    )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </Card>
+                })
+              )
+            ) : filteredProposals.length === 0 ? (
+              <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
+                Belum ada lamaran proyek yang sesuai filter.
               </div>
             ) : (
-              <Card className="p-12 text-center text-muted bg-surface border-border">
-                Pilih salah satu proyek di sebelah kiri untuk melihat rincian pelamar.
-              </Card>
-            )}
-          </div>
-        </div>
-      ) : (
-        /* ========================================================================= */
-        /* 6. MAHASISWA VIEW (Linear-Style Modern Data List)                         */
-        /* ========================================================================= */
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-dark-900">
-              Daftar Lamaran Proposal ({filteredProposals.length})
-            </h3>
-            {totalProposalPages > 1 && (
-              <span className="text-[11px] text-muted">
-                Halaman {currentPage} dari {totalProposalPages}
-              </span>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="space-y-2">
-              {[1, 2, 3, 4].map((n) => (
-                <div
-                  key={n}
-                  className="h-16 bg-surface rounded-2xl border border-border animate-pulse"
-                />
-              ))}
-            </div>
-          ) : filteredProposals.length === 0 ? (
-            <Card className="text-center py-12 space-y-3 bg-surface border-border">
-              <Briefcase className="w-10 h-10 text-muted mx-auto opacity-40" />
-              <h3 className="text-sm font-bold text-dark-900">
-                Belum Ada Lamaran Proposal pada Filter Ini
-              </h3>
-              <p className="text-xs text-muted max-w-sm mx-auto">
-                Silakan jelajahi katalog proyek UMKM yang terbuka untuk mulai mengajukan penawaran.
-              </p>
-              <Link to="/projects">
-                <Button
-                  variant="brand"
-                  size="sm"
-                  className="mt-1 text-xs font-bold shadow-brand"
-                >
-                  Jelajah Proyek Terbuka
-                </Button>
-              </Link>
-            </Card>
-          ) : (
-            <div className="bg-surface border border-border rounded-2xl overflow-hidden shadow-xs divide-y divide-border">
-              {paginatedProposals.map((proposal) => {
-                const isExpanded = expandedCards[proposal.id];
-                const sub = mhsSubmissions[proposal.project_id];
-                const isDone = sub?.status === "APPROVED" || proposal.status === "COMPLETED";
-
-                const clientName = proposal.project_umkm_nama || "Mitra UMKM";
-                const clientInitials = clientName
-                  .split(" ")
-                  .map((w) => w[0])
-                  .join("")
-                  .slice(0, 2)
-                  .toUpperCase() || "UM";
+              filteredProposals.map((prop) => {
+                const isSelected = selectedProposal?.id === prop.id;
+                const isAccepted = prop.status === "ACCEPTED";
+                const isDone =
+                  mhsSubmissions[prop.project_id]?.status === "APPROVED" ||
+                  prop.status === "COMPLETED";
 
                 return (
                   <div
-                    key={proposal.id}
-                    className={`transition-colors duration-150 ${
-                      isExpanded ? "bg-canvas/60" : "hover:bg-slate-50/70"
+                    key={prop.id}
+                    onClick={() => handleSelectProposal(prop)}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-150 ${
+                      isSelected
+                        ? "bg-indigo-50/40 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
+                        : "bg-canvas border-border hover:bg-surface hover:border-dark-900/20"
                     }`}
                   >
-                    {/* Linear-Style Row */}
-                    <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                      {/* Left: Client Avatar + Project Title & Details */}
-                      <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 border ${
-                            isDone
-                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                              : proposal.status === "ACCEPTED"
-                                ? "bg-dark-900 text-white border-dark-900"
-                                : "bg-canvas text-dark-900 border-border"
-                          }`}
-                        >
-                          {clientInitials}
-                        </div>
-
-                        <div className="min-w-0 space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            {proposal.project_kategori && (
-                              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-canvas border border-border text-dark-900 tracking-wider">
-                                {proposal.project_kategori}
-                              </span>
-                            )}
-                            <h4 className="text-sm font-bold text-dark-900 truncate">
-                              {proposal.project_judul ||
-                                `Lamaran Proyek #${proposal.project_id.slice(0, 8)}`}
-                            </h4>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-muted">
-                            <span>
-                              Klien: <b className="text-dark-900 font-semibold">{clientName}</b>
-                            </span>
-                            <span>•</span>
-                            <span>
-                              Estimasi: <b className="text-dark-900">{proposal.estimasi_hari} Hari</b>
-                            </span>
-                            <span>•</span>
-                            <span>Dikirim: {formatDate(proposal.created_at)}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Middle: Micro Workflow Stepper (Linear-Style Tracker) */}
-                      <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-[11px] font-semibold text-muted shrink-0 select-none">
-                        <span className="flex items-center gap-1 text-dark-900 font-bold">
-                          <CircleDot className="w-3 h-3 text-dark-900" />
-                          1. Dilamar
-                        </span>
-                        <span className="text-muted/40 font-mono">→</span>
-                        <span
-                          className={`flex items-center gap-1 ${
-                            proposal.status === "ACCEPTED" || isDone
-                              ? "text-dark-900 font-bold"
-                              : "opacity-40"
-                          }`}
-                        >
-                          <CircleDot
-                            className={`w-3 h-3 ${
-                              proposal.status === "ACCEPTED" || isDone
-                                ? "text-dark-900"
-                                : "text-muted"
-                            }`}
-                          />
-                          2. Pengerjaan
-                        </span>
-                        <span className="text-muted/40 font-mono">→</span>
-                        <span
-                          className={`flex items-center gap-1 ${
-                            isDone ? "text-emerald-700 font-extrabold" : "opacity-40"
-                          }`}
-                        >
-                          <CheckCircle2
-                            className={`w-3 h-3 ${
-                              isDone ? "text-emerald-600" : "text-muted"
-                            }`}
-                          />
-                          3. Honor Cair
-                        </span>
-                      </div>
-
-                      {/* Right: Nominal Honor + Status Pill + Expand Button */}
-                      <div className="flex items-center justify-between lg:justify-end gap-3.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-border">
-                        <div className="text-left lg:text-right">
-                          <span className="text-[10px] uppercase font-bold text-muted tracking-wider block">
-                            Harga Tawar
-                          </span>
-                          <span
-                            className={`text-base sm:text-lg font-extrabold font-sans tracking-tight ${
-                              isDone ? "text-emerald-700" : "text-dark-900"
-                            }`}
-                          >
-                            {formatCurrency(proposal.harga_tawar)}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {/* Modern Status Badge with Dot Indicator */}
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
-                              isDone
-                                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                                : proposal.status === "ACCEPTED"
-                                  ? "bg-dark-900 text-white border-dark-900"
-                                  : proposal.status === "REJECTED"
-                                    ? "bg-rose-50 text-rose-800 border-rose-200"
-                                    : "bg-canvas text-dark-900 border-border"
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                isDone
-                                  ? "bg-emerald-500"
-                                  : proposal.status === "ACCEPTED"
-                                    ? "bg-emerald-400"
-                                    : proposal.status === "REJECTED"
-                                      ? "bg-rose-500"
-                                      : "bg-amber-500"
-                              }`}
-                            />
-                            {isDone
-                              ? "Selesai & Cair"
-                              : proposal.status === "ACCEPTED"
-                                ? "Sedang Dikerjakan"
-                                : formatStatus(proposal.status)}
-                          </span>
-
-                          <button
-                            onClick={() => toggleCard(proposal.id)}
-                            className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all ${
-                              isExpanded
-                                ? "bg-dark-900 text-white border-dark-900"
-                                : "bg-canvas border-border text-dark-900 hover:bg-surface"
-                            }`}
-                          >
-                            {isExpanded ? "Tutup" : "Rincian"}
-                            {isExpanded ? (
-                              <ChevronUp className="w-3.5 h-3.5" />
-                            ) : (
-                              <ChevronDown className="w-3.5 h-3.5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted truncate">
+                        {prop.project_kategori || "Proyek UMKM"}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          isDone
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : isAccepted
+                              ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                              : prop.status === "REJECTED"
+                                ? "bg-rose-50 text-rose-800 border-rose-200"
+                                : "bg-amber-50 text-amber-800 border-amber-200"
+                        }`}
+                      >
+                        {isDone
+                          ? "Selesai"
+                          : isAccepted
+                            ? "Dikerjakan"
+                            : formatStatus(prop.status)}
+                      </span>
                     </div>
 
-                    {/* Expandable Inline Detail Panel */}
-                    {isExpanded && (
-                      <div className="p-4 sm:p-5 pt-0 border-t border-border/80 bg-canvas/40 space-y-3.5 text-xs">
-                        <div className="bg-surface p-4 rounded-xl border border-border space-y-1">
-                          <span className="font-bold text-dark-900 block text-xs">
-                            Pesan Penawaran & Rencana Kerja Anda:
-                          </span>
-                          <p className="text-dark-900/90 leading-relaxed">
-                            "{proposal.cover_letter}"
-                          </p>
-                        </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-dark-900 line-clamp-1">
+                      {prop.project_judul}
+                    </h4>
 
-                        {proposal.status === "ACCEPTED" && (
-                          <div className="space-y-3">
-                            {sub ? (
-                              <div className="p-4 rounded-xl border border-border bg-surface space-y-3">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-dark-900">
-                                    <FileCheck2 className="w-4 h-4 text-emerald-600" />
-                                    {isDone
-                                      ? "Hasil Pekerjaan Disetujui • Selesai"
-                                      : sub.status === "REVISION_REQUESTED"
-                                        ? `Permintaan Revisi dari Klien (Ke-${sub.jumlah_revisi}/2)`
-                                        : "Berkas Deliverable Terkirim • Menunggu Review"}
-                                  </span>
-                                  <span className="text-[11px] text-muted">
-                                    Diserahkan: {formatDate(sub.submitted_at || sub.created_at)}
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center justify-between gap-2 p-3 bg-canvas border border-border rounded-lg text-xs">
-                                  <div className="flex items-center gap-2 truncate">
-                                    <ExternalLink className="w-4 h-4 text-dark-900 shrink-0" />
-                                    <a
-                                      href={sub.url_berkas}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="font-semibold text-dark-900 hover:underline truncate"
-                                    >
-                                      {sub.url_berkas}
-                                    </a>
-                                  </div>
-                                  <a
-                                    href={sub.url_berkas}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="px-2.5 py-1 rounded-md bg-dark-900 text-white text-[11px] font-bold hover:bg-dark-800 shrink-0"
-                                  >
-                                    Buka
-                                  </a>
-                                </div>
-
-                                {sub.catatan_pengiriman && (
-                                  <p className="text-xs text-dark-900/80 italic bg-canvas p-3 rounded-lg border border-border">
-                                    "{sub.catatan_pengiriman}"
-                                  </p>
-                                )}
-
-                                {isDone && (
-                                  <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                    <div className="flex items-center gap-2.5">
-                                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                                      <div>
-                                        <span className="font-extrabold text-emerald-950 text-xs block">
-                                          Proyek Selesai! Honor {formatCurrency(proposal.harga_tawar)} Telah Cair.
-                                        </span>
-                                        <span className="text-[11px] text-emerald-800">
-                                          Dana telah masuk 100% ke saldo dompet aktif Anda dan dapat langsung ditarik.
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <Link to="/wallet" className="shrink-0 self-start sm:self-auto">
-                                      <Button
-                                        variant="brand"
-                                        size="sm"
-                                        className="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white"
-                                      >
-                                        Buka Dompet
-                                        <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                                      </Button>
-                                    </Link>
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2.5 text-xs text-dark-900 font-medium p-3.5 bg-surface rounded-xl border border-border">
-                                <ShieldCheck className="w-5 h-5 text-dark-900 shrink-0" />
-                                <span>
-                                  Dana escrow sebesar{" "}
-                                  <b>{formatCurrency(proposal.harga_tawar)}</b>{" "}
-                                  telah dikunci aman oleh klien. Silakan unggah berkas hasil kerja saat sudah selesai.
-                                </span>
-                              </div>
-                            )}
-
-                            {!isDone && (
-                              <div className="flex justify-end pt-1">
-                                <Button
-                                  variant="brand"
-                                  size="sm"
-                                  onClick={() => handleOpenSubmission(proposal.project_id)}
-                                  className="w-full sm:w-auto text-xs font-bold shadow-brand"
-                                >
-                                  <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
-                                  {sub
-                                    ? sub.status === "REVISION_REQUESTED"
-                                      ? "Kirim Revisi Hasil Kerja"
-                                      : "Perbarui / Kirim Ulang Deliverable"
-                                    : "Unggah / Serahkan Hasil Kerja"}
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/60 text-[11px] text-muted">
+                      <span className="font-extrabold text-dark-900">
+                        {formatCurrency(prop.harga_tawar)}
+                      </span>
+                      <span>{prop.estimasi_hari} Hari</span>
+                    </div>
                   </div>
                 );
-              })}
+              })
+            )}
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* RIGHT PANE: Unified Active Workroom Stage (8 cols on lg) */}
+        {/* ========================================================================= */}
+        <div className="lg:col-span-8 space-y-4">
+          {!activeProjectId ? (
+            <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo mx-auto shadow-xs">
+                <Briefcase className="w-7 h-7" />
+              </div>
+              <h3 className="text-base font-bold text-dark-900">
+                Pilih Proyek di Sisi Kiri
+              </h3>
+              <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
+                Pilih salah satu proyek atau proposal pada daftar navigator
+                untuk langsung membuka ruang obrolan, memverifikasi berkas
+                kerja, dan mengelola garansi escrow.
+              </p>
             </div>
-          )}
+          ) : (
+            <div className="space-y-4">
+              {/* Stage Top Bar (Project Card Summary) */}
+              <div className="bg-surface rounded-3xl border border-border p-5 sm:p-6 shadow-xs space-y-3.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3.5">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-0.5">
+                      Proyek Aktif
+                    </span>
+                    <h2 className="text-base sm:text-lg font-bold text-dark-900 leading-snug">
+                      {activeProjectTitle}
+                    </h2>
+                  </div>
 
-          {/* Mahasiswa Proposal List Pagination Controls */}
-          {totalProposalPages > 1 && (
-            <div className="flex items-center justify-between pt-2 border-t border-border bg-surface p-4 rounded-2xl">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="text-xs font-bold border-border"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Sebelumnya
-              </Button>
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Garansi Escrow Aman</span>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="flex items-center gap-1.5">
-                {Array.from({ length: totalProposalPages }, (_, i) => i + 1).map((pg) => (
+                {/* Partner Info & Quick Metas */}
+                <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs">
+                      {activePartnerName.charAt(0)}
+                    </div>
+                    <div>
+                      <span className="font-bold text-dark-900 block leading-tight">
+                        {activePartnerName}
+                      </span>
+                      <span className="text-[10px] text-muted">
+                        {activePartnerRole === "UMKM"
+                          ? "Klien Usaha UMKM"
+                          : "Mahasiswa Talenta"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-muted text-[11px]">
+                    <div>
+                      <span className="block text-[10px]">Nilai Kontrak:</span>
+                      <span className="font-extrabold text-dark-900 text-xs">
+                        {formatCurrency(
+                          isUmkm
+                            ? selectedProject?.budget_max
+                            : selectedProposal?.harga_tawar,
+                        )}
+                      </span>
+                    </div>
+                    {isUmkm && (
+                      <Link
+                        to={`/projects/${selectedProject?.id}`}
+                        className="text-brand-indigo hover:underline flex items-center gap-1 font-bold text-[11px]"
+                      >
+                        <span>Lihat Brief Lengkap</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Sub-Nav Segmented Tabs for the Active Workroom */}
+                <div className="flex items-center gap-1.5 pt-2 border-t border-border overflow-x-auto scrollbar-none">
                   <button
-                    key={pg}
-                    onClick={() => setCurrentPage(pg)}
-                    className={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
-                      currentPage === pg
-                        ? "bg-dark-900 text-white shadow-xs"
-                        : "bg-canvas text-muted hover:text-dark-900 border border-border"
+                    onClick={() => setActiveStageTab("chat")}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                      activeStageTab === "chat"
+                        ? "bg-brand-indigo text-white shadow-brand"
+                        : "bg-canvas border border-border text-muted hover:text-dark-900"
                     }`}
                   >
-                    {pg}
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Obrolan & Kolaborasi</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   </button>
-                ))}
+
+                  <button
+                    onClick={() => setActiveStageTab("deliverable")}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                      activeStageTab === "deliverable"
+                        ? "bg-dark-900 text-white shadow-xs"
+                        : "bg-canvas border border-border text-muted hover:text-dark-900"
+                    }`}
+                  >
+                    <FileCheck2 className="w-3.5 h-3.5" />
+                    <span>Hasil Deliverable</span>
+                    {activeDeliverable && (
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-extrabold">
+                        Ada
+                      </span>
+                    )}
+                  </button>
+
+                  {isUmkm && (
+                    <button
+                      onClick={() => setActiveStageTab("applicants")}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                        activeStageTab === "applicants"
+                          ? "bg-dark-900 text-white shadow-xs"
+                          : "bg-canvas border border-border text-muted hover:text-dark-900"
+                      }`}
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>Pelamar Masuk ({projectProposals.length})</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => setActiveStageTab("brief")}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                      activeStageTab === "brief"
+                        ? "bg-dark-900 text-white shadow-xs"
+                        : "bg-canvas border border-border text-muted hover:text-dark-900"
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Rincian Kontrak</span>
+                  </button>
+                </div>
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalProposalPages, p + 1))}
-                disabled={currentPage === totalProposalPages}
-                className="text-xs font-bold border-border"
-              >
-                Berikutnya
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+              {/* STAGE TAB 1: INTEGRATED REAL-TIME CHAT PANEL (NO MODAL POPUPS!) */}
+              {activeStageTab === "chat" && (
+                <div className="animate-in fade-in duration-200">
+                  <WorkroomChatPanel
+                    projectId={activeProjectId}
+                    projectTitle={activeProjectTitle}
+                    partnerName={activePartnerName}
+                    partnerRole={activePartnerRole}
+                  />
+                </div>
+              )}
+
+              {/* STAGE TAB 2: DELIVERABLE SUBMISSION & REVIEW */}
+              {activeStageTab === "deliverable" && (
+                <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                      <FileCheck2 className="w-4 h-4 text-brand-indigo" />
+                      <span>Berkas Hasil Pekerjaan (Deliverable)</span>
+                    </h3>
+                    <span className="text-xs text-muted">
+                      Garansi Escrow Cair setelah disetujui
+                    </span>
+                  </div>
+
+                  {activeDeliverable ? (
+                    <div className="space-y-4">
+                      <div className="p-4 bg-canvas rounded-2xl border border-border space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <span className="text-xs font-bold text-dark-900">
+                            Tautan Berkas Hasil Pekerjaan:
+                          </span>
+                          <a
+                            href={activeDeliverable.url_berkas}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-900 text-white text-xs font-bold hover:bg-dark-800 transition-colors shadow-xs"
+                          >
+                            <span>Buka / Unduh Berkas Deliverable</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+
+                        {activeDeliverable.catatan_pengiriman && (
+                          <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
+                            <span className="font-bold text-dark-900 block mb-0.5">
+                              Catatan Pengiriman Mahasiswa:
+                            </span>
+                            "{activeDeliverable.catatan_pengiriman}"
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
+                          <span>
+                            Jumlah Revisi:{" "}
+                            <b>
+                              {activeDeliverable.jumlah_revisi || 0} dari 2 kali
+                            </b>
+                          </span>
+                          <span>
+                            Diserahkan:{" "}
+                            {formatDate(
+                              activeDeliverable.submitted_at ||
+                                activeDeliverable.created_at,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* UMKM Action Bar */}
+                      {isUmkm &&
+                        activeDeliverable.status !== "APPROVED" &&
+                        activeDeliverable.status !== "COMPLETED" && (
+                          <div className="pt-2 flex flex-col sm:flex-row justify-end gap-2.5">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedSubmissionForRevision(
+                                  activeDeliverable,
+                                );
+                                setRevisionModalOpen(true);
+                              }}
+                              disabled={activeDeliverable.jumlah_revisi >= 2}
+                              className="text-xs font-bold border-border text-dark-900 hover:bg-canvas"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                              {activeDeliverable.jumlah_revisi >= 2
+                                ? "Batas Revisi Habis (2/2)"
+                                : "Minta Revisi"}
+                            </Button>
+
+                            <Button
+                              variant="brand"
+                              size="sm"
+                              onClick={() =>
+                                handleApproveWork(activeDeliverable.id)
+                              }
+                              className="text-xs font-bold shadow-brand"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                              Setujui & Cairkan Honor Escrow
+                            </Button>
+                          </div>
+                        )}
+
+                      {/* Mahasiswa Update Deliverable Action */}
+                      {!isUmkm &&
+                        activeDeliverable.status !== "APPROVED" &&
+                        activeDeliverable.status !== "COMPLETED" && (
+                          <div className="pt-2 flex justify-end">
+                            <Button
+                              variant="brand"
+                              size="sm"
+                              onClick={() =>
+                                handleOpenSubmission(
+                                  selectedProposal.project_id,
+                                )
+                              }
+                              className="text-xs font-bold shadow-brand"
+                            >
+                              <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                              Perbarui Berkas Deliverable
+                            </Button>
+                          </div>
+                        )}
+
+                      {/* Approved Completed Success Banner */}
+                      {(activeDeliverable.status === "APPROVED" ||
+                        activeDeliverable.status === "COMPLETED") && (
+                        <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center justify-between gap-3 text-xs text-emerald-950">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                            <div>
+                              <span className="font-bold block">
+                                Deliverable Disetujui & Proyek Selesai!
+                              </span>
+                              <span className="text-[11px] text-emerald-800">
+                                Dana honor escrow telah 100% diteruskan ke
+                                dompet mahasiswa.
+                              </span>
+                            </div>
+                          </div>
+                          <span className="px-2.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-[10px] uppercase">
+                            Lunas & Tuntas
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-surface border border-border flex items-center justify-center text-muted mx-auto">
+                        <Clock className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs sm:text-sm font-bold text-dark-900">
+                          {isUmkm
+                            ? "Mahasiswa Sedang Mengerjakan Proyek"
+                            : "Belum Ada Berkas Deliverable"}
+                        </h4>
+                        <p className="text-[11px] text-muted max-w-sm mx-auto mt-1">
+                          {isUmkm
+                            ? "Begitu mahasiswa mengunggah tautan hasil kerja (Figma, GitHub, atau Drive), berkas akan otomatis muncul di sini untuk Anda verifikasi."
+                            : "Setelah pekerjaan selesai sesuai brief, unggah tautan hasil kerja Anda agar dapat diperiksa klien dan honor escrow dicairkan."}
+                        </p>
+                      </div>
+
+                      {!isUmkm && (
+                        <Button
+                          variant="brand"
+                          size="sm"
+                          onClick={() =>
+                            handleOpenSubmission(selectedProposal.project_id)
+                          }
+                          className="text-xs font-bold shadow-brand mt-2"
+                        >
+                          <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                          Serahkan Berkas Deliverable Sekarang
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STAGE TAB 3: APPLICANTS PROPOSALS (FOR UMKM) */}
+              {activeStageTab === "applicants" && isUmkm && (
+                <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-brand-indigo" />
+                      <span>
+                        Pelamar Mahasiswa yang Masuk ({projectProposals.length})
+                      </span>
+                    </h3>
+                    <span className="text-xs text-muted">
+                      Evaluasi & pilih kandidat terbaik
+                    </span>
+                  </div>
+
+                  {projectProposals.length === 0 ? (
+                    <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-1">
+                      <Users className="w-8 h-8 text-muted mx-auto opacity-40" />
+                      <p className="text-xs font-bold text-dark-900">
+                        Belum Ada Pelamar Masuk
+                      </p>
+                      <p className="text-[11px] text-muted">
+                        Proyek Anda sedang aktif tayang di katalog terbuka
+                        mahasiswa.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {projectProposals.map((prop) => {
+                        const isAccepted = prop.status === "ACCEPTED";
+                        const isRejected = prop.status === "REJECTED";
+
+                        return (
+                          <div
+                            key={prop.id}
+                            className={`p-4 rounded-2xl border transition-all ${
+                              isAccepted
+                                ? "bg-emerald-50/20 border-emerald-200 shadow-xs"
+                                : isRejected
+                                  ? "bg-canvas border-border opacity-70"
+                                  : "bg-canvas border-border hover:border-dark-900/30"
+                            }`}
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-bold text-dark-900">
+                                    {prop.mhs_profile?.nama_lengkap ||
+                                      "Mahasiswa Pelamar"}
+                                  </span>
+                                  <span
+                                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                      isAccepted
+                                        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                        : isRejected
+                                          ? "bg-rose-50 text-rose-800 border-rose-200"
+                                          : "bg-surface text-muted border-border"
+                                    }`}
+                                  >
+                                    {isAccepted
+                                      ? "Disetujui"
+                                      : isRejected
+                                        ? "Ditolak"
+                                        : "Menunggu Seleksi"}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-muted mt-0.5">
+                                  {prop.mhs_profile?.asal_kampus ||
+                                    "Universitas Bina Sarana Informatika"}{" "}
+                                  • Estimasi: {prop.estimasi_hari} Hari
+                                </p>
+                              </div>
+
+                              <div className="text-left sm:text-right">
+                                <span className="text-sm font-extrabold text-dark-900">
+                                  {formatCurrency(prop.harga_tawar)}
+                                </span>
+                              </div>
+                            </div>
+
+                            {(() => {
+                              const parsed = parseCoverLetter(
+                                prop.cover_letter,
+                              );
+                              return (
+                                <div className="bg-surface p-3.5 rounded-xl border border-border text-xs text-dark-900/90 leading-relaxed mb-3 space-y-2">
+                                  <div>
+                                    <span className="font-bold text-dark-900 block mb-0.5">
+                                      Rencana Pengerjaan Pelamar:
+                                    </span>
+                                    <p className="whitespace-pre-wrap">
+                                      {parsed.text}
+                                    </p>
+                                  </div>
+
+                                  {parsed.tools.length > 0 && (
+                                    <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/60">
+                                      <span className="text-[10px] font-bold text-muted uppercase">
+                                        Keahlian:
+                                      </span>
+                                      {parsed.tools.map((tool) => (
+                                        <span
+                                          key={tool}
+                                          className="px-2 py-0.5 rounded-md bg-brand-indigo/10 text-brand-indigo font-bold text-[10px] border border-brand-indigo/20"
+                                        >
+                                          {tool}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {parsed.portfolio && (
+                                    <div className="pt-1.5 border-t border-border/60">
+                                      <a
+                                        href={parsed.portfolio}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-1 text-brand-indigo hover:underline font-bold text-[11px]"
+                                      >
+                                        <ExternalLink className="w-3 h-3" />
+                                        <span>Lihat Portofolio Pelamar</span>
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()}
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center justify-end gap-2 pt-1 border-t border-border/60">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setActiveStageTab("chat")}
+                                className="text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 flex items-center gap-1.5"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5" />
+                                <span>Buka Obrolan</span>
+                              </Button>
+
+                              {(selectedProject.status === "OPEN" ||
+                                selectedProject.status === "BIDDING") &&
+                                prop.status === "PENDING" && (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleRejectProposal(prop)}
+                                      className="text-xs font-bold text-rose-600 border-rose-200 hover:bg-rose-50"
+                                    >
+                                      Tolak
+                                    </Button>
+                                    <Button
+                                      variant="brand"
+                                      size="sm"
+                                      onClick={() => handleAcceptProposal(prop)}
+                                      className="text-xs font-bold shadow-brand"
+                                    >
+                                      <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                                      Terima & Kunci Escrow
+                                    </Button>
+                                  </>
+                                )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STAGE TAB 4: CONTRACT & BRIEF DETAILS */}
+              {activeStageTab === "brief" && (
+                <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
+                  <div className="border-b border-border pb-3">
+                    <h3 className="text-sm font-bold text-dark-900">
+                      Rincian Brief & Kesepakatan Kontrak
+                    </h3>
+                    <p className="text-xs text-muted mt-0.5">
+                      Spesifikasi pengerjaan yang disepakati kedua belah pihak
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
+                      <span className="text-[10px] font-bold text-muted uppercase">
+                        Kategori & Bidang
+                      </span>
+                      <p className="font-bold text-dark-900">
+                        {isUmkm
+                          ? selectedProject?.kategori
+                          : selectedProposal?.project_kategori ||
+                            "Desain Kreatif"}
+                      </p>
+                    </div>
+
+                    <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
+                      <span className="text-[10px] font-bold text-muted uppercase">
+                        Batas Honor Disepakati
+                      </span>
+                      <p className="font-bold text-dark-900">
+                        {formatCurrency(
+                          isUmkm
+                            ? selectedProject?.budget_max
+                            : selectedProposal?.harga_tawar,
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Brief Kebutuhan Proyek dari Klien UMKM */}
+                  <div className="bg-canvas p-4 rounded-2xl border border-border space-y-2 text-xs">
+                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
+                      Brief & Kebutuhan Proyek Klien
+                    </span>
+                    <p className="text-dark-900 leading-relaxed whitespace-pre-wrap">
+                      {isUmkm
+                        ? selectedProject?.deskripsi_raw ||
+                          "Rincian brief proyek UMKM."
+                        : selectedProposal?.project_deskripsi ||
+                          "Brief kebutuhan proyek yang telah diterbitkan oleh klien UMKM."}
+                    </p>
+                  </div>
+
+                  {/* Proposal Cover Letter if Student view */}
+                  {!isUmkm &&
+                    selectedProposal &&
+                    (() => {
+                      const parsed = parseCoverLetter(
+                        selectedProposal.cover_letter,
+                      );
+                      return (
+                        <div className="bg-canvas p-4 rounded-2xl border border-border space-y-3 text-xs">
+                          <div>
+                            <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">
+                              Surat Lamaran & Rencana Pengerjaan Anda
+                            </span>
+                            <p className="text-dark-900/90 whitespace-pre-wrap leading-relaxed">
+                              {parsed.text}
+                            </p>
+                          </div>
+
+                          {parsed.tools.length > 0 && (
+                            <div className="pt-2 border-t border-border/60">
+                              <span className="text-[10px] font-bold text-muted uppercase block mb-1.5">
+                                Perangkat & Keahlian yang Diajukan:
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {parsed.tools.map((tool) => (
+                                  <span
+                                    key={tool}
+                                    className="px-2.5 py-0.5 rounded-lg bg-brand-indigo/10 text-brand-indigo font-bold text-[10px] border border-brand-indigo/20"
+                                  >
+                                    {tool}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {parsed.portfolio && (
+                            <div className="pt-2 border-t border-border/60 flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-muted uppercase">
+                                Tautan Portofolio Pendukung:
+                              </span>
+                              <a
+                                href={parsed.portfolio}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 font-bold text-xs text-brand-indigo hover:underline"
+                              >
+                                <span>Buka Tautan Portofolio</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
 
-      {/* Submission Modal for Student */}
-      {selectedProjectId && (
-        <SubmissionModal
-          isOpen={submissionModalOpen}
-          onClose={() => setSubmissionModalOpen(false)}
-          projectId={selectedProjectId}
-          onSuccess={loadData}
-        />
-      )}
+      {/* Modals for Deliverables & Reviews */}
+      <SubmissionModal
+        isOpen={submissionModalOpen}
+        onClose={() => setSubmissionModalOpen(false)}
+        projectId={selectedProjectId}
+        onSuccess={() => loadData()}
+      />
 
-      {/* Rating Modal for UMKM */}
-      {selectedProject && (
-        <RatingModal
-          isOpen={ratingModalOpen}
-          onClose={() => setRatingModalOpen(false)}
-          projectId={selectedProject.id}
-          keUserId={
-            projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_id
-          }
-          recipientName={
-            projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
-              ?.nama_lengkap || "Mahasiswa Pelaksana"
-          }
-          onSuccess={loadData}
-        />
-      )}
+      <RevisionModal
+        isOpen={revisionModalOpen}
+        onClose={() => {
+          setRevisionModalOpen(false);
+          setSelectedSubmissionForRevision(null);
+        }}
+        submission={selectedSubmissionForRevision}
+        onSuccess={() => loadData()}
+      />
 
-      {/* Revision Modal for UMKM */}
-      {selectedSubmissionForRevision && (
-        <RevisionModal
-          isOpen={revisionModalOpen}
-          onClose={() => {
-            setRevisionModalOpen(false);
-            setSelectedSubmissionForRevision(null);
-          }}
-          submissionId={selectedSubmissionForRevision.id}
-          currentRevisions={selectedSubmissionForRevision.jumlah_revisi || 0}
-          onSuccess={loadData}
-        />
-      )}
+      <RatingModal
+        isOpen={ratingModalOpen}
+        onClose={() => setRatingModalOpen(false)}
+        projectId={selectedProject?.id || selectedProjectId}
+        onSuccess={() => loadData()}
+      />
     </div>
   );
 }

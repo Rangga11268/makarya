@@ -104,7 +104,12 @@ def get_my_proposals(
             project_kategori=proj.kategori.value if proj and proj.kategori else None,
             project_status=proj.status.value if proj and proj.status else None,
             project_budget_max=proj.budget_max if proj else None,
-            project_umkm_nama=proj.umkm.email.split("@")[0] if proj and proj.umkm else None,
+            project_umkm_nama=(
+                proj.umkm.profile_umkm.nama_usaha
+                if (proj and proj.umkm and proj.umkm.profile_umkm and proj.umkm.profile_umkm.nama_usaha)
+                else (proj.umkm.email.split("@")[0] if proj and proj.umkm else None)
+            ),
+            project_deskripsi=proj.deskripsi_raw if proj else None,
         ))
     return results
 
@@ -143,7 +148,12 @@ def get_proposals_by_project(
             project_kategori=project.kategori.value if project.kategori else None,
             project_status=project.status.value if project.status else None,
             project_budget_max=project.budget_max,
-            project_umkm_nama=project.umkm.email.split("@")[0] if project.umkm else None,
+            project_umkm_nama=(
+                project.umkm.profile_umkm.nama_usaha
+                if (project and project.umkm and project.umkm.profile_umkm and project.umkm.profile_umkm.nama_usaha)
+                else (project.umkm.email.split("@")[0] if project.umkm else None)
+            ),
+            project_deskripsi=project.deskripsi_raw if project else None,
         ))
     return results
 

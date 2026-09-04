@@ -243,7 +243,7 @@ export function HomeScreen({ navigation }) {
         {/* 2. Dashboard Title & Date Row */}
         <View style={styles.dashboardTitleRow}>
           <Text style={styles.dashboardMainTitle}>
-            {isMahasiswa ? "Top level Freelancer" : "Dashboard Klien UMKM"}
+            {isMahasiswa ? "Top Freelance Talent" : "Client Dashboard"}
           </Text>
           <Text style={styles.dashboardDateText}>{currentDateFormatted}</Text>
         </View>
@@ -258,7 +258,7 @@ export function HomeScreen({ navigation }) {
           >
             <View style={styles.earningsTopRow}>
               <Text style={styles.earningsTitleLabel}>
-                {isMahasiswa ? "Earnings" : "Escrow Saldo"}
+                {isMahasiswa ? "Earnings" : "Escrow Balance"}
               </Text>
               <Text style={styles.earningsDetailsLink}>Details</Text>
             </View>
@@ -268,8 +268,8 @@ export function HomeScreen({ navigation }) {
             </Text>
             <Text style={styles.earningsGrowthSub}>
               {wallet?.saldo_aktif > 0
-                ? "Increase 12% than last month"
-                : "Siap dicairkan ke rekening"}
+                ? "+12% from last month"
+                : "Available for withdrawal"}
             </Text>
 
             {/* Nested Mini Target Card */}
@@ -279,7 +279,7 @@ export function HomeScreen({ navigation }) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.targetLabelText}>
-                  {isMahasiswa ? "Escrow Pengerjaan" : "Escrow Terkunci"}
+                  {isMahasiswa ? "Escrow Locked" : "Escrow Held"}
                 </Text>
                 <Text style={styles.targetAmountText}>
                   {formatCurrency(wallet?.saldo_escrow || 0)}
@@ -304,7 +304,7 @@ export function HomeScreen({ navigation }) {
                 <Text style={styles.greenProgressText}>100%</Text>
               </View>
               <Text style={styles.metricCardLabel}>
-                Response{"\n"}On-time rate
+                Response{"\n"}Rate 100%
               </Text>
             </View>
 
@@ -324,12 +324,12 @@ export function HomeScreen({ navigation }) {
         {isMahasiswa && myProposals.length > 0 && (
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionMainTitle}>Ongoing Project</Text>
+              <Text style={styles.sectionMainTitle}>Ongoing Projects</Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate("TrackerTab")}
                 activeOpacity={0.7}
               >
-                <Text style={styles.seeMoreLink}>See more</Text>
+                <Text style={styles.seeMoreLink}>See All</Text>
               </TouchableOpacity>
             </View>
 
@@ -386,7 +386,9 @@ export function HomeScreen({ navigation }) {
                           : styles.revisionTextPending,
                       ]}
                     >
-                      {item.status === "ACCEPTED" ? "Pengerjaan" : "Revisions"}
+                      {item.status === "ACCEPTED"
+                        ? "Pengerjaan"
+                        : "Menunggu Seleksi"}
                     </Text>
                   </View>
 
@@ -415,7 +417,7 @@ export function HomeScreen({ navigation }) {
               onPress={() => navigation.navigate("ProjectsTab")}
               activeOpacity={0.7}
             >
-              <Text style={styles.seeMoreLink}>Lihat Semua</Text>
+              <Text style={styles.seeMoreLink}>See All</Text>
             </TouchableOpacity>
           </View>
 
@@ -454,7 +456,9 @@ export function HomeScreen({ navigation }) {
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
               <View>
-                <Text style={styles.sectionMainTitle}>Discover Jobs</Text>
+                <Text style={styles.sectionMainTitle}>
+                  Peluang Proyek Terbaru
+                </Text>
                 <Text style={styles.sectionSubTitle}>
                   Peluang kerja baru dari UMKM terverifikasi
                 </Text>
@@ -724,7 +728,7 @@ const styles = StyleSheet.create({
   earningsAmountText: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "#FFFFFF",
     letterSpacing: -0.5,
     marginTop: 8,

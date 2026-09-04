@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Modal,
   Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
@@ -40,6 +41,7 @@ import {
   FileText,
   ChevronRight,
   Check,
+  MessageSquare,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -49,8 +51,11 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [project, setProject] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [submissions, setSubmissions] = useState([]);
+  const [myExistingProposal, setMyExistingProposal] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("proposals");
+  const [activeTab, setActiveTab] = useState(
+    route.params?.initialTab || "proposals",
+  );
   const [actionLoading, setActionLoading] = useState(false);
 
   // Proposal modal for Mahasiswa
@@ -71,7 +76,6 @@ export function ProjectDetailScreen({ route, navigation }) {
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
-    !user?.role ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
@@ -83,14 +87,49 @@ export function ProjectDetailScreen({ route, navigation }) {
     if (!projectId) return;
     try {
       setLoading(true);
-      const [pRes, propRes, subRes] = await Promise.all([
+      const promises = [
         projectApi.getDetail(projectId),
         proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
         submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
-      ]);
+      ];
+
+      if (isMahasiswa) {
+        promises.push(
+          proposalApi.getMyProposals().catch(() => ({ data: [] })),
+        );
+      }
+
+      const results = await Promise.all(promises);
+      const pRes = results[0];
+      const propRes = results[1];
+      const subRes = results[2];
+      const myPropsRes = isMahasiswa ? results[3] : null;
+
       setProject(pRes.data);
       setProposals(Array.isArray(propRes.data) ? propRes.data : []);
-      setSubmissions(Array.isArray(subRes.data) ? subRes.data : []);
+      setSubmissions(
+        Array.isArray(subRes.data)
+          ? subRes.data
+          : subRes.data && subRes.data.id
+            ? [subRes.data]
+            : [],
+      );
+
+      let foundProp = null;
+      if (myPropsRes && Array.isArray(myPropsRes.data)) {
+        foundProp = myPropsRes.data.find(
+          (p) => String(p.project_id) === String(projectId),
+        );
+      }
+      if (!foundProp && Array.isArray(propRes.data)) {
+        foundProp = propRes.data.find(
+          (p) =>
+            String(p.mhs_id || p.user_id) === String(user?.id) ||
+            (user?.email && p.mahasiswa_email === user?.email),
+        );
+      }
+      setMyExistingProposal(foundProp || null);
+
       if (pRes.data?.budget_max) {
         setHargaTawar(String(pRes.data.budget_max));
       }
@@ -101,9 +140,20 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
-  useEffect(() => {
-    loadDetail();
-  }, [projectId]);
+  const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
+  const isOpenForApply =
+    project?.status === "OPEN" || project?.status === "BIDDING";
+  const canApply =
+    isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.initialTab) {
+        setActiveTab(route.params.initialTab);
+      }
+      loadDetail();
+    }, [projectId, route.params?.initialTab])
+  );
 
   const handleSubmitProposal = async () => {
     if (!hargaTawar || !coverLetter.trim()) {
@@ -115,9 +165,9 @@ export function ProjectDetailScreen({ route, navigation }) {
     if (harga > (project?.budget_max || 0)) {
       showToast(
         `Harga tawar tidak boleh melebihi budget max (${formatCurrency(
-          project.budget_max
+          project.budget_max,
         )})`,
-        "danger"
+        "danger",
       );
       return;
     }
@@ -136,7 +186,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal mengirim proposal",
-        "danger"
+        "danger",
       );
     } finally {
       setSubmitLoading(false);
@@ -154,7 +204,8 @@ export function ProjectDetailScreen({ route, navigation }) {
       await submissionApi.submitWork({
         project_id: projectId,
         url_berkas: urlBerkas.trim(),
-        catatan_pengiriman: catatanPengiriman.trim() || "Hasil deliverable pengerjaan proyek",
+        catatan_pengiriman:
+          catatanPengiriman.trim() || "Hasil deliverable pengerjaan proyek",
       });
       showToast("Hasil deliverable berhasil diunggah!", "success");
       setSubmissionModal(false);
@@ -162,7 +213,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal mengunggah hasil kerja",
-        "danger"
+        "danger",
       );
     } finally {
       setUploadLoading(false);
@@ -183,20 +234,20 @@ export function ProjectDetailScreen({ route, navigation }) {
               await proposalApi.accept(proposalId);
               showToast(
                 "Proposal disetujui! Proyek kini sedang dikerjakan.",
-                "success"
+                "success",
               );
               loadDetail();
             } catch (err) {
               showToast(
                 err.response?.data?.detail || "Gagal menyetujui proposal",
-                "danger"
+                "danger",
               );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -227,20 +278,20 @@ export function ProjectDetailScreen({ route, navigation }) {
               await submissionApi.approve(submissionId);
               showToast(
                 "Proyek selesai & dana escrow berhasil dicairkan!",
-                "success"
+                "success",
               );
               loadDetail();
             } catch (err) {
               showToast(
                 err.response?.data?.detail || "Gagal menyetujui hasil kerja",
-                "danger"
+                "danger",
               );
             } finally {
               setActionLoading(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -252,13 +303,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     projectStatusUpper === "BIDDING" ||
     projectStatusUpper === "TERBUKA";
 
-  // Check if user already submitted a proposal
-  const myExistingProposal = proposals.find(
-    (p) => p.user_id === user?.id || p.mahasiswa_email === user?.email
-  );
 
-  const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
-  const canApply = !isUmkmOwner && isBiddingOpen && !myExistingProposal;
 
   return (
     <View style={styles.container}>
@@ -266,6 +311,24 @@ export function ProjectDetailScreen({ route, navigation }) {
         title="Detail Proyek"
         subtitle={`Kategori: ${project.kategori || "UMKM Digital"}`}
         onBack={() => navigation.goBack()}
+        rightAction={
+          <TouchableOpacity
+            style={styles.headerChatBtn}
+            onPress={() =>
+              navigation.navigate("Chat", {
+                projectId: project.id,
+                projectTitle: project.judul,
+                partnerName: isUmkmOwner
+                  ? "Mahasiswa Talenta"
+                  : project.umkm_nama || "Klien UMKM",
+                partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+              })
+            }
+            activeOpacity={0.7}
+          >
+            <MessageSquare size={18} color={COLORS.brandIndigo} />
+          </TouchableOpacity>
+        }
       />
 
       <ScrollView
@@ -293,7 +356,7 @@ export function ProjectDetailScreen({ route, navigation }) {
 
             <View style={styles.escrowPill}>
               <ShieldCheck size={13} color={COLORS.brandCyan} />
-              <Text style={styles.escrowPillText}>Escrow Guaranteed</Text>
+              <Text style={styles.escrowPillText}>Garansi Escrow 100%</Text>
             </View>
           </View>
         </View>
@@ -321,6 +384,37 @@ export function ProjectDetailScreen({ route, navigation }) {
             </Text>
           </View>
         </View>
+
+        {/* 3B. Collaboration Chat Entry Point */}
+        <TouchableOpacity
+          style={styles.openChatBar}
+          onPress={() =>
+            navigation.navigate("Chat", {
+              projectId: project.id,
+              projectTitle: project.judul,
+              partnerName: isUmkmOwner
+                ? "Mahasiswa Talenta"
+                : project.umkm_nama || "Klien UMKM",
+              partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+            })
+          }
+          activeOpacity={0.85}
+        >
+          <View style={styles.openChatBarLeft}>
+            <View style={styles.chatIconBadge}>
+              <MessageSquare size={16} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.openChatTitle}>
+                Ruang Obrolan & Kolaborasi
+              </Text>
+              <Text style={styles.openChatSub}>
+                Kirim pesan, revisi, dan tautan Figma secara realtime
+              </Text>
+            </View>
+          </View>
+          <ChevronRight size={16} color={COLORS.brandIndigo} />
+        </TouchableOpacity>
 
         {/* 4. Description & Scope */}
         <View style={styles.sectionBox}>
@@ -375,7 +469,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                   onPress={() => setSubmissionModal(true)}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.reuploadBtnText}>Perbarui Tautan Berkas</Text>
+                  <Text style={styles.reuploadBtnText}>
+                    Perbarui Tautan Berkas
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -498,7 +594,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                         activeOpacity={0.7}
                       >
                         <Link2 size={15} color={COLORS.brandIndigo} />
-                        <Text style={styles.submittedLinkText} numberOfLines={1}>
+                        <Text
+                          style={styles.submittedLinkText}
+                          numberOfLines={1}
+                        >
                           {sub.url_berkas}
                         </Text>
                       </TouchableOpacity>
@@ -524,6 +623,107 @@ export function ProjectDetailScreen({ route, navigation }) {
           </View>
         )}
 
+        {/* 7b. Mahasiswa Project Collaboration & Deliverable Section */}
+        {isMahasiswa && myExistingProposal && (
+          <View style={styles.managementSection}>
+            <View style={styles.tabContainer}>
+              <View style={[styles.tabButton, styles.tabButtonActive]}>
+                <Text style={[styles.tabText, styles.tabTextActive]}>
+                  {isAcceptedProposal
+                    ? "Deliverable & Hasil Kerja"
+                    : "Status Lamaran Anda"}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.tabContent}>
+              {isAcceptedProposal ? (
+                <View style={styles.submissionCard}>
+                  <Text style={styles.submissionTitle}>
+                    {submissions.length > 0
+                      ? "Berkas Deliverable Terkirim"
+                      : "Unggah Berkas Deliverable"}
+                  </Text>
+                  {submissions.length > 0 ? (
+                    <>
+                      <TouchableOpacity
+                        style={styles.submittedLinkBox}
+                        activeOpacity={0.7}
+                      >
+                        <Link2 size={15} color={COLORS.brandIndigo} />
+                        <Text style={styles.submittedLinkText} numberOfLines={1}>
+                          {submissions[0].url_berkas}
+                        </Text>
+                      </TouchableOpacity>
+                      {submissions[0].catatan_pengiriman && (
+                        <Text style={styles.submissionDesc}>
+                          Catatan: "{submissions[0].catatan_pengiriman}"
+                        </Text>
+                      )}
+                      <View style={{ marginTop: 10 }}>
+                        <Button
+                          title="Perbarui Berkas Deliverable"
+                          variant="outline"
+                          size="sm"
+                          icon={<UploadCloud size={15} color={COLORS.brandIndigo} />}
+                          onPress={() => setSubmissionModal(true)}
+                        />
+                      </View>
+                    </>
+                  ) : (
+                    <View style={styles.emptyBox}>
+                      <Clock size={28} color={COLORS.brandIndigo} />
+                      <Text style={styles.emptyText}>
+                        Proyek disetujui! Silakan kerjakan dan unggah tautan hasil kerja (Figma / Drive) Anda.
+                      </Text>
+                      <Button
+                        title="Unggah Deliverable Sekarang"
+                        variant="brand"
+                        size="md"
+                        icon={<UploadCloud size={16} color="#FFF" />}
+                        onPress={() => setSubmissionModal(true)}
+                        style={{ marginTop: 12 }}
+                      />
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.submissionCard}>
+                  <Text style={styles.submissionTitle}>Rencana Kerja yang Diajukan</Text>
+                  <Text style={styles.submissionDesc}>
+                    "{myExistingProposal.cover_letter}"
+                  </Text>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.borderDark }}>
+                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Tawaran Anda:</Text>
+                    <Text style={{ fontSize: 13, fontWeight: "700", color: COLORS.textDark }}>
+                      {formatCurrency(myExistingProposal.harga_tawar)}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
+                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Status Seleksi:</Text>
+                    <Badge
+                      label={
+                        myExistingProposal.status === "PENDING"
+                          ? "Menunggu Keputusan Klien"
+                          : myExistingProposal.status === "REJECTED"
+                            ? "Lamaran Ditolak"
+                            : "Disetujui"
+                      }
+                      variant={
+                        myExistingProposal.status === "PENDING"
+                          ? "warning"
+                          : myExistingProposal.status === "REJECTED"
+                            ? "danger"
+                            : "success"
+                      }
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
         <View style={{ height: 100 }} />
       </ScrollView>
 
@@ -536,6 +736,24 @@ export function ProjectDetailScreen({ route, navigation }) {
           </Text>
         </View>
 
+        {/* Dedicated Sticky Chat Button */}
+        <TouchableOpacity
+          style={styles.stickyChatBtn}
+          onPress={() =>
+            navigation.navigate("Chat", {
+              projectId: project.id,
+              projectTitle: project.judul,
+              partnerName: isUmkmOwner
+                ? "Mahasiswa Talenta"
+                : project.umkm_nama || "Klien UMKM",
+              partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+            })
+          }
+          activeOpacity={0.8}
+        >
+          <MessageSquare size={18} color={COLORS.brandIndigo} />
+        </TouchableOpacity>
+
         <View style={styles.stickyActionCol}>
           {canApply ? (
             <TouchableOpacity
@@ -544,7 +762,9 @@ export function ProjectDetailScreen({ route, navigation }) {
               activeOpacity={0.88}
             >
               <Send size={15} color="#FFFFFF" />
-              <Text style={styles.primaryApplyBtnText}>Ajukan Bid / Lamaran</Text>
+              <Text style={styles.primaryApplyBtnText}>
+                Ajukan Lamaran
+              </Text>
             </TouchableOpacity>
           ) : isAcceptedProposal ? (
             <TouchableOpacity
@@ -641,7 +861,8 @@ export function ProjectDetailScreen({ route, navigation }) {
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>Unggah Hasil Pekerjaan</Text>
             <Text style={styles.modalSub}>
-              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau Loom video)
+              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau
+              Loom video)
             </Text>
 
             <Input
@@ -716,7 +937,7 @@ const styles = StyleSheet.create({
   budgetText: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   projectTitle: {
@@ -772,6 +993,63 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 14,
+  },
+  openChatBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.brandIndigoLight,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+  },
+  openChatBarLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flex: 1,
+  },
+  chatIconBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: COLORS.brandIndigo,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  openChatTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  openChatSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 1,
+  },
+  headerChatBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stickyChatBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.brandIndigoLight,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 8,
   },
   clientAvatarBox: {
     width: 42,
@@ -1097,7 +1375,7 @@ const styles = StyleSheet.create({
   stickyPriceValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 17,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.brandIndigo,
     letterSpacing: -0.3,
   },

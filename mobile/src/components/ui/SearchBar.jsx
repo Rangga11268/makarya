@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.brandIndigo,
   },
   badgeCount: {
-    fontFamily: FONTS.bodyRegular,
     position: "absolute",
     top: -4,
     right: -4,
@@ -120,6 +119,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontSize: 10,
-    fontWeight: "900",
+    fontWeight: "700",
   },
 });

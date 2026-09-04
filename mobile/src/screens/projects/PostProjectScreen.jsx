@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   categoryChip: {
-    fontFamily: FONTS.bodyRegular,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
@@ -193,7 +192,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   categoryTextActive: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF",
   },
   guaranteeBox: {
@@ -217,7 +215,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   submitBtn: {
-    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
 });

@@ -49,3 +49,21 @@ export const disputeApi = {
   getAll: () => api.get("/disputes"),
   resolve: (id, data) => api.patch(`/disputes/${id}/resolve`, data),
 };
+
+export const chatApi = {
+  getMessages: (projectId) => api.get(`/chat/project/${projectId}/messages`),
+  sendMessage: (projectId, data) =>
+    api.post(`/chat/project/${projectId}/messages`, data),
+  markRead: (projectId) => api.patch(`/chat/project/${projectId}/read`),
+};
+
+export const getChatWsUrl = (projectId, token) => {
+  const isHttps = window.location.protocol === "https:";
+  const wsProto = isHttps ? "wss:" : "ws:";
+  const host =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "localhost:8000"
+      : window.location.host;
+  return `${wsProto}//${host}/v1/chat/ws/project/${projectId}?token=${token}`;
+};

@@ -87,8 +87,8 @@ export function ProjectListScreen({ navigation, route }) {
 
   const segmentedTabs = [
     { id: "MATCH", label: "Best Match" },
-    { id: "RECENT", label: "Most Recent" },
-    { id: "NEW", label: "New Post" },
+    { id: "RECENT", label: "Recent" },
+    { id: "NEW", label: "New Gigs" },
   ];
 
   const activeFilterCount =
@@ -157,12 +157,10 @@ export function ProjectListScreen({ navigation, route }) {
       <View style={styles.header}>
         <View style={styles.headerTitleGroup}>
           <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Discover Jobs" : "Kelola Proyek"}
+            {isMahasiswa ? "Discover Jobs" : "Manage Projects"}
           </Text>
           <Text style={styles.headerSubtitle}>
-            {isMahasiswa
-              ? "Temukan peluang proyek & kirim proposalmu"
-              : "Pantau pesanan proyek & seleksi talenta"}
+            {isMahasiswa ? "Find verified micro-gigs & submit pitches" : "Track listings & recruit student talent"}
           </Text>
         </View>
 
@@ -174,7 +172,7 @@ export function ProjectListScreen({ navigation, route }) {
               activeOpacity={0.85}
             >
               <Plus size={16} color="#FFFFFF" />
-              <Text style={styles.postProjectBtnText}>Pasang</Text>
+              <Text style={styles.postProjectBtnText}>Post Job</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -195,7 +193,7 @@ export function ProjectListScreen({ navigation, route }) {
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery("")}
-          placeholder="Search for job or skill..."
+          placeholder="Search projects or skills..."
           showFilterBtn={true}
           onFilterPress={() => setIsFilterModalOpen(true)}
           activeFilterCount={activeFilterCount}
@@ -290,8 +288,8 @@ export function ProjectListScreen({ navigation, route }) {
               <Compass size={40} color={COLORS.brandIndigo} />
               <Text style={styles.emptyTitle}>
                 {searchQuery || activeFilterCount > 0
-                  ? "Proyek Tidak Ditemukan"
-                  : "Belum Ada Proyek Tersedia"}
+                  ? "No Projects Found"
+                  : "No Projects Available"}
               </Text>
               <Text style={styles.emptyDesc}>
                 {searchQuery || activeFilterCount > 0
@@ -302,7 +300,7 @@ export function ProjectListScreen({ navigation, route }) {
               </Text>
               {activeFilterCount > 0 && (
                 <Button
-                  title="Atur Ulang Filter"
+                  title="Reset Filters"
                   variant="secondary"
                   size="sm"
                   icon={<RotateCcw size={14} color={COLORS.textDark} />}
@@ -373,7 +371,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.5,
   },

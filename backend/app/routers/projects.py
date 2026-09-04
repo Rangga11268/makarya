@@ -102,6 +102,7 @@ def browse_project(
 
 
 @router.get("/my-projects", response_model=List[ProjectResponse])
+@router.get("/my", response_model=List[ProjectResponse])
 def get_my_projects(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))

@@ -1,11 +1,24 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import Constants from "expo-constants";
 
-// 10.0.2.2 untuk Android Emulator, localhost untuk iOS/Web
-const DEFAULT_BASE_URL = Platform.OS === "android" 
-  ? "http://10.0.2.2:8000/v1" 
-  : "http://localhost:8000/v1";
+// Otomatis deteksi IP lokal jika menggunakan Expo Go di HP fisik, fallback ke 10.0.2.2 / localhost
+const getBaseUrl = () => {
+  const debuggerHost =
+    Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
+  if (debuggerHost) {
+    const ip = debuggerHost.split(":")[0];
+    if (ip && ip !== "localhost" && ip !== "127.0.0.1") {
+      return `http://${ip}:8000/v1`;
+    }
+  }
+  return Platform.OS === "android"
+    ? "http://10.0.2.2:8000/v1"
+    : "http://localhost:8000/v1";
+};
+
+const DEFAULT_BASE_URL = getBaseUrl();
 
 const api = axios.create({
   baseURL: DEFAULT_BASE_URL,
@@ -27,7 +40,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -38,7 +51,7 @@ api.interceptors.response.use(
       await AsyncStorage.removeItem("makarya_user");
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,9 @@ import {
   RefreshControl,
   Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Header } from "../../components/ui/Header";
-import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { projectApi, proposalApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -20,15 +19,13 @@ import { renderProjectCategoryVectorIcon } from "../../components/icons/Category
 import {
   Layers,
   ArrowRight,
-  Briefcase,
   Clock,
-  CheckCircle2,
-  AlertCircle,
   ShieldCheck,
   ChevronRight,
-  Building2,
-  FileCheck,
-  Sparkles,
+  MessageSquare,
+  Users,
+  Plus,
+  Briefcase,
 } from "lucide-react-native";
 
 export function TrackerScreen({ navigation }) {
@@ -60,94 +57,124 @@ export function TrackerScreen({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, [user?.role]);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [isMahasiswa]),
+  );
 
-  const activeJobsCount = items.filter((i) => i.status === "ACCEPTED").length;
-  const pendingJobsCount = items.filter((i) => i.status === "PENDING").length;
+  const activeJobsCount = isMahasiswa
+    ? items.filter((i) => i.status === "ACCEPTED").length
+    : items.filter((i) => i.status === "IN_PROGRESS").length;
+
+  const pendingJobsCount = isMahasiswa
+    ? items.filter((i) => i.status === "PENDING").length
+    : items.filter((i) => ["OPEN", "BIDDING", "REVIEW"].includes(i.status))
+        .length;
+
+  const doneJobsCount = isMahasiswa
+    ? items.filter((i) =>
+        ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE"].includes(i.status),
+      ).length
+    : items.filter((i) => ["DONE", "CANCELLED", "COMPLETED"].includes(i.status))
+        .length;
 
   const segmentedTabs = [
-    { id: "ALL", label: "Semua" },
-    { id: "ACTIVE", label: "Aktif", count: activeJobsCount },
-    { id: "PENDING", label: "Review", count: pendingJobsCount },
-    { id: "DONE", label: "Selesai" },
+    { id: "ALL", label: "All", count: items.length },
+    { id: "ACTIVE", label: "Active", count: activeJobsCount },
+    {
+      id: "PENDING",
+      label: isMahasiswa ? "In Review" : "Proposals",
+      count: pendingJobsCount,
+    },
+    { id: "DONE", label: "Completed", count: doneJobsCount },
   ];
 
   const filteredItems = items.filter((item) => {
     if (activeTab === "ALL") return true;
-    if (activeTab === "ACTIVE") return item.status === "ACCEPTED";
-    if (activeTab === "PENDING") return item.status === "PENDING";
-    if (activeTab === "DONE")
-      return item.status === "COMPLETED" || item.status === "REJECTED";
+    if (activeTab === "ACTIVE") {
+      return isMahasiswa
+        ? item.status === "ACCEPTED"
+        : item.status === "IN_PROGRESS";
+    }
+    if (activeTab === "PENDING") {
+      return isMahasiswa
+        ? item.status === "PENDING"
+        : ["OPEN", "BIDDING", "REVIEW"].includes(item.status);
+    }
+    if (activeTab === "DONE") {
+      return isMahasiswa
+        ? ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE"].includes(item.status)
+        : ["DONE", "CANCELLED", "COMPLETED"].includes(item.status);
+    }
     return true;
   });
 
   return (
     <View style={styles.container}>
-      {/* 1. Header (Matching Modern Workspace Style) */}
+      {/* 1. Sleek, Uncluttered Header */}
       <View style={styles.header}>
-        <View style={styles.headerTitleGroup}>
-          <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Papan Kerja & Lamaran" : "Manajemen Proyek"}
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {isMahasiswa
-              ? `${activeJobsCount} Proyek Aktif • ${pendingJobsCount} Menunggu Keputusan`
-              : "Pantau pesanan proyek & seleksi proposal mahasiswa"}
-          </Text>
-        </View>
-      </View>
+        <View style={styles.headerMainRow}>
+          <View>
+            <Text style={styles.headerTitle}>Workspace</Text>
+            <Text style={styles.headerSubtitle}>
+              {activeJobsCount} in progress • {items.length} total
+            </Text>
+          </View>
 
-      {/* 2. Modern Underline Segmented Tabs (Clean Single Line) */}
-      <View style={styles.segmentedContainer}>
-        {segmentedTabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
+          {!isMahasiswa && (
             <TouchableOpacity
-              key={tab.id}
-              onPress={() => setActiveTab(tab.id)}
-              style={styles.segmentedTabItem}
-              activeOpacity={0.7}
+              style={styles.newProjectBtn}
+              onPress={() => navigation.navigate("PostProject")}
+              activeOpacity={0.85}
             >
-              <View style={styles.tabItemContent}>
+              <Plus size={14} color="#FFFFFF" strokeWidth={2.5} />
+              <Text style={styles.newProjectBtnText}>New Project</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* 2. Clean Segmented Pill Tabs */}
+        <View style={styles.tabBar}>
+          {segmentedTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => setActiveTab(tab.id)}
+                style={[styles.tabItem, isActive && styles.tabItemActive]}
+                activeOpacity={0.75}
+              >
                 <Text
-                  style={[
-                    styles.segmentedTabText,
-                    isActive && styles.segmentedTabTextActive,
-                  ]}
+                  style={[styles.tabLabel, isActive && styles.tabLabelActive]}
                   numberOfLines={1}
                 >
                   {tab.label}
                 </Text>
-                {tab.count !== undefined && tab.count > 0 && (
+                {tab.count > 0 && (
                   <View
-                    style={[
-                      styles.tabCountPill,
-                      isActive && styles.tabCountPillActive,
-                    ]}
+                    style={[styles.tabBadge, isActive && styles.tabBadgeActive]}
                   >
                     <Text
                       style={[
-                        styles.tabCountText,
-                        isActive && styles.tabCountTextActive,
+                        styles.tabBadgeText,
+                        isActive && styles.tabBadgeTextActive,
                       ]}
                     >
                       {tab.count}
                     </Text>
                   </View>
                 )}
-              </View>
-              {isActive && <View style={styles.activeUnderlineBar} />}
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
-      {/* 3. Modern Workspace Card Feed */}
+      {/* 3. Breathable Project Feed */}
       <FlatList
-        data={isMahasiswa ? filteredItems : items}
-        keyExtractor={(item) => item.id}
+        data={filteredItems}
+        keyExtractor={(item) => String(item.id)}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -157,29 +184,35 @@ export function TrackerScreen({ navigation }) {
           />
         }
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           !loading && (
             <View style={styles.emptyBox}>
-              <Layers size={40} color={COLORS.brandIndigo} />
-              <Text style={styles.emptyTitle}>
-                {isMahasiswa
-                  ? "Belum Ada Lamaran di Kategori Ini"
-                  : "Tidak Ada Proyek Aktif"}
-              </Text>
+              <View style={styles.emptyIconCircle}>
+                <Briefcase size={28} color={COLORS.brandIndigo} />
+              </View>
+              <Text style={styles.emptyTitle}>No projects in this tab</Text>
               <Text style={styles.emptyDesc}>
                 {isMahasiswa
-                  ? "Jelajahi proyek baru di tab Eksplor dan kirim penawaran pertamamu."
-                  : "Mulai buat proyek baru untuk merekrut talenta mahasiswa kampus."}
+                  ? "Explore verified micro-gigs and submit your offer to get started."
+                  : "Post your first project listing to connect with top campus talents."}
               </Text>
-              {isMahasiswa && (
+              {isMahasiswa ? (
                 <TouchableOpacity
-                  style={styles.exploreCtaBtn}
+                  style={styles.emptyCtaBtn}
                   onPress={() => navigation.navigate("ProjectsTab")}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.exploreCtaBtnText}>
-                    Jelajah Katalog Proyek
-                  </Text>
+                  <Text style={styles.emptyCtaBtnText}>Explore Projects</Text>
+                  <ArrowRight size={14} color="#FFFFFF" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.emptyCtaBtn}
+                  onPress={() => navigation.navigate("PostProject")}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.emptyCtaBtnText}>+ Post New Project</Text>
                   <ArrowRight size={14} color="#FFFFFF" />
                 </TouchableOpacity>
               )}
@@ -187,184 +220,163 @@ export function TrackerScreen({ navigation }) {
           )
         }
         renderItem={({ item }) => {
-          if (isMahasiswa) {
-            const isAccepted = item.status === "ACCEPTED";
-            const isPending = item.status === "PENDING";
-            const isRejected = item.status === "REJECTED";
+          // Determine roles & properties
+          const projectId = isMahasiswa ? item.project_id : item.id;
+          const projectTitle = isMahasiswa ? item.project_judul : item.judul;
+          const partnerName = isMahasiswa
+            ? item.project_umkm_nama || "Campus UMKM Client"
+            : "Your Business Listing";
+          const category = item.kategori;
+          const createdAt = item.created_at;
 
-            return (
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() =>
-                  navigation.navigate("ProjectDetail", {
-                    id: item.project_id,
-                    projectId: item.project_id,
-                  })
-                }
-                style={[
-                  styles.workspaceCard,
-                  isAccepted && styles.workspaceCardActiveGlow,
-                ]}
-              >
-                {/* Top Row: Client Info & Status Badge */}
-                <View style={styles.cardTopRow}>
-                  <View style={styles.clientGroup}>
-                    <View
-                      style={[
-                        styles.clientIconBox,
-                        isAccepted ? styles.clientIconBoxActive : {},
-                      ]}
-                    >
-                      {renderProjectCategoryVectorIcon(
-                        item.kategori,
-                        item.project_judul,
-                        22,
-                        isAccepted ? COLORS.success : COLORS.brandIndigo,
-                      )}
-                    </View>
-                    <View>
-                      <Text style={styles.clientName}>
-                        {item.project_umkm_nama || "Mitra UMKM Kampus"}
-                      </Text>
-                      <Text style={styles.createdDate}>
-                        Diajukan: {formatDate(item.created_at)}
-                      </Text>
-                    </View>
-                  </View>
+          // Status & Chat Logic
+          const isAccepted = isMahasiswa
+            ? item.status === "ACCEPTED"
+            : item.status === "IN_PROGRESS";
+          const isPending = isMahasiswa
+            ? item.status === "PENDING"
+            : item.status === "OPEN" || item.status === "BIDDING";
+          const isReview = !isMahasiswa && item.status === "REVIEW";
+          const isDone =
+            item.status === "DONE" ||
+            item.status === "COMPLETED" ||
+            item.status === "SELESAI";
+          const isDeclined =
+            item.status === "REJECTED" || item.status === "CANCELLED";
 
-                  {/* Status Indicator Pill */}
-                  {isAccepted ? (
-                    <View style={styles.statusPillAccepted}>
-                      <View style={styles.statusDotGreen} />
-                      <Text style={styles.statusTextAccepted}>
-                        Escrow Aktif
-                      </Text>
-                    </View>
-                  ) : isPending ? (
-                    <View style={styles.statusPillPending}>
-                      <View style={styles.statusDotAmber} />
-                      <Text style={styles.statusTextPending}>
-                        Menunggu Review
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={styles.statusPillRejected}>
-                      <Text style={styles.statusTextRejected}>Ditolak</Text>
-                    </View>
-                  )}
-                </View>
+          // Chat is relevant when work is active or in review!
+          const canChat = isAccepted || isReview;
 
-                {/* Project Title */}
-                <Text style={styles.cardTitle} numberOfLines={2}>
-                  {item.project_judul || "Pengembangan Solusi UMKM"}
-                </Text>
-
-                {/* Financial & Time Specs Grid */}
-                <View style={styles.specsRow}>
-                  <View style={styles.specItem}>
-                    <Text style={styles.specLabel}>Tawaran Anda</Text>
-                    <Text style={styles.specBudgetValue}>
-                      {formatCurrency(item.harga_tawar)}
-                    </Text>
-                  </View>
-
-                  <View style={styles.specDivider} />
-
-                  <View style={styles.specItem}>
-                    <Text style={styles.specLabel}>Waktu Kerja</Text>
-                    <View style={styles.specTimeWrap}>
-                      <Clock size={12} color={COLORS.textMuted} />
-                      <Text style={styles.specTimeValue}>
-                        {item.estimasi_hari || 5} Hari
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.specDivider} />
-
-                  <View style={styles.specItemRight}>
-                    <Text style={styles.specLabel}>Jaminan Keamanan</Text>
-                    <View style={styles.escrowSafeWrap}>
-                      <ShieldCheck size={12} color={COLORS.success} />
-                      <Text style={styles.escrowSafeText}>100% Escrow</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Milestone Bar (Shown on Active Project) */}
-                {isAccepted && (
-                  <View style={styles.milestoneProgressSection}>
-                    <View style={styles.milestoneLabelRow}>
-                      <Text style={styles.milestoneStageText}>
-                        Tahap 2: Pengerjaan & Pengujian
-                      </Text>
-                      <Text style={styles.milestonePercentText}>65%</Text>
-                    </View>
-                    <View style={styles.progressBarTrack}>
-                      <View
-                        style={[styles.progressBarFill, { width: "65%" }]}
-                      />
-                    </View>
-                  </View>
-                )}
-
-                {/* Card Action Footer */}
-                <View style={styles.cardFooter}>
-                  <Text style={styles.actionHintText}>
-                    {isAccepted
-                      ? "Ketuk untuk unggah hasil atau kirim pesan"
-                      : "Ketuk untuk melihat detail proposal"}
-                  </Text>
-                  <View style={styles.viewDetailBtn}>
-                    <Text style={styles.viewDetailBtnText}>Buka</Text>
-                    <ChevronRight size={13} color={COLORS.brandIndigo} />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          }
-
-          // UMKM Project Card
           return (
             <TouchableOpacity
               activeOpacity={0.88}
               onPress={() =>
                 navigation.navigate("ProjectDetail", {
-                  id: item.id,
-                  projectId: item.id,
+                  id: projectId,
+                  projectId: projectId,
                 })
               }
-              style={styles.workspaceCard}
+              style={[
+                styles.projectCard,
+                isAccepted && styles.projectCardActive,
+              ]}
             >
-              <View style={styles.cardTopRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.clientName}>Proyek Usaha Anda</Text>
-                  <Text style={styles.createdDate}>
-                    Dibuat: {formatDate(item.created_at)}
-                  </Text>
+              {/* Card Header: Category Icon + Partner Info + Status Badge */}
+              <View style={styles.cardHeader}>
+                <View style={styles.partnerRow}>
+                  <View
+                    style={[
+                      styles.categoryBox,
+                      isAccepted && styles.categoryBoxActive,
+                    ]}
+                  >
+                    {renderProjectCategoryVectorIcon(
+                      category,
+                      projectTitle,
+                      18,
+                      isAccepted ? COLORS.success : COLORS.brandIndigo,
+                    )}
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.partnerName} numberOfLines={1}>
+                      {partnerName}
+                    </Text>
+                    <Text style={styles.postDate}>
+                      {isMahasiswa ? "Applied " : "Posted "}
+                      {formatDate(createdAt)}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.statusPillAccepted}>
-                  <Text style={styles.statusTextAccepted}>
-                    {item.status || "OPEN"}
-                  </Text>
-                </View>
+
+                {/* Clean Status Pill */}
+                {isAccepted ? (
+                  <View style={styles.statusPillActive}>
+                    <View style={styles.pulseDotGreen} />
+                    <Text style={styles.statusTextActive}>In Progress</Text>
+                  </View>
+                ) : isReview ? (
+                  <View style={styles.statusPillReview}>
+                    <View style={styles.pulseDotPurple} />
+                    <Text style={styles.statusTextReview}>Delivered</Text>
+                  </View>
+                ) : isPending ? (
+                  <View style={styles.statusPillPending}>
+                    <Text style={styles.statusTextPending}>
+                      {isMahasiswa
+                        ? "Under Review"
+                        : `${item.total_pelamar || 0} Proposals`}
+                    </Text>
+                  </View>
+                ) : isDone ? (
+                  <View style={styles.statusPillDone}>
+                    <Text style={styles.statusTextDone}>Completed</Text>
+                  </View>
+                ) : (
+                  <View style={styles.statusPillDeclined}>
+                    <Text style={styles.statusTextDeclined}>
+                      {isDeclined ? "Declined" : item.status}
+                    </Text>
+                  </View>
+                )}
               </View>
 
+              {/* Project Title */}
               <Text style={styles.cardTitle} numberOfLines={2}>
-                {item.judul}
+                {projectTitle || "Project Assignment"}
               </Text>
 
-              <View style={styles.specsRow}>
-                <View style={styles.specItem}>
-                  <Text style={styles.specLabel}>Pagu Anggaran</Text>
-                  <Text style={styles.specBudgetValue}>
-                    {formatCurrency(item.budget_max)}
+              {/* Bottom Row: Metadata & Quick Actions */}
+              <View style={styles.cardBottomRow}>
+                {/* Meta info: Budget, Timeline, Escrow */}
+                <View style={styles.metaInfo}>
+                  <Text style={styles.budgetHighlight}>
+                    {formatCurrency(
+                      isMahasiswa ? item.harga_tawar : item.budget_max,
+                    )}
                   </Text>
+                  <Text style={styles.metaDivider}>•</Text>
+                  <View style={styles.metaIconText}>
+                    <Clock size={11} color={COLORS.textMuted} />
+                    <Text style={styles.metaLabel}>
+                      {isMahasiswa
+                        ? `${item.estimasi_hari || 5}d`
+                        : `${item.total_pelamar || 0} bids`}
+                    </Text>
+                  </View>
+                  <Text style={styles.metaDivider}>•</Text>
+                  <View style={styles.metaIconText}>
+                    <ShieldCheck size={11} color={COLORS.success} />
+                    <Text style={styles.escrowLabel}>Escrow</Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={{ marginTop: 10 }}>
-                <ProjectStatusBar currentStatus={item.status} />
+                {/* Quick Action: Direct Chat & View */}
+                <View style={styles.actionGroup}>
+                  {canChat && (
+                    <TouchableOpacity
+                      style={styles.quickChatBtn}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        navigation.navigate("Chat", {
+                          projectId: projectId,
+                          projectTitle: projectTitle,
+                          partnerName: isMahasiswa
+                            ? item.project_umkm_nama || "Client"
+                            : "Talent",
+                          partnerRole: isMahasiswa ? "UMKM" : "MHS",
+                        });
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <MessageSquare size={12} color={COLORS.brandIndigo} />
+                      <Text style={styles.quickChatBtnText}>Chat</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  <View style={styles.chevronBox}>
+                    <ChevronRight size={14} color={COLORS.textMuted} />
+                  </View>
+                </View>
               </View>
             </TouchableOpacity>
           );
@@ -377,26 +389,29 @@ export function TrackerScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: "#F8FAFC", // Clean, bright backdrop
   },
 
   // 1. Header
   header: {
+    backgroundColor: "#FFFFFF",
+    paddingTop: Platform.OS === "ios" ? 54 : 44,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderDark,
+    ...SHADOWS.sm,
+  },
+  headerMainRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 44,
-    paddingBottom: 12,
-    backgroundColor: COLORS.bgSurface,
-  },
-  headerTitleGroup: {
-    flex: 1,
+    marginBottom: 14,
   },
   headerTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.5,
   },
@@ -406,42 +421,55 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 2,
   },
+  newProjectBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
+  },
+  newProjectBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
 
-  // 2. Segmented Tabs (Clean Single-Line Style)
-  segmentedContainer: {
+  // 2. Segmented Pill Tabs
+  tabBar: {
     flexDirection: "row",
-    backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    backgroundColor: "#F1F5F9",
+    padding: 3,
+    borderRadius: 12,
   },
-  segmentedTabItem: {
+  tabItem: {
     flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  tabItemContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 7,
+    borderRadius: 9,
     gap: 4,
   },
-  segmentedTabText: {
+  tabItemActive: {
+    backgroundColor: "#FFFFFF",
+    ...SHADOWS.sm,
+  },
+  tabLabel: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "500",
     color: COLORS.textMuted,
-    textAlign: "center",
   },
-  segmentedTabTextActive: {
+  tabLabelActive: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.brandIndigo,
     fontWeight: "700",
   },
-  tabCountPill: {
-    backgroundColor: COLORS.canvasSoft,
+  tabBadge: {
+    backgroundColor: "rgba(15, 23, 42, 0.08)",
     paddingHorizontal: 5,
     paddingVertical: 1,
     borderRadius: 999,
@@ -449,281 +477,237 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tabCountPillActive: {
+  tabBadgeActive: {
     backgroundColor: COLORS.brandIndigoLight,
   },
-  tabCountText: {
+  tabBadgeText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
     color: COLORS.textMuted,
     fontWeight: "700",
   },
-  tabCountTextActive: {
+  tabBadgeTextActive: {
     color: COLORS.brandIndigo,
-  },
-  activeUnderlineBar: {
-    position: "absolute",
-    bottom: -1,
-    left: 6,
-    right: 6,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: COLORS.brandIndigo,
   },
 
   // 3. Feed List
   listContent: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 32,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 40,
   },
 
-  // Modern Workspace Card
-  workspaceCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
-    padding: 16,
+  // 4. Streamlined Card
+  projectCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 14,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    ...SHADOWS.sm,
   },
-  workspaceCardActiveGlow: {
-    borderColor: "rgba(79, 70, 229, 0.3)",
-    backgroundColor: "#FAFAFF",
+  projectCardActive: {
+    borderColor: "rgba(79, 70, 229, 0.35)",
   },
-  cardTopRow: {
+  cardHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 8,
   },
-  clientGroup: {
+  partnerRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 9,
     flex: 1,
+    marginRight: 8,
   },
-  clientIconBox: {
-    width: 38,
-    height: 38,
+  categoryBox: {
+    width: 34,
+    height: 34,
     borderRadius: 10,
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
   },
-  clientIconBoxActive: {
+  categoryBoxActive: {
     backgroundColor: COLORS.successBg,
   },
-  clientName: {
+  partnerName: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
   },
-  createdDate: {
+  postDate: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
     marginTop: 1,
   },
 
-  // Status Pills
-  statusPillAccepted: {
+  // Status Badges
+  statusPillActive: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
     backgroundColor: COLORS.successBg,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: COLORS.successBorder,
   },
-  statusDotGreen: {
+  pulseDotGreen: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: COLORS.success,
   },
-  statusTextAccepted: {
+  statusTextActive: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    color: COLORS.success,
     fontWeight: "700",
+    color: COLORS.success,
   },
-  statusPillPending: {
+  statusPillReview: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: COLORS.warningBg,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    backgroundColor: "#F3E8FF",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: COLORS.warningBorder,
   },
-  statusDotAmber: {
+  pulseDotPurple: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.warning,
+    backgroundColor: "#9333EA",
+  },
+  statusTextReview: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#9333EA",
+  },
+  statusPillPending: {
+    backgroundColor: COLORS.warningBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
   statusTextPending: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    color: COLORS.warning,
     fontWeight: "700",
+    color: COLORS.warning,
   },
-  statusPillRejected: {
-    backgroundColor: COLORS.dangerBg,
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+  statusPillDone: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: COLORS.dangerBorder,
   },
-  statusTextRejected: {
+  statusTextDone: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    color: COLORS.danger,
     fontWeight: "700",
+    color: COLORS.textSecondary,
+  },
+  statusPillDeclined: {
+    backgroundColor: COLORS.dangerBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  statusTextDeclined: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.danger,
   },
 
-  // Project Title
+  // Title
   cardTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "700",
     color: COLORS.textDark,
-    lineHeight: 21,
-    marginBottom: 12,
+    lineHeight: 20,
+    marginBottom: 10,
   },
 
-  // Specs Row
-  specsRow: {
+  // Bottom Row
+  cardBottomRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.canvasSoft,
-    borderRadius: 14,
-    padding: 10,
-    marginBottom: 12,
+    justifyContent: "space-between",
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
   },
-  specItem: {
+  metaInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     flex: 1,
   },
-  specItemRight: {
-    flex: 1,
-    alignItems: "flex-end",
-  },
-  specDivider: {
-    width: 1,
-    height: 22,
-    backgroundColor: COLORS.borderDark,
-    marginHorizontal: 8,
-  },
-  specLabel: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 9,
-    color: COLORS.textMuted,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
-    marginBottom: 2,
-  },
-  specBudgetValue: {
+  budgetHighlight: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.brandIndigo,
   },
-  specTimeWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  },
-  specTimeValue: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    fontWeight: "600",
-    color: COLORS.textDark,
-  },
-  escrowSafeWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  },
-  escrowSafeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.success,
-  },
-
-  // Milestone Bar
-  milestoneProgressSection: {
-    marginBottom: 12,
-    paddingTop: 4,
-  },
-  milestoneLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  milestoneStageText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-    fontWeight: "600",
-  },
-  milestonePercentText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-    fontWeight: "700",
-  },
-  progressBarTrack: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLORS.canvasSoft,
-    overflow: "hidden",
-  },
-  progressBarFill: {
-    height: "100%",
-    borderRadius: 3,
-    backgroundColor: COLORS.brandIndigo,
-  },
-
-  // Card Footer
-  cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-  },
-  actionHintText: {
+  metaDivider: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: COLORS.textMuted,
-    flex: 1,
-    marginRight: 8,
+    color: COLORS.borderDark,
+    fontSize: 11,
   },
-  viewDetailBtn: {
+  metaIconText: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 2,
+    gap: 3,
   },
-  viewDetailBtnText: {
+  metaLabel: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  escrowLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+
+  // Action Buttons
+  actionGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  quickChatBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.brandIndigoLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  quickChatBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
     color: COLORS.brandIndigo,
     fontWeight: "700",
+  },
+  chevronBox: {
+    width: 22,
+    height: 22,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // Empty State
@@ -731,18 +715,27 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     marginTop: 20,
+    ...SHADOWS.sm,
+  },
+  emptyIconCircle: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
   },
   emptyTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 15,
     fontWeight: "700",
     color: COLORS.textDark,
-    marginTop: 12,
     textAlign: "center",
   },
   emptyDesc: {
@@ -754,17 +747,17 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     maxWidth: 260,
   },
-  exploreCtaBtn: {
+  emptyCtaBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     backgroundColor: COLORS.brandIndigo,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 9,
     borderRadius: 999,
-    marginTop: 18,
+    marginTop: 16,
   },
-  exploreCtaBtnText: {
+  emptyCtaBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",

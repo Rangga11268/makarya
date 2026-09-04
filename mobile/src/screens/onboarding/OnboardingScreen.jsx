@@ -246,7 +246,6 @@ const styles = StyleSheet.create({
     height: 34,
   },
   topTag: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
@@ -282,7 +281,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0F172A", // Deep Midnight Slate
   },
   mockupInnerHeader: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -319,7 +317,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   escrowIconBadge: {
-    fontFamily: FONTS.bodyRegular,
     width: 26,
     height: 26,
     borderRadius: 13,
@@ -362,7 +359,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   mockupMiniPillIndigo: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -372,7 +368,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   mockupMiniPillEmerald: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -382,7 +377,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   mockupMiniPillSky: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,

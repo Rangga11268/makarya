@@ -6,10 +6,10 @@ import { Check, ShieldCheck } from "lucide-react-native";
 
 export function ProjectStatusBar({ currentStatus }) {
   const steps = [
-    { key: "BIDDING", label: "Bidding", sub: "Seleksi" },
-    { key: "IN_PROGRESS", label: "Pengerjaan", sub: "Escrow Aktif" },
-    { key: "REVIEW", label: "Review", sub: "Deliverable" },
-    { key: "COMPLETED", label: "Selesai", sub: "Honor Cair" },
+    { key: "BIDDING", label: "Proposals", sub: "Reviewing" },
+    { key: "IN_PROGRESS", label: "In Progress", sub: "Escrow Active" },
+    { key: "REVIEW", label: "Delivery", sub: "Under Review" },
+    { key: "COMPLETED", label: "Completed", sub: "Funds Released" },
   ];
 
   const getStepIndex = (status) => {
@@ -49,7 +49,7 @@ export function ProjectStatusBar({ currentStatus }) {
       <View style={styles.headerRow}>
         <View style={styles.headerLeft}>
           <ShieldCheck size={14} color={COLORS.brandIndigo} />
-          <Text style={styles.headerTitle}>Alur Proteksi Escrow</Text>
+          <Text style={styles.headerTitle}>Escrow Workflow</Text>
         </View>
         <Text
           style={[
@@ -57,7 +57,7 @@ export function ProjectStatusBar({ currentStatus }) {
             isAllCompleted && styles.headerProgressCompleted,
           ]}
         >
-          Progres: {getProgressPercentage()}
+          Progress: {getProgressPercentage()}
         </Text>
       </View>
 
@@ -122,12 +122,12 @@ export function ProjectStatusBar({ currentStatus }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 14,
+    marginBottom: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.02,
@@ -138,8 +138,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
-    paddingBottom: 8,
+    marginBottom: 10,
+    paddingBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
   },
@@ -174,12 +174,12 @@ const styles = StyleSheet.create({
     width: 62,
   },
   circle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 6,
+    marginBottom: 5,
   },
   circleDone: {
     backgroundColor: COLORS.success,
@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
   connector: {
     flex: 1,
     height: 2,
-    marginTop: 12,
-    marginHorizontal: -12,
+    marginTop: 11,
+    marginHorizontal: -10,
     zIndex: 1,
   },
   connectorActive: {
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "600",
     color: COLORS.textMuted,
     textAlign: "center",

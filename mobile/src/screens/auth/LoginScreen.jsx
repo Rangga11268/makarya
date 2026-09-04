@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   header: {
-    fontFamily: FONTS.bodyRegular,
     marginBottom: 20,
   },
   brandLogo: {
@@ -197,7 +196,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   testAccountBox: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.canvasSoft,
     borderRadius: 20,
     padding: 14,
@@ -206,14 +204,12 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   testHeader: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 10,
   },
   testTitleRow: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -230,13 +226,11 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   chipRow: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
   },
   chip: {
-    fontFamily: FONTS.bodyRegular,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
