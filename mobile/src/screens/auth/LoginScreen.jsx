@@ -49,10 +49,16 @@ export function LoginScreen({ navigation }) {
       }
       showToast("Selamat datang kembali!", "success");
     } catch (err) {
-      showToast(
-        err.response?.data?.detail || "Gagal masuk. Periksa email/kata sandi.",
-        "danger",
-      );
+      console.warn("Login error:", err);
+      const isNetworkError =
+        !err.response ||
+        err.message === "Network Error" ||
+        err.code === "ERR_NETWORK";
+      const errorMsg = isNetworkError
+        ? "Koneksi ke backend gagal. Pastikan uvicorn berjalan dengan --host 0.0.0.0"
+        : err.response?.data?.detail ||
+          "Gagal masuk. Periksa email/kata sandi.";
+      showToast(errorMsg, "danger");
     } finally {
       setLoading(false);
     }

@@ -14,6 +14,7 @@ import { FONTS } from "../../theme/fonts";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { NotificationModal } from "../../components/features/NotificationModal";
+import { PromoBanner } from "../../components/features/PromoBanner";
 import {
   UiUxVectorIcon,
   WebCodingVectorIcon,
@@ -37,6 +38,8 @@ import {
   Star,
   Clock,
   CheckCircle2,
+  MessageSquare,
+  Building2,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -100,42 +103,55 @@ export function HomeScreen({ navigation }) {
   }, [user?.role]);
 
   // 6 Bespoke Vector Categories
+  // 6 Bespoke Vector Categories with Luxury Color Palettes
   const categoryTiles = [
     {
       id: "DESAIN",
       title: "Desain UI/UX",
       sub: "Figma & Branding",
       iconComponent: UiUxVectorIcon,
+      accentColor: "#4F46E5",
+      bgTint: "#EEF2FF",
     },
     {
       id: "WEB",
       title: "Web & Coding",
       sub: "React, Vue & API",
       iconComponent: WebCodingVectorIcon,
+      accentColor: "#0284C7",
+      bgTint: "#F0F9FF",
     },
     {
       id: "MOBILE",
       title: "App Mobile",
       sub: "Flutter & React Native",
       iconComponent: MobileAppVectorIcon,
+      accentColor: "#10B981",
+      bgTint: "#ECFDF5",
     },
     {
       id: "VIDEO",
       title: "Video & Reels",
       sub: "Motion & Editing",
       iconComponent: VideoMotionVectorIcon,
+      accentColor: "#F59E0B",
+      bgTint: "#FFFBEB",
     },
     {
       id: "MARKETING",
       title: "Pemasaran & Ads",
       sub: "SEO & Sosmed",
       iconComponent: MarketingVectorIcon,
+      accentColor: "#EC4899",
+      bgTint: "#FDF2F8",
     },
     {
       id: "WRITING",
       title: "Riset & Penulisan",
       sub: "Copywriting & Artikel",
       iconComponent: WritingVectorIcon,
+      accentColor: "#8B5CF6",
+      bgTint: "#FAF5FF",
     },
   ];
 
@@ -165,6 +181,22 @@ export function HomeScreen({ navigation }) {
       skills: ["Landing Page", "Next.js", "WordPress"],
     },
   ];
+
+  // Ongoing Projects (prioritize in-progress / accepted, then pending)
+  const ongoingProjectsList = isMahasiswa
+    ? [...myProposals]
+        .filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
+        .sort((a, b) => (a.status === "ACCEPTED" ? -1 : 1))
+        .slice(0, 2)
+    : [...myProjects]
+        .filter(
+          (p) =>
+            p.status === "IN_PROGRESS" ||
+            p.status === "REVIEW" ||
+            p.status === "OPEN",
+        )
+        .sort((a, b) => (a.status === "IN_PROGRESS" ? -1 : 1))
+        .slice(0, 2);
 
   const displayName = isMahasiswa
     ? user?.nama_lengkap || "Darell Rangga"
@@ -287,12 +319,12 @@ export function HomeScreen({ navigation }) {
               </View>
             </View>
 
-            {/* Carousel Dots */}
-            <View style={styles.carouselDotsRow}>
-              <View style={styles.dotActive} />
-              <View style={styles.dotInactive} />
-              <View style={styles.dotInactive} />
-              <View style={styles.dotInactive} />
+            {/* Real Action Footer (No Fake Dots) */}
+            <View style={styles.earningsBottomAction}>
+              <Text style={styles.earningsBottomActionText}>
+                Buka Dompet & Penarikan
+              </Text>
+              <ArrowRight size={11} color="rgba(255, 255, 255, 0.85)" />
             </View>
           </TouchableOpacity>
 
@@ -320,89 +352,242 @@ export function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 4. Ongoing Project Section */}
-        {isMahasiswa && myProposals.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeaderRow}>
+        {/* 4. Modern Ongoing Projects Showcase */}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <View>
               <Text style={styles.sectionMainTitle}>Ongoing Projects</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("TrackerTab")}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seeMoreLink}>See All</Text>
-              </TouchableOpacity>
+              <Text style={styles.sectionSubTitle}>
+                {isMahasiswa
+                  ? "Proyek aktif & proposal dalam seleksi"
+                  : "Status pengerjaan proyek bisnis Anda"}
+              </Text>
             </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("TrackerTab")}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.seeMoreLink}>Workspace →</Text>
+            </TouchableOpacity>
+          </View>
 
-            {myProposals.slice(0, 2).map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.ongoingCardMockup}
-                activeOpacity={0.88}
-                onPress={() =>
-                  navigation.navigate("ProjectDetail", {
-                    id: item.project_id,
-                    projectId: item.project_id,
-                  })
-                }
-              >
-                <View style={styles.ongoingCardTop}>
-                  <View style={styles.ongoingThumbnail}>
-                    {renderProjectCategoryVectorIcon(
-                      item.kategori,
-                      item.project_judul,
-                      24,
-                      COLORS.brandIndigo,
-                    )}
-                  </View>
+          {ongoingProjectsList.length > 0 ? (
+            ongoingProjectsList.map((item) => {
+              const pId = isMahasiswa ? item.project_id || item.id : item.id;
+              const pTitle = isMahasiswa
+                ? item.project_judul || "Pengembangan Solusi UMKM"
+                : item.judul || "Proyek Digital UMKM";
+              const pCategory = item.kategori || "UMKM";
+              const pPartner = isMahasiswa
+                ? item.project_umkm_nama || "Mitra UMKM"
+                : item.mahasiswa_nama || "Talenta Mahasiswa";
+              const pBudget = isMahasiswa
+                ? item.harga_tawar || item.budget || 0
+                : item.budget || item.budget_max || 0;
+              const pDays = item.estimasi_hari || (isMahasiswa ? 5 : 7);
 
-                  <View style={styles.ongoingCardInfo}>
-                    <Text style={styles.ongoingProjectTitle} numberOfLines={1}>
-                      {item.project_judul || "Pengembangan Solusi UMKM"}
-                    </Text>
-                    <Text style={styles.ongoingClientText}>
-                      {item.project_umkm_nama || "Mitra UMKM"}
-                    </Text>
-                  </View>
+              const isAccepted =
+                item.status === "ACCEPTED" || item.status === "IN_PROGRESS";
+              const isReview = item.status === "REVIEW";
 
-                  <Text style={styles.ongoingBudgetText}>
-                    {formatCurrency(item.harga_tawar)}
-                  </Text>
-                </View>
+              const statusLabel = isAccepted
+                ? "In Progress"
+                : isReview
+                  ? "Under Review"
+                  : isMahasiswa
+                    ? "Proposal Sent"
+                    : "Open Proposals";
 
-                <View style={styles.ongoingCardBottom}>
-                  <View
-                    style={[
-                      styles.revisionBadge,
-                      item.status === "ACCEPTED"
-                        ? styles.revisionBadgeActive
-                        : styles.revisionBadgePending,
-                    ]}
-                  >
-                    <Text
+              const statusDotColor = isAccepted
+                ? "#10B981"
+                : isReview
+                  ? "#F59E0B"
+                  : "#6366F1";
+              const statusBg = isAccepted
+                ? "#ECFDF5"
+                : isReview
+                  ? "#FFFBEB"
+                  : "#EEF2FF";
+              const statusTextColor = isAccepted
+                ? "#065F46"
+                : isReview
+                  ? "#92400E"
+                  : "#3730A3";
+              const progressPercent = isAccepted
+                ? "70%"
+                : isReview
+                  ? "90%"
+                  : "25%";
+              const milestoneLabel = isAccepted
+                ? "Milestone 1 • Pengerjaan Deliverable"
+                : isReview
+                  ? "Milestone Final • Menunggu Persetujuan"
+                  : "Tahap Evaluasi & Seleksi Proposal";
+
+              return (
+                <View key={item.id || pId} style={styles.modernOngoingCard}>
+                  {/* Top Meta: Status Pill & Delivery Days */}
+                  <View style={styles.ongoingTopMeta}>
+                    <View
                       style={[
-                        styles.revisionBadgeText,
-                        item.status === "ACCEPTED"
-                          ? styles.revisionTextActive
-                          : styles.revisionTextPending,
+                        styles.ongoingStatusPill,
+                        { backgroundColor: statusBg },
                       ]}
                     >
-                      {item.status === "ACCEPTED"
-                        ? "Pengerjaan"
-                        : "Menunggu Seleksi"}
-                    </Text>
+                      <View
+                        style={[
+                          styles.pulseLiveDot,
+                          { backgroundColor: statusDotColor },
+                        ]}
+                      />
+                      <Text
+                        style={[
+                          styles.ongoingStatusText,
+                          { color: statusTextColor },
+                        ]}
+                      >
+                        {statusLabel}
+                      </Text>
+                    </View>
+
+                    <View style={styles.ongoingDaysBadge}>
+                      <Clock size={11} color={COLORS.textMuted} />
+                      <Text style={styles.ongoingDaysText}>
+                        {pDays} Hari Kerja
+                      </Text>
+                    </View>
                   </View>
 
-                  <View style={styles.ongoingDateWrap}>
-                    <Clock size={11} color={COLORS.textMuted} />
-                    <Text style={styles.ongoingDateString}>
-                      {item.estimasi_hari || 5} Hari Kerja
-                    </Text>
+                  {/* Main Info: Category Icon + Title + Partner Name */}
+                  <TouchableOpacity
+                    style={styles.ongoingMainBody}
+                    activeOpacity={0.88}
+                    onPress={() =>
+                      navigation.navigate("ProjectDetail", {
+                        id: pId,
+                        projectId: pId,
+                      })
+                    }
+                  >
+                    <View style={styles.ongoingCategoryIconSquare}>
+                      {renderProjectCategoryVectorIcon(pCategory, pTitle, 26)}
+                    </View>
+
+                    <View style={styles.ongoingMetaColumn}>
+                      <Text style={styles.ongoingCategoryMicroText}>
+                        {pCategory.toUpperCase()}
+                      </Text>
+                      <Text style={styles.ongoingMainTitle} numberOfLines={2}>
+                        {pTitle}
+                      </Text>
+                      <View style={styles.ongoingPartnerMetaRow}>
+                        <Building2 size={12} color={COLORS.textMuted} />
+                        <Text
+                          style={styles.ongoingPartnerMetaText}
+                          numberOfLines={1}
+                        >
+                          {pPartner}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+
+                  {/* Milestone & Budget Gauge */}
+                  <View style={styles.ongoingMilestoneBox}>
+                    <View style={styles.milestoneGaugeLabels}>
+                      <Text style={styles.milestonePhaseText}>
+                        {milestoneLabel}
+                      </Text>
+                      <Text style={styles.milestoneBudgetText}>
+                        {formatCurrency(pBudget)}
+                      </Text>
+                    </View>
+                    <View style={styles.milestoneTrackOuter}>
+                      <View
+                        style={[
+                          styles.milestoneTrackInner,
+                          {
+                            width: progressPercent,
+                            backgroundColor: isAccepted
+                              ? COLORS.brandIndigo
+                              : statusDotColor,
+                          },
+                        ]}
+                      />
+                    </View>
+                  </View>
+
+                  {/* Action Footer: Quick Chat + Open Workspace */}
+                  <View style={styles.ongoingActionRow}>
+                    <TouchableOpacity
+                      style={styles.ongoingChatBtn}
+                      onPress={() =>
+                        navigation.navigate("Chat", {
+                          projectId: pId,
+                          projectTitle: pTitle,
+                          partnerName: pPartner,
+                          partnerRole: isMahasiswa ? "UMKM" : "MHS",
+                        })
+                      }
+                      activeOpacity={0.8}
+                    >
+                      <MessageSquare size={13} color={COLORS.brandIndigo} />
+                      <Text style={styles.ongoingChatBtnText}>
+                        Chat {isMahasiswa ? "Klien" : "Talenta"}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.ongoingWorkspaceBtn}
+                      onPress={() => navigation.navigate("TrackerTab")}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.ongoingWorkspaceBtnText}>
+                        Workspace
+                      </Text>
+                      <ArrowRight size={12} color="#FFFFFF" strokeWidth={2.5} />
+                    </TouchableOpacity>
                   </View>
                 </View>
+              );
+            })
+          ) : (
+            <View style={styles.emptyOngoingCard}>
+              <View style={styles.emptyOngoingIcon}>
+                <Briefcase size={20} color={COLORS.brandIndigo} />
+              </View>
+              <View style={styles.emptyOngoingInfo}>
+                <Text style={styles.emptyOngoingTitle}>
+                  Belum Ada Proyek Aktif
+                </Text>
+                <Text style={styles.emptyOngoingSubtitle}>
+                  {isMahasiswa
+                    ? "Jelajahi proyek UMKM & kirim proposal pertamamu."
+                    : "Buat proyek baru untuk merekrut talenta mahasiswa."}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.emptyOngoingCta}
+                onPress={() => navigation.navigate("ProjectsTab")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.emptyOngoingCtaText}>Eksplor</Text>
+                <ArrowRight
+                  size={11}
+                  color={COLORS.brandIndigo}
+                  strokeWidth={2.5}
+                />
               </TouchableOpacity>
-            ))}
-          </View>
-        )}
+            </View>
+          )}
+        </View>
+
+        {/* 4.5 Modern Eye-Candy Showcase Banner */}
+        <PromoBanner
+          onBannerPress={() => {
+            navigation.navigate("ProjectsTab");
+          }}
+        />
 
         {/* 5. Modern Bespoke Vector Category Hub */}
         <View style={styles.sectionContainer}>
@@ -438,8 +623,16 @@ export function HomeScreen({ navigation }) {
                   }}
                   activeOpacity={0.8}
                 >
-                  <View style={styles.categoryTileIconWrap}>
-                    <IconComp size={24} color={COLORS.brandIndigo} />
+                  <View
+                    style={[
+                      styles.categoryTileIconWrap,
+                      cat.bgTint ? { backgroundColor: cat.bgTint } : null,
+                    ]}
+                  >
+                    <IconComp
+                      size={24}
+                      color={cat.accentColor || COLORS.brandIndigo}
+                    />
                   </View>
                   <View style={styles.categoryTileTextGroup}>
                     <Text style={styles.categoryTileTitle}>{cat.title}</Text>
@@ -748,6 +941,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginBottom: 14,
+    marginBottom: 10,
   },
   targetIconCircle: {
     width: 24,
@@ -769,23 +963,20 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginTop: 1,
   },
-  carouselDotsRow: {
+  earningsBottomAction: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 4,
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255, 255, 255, 0.14)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
-  dotActive: {
-    width: 14,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#FFFFFF",
-  },
-  dotInactive: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
+  earningsBottomActionText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 
   // Right Column (2 Metric Cards)
@@ -882,93 +1073,234 @@ const styles = StyleSheet.create({
     gap: 3,
   },
 
-  ongoingCardMockup: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+  // 4. Modern Ongoing Projects Showcase Styles
+  modernOngoingCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1.2,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
-  ongoingCardTop: {
+  ongoingTopMeta: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    marginBottom: 10,
+    justifyContent: "space-between",
+    marginBottom: 12,
   },
-  ongoingThumbnail: {
-    width: 42,
-    height: 42,
+  ongoingStatusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: 20,
+  },
+  pulseLiveDot: {
+    width: 6.5,
+    height: 6.5,
+    borderRadius: 3.5,
+    marginRight: 6,
+  },
+  ongoingStatusText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  ongoingDaysBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  ongoingDaysText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10.5,
+    color: COLORS.textMuted,
+  },
+  ongoingMainBody: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 12,
+  },
+  ongoingCategoryIconSquare: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
   },
-  ongoingCardInfo: {
+  ongoingMetaColumn: {
     flex: 1,
   },
-  ongoingProjectTitle: {
+  ongoingCategoryMicroText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+    letterSpacing: 0.6,
+    marginBottom: 1,
+  },
+  ongoingMainTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    lineHeight: 18,
+    letterSpacing: -0.2,
+  },
+  ongoingPartnerMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 3,
+  },
+  ongoingPartnerMetaText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  ongoingMilestoneBox: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    marginBottom: 12,
+  },
+  milestoneGaugeLabels: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
+  },
+  milestonePhaseText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    color: "#64748B",
+    fontWeight: "600",
+  },
+  milestoneBudgetText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 12.5,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  milestoneTrackOuter: {
+    height: 5,
+    backgroundColor: "#E2E8F0",
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  milestoneTrackInner: {
+    height: "100%",
+    borderRadius: 3,
+  },
+  ongoingActionRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  ongoingChatBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#E0E7FF",
+    paddingVertical: 9,
+    borderRadius: 12,
+  },
+  ongoingChatBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  ongoingWorkspaceBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    backgroundColor: "#0F172A",
+    paddingVertical: 9,
+    borderRadius: 12,
+  },
+  ongoingWorkspaceBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  emptyOngoingCard: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.2,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderRadius: 18,
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  emptyOngoingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "#EEF2FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyOngoingInfo: {
+    flex: 1,
+  },
+  emptyOngoingTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
   },
-  ongoingClientText: {
+  emptyOngoingSubtitle: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 10.5,
     color: COLORS.textMuted,
-    marginTop: 1,
+    marginTop: 2,
+    lineHeight: 14,
   },
-  ongoingBudgetText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 13,
+  emptyOngoingCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  emptyOngoingCtaText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
     fontWeight: "700",
     color: COLORS.brandIndigo,
-  },
-  ongoingCardBottom: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.canvasSoft,
-  },
-  revisionBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  revisionBadgePending: {
-    backgroundColor: COLORS.warningBg,
-  },
-  revisionBadgeActive: {
-    backgroundColor: COLORS.successBg,
-  },
-  revisionBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  revisionTextPending: {
-    color: COLORS.warning,
-  },
-  revisionTextActive: {
-    color: COLORS.success,
-  },
-  ongoingDateWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  ongoingDateString: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
   },
 
   // 5. Bespoke Vector Category Bento Grid

@@ -244,7 +244,12 @@ _Fitur pengembangan bernilai tinggi untuk Mahasiswa & Klien UMKM. Backend meliba
     - [x] Menambahkan auto-reload `useFocusEffect` pada `TrackerScreen.jsx` dan `ProjectDetailScreen.jsx`.
 
     - [x] **Audit & Standardisasi Tipografi / fontWeight Seluruh Mobile App**: Memperbaiki bug font override pada Button.jsx dan modifier styles (di mana bodyRegular menimpa bodyBold), menghapus fontFamily ilegal pada elemen View, dan standardisasi bobot (700 untuk Bold, 500 untuk Medium).
+    - [x] **Sistem Ikon Vektor Premium & Duotone Luxury**: Merancang ikon tab bar kustom (Home, Explore, Workspace, Wallet, Profile) dengan kedalaman visual duotone dan indikator aktif, serta merombak ikon kategori keahlian dengan gradasi multi-stop dan palet warna squircle mewah.
     - [x] **Redesign Modern Workspace Screen & Natural English Copywriting**: Merombak tampilan Workspace mobile (tata letak ramping & breathable bebas tumpukan, pill-based tab filter, integrasi tombol cepat Chat langsung di kartu, dan metadata ringkas) serta mengadopsi copywriting Bahasa Inggris profesional yang natural (Workspace, In Progress, Under Review, Completed, Discover Jobs, Best Match, dsb).
+    - [x] **Hotfix Kompilasi & Babel AST Clean**: Memperbaiki syntax error duplikasi deklarasi fungsi dan unclosed tag pada `CategoryIcons.jsx`, `MainTabs.jsx`, dan `HomeScreen.jsx`. Memverifikasi parsing 46 berkas JavaScript dengan 0 syntax error dan Metro bundler sukses menghasilkan bundel Android (HTTP 200 OK).
+    - [x] **Redesign Komprehensif Ongoing Projects Card (`HomeScreen.jsx`)**: Mengubah kartu proyek berjalan yang kaku & sempit menjadi kartu berstandar _mission-control_ modern: status badge dengan indikator pulsa live, nama mitra dengan ikon gedung, gauge progress bar milestone visual, nilai honor terlindungi escrow, tombol aksi instan (_1-tap Chat Klien & Buka Workspace_), serta empty-state elegan saat belum ada proyek aktif.
+    - [x] **Pembersihan Indikator Semu Kartu Earnings (`HomeScreen.jsx`)**: Menghapus 4 titik carousel statis (`carouselDotsRow`) yang membingungkan pengguna pada kartu biru Earnings, menggantikannya dengan tombol aksi fungsional riil `[ Buka Dompet & Penarikan → ]`.
+
 - **⚙️ Backend**:
   - [x] Model SQLAlchemy `ChatMessage` di `app/models/chat.py` & migrasi database Alembic.
   - [x] WebSocket endpoint `@router.websocket("/ws/project/{project_id}")` di `app/routers/chat.py`.

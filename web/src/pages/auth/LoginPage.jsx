@@ -46,7 +46,11 @@ export function LoginPage() {
         navigate("/dashboard");
       }
     } catch (err) {
-      const msg = err.response?.data?.detail || "Email atau password salah.";
+      const msg =
+        err.response?.data?.detail ||
+        (err.message === "Network Error" || !err.response
+          ? "Gagal terhubung ke backend (Network Error). Pastikan server backend aktif di port 8000."
+          : "Email atau password salah.");
       setError(msg);
     } finally {
       setLoading(false);

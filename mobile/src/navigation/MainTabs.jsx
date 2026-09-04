@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+﻿import React from "react";
+import { StyleSheet, Platform } from "react-native";
 import { FONTS } from "../theme/fonts";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/home/HomeScreen";
@@ -8,7 +8,13 @@ import { TrackerScreen } from "../screens/tracker/TrackerScreen";
 import { WalletScreen } from "../screens/wallet/WalletScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { COLORS } from "../theme/colors";
-import { LayoutGrid, Compass, Layers, Wallet, User } from "lucide-react-native";
+import {
+  HomeTabIcon,
+  ExploreTabIcon,
+  WorkspaceTabIcon,
+  WalletTabIcon,
+  ProfileTabIcon,
+} from "../components/icons/TabIcons";
 
 const Tab = createBottomTabNavigator();
 
@@ -32,13 +38,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <View style={focused ? styles.activeIconContainer : null}>
-              <LayoutGrid
-                size={21}
-                color={focused ? COLORS.brandIndigo : COLORS.textMuted}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
+            <HomeTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
           ),
         }}
       />
@@ -50,13 +50,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
-            <View style={focused ? styles.activeIconContainer : null}>
-              <Compass
-                size={21}
-                color={focused ? COLORS.brandIndigo : COLORS.textMuted}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
+            <ExploreTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
           ),
         }}
       />
@@ -68,13 +62,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Workspace",
           tabBarIcon: ({ focused }) => (
-            <View style={focused ? styles.activeIconContainer : null}>
-              <Layers
-                size={21}
-                color={focused ? COLORS.brandIndigo : COLORS.textMuted}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
+            <WorkspaceTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
           ),
         }}
       />
@@ -86,13 +74,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Wallet",
           tabBarIcon: ({ focused }) => (
-            <View style={focused ? styles.activeIconContainer : null}>
-              <Wallet
-                size={21}
-                color={focused ? COLORS.brandIndigo : COLORS.textMuted}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
+            <WalletTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
           ),
         }}
       />
@@ -104,13 +86,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ focused }) => (
-            <View style={focused ? styles.activeIconContainer : null}>
-              <User
-                size={21}
-                color={focused ? COLORS.brandIndigo : COLORS.textMuted}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
+            <ProfileTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
           ),
         }}
       />
@@ -124,28 +100,28 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: Platform.OS === "ios" ? 84 : 66,
+    height: Platform.OS === "ios" ? 86 : 68,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
-    paddingTop: 6,
-    paddingBottom: Platform.OS === "ios" ? 24 : 8,
-    elevation: 16,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    paddingTop: 8,
+    paddingBottom: Platform.OS === "ios" ? 26 : 8,
+    elevation: 20,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
   },
   tabItem: {
-    paddingVertical: 2,
+    paddingVertical: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   tabLabel: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     fontWeight: "600",
     marginTop: 2,
-  },
-  activeIconContainer: {
-    transform: [{ scale: 1.05 }],
+    letterSpacing: 0.2,
   },
 });
