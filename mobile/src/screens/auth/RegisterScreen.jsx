@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -13,6 +14,8 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { GoogleIcon } from "../../components/icons/GoogleIcon";
+import { initiateGoogleSignIn } from "../../services/googleAuth";
 import {
   Building2,
   Mail,
@@ -30,8 +33,9 @@ export function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { registerUmkm } = useAuthStore();
+  const { registerUmkm, loginWithGoogle } = useAuthStore();
   const { showToast } = useToastStore();
 
   const handleRegister = async () => {
@@ -50,7 +54,11 @@ export function RegisterScreen({ navigation }) {
         email: email.trim(),
         password,
       });
-      showToast("Akun UMKM berhasil terdaftar!", "success");
+      showToast("Kode verifikasi OTP telah dikirimkan!", "success");
+      navigation.navigate("Verification", {
+        email: email.trim(),
+        role: "CLIENT_UMKM",
+      });
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Pendaftaran gagal. Silakan coba lagi.",
@@ -58,6 +66,29 @@ export function RegisterScreen({ navigation }) {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = async () => {
+    try {
+      setGoogleLoading(true);
+      const googleUser = await initiateGoogleSignIn();
+      await loginWithGoogle({
+        id_token: googleUser.idToken,
+        email: googleUser.email,
+        name: googleUser.name,
+        avatar_url: googleUser.avatarUrl,
+      });
+      showToast("Pendaftaran Google berhasil!", "success");
+    } catch (err) {
+      if (err.message?.includes("dibatalkan")) return;
+      console.warn("Google registration error:", err);
+      showToast(
+        err.response?.data?.detail || "Gagal mendaftar dengan Google",
+        "danger",
+      );
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -174,6 +205,30 @@ export function RegisterScreen({ navigation }) {
           style={styles.registerBtn}
         />
 
+        {/* Divider */}
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>atau</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        {/* Google Sign Up Button */}
+        <TouchableOpacity
+          style={styles.googleBtn}
+          onPress={handleGoogleRegister}
+          disabled={googleLoading || loading}
+          activeOpacity={0.8}
+        >
+          {googleLoading ? (
+            <ActivityIndicator size="small" color={COLORS.brandIndigo} />
+          ) : (
+            <>
+              <GoogleIcon size={18} />
+              <Text style={styles.googleBtnText}>Daftar Cepat dengan Google</Text>
+            </>
+          )}
+        </TouchableOpacity>
+
         <View style={styles.loginRow}>
           <Text style={styles.loginText}>Sudah punya akun? </Text>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
@@ -188,7 +243,7 @@ export function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: COLORS.bgDark, // Clean light canvas #F8FAFC
+    backgroundColor: COLORS.bgDark,
     paddingHorizontal: 22,
     paddingTop: 50,
     paddingBottom: 36,
@@ -252,7 +307,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   industryChipActive: {
-    fontFamily: FONTS.bodyRegular,
     backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
@@ -270,6 +324,45 @@ const styles = StyleSheet.create({
   registerBtn: {
     marginTop: 8,
     backgroundColor: COLORS.brandIndigo,
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 16,
+    gap: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.borderDark,
+  },
+  dividerText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
+  googleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    borderRadius: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    gap: 10,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  googleBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.textDark,
   },
   loginRow: {
     flexDirection: "row",

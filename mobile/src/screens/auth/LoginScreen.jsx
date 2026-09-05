@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -13,6 +14,8 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { GoogleIcon } from "../../components/icons/GoogleIcon";
+import { initiateGoogleSignIn } from "../../services/googleAuth";
 import {
   Sparkles,
   ShieldCheck,
@@ -27,7 +30,8 @@ export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuthStore();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { login, loginWithGoogle } = useAuthStore();
   const { showToast } = useToastStore();
 
   const handleLogin = async () => {
@@ -61,6 +65,26 @@ export function LoginScreen({ navigation }) {
       showToast(errorMsg, "danger");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setGoogleLoading(true);
+      const googleUser = await initiateGoogleSignIn();
+      await loginWithGoogle({
+        id_token: googleUser.idToken,
+        email: googleUser.email,
+        name: googleUser.name,
+        avatar_url: googleUser.avatarUrl,
+      });
+      showToast("Berhasil masuk dengan Google!", "success");
+    } catch (err) {
+      if (err.message?.includes("dibatalkan")) return;
+      console.warn("Google sign-in error:", err);
+      showToast(err.response?.data?.detail || "Gagal masuk dengan Google", "danger");
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -139,6 +163,12 @@ export function LoginScreen({ navigation }) {
           icon={<Lock size={18} color={COLORS.textMuted} />}
         />
 
+        <View style={styles.forgotPasswordRow}>
+          <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+            <Text style={styles.forgotPasswordLink}>Lupa Kata Sandi?</Text>
+          </TouchableOpacity>
+        </View>
+
         <Button
           title="Masuk Sekarang"
           variant="brand"
@@ -148,6 +178,30 @@ export function LoginScreen({ navigation }) {
           iconRight={<ArrowRight size={18} color="#FFFFFF" />}
           style={styles.loginBtn}
         />
+
+        {/* Divider */}
+        <View style={styles.dividerRow}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>atau</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        {/* Google Sign In Button */}
+        <TouchableOpacity
+          style={styles.googleBtn}
+          onPress={handleGoogleLogin}
+          disabled={googleLoading || loading}
+          activeOpacity={0.8}
+        >
+          {googleLoading ? (
+            <ActivityIndicator size="small" color={COLORS.brandIndigo} />
+          ) : (
+            <>
+              <GoogleIcon size={18} />
+              <Text style={styles.googleBtnText}>Masuk dengan Google</Text>
+            </>
+          )}
+        </TouchableOpacity>
 
         {/* Register link */}
         <View style={styles.registerRow}>
@@ -279,6 +333,56 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.brandIndigo,
+  },
+  forgotPasswordRow: {
+    alignItems: "flex-end",
+    marginBottom: 14,
+    marginTop: -4,
+  },
+  forgotPasswordLink: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 16,
+    gap: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.borderDark,
+  },
+  dividerText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
+  googleBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    borderRadius: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    gap: 10,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  googleBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.textDark,
   },
   footerNotice: {
     flexDirection: "row",

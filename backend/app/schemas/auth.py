@@ -47,3 +47,33 @@ class TokenResponse(BaseModel):
 # Schema untuk request refresh token
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+# Schema untuk Verifikasi OTP
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    otp_code: str = Field(..., min_length=4, max_length=8)
+
+
+class ResendOtpRequest(BaseModel):
+    email: EmailStr
+
+
+# Schema untuk Lupa & Reset Password
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    otp_code: str = Field(..., min_length=4, max_length=8)
+    new_password: str = Field(..., min_length=8)
+
+
+# Schema untuk Otentikasi Google OAuth
+class GoogleAuthRequest(BaseModel):
+    email: EmailStr
+    name: Optional[str] = None
+    google_id: Optional[str] = None
+    photo_url: Optional[str] = None
+    role: Optional[UserRole] = UserRole.UMKM

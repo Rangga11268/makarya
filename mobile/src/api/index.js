@@ -5,6 +5,12 @@ import api from "./axiosInstance";
 export const authApi = {
   login: (data) => api.post("/auth/login", data),
   registerUmkm: (data) => api.post("/auth/register/umkm", data),
+  registerMhs: (data) => api.post("/auth/register/mahasiswa", data),
+  verifyOtp: (data) => api.post("/auth/verify-otp", data),
+  resendOtp: (data) => api.post("/auth/resend-otp", data),
+  forgotPassword: (data) => api.post("/auth/forgot-password", data),
+  resetPassword: (data) => api.post("/auth/reset-password", data),
+  googleAuth: (data) => api.post("/auth/google", data),
   getMe: () => api.get("/auth/me"),
 };
 

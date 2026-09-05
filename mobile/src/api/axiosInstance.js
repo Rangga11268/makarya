@@ -43,33 +43,16 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-let isRetrying = false;
-
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retry &&
-      !isRetrying
-    ) {
-      originalRequest._retry = true;
-      isRetrying = true;
+    if (error.response?.status === 401) {
       try {
+        await AsyncStorage.removeItem("makarya_access_token");
+        await AsyncStorage.removeItem("makarya_user");
         const { useAuthStore } = require("../store/authStore");
-        const newToken = await useAuthStore.getState().relogin();
-        isRetrying = false;
-        if (newToken) {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return api(originalRequest);
-        }
-      } catch (_) {
-        isRetrying = false;
-      }
-      await AsyncStorage.removeItem("makarya_access_token");
-      await AsyncStorage.removeItem("makarya_user");
+        useAuthStore.getState().logout(true);
+      } catch (_) {}
     }
     return Promise.reject(error);
   },

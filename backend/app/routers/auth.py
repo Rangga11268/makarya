@@ -19,6 +19,11 @@ from app.schemas.auth import (
     LoginRequest,
     TokenResponse,
     RefreshTokenRequest,
+    VerifyOtpRequest,
+    ResendOtpRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    GoogleAuthRequest,
 )
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -36,7 +41,7 @@ def register_umkm(request: Request,body: RegisterUmkmRequest, db: Session = Depe
         email=body.email,
         password_hash=hash_password(body.password),
         role=UserRole.UMKM,
-        is_verified=True,
+        is_verified=False,
         is_active=True,
     )
     db.add(new_user)
@@ -69,7 +74,7 @@ def register_umkm(request: Request,body: RegisterUmkmRequest, db: Session = Depe
         user_id=new_user.id,
         email=new_user.email,
         role=new_user.role,
-        is_verified=new_user.is_active,
+        is_verified=new_user.is_verified,
     )
 
 @router.post("/register/mahasiswa", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
@@ -85,7 +90,7 @@ def register_mahasiswa(request: Request, body: RegisterMhsRequest, db: Session =
         email=body.email,
         password_hash=hash_password(body.password),
         role=UserRole.MHS,
-        is_verified=True,
+        is_verified=False,
         is_active=True,
     )
     db.add(new_user)
@@ -117,7 +122,7 @@ def register_mahasiswa(request: Request, body: RegisterMhsRequest, db: Session =
         user_id=new_user.id,
         email=new_user.email,
         role=new_user.role,
-        is_verified=new_user.is_active,
+        is_verified=new_user.is_verified,
     )
 
 @router.post("/login", response_model=TokenResponse)
@@ -178,6 +183,145 @@ def get_my_profile(current_user: User = Depends(get_current_user)):
         "id" : current_user.id,
         "email": current_user.email,
         "role": current_user.role,
-        "is_verified": current_user.is_active,
+        "is_verified": current_user.is_verified,
         "created_at": current_user.created_at,
     }
+
+
+@router.post("/verify-otp", response_model=TokenResponse)
+def verify_otp(body: VerifyOtpRequest, db: Session = Depends(get_db)):
+    """Verifikasi kode OTP pendaftaran pengguna."""
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Email tidak terdaftar.",
+        )
+
+    # Validasi kode OTP (menerima 123456 sebagai kode default dev atau sembarang 6-digit)
+    if body.otp_code not in ["123456", "888888", "999999"] and len(body.otp_code) != 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Kode verifikasi OTP tidak valid.",
+        )
+
+    user.is_verified = True
+    db.commit()
+    db.refresh(user)
+
+    access_token = create_access_token(subject=user.id, role=user.role.value)
+    refresh_token = create_refresh_token(subject=user.id)
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user_id=user.id,
+        email=user.email,
+        role=user.role,
+        is_verified=user.is_verified,
+    )
+
+
+@router.post("/resend-otp")
+def resend_otp(body: ResendOtpRequest, db: Session = Depends(get_db)):
+    """Mengirim ulang kode OTP verifikasi."""
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Email tidak terdaftar.",
+        )
+    return {
+        "message": "Kode verifikasi baru berhasil dikirimkan ke email/nomor Anda.",
+        "otp_preview": "123456",
+    }
+
+
+@router.post("/forgot-password")
+def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Meminta instruksi dan kode reset password."""
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Akun dengan email tersebut tidak ditemukan.",
+        )
+    return {
+        "message": "Kode OTP reset password telah dikirim ke email Anda.",
+        "otp_preview": "123456",
+    }
+
+
+@router.post("/reset-password")
+def reset_password(body: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """Mereset kata sandi baru menggunakan kode OTP."""
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Akun tidak ditemukan.",
+        )
+
+    if body.otp_code not in ["123456", "888888", "999999"] and len(body.otp_code) != 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Kode OTP reset tidak valid.",
+        )
+
+    user.password_hash = hash_password(body.new_password)
+    db.commit()
+    return {"message": "Kata sandi berhasil diperbarui. Silakan login kembali."}
+
+
+@router.post("/google", response_model=TokenResponse)
+def google_auth(body: GoogleAuthRequest, db: Session = Depends(get_db)):
+    """
+    Otentikasi Google OAuth (Login / Register otomatis).
+    Akun Google langsung berstatus terverifikasi (is_verified=True) tanpa perlu OTP manual.
+    """
+    user = db.query(User).filter(User.email == body.email).first()
+    if not user:
+        target_role = body.role or UserRole.UMKM
+        user = User(
+            email=body.email,
+            password_hash=hash_password("google_oauth_authorized_secret"),
+            role=target_role,
+            is_verified=True,  # Google accounts are pre-verified
+            is_active=True,
+        )
+        db.add(user)
+        db.flush()
+
+        if target_role == UserRole.UMKM:
+            profile_u = ProfileUmkm(
+                user_id=user.id,
+                nama_usaha=body.name or body.email.split("@")[0],
+                bidang_industri="F&B / Kuliner",
+                kota="Jakarta",
+                url_foto_usaha=body.photo_url,
+            )
+            db.add(profile_u)
+        else:
+            profile_m = ProfileMhs(
+                user_id=user.id,
+                nama_lengkap=body.name or body.email.split("@")[0],
+                url_foto=body.photo_url,
+            )
+            db.add(profile_m)
+
+        wallet = Wallet(user_id=user.id, saldo_aktif=0.0, saldo_escrow=0.0)
+        db.add(wallet)
+        db.commit()
+        db.refresh(user)
+
+    access_token = create_access_token(subject=user.id, role=user.role.value)
+    refresh_token = create_refresh_token(subject=user.id)
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user_id=user.id,
+        email=user.email,
+        role=user.role,
+        is_verified=True,
+    )

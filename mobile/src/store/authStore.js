@@ -8,43 +8,6 @@ export const useAuthStore = create((set, get) => ({
   isAuthenticated: false,
   loading: true,
 
-  relogin: async () => {
-    try {
-      const userStr = await AsyncStorage.getItem("makarya_user");
-      let email = "darell@ubsi.ac.id";
-      if (userStr) {
-        try {
-          const parsed = JSON.parse(userStr);
-          if (parsed?.email) email = parsed.email;
-        } catch (_) {}
-      }
-      const res = await authApi.login({ email, password: "password123" });
-      const { access_token, role, user_id, is_verified } = res.data;
-
-      let userData = {
-        id: user_id,
-        email,
-        role: role ? role.toUpperCase() : "MAHASISWA",
-        is_verified: !!is_verified,
-      };
-
-      await AsyncStorage.setItem("makarya_access_token", access_token);
-      await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
-
-      try {
-        const meRes = await authApi.getMe();
-        userData = { ...userData, ...meRes.data };
-        await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
-      } catch (_) {}
-
-      set({ token: access_token, user: userData, isAuthenticated: true });
-      return access_token;
-    } catch (e) {
-      console.warn("relogin failed:", e.message);
-      return null;
-    }
-  },
-
   initializeAuth: async () => {
     try {
       set({ loading: true });
@@ -66,13 +29,11 @@ export const useAuthStore = create((set, get) => ({
           set({ user: updatedUser });
         } catch (err) {
           if (err.response?.status === 401) {
-            // Refresh/relogin if token expired
-            await get().relogin();
+            await get().logout(true);
           }
         }
       } else {
-        // Auto-authenticate Darell in local dev if no session exists yet
-        await get().relogin();
+        set({ token: null, user: null, isAuthenticated: false });
       }
     } catch (e) {
       set({ token: null, user: null, isAuthenticated: false });
@@ -83,7 +44,7 @@ export const useAuthStore = create((set, get) => ({
 
   login: async (email, password) => {
     const res = await authApi.login({ email, password });
-    const { access_token, role, user_id, is_verified } = res.data;
+    const { access_token, refresh_token, role, user_id, is_verified } = res.data;
 
     let userData = {
       id: user_id,
@@ -93,11 +54,14 @@ export const useAuthStore = create((set, get) => ({
     };
 
     await AsyncStorage.setItem("makarya_access_token", access_token);
+    if (refresh_token) {
+      await AsyncStorage.setItem("makarya_refresh_token", refresh_token);
+    }
     await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
 
     set({ token: access_token, user: userData, isAuthenticated: true });
 
-    // Fetch full profile info (name, university/business)
+    // Fetch full profile info
     try {
       const meRes = await authApi.getMe();
       userData = { ...userData, ...meRes.data };
@@ -108,27 +72,115 @@ export const useAuthStore = create((set, get) => ({
     return userData;
   },
 
+  // Register UMKM (tanpa auto-authenticate agar masuk ke alur verifikasi OTP)
   registerUmkm: async (data) => {
     const res = await authApi.registerUmkm(data);
-    const { access_token, role, user_id } = res.data;
-
-    const userData = {
-      id: user_id,
+    return {
+      user_id: res.data.user_id,
       email: data.email,
       role: "UMKM",
-      nama_usaha: data.nama_usaha,
+      is_verified: false,
+    };
+  },
+
+  // Register Mahasiswa (tanpa auto-authenticate agar masuk ke alur verifikasi OTP)
+  registerMhs: async (data) => {
+    const res = await authApi.registerMhs(data);
+    return {
+      user_id: res.data.user_id,
+      email: data.email,
+      role: "MAHASISWA",
+      is_verified: false,
+    };
+  },
+
+  // Verifikasi kode OTP setelah registrasi
+  verifyOtp: async (email, otp_code) => {
+    const res = await authApi.verifyOtp({ email, otp_code });
+    const { access_token, refresh_token, role, user_id, is_verified } = res.data;
+
+    let userData = {
+      id: user_id,
+      email,
+      role: role ? role.toUpperCase() : "UMKM",
+      is_verified: !!is_verified,
     };
 
     await AsyncStorage.setItem("makarya_access_token", access_token);
+    if (refresh_token) {
+      await AsyncStorage.setItem("makarya_refresh_token", refresh_token);
+    }
     await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
 
     set({ token: access_token, user: userData, isAuthenticated: true });
+
+    try {
+      const meRes = await authApi.getMe();
+      userData = { ...userData, ...meRes.data };
+      await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
+      set({ user: userData });
+    } catch (_) {}
+
     return userData;
   },
 
-  logout: async () => {
-    await AsyncStorage.removeItem("makarya_access_token");
-    await AsyncStorage.removeItem("makarya_user");
+  resendOtp: async (email) => {
+    const res = await authApi.resendOtp({ email });
+    return res.data;
+  },
+
+  forgotPassword: async (email) => {
+    const res = await authApi.forgotPassword({ email });
+    return res.data;
+  },
+
+  resetPassword: async (email, otp_code, new_password) => {
+    const res = await authApi.resetPassword({ email, otp_code, new_password });
+    return res.data;
+  },
+
+  // Google OAuth (Bypass OTP verification karena akun Google sudah terverifikasi)
+  loginWithGoogle: async ({ email, name, photo_url, role = "UMKM" }) => {
+    const res = await authApi.googleAuth({
+      email,
+      name,
+      photo_url,
+      role: role ? role.toUpperCase() : "UMKM",
+    });
+
+    const { access_token, refresh_token, user_id, is_verified } = res.data;
+
+    let userData = {
+      id: user_id,
+      email,
+      role: role ? role.toUpperCase() : "UMKM",
+      is_verified: !!is_verified,
+    };
+
+    await AsyncStorage.setItem("makarya_access_token", access_token);
+    if (refresh_token) {
+      await AsyncStorage.setItem("makarya_refresh_token", refresh_token);
+    }
+    await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
+
+    set({ token: access_token, user: userData, isAuthenticated: true });
+
+    try {
+      const meRes = await authApi.getMe();
+      userData = { ...userData, ...meRes.data };
+      await AsyncStorage.setItem("makarya_user", JSON.stringify(userData));
+      set({ user: userData });
+    } catch (_) {}
+
+    return userData;
+  },
+
+  logout: async (silent = false) => {
+    try {
+      await AsyncStorage.removeItem("makarya_access_token");
+      await AsyncStorage.removeItem("makarya_refresh_token");
+      await AsyncStorage.removeItem("makarya_user");
+    } catch (_) {}
     set({ token: null, user: null, isAuthenticated: false });
   },
 }));
