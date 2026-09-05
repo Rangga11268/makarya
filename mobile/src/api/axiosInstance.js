@@ -43,10 +43,31 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
+let isRetrying = false;
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !isRetrying
+    ) {
+      originalRequest._retry = true;
+      isRetrying = true;
+      try {
+        const { useAuthStore } = require("../store/authStore");
+        const newToken = await useAuthStore.getState().relogin();
+        isRetrying = false;
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        }
+      } catch (_) {
+        isRetrying = false;
+      }
       await AsyncStorage.removeItem("makarya_access_token");
       await AsyncStorage.removeItem("makarya_user");
     }

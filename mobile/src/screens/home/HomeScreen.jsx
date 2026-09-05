@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   RefreshControl,
   Dimensions,
   Platform,
+  StatusBar,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Path, Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
@@ -40,12 +44,15 @@ import {
   CheckCircle2,
   MessageSquare,
   Building2,
+  Search,
+  SlidersHorizontal,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = Math.min(width * 0.84, 340);
 
 export function HomeScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
   const [wallet, setWallet] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
@@ -185,7 +192,13 @@ export function HomeScreen({ navigation }) {
   // Ongoing Projects (prioritize in-progress / accepted, then pending)
   const ongoingProjectsList = isMahasiswa
     ? [...myProposals]
-        .filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
+        .filter(
+          (p) =>
+            (p.status === "ACCEPTED" &&
+              p.project_status !== "DONE" &&
+              p.project_status !== "COMPLETED") ||
+            p.status === "PENDING",
+        )
         .sort((a, b) => (a.status === "ACCEPTED" ? -1 : 1))
         .slice(0, 2)
     : [...myProjects]
@@ -212,10 +225,22 @@ export function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Top Profile Bar */}
-      <View style={styles.profileTopBar}>
+      <StatusBar barStyle="light-content" backgroundColor="#0B132B" />
+
+      {/* 1. Dedicated Clean Top App Bar (Profile & Notification) */}
+      <View
+        style={[
+          styles.topAppBar,
+          {
+            paddingTop:
+              Platform.OS === "ios"
+                ? Math.max(insets.top, 44)
+                : (StatusBar.currentHeight || 24) + 6,
+          },
+        ]}
+      >
         <TouchableOpacity
-          style={styles.profileUserGroup}
+          style={styles.topProfileButton}
           onPress={() => navigation.navigate("ProfileTab")}
           activeOpacity={0.85}
         >
@@ -230,7 +255,7 @@ export function HomeScreen({ navigation }) {
             </View>
             <View style={styles.verifiedTickBadge}>
               <CheckCircle2
-                size={11}
+                size={10}
                 color="#FFFFFF"
                 fill={COLORS.brandIndigo}
               />
@@ -238,520 +263,607 @@ export function HomeScreen({ navigation }) {
           </View>
 
           <View style={styles.profileTextInfo}>
-            <Text style={styles.profileName} numberOfLines={1}>
-              {displayName}
+            <Text style={styles.topProfileGreeting} numberOfLines={1}>
+              Halo, {displayName}
             </Text>
-            <Text style={styles.profileRole} numberOfLines={1}>
+            <Text style={styles.topProfileRole} numberOfLines={1}>
               {isMahasiswa
-                ? "UI/UX & Web Developer • UBSI"
+                ? "UI/UX & Web Dev • UBSI"
                 : "Klien UMKM Terverifikasi"}
             </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.bellIconButton}
+          style={styles.topBellButton}
           onPress={() => setIsNotificationOpen(true)}
           activeOpacity={0.8}
         >
-          <Bell size={20} color={COLORS.textDark} />
+          <Bell size={19} color="#FFFFFF" />
           {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
         </TouchableOpacity>
       </View>
 
       <ScrollView
         style={styles.scrollArea}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={loadData}
-            tintColor={COLORS.brandIndigo}
+            tintColor="#FFFFFF"
             colors={[COLORS.brandIndigo]}
           />
         }
       >
-        {/* 2. Dashboard Title & Date Row */}
-        <View style={styles.dashboardTitleRow}>
-          <Text style={styles.dashboardMainTitle}>
-            {isMahasiswa ? "Top Freelance Talent" : "Client Dashboard"}
-          </Text>
-          <Text style={styles.dashboardDateText}>{currentDateFormatted}</Text>
+        {/* 2. Curved Hero Header Banner (100% Clean Artwork Showcase - Zero Overlapping Elements) */}
+        <View style={styles.curvedHeaderBanner}>
+          {/* Full Background Artwork with Makarya Logo & Digital Creative Ornaments */}
+          <Image
+            source={require("../../../assets/header-banner.jpg")}
+            style={styles.headerBannerImage}
+            resizeMode="cover"
+          />
+
+          {/* Organic Curved Bottom Wave */}
+          <View style={styles.curveContainer}>
+            <Svg
+              width="100%"
+              height={26}
+              viewBox="0 0 375 26"
+              preserveAspectRatio="none"
+            >
+              <Path
+                d="M0,0 C125,26 250,26 375,0 L375,26 L0,26 Z"
+                fill={COLORS.bgDark}
+              />
+            </Svg>
+          </View>
         </View>
 
-        {/* 3. Exact 2-Column Hero Bento Grid (Brand Palette) */}
-        <View style={styles.heroBentoRow}>
-          {/* Left: Large Glowing Earnings Card */}
+        {/* Content Body */}
+        <View style={styles.content}>
+          {/* Quick Interactive Search Affordance */}
           <TouchableOpacity
-            style={styles.earningsBlueCard}
-            onPress={() => navigation.navigate("WalletTab")}
-            activeOpacity={0.92}
+            style={styles.heroSearchPill}
+            onPress={() => navigation.navigate("ProjectsTab")}
+            activeOpacity={0.88}
           >
-            <View style={styles.earningsTopRow}>
-              <Text style={styles.earningsTitleLabel}>
-                {isMahasiswa ? "Earnings" : "Escrow Balance"}
-              </Text>
-              <Text style={styles.earningsDetailsLink}>Details</Text>
-            </View>
-
-            <Text style={styles.earningsAmountText}>
-              {formatCurrency(wallet?.saldo_aktif || 0)}
+            <Search size={16} color={COLORS.textMuted} />
+            <Text style={styles.heroSearchPlaceholder}>
+              Cari proyek, keahlian, atau UMKM...
             </Text>
-            <Text style={styles.earningsGrowthSub}>
-              {wallet?.saldo_aktif > 0
-                ? "+12% from last month"
-                : "Available for withdrawal"}
-            </Text>
-
-            {/* Nested Mini Target Card */}
-            <View style={styles.nestedTargetCard}>
-              <View style={styles.targetIconCircle}>
-                <Lock size={12} color="#FFFFFF" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.targetLabelText}>
-                  {isMahasiswa ? "Escrow Locked" : "Escrow Held"}
-                </Text>
-                <Text style={styles.targetAmountText}>
-                  {formatCurrency(wallet?.saldo_escrow || 0)}
-                </Text>
-              </View>
-            </View>
-
-            {/* Real Action Footer (No Fake Dots) */}
-            <View style={styles.earningsBottomAction}>
-              <Text style={styles.earningsBottomActionText}>
-                Buka Dompet & Penarikan
-              </Text>
-              <ArrowRight size={11} color="rgba(255, 255, 255, 0.85)" />
+            <View style={styles.searchFilterIconWrap}>
+              <SlidersHorizontal size={13} color={COLORS.brandIndigo} />
             </View>
           </TouchableOpacity>
 
-          {/* Right: Stacked 2 White Metric Cards */}
-          <View style={styles.metricsRightColumn}>
-            {/* Top Metric: Response On-time Rate */}
-            <View style={styles.metricWhiteCard}>
-              <View style={styles.greenProgressRing}>
-                <Text style={styles.greenProgressText}>100%</Text>
-              </View>
-              <Text style={styles.metricCardLabel}>
-                Response{"\n"}Rate 100%
+          {/* 2. Dashboard Title & Date Row */}
+          <View style={styles.dashboardTitleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.dashboardMainTitle}>
+                {isMahasiswa ? "Top Freelance Talent" : "Client Dashboard"}
               </Text>
-            </View>
-
-            {/* Bottom Metric: Positive Rating */}
-            <View style={styles.metricWhiteCard}>
-              <View style={styles.starRow}>
-                <Star size={15} color="#F59E0B" fill="#F59E0B" />
-                <Text style={styles.starValueText}>5.0</Text>
-                <Text style={styles.starMaxText}>/5.0</Text>
-              </View>
-              <Text style={styles.metricCardLabel}>Positive{"\n"}Rating</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* 4. Modern Ongoing Projects Showcase */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderRow}>
-            <View>
-              <Text style={styles.sectionMainTitle}>Ongoing Projects</Text>
-              <Text style={styles.sectionSubTitle}>
+              <Text style={styles.dashboardMottoText}>
                 {isMahasiswa
-                  ? "Proyek aktif & proposal dalam seleksi"
-                  : "Status pengerjaan proyek bisnis Anda"}
+                  ? "Wujudkan Solusi Digital & Raih Peluang Nyata"
+                  : "Akselerasi Bisnis dengan Talenta Muda Terbaik"}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("TrackerTab")}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.seeMoreLink}>Workspace →</Text>
-            </TouchableOpacity>
+            <Text style={styles.dashboardDateText}>{currentDateFormatted}</Text>
           </View>
 
-          {ongoingProjectsList.length > 0 ? (
-            ongoingProjectsList.map((item) => {
-              const pId = isMahasiswa ? item.project_id || item.id : item.id;
-              const pTitle = isMahasiswa
-                ? item.project_judul || "Pengembangan Solusi UMKM"
-                : item.judul || "Proyek Digital UMKM";
-              const pCategory = item.kategori || "UMKM";
-              const pPartner = isMahasiswa
-                ? item.project_umkm_nama || "Mitra UMKM"
-                : item.mahasiswa_nama || "Talenta Mahasiswa";
-              const pBudget = isMahasiswa
-                ? item.harga_tawar || item.budget || 0
-                : item.budget || item.budget_max || 0;
-              const pDays = item.estimasi_hari || (isMahasiswa ? 5 : 7);
+          {/* 3. Executive Financial Overview & Balanced Quick Metrics */}
+          <View style={styles.executiveSection}>
+            {/* A. Full-Width Executive Wallet Card */}
+            <TouchableOpacity
+              style={styles.executiveWalletCard}
+              onPress={() => navigation.navigate("WalletTab")}
+              activeOpacity={0.92}
+            >
+              {/* Top Row: Escrow Badge & Action Pill */}
+              <View style={styles.walletTopRow}>
+                <View style={styles.walletBadgeChip}>
+                  <ShieldCheck size={14} color="#38BDF8" />
+                  <Text style={styles.walletBadgeText}>
+                    {isMahasiswa ? "Saldo Dompet Aktif" : "Escrow Balance UMKM"}
+                  </Text>
+                </View>
+                <View style={styles.walletActionBtn}>
+                  <Text style={styles.walletActionBtnText}>
+                    {isMahasiswa ? "Tarik Saldo" : "Detail Escrow"}
+                  </Text>
+                  <ArrowRight size={12} color="#FFFFFF" strokeWidth={2.5} />
+                </View>
+              </View>
 
-              const isAccepted =
-                item.status === "ACCEPTED" || item.status === "IN_PROGRESS";
-              const isReview = item.status === "REVIEW";
+              {/* Main Balance Display */}
+              <View style={styles.walletAmountRow}>
+                <Text style={styles.walletCurrencyPrefix}>Rp</Text>
+                <Text style={styles.walletAmountNumber}>
+                  {new Intl.NumberFormat("id-ID").format(
+                    wallet?.saldo_aktif || 0,
+                  )}
+                </Text>
+              </View>
 
-              const statusLabel = isAccepted
-                ? "In Progress"
-                : isReview
-                  ? "Under Review"
-                  : isMahasiswa
-                    ? "Proposal Sent"
-                    : "Open Proposals";
+              {/* Bottom Reassurance Strip */}
+              <View style={styles.walletBottomStrip}>
+                <View style={styles.walletLiveDot} />
+                <Text style={styles.walletBottomText} numberOfLines={1}>
+                  {wallet?.saldo_escrow > 0
+                    ? `🛡️ ${formatCurrency(wallet?.saldo_escrow)} ditahan di Escrow`
+                    : "Dana aman terenkripsi • Tarik kapan saja"}
+                </Text>
+              </View>
+            </TouchableOpacity>
 
-              const statusDotColor = isAccepted
-                ? "#10B981"
-                : isReview
-                  ? "#F59E0B"
-                  : "#6366F1";
-              const statusBg = isAccepted
-                ? "#ECFDF5"
-                : isReview
-                  ? "#FFFBEB"
-                  : "#EEF2FF";
-              const statusTextColor = isAccepted
-                ? "#065F46"
-                : isReview
-                  ? "#92400E"
-                  : "#3730A3";
-              const progressPercent = isAccepted
-                ? "70%"
-                : isReview
-                  ? "90%"
-                  : "25%";
-              const milestoneLabel = isAccepted
-                ? "Milestone 1 • Pengerjaan Deliverable"
-                : isReview
-                  ? "Milestone Final • Menunggu Persetujuan"
-                  : "Tahap Evaluasi & Seleksi Proposal";
+            {/* B. Balanced 3-Column Metrics Bar (Reflow Friendly) */}
+            <View style={styles.metricsBalancedRow}>
+              {/* Metric 1: Active Projects / Proposals */}
+              <TouchableOpacity
+                style={styles.metricTile}
+                onPress={() => navigation.navigate("TrackerTab")}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.metricTileIconWrap,
+                    { backgroundColor: "#EEF2FF" },
+                  ]}
+                >
+                  <Briefcase size={16} color={COLORS.brandIndigo} />
+                </View>
+                <Text style={styles.metricTileValue}>
+                  {ongoingProjectsList.length > 0
+                    ? ongoingProjectsList.length
+                    : "0"}
+                </Text>
+                <Text style={styles.metricTileLabel} numberOfLines={1}>
+                  {isMahasiswa ? "Proyek Aktif" : "Order Aktif"}
+                </Text>
+              </TouchableOpacity>
 
-              return (
-                <View key={item.id || pId} style={styles.modernOngoingCard}>
-                  {/* Top Meta: Status Pill & Delivery Days */}
-                  <View style={styles.ongoingTopMeta}>
-                    <View
-                      style={[
-                        styles.ongoingStatusPill,
-                        { backgroundColor: statusBg },
-                      ]}
-                    >
+              {/* Metric 2: On-Time Rate */}
+              <View style={styles.metricTile}>
+                <View
+                  style={[
+                    styles.metricTileIconWrap,
+                    { backgroundColor: "#ECFDF5" },
+                  ]}
+                >
+                  <Clock size={16} color="#10B981" />
+                </View>
+                <Text style={[styles.metricTileValue, { color: "#065F46" }]}>
+                  100%
+                </Text>
+                <Text style={styles.metricTileLabel} numberOfLines={1}>
+                  On-Time
+                </Text>
+              </View>
+
+              {/* Metric 3: Rating Kepuasan */}
+              <View style={styles.metricTile}>
+                <View
+                  style={[
+                    styles.metricTileIconWrap,
+                    { backgroundColor: "#FFFBEB" },
+                  ]}
+                >
+                  <Star size={16} color="#F59E0B" fill="#F59E0B" />
+                </View>
+                <Text style={[styles.metricTileValue, { color: "#92400E" }]}>
+                  5.0
+                </Text>
+                <Text style={styles.metricTileLabel} numberOfLines={1}>
+                  Rating
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* 4. Modern Ongoing Projects Showcase */}
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <View>
+                <Text style={styles.sectionMainTitle}>Ongoing Projects</Text>
+                <Text style={styles.sectionSubTitle}>
+                  {isMahasiswa
+                    ? "Proyek aktif & proposal dalam seleksi"
+                    : "Status pengerjaan proyek bisnis Anda"}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("TrackerTab")}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.seeMoreLink}>Workspace →</Text>
+              </TouchableOpacity>
+            </View>
+
+            {ongoingProjectsList.length > 0 ? (
+              ongoingProjectsList.map((item) => {
+                const pId = isMahasiswa ? item.project_id || item.id : item.id;
+                const pTitle = isMahasiswa
+                  ? item.project_judul || "Pengembangan Solusi UMKM"
+                  : item.judul || "Proyek Digital UMKM";
+                const pCategory = isMahasiswa
+                  ? item.project_kategori || item.kategori || "UMKM"
+                  : item.kategori || "UMKM";
+                const pPartner = isMahasiswa
+                  ? item.project_umkm_nama || "Mitra UMKM"
+                  : item.mahasiswa_nama || "Talenta Mahasiswa";
+                const pBudget = isMahasiswa
+                  ? item.harga_tawar || item.budget || 0
+                  : item.budget || item.budget_max || 0;
+                const pDays = item.estimasi_hari || (isMahasiswa ? 5 : 7);
+
+                const isAccepted =
+                  item.status === "ACCEPTED" || item.status === "IN_PROGRESS";
+                const isReview = item.status === "REVIEW";
+
+                const statusLabel = isAccepted
+                  ? "In Progress"
+                  : isReview
+                    ? "Under Review"
+                    : isMahasiswa
+                      ? "Proposal Sent"
+                      : "Open Proposals";
+
+                const statusDotColor = isAccepted
+                  ? "#10B981"
+                  : isReview
+                    ? "#F59E0B"
+                    : "#6366F1";
+                const statusBg = isAccepted
+                  ? "#ECFDF5"
+                  : isReview
+                    ? "#FFFBEB"
+                    : "#EEF2FF";
+                const statusTextColor = isAccepted
+                  ? "#065F46"
+                  : isReview
+                    ? "#92400E"
+                    : "#3730A3";
+                const progressPercent = isAccepted
+                  ? "70%"
+                  : isReview
+                    ? "90%"
+                    : "25%";
+                const milestoneLabel = isAccepted
+                  ? "Milestone 1 • Pengerjaan Deliverable"
+                  : isReview
+                    ? "Milestone Final • Menunggu Persetujuan"
+                    : "Tahap Evaluasi & Seleksi Proposal";
+
+                return (
+                  <View key={item.id || pId} style={styles.modernOngoingCard}>
+                    {/* Top Meta: Status Pill & Delivery Days */}
+                    <View style={styles.ongoingTopMeta}>
                       <View
                         style={[
-                          styles.pulseLiveDot,
-                          { backgroundColor: statusDotColor },
-                        ]}
-                      />
-                      <Text
-                        style={[
-                          styles.ongoingStatusText,
-                          { color: statusTextColor },
+                          styles.ongoingStatusPill,
+                          { backgroundColor: statusBg },
                         ]}
                       >
-                        {statusLabel}
-                      </Text>
-                    </View>
-
-                    <View style={styles.ongoingDaysBadge}>
-                      <Clock size={11} color={COLORS.textMuted} />
-                      <Text style={styles.ongoingDaysText}>
-                        {pDays} Hari Kerja
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Main Info: Category Icon + Title + Partner Name */}
-                  <TouchableOpacity
-                    style={styles.ongoingMainBody}
-                    activeOpacity={0.88}
-                    onPress={() =>
-                      navigation.navigate("ProjectDetail", {
-                        id: pId,
-                        projectId: pId,
-                      })
-                    }
-                  >
-                    <View style={styles.ongoingCategoryIconSquare}>
-                      {renderProjectCategoryVectorIcon(pCategory, pTitle, 26)}
-                    </View>
-
-                    <View style={styles.ongoingMetaColumn}>
-                      <Text style={styles.ongoingCategoryMicroText}>
-                        {pCategory.toUpperCase()}
-                      </Text>
-                      <Text style={styles.ongoingMainTitle} numberOfLines={2}>
-                        {pTitle}
-                      </Text>
-                      <View style={styles.ongoingPartnerMetaRow}>
-                        <Building2 size={12} color={COLORS.textMuted} />
+                        <View
+                          style={[
+                            styles.pulseLiveDot,
+                            { backgroundColor: statusDotColor },
+                          ]}
+                        />
                         <Text
-                          style={styles.ongoingPartnerMetaText}
-                          numberOfLines={1}
+                          style={[
+                            styles.ongoingStatusText,
+                            { color: statusTextColor },
+                          ]}
                         >
-                          {pPartner}
+                          {statusLabel}
+                        </Text>
+                      </View>
+
+                      <View style={styles.ongoingDaysBadge}>
+                        <Clock size={11} color={COLORS.textMuted} />
+                        <Text style={styles.ongoingDaysText}>
+                          {pDays} Hari Kerja
                         </Text>
                       </View>
                     </View>
-                  </TouchableOpacity>
 
-                  {/* Milestone & Budget Gauge */}
-                  <View style={styles.ongoingMilestoneBox}>
-                    <View style={styles.milestoneGaugeLabels}>
-                      <Text style={styles.milestonePhaseText}>
-                        {milestoneLabel}
-                      </Text>
-                      <Text style={styles.milestoneBudgetText}>
-                        {formatCurrency(pBudget)}
-                      </Text>
-                    </View>
-                    <View style={styles.milestoneTrackOuter}>
-                      <View
-                        style={[
-                          styles.milestoneTrackInner,
-                          {
-                            width: progressPercent,
-                            backgroundColor: isAccepted
-                              ? COLORS.brandIndigo
-                              : statusDotColor,
-                          },
-                        ]}
-                      />
-                    </View>
-                  </View>
-
-                  {/* Action Footer: Quick Chat + Open Workspace */}
-                  <View style={styles.ongoingActionRow}>
+                    {/* Main Info: Category Icon + Title + Partner Name */}
                     <TouchableOpacity
-                      style={styles.ongoingChatBtn}
+                      style={styles.ongoingMainBody}
+                      activeOpacity={0.88}
                       onPress={() =>
-                        navigation.navigate("Chat", {
+                        navigation.navigate("ProjectDetail", {
+                          id: pId,
                           projectId: pId,
-                          projectTitle: pTitle,
-                          partnerName: pPartner,
-                          partnerRole: isMahasiswa ? "UMKM" : "MHS",
                         })
                       }
-                      activeOpacity={0.8}
                     >
-                      <MessageSquare size={13} color={COLORS.brandIndigo} />
-                      <Text style={styles.ongoingChatBtnText}>
-                        Chat {isMahasiswa ? "Klien" : "Talenta"}
-                      </Text>
+                      <View style={styles.ongoingCategoryIconSquare}>
+                        {renderProjectCategoryVectorIcon(pCategory, pTitle, 26)}
+                      </View>
+
+                      <View style={styles.ongoingMetaColumn}>
+                        <Text style={styles.ongoingCategoryMicroText}>
+                          {pCategory.toUpperCase()}
+                        </Text>
+                        <Text style={styles.ongoingMainTitle} numberOfLines={2}>
+                          {pTitle}
+                        </Text>
+                        <View style={styles.ongoingPartnerMetaRow}>
+                          <Building2 size={12} color={COLORS.textMuted} />
+                          <Text
+                            style={styles.ongoingPartnerMetaText}
+                            numberOfLines={1}
+                          >
+                            {pPartner}
+                          </Text>
+                        </View>
+                      </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={styles.ongoingWorkspaceBtn}
-                      onPress={() => navigation.navigate("TrackerTab")}
-                      activeOpacity={0.85}
-                    >
-                      <Text style={styles.ongoingWorkspaceBtnText}>
-                        Workspace
-                      </Text>
-                      <ArrowRight size={12} color="#FFFFFF" strokeWidth={2.5} />
-                    </TouchableOpacity>
+                    {/* Milestone & Budget Gauge */}
+                    <View style={styles.ongoingMilestoneBox}>
+                      <View style={styles.milestoneGaugeLabels}>
+                        <Text style={styles.milestonePhaseText}>
+                          {milestoneLabel}
+                        </Text>
+                        <Text style={styles.milestoneBudgetText}>
+                          {formatCurrency(pBudget)}
+                        </Text>
+                      </View>
+                      <View style={styles.milestoneTrackOuter}>
+                        <View
+                          style={[
+                            styles.milestoneTrackInner,
+                            {
+                              width: progressPercent,
+                              backgroundColor: isAccepted
+                                ? COLORS.brandIndigo
+                                : statusDotColor,
+                            },
+                          ]}
+                        />
+                      </View>
+                    </View>
+
+                    {/* Action Footer: Quick Chat + Open Workspace */}
+                    <View style={styles.ongoingActionRow}>
+                      <TouchableOpacity
+                        style={styles.ongoingChatBtn}
+                        onPress={() =>
+                          navigation.navigate("Chat", {
+                            projectId: pId,
+                            projectTitle: pTitle,
+                            partnerName: pPartner,
+                            partnerRole: isMahasiswa ? "UMKM" : "MHS",
+                          })
+                        }
+                        activeOpacity={0.8}
+                      >
+                        <MessageSquare size={13} color={COLORS.brandIndigo} />
+                        <Text style={styles.ongoingChatBtnText}>
+                          Chat {isMahasiswa ? "Klien" : "Talenta"}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.ongoingWorkspaceBtn}
+                        onPress={() => navigation.navigate("TrackerTab")}
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.ongoingWorkspaceBtnText}>
+                          Workspace
+                        </Text>
+                        <ArrowRight
+                          size={12}
+                          color="#FFFFFF"
+                          strokeWidth={2.5}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
+                );
+              })
+            ) : (
+              <View style={styles.emptyOngoingCard}>
+                <View style={styles.emptyOngoingIcon}>
+                  <Briefcase size={20} color={COLORS.brandIndigo} />
                 </View>
-              );
-            })
-          ) : (
-            <View style={styles.emptyOngoingCard}>
-              <View style={styles.emptyOngoingIcon}>
-                <Briefcase size={20} color={COLORS.brandIndigo} />
+                <View style={styles.emptyOngoingInfo}>
+                  <Text style={styles.emptyOngoingTitle}>
+                    Belum Ada Proyek Aktif
+                  </Text>
+                  <Text style={styles.emptyOngoingSubtitle}>
+                    {isMahasiswa
+                      ? "Jelajahi proyek UMKM & kirim proposal pertamamu."
+                      : "Buat proyek baru untuk merekrut talenta mahasiswa."}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.emptyOngoingCta}
+                  onPress={() => navigation.navigate("ProjectsTab")}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.emptyOngoingCtaText}>Eksplor</Text>
+                  <ArrowRight
+                    size={11}
+                    color={COLORS.brandIndigo}
+                    strokeWidth={2.5}
+                  />
+                </TouchableOpacity>
               </View>
-              <View style={styles.emptyOngoingInfo}>
-                <Text style={styles.emptyOngoingTitle}>
-                  Belum Ada Proyek Aktif
-                </Text>
-                <Text style={styles.emptyOngoingSubtitle}>
-                  {isMahasiswa
-                    ? "Jelajahi proyek UMKM & kirim proposal pertamamu."
-                    : "Buat proyek baru untuk merekrut talenta mahasiswa."}
+            )}
+          </View>
+
+          {/* 5. Modern Bespoke Vector Category Hub */}
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <View>
+                <Text style={styles.sectionMainTitle}>Kategori Keahlian</Text>
+                <Text style={styles.sectionSubTitle}>
+                  Jelajahi talenta & proyek berdasarkan bidang
                 </Text>
               </View>
               <TouchableOpacity
-                style={styles.emptyOngoingCta}
                 onPress={() => navigation.navigate("ProjectsTab")}
-                activeOpacity={0.8}
+                activeOpacity={0.7}
               >
-                <Text style={styles.emptyOngoingCtaText}>Eksplor</Text>
-                <ArrowRight
-                  size={11}
-                  color={COLORS.brandIndigo}
-                  strokeWidth={2.5}
-                />
+                <Text style={styles.seeMoreLink}>See All</Text>
               </TouchableOpacity>
+            </View>
+
+            <View style={styles.categoryBentoGrid}>
+              {categoryTiles.map((cat) => {
+                const IconComp = cat.iconComponent;
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.categoryBentoTile,
+                      isSelected && styles.categoryBentoTileActive,
+                    ]}
+                    onPress={() => {
+                      setSelectedCategory(isSelected ? "ALL" : cat.id);
+                      navigation.navigate("ProjectsTab", { category: cat.id });
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <View
+                      style={[
+                        styles.categoryTileIconWrap,
+                        cat.bgTint ? { backgroundColor: cat.bgTint } : null,
+                      ]}
+                    >
+                      <IconComp
+                        size={28}
+                        color={cat.accentColor || COLORS.brandIndigo}
+                      />
+                    </View>
+                    <View style={styles.categoryTileTextGroup}>
+                      <Text style={styles.categoryTileTitle}>{cat.title}</Text>
+                      <Text style={styles.categoryTileSub}>{cat.sub}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* 6. Curated Projects Feed */}
+          {isMahasiswa ? (
+            <View style={styles.sectionContainer}>
+              <View style={styles.sectionHeaderRow}>
+                <View>
+                  <Text style={styles.sectionMainTitle}>
+                    Peluang Proyek Terbaru
+                  </Text>
+                  <Text style={styles.sectionSubTitle}>
+                    Peluang kerja baru dari UMKM terverifikasi
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("ProjectsTab")}
+                  style={styles.seeAllWithArrow}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.seeMoreLink}>Eksplor</Text>
+                  <ArrowRight size={13} color={COLORS.brandIndigo} />
+                </TouchableOpacity>
+              </View>
+
+              {browseProjects.length === 0 ? (
+                <View style={styles.emptyCardBox}>
+                  <Briefcase size={32} color={COLORS.textDim} />
+                  <Text style={styles.emptyCardTitle}>Belum Ada Proyek</Text>
+                  <Text style={styles.emptyCardSubtitle}>
+                    Periksa kembali beberapa saat lagi untuk tawaran terbaru.
+                  </Text>
+                </View>
+              ) : (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.horizontalFeedList}
+                  snapToInterval={CARD_WIDTH + 14}
+                  decelerationRate="fast"
+                >
+                  {browseProjects.slice(0, 5).map((p) => (
+                    <View
+                      key={p.id}
+                      style={{ width: CARD_WIDTH, marginRight: 14 }}
+                    >
+                      <ProjectCard
+                        project={p}
+                        onPress={() =>
+                          navigation.navigate("ProjectDetail", {
+                            id: p.id,
+                            projectId: p.id,
+                          })
+                        }
+                      />
+                    </View>
+                  ))}
+
+                  {/* Explore More Cap */}
+                  <TouchableOpacity
+                    style={[styles.endCapCard, { width: CARD_WIDTH * 0.72 }]}
+                    onPress={() => navigation.navigate("ProjectsTab")}
+                    activeOpacity={0.85}
+                  >
+                    <View style={styles.endCapIconBox}>
+                      <Compass size={22} color={COLORS.brandIndigo} />
+                    </View>
+                    <Text style={styles.endCapMainText}>
+                      Jelajahi Semua Proyek
+                    </Text>
+                    <Text style={styles.endCapSubText}>
+                      Buka katalog lengkap dengan filter pagu anggaran
+                    </Text>
+                    <View style={styles.endCapPillBtn}>
+                      <Text style={styles.endCapPillText}>Buka Katalog</Text>
+                      <ArrowRight size={12} color="#FFFFFF" />
+                    </View>
+                  </TouchableOpacity>
+                </ScrollView>
+              )}
+            </View>
+          ) : (
+            /* UMKM View: Featured Student Talents */
+            <View style={styles.sectionContainer}>
+              <View style={styles.sectionHeaderRow}>
+                <View>
+                  <Text style={styles.sectionMainTitle}>
+                    Talenta Mahasiswa Unggulan
+                  </Text>
+                  <Text style={styles.sectionSubTitle}>
+                    Akademisi berprestasi Universitas BSI siap membantu usaha
+                    Anda
+                  </Text>
+                </View>
+              </View>
+
+              <TalentBentoCard
+                talent={featuredTalents[0]}
+                variant="featured"
+                onPress={() => navigation.navigate("ProjectsTab")}
+              />
+
+              {featuredTalents.slice(1).map((t) => (
+                <TalentBentoCard
+                  key={t.id}
+                  talent={t}
+                  variant="standard"
+                  onPress={() => navigation.navigate("ProjectsTab")}
+                />
+              ))}
             </View>
           )}
         </View>
-
-        {/* 4.5 Modern Eye-Candy Showcase Banner */}
-        <PromoBanner
-          onBannerPress={() => {
-            navigation.navigate("ProjectsTab");
-          }}
-        />
-
-        {/* 5. Modern Bespoke Vector Category Hub */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderRow}>
-            <View>
-              <Text style={styles.sectionMainTitle}>Kategori Keahlian</Text>
-              <Text style={styles.sectionSubTitle}>
-                Jelajahi talenta & proyek berdasarkan bidang
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("ProjectsTab")}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.seeMoreLink}>See All</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.categoryBentoGrid}>
-            {categoryTiles.map((cat) => {
-              const IconComp = cat.iconComponent;
-              const isSelected = selectedCategory === cat.id;
-              return (
-                <TouchableOpacity
-                  key={cat.id}
-                  style={[
-                    styles.categoryBentoTile,
-                    isSelected && styles.categoryBentoTileActive,
-                  ]}
-                  onPress={() => {
-                    setSelectedCategory(isSelected ? "ALL" : cat.id);
-                    navigation.navigate("ProjectsTab", { category: cat.id });
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <View
-                    style={[
-                      styles.categoryTileIconWrap,
-                      cat.bgTint ? { backgroundColor: cat.bgTint } : null,
-                    ]}
-                  >
-                    <IconComp
-                      size={24}
-                      color={cat.accentColor || COLORS.brandIndigo}
-                    />
-                  </View>
-                  <View style={styles.categoryTileTextGroup}>
-                    <Text style={styles.categoryTileTitle}>{cat.title}</Text>
-                    <Text style={styles.categoryTileSub}>{cat.sub}</Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
-        {/* 6. Curated Projects Feed */}
-        {isMahasiswa ? (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeaderRow}>
-              <View>
-                <Text style={styles.sectionMainTitle}>
-                  Peluang Proyek Terbaru
-                </Text>
-                <Text style={styles.sectionSubTitle}>
-                  Peluang kerja baru dari UMKM terverifikasi
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ProjectsTab")}
-                style={styles.seeAllWithArrow}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seeMoreLink}>Eksplor</Text>
-                <ArrowRight size={13} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-            </View>
-
-            {browseProjects.length === 0 ? (
-              <View style={styles.emptyCardBox}>
-                <Briefcase size={32} color={COLORS.textDim} />
-                <Text style={styles.emptyCardTitle}>Belum Ada Proyek</Text>
-                <Text style={styles.emptyCardSubtitle}>
-                  Periksa kembali beberapa saat lagi untuk tawaran terbaru.
-                </Text>
-              </View>
-            ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalFeedList}
-                snapToInterval={CARD_WIDTH + 14}
-                decelerationRate="fast"
-              >
-                {browseProjects.slice(0, 5).map((p) => (
-                  <View
-                    key={p.id}
-                    style={{ width: CARD_WIDTH, marginRight: 14 }}
-                  >
-                    <ProjectCard
-                      project={p}
-                      onPress={() =>
-                        navigation.navigate("ProjectDetail", {
-                          id: p.id,
-                          projectId: p.id,
-                        })
-                      }
-                    />
-                  </View>
-                ))}
-
-                {/* Explore More Cap */}
-                <TouchableOpacity
-                  style={[styles.endCapCard, { width: CARD_WIDTH * 0.72 }]}
-                  onPress={() => navigation.navigate("ProjectsTab")}
-                  activeOpacity={0.85}
-                >
-                  <View style={styles.endCapIconBox}>
-                    <Compass size={22} color={COLORS.brandIndigo} />
-                  </View>
-                  <Text style={styles.endCapMainText}>
-                    Jelajahi Semua Proyek
-                  </Text>
-                  <Text style={styles.endCapSubText}>
-                    Buka katalog lengkap dengan filter pagu anggaran
-                  </Text>
-                  <View style={styles.endCapPillBtn}>
-                    <Text style={styles.endCapPillText}>Buka Katalog</Text>
-                    <ArrowRight size={12} color="#FFFFFF" />
-                  </View>
-                </TouchableOpacity>
-              </ScrollView>
-            )}
-          </View>
-        ) : (
-          /* UMKM View: Featured Student Talents */
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeaderRow}>
-              <View>
-                <Text style={styles.sectionMainTitle}>
-                  Talenta Mahasiswa Unggulan
-                </Text>
-                <Text style={styles.sectionSubTitle}>
-                  Akademisi berprestasi Universitas BSI siap membantu usaha Anda
-                </Text>
-              </View>
-            </View>
-
-            <TalentBentoCard
-              talent={featuredTalents[0]}
-              variant="featured"
-              onPress={() => navigation.navigate("ProjectsTab")}
-            />
-
-            {featuredTalents.slice(1).map((t) => (
-              <TalentBentoCard
-                key={t.id}
-                talent={t}
-                variant="standard"
-                onPress={() => navigation.navigate("ProjectsTab")}
-              />
-            ))}
-          </View>
-        )}
 
         <View style={{ height: 30 }} />
       </ScrollView>
@@ -771,16 +883,74 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
 
-  // 1. Top Profile Bar
-  profileTopBar: {
+  // Dedicated Top App Bar (Profile & Notification)
+  topAppBar: {
+    backgroundColor: "#0B132B",
+    paddingHorizontal: 20,
+    paddingBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 44,
-    paddingBottom: 12,
-    backgroundColor: COLORS.bgSurface,
   },
+  topProfileButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flex: 1,
+    paddingRight: 12,
+  },
+  topProfileGreeting: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 16,
+    color: "#FFFFFF",
+    letterSpacing: -0.4,
+  },
+  topProfileRole: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: "rgba(255, 255, 255, 0.72)",
+    marginTop: 2,
+  },
+  topBellButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.18)",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+
+  // 2. Curved Hero Header Banner (100% Pure Artwork Showcase)
+  curvedHeaderBanner: {
+    height: 145,
+    width: "100%",
+    position: "relative",
+    backgroundColor: "#0B132B",
+    overflow: "hidden",
+  },
+  headerBannerImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+  },
+  dashboardMottoText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: COLORS.textMuted,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  curveContainer: {
+    position: "absolute",
+    bottom: -1,
+    left: 0,
+    right: 0,
+    width: "100%",
+  },
+
   profileUserGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -791,11 +961,13 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   userAvatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.85)",
   },
   avatarMhs: {
     backgroundColor: COLORS.brandIndigo,
@@ -806,8 +978,7 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 16,
   },
   verifiedTickBadge: {
     position: "absolute",
@@ -819,30 +990,6 @@ const styles = StyleSheet.create({
   profileTextInfo: {
     flex: 1,
   },
-  profileName: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    letterSpacing: -0.3,
-  },
-  profileRole: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  bellIconButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: COLORS.canvasSoft,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
   bellRedDot: {
     position: "absolute",
     top: 9,
@@ -852,17 +999,53 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: COLORS.danger,
     borderWidth: 1.5,
-    borderColor: "#FFFFFF",
+    borderColor: "#0B132B",
   },
 
   // Scroll Content
   scrollArea: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 30,
+  },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 24,
+  },
+
+  // Quick Interactive Search Affordance
+  heroSearchPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.95)",
+    marginBottom: 18,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    gap: 10,
+  },
+  heroSearchPlaceholder: {
+    flex: 1,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    color: COLORS.textDim,
+  },
+  searchFilterIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: "#EEF2FF",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // 2. Dashboard Title Row
@@ -874,168 +1057,152 @@ const styles = StyleSheet.create({
   },
   dashboardMainTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 18,
     color: COLORS.textDark,
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   dashboardDateText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
     color: COLORS.textMuted,
   },
 
-  // 3. Exact Mockup 2-Column Hero Bento Grid
-  heroBentoRow: {
-    flexDirection: "row",
-    gap: 14,
+  // 3. Executive Financial Overview & Balanced Quick Metrics
+  executiveSection: {
     marginBottom: 24,
-  },
-  earningsBlueCard: {
-    flex: 1.28,
-    backgroundColor: COLORS.brandIndigo,
-    borderRadius: 22,
-    padding: 16,
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.32,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  earningsTopRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  earningsTitleLabel: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: "rgba(255, 255, 255, 0.85)",
-  },
-  earningsDetailsLink: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: "#FFFFFF",
-    textDecorationLine: "underline",
-  },
-  earningsAmountText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    letterSpacing: -0.5,
-    marginTop: 8,
-  },
-  earningsGrowthSub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: "rgba(255, 255, 255, 0.75)",
-    marginTop: 2,
-    marginBottom: 14,
-  },
-  nestedTargetCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    borderRadius: 14,
-    padding: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 14,
-    marginBottom: 10,
-  },
-  targetIconCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  targetLabelText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 9,
-    color: "rgba(255, 255, 255, 0.85)",
-  },
-  targetAmountText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    marginTop: 1,
-  },
-  earningsBottomAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(255, 255, 255, 0.14)",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
-  },
-  earningsBottomActionText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#FFFFFF",
-    fontWeight: "600",
-  },
-
-  // Right Column (2 Metric Cards)
-  metricsRightColumn: {
-    flex: 0.82,
     gap: 12,
   },
-  metricWhiteCard: {
+  executiveWalletCard: {
+    backgroundColor: "#0B132B",
+    borderRadius: 22,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "rgba(99, 102, 241, 0.28)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  walletTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  walletBadgeChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "rgba(56, 189, 248, 0.12)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(56, 189, 248, 0.22)",
+  },
+  walletBadgeText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    color: "#38BDF8",
+    letterSpacing: 0.2,
+  },
+  walletActionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+    borderRadius: 999,
+    minHeight: 32,
+  },
+  walletActionBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#FFFFFF",
+  },
+  walletAmountRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 6,
+    marginBottom: 12,
+  },
+  walletCurrencyPrefix: {
+    fontFamily: FONTS.displayMedium,
+    fontSize: 17,
+    color: "#94A3B8",
+  },
+  walletAmountNumber: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 29,
+    color: "#FFFFFF",
+    letterSpacing: -0.8,
+    fontVariant: ["tabular-nums"],
+  },
+  walletBottomStrip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255, 255, 255, 0.08)",
+  },
+  walletLiveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#10B981",
+  },
+  walletBottomText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "rgba(255, 255, 255, 0.72)",
+    flex: 1,
+  },
+
+  // Balanced 3-Column Metrics Row
+  metricsBalancedRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  metricTile: {
     flex: 1,
     backgroundColor: COLORS.bgSurface,
     borderRadius: 18,
-    padding: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
     elevation: 2,
-    justifyContent: "center",
+    minHeight: 88,
   },
-  greenProgressRing: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 3.5,
-    borderColor: COLORS.success,
+  metricTileIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
   },
-  greenProgressText: {
+  metricTileValue: {
     fontFamily: FONTS.displayBold,
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 16,
     color: COLORS.textDark,
+    letterSpacing: -0.3,
+    marginBottom: 2,
   },
-  metricCardLabel: {
+  metricTileLabel: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 10.5,
     color: COLORS.textMuted,
-    lineHeight: 14,
-  },
-  starRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    marginBottom: 6,
-  },
-  starValueText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  starMaxText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: COLORS.textDim,
+    textAlign: "center",
   },
 
   // 4. Ongoing Projects Section
@@ -1050,10 +1217,9 @@ const styles = StyleSheet.create({
   },
   sectionMainTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 16.5,
     color: COLORS.textDark,
-    letterSpacing: -0.3,
+    letterSpacing: -0.35,
   },
   sectionSubTitle: {
     fontFamily: FONTS.bodyRegular,
@@ -1065,7 +1231,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
     color: COLORS.brandIndigo,
-    fontWeight: "700",
   },
   seeAllWithArrow: {
     flexDirection: "row",
@@ -1109,7 +1274,6 @@ const styles = StyleSheet.create({
   ongoingStatusText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    fontWeight: "700",
     letterSpacing: 0.2,
   },
   ongoingDaysBadge: {
@@ -1147,18 +1311,16 @@ const styles = StyleSheet.create({
   },
   ongoingCategoryMicroText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9,
-    fontWeight: "700",
+    fontSize: 9.5,
     color: COLORS.brandIndigo,
     letterSpacing: 0.6,
-    marginBottom: 1,
+    marginBottom: 2,
   },
   ongoingMainTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 14.5,
     color: COLORS.textDark,
-    lineHeight: 18,
+    lineHeight: 19,
     letterSpacing: -0.2,
   },
   ongoingPartnerMetaRow: {
@@ -1191,13 +1353,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: "#64748B",
-    fontWeight: "600",
   },
   milestoneBudgetText: {
     fontFamily: FONTS.displayBold,
     fontSize: 12.5,
-    fontWeight: "700",
     color: COLORS.brandIndigo,
+    fontVariant: ["tabular-nums"],
   },
   milestoneTrackOuter: {
     height: 5,
@@ -1228,7 +1389,6 @@ const styles = StyleSheet.create({
   ongoingChatBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   ongoingWorkspaceBtn: {
@@ -1244,7 +1404,6 @@ const styles = StyleSheet.create({
   ongoingWorkspaceBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "700",
     color: "#FFFFFF",
   },
   emptyOngoingCard: {
@@ -1277,7 +1436,6 @@ const styles = StyleSheet.create({
   emptyOngoingTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "700",
     color: COLORS.textDark,
   },
   emptyOngoingSubtitle: {
@@ -1299,7 +1457,6 @@ const styles = StyleSheet.create({
   emptyOngoingCtaText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
-    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
 
@@ -1312,7 +1469,7 @@ const styles = StyleSheet.create({
   categoryBentoTile: {
     width: (width - 40 - 10) / 2,
     padding: 12,
-    borderRadius: 16,
+    borderRadius: 18,
     backgroundColor: COLORS.bgSurface,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
@@ -1322,18 +1479,19 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1,
+    shadowRadius: 4,
+    elevation: 1.5,
+    minHeight: 66,
   },
   categoryBentoTileActive: {
     borderColor: COLORS.brandIndigo,
     borderWidth: 1.5,
-    backgroundColor: COLORS.cardDarkHover,
+    backgroundColor: "#EEF2FF",
   },
   categoryTileIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
@@ -1343,13 +1501,13 @@ const styles = StyleSheet.create({
   },
   categoryTileTitle: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: 13,
     color: COLORS.textDark,
+    letterSpacing: -0.2,
   },
   categoryTileSub: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
+    fontSize: 10.5,
     color: COLORS.textMuted,
     marginTop: 1,
   },
@@ -1381,10 +1539,10 @@ const styles = StyleSheet.create({
   endCapMainText: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "700",
     color: COLORS.textDark,
     textAlign: "center",
     marginBottom: 4,
+    letterSpacing: -0.2,
   },
   endCapSubText: {
     fontFamily: FONTS.bodyRegular,
@@ -1407,7 +1565,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
     color: "#FFFFFF",
-    fontWeight: "700",
   },
   emptyCardBox: {
     backgroundColor: COLORS.bgSurface,
@@ -1421,7 +1578,6 @@ const styles = StyleSheet.create({
   emptyCardTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 14,
-    fontWeight: "700",
     color: COLORS.textDark,
     marginTop: 8,
   },

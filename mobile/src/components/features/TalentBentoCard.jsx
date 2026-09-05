@@ -27,7 +27,9 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
           <Text
             style={[
               styles.avatarText,
-              isFeatured ? styles.avatarTextFeatured : styles.avatarTextStandard,
+              isFeatured
+                ? styles.avatarTextFeatured
+                : styles.avatarTextStandard,
             ]}
           >
             {talent.name ? talent.name.charAt(0) : "M"}
@@ -57,7 +59,9 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
         <View
           style={[
             styles.ratingBadge,
-            isFeatured ? styles.ratingBadgeFeatured : styles.ratingBadgeStandard,
+            isFeatured
+              ? styles.ratingBadgeFeatured
+              : styles.ratingBadgeStandard,
           ]}
         >
           <Star
@@ -68,7 +72,9 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
           <Text
             style={[
               styles.ratingText,
-              isFeatured ? styles.ratingTextFeatured : styles.ratingTextStandard,
+              isFeatured
+                ? styles.ratingTextFeatured
+                : styles.ratingTextStandard,
             ]}
           >
             {talent.rating?.toFixed(1) || "5.0"}
@@ -109,7 +115,9 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
             <Text
               style={[
                 styles.skillText,
-                isFeatured ? styles.skillTextFeatured : styles.skillTextStandard,
+                isFeatured
+                  ? styles.skillTextFeatured
+                  : styles.skillTextStandard,
               ]}
             >
               {s}
@@ -153,7 +161,9 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
           <Text
             style={[
               styles.actionText,
-              isFeatured ? styles.actionTextFeatured : styles.actionTextStandard,
+              isFeatured
+                ? styles.actionTextFeatured
+                : styles.actionTextStandard,
             ]}
           >
             Lihat Profil
@@ -209,7 +219,6 @@ const styles = StyleSheet.create({
   avatarText: {
     fontFamily: FONTS.displayBold,
     fontSize: 17,
-    fontWeight: "700",
   },
   avatarTextFeatured: {
     color: "#FFFFFF",
@@ -223,7 +232,6 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: FONTS.displayBold,
     fontSize: 16,
-    fontWeight: "700",
     letterSpacing: -0.3,
   },
   prodi: {
@@ -262,7 +270,6 @@ const styles = StyleSheet.create({
   ratingText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontWeight: "700",
   },
   ratingTextFeatured: {
     color: "#FFFFFF",
@@ -276,7 +283,6 @@ const styles = StyleSheet.create({
   roleLabel: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -289,7 +295,6 @@ const styles = StyleSheet.create({
   roleValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
-    fontWeight: "700",
     letterSpacing: -0.5,
     marginTop: 2,
   },
@@ -315,7 +320,6 @@ const styles = StyleSheet.create({
   skillText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    fontWeight: "600",
   },
   skillTextFeatured: {
     color: "#FFFFFF",
@@ -340,7 +344,6 @@ const styles = StyleSheet.create({
   statLabel: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 10,
-    fontWeight: "600",
   },
   statLabelFeatured: {
     color: "rgba(255, 255, 255, 0.7)",
@@ -351,7 +354,6 @@ const styles = StyleSheet.create({
   statValue: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "700",
     marginTop: 1,
   },
   actionBtn: {
@@ -371,14 +373,11 @@ const styles = StyleSheet.create({
   actionText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
   },
   actionTextFeatured: {
-    fontFamily: FONTS.bodyRegular,
     color: COLORS.brandIndigo, // Indigo text on white button
   },
   actionTextStandard: {
-    fontFamily: FONTS.bodyRegular,
     color: "#FFFFFF", // Pure white text on Indigo button
   },
 });

@@ -16,6 +16,10 @@ export default function App() {
     "GeneralSans-Regular": require("./assets/fonts/GeneralSans-Regular.ttf"),
   });
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />

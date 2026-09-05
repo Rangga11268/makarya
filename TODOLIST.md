@@ -245,10 +245,19 @@ _Fitur pengembangan bernilai tinggi untuk Mahasiswa & Klien UMKM. Backend meliba
 
     - [x] **Audit & Standardisasi Tipografi / fontWeight Seluruh Mobile App**: Memperbaiki bug font override pada Button.jsx dan modifier styles (di mana bodyRegular menimpa bodyBold), menghapus fontFamily ilegal pada elemen View, dan standardisasi bobot (700 untuk Bold, 500 untuk Medium).
     - [x] **Sistem Ikon Vektor Premium & Duotone Luxury**: Merancang ikon tab bar kustom (Home, Explore, Workspace, Wallet, Profile) dengan kedalaman visual duotone dan indikator aktif, serta merombak ikon kategori keahlian dengan gradasi multi-stop dan palet warna squircle mewah.
-    - [x] **Redesign Modern Workspace Screen & Natural English Copywriting**: Merombak tampilan Workspace mobile (tata letak ramping & breathable bebas tumpukan, pill-based tab filter, integrasi tombol cepat Chat langsung di kartu, dan metadata ringkas) serta mengadopsi copywriting Bahasa Inggris profesional yang natural (Workspace, In Progress, Under Review, Completed, Discover Jobs, Best Match, dsb).
-    - [x] **Hotfix Kompilasi & Babel AST Clean**: Memperbaiki syntax error duplikasi deklarasi fungsi dan unclosed tag pada `CategoryIcons.jsx`, `MainTabs.jsx`, dan `HomeScreen.jsx`. Memverifikasi parsing 46 berkas JavaScript dengan 0 syntax error dan Metro bundler sukses menghasilkan bundel Android (HTTP 200 OK).
-    - [x] **Redesign Komprehensif Ongoing Projects Card (`HomeScreen.jsx`)**: Mengubah kartu proyek berjalan yang kaku & sempit menjadi kartu berstandar _mission-control_ modern: status badge dengan indikator pulsa live, nama mitra dengan ikon gedung, gauge progress bar milestone visual, nilai honor terlindungi escrow, tombol aksi instan (_1-tap Chat Klien & Buka Workspace_), serta empty-state elegan saat belum ada proyek aktif.
-    - [x] **Pembersihan Indikator Semu Kartu Earnings (`HomeScreen.jsx`)**: Menghapus 4 titik carousel statis (`carouselDotsRow`) yang membingungkan pengguna pada kartu biru Earnings, menggantikannya dengan tombol aksi fungsional riil `[ Buka Dompet & Penarikan → ]`.
+    - [x] **Resolusi Data Kosong di Workspace Darell & Sinkronisasi Status Proyek**:
+      - Mengatasi root cause data hilang: `isMahasiswa` pada `TrackerScreen.jsx` keliru mengevaluasi `false` saat inisialisasi sesi awal sehingga memanggil endpoint UMKM (`/projects/my-projects`, HTTP 403 Forbidden) yang menimpa `items` menjadi array kosong `[]`.
+      - Menambahkan pengamanan default role MHS, parsing tanggungan respon multi-format (`raw`, `raw.data`, `raw.items`), dan sinkronisasi dependensi `[isMahasiswa, user?.id, user?.role]` pada `useFocusEffect`.
+      - Memperbaiki kategorisasi tab & kartu: memisahkan proposal berstatus `ACCEPTED` yang masih aktif (`project_status: IN_PROGRESS`) dengan yang sudah selesai (`project_status: DONE`/`COMPLETED`), sehingga tab All (4 proyek), Active (1 proyek), dan Completed (3 proyek) terdistribusi tepat tanpa ada proyek hilang atau salah status.
+      - Memperbaiki ekstraksi kategori `project_kategori` pada kartu pelamar mahasiswa agar ikon vektor presisi sesuai bidang keahlian.
+      - Menangani silent 401 dan masalah "Not authenticated" yang membuat saldo dompet dan proyek bernilai 0: mengimplementasikan silent re-login & request retry otomatis di `axiosInstance.js` dan `authStore.js` sehingga saat token terhapus atau kedaluwarsa, sesi Darell langsung diperbarui otomatis tanpa mengganggu tampilan.
+      - **Penerapan Penuh `/antislop-ui` pada Curved Hero Header (`HomeScreen.jsx`)**:
+        - Menyingkirkan gambar latar belakang AI slop yang penuh stiker kartun bertumpuk, pil mengambang dengan emoji, dan teks berlapis yang saling menabrak.
+        - Menerapkan kanvas solid Dark Navy (`#0B132B`) yang bersih, tenang, dan berfokus fungsional.
+        - Memasang logo resmi Makarya (`logo-icon.webp`) dalam baris tipografi yang rapi dan proporsional bersama tagline brand yang lugas.
+        - Menghadirkan aksen geometri arsitektural (garis pandu 1px dan node sirkuit dengan opasitas redup 8-12%) sebagai tekstur latar yang berkelas tanpa mengganggu keterbacaan teks.
+        - Mengembalikan Uvicorn pada host `0.0.0.0:8000` agar koneksi Wi-Fi perangkat mobile lokal tidak terputus.
+      - Memperpanjang masa aktif token JWT lokal (`ACCESS_TOKEN_EXPIRE_MINUTES=10080` / 7 hari) di `.env` backend agar sesi otentikasi di HP tidak kedaluwarsa diam-diam setiap 30 menit.
 
 - **⚙️ Backend**:
   - [x] Model SQLAlchemy `ChatMessage` di `app/models/chat.py` & migrasi database Alembic.

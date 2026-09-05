@@ -34,23 +34,43 @@ export function TrackerScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL"); // 'ALL' | 'ACTIVE' | 'PENDING' | 'DONE'
 
+  const role = user?.role ? String(user.role).toUpperCase() : "";
+  const email = user?.email ? String(user.email).toLowerCase() : "";
   const isMahasiswa =
-    user?.role === "MHS" ||
-    user?.role === "MAHASISWA" ||
-    (user?.email && user.email.includes(".ac.id")) ||
-    user?.email === "darell@ubsi.ac.id";
+    role === "MHS" ||
+    role === "MAHASISWA" ||
+    email.includes(".ac.id") ||
+    email === "darell@ubsi.ac.id" ||
+    (!user && true); // Default to MHS to prevent 403 on UMKM endpoint before hydration
 
   const loadData = async () => {
     try {
       setLoading(true);
       if (isMahasiswa) {
         const res = await proposalApi.getMyProposals();
-        setItems(Array.isArray(res.data) ? res.data : []);
+        const raw = res?.data;
+        const list = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.data)
+            ? raw.data
+            : Array.isArray(raw?.items)
+              ? raw.items
+              : [];
+        setItems(list);
       } else {
         const res = await projectApi.getMyProjects();
-        setItems(Array.isArray(res.data) ? res.data : []);
+        const raw = res?.data;
+        const list = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.data)
+            ? raw.data
+            : Array.isArray(raw?.items)
+              ? raw.items
+              : [];
+        setItems(list);
       }
     } catch (e) {
+      console.warn("Tracker loadData error:", e.response?.data || e.message);
       setItems([]);
     } finally {
       setLoading(false);
@@ -60,24 +80,35 @@ export function TrackerScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [isMahasiswa]),
+    }, [isMahasiswa, user?.id, user?.role]),
   );
 
   const activeJobsCount = isMahasiswa
-    ? items.filter((i) => i.status === "ACCEPTED").length
-    : items.filter((i) => i.status === "IN_PROGRESS").length;
+    ? items.filter(
+        (i) =>
+          i.status === "ACCEPTED" &&
+          i.project_status !== "DONE" &&
+          i.project_status !== "COMPLETED",
+      ).length
+    : items.filter((i) => i.status === "IN_PROGRESS" || i.status === "REVIEW")
+        .length;
 
   const pendingJobsCount = isMahasiswa
     ? items.filter((i) => i.status === "PENDING").length
-    : items.filter((i) => ["OPEN", "BIDDING", "REVIEW"].includes(i.status))
-        .length;
+    : items.filter((i) => ["OPEN", "BIDDING"].includes(i.status)).length;
 
   const doneJobsCount = isMahasiswa
-    ? items.filter((i) =>
-        ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE"].includes(i.status),
+    ? items.filter(
+        (i) =>
+          i.project_status === "DONE" ||
+          i.project_status === "COMPLETED" ||
+          ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE", "SELESAI"].includes(
+            i.status,
+          ),
       ).length
-    : items.filter((i) => ["DONE", "CANCELLED", "COMPLETED"].includes(i.status))
-        .length;
+    : items.filter((i) =>
+        ["DONE", "CANCELLED", "COMPLETED", "SELESAI"].includes(i.status),
+      ).length;
 
   const segmentedTabs = [
     { id: "ALL", label: "All", count: items.length },
@@ -94,18 +125,24 @@ export function TrackerScreen({ navigation }) {
     if (activeTab === "ALL") return true;
     if (activeTab === "ACTIVE") {
       return isMahasiswa
-        ? item.status === "ACCEPTED"
-        : item.status === "IN_PROGRESS";
+        ? item.status === "ACCEPTED" &&
+            item.project_status !== "DONE" &&
+            item.project_status !== "COMPLETED"
+        : item.status === "IN_PROGRESS" || item.status === "REVIEW";
     }
     if (activeTab === "PENDING") {
       return isMahasiswa
         ? item.status === "PENDING"
-        : ["OPEN", "BIDDING", "REVIEW"].includes(item.status);
+        : ["OPEN", "BIDDING"].includes(item.status);
     }
     if (activeTab === "DONE") {
       return isMahasiswa
-        ? ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE"].includes(item.status)
-        : ["DONE", "CANCELLED", "COMPLETED"].includes(item.status);
+        ? item.project_status === "DONE" ||
+            item.project_status === "COMPLETED" ||
+            ["REJECTED", "WITHDRAWN", "COMPLETED", "DONE", "SELESAI"].includes(
+              item.status,
+            )
+        : ["DONE", "CANCELLED", "COMPLETED", "SELESAI"].includes(item.status);
     }
     return true;
   });
@@ -224,25 +261,33 @@ export function TrackerScreen({ navigation }) {
           const projectId = isMahasiswa ? item.project_id : item.id;
           const projectTitle = isMahasiswa ? item.project_judul : item.judul;
           const partnerName = isMahasiswa
-            ? item.project_umkm_nama || "Campus UMKM Client"
-            : "Your Business Listing";
-          const category = item.kategori;
+            ? item.project_umkm_nama || "Mitra UMKM Kampus"
+            : "Daftar Proyek Anda";
+          const category = isMahasiswa
+            ? item.project_kategori || item.kategori || "UMKM"
+            : item.kategori || "UMKM";
           const createdAt = item.created_at;
 
           // Status & Chat Logic
+          const isDone = isMahasiswa
+            ? item.project_status === "DONE" ||
+              item.project_status === "COMPLETED" ||
+              ["DONE", "COMPLETED", "SELESAI"].includes(item.status)
+            : ["DONE", "COMPLETED", "SELESAI"].includes(item.status);
+
           const isAccepted = isMahasiswa
-            ? item.status === "ACCEPTED"
+            ? item.status === "ACCEPTED" && !isDone
             : item.status === "IN_PROGRESS";
+
           const isPending = isMahasiswa
             ? item.status === "PENDING"
             : item.status === "OPEN" || item.status === "BIDDING";
+
           const isReview = !isMahasiswa && item.status === "REVIEW";
-          const isDone =
-            item.status === "DONE" ||
-            item.status === "COMPLETED" ||
-            item.status === "SELESAI";
-          const isDeclined =
-            item.status === "REJECTED" || item.status === "CANCELLED";
+
+          const isDeclined = ["REJECTED", "WITHDRAWN", "CANCELLED"].includes(
+            item.status,
+          );
 
           // Chat is relevant when work is active or in review!
           const canChat = isAccepted || isReview;

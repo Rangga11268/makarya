@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
   clientAvatarText: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   clientInfo: {
@@ -138,7 +137,6 @@ const styles = StyleSheet.create({
   clientName: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "600",
     color: COLORS.textDark,
   },
   postedTime: {
@@ -159,13 +157,11 @@ const styles = StyleSheet.create({
   escrowText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    fontWeight: "700",
     color: COLORS.brandCyan,
   },
   title: {
     fontFamily: FONTS.displayBold,
     fontSize: 15,
-    fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.3,
     lineHeight: 21,
@@ -189,7 +185,6 @@ const styles = StyleSheet.create({
   specLabel: {
     fontFamily: FONTS.bodyBold,
     fontSize: 9,
-    fontWeight: "600",
     color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.3,
@@ -198,7 +193,6 @@ const styles = StyleSheet.create({
   specBudgetValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 13,
-    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   applicantRow: {
@@ -209,7 +203,6 @@ const styles = StyleSheet.create({
   specLevelValue: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "600",
     color: COLORS.textDark,
   },
   skillsRow: {
@@ -228,7 +221,6 @@ const styles = StyleSheet.create({
   skillPillText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    fontWeight: "500",
     color: COLORS.textSecondary,
   },
 });
