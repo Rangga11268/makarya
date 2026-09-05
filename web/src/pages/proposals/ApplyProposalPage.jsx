@@ -356,7 +356,7 @@ export function ApplyProposalPage() {
                       Honor Bersih Diterima Mahasiswa:
                     </span>
                     <span className="text-[11px] text-indigo-800">
-                      Bebas potongan platform (0% Biaya Komisi Mahasiswa UBSI).
+                      Bebas potongan platform (0% Biaya Komisi Mahasiswa).
                     </span>
                   </div>
                   <span className="text-lg font-black text-brand-indigo font-sans">

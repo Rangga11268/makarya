@@ -22,6 +22,7 @@ import { ProfilePage } from "./pages/profile/ProfilePage";
 import { WalletPage } from "./pages/wallet/WalletPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminDisputePage } from "./pages/admin/AdminDisputePage";
+import { TalentsDirectoryPage } from "./pages/talents/TalentsDirectoryPage";
 
 export default function App() {
   const { isAuthenticated, user } = useAuthStore();
@@ -50,6 +51,7 @@ export default function App() {
             />
             <Route path="/projects" element={<BrowseProjectsPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/talents" element={<TalentsDirectoryPage />} />
 
             {/* 2. Auth Routes */}
             <Route

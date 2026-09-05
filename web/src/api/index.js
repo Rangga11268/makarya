@@ -57,6 +57,11 @@ export const chatApi = {
   markRead: (projectId) => api.patch(`/chat/project/${projectId}/read`),
 };
 
+export const talentApi = {
+  getTalents: (params) => api.get("/talents", { params }),
+  getTalentDetail: (id) => api.get(`/talents/${id}`),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   const isHttps = window.location.protocol === "https:";
   const wsProto = isHttps ? "wss:" : "ws:";

@@ -209,7 +209,7 @@ export function ProjectChatModal({
                   {partnerName}
                 </h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
-                  {partnerRole === "UMKM" ? "Klien UMKM" : "Mahasiswa UBSI"}
+                  {partnerRole === "UMKM" ? "Klien UMKM" : "Mahasiswa Terverifikasi"}
                 </span>
               </div>
               <p className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">

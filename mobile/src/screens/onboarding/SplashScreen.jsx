@@ -66,7 +66,7 @@ export function SplashScreen({ onFinish }) {
       {/* Subtle Minimalist Bottom Footer */}
       <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
         <Text style={styles.footerCampus}>
-          Universitas Bina Sarana Informatika
+          Platform Talenta Digital & UMKM Terpercaya
         </Text>
       </Animated.View>
     </View>

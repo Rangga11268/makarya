@@ -50,7 +50,7 @@ export function AuthArtwork({
                   <h4 className="text-xs font-bold text-white font-sans">Darell Rangga Putra</h4>
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
-                <p className="text-[11px] text-slate-400 font-sans">Sistem Informasi • UBSI Kaliabang</p>
+                <p className="text-[11px] text-slate-400 font-sans">Sistem Informasi • Talenta Terverifikasi</p>
               </div>
             </div>
             <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">

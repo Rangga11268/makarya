@@ -162,8 +162,7 @@ export function LoginScreen({ navigation }) {
       <View style={styles.footerNotice}>
         <ShieldCheck size={16} color={COLORS.success} />
         <Text style={styles.footerText}>
-          Garansi Rekening Bersama (Escrow) & Keamanan Data Mahasiswa Kampus
-          UBSI.
+          Garansi Rekening Bersama (Escrow) & Keamanan Data Pengguna Makarya.
         </Text>
       </View>
     </ScrollView>

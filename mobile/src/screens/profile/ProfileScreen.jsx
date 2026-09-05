@@ -108,7 +108,7 @@ export function ProfileScreen({ navigation }) {
         title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
           isMahasiswa
-            ? "Identitas akademik, portofolio & kredensial UBSI"
+            ? "Identitas, portofolio & kredensial talenta"
             : "Informasi bisnis & manajemen akun UMKM"
         }
         onBack={canGoBack ? () => navigation.goBack() : undefined}
@@ -155,7 +155,7 @@ export function ProfileScreen({ navigation }) {
               ]}
             >
               {isMahasiswa
-                ? "Mahasiswa Terverifikasi • UBSI"
+                ? "Mahasiswa Terverifikasi"
                 : "Klien UMKM Terverifikasi"}
             </Text>
           </View>
@@ -194,10 +194,14 @@ export function ProfileScreen({ navigation }) {
         {isMahasiswa && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Kredensial Akademik UBSI</Text>
+              <Text style={styles.sectionTitle}>
+                Kredensial Akademik & Sertifikasi
+              </Text>
               <View style={styles.verifiedCampusTag}>
                 <CheckCircle2 size={11} color={COLORS.success} />
-                <Text style={styles.verifiedCampusText}>Terhubung SIAKAD</Text>
+                <Text style={styles.verifiedCampusText}>
+                  Terverifikasi Resmi
+                </Text>
               </View>
             </View>
 
@@ -206,7 +210,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Perguruan Tinggi</Text>
                 <Text style={styles.detailValue}>
-                  Universitas Bina Sarana Informatika
+                  {user?.universitas || "Perguruan Tinggi Terakreditasi"}
                 </Text>
               </View>
             </View>
@@ -215,16 +219,20 @@ export function ProfileScreen({ navigation }) {
               <Sparkles size={16} color={COLORS.brandCyan} />
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Program Studi & Jenjang</Text>
-                <Text style={styles.detailValue}>Sistem Informasi (S1)</Text>
+                <Text style={styles.detailValue}>
+                  {user?.prodi ? `${user.prodi} (S1)` : "Sistem Informasi (S1)"}
+                </Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
               <Award size={16} color="#F59E0B" />
               <View style={styles.detailTextWrapper}>
-                <Text style={styles.detailLabel}>NIM & Status Akademik</Text>
+                <Text style={styles.detailLabel}>Status Akademik</Text>
                 <Text style={styles.detailValue}>
-                  12220491 • Semester 6 (Aktif)
+                  {user?.nim
+                    ? `${user.nim} • Semester ${user.semester || 6} (Aktif)`
+                    : "Mahasiswa Aktif Terverifikasi"}
                 </Text>
               </View>
             </View>
@@ -265,7 +273,9 @@ export function ProfileScreen({ navigation }) {
         {/* 4. Digital Portofolio Links (Mahasiswa Only) */}
         {isMahasiswa && (
           <View style={styles.sectionBox}>
-            <Text style={styles.sectionTitle}>Tautan Portofolio & Repositori</Text>
+            <Text style={styles.sectionTitle}>
+              Tautan Portofolio & Repositori
+            </Text>
 
             <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
               <View style={styles.linkIconWrap}>
@@ -273,7 +283,7 @@ export function ProfileScreen({ navigation }) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.linkTitle}>Profil GitHub</Text>
-                <Text style={styles.linkUrl}>github.com/Rangga11268</Text>
+                <Text style={styles.linkUrl}>github.com/makarya-talent</Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
@@ -284,7 +294,7 @@ export function ProfileScreen({ navigation }) {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.linkTitle}>Portofolio Desain Figma</Text>
-                <Text style={styles.linkUrl}>figma.com/@darell_ux</Text>
+                <Text style={styles.linkUrl}>figma.com/@makarya_portfolio</Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
@@ -294,8 +304,10 @@ export function ProfileScreen({ navigation }) {
                 <Globe size={16} color={COLORS.brandCyan} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.linkTitle}>Website Portofolio Pribadi</Text>
-                <Text style={styles.linkUrl}>darellputra.dev</Text>
+                <Text style={styles.linkTitle}>
+                  Website Portofolio Profesional
+                </Text>
+                <Text style={styles.linkUrl}>portofolio-digital.id</Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
@@ -342,7 +354,10 @@ export function ProfileScreen({ navigation }) {
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              trackColor={{ false: COLORS.borderDark, true: COLORS.brandIndigo }}
+              trackColor={{
+                false: COLORS.borderDark,
+                true: COLORS.brandIndigo,
+              }}
               thumbColor="#FFFFFF"
             />
           </View>
@@ -352,7 +367,9 @@ export function ProfileScreen({ navigation }) {
               <ShieldCheck size={16} color={COLORS.success} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.settingMainText}>Notifikasi Saldo Escrow</Text>
+              <Text style={styles.settingMainText}>
+                Notifikasi Saldo Escrow
+              </Text>
               <Text style={styles.settingSubText}>
                 Pemberitahuan instan saat dana dikunci & dicairkan
               </Text>
@@ -360,7 +377,10 @@ export function ProfileScreen({ navigation }) {
             <Switch
               value={escrowAlertsEnabled}
               onValueChange={setEscrowAlertsEnabled}
-              trackColor={{ false: COLORS.borderDark, true: COLORS.brandIndigo }}
+              trackColor={{
+                false: COLORS.borderDark,
+                true: COLORS.brandIndigo,
+              }}
               thumbColor="#FFFFFF"
             />
           </View>
@@ -368,13 +388,15 @@ export function ProfileScreen({ navigation }) {
 
         {/* 7. Help Center & Support */}
         <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>Bantuan & Layanan Kampus</Text>
+          <Text style={styles.sectionTitle}>Pusat Bantuan & Layanan</Text>
 
           <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
             <View style={styles.menuIconWrap}>
               <Phone size={15} color={COLORS.brandIndigo} />
             </View>
-            <Text style={styles.menuItemTitle}>Hubungi Admin UBSI Hub</Text>
+            <Text style={styles.menuItemTitle}>
+              Hubungi Customer Support Makarya
+            </Text>
             <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
 
@@ -414,7 +436,8 @@ export function ProfileScreen({ navigation }) {
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>Tambah Keahlian Baru</Text>
             <Text style={styles.modalSub}>
-              Tambahkan keahlian teknis atau desain untuk meningkatkan peluang terpilih
+              Tambahkan keahlian teknis atau desain untuk meningkatkan peluang
+              terpilih
             </Text>
 
             <Input

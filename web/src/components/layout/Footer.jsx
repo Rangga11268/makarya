@@ -81,7 +81,7 @@ export function Footer() {
             <div className="pt-2 flex flex-col gap-1.5 text-xs text-dark-900 font-medium">
               <span className="flex items-center gap-2 text-slate-700">
                 <GraduationCap className="w-4 h-4 text-brand-indigo shrink-0" />
-                Universitas Bina Sarana Informatika • UBSI Kaliabang
+                Talenta Mahasiswa Terverifikasi Perguruan Tinggi
               </span>
               <span className="flex items-center gap-2 text-slate-700">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -226,9 +226,9 @@ export function Footer() {
             &copy; {new Date().getFullYear()} <b>Makarya Platform</b>. Hak Cipta Dilindungi Undang-Undang.
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            <span>Skripsi S1 Sistem Informasi</span>
+            <Link to="/terms" className="hover:text-dark-900 transition-colors">Syarat & Ketentuan</Link>
             <span>•</span>
-            <span>Darell Rangga Putra (12219999)</span>
+            <Link to="/privacy" className="hover:text-dark-900 transition-colors">Kebijakan Privasi</Link>
             <span>•</span>
             <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
               <Lock className="w-3 h-3" /> Escrow Terenkripsi

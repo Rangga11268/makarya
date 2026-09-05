@@ -33,7 +33,7 @@ export function ProfilePage() {
     nama_lengkap: "Darell Rangga Putra",
     nim: "12219999",
     prodi: "Sistem Informasi",
-    bio: "Mahasiswa tingkat akhir jurusan Sistem Informasi UBSI dengan fokus full-stack development (FastAPI & React) serta arsitektur database relasional.",
+    bio: "Mahasiswa tingkat akhir jurusan Sistem Informasi dengan fokus full-stack development (FastAPI & React) serta arsitektur database relasional.",
     url_portofolio: "https://github.com/darell-student",
     skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind CSS"],
   });
@@ -244,7 +244,7 @@ export function ProfilePage() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-dark-900">
-                Program Studi (UBSI)
+                Program Studi
               </label>
               <select
                 value={mhsData.prodi}

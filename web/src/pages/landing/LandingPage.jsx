@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-import { projectApi } from "../../api";
+import { projectApi, talentApi } from "../../api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { SectionHeader } from "../../components/ui/SectionHeader";
@@ -36,16 +36,54 @@ export function LandingPage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [openFaq, setOpenFaq] = useState(0);
 
+  const [talents, setTalents] = useState([
+    {
+      id: "1",
+      nama_lengkap: "Darell Rangga Putra",
+      prodi: "Sistem Informasi",
+      rating_avg: 5.0,
+      total_proyek_selesai: 9,
+      skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind CSS"],
+    },
+    {
+      id: "2",
+      nama_lengkap: "Adelia Putri",
+      prodi: "Desain Komunikasi Visual",
+      rating_avg: 4.9,
+      total_proyek_selesai: 11,
+      skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
+    },
+    {
+      id: "3",
+      nama_lengkap: "Bima Arya",
+      prodi: "Teknologi Informasi",
+      rating_avg: 5.0,
+      total_proyek_selesai: 6,
+      skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
+    },
+  ]);
+
   useEffect(() => {
     async function loadPublicData() {
       try {
         setLoading(true);
         const res = await projectApi.browse({ limit: 6 });
-        setLatestProjects(res.data);
+        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        setLatestProjects(list);
       } catch (err) {
         setLatestProjects([]);
       } finally {
         setLoading(false);
+      }
+
+      try {
+        const tRes = await talentApi.getTalents({ only_completed: true, limit: 4 });
+        const tList = Array.isArray(tRes?.data) ? tRes.data : Array.isArray(tRes) ? tRes : [];
+        if (tList.length > 0) {
+          setTalents(tList);
+        }
+      } catch (tErr) {
+        console.warn("Gagal memuat talenta riil dari API:", tErr);
       }
     }
     loadPublicData();
@@ -63,37 +101,6 @@ export function LandingPage() {
     { code: "VIDEO", title: "Video Reels & Promosi", count: 2 },
     { code: "COPYWRITING", title: "Copywriting & Artikel SEO", count: 2 },
     { code: "ADMIN_DATA", title: "Admin & Pengolahan Data", count: 2 },
-  ];
-
-  const featuredTalents = [
-    {
-      name: "Darell Rangga Putra",
-      prodi: "Sistem Informasi • UBSI",
-      rating: 5.0,
-      totalJobs: 8,
-      skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind"],
-    },
-    {
-      name: "Adelia Putri",
-      prodi: "DKV • UBSI",
-      rating: 4.9,
-      totalJobs: 11,
-      skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
-    },
-    {
-      name: "Bima Arya",
-      prodi: "Teknologi Informasi • UBSI",
-      rating: 5.0,
-      totalJobs: 6,
-      skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
-    },
-    {
-      name: "Siti Rahmawati",
-      prodi: "Ilmu Komunikasi • UBSI",
-      rating: 4.8,
-      totalJobs: 9,
-      skills: ["Copywriting", "Social Media", "Content Plan"],
-    },
   ];
 
   return (
@@ -370,16 +377,29 @@ export function LandingPage() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {featuredTalents.map((talent, idx) => (
+          {talents.map((talent, idx) => (
             <TalentCard
-              key={idx}
-              name={talent.name}
+              key={talent.id || idx}
+              name={talent.nama_lengkap}
               prodi={talent.prodi}
-              rating={talent.rating}
-              totalJobs={talent.totalJobs}
-              skills={talent.skills}
+              rating={Number(talent.rating_avg) || 5.0}
+              totalJobs={talent.total_proyek_selesai || 0}
+              skills={talent.skills || []}
             />
           ))}
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link to="/talents">
+            <Button
+              variant="outline"
+              size="md"
+              className="rounded-full text-xs font-bold gap-2 hover:bg-dark-900 hover:text-white transition-all shadow-xs"
+            >
+              <span>Jelajah Seluruh Direktori Talenta Berprestasi</span>
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </section>
 

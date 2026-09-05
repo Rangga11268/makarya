@@ -88,8 +88,8 @@ export function OnboardingScreen({ navigation, onComplete }) {
           resizeMode="contain"
         />
         <View style={styles.topTag}>
-          <GraduationCap size={12} color={COLORS.brandIndigo} />
-          <Text style={styles.topTagText}>Terverifikasi UBSI</Text>
+          <ShieldCheck size={12} color={COLORS.brandIndigo} />
+          <Text style={styles.topTagText}>Platform Terverifikasi</Text>
         </View>
       </View>
 

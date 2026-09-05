@@ -149,7 +149,7 @@ export function RegisterPage() {
                   <input
                     type="email"
                     name="email"
-                    placeholder="contoh: 12210001@ubsi.ac.id"
+                    placeholder="contoh: nama.mahasiswa@kampus.ac.id"
                     value={formData.email}
                     onChange={handleChange}
                     required

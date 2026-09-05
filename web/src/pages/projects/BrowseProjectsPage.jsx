@@ -27,8 +27,9 @@ export function BrowseProjectsPage() {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState(initialCategory);
-  const [keyword, setKeyword] = useState(initialKeyword);
+  const [error, setError] = useState(null);
+  const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [maxBudget, setMaxBudget] = useState(2000000);
   const [sortBy, setSortBy] = useState("newest"); // newest | budget_desc | budget_asc | deadline_soon
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,9 +45,18 @@ export function BrowseProjectsPage() {
     { key: "ADMIN_DATA", label: "Admin & Data Excel" },
   ];
 
+  // Sinkronkan perubahan URL query params ke state
+  useEffect(() => {
+    const urlCategory = searchParams.get("category") || "";
+    const urlKeyword = searchParams.get("keyword") || "";
+    setCategory(urlCategory);
+    setKeyword(urlKeyword);
+  }, [searchParams]);
+
   const fetchProjects = async () => {
     try {
       setLoading(true);
+      setError(null);
       const params = {
         status: "OPEN",
         max_budget: maxBudget,
@@ -55,10 +65,12 @@ export function BrowseProjectsPage() {
       if (keyword.trim()) params.keyword = keyword.trim();
 
       const res = await projectApi.browse(params);
-      setProjects(res.data);
+      const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      setProjects(data);
       setCurrentPage(1); // Reset page on new search/filter
     } catch (err) {
       console.error("Gagal memuat proyek:", err);
+      setError("Gagal terhubung ke katalog proyek. Silakan coba muat ulang.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +85,19 @@ export function BrowseProjectsPage() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    const nextParams = {};
+    if (category) nextParams.category = category;
+    if (keyword.trim()) nextParams.keyword = keyword.trim();
+    setSearchParams(nextParams);
     fetchProjects();
+  };
+
+  const handleCategorySelect = (key) => {
+    setCategory(key);
+    const nextParams = {};
+    if (key) nextParams.category = key;
+    if (keyword.trim()) nextParams.keyword = keyword.trim();
+    setSearchParams(nextParams);
   };
 
   const handleResetFilter = () => {
@@ -194,10 +218,7 @@ export function BrowseProjectsPage() {
                 {categories.map((c) => (
                   <button
                     key={c.key}
-                    onClick={() => {
-                      setCategory(c.key);
-                      setSearchParams(c.key ? { category: c.key } : {});
-                    }}
+                    onClick={() => handleCategorySelect(c.key)}
                     className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between ${
                       category === c.key
                         ? "bg-dark-900 text-white shadow-xs"
@@ -294,7 +315,21 @@ export function BrowseProjectsPage() {
           </div>
 
           {/* Project Cards Grid */}
-          {loading ? (
+          {error && paginatedProjects.length === 0 ? (
+            <div className="p-8 bg-surface rounded-3xl border border-rose-200 text-center space-y-3 shadow-xs">
+              <p className="text-sm font-bold text-rose-700">{error}</p>
+              <p className="text-xs text-muted">Pastikan server backend aktif di http://127.0.0.1:8000</p>
+              <Button
+                variant="brand"
+                size="sm"
+                onClick={fetchProjects}
+                className="mt-2"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                Coba Muat Ulang
+              </Button>
+            </div>
+          ) : loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((n) => (
                 <div

@@ -38,9 +38,6 @@ export function Header({
               style={styles.brandLogo}
               resizeMode="contain"
             />
-            <View style={styles.brandBadge}>
-              <Text style={styles.brandBadgeText}>UBSI</Text>
-            </View>
           </View>
         ) : userProfile ? (
           /* User Profile Header */

@@ -31,7 +31,7 @@ export function ProposalCard({
             {mhs.nama_lengkap || "Mahasiswa Freelancer"}
           </Text>
           <Text style={styles.prodi}>
-            {mhs.prodi || "Sistem Informasi • UBSI"}
+            {mhs.prodi || "Sistem Informasi • Terverifikasi"}
           </Text>
         </View>
 

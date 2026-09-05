@@ -46,6 +46,12 @@ import {
   Building2,
   Search,
   SlidersHorizontal,
+  ArrowDownToLine,
+  Send,
+  CircleHelp,
+  Plus,
+  Users,
+  Eye,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -109,64 +115,106 @@ export function HomeScreen({ navigation }) {
     loadData();
   }, [user?.role]);
 
-  // 6 Bespoke Vector Categories
-  // 6 Bespoke Vector Categories with Luxury Color Palettes
+  // 6 Bespoke Vector Categories Unified in Makarya Brand Indigo Palette
   const categoryTiles = [
     {
       id: "DESAIN",
       title: "Desain UI/UX",
       sub: "Figma & Branding",
       iconComponent: UiUxVectorIcon,
-      accentColor: "#4F46E5",
-      bgTint: "#EEF2FF",
     },
     {
       id: "WEB",
       title: "Web & Coding",
       sub: "React, Vue & API",
       iconComponent: WebCodingVectorIcon,
-      accentColor: "#0284C7",
-      bgTint: "#F0F9FF",
     },
     {
       id: "MOBILE",
       title: "App Mobile",
       sub: "Flutter & React Native",
       iconComponent: MobileAppVectorIcon,
-      accentColor: "#10B981",
-      bgTint: "#ECFDF5",
     },
     {
       id: "VIDEO",
       title: "Video & Reels",
       sub: "Motion & Editing",
       iconComponent: VideoMotionVectorIcon,
-      accentColor: "#F59E0B",
-      bgTint: "#FFFBEB",
     },
     {
       id: "MARKETING",
       title: "Pemasaran & Ads",
       sub: "SEO & Sosmed",
       iconComponent: MarketingVectorIcon,
-      accentColor: "#EC4899",
-      bgTint: "#FDF2F8",
     },
     {
       id: "WRITING",
       title: "Riset & Penulisan",
       sub: "Copywriting & Artikel",
       iconComponent: WritingVectorIcon,
-      accentColor: "#8B5CF6",
-      bgTint: "#FAF5FF",
     },
   ];
+
+  // 4 Primary Quick Action Pills (Fintech & Workflow Shortcuts)
+  const actionItems = isMahasiswa
+    ? [
+        {
+          id: "tarik",
+          label: "Tarik Saldo",
+          icon: ArrowDownToLine,
+          onPress: () => navigation.navigate("WalletTab"),
+        },
+        {
+          id: "eksplor",
+          label: "Eksplor",
+          icon: Compass,
+          onPress: () => navigation.navigate("ProjectsTab"),
+        },
+        {
+          id: "proposal",
+          label: "Proposal",
+          icon: Send,
+          onPress: () => navigation.navigate("TrackerTab"),
+        },
+        {
+          id: "bantuan",
+          label: "Bantuan",
+          icon: CircleHelp,
+          onPress: () => setIsNotificationOpen(true),
+        },
+      ]
+    : [
+        {
+          id: "pasang",
+          label: "Pasang Proyek",
+          icon: Plus,
+          onPress: () => navigation.navigate("ProjectsTab"),
+        },
+        {
+          id: "topup",
+          label: "Top Up Escrow",
+          icon: ShieldCheck,
+          onPress: () => navigation.navigate("WalletTab"),
+        },
+        {
+          id: "talenta",
+          label: "Cari Talenta",
+          icon: Users,
+          onPress: () => navigation.navigate("ProjectsTab"),
+        },
+        {
+          id: "workspace",
+          label: "Workspace",
+          icon: Briefcase,
+          onPress: () => navigation.navigate("TrackerTab"),
+        },
+      ];
 
   const featuredTalents = [
     {
       id: "1",
       name: "Darell Rangga Putra",
-      prodi: "Sistem Informasi • UBSI",
+      prodi: "Sistem Informasi",
       rating: 5.0,
       totalJobs: 14,
       skills: ["Fullstack Web", "React & FastAPI", "UI Design"],
@@ -174,7 +222,7 @@ export function HomeScreen({ navigation }) {
     {
       id: "2",
       name: "Adelia Putri",
-      prodi: "DKV • UBSI",
+      prodi: "Desain Komunikasi Visual",
       rating: 4.9,
       totalJobs: 11,
       skills: ["Branding", "Packaging", "Logo Vector"],
@@ -182,7 +230,7 @@ export function HomeScreen({ navigation }) {
     {
       id: "3",
       name: "Bima Arya",
-      prodi: "Teknologi Informasi • UBSI",
+      prodi: "Teknologi Informasi",
       rating: 5.0,
       totalJobs: 8,
       skills: ["Landing Page", "Next.js", "WordPress"],
@@ -268,7 +316,7 @@ export function HomeScreen({ navigation }) {
             </Text>
             <Text style={styles.topProfileRole} numberOfLines={1}>
               {isMahasiswa
-                ? "UI/UX & Web Dev • UBSI"
+                ? "UI/UX & Web Dev • Talenta Terverifikasi"
                 : "Klien UMKM Terverifikasi"}
             </Text>
           </View>
@@ -356,48 +404,88 @@ export function HomeScreen({ navigation }) {
 
           {/* 3. Executive Financial Overview & Balanced Quick Metrics */}
           <View style={styles.executiveSection}>
-            {/* A. Full-Width Executive Wallet Card */}
-            <TouchableOpacity
-              style={styles.executiveWalletCard}
-              onPress={() => navigation.navigate("WalletTab")}
-              activeOpacity={0.92}
-            >
-              {/* Top Row: Escrow Badge & Action Pill */}
-              <View style={styles.walletTopRow}>
-                <View style={styles.walletBadgeChip}>
-                  <ShieldCheck size={14} color="#38BDF8" />
-                  <Text style={styles.walletBadgeText}>
-                    {isMahasiswa ? "Saldo Dompet Aktif" : "Escrow Balance UMKM"}
+            {/* A. Luminous Floating Wallet Card with Atmospheric Glow */}
+            <View style={styles.cardAuraWrapper}>
+              <View style={styles.cardAtmosphericGlow} />
+              <TouchableOpacity
+                style={styles.floatingWalletCard}
+                onPress={() => navigation.navigate("WalletTab")}
+                activeOpacity={0.92}
+              >
+                {/* Top Row: Current Balance Label & Escrow Protected Badge */}
+                <View style={styles.walletTopRow}>
+                  <View style={styles.walletBalanceLabelGroup}>
+                    <Text style={styles.walletBalanceTitle}>
+                      {isMahasiswa
+                        ? "Saldo Dompet Aktif"
+                        : "Saldo Escrow Bisnis"}
+                    </Text>
+                    <Eye size={13} color={COLORS.textDim} />
+                  </View>
+                  <View style={styles.walletEscrowChip}>
+                    <ShieldCheck size={12} color="#0EA5E9" />
+                    <Text style={styles.walletEscrowChipText}>
+                      Escrow Protected
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Main Balance Display */}
+                <View style={styles.walletAmountRow}>
+                  <Text style={styles.walletCurrencyPrefix}>Rp</Text>
+                  <Text style={styles.walletAmountNumber}>
+                    {new Intl.NumberFormat("id-ID").format(
+                      wallet?.saldo_aktif || 0,
+                    )}
                   </Text>
                 </View>
-                <View style={styles.walletActionBtn}>
-                  <Text style={styles.walletActionBtnText}>
-                    {isMahasiswa ? "Tarik Saldo" : "Detail Escrow"}
-                  </Text>
-                  <ArrowRight size={12} color="#FFFFFF" strokeWidth={2.5} />
-                </View>
-              </View>
 
-              {/* Main Balance Display */}
-              <View style={styles.walletAmountRow}>
-                <Text style={styles.walletCurrencyPrefix}>Rp</Text>
-                <Text style={styles.walletAmountNumber}>
-                  {new Intl.NumberFormat("id-ID").format(
-                    wallet?.saldo_aktif || 0,
-                  )}
-                </Text>
-              </View>
-
-              {/* Bottom Reassurance Strip */}
-              <View style={styles.walletBottomStrip}>
-                <View style={styles.walletLiveDot} />
-                <Text style={styles.walletBottomText} numberOfLines={1}>
+                {/* Subtitle Reassurance */}
+                <Text style={styles.walletAvailableSub} numberOfLines={1}>
                   {wallet?.saldo_escrow > 0
-                    ? `🛡️ ${formatCurrency(wallet?.saldo_escrow)} ditahan di Escrow`
-                    : "Dana aman terenkripsi • Tarik kapan saja"}
+                    ? `🛡️ ${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
+                    : "Tersedia untuk dicairkan • Dilindungi Rekening Bersama"}
                 </Text>
-              </View>
-            </TouchableOpacity>
+
+                {/* Bottom Card Meta Row (Inspired by Fintech Reference) */}
+                <View style={styles.walletCardBottomMeta}>
+                  <Text style={styles.walletMaskedId}>
+                    {isMahasiswa
+                      ? "Makarya Talent ID •••• 8821"
+                      : "Mitra UMKM •••• 4561"}
+                  </Text>
+                  <View style={styles.walletBrandMark}>
+                    <Text style={styles.walletBrandMarkText}>MAKARYA</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {/* B. 4 Circular Quick-Action Pills Row (Direct Fintech Reference) */}
+            <View style={styles.quickActionPillsRow}>
+              {actionItems.map((action) => {
+                const IconComp = action.icon;
+                return (
+                  <TouchableOpacity
+                    key={action.id}
+                    style={styles.quickActionPillCol}
+                    onPress={action.onPress}
+                    activeOpacity={0.75}
+                  >
+                    <View style={styles.quickActionCircle}>
+                      <IconComp
+                        size={20}
+                        color={COLORS.brandIndigo}
+                        strokeWidth={2}
+                      />
+                    </View>
+                    <Text style={styles.quickActionLabel} numberOfLines={1}>
+                      {action.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
             {/* B. Balanced 3-Column Metrics Bar (Reflow Friendly) */}
             <View style={styles.metricsBalancedRow}>
@@ -733,16 +821,8 @@ export function HomeScreen({ navigation }) {
                     }}
                     activeOpacity={0.8}
                   >
-                    <View
-                      style={[
-                        styles.categoryTileIconWrap,
-                        cat.bgTint ? { backgroundColor: cat.bgTint } : null,
-                      ]}
-                    >
-                      <IconComp
-                        size={28}
-                        color={cat.accentColor || COLORS.brandIndigo}
-                      />
+                    <View style={styles.categoryTileIconWrap}>
+                      <IconComp size={28} color={COLORS.brandIndigo} />
                     </View>
                     <View style={styles.categoryTileTextGroup}>
                       <Text style={styles.categoryTileTitle}>{cat.title}</Text>
@@ -841,7 +921,7 @@ export function HomeScreen({ navigation }) {
                     Talenta Mahasiswa Unggulan
                   </Text>
                   <Text style={styles.sectionSubTitle}>
-                    Akademisi berprestasi Universitas BSI siap membantu usaha
+                    Talenta muda terverifikasi siap membantu akselerasi bisnis
                     Anda
                   </Text>
                 </View>
@@ -1072,93 +1152,148 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 12,
   },
-  executiveWalletCard: {
-    backgroundColor: "#0B132B",
-    borderRadius: 22,
+  cardAuraWrapper: {
+    position: "relative",
+    marginBottom: 4,
+  },
+  cardAtmosphericGlow: {
+    position: "absolute",
+    top: -12,
+    left: 14,
+    right: 14,
+    bottom: -8,
+    borderRadius: 28,
+    backgroundColor: "rgba(14, 165, 233, 0.12)",
+  },
+  floatingWalletCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
     padding: 18,
     borderWidth: 1,
-    borderColor: "rgba(99, 102, 241, 0.28)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.16,
-    shadowRadius: 12,
-    elevation: 5,
+    borderColor: "rgba(226, 232, 240, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    elevation: 3,
   },
   walletTopRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 10,
   },
-  walletBadgeChip: {
+  walletBalanceLabelGroup: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(56, 189, 248, 0.12)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(56, 189, 248, 0.22)",
   },
-  walletBadgeText: {
+  walletBalanceTitle: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    color: "#38BDF8",
-    letterSpacing: 0.2,
+    fontSize: 12,
+    color: COLORS.textMuted,
   },
-  walletActionBtn: {
+  walletEscrowChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    backgroundColor: COLORS.brandIndigo,
-    paddingHorizontal: 13,
-    paddingVertical: 7,
+    gap: 4,
+    backgroundColor: "rgba(14, 165, 233, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
     borderRadius: 999,
-    minHeight: 32,
+    borderWidth: 1,
+    borderColor: "rgba(14, 165, 233, 0.2)",
   },
-  walletActionBtnText: {
+  walletEscrowChipText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: "#FFFFFF",
+    fontSize: 10,
+    color: "#0284C7",
   },
   walletAmountRow: {
     flexDirection: "row",
     alignItems: "baseline",
-    gap: 6,
-    marginBottom: 12,
+    gap: 5,
+    marginBottom: 6,
   },
   walletCurrencyPrefix: {
     fontFamily: FONTS.displayMedium,
     fontSize: 17,
-    color: "#94A3B8",
+    color: COLORS.textMuted,
   },
   walletAmountNumber: {
     fontFamily: FONTS.displayBold,
-    fontSize: 29,
-    color: "#FFFFFF",
+    fontSize: 30,
+    color: COLORS.textDark,
     letterSpacing: -0.8,
     fontVariant: ["tabular-nums"],
   },
-  walletBottomStrip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.08)",
-  },
-  walletLiveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#10B981",
-  },
-  walletBottomText: {
+  walletAvailableSub: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: "rgba(255, 255, 255, 0.72)",
+    color: COLORS.textMuted,
+    marginBottom: 14,
+  },
+  walletCardBottomMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
+  },
+  walletMaskedId: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10.5,
+    color: COLORS.textDim,
+    letterSpacing: 0.3,
+  },
+  walletBrandMark: {
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  walletBrandMarkText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 9.5,
+    color: COLORS.brandIndigo,
+    letterSpacing: 0.6,
+  },
+
+  // 4 Circular Quick-Action Pills Row (Direct Fintech Reference)
+  quickActionPillsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 12,
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  quickActionPillCol: {
+    alignItems: "center",
     flex: 1,
+  },
+  quickActionCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 5,
+    elevation: 2,
+    marginBottom: 6,
+  },
+  quickActionLabel: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: COLORS.textDark,
+    textAlign: "center",
   },
 
   // Balanced 3-Column Metrics Row

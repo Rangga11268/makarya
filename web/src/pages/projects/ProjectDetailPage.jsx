@@ -421,7 +421,7 @@ export function ProjectDetailPage() {
                 {formatCurrency(project.budget_max)}
               </div>
               <span className="text-[11px] text-emerald-700 font-semibold block">
-                ✓ 0% Potongan Komisi bagi Mahasiswa UBSI
+                ✓ 0% Potongan Komisi bagi Mahasiswa
               </span>
             </div>
 

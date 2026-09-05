@@ -981,7 +981,7 @@ export function ProposalBoardPage() {
                                 </div>
                                 <p className="text-[11px] text-muted mt-0.5">
                                   {prop.mhs_profile?.asal_kampus ||
-                                    "Universitas Bina Sarana Informatika"}{" "}
+                                    "Perguruan Tinggi Terakreditasi"}{" "}
                                   • Estimasi: {prop.estimasi_hari} Hari
                                 </p>
                               </div>
