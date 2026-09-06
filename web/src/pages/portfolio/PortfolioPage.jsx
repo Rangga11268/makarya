@@ -132,6 +132,7 @@ export function PortfolioPage() {
               Rating Rata-rata
             </span>
             <div className="flex items-center gap-1.5 mt-1">
+              <StarRating rating={parseFloat(avgRating)} size="md" />
               {avgRating ? (
                 <>
                   <StarRating rating={parseFloat(avgRating)} size="md" />

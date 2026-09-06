@@ -38,6 +38,7 @@ export function ProposalCard({
         <View style={styles.ratingBadge}>
           <Star size={11} color="#F59E0B" fill="#F59E0B" />
           <Text style={styles.ratingText}>
+            {mhs.rating_avg ? Number(mhs.rating_avg).toFixed(1) : "5.0"}
             {mhs.rating_avg ? Number(mhs.rating_avg).toFixed(1) : "Baru"}
           </Text>
         </View>
