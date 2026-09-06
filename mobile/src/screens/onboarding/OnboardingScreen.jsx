@@ -20,7 +20,7 @@ const slides = [
     badge: "Platform Mahasiswa #1",
     title: "Hasilkan Uang Nyata\nSelagi Kuliah",
     subtitle:
-      "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata — bangun portofolio, raih honor, mulai dari laptop-mu.",
+      "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata \u2014 bangun portofolio, raih honor, mulai dari laptop-mu.",
     image: require("../../../assets/onboarding_1.jpg"),
   },
   {
@@ -28,7 +28,7 @@ const slides = [
     badge: "Proteksi Pembayaran",
     title: "Honormu Aman,\n100% Terjamin",
     subtitle:
-      "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai & disetujui — langsung cair ke dompetmu.",
+      "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai & disetujui \u2014 langsung cair ke dompetmu.",
     image: require("../../../assets/onboarding_2.jpg"),
   },
   {
@@ -36,7 +36,7 @@ const slides = [
     badge: "Kolaborasi Real-Time",
     title: "Pantau Proyek\ndari Genggamanmu",
     subtitle:
-      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM — semua tersentralisasi dalam satu platform.",
+      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM \u2014 semua tersentralisasi dalam satu platform.",
     image: require("../../../assets/onboarding_3.jpg"),
   },
 ];
@@ -73,7 +73,6 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
         {/* Top logo bar overlaid on image */}
         <View style={s.topBar}>
-          {/* White pill behind logo so it's visible on any background */}
           <View style={s.logoPill}>
             <Image
               source={require("../../../assets/logo.webp")}
@@ -90,12 +89,10 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
       {/* Bottom content sheet */}
       <View style={s.sheet}>
-        {/* Badge label */}
         <View style={s.slideBadge}>
           <Text style={s.slideBadgeText}>{slide.badge}</Text>
         </View>
 
-        {/* Pagination dots */}
         <View style={s.dots}>
           {slides.map((_, i) => (
             <TouchableOpacity
@@ -144,14 +141,15 @@ const s = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  imageOverlay: {},
   topScrim: {
-    ...StyleSheet.absoluteFillObject,
-    // Dark gradient at the very top only so logo stays readable
-    backgroundColor: "rgba(0,0,0,0.35)",
-    bottom: "60%", // only covers top 40% of the image
-    borderBottomLeftRadius: 80,
-    borderBottomRightRadius: 80,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 160,
+    backgroundColor: "rgba(0,0,0,0.38)",
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
   },
   topBar: {
     position: "absolute",
@@ -183,7 +181,7 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(238,242,255,0.9)",
+    backgroundColor: "rgba(238,242,255,0.92)",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
@@ -203,7 +201,6 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     ...SHADOWS.lg,
-    // Pull up over the image slightly
     marginTop: -36,
   },
   slideBadge: {
