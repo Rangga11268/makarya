@@ -4,7 +4,6 @@ import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { authApi } from "../../api";
 import { Card } from "../../components/ui/Card";
-import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { AuthArtwork } from "../../components/features/AuthArtwork";
@@ -86,7 +85,7 @@ export function LoginPage() {
     } catch (err) {
       addToast(
         err.response?.data?.detail || "Gagal masuk dengan Google",
-        "danger"
+        "danger",
       );
     } finally {
       setLoading(false);
@@ -107,7 +106,7 @@ export function LoginPage() {
       setForgotStep(2);
     } catch (err) {
       setForgotError(
-        err.response?.data?.detail || "Email tidak terdaftar di sistem"
+        err.response?.data?.detail || "Email tidak terdaftar di sistem",
       );
     } finally {
       setForgotLoading(false);
@@ -134,7 +133,7 @@ export function LoginPage() {
       });
       addToast(
         "Password berhasil diubah! Silakan masuk dengan password baru.",
-        "success"
+        "success",
       );
       setForgotModalOpen(false);
       setEmail(forgotEmail.trim());
@@ -143,7 +142,7 @@ export function LoginPage() {
       setForgotNewPass("");
     } catch (err) {
       setForgotError(
-        err.response?.data?.detail || "Kode OTP salah atau telah kedaluwarsa"
+        err.response?.data?.detail || "Kode OTP salah atau telah kedaluwarsa",
       );
     } finally {
       setForgotLoading(false);
@@ -272,9 +271,6 @@ export function LoginPage() {
               </div>
 
               <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                  Password
-                </label>
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
                     Password
@@ -353,7 +349,9 @@ export function LoginPage() {
       <Modal
         isOpen={forgotModalOpen}
         onClose={() => setForgotModalOpen(false)}
-        title={forgotStep === 1 ? "Lupa Kata Sandi" : "Verifikasi OTP & Sandi Baru"}
+        title={
+          forgotStep === 1 ? "Lupa Kata Sandi" : "Verifikasi OTP & Sandi Baru"
+        }
       >
         <div className="space-y-4">
           <p className="text-xs text-muted">
@@ -371,7 +369,9 @@ export function LoginPage() {
           {forgotStep === 1 ? (
             <form onSubmit={handleSendForgotOtp} className="space-y-4">
               <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-dark-900">Email Akun</label>
+                <label className="text-xs font-bold text-dark-900">
+                  Email Akun
+                </label>
                 <input
                   type="email"
                   required
@@ -412,7 +412,9 @@ export function LoginPage() {
                   required
                   maxLength={6}
                   value={forgotOtp}
-                  onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) =>
+                    setForgotOtp(e.target.value.replace(/\D/g, ""))
+                  }
                   placeholder="Contoh: 123456"
                   className="w-full px-4 py-2.5 text-center tracking-widest text-lg font-mono font-bold border border-border rounded-xl bg-canvas focus:outline-none focus:border-brand-indigo"
                 />

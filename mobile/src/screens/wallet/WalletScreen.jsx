@@ -71,7 +71,7 @@ export function WalletScreen({ navigation }) {
       if (user.nomor_rekening) setDestAccount(user.nomor_rekening);
       if (user.nama_pemilik_rekening || user.nama_lengkap || user.nama_usaha) {
         setDestOwner(
-          user.nama_pemilik_rekening || user.nama_lengkap || user.nama_usaha
+          user.nama_pemilik_rekening || user.nama_lengkap || user.nama_usaha,
         );
       }
     }
@@ -99,13 +99,11 @@ export function WalletScreen({ navigation }) {
 
   const handleTransaction = async () => {
     const num = parseInt(nominal, 10);
-    if (!num || num < 50000) {
-      showToast("Minimal transaksi adalah Rp 50.000", "danger");
     const minNominal = txType === "WITHDRAW" ? 25000 : 50000;
     if (!num || num < minNominal) {
       showToast(
         `Minimal transaksi adalah Rp ${formatCurrency(minNominal)}`,
-        "danger"
+        "danger",
       );
       return;
     }
@@ -117,13 +115,6 @@ export function WalletScreen({ navigation }) {
 
     try {
       setTxLoading(true);
-      await walletApi.topUp(num);
-      showToast(
-        txType === "WITHDRAW"
-          ? `Permintaan pencairan honor Rp ${formatCurrency(num)} berhasil diproses!`
-          : `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
-        "success"
-      );
       if (txType === "WITHDRAW") {
         await walletApi.withdraw({
           nominal: num,
@@ -133,22 +124,21 @@ export function WalletScreen({ navigation }) {
         });
         showToast(
           `Pencairan honor Rp ${formatCurrency(num)} berhasil diajukan ke ${destBank} (${destAccount})!`,
-          "success"
+          "success",
         );
       } else {
         await walletApi.topUp(num);
         showToast(
           `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
-          "success"
+          "success",
         );
       }
       setTxModal(false);
       loadWallet();
     } catch (e) {
-      showToast("Gagal memproses transaksi", "danger");
       showToast(
         e.response?.data?.detail || "Gagal memproses transaksi",
-        "danger"
+        "danger",
       );
     } finally {
       setTxLoading(false);
@@ -156,8 +146,7 @@ export function WalletScreen({ navigation }) {
   };
 
   const filteredHistory = history.filter((tx) => {
-    if (historyTab === "IN")
-      return tx.tipe === "TOPUP" || tx.tipe === "PAYOUT";
+    if (historyTab === "IN") return tx.tipe === "TOPUP" || tx.tipe === "PAYOUT";
     if (historyTab === "OUT")
       return tx.tipe === "HOLD" || tx.tipe === "WITHDRAW";
     return true;
@@ -211,7 +200,9 @@ export function WalletScreen({ navigation }) {
             <View style={styles.escrowBadge}>
               <View style={styles.liveGreenDot} />
               <ShieldCheck size={13} color="#34D399" />
-              <Text style={styles.escrowBadgeText}>100% Terproteksi Escrow</Text>
+              <Text style={styles.escrowBadgeText}>
+                100% Terproteksi Escrow
+              </Text>
             </View>
 
             <TouchableOpacity
@@ -381,8 +372,8 @@ export function WalletScreen({ navigation }) {
                 Belum Ada Mutasi Rekening
               </Text>
               <Text style={styles.emptyHistorySub}>
-                Transaksi penerimaan honor & deposit proyek akan otomatis tercatat
-                di sini.
+                Transaksi penerimaan honor & deposit proyek akan otomatis
+                tercatat di sini.
               </Text>
             </View>
           ) : (
@@ -453,14 +444,29 @@ export function WalletScreen({ navigation }) {
             </Text>
             <Text style={styles.modalSub}>
               {txType === "WITHDRAW"
-                ? "Honor akan ditransfer ke rekening Bank BCA Anda tanpa potongan"
                 ? `Honor akan ditransfer ke rekening ${destBank} Anda`
                 : "Deposit akan disimpan aman di sistem rekening bersama escrow"}
             </Text>
 
             {txType === "WITHDRAW" && (
-              <View style={{ marginBottom: 12, padding: 12, backgroundColor: COLORS.bgSurfaceSubtle, borderRadius: 12, borderWidth: 1, borderColor: COLORS.borderDark }}>
-                <Text style={{ fontFamily: FONTS.bodyBold, fontSize: 11, color: COLORS.textDark, marginBottom: 8 }}>
+              <View
+                style={{
+                  marginBottom: 12,
+                  padding: 12,
+                  backgroundColor: COLORS.bgSurfaceSubtle,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: COLORS.borderDark,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: FONTS.bodyBold,
+                    fontSize: 11,
+                    color: COLORS.textDark,
+                    marginBottom: 8,
+                  }}
+                >
                   Rekening Tujuan Pencairan
                 </Text>
                 <Input
@@ -526,7 +532,11 @@ export function WalletScreen({ navigation }) {
                 style={{ flex: 1 }}
               />
               <Button
-                title={txType === "WITHDRAW" ? "Konfirmasi Tarik" : "Konfirmasi Deposit"}
+                title={
+                  txType === "WITHDRAW"
+                    ? "Konfirmasi Tarik"
+                    : "Konfirmasi Deposit"
+                }
                 variant="brand"
                 size="md"
                 onPress={handleTransaction}

@@ -5,7 +5,6 @@ import { authApi } from "../../api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
-import { Alert } from "../../components/ui/Alert";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -23,19 +22,17 @@ import {
   Link as LinkIcon,
   Phone,
   MapPin,
-  BookOpen,
   Sparkles,
   CheckCircle2,
-  AlertCircle,
   ExternalLink,
   CreditCard,
   Check,
   Plus,
   X,
+  Star,
 } from "lucide-react";
 
 export function ProfilePage() {
-  const { user } = useAuthStore();
   const { user, updateUser } = useAuthStore();
   const { addToast } = useToastStore();
   const [loading, setLoading] = useState(false);
@@ -46,19 +43,21 @@ export function ProfilePage() {
   // Form states for Mahasiswa
   const [mhsData, setMhsData] = useState({
     nama_lengkap: "Darell Rangga Putra",
-    nim: "12219999",
     nim: "12210001",
     prodi: "Sistem Informasi",
-    bio: "Mahasiswa tingkat akhir jurusan Sistem Informasi dengan fokus full-stack development (FastAPI & React) serta arsitektur database relasional.",
-    url_portofolio: "https://github.com/darell-student",
-    skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind CSS"],
     semester: 6,
     bio: "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
     github_url: "https://github.com/darell-rangga",
     figma_url: "https://figma.com/@darell_makarya",
     website_url: "https://darell.design",
     linkedin_url: "https://linkedin.com/in/darell-rangga",
-    skills: ["UI/UX Design", "Figma", "React Native", "FastAPI", "Tailwind CSS"],
+    skills: [
+      "UI/UX Design",
+      "Figma",
+      "React Native",
+      "FastAPI",
+      "Tailwind CSS",
+    ],
     nama_bank: "Bank Central Asia (BCA)",
     nomor_rekening: "8270-3491-8821",
     nama_pemilik_rekening: "Darell Rangga Putra",
@@ -76,25 +75,6 @@ export function ProfilePage() {
     nama_pemilik_rekening: "Kedai Kopi Nusantara",
   });
 
-  const availableSkills = [
-    "FastAPI",
-    "React.js",
-    "Python",
-    "PostgreSQL",
-    "Tailwind CSS",
-    "Figma",
-    "UI/UX Design",
-    "Logo Design",
-    "Branding",
-    "Adobe Illustrator",
-    "Video Editing",
-    "Reels / TikTok",
-    "CapCut",
-    "Copywriting",
-    "SEO Optimization",
-    "Data Entry",
-    "Excel / Google Sheets",
-  ];
   const [newSkillInput, setNewSkillInput] = useState("");
 
   const prodiList = [
@@ -104,11 +84,8 @@ export function ProfilePage() {
     "Informatika",
     "Rekayasa Perangkat Lunak",
     "Ilmu Komunikasi",
-    "Rekayasa Perangkat Lunak",
-    "Manajemen Informatika",
     "Manajemen Bisnis",
     "Akuntansi",
-    "Manajemen Bisnis",
   ];
 
   const industriList = [
@@ -128,10 +105,6 @@ export function ProfilePage() {
         setFetching(true);
         const res = await authApi.getMe();
         if (res.data) {
-          if (isUmkm && res.data.profile_umkm) {
-            setUmkmData((prev) => ({ ...prev, ...res.data.profile_umkm }));
-          } else if (!isUmkm && res.data.profile_mhs) {
-            setMhsData((prev) => ({ ...prev, ...res.data.profile_mhs }));
           const d = res.data;
           if (isUmkm) {
             setUmkmData({
@@ -143,7 +116,9 @@ export function ProfilePage() {
               nama_bank: d.nama_bank || "Bank Central Asia (BCA)",
               nomor_rekening: d.nomor_rekening || "8270-3491-8821",
               nama_pemilik_rekening:
-                d.nama_pemilik_rekening || d.nama_usaha || "Kedai Kopi Nusantara",
+                d.nama_pemilik_rekening ||
+                d.nama_usaha ||
+                "Kedai Kopi Nusantara",
             });
           } else {
             setMhsData({
@@ -158,13 +133,16 @@ export function ProfilePage() {
               figma_url: d.figma_url || "",
               website_url: d.website_url || "",
               linkedin_url: d.linkedin_url || "",
-              skills: Array.isArray(d.skills) && d.skills.length > 0
-                ? d.skills
-                : ["UI/UX Design", "Figma", "React Native", "FastAPI"],
+              skills:
+                Array.isArray(d.skills) && d.skills.length > 0
+                  ? d.skills
+                  : ["UI/UX Design", "Figma", "React Native", "FastAPI"],
               nama_bank: d.nama_bank || "Bank Central Asia (BCA)",
               nomor_rekening: d.nomor_rekening || "8270-3491-8821",
               nama_pemilik_rekening:
-                d.nama_pemilik_rekening || d.nama_lengkap || "Darell Rangga Putra",
+                d.nama_pemilik_rekening ||
+                d.nama_lengkap ||
+                "Darell Rangga Putra",
             });
           }
           if (updateUser) {
@@ -172,7 +150,6 @@ export function ProfilePage() {
           }
         }
       } catch (err) {
-        // Fallback gracefully
         // Fallback to initial state
       } finally {
         setFetching(false);
@@ -181,15 +158,6 @@ export function ProfilePage() {
     loadProfile();
   }, [isUmkm]);
 
-  const toggleSkill = (skill) => {
-    setMhsData((prev) => {
-      const exists = prev.skills.includes(skill);
-      if (exists) {
-        return { ...prev, skills: prev.skills.filter((s) => s !== skill) };
-      } else {
-        return { ...prev, skills: [...prev.skills, skill] };
-      }
-    });
   const handleAddSkill = (e) => {
     e?.preventDefault();
     const clean = newSkillInput.trim();
@@ -213,8 +181,6 @@ export function ProfilePage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (authApi.updateProfile) {
-        await authApi.updateProfile(isUmkm ? umkmData : mhsData);
       const payload = isUmkm
         ? {
             nama_usaha: umkmData.nama_usaha.trim(),
@@ -246,13 +212,11 @@ export function ProfilePage() {
       if (res?.data && updateUser) {
         updateUser(res.data);
       }
-      addToast("Profil berhasil diperbarui dan disimpan!", "success");
       addToast("Profil dan rekening pencairan berhasil disimpan!", "success");
     } catch (err) {
-      addToast("Profil berhasil disimpan di sesi lokal.", "success");
       addToast(
         err.response?.data?.detail || "Gagal menyimpan perubahan profil.",
-        "danger"
+        "danger",
       );
     } finally {
       setLoading(false);
@@ -277,7 +241,6 @@ export function ProfilePage() {
       : "U"
     : mhsData.nama_lengkap
       ? mhsData.nama_lengkap.charAt(0).toUpperCase()
-      : "M";
       : "D";
 
   return (
@@ -288,15 +251,12 @@ export function ProfilePage() {
           Pengaturan Akun & Identitas
         </span>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
-          Kelola Profil {isUmkm ? "Usaha UMKM" : "Mahasiswa"}
           Kelola Profil {isUmkm ? "Usaha UMKM" : "Talenta Mahasiswa"}
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
           {isUmkm
-            ? "Lengkapi informasi usaha Anda agar talenta mahasiswa dapat memahami kebutuhan bisnis Anda secara akurat."
-            : "Perbarui keahlian, biodata, dan tautan portofolio Anda untuk memenangkan seleksi proposal proyek UMKM."}
-            ? "Lengkapi informasi usaha dan rekening pencairan Anda agar talenta mahasiswa dapat berkolaborasi secara aman."
-            : "Perbarui keahlian, biodata, tautan portofolio, dan rekening bank pencairan honor Anda."}
+            ? (user?.profil_subtitle || "Lengkapi informasi usaha dan rekening pencairan Anda agar talenta mahasiswa dapat berkolaborasi secara aman.")
+            : (user?.profil_subtitle || "Profil talenta muda dengan rekam jejak deliverable memuaskan")}
         </p>
       </div>
 
@@ -312,26 +272,63 @@ export function ProfilePage() {
               {isUmkm ? umkmData.nama_usaha : mhsData.nama_lengkap}
             </h2>
             <Badge variant={isUmkm ? "warning" : "brand"}>
-              {isUmkm ? "Klien UMKM" : "Mahasiswa Freelancer"}
-              {isUmkm ? "Klien UMKM" : "Mahasiswa Terverifikasi"}
+              {isUmkm
+                ? (user?.status_badge || "Klien UMKM Terverifikasi")
+                : (user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi")}
             </Badge>
             <Badge variant="success" className="flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" /> Terverifikasi
               <CheckCircle2 className="w-3 h-3" /> Terverifikasi Resmi
             </Badge>
           </div>
 
-          <p className="text-xs text-muted flex items-center justify-center sm:justify-start gap-2">
           <p className="text-xs text-muted flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <span>{user?.email}</span>
             <span>•</span>
             <span>
               {isUmkm
                 ? `${umkmData.bidang_industri} • ${umkmData.kota}`
-                : `${mhsData.prodi} • NIM ${mhsData.nim}`}
                 : `${mhsData.prodi} • NIM ${mhsData.nim} • Semester ${mhsData.semester}`}
             </span>
           </p>
+        </div>
+      </div>
+
+      {/* Quick Metrics Grid */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-6">
+        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
+          <div className="flex items-center gap-1.5 text-amber-500 font-bold text-lg sm:text-2xl font-serif">
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-500" />
+            <span>
+              {user?.rating_avg != null
+                ? Number(user.rating_avg).toFixed(1)
+                : "5.0"}
+            </span>
+          </div>
+          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
+            Reputasi Skor
+          </span>
+        </div>
+
+        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
+          <span className="text-lg sm:text-2xl font-bold text-dark-900 font-serif">
+            {!isUmkm
+              ? (user?.total_proyek_selesai !== undefined && user?.total_proyek_selesai !== null
+                  ? user.total_proyek_selesai
+                  : 9)
+              : (user?.total_proyek_diterbitkan ?? 8)}
+          </span>
+          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
+            {!isUmkm ? "Proyek Tuntas" : "Proyek Diterbitkan"}
+          </span>
+        </div>
+
+        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
+          <span className="text-lg sm:text-2xl font-bold text-emerald-600 font-serif">
+            {user?.escrow_success_rate || "100%"}
+          </span>
+          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
+            Sukses Escrow
+          </span>
         </div>
       </div>
 
@@ -339,17 +336,6 @@ export function ProfilePage() {
       <form onSubmit={handleSaveProfile} className="space-y-6">
         {/* MAHASISWA FORM */}
         {!isUmkm ? (
-          <Card className="p-6 sm:p-8 space-y-6">
-            <div className="border-b border-border pb-4">
-              <h3 className="text-base font-bold text-dark-900 flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-brand-indigo" />
-                Informasi Akademik & Biodata Mahasiswa
-              </h3>
-              <p className="text-xs text-muted mt-0.5">
-                Data identitas kampus untuk verifikasi resmi kredibilitas
-                mahasiswa di platform.
-              </p>
-            </div>
           <>
             {/* 1. Kredensial Akademik & Biodata (Using authentic SVG vector icons) */}
             <Card className="p-6 sm:p-8 space-y-6">
@@ -370,21 +356,6 @@ export function ProfilePage() {
                 </div>
               </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">
-                  Nama Lengkap Sesuai KTM
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={mhsData.nama_lengkap}
-                  onChange={(e) =>
-                    setMhsData({ ...mhsData, nama_lengkap: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                  placeholder="Masukkan nama lengkap..."
-                />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
@@ -405,7 +376,10 @@ export function ProfilePage() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                    <AcademicStatusVectorIcon size={16} className="text-amber-500" />
+                    <AcademicStatusVectorIcon
+                      size={16}
+                      className="text-amber-500"
+                    />
                     Nomor Induk Mahasiswa (NIM)
                   </label>
                   <input
@@ -462,46 +436,19 @@ export function ProfilePage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-dark-900">
-                  Nomor Induk Mahasiswa (NIM)
                   Bio Singkat / Ringkasan Profesional
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={mhsData.nim}
                 <textarea
                   rows={3}
                   value={mhsData.bio}
                   onChange={(e) =>
-                    setMhsData({ ...mhsData, nim: e.target.value })
                     setMhsData({ ...mhsData, bio: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono"
-                  placeholder="Contoh: 12219999"
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
                   placeholder="Ceritakan keahlian utama, pengalaman project, atau minat pengerjaan Anda..."
                 />
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">
-                Program Studi
-              </label>
-              <select
-                value={mhsData.prodi}
-                onChange={(e) =>
-                  setMhsData({ ...mhsData, prodi: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
-              >
-                {prodiList.map((p, idx) => (
-                  <option key={idx} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
-            </div>
               {/* Tag Keahlian (Skills) */}
               <div className="space-y-3 pt-4 border-t border-border">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -511,7 +458,8 @@ export function ProfilePage() {
                       Keahlian & Tag Spesialisasi Digital
                     </label>
                     <p className="text-[11px] text-muted mt-0.5">
-                      Keahlian yang Anda kuasai untuk mencocokkan dengan proyek UMKM.
+                      Keahlian yang Anda kuasai untuk mencocokkan dengan proyek
+                      UMKM.
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -538,20 +486,6 @@ export function ProfilePage() {
                   </div>
                 </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">
-                Bio Singkat / Ringkasan Diri
-              </label>
-              <textarea
-                rows={3}
-                value={mhsData.bio}
-                onChange={(e) =>
-                  setMhsData({ ...mhsData, bio: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
-                placeholder="Ceritakan keahlian utama, pengalaman project, atau minat pengerjaan Anda..."
-              />
-            </div>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {mhsData.skills.map((skill) => (
                     <span
@@ -572,37 +506,6 @@ export function ProfilePage() {
               </div>
             </Card>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                <LinkIcon className="w-3.5 h-3.5 text-brand-indigo" />
-                Tautan Portofolio Luar (GitHub / Behance / Dribbble / Google
-                Drive)
-              </label>
-              <input
-                type="url"
-                value={mhsData.url_portofolio}
-                onChange={(e) =>
-                  setMhsData({ ...mhsData, url_portofolio: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                placeholder="https://github.com/username atau https://behance.net/username"
-              />
-              <span className="text-[11px] text-muted block">
-                Klien UMKM dapat melihat tautan portofolio ini saat mengevaluasi
-                proposal yang Anda kirimkan.
-              </span>
-            </div>
-
-            {/* Tag Keahlian (Skills) */}
-            <div className="space-y-3 pt-4 border-t border-border">
-              <div>
-                <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
-                  Keahlian & Tag Spesialisasi Digital
-                </label>
-                <p className="text-[11px] text-muted mt-0.5">
-                  Pilih skill yang Anda kuasai. Sistem Makarya akan mencocokkan
-                  skill ini dengan kebutuhan proyek UMKM.
             {/* 2. Tautan Portofolio & Repositori Resmi (Vector SVG Icons) */}
             <Card className="p-6 sm:p-8 space-y-6">
               <div className="border-b border-border pb-4">
@@ -611,29 +514,11 @@ export function ProfilePage() {
                   Tautan Portofolio & Repositori Karya
                 </h3>
                 <p className="text-xs text-muted mt-0.5">
-                  Tautan langsung ke portofolio online Anda yang dapat dibuka oleh
-                  klien UMKM saat mengevaluasi proposal.
+                  Tautan langsung ke portofolio online Anda yang dapat dibuka
+                  oleh klien UMKM saat mengevaluasi proposal.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {availableSkills.map((skill) => {
-                  const selected = mhsData.skills.includes(skill);
-                  return (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => toggleSkill(skill)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer select-none ${
-                        selected
-                          ? "bg-brand-indigo text-white border-brand-indigo shadow-2xs"
-                          : "bg-canvas text-muted hover:text-dark-900 border-border hover:border-brand-indigo/30"
-                      }`}
-                    >
-                      {selected ? `✓ ${skill}` : `+ ${skill}`}
-                    </button>
-                  );
-                })}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* GitHub */}
                 <div className="space-y-1.5">
@@ -723,7 +608,10 @@ export function ProfilePage() {
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                      <LinkedinVectorIcon size={16} className="text-[#0A66C2]" />
+                      <LinkedinVectorIcon
+                        size={16}
+                        className="text-[#0A66C2]"
+                      />
                       Profil LinkedIn
                     </label>
                     {mhsData.linkedin_url ? (
@@ -747,8 +635,6 @@ export function ProfilePage() {
                   />
                 </div>
               </div>
-            </div>
-          </Card>
             </Card>
 
             {/* 3. Rekening Pencairan Honor Bank */}
@@ -825,17 +711,6 @@ export function ProfilePage() {
           </>
         ) : (
           /* UMKM FORM */
-          <Card className="p-6 sm:p-8 space-y-6">
-            <div className="border-b border-border pb-4">
-              <h3 className="text-base font-bold text-dark-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-brand-indigo" />
-                Informasi Profil Usaha UMKM
-              </h3>
-              <p className="text-xs text-muted mt-0.5">
-                Data usaha Anda akan tampil pada rincian proyek untuk meyakinkan
-                mahasiswa bertalenta.
-              </p>
-            </div>
           <>
             <Card className="p-6 sm:p-8 space-y-6">
               <div className="border-b border-border pb-4">
@@ -844,26 +719,11 @@ export function ProfilePage() {
                   Informasi Profil Usaha UMKM
                 </h3>
                 <p className="text-xs text-muted mt-0.5">
-                  Data usaha Anda akan tampil pada rincian proyek untuk meyakinkan
-                  mahasiswa bertalenta.
+                  Data usaha Anda akan tampil pada rincian proyek untuk
+                  meyakinkan mahasiswa bertalenta.
                 </p>
               </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">
-                  Nama Usaha / Toko / Merek
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={umkmData.nama_usaha}
-                  onChange={(e) =>
-                    setUmkmData({ ...umkmData, nama_usaha: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                  placeholder="Contoh: Kopi Nusantara Jaya"
-                />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-dark-900">
@@ -904,26 +764,6 @@ export function ProfilePage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900">
-                  Bidang Industri Usaha
-                </label>
-                <select
-                  value={umkmData.bidang_industri}
-                  onChange={(e) =>
-                    setUmkmData({
-                      ...umkmData,
-                      bidang_industri: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
-                >
-                  {industriList.map((ind, idx) => (
-                    <option key={idx} value={ind}>
-                      {ind}
-                    </option>
-                  ))}
-                </select>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
@@ -959,50 +799,23 @@ export function ProfilePage() {
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-brand-indigo" />
-                  Kota / Wilayah Operasional
                 <label className="text-xs font-bold text-dark-900">
                   Alamat Lengkap Usaha
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={umkmData.kota}
                 <textarea
                   rows={3}
                   value={umkmData.alamat}
                   onChange={(e) =>
-                    setUmkmData({ ...umkmData, kota: e.target.value })
                     setUmkmData({ ...umkmData, alamat: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                  placeholder="Contoh: Jakarta Selatan, Bekasi, Depok"
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
                   placeholder="Alamat jalan, nomor ruko/outlet, kecamatan, dan provinsi..."
                 />
               </div>
             </Card>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-brand-indigo" />
-                  Nomor Kontak WhatsApp Usaha
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={umkmData.no_kontak}
-                  onChange={(e) =>
-                    setUmkmData({ ...umkmData, no_kontak: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono"
-                  placeholder="0812xxxxxxxx"
-                />
             {/* Rekening Pengembalian / Pencairan Dana UMKM */}
             <Card className="p-6 sm:p-8 space-y-6">
               <div className="border-b border-border pb-4">
@@ -1015,23 +828,7 @@ export function ProfilePage() {
                   usaha Anda.
                 </p>
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-dark-900">
-                Alamat Lengkap Usaha
-              </label>
-              <textarea
-                rows={3}
-                value={umkmData.alamat}
-                onChange={(e) =>
-                  setUmkmData({ ...umkmData, alamat: e.target.value })
-                }
-                className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo leading-relaxed"
-                placeholder="Alamat jalan, nomor ruko/outlet, kecamatan, dan provinsi..."
-              />
-            </div>
-          </Card>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-dark-900">

@@ -82,7 +82,10 @@ export function CampusVectorIcon({ size = 18, className = "text-indigo-600" }) {
  * Status Akademik / NIM Student Vector Icon for Web
  * Authentic student identity badge / card with lanyard clip
  */
-export function AcademicStatusVectorIcon({ size = 18, className = "text-amber-500" }) {
+export function AcademicStatusVectorIcon({
+  size = 18,
+  className = "text-amber-500",
+}) {
   return (
     <svg
       width={size}
@@ -108,7 +111,13 @@ export function AcademicStatusVectorIcon({ size = 18, className = "text-amber-50
         strokeWidth="1.75"
         strokeLinecap="round"
       />
-      <circle cx="8.5" cy="11.5" r="2.5" stroke="currentColor" strokeWidth="1.75" />
+      <circle
+        cx="8.5"
+        cy="11.5"
+        r="2.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+      />
       <path
         d="M13.5 10h4M13.5 13h3M7 17.5h10"
         stroke="currentColor"
@@ -156,10 +165,7 @@ export function FigmaVectorIcon({ size = 18, className = "" }) {
         d="M5 4.5A2.5 2.5 0 0 1 7.5 2H12v5H7.5A2.5 2.5 0 0 1 5 4.5z"
         fill="#F24E1E"
       />
-      <path
-        d="M12 2h4.5a2.5 2.5 0 1 1 0 5H12V2z"
-        fill="#FF7262"
-      />
+      <path d="M12 2h4.5a2.5 2.5 0 1 1 0 5H12V2z" fill="#FF7262" />
       <path
         d="M5 9.5A2.5 2.5 0 0 1 7.5 7H12v5H7.5A2.5 2.5 0 0 1 5 9.5z"
         fill="#A259FF"
@@ -204,7 +210,10 @@ export function GlobeVectorIcon({ size = 18, className = "text-sky-500" }) {
 /**
  * Authentic LinkedIn Vector Icon for Web
  */
-export function LinkedinVectorIcon({ size = 18, className = "text-[#0A66C2]" }) {
+export function LinkedinVectorIcon({
+  size = 18,
+  className = "text-[#0A66C2]",
+}) {
   return (
     <svg
       width={size}
@@ -223,12 +232,7 @@ export function LinkedinVectorIcon({ size = 18, className = "text-[#0A66C2]" }) 
  */
 export function GoogleVectorIcon({ size = 18, className = "" }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      className={className}
-    >
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
       <path
         fill="#4285F4"
         d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
@@ -248,4 +252,3 @@ export function GoogleVectorIcon({ size = 18, className = "" }) {
     </svg>
   );
 }
-

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { walletApi } from "../../api";
 import { walletApi, authApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -201,14 +200,9 @@ export function WalletPage() {
         "Permintaan Penarikan Berhasil",
         `Dana ${formatCurrency(nominal)} sedang diproses transfer ke rekening ${withdrawForm.nama_bank} (${withdrawForm.nomor_rekening}).`,
       );
-      setWithdrawForm({
       setWithdrawForm((prev) => ({
         ...prev,
         nominal: "",
-        nama_bank: "BCA",
-        nomor_rekening: "",
-        nama_pemilik: "",
-      });
       }));
       fetchWalletData();
     } catch (err) {

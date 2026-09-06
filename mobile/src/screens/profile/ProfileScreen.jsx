@@ -280,8 +280,8 @@ export function ProfileScreen({ navigation }) {
         title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
           isMahasiswa
-            ? "Identitas, portofolio & kredensial talenta"
-            : "Informasi bisnis & manajemen akun UMKM"
+            ? (user?.profil_subtitle || "Profil talenta muda dengan rekam jejak deliverable memuaskan")
+            : (user?.profil_subtitle || "Informasi bisnis & manajemen akun UMKM")
         }
         onBack={canGoBack ? () => navigation.goBack() : undefined}
       />
@@ -327,8 +327,8 @@ export function ProfileScreen({ navigation }) {
               ]}
             >
               {isMahasiswa
-                ? "Mahasiswa Terverifikasi"
-                : "Klien UMKM Terverifikasi"}
+                ? (user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi")
+                : (user?.status_badge || "Klien UMKM Terverifikasi")}
             </Text>
           </View>
 
@@ -338,7 +338,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.metricIconRow}>
                 <Star size={14} color="#F59E0B" fill="#F59E0B" />
                 <Text style={styles.metricValue}>
-                  {user?.rating_avg
+                  {user?.rating_avg != null
                     ? Number(user.rating_avg).toFixed(1)
                     : "5.0"}
                 </Text>
@@ -350,7 +350,11 @@ export function ProfileScreen({ navigation }) {
 
             <View style={styles.metricItem}>
               <Text style={styles.metricValue}>
-                {isMahasiswa ? (user?.total_proyek_selesai ?? "14") : "8"}
+                {isMahasiswa
+                  ? (user?.total_proyek_selesai !== undefined && user?.total_proyek_selesai !== null
+                      ? user.total_proyek_selesai
+                      : 9)
+                  : (user?.total_proyek_diterbitkan ?? 8)}
               </Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
@@ -361,7 +365,7 @@ export function ProfileScreen({ navigation }) {
 
             <View style={styles.metricItem}>
               <Text style={[styles.metricValue, { color: COLORS.success }]}>
-                100%
+                {user?.escrow_success_rate || "100%"}
               </Text>
               <Text style={styles.metricLabel}>Sukses Escrow</Text>
             </View>
@@ -631,7 +635,6 @@ export function ProfileScreen({ navigation }) {
 
         {/* 6. Rekening Pencairan Honor Terdaftar */}
         <View style={styles.sectionBox}>
-          <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
             <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
@@ -645,7 +648,6 @@ export function ProfileScreen({ navigation }) {
             </View>
             <View style={{ flex: 1 }}>
               <View style={styles.bankNameRow}>
-                <Text style={styles.bankNameText}>Bank Central Asia (BCA)</Text>
                 <Text style={styles.bankNameText}>
                   {user?.nama_bank || "Bank Central Asia (BCA)"}
                 </Text>
@@ -655,7 +657,6 @@ export function ProfileScreen({ navigation }) {
                 </View>
               </View>
               <Text style={styles.bankAccountDetail}>
-                8270-3491-8821 • {user?.nama_lengkap || "Darell Rangga"}
                 {user?.nomor_rekening || "8270-3491-8821"} •{" "}
                 {user?.nama_pemilik_rekening ||
                   user?.nama_lengkap ||
