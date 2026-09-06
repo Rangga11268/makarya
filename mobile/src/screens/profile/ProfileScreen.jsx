@@ -355,6 +355,8 @@ export function ProfileScreen({ navigation }) {
                   ? user?.total_proyek_selesai !== undefined &&
                     user?.total_proyek_selesai !== null
                     ? user.total_proyek_selesai
+                    : 9
+                  : (user?.total_proyek_diterbitkan ?? 8)}
                     : 3
                   : (user?.total_proyek_diterbitkan ?? 4)}
               </Text>

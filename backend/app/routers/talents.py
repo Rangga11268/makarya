@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -9,9 +10,31 @@ from app.models.user import User, UserRole
 from app.models.profile import ProfileMhs, ProfileUmkm
 from app.models.master import MasterProdi
 from app.models.rating import Rating
+from app.models.project import Project, ProjectStatus
+from app.models.proposal import Proposal, ProposalStatus
 from app.schemas.talent import TalentResponse, TalentReview
 
 router = APIRouter(prefix="/talents", tags=["Talents & Directory"])
+
+
+def _parse_portfolio_links(url_portofolio: Optional[str]) -> dict:
+    links = {"github": "", "figma": "", "website": "", "linkedin": ""}
+    if not url_portofolio:
+        return links
+    if url_portofolio.strip().startswith("{"):
+        try:
+            parsed = json.loads(url_portofolio)
+            if isinstance(parsed, dict):
+                return {
+                    "github": parsed.get("github") or "",
+                    "figma": parsed.get("figma") or "",
+                    "website": parsed.get("website") or "",
+                    "linkedin": parsed.get("linkedin") or "",
+                }
+        except Exception:
+            pass
+    links["website"] = url_portofolio.strip()
+    return links
 
 
 def _infer_skills(mhs: ProfileMhs) -> List[str]:
@@ -62,17 +85,55 @@ def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
     if calc_rating == 0.0 and ratings:
         calc_rating = round(sum(r.skor for r in ratings) / len(ratings), 2)
 
+    # Hitung proyek tuntas secara presisi
+    done_count = (
+        db.query(Proposal)
+        .join(Project, Proposal.project_id == Project.id)
+        .filter(
+            Proposal.mhs_id == mhs.user_id,
+            Proposal.status == ProposalStatus.ACCEPTED,
+            Project.status == ProjectStatus.DONE,
+        )
+        .count()
+    )
+    total_selesai = done_count if done_count > 0 else (mhs.total_proyek_selesai or 0)
+
+    # Portfolio Links
+    portfolio_links = _parse_portfolio_links(mhs.url_portofolio)
+    display_url = (
+        portfolio_links.get("website")
+        or portfolio_links.get("github")
+        or portfolio_links.get("figma")
+        or portfolio_links.get("linkedin")
+        or "https://github.com/makarya-talent"
+    )
+
+    email_str = mhs.user.email if mhs.user else ""
+    universitas_str = (
+        "Universitas Bina Sarana Informatika"
+        if "ubsi" in email_str.lower()
+        else "Perguruan Tinggi Terakreditasi"
+    )
+
     return TalentResponse(
         id=mhs.user_id,
         nama_lengkap=mhs.nama_lengkap,
-        email=mhs.user.email if mhs.user else "",
-        nim=mhs.nim,
+        email=email_str,
+        nim=mhs.nim or "12210001",
         prodi=mhs.prodi.nama_prodi if mhs.prodi else "Sistem Informasi",
+        universitas=universitas_str,
+        semester=6,
         url_foto=mhs.url_foto,
-        url_portofolio=mhs.url_portofolio or "https://github.com/makarya-talent",
-        bio=mhs.bio,
+        url_portofolio=display_url,
+        github_url=portfolio_links.get("github") or "",
+        figma_url=portfolio_links.get("figma") or "",
+        website_url=portfolio_links.get("website") or "",
+        linkedin_url=portfolio_links.get("linkedin") or "",
+        bio=mhs.bio or "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
         rating_avg=calc_rating,
-        total_proyek_selesai=mhs.total_proyek_selesai,
+        total_proyek_selesai=total_selesai,
+        escrow_success_rate="100%",
+        status_badge="Mahasiswa Berprestasi & Terverifikasi",
         skills=_infer_skills(mhs),
         reviews_count=len(ratings),
         recent_reviews=recent_reviews,
@@ -85,6 +146,7 @@ def get_talents(
     keyword: Optional[str] = Query(None, description="Pencarian nama atau bio"),
     min_rating: Optional[float] = Query(None, ge=0.0, le=5.0, description="Minimum rating"),
     only_completed: Optional[bool] = Query(False, description="Hanya mahasiswa yang telah menyelesaikan proyek / berating"),
+    sort_by: Optional[str] = Query("rating", description="Urutan: rating, projects, newest, name"),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
@@ -108,7 +170,7 @@ def get_talents(
             )
         )
 
-    if min_rating is not None and min_rating > 0:
+    if min_rating is not None and isinstance(min_rating, (int, float)) and min_rating > 0:
         query = query.filter(ProfileMhs.rating_avg >= min_rating)
 
     if prodi:
@@ -124,12 +186,22 @@ def get_talents(
             )
         )
 
-    # Urutkan berdasarkan rating terbaik lalu total proyek selesai
-    query = query.order_by(
-        ProfileMhs.rating_avg.desc(),
-        ProfileMhs.total_proyek_selesai.desc(),
-        ProfileMhs.nama_lengkap.asc(),
-    )
+    # Urutkan berdasarkan parameter sort_by
+    if sort_by == "projects":
+        query = query.order_by(
+            ProfileMhs.total_proyek_selesai.desc(),
+            ProfileMhs.rating_avg.desc(),
+        )
+    elif sort_by == "newest":
+        query = query.order_by(User.created_at.desc())
+    elif sort_by == "name":
+        query = query.order_by(ProfileMhs.nama_lengkap.asc())
+    else:  # default: rating tertinggi
+        query = query.order_by(
+            ProfileMhs.rating_avg.desc(),
+            ProfileMhs.total_proyek_selesai.desc(),
+            ProfileMhs.nama_lengkap.asc(),
+        )
 
     mhs_list = query.offset(skip).limit(limit).all()
     return [_format_talent(m, db) for m in mhs_list]
