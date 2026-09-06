@@ -93,6 +93,11 @@ def register_mahasiswa(request: Request, body: RegisterMhsRequest, db: Session =
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email sudah terdaftar.",
         )
+    if body.nim and db.query(ProfileMhs).filter(ProfileMhs.nim == body.nim.strip()).first():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIM sudah terdaftar. Silakan gunakan NIM Anda sendiri.",
+        )
     # Buat akun user
     new_user = User(
         email=body.email,

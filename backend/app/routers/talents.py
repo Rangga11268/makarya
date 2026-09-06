@@ -204,7 +204,18 @@ def get_talents(
         )
 
     mhs_list = query.offset(skip).limit(limit).all()
-    return [_format_talent(m, db) for m in mhs_list]
+
+    # Guardrail: Cegah duplikasi profil talenta jika terdapat akun uji coba dengan nama/NIM serupa
+    seen_identifiers = set()
+    unique_mhs = []
+    for m in mhs_list:
+        identifier = (m.nim.strip() if m.nim else "") or m.nama_lengkap.strip().lower()
+        if identifier and identifier in seen_identifiers:
+            continue
+        seen_identifiers.add(identifier)
+        unique_mhs.append(m)
+
+    return [_format_talent(m, db) for m in unique_mhs]
 
 
 @router.get("/{user_id}", response_model=TalentResponse)

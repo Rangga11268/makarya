@@ -79,10 +79,10 @@ def seed_all():
             {
                 "email": "darell@ubsi.ac.id",
                 "nama": "Darell Rangga Putra",
-                "nim": "12219999",
+                "nim": "12210001",
                 "prodi_id": 1,
                 "rating": Decimal("5.0"),
-                "total": 8,
+                "total": 3,
             },
             {
                 "email": "adelia@ubsi.ac.id",
