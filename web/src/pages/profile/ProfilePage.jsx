@@ -255,8 +255,10 @@ export function ProfilePage() {
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
           {isUmkm
-            ? (user?.profil_subtitle || "Lengkapi informasi usaha dan rekening pencairan Anda agar talenta mahasiswa dapat berkolaborasi secara aman.")
-            : (user?.profil_subtitle || "Profil talenta muda dengan rekam jejak deliverable memuaskan")}
+            ? user?.profil_subtitle ||
+              "Lengkapi informasi usaha dan rekening pencairan Anda agar talenta mahasiswa dapat berkolaborasi secara aman."
+            : user?.profil_subtitle ||
+              "Profil talenta muda dengan rekam jejak deliverable memuaskan"}
         </p>
       </div>
 
@@ -273,8 +275,8 @@ export function ProfilePage() {
             </h2>
             <Badge variant={isUmkm ? "warning" : "brand"}>
               {isUmkm
-                ? (user?.status_badge || "Klien UMKM Terverifikasi")
-                : (user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi")}
+                ? user?.status_badge || "Klien UMKM Terverifikasi"
+                : user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"}
             </Badge>
             <Badge variant="success" className="flex items-center gap-1">
               <CheckCircle2 className="w-3 h-3" /> Terverifikasi Resmi
@@ -312,10 +314,11 @@ export function ProfilePage() {
         <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
           <span className="text-lg sm:text-2xl font-bold text-dark-900 font-serif">
             {!isUmkm
-              ? (user?.total_proyek_selesai !== undefined && user?.total_proyek_selesai !== null
-                  ? user.total_proyek_selesai
-                  : 9)
-              : (user?.total_proyek_diterbitkan ?? 8)}
+              ? user?.total_proyek_selesai !== undefined &&
+                user?.total_proyek_selesai !== null
+                ? user.total_proyek_selesai
+                : 3
+              : (user?.total_proyek_diterbitkan ?? 4)}
           </span>
           <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
             {!isUmkm ? "Proyek Tuntas" : "Proyek Diterbitkan"}

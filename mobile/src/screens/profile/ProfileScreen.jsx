@@ -280,8 +280,9 @@ export function ProfileScreen({ navigation }) {
         title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
           isMahasiswa
-            ? (user?.profil_subtitle || "Profil talenta muda dengan rekam jejak deliverable memuaskan")
-            : (user?.profil_subtitle || "Informasi bisnis & manajemen akun UMKM")
+            ? user?.profil_subtitle ||
+              "Profil talenta muda dengan rekam jejak deliverable memuaskan"
+            : user?.profil_subtitle || "Informasi bisnis & manajemen akun UMKM"
         }
         onBack={canGoBack ? () => navigation.goBack() : undefined}
       />
@@ -327,8 +328,8 @@ export function ProfileScreen({ navigation }) {
               ]}
             >
               {isMahasiswa
-                ? (user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi")
-                : (user?.status_badge || "Klien UMKM Terverifikasi")}
+                ? user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"
+                : user?.status_badge || "Klien UMKM Terverifikasi"}
             </Text>
           </View>
 
@@ -351,10 +352,11 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.metricItem}>
               <Text style={styles.metricValue}>
                 {isMahasiswa
-                  ? (user?.total_proyek_selesai !== undefined && user?.total_proyek_selesai !== null
-                      ? user.total_proyek_selesai
-                      : 9)
-                  : (user?.total_proyek_diterbitkan ?? 8)}
+                  ? user?.total_proyek_selesai !== undefined &&
+                    user?.total_proyek_selesai !== null
+                    ? user.total_proyek_selesai
+                    : 3
+                  : (user?.total_proyek_diterbitkan ?? 4)}
               </Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
