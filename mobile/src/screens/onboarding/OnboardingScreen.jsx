@@ -67,16 +67,20 @@ export function OnboardingScreen({ navigation, onComplete }) {
           style={s.illustration}
           resizeMode="cover"
         />
-        {/* Gradient overlay so sheet blends into the image */}
-        <View style={s.imageOverlay} />
+
+        {/* Dark scrim at top so logo & badge are always readable */}
+        <View style={s.topScrim} />
 
         {/* Top logo bar overlaid on image */}
         <View style={s.topBar}>
-          <Image
-            source={require("../../../assets/logo.webp")}
-            style={s.logo}
-            resizeMode="contain"
-          />
+          {/* White pill behind logo so it's visible on any background */}
+          <View style={s.logoPill}>
+            <Image
+              source={require("../../../assets/logo.webp")}
+              style={s.logo}
+              resizeMode="contain"
+            />
+          </View>
           <View style={s.platformBadge}>
             <ShieldCheck size={11} color={COLORS.brandIndigo} />
             <Text style={s.platformBadgeText}>Terverifikasi Kampus</Text>
@@ -140,13 +144,14 @@ const s = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  imageOverlay: {
+  imageOverlay: {},
+  topScrim: {
     ...StyleSheet.absoluteFillObject,
-    // Fade bottom edge into the sheet background
-    background: "transparent",
-    // React Native doesn't support CSS gradient, use a tinted bottom fade instead
-    backgroundColor: "transparent",
-    // We achieve the fade via the sheet's borderRadius overlapping
+    // Dark gradient at the very top only so logo stays readable
+    backgroundColor: "rgba(0,0,0,0.35)",
+    bottom: "60%", // only covers top 40% of the image
+    borderBottomLeftRadius: 80,
+    borderBottomRightRadius: 80,
   },
   topBar: {
     position: "absolute",
@@ -159,9 +164,20 @@ const s = StyleSheet.create({
     paddingHorizontal: 22,
     paddingTop: 54,
   },
+  logoPill: {
+    backgroundColor: "rgba(255,255,255,0.92)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
   logo: {
-    width: 120,
-    height: 34,
+    width: 110,
+    height: 30,
   },
   platformBadge: {
     flexDirection: "row",
