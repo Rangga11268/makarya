@@ -346,7 +346,9 @@ export function ProfileScreen({ navigation }) {
                 </Text>
               </View>
               <Text style={styles.metricLabel}>
-                {user?.total_ulasan > 0 ? `Reputasi (${user.total_ulasan})` : "Reputasi Skor"}
+                {user?.total_ulasan > 0
+                  ? `Reputasi (${user.total_ulasan})`
+                  : "Reputasi Skor"}
               </Text>
             </View>
 
@@ -406,13 +408,13 @@ export function ProfileScreen({ navigation }) {
         {isMahasiswa ? (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>
-                Kredensial Akademik & Sertifikasi
+              <Text style={styles.sectionTitle} numberOfLines={1}>
+                Kredensial Akademik
               </Text>
               <View style={styles.verifiedCampusTag}>
                 <CheckCircle2 size={11} color={COLORS.success} />
                 <Text style={styles.verifiedCampusText}>
-                  Terverifikasi Resmi
+                  Terverifikasi
                 </Text>
               </View>
             </View>
@@ -1209,15 +1211,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 8,
     marginBottom: 12,
   },
   sectionTitle: {
+    flex: 1,
     fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.textMuted,
     textTransform: "uppercase",
     letterSpacing: 0.5,
+    marginRight: 6,
   },
   editInlineLink: {
     fontFamily: FONTS.bodyBold,
@@ -1239,6 +1244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 999,
+    flexShrink: 0,
   },
   verifiedCampusText: {
     fontFamily: FONTS.bodyBold,
@@ -1369,6 +1375,7 @@ const styles = StyleSheet.create({
   bankNameRow: {
     flexDirection: "row",
     alignItems: "center",
+    flexWrap: "wrap",
     gap: 6,
   },
   bankNameText: {
@@ -1385,6 +1392,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 1.5,
     borderRadius: 999,
+    flexShrink: 0,
   },
   verifiedBankPillText: {
     fontFamily: FONTS.bodyBold,

@@ -307,7 +307,7 @@ export function WalletScreen({ navigation }) {
             <View style={styles.bankIconCircle}>
               <Building2 size={18} color={COLORS.brandIndigo} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <View style={styles.bankNameRow}>
                 <Text style={styles.bankName}>Bank Central Asia (BCA)</Text>
                 <View style={styles.verifiedBankBadge}>
@@ -796,6 +796,7 @@ const styles = StyleSheet.create({
   bankNameRow: {
     flexDirection: "row",
     alignItems: "center",
+    flexWrap: "wrap",
     gap: 6,
   },
   bankName: {
@@ -812,6 +813,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 1.5,
     borderRadius: 999,
+    flexShrink: 0,
   },
   verifiedBankText: {
     fontFamily: FONTS.bodyBold,
