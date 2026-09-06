@@ -57,6 +57,11 @@ export const chatApi = {
   markRead: (projectId) => api.patch(`/chat/project/${projectId}/read`),
 };
 
+export const talentApi = {
+  getTalents: (params) => api.get("/talents", { params }),
+  getTalentDetail: (id) => api.get(`/talents/${id}`),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   let host = Platform.OS === "android" ? "10.0.2.2:8000" : "localhost:8000";
   const debuggerHost =

@@ -1,12 +1,14 @@
-﻿import React from "react";
+import React from "react";
 import { StyleSheet, Platform } from "react-native";
 import { FONTS } from "../theme/fonts";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { HomeScreen } from "../screens/home/HomeScreen";
 import { ProjectListScreen } from "../screens/projects/ProjectListScreen";
+import { TalentListScreen } from "../screens/talents/TalentListScreen";
 import { TrackerScreen } from "../screens/tracker/TrackerScreen";
 import { WalletScreen } from "../screens/wallet/WalletScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
+import { useAuthStore } from "../store/authStore";
 import { COLORS } from "../theme/colors";
 import {
   HomeTabIcon,
@@ -19,6 +21,13 @@ import {
 const Tab = createBottomTabNavigator();
 
 export function MainTabs() {
+  const { user } = useAuthStore();
+  const isMahasiswa =
+    user?.role === "MHS" ||
+    user?.role === "MAHASISWA" ||
+    (user?.email && user.email.includes(".ac.id")) ||
+    user?.email === "darell@ubsi.ac.id";
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -43,10 +52,10 @@ export function MainTabs() {
         }}
       />
 
-      {/* 2. Explore Projects */}
+      {/* 2. Explore Tab: Projects for Mahasiswa, Talenta Mahasiswa for Client/UMKM */}
       <Tab.Screen
         name="ProjectsTab"
-        component={ProjectListScreen}
+        component={isMahasiswa ? ProjectListScreen : TalentListScreen}
         options={{
           tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (

@@ -17,6 +17,7 @@ import {
   ChevronRight,
   ArrowUpDown,
   Layers,
+  GraduationCap,
 } from "lucide-react";
 
 export function BrowseProjectsPage() {
@@ -189,6 +190,29 @@ export function BrowseProjectsPage() {
           )}
         </div>
       </div>
+
+      {user?.role === "UMKM" && (
+        <div className="bg-brand-indigo/5 border border-brand-indigo/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-dark-900">
+                Mencari Talenta Mahasiswa untuk Direkrut Langsung?
+              </h3>
+              <p className="text-xs text-muted mt-0.5">
+                Jelajahi direktori mahasiswa berprestasi dengan portofolio terverifikasi dan ulasan UMKM riil.
+              </p>
+            </div>
+          </div>
+          <Link to="/talents" className="shrink-0">
+            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand">
+              Buka Direktori Mahasiswa
+            </Button>
+          </Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         {/* Sidebar Filters */}

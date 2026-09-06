@@ -19,17 +19,21 @@ import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import {
-  Plus,
-  Compass,
-  Bell,
-  RotateCcw,
-  X,
-  SlidersHorizontal,
-} from "lucide-react-native";
+import { Plus, Compass, Bell, RotateCcw, X, SlidersHorizontal } from "lucide-react-native";
+import { TalentListScreen } from "../talents/TalentListScreen";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
+  const isMahasiswa =
+    user?.role === "MHS" ||
+    user?.role === "MAHASISWA" ||
+    (user?.email && user.email.includes(".ac.id")) ||
+    user?.email === "darell@ubsi.ac.id";
+
+  if (!isMahasiswa) {
+    return <TalentListScreen navigation={navigation} route={route} />;
+  }
+
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,12 +50,6 @@ export function ProjectListScreen({ navigation, route }) {
 
   const { getUnreadCount } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
-
-  const isMahasiswa =
-    user?.role === "MHS" ||
-    user?.role === "MAHASISWA" ||
-    (user?.email && user.email.includes(".ac.id")) ||
-    user?.email === "darell@ubsi.ac.id";
 
   useEffect(() => {
     if (route?.params?.category) {
