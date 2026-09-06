@@ -12,6 +12,7 @@ export const authApi = {
   resetPassword: (data) => api.post("/auth/reset-password", data),
   googleAuth: (data) => api.post("/auth/google", data),
   getMe: () => api.get("/auth/me"),
+  updateProfile: (data) => api.patch("/auth/profile", data),
 };
 
 export const projectApi = {

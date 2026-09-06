@@ -336,7 +336,11 @@ export function HomeScreen({ navigation }) {
                   <Text style={styles.avatarInitial}>{initialLetter}</Text>
                 </View>
                 <View style={styles.verifiedTickBadge}>
-                  <CheckCircle2 size={11} color="#FFFFFF" fill={COLORS.success} />
+                  <CheckCircle2
+                    size={11}
+                    color="#FFFFFF"
+                    fill={COLORS.success}
+                  />
                 </View>
               </View>
 

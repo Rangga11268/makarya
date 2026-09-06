@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Switch,
   Modal,
   Platform,
+  Linking,
+  ActivityIndicator,
+  TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
+import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
@@ -18,51 +21,78 @@ import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { showConfirm } from "../../store/dialogStore";
+import { authApi } from "../../api";
 import {
-  Building2,
-  Mail,
+  ProdiVectorIcon,
+  CampusVectorIcon,
+  AcademicStatusVectorIcon,
+  GithubVectorIcon,
+  FigmaVectorIcon,
+  GlobeVectorIcon,
+  LinkedinVectorIcon,
+  EditPencilVectorIcon,
+  WhatsappVectorIcon,
+} from "../../components/icons/ProfileVectorIcons";
+import {
   ShieldCheck,
   LogOut,
-  GraduationCap,
-  Sparkles,
   Star,
   CheckCircle2,
-  Award,
   ChevronRight,
-  Code2,
-  Palette,
-  Globe,
-  Github,
-  Linkedin,
   CreditCard,
   Bell,
-  Lock,
-  HelpCircle,
   Phone,
   FileText,
+  HelpCircle,
   ExternalLink,
   Plus,
   Check,
+  X,
+  MapPin,
+  Building,
 } from "lucide-react-native";
 
 export function ProfileScreen({ navigation }) {
-  const { user, logout } = useAuthStore();
+  const { user, updateUser, logout } = useAuthStore();
   const { showToast } = useToastStore();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [escrowAlertsEnabled, setEscrowAlertsEnabled] = useState(true);
 
-  // Skill Modal
+  // Skills State
   const [skillModal, setSkillModal] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-  const [skillsList, setSkillsList] = useState([
-    "UI/UX Design",
-    "Figma",
-    "React Native",
-    "FastAPI",
-    "Tailwind CSS",
-    "Wireframing",
-  ]);
+  const [skillsList, setSkillsList] = useState(
+    user?.skills && user.skills.length > 0
+      ? user.skills
+      : [
+          "UI/UX Design",
+          "Figma",
+          "React Native",
+          "FastAPI",
+          "Tailwind CSS",
+          "Wireframing",
+        ]
+  );
+
+  // Edit Profile Modal State
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editForm, setEditForm] = useState({
+    nama_lengkap: "",
+    bio: "",
+    prodi: "",
+    nim: "",
+    semester: "6",
+    github_url: "",
+    figma_url: "",
+    website_url: "",
+    linkedin_url: "",
+    nama_usaha: "",
+    bidang_industri: "",
+    kota: "",
+    no_kontak: "",
+  });
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -70,6 +100,116 @@ export function ProfileScreen({ navigation }) {
     !user?.role ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+
+  // Sinkronisasi data awal dari database saat mount
+  useEffect(() => {
+    authApi
+      .getMe()
+      .then((res) => {
+        if (res?.data) {
+          updateUser(res.data);
+          if (res.data.skills && Array.isArray(res.data.skills)) {
+            setSkillsList(res.data.skills);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Update skillsList jika user di store berubah
+  useEffect(() => {
+    if (user?.skills && Array.isArray(user.skills) && user.skills.length > 0) {
+      setSkillsList(user.skills);
+    }
+  }, [user?.skills]);
+
+  const handleOpenEditModal = () => {
+    setEditForm({
+      nama_lengkap:
+        user?.nama_lengkap ||
+        (isMahasiswa ? "Darell Rangga Putra" : "Brand UMKM Anda"),
+      bio:
+        user?.bio ||
+        (isMahasiswa
+          ? "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM."
+          : "Pelaku usaha mikro kecil menengah yang bertumbuh bersama talenta muda Makarya."),
+      prodi: user?.prodi || "Sistem Informasi",
+      nim: user?.nim || "12210001",
+      semester: user?.semester ? String(user.semester) : "6",
+      github_url: user?.github_url || "",
+      figma_url: user?.figma_url || "",
+      website_url: user?.website_url || "",
+      linkedin_url: user?.linkedin_url || "",
+      nama_usaha: user?.nama_usaha || "Kopi Nusantara",
+      bidang_industri: user?.bidang_industri || "Food & Beverages (F&B)",
+      kota: user?.kota || "Jakarta Selatan",
+      no_kontak: user?.no_kontak || "081298765432",
+    });
+    setEditModalVisible(true);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsSaving(true);
+      const payload = isMahasiswa
+        ? {
+            nama_lengkap: editForm.nama_lengkap.trim(),
+            bio: editForm.bio.trim(),
+            prodi: editForm.prodi.trim(),
+            nim: editForm.nim.trim(),
+            semester: parseInt(editForm.semester, 10) || 6,
+            github_url: editForm.github_url.trim(),
+            figma_url: editForm.figma_url.trim(),
+            website_url: editForm.website_url.trim(),
+            linkedin_url: editForm.linkedin_url.trim(),
+          }
+        : {
+            nama_usaha: editForm.nama_usaha.trim(),
+            bidang_industri: editForm.bidang_industri.trim(),
+            kota: editForm.kota.trim(),
+            no_kontak: editForm.no_kontak.trim(),
+          };
+
+      const res = await authApi.updateProfile(payload);
+      if (res?.data) {
+        await updateUser(res.data);
+      }
+      setEditModalVisible(false);
+      showToast("Informasi profil berhasil diperbarui!", "success");
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal memperbarui profil. Coba lagi.",
+        "danger"
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleOpenLink = async (rawUrl, defaultHint = "") => {
+    const targetUrl = rawUrl || defaultHint;
+    if (!targetUrl || targetUrl.trim() === "") {
+      showToast(
+        "Tautan belum diatur. Ketuk tombol 'Edit Profil' untuk mengaturnya.",
+        "info"
+      );
+      return;
+    }
+    let fullUrl = targetUrl.trim();
+    if (!fullUrl.startsWith("http://") && !fullUrl.startsWith("https://")) {
+      fullUrl = "https://" + fullUrl;
+    }
+    try {
+      const canOpen = await Linking.canOpenURL(fullUrl);
+      if (canOpen) {
+        await Linking.openURL(fullUrl);
+      } else {
+        showToast("Tidak dapat membuka URL: " + targetUrl, "danger");
+      }
+    } catch (err) {
+      showToast("Terjadi kendala saat membuka URL tautan.", "danger");
+    }
+  };
 
   const handleLogout = () => {
     showConfirm({
@@ -83,21 +223,38 @@ export function ProfileScreen({ navigation }) {
     });
   };
 
-  const handleAddSkill = () => {
+  const handleAddSkill = async () => {
     if (!newSkill.trim()) return;
-    if (skillsList.includes(newSkill.trim())) {
+    const cleanSkill = newSkill.trim();
+    if (skillsList.includes(cleanSkill)) {
       showToast("Keahlian sudah ada dalam daftar", "info");
       return;
     }
-    setSkillsList([...skillsList, newSkill.trim()]);
+    const updatedSkills = [...skillsList, cleanSkill];
+    setSkillsList(updatedSkills);
     setNewSkill("");
     setSkillModal(false);
-    showToast("Keahlian baru berhasil ditambahkan!", "success");
+
+    try {
+      await authApi.updateProfile({ skills: updatedSkills });
+      await updateUser({ skills: updatedSkills });
+      showToast("Keahlian baru berhasil disimpan!", "success");
+    } catch (_) {
+      showToast("Keahlian ditambahkan secara lokal", "info");
+    }
   };
 
-  const handleRemoveSkill = (skillToRemove) => {
-    setSkillsList(skillsList.filter((s) => s !== skillToRemove));
-    showToast("Keahlian dihapus", "info");
+  const handleRemoveSkill = async (skillToRemove) => {
+    const updatedSkills = skillsList.filter((s) => s !== skillToRemove);
+    setSkillsList(updatedSkills);
+
+    try {
+      await authApi.updateProfile({ skills: updatedSkills });
+      await updateUser({ skills: updatedSkills });
+      showToast("Keahlian telah dihapus", "info");
+    } catch (_) {
+      showToast("Keahlian dihapus", "info");
+    }
   };
 
   const canGoBack = navigation?.canGoBack && navigation.canGoBack();
@@ -128,8 +285,8 @@ export function ProfileScreen({ navigation }) {
           >
             <Text style={styles.avatarInitial}>
               {isMahasiswa
-                ? user?.nama_lengkap?.charAt(0) || "D"
-                : user?.nama_usaha?.charAt(0) || "U"}
+                ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
+                : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
             </Text>
           </View>
 
@@ -142,9 +299,9 @@ export function ProfileScreen({ navigation }) {
 
           <View style={styles.roleTag}>
             {isMahasiswa ? (
-              <GraduationCap size={13} color={COLORS.brandIndigo} />
+              <ProdiVectorIcon size={14} color={COLORS.brandIndigo} />
             ) : (
-              <ShieldCheck size={13} color={COLORS.brandCyan} />
+              <ShieldCheck size={14} color={COLORS.brandCyan} />
             )}
             <Text
               style={[
@@ -165,7 +322,9 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.metricItem}>
               <View style={styles.metricIconRow}>
                 <Star size={14} color="#F59E0B" fill="#F59E0B" />
-                <Text style={styles.metricValue}>5.0</Text>
+                <Text style={styles.metricValue}>
+                  {user?.rating_avg ? Number(user.rating_avg).toFixed(1) : "5.0"}
+                </Text>
               </View>
               <Text style={styles.metricLabel}>Reputasi Skor</Text>
             </View>
@@ -173,7 +332,11 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.metricDivider} />
 
             <View style={styles.metricItem}>
-              <Text style={styles.metricValue}>{isMahasiswa ? "14" : "8"}</Text>
+              <Text style={styles.metricValue}>
+                {isMahasiswa
+                  ? user?.total_proyek_selesai ?? "14"
+                  : "8"}
+              </Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
               </Text>
@@ -188,10 +351,33 @@ export function ProfileScreen({ navigation }) {
               <Text style={styles.metricLabel}>Sukses Escrow</Text>
             </View>
           </View>
+
+          {/* Edit Profile Action Button */}
+          <TouchableOpacity
+            style={styles.editProfileBtn}
+            onPress={handleOpenEditModal}
+            activeOpacity={0.85}
+          >
+            <EditPencilVectorIcon size={14} color="#FFFFFF" />
+            <Text style={styles.editProfileBtnText}>Edit Profil & Portofolio</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* 2. Mahasiswa Academic Credentials Card */}
-        {isMahasiswa && (
+        {/* 2. Bio Singkat Card */}
+        {user?.bio ? (
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Ringkasan Profesional</Text>
+              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+                <Text style={styles.editInlineLink}>Ubah</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.bioContentText}>{user.bio}</Text>
+          </View>
+        ) : null}
+
+        {/* 3. Mahasiswa Academic Credentials Card */}
+        {isMahasiswa ? (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>
@@ -205,41 +391,98 @@ export function ProfileScreen({ navigation }) {
               </View>
             </View>
 
+            {/* Perguruan Tinggi */}
             <View style={styles.detailRow}>
-              <GraduationCap size={16} color={COLORS.brandIndigo} />
+              <View style={styles.vectorIconFrame}>
+                <CampusVectorIcon size={18} color={COLORS.brandIndigo} />
+              </View>
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Perguruan Tinggi</Text>
                 <Text style={styles.detailValue}>
-                  {user?.universitas || "Perguruan Tinggi Terakreditasi"}
+                  {user?.universitas || "Universitas Bina Sarana Informatika"}
                 </Text>
               </View>
             </View>
 
+            {/* Program Studi & Jenjang (Menggunakan Icon Vector SVG Khusus) */}
             <View style={styles.detailRow}>
-              <Sparkles size={16} color={COLORS.brandCyan} />
+              <View style={styles.vectorIconFrame}>
+                <ProdiVectorIcon size={18} color={COLORS.brandCyan} />
+              </View>
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Program Studi & Jenjang</Text>
                 <Text style={styles.detailValue}>
-                  {user?.prodi ? `${user.prodi} (S1)` : "Sistem Informasi (S1)"}
+                  {user?.prodi
+                    ? `${user.prodi} (S1)`
+                    : "Sistem Informasi (S1)"}
+                </Text>
+              </View>
+            </View>
+
+            {/* Status Akademik & NIM */}
+            <View style={styles.detailRow}>
+              <View style={styles.vectorIconFrame}>
+                <AcademicStatusVectorIcon size={18} color="#F59E0B" />
+              </View>
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>Status Akademik & NIM</Text>
+                <Text style={styles.detailValue}>
+                  {user?.nim
+                    ? `${user.nim} • Semester ${user.semester || 6} (Aktif)`
+                    : "12210001 • Semester 6 (Aktif)"}
+                </Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          /* Profil Bisnis UMKM Card */
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Informasi Bisnis UMKM</Text>
+              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+                <Text style={styles.editInlineLink}>Ubah</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.detailRow}>
+              <View style={styles.vectorIconFrame}>
+                <Building size={18} color={COLORS.brandCyan} />
+              </View>
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>Bidang Industri</Text>
+                <Text style={styles.detailValue}>
+                  {user?.bidang_industri || "Food & Beverages (F&B)"}
                 </Text>
               </View>
             </View>
 
             <View style={styles.detailRow}>
-              <Award size={16} color="#F59E0B" />
+              <View style={styles.vectorIconFrame}>
+                <MapPin size={18} color={COLORS.brandIndigo} />
+              </View>
               <View style={styles.detailTextWrapper}>
-                <Text style={styles.detailLabel}>Status Akademik</Text>
+                <Text style={styles.detailLabel}>Lokasi Operasional</Text>
                 <Text style={styles.detailValue}>
-                  {user?.nim
-                    ? `${user.nim} • Semester ${user.semester || 6} (Aktif)`
-                    : "Mahasiswa Aktif Terverifikasi"}
+                  {user?.kota || "Jakarta Selatan"}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.detailRow}>
+              <View style={styles.vectorIconFrame}>
+                <WhatsappVectorIcon size={18} color="#25D366" />
+              </View>
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>No. Kontak Bisnis</Text>
+                <Text style={styles.detailValue}>
+                  {user?.no_kontak || "081298765432"}
                 </Text>
               </View>
             </View>
           </View>
         )}
 
-        {/* 3. Skills & Keahlian Management (Mahasiswa Only) */}
+        {/* 4. Skills & Keahlian Management (Mahasiswa Only) */}
         {isMahasiswa && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
@@ -270,51 +513,99 @@ export function ProfileScreen({ navigation }) {
           </View>
         )}
 
-        {/* 4. Digital Portofolio Links (Mahasiswa Only) */}
+        {/* 5. Digital Portofolio Links (Mahasiswa Only) */}
         {isMahasiswa && (
           <View style={styles.sectionBox}>
-            <Text style={styles.sectionTitle}>
-              Tautan Portofolio & Repositori
-            </Text>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>
+                Tautan Portofolio & Repositori
+              </Text>
+              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+                <Text style={styles.editInlineLink}>Atur Tautan</Text>
+              </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+            {/* GitHub */}
+            <TouchableOpacity
+              style={styles.linkRowItem}
+              activeOpacity={0.7}
+              onPress={() =>
+                handleOpenLink(user?.github_url, "https://github.com")
+              }
+            >
               <View style={styles.linkIconWrap}>
-                <Github size={16} color={COLORS.textDark} />
+                <GithubVectorIcon size={18} color={COLORS.textDark} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.linkTitle}>Profil GitHub</Text>
-                <Text style={styles.linkUrl}>github.com/makarya-talent</Text>
+                <Text style={styles.linkUrl} numberOfLines={1}>
+                  {user?.github_url || "Belum diatur (Ketuk untuk membuka)"}
+                </Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+            {/* Figma */}
+            <TouchableOpacity
+              style={styles.linkRowItem}
+              activeOpacity={0.7}
+              onPress={() =>
+                handleOpenLink(user?.figma_url, "https://figma.com")
+              }
+            >
               <View style={styles.linkIconWrap}>
-                <Palette size={16} color="#EA4C89" />
+                <FigmaVectorIcon size={18} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.linkTitle}>Portofolio Desain Figma</Text>
-                <Text style={styles.linkUrl}>figma.com/@makarya_portfolio</Text>
+                <Text style={styles.linkUrl} numberOfLines={1}>
+                  {user?.figma_url || "Belum diatur (Ketuk untuk membuka)"}
+                </Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.linkRowItem} activeOpacity={0.7}>
+            {/* Website Portfolio */}
+            <TouchableOpacity
+              style={styles.linkRowItem}
+              activeOpacity={0.7}
+              onPress={() => handleOpenLink(user?.website_url)}
+            >
               <View style={styles.linkIconWrap}>
-                <Globe size={16} color={COLORS.brandCyan} />
+                <GlobeVectorIcon size={18} color={COLORS.brandCyan} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.linkTitle}>
-                  Website Portofolio Profesional
+                <Text style={styles.linkTitle}>Website Portofolio</Text>
+                <Text style={styles.linkUrl} numberOfLines={1}>
+                  {user?.website_url || "Belum diatur (Ketuk untuk membuka)"}
                 </Text>
-                <Text style={styles.linkUrl}>portofolio-digital.id</Text>
+              </View>
+              <ExternalLink size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+
+            {/* LinkedIn */}
+            <TouchableOpacity
+              style={styles.linkRowItem}
+              activeOpacity={0.7}
+              onPress={() =>
+                handleOpenLink(user?.linkedin_url, "https://linkedin.com")
+              }
+            >
+              <View style={styles.linkIconWrap}>
+                <LinkedinVectorIcon size={18} color="#0A66C2" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.linkTitle}>Profil LinkedIn</Text>
+                <Text style={styles.linkUrl} numberOfLines={1}>
+                  {user?.linkedin_url || "Belum diatur (Ketuk untuk membuka)"}
+                </Text>
               </View>
               <ExternalLink size={14} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>
         )}
 
-        {/* 5. Rekening Pencairan Honor Terdaftar */}
+        {/* 6. Rekening Pencairan Honor Terdaftar */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
 
@@ -337,7 +628,7 @@ export function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 6. Settings & Security */}
+        {/* 7. Settings & Security */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Pengaturan & Notifikasi</Text>
 
@@ -386,7 +677,7 @@ export function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 7. Help Center & Support */}
+        {/* 8. Help Center & Support */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Pusat Bantuan & Layanan</Text>
 
@@ -417,7 +708,7 @@ export function ProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* 8. Logout Button */}
+        {/* 9. Logout Button */}
         <Button
           title="Keluar dari Akun"
           variant="danger"
@@ -430,19 +721,236 @@ export function ProfileScreen({ navigation }) {
         <View style={{ height: 30 }} />
       </ScrollView>
 
-      {/* Modal Tambah Skill */}
+      {/* MODAL EDIT PROFIL & PORTOFOLIO */}
+      <Modal
+        visible={editModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.editModalSheet}>
+            {/* Modal Header */}
+            <View style={styles.modalHeaderRow}>
+              <View>
+                <Text style={styles.modalTitle}>
+                  {isMahasiswa
+                    ? "Edit Profil & Portofolio"
+                    : "Edit Informasi Bisnis"}
+                </Text>
+                <Text style={styles.modalSub}>
+                  Perbarui informasi agar profilmu selalu mutakhir
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => setEditModalVisible(false)}
+              >
+                <X size={18} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 24 }}
+            >
+              {isMahasiswa ? (
+                <>
+                  <Input
+                    label="Nama Lengkap"
+                    value={editForm.nama_lengkap}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, nama_lengkap: v }))
+                    }
+                    placeholder="Masukkan nama lengkap Anda"
+                  />
+
+                  <View style={styles.formGroup}>
+                    <Text style={styles.formLabel}>Bio & Pengantar Profil</Text>
+                    <TextInput
+                      style={styles.textArea}
+                      value={editForm.bio}
+                      onChangeText={(v) =>
+                        setEditForm((prev) => ({ ...prev, bio: v }))
+                      }
+                      placeholder="Tuliskan pengalaman singkat atau keahlian utama Anda..."
+                      placeholderTextColor={COLORS.textDim}
+                      multiline
+                      numberOfLines={3}
+                      textAlignVertical="top"
+                    />
+                  </View>
+
+                  <View style={{ flexDirection: "row", gap: 10 }}>
+                    <View style={{ flex: 2 }}>
+                      <Input
+                        label="Program Studi"
+                        value={editForm.prodi}
+                        onChangeText={(v) =>
+                          setEditForm((prev) => ({ ...prev, prodi: v }))
+                        }
+                        placeholder="Cth: Sistem Informasi"
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Input
+                        label="Semester"
+                        value={editForm.semester}
+                        onChangeText={(v) =>
+                          setEditForm((prev) => ({ ...prev, semester: v }))
+                        }
+                        keyboardType="numeric"
+                        placeholder="6"
+                      />
+                    </View>
+                  </View>
+
+                  <Input
+                    label="NIM (Nomor Induk Mahasiswa)"
+                    value={editForm.nim}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, nim: v }))
+                    }
+                    placeholder="Cth: 12210001"
+                  />
+
+                  {/* Portfolio Links Group */}
+                  <View style={styles.portfolioSectionHeader}>
+                    <Text style={styles.portfolioSectionTitle}>
+                      Tautan Portofolio & Sosial
+                    </Text>
+                    <Text style={styles.portfolioSectionDesc}>
+                      Dapat langsung dibuka oleh klien UMKM untuk melihat portofoliomu
+                    </Text>
+                  </View>
+
+                  <Input
+                    label="GitHub Profile / Repository URL"
+                    value={editForm.github_url}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, github_url: v }))
+                    }
+                    placeholder="https://github.com/username"
+                    autoCapitalize="none"
+                  />
+
+                  <Input
+                    label="Figma Community / Portfolio URL"
+                    value={editForm.figma_url}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, figma_url: v }))
+                    }
+                    placeholder="https://figma.com/@username"
+                    autoCapitalize="none"
+                  />
+
+                  <Input
+                    label="Website Portofolio Pribadi"
+                    value={editForm.website_url}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, website_url: v }))
+                    }
+                    placeholder="https://portofolio-anda.com"
+                    autoCapitalize="none"
+                  />
+
+                  <Input
+                    label="LinkedIn Profile URL"
+                    value={editForm.linkedin_url}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, linkedin_url: v }))
+                    }
+                    placeholder="https://linkedin.com/in/username"
+                    autoCapitalize="none"
+                  />
+                </>
+              ) : (
+                <>
+                  <Input
+                    label="Nama Usaha / Brand"
+                    value={editForm.nama_usaha}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, nama_usaha: v }))
+                    }
+                    placeholder="Contoh: Kopi Senja Nusantara"
+                  />
+
+                  <Input
+                    label="Bidang Industri"
+                    value={editForm.bidang_industri}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, bidang_industri: v }))
+                    }
+                    placeholder="Contoh: Food & Beverage, Fashion, Jasa"
+                  />
+
+                  <Input
+                    label="Kota / Lokasi Operasional"
+                    value={editForm.kota}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, kota: v }))
+                    }
+                    placeholder="Contoh: Jakarta Selatan"
+                  />
+
+                  <Input
+                    label="No. Kontak Bisnis (WhatsApp)"
+                    value={editForm.no_kontak}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, no_kontak: v }))
+                    }
+                    placeholder="Contoh: 081298765432"
+                    keyboardType="phone-pad"
+                  />
+                </>
+              )}
+
+              <View style={styles.modalActions}>
+                <Button
+                  title="Batal"
+                  variant="secondary"
+                  size="md"
+                  onPress={() => setEditModalVisible(false)}
+                  style={{ flex: 1 }}
+                  disabled={isSaving}
+                />
+                <Button
+                  title={isSaving ? "Menyimpan..." : "Simpan Perubahan"}
+                  variant="brand"
+                  size="md"
+                  onPress={handleSaveProfile}
+                  style={{ flex: 2 }}
+                  disabled={isSaving}
+                  icon={
+                    isSaving ? (
+                      <ActivityIndicator size="small" color="#FFF" />
+                    ) : (
+                      <Check size={16} color="#FFF" />
+                    )
+                  }
+                />
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* MODAL TAMBAH SKILL */}
       <Modal visible={skillModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>Tambah Keahlian Baru</Text>
             <Text style={styles.modalSub}>
               Tambahkan keahlian teknis atau desain untuk meningkatkan peluang
-              terpilih
+              terpilih proyek
             </Text>
 
             <Input
               label="Nama Keahlian"
-              placeholder="Contoh: Flutter, Next.js, Motion Graphic..."
+              placeholder="Contoh: Next.js, Flutter, Motion Graphic..."
               value={newSkill}
               onChangeText={setNewSkill}
             />
@@ -530,14 +1038,14 @@ const styles = StyleSheet.create({
   roleTag: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 6,
     backgroundColor: COLORS.brandIndigoLight,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(79, 70, 229, 0.2)",
-    marginBottom: 18,
+    marginBottom: 16,
   },
   roleText: {
     fontFamily: FONTS.bodyBold,
@@ -553,6 +1061,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     paddingVertical: 12,
     paddingHorizontal: 16,
+    marginBottom: 16,
   },
   metricItem: {
     flex: 1,
@@ -580,6 +1089,23 @@ const styles = StyleSheet.create({
     width: 1,
     height: 24,
     backgroundColor: COLORS.borderDark,
+  },
+  editProfileBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: COLORS.brandIndigo,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    width: "100%",
+  },
+  editProfileBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
 
   // Section Box
@@ -610,6 +1136,18 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
+  editInlineLink: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  bioContentText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    lineHeight: 20,
+    color: COLORS.textSecondary,
+  },
   verifiedCampusTag: {
     flexDirection: "row",
     alignItems: "center",
@@ -629,9 +1167,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 10,
+    paddingVertical: 11,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
+  },
+  vectorIconFrame: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
   },
   detailTextWrapper: {
     flex: 1,
@@ -647,7 +1193,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
-    marginTop: 1,
+    marginTop: 2,
   },
 
   // Skills
@@ -697,14 +1243,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 10,
+    paddingVertical: 11,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderSubtle,
   },
   linkIconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 9,
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     backgroundColor: COLORS.canvasSoft,
     alignItems: "center",
     justifyContent: "center",
@@ -718,8 +1264,8 @@ const styles = StyleSheet.create({
   linkUrl: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 1,
+    color: COLORS.brandCyan,
+    marginTop: 2,
   },
 
   // Bank
@@ -831,7 +1377,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  // Modal Sheet
+  // Modal Sheet (Common)
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(15, 23, 42, 0.6)",
@@ -844,6 +1390,20 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: Platform.OS === "ios" ? 40 : 24,
   },
+  editModalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 20,
+    maxHeight: "88%",
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
+  },
+  modalHeaderRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
   modalTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 18,
@@ -855,11 +1415,55 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
-    marginBottom: 16,
+  },
+  closeBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: COLORS.canvasSoft,
+  },
+  formGroup: {
+    marginBottom: 14,
+  },
+  formLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginBottom: 6,
+  },
+  textArea: {
+    backgroundColor: COLORS.bgSurfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    color: COLORS.textDark,
+    minHeight: 74,
+  },
+  portfolioSectionHeader: {
+    marginTop: 6,
+    marginBottom: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+  },
+  portfolioSectionTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  portfolioSectionDesc: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+    marginTop: 2,
   },
   modalActions: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 10,
+    marginTop: 14,
   },
 });

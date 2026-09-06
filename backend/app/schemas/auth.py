@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from app.models.user import UserRole
@@ -77,3 +77,24 @@ class GoogleAuthRequest(BaseModel):
     google_id: Optional[str] = None
     photo_url: Optional[str] = None
     role: Optional[UserRole] = UserRole.UMKM
+
+
+# Schema untuk Update Profil Pengguna (Mahasiswa & UMKM)
+class ProfileUpdateRequest(BaseModel):
+    nama_lengkap: Optional[str] = None
+    nama_usaha: Optional[str] = None
+    bidang_industri: Optional[str] = None
+    nim: Optional[str] = None
+    prodi_id: Optional[int] = None
+    prodi: Optional[str] = None
+    semester: Optional[int] = None
+    bio: Optional[str] = None
+    url_portofolio: Optional[str] = None
+    github_url: Optional[str] = None
+    figma_url: Optional[str] = None
+    website_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    no_kontak: Optional[str] = None
+    alamat: Optional[str] = None
+    kota: Optional[str] = None
+    skills: Optional[List[str]] = None

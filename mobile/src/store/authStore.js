@@ -175,6 +175,16 @@ export const useAuthStore = create((set, get) => ({
     return userData;
   },
 
+  updateUser: async (updatedData) => {
+    const currentUser = get().user || {};
+    const newUser = { ...currentUser, ...updatedData };
+    try {
+      await AsyncStorage.setItem("makarya_user", JSON.stringify(newUser));
+    } catch (_) {}
+    set({ user: newUser });
+    return newUser;
+  },
+
   logout: async (silent = false) => {
     try {
       await AsyncStorage.removeItem("makarya_access_token");
