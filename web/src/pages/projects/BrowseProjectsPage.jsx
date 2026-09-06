@@ -18,6 +18,7 @@ import {
   ArrowUpDown,
   Layers,
   GraduationCap,
+  Briefcase,
 } from "lucide-react";
 
 export function BrowseProjectsPage() {
@@ -154,6 +155,24 @@ export function BrowseProjectsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-sans">
+      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta */}
+      <div className="flex items-center gap-2 border-b border-border pb-3">
+        <Link
+          to="/projects"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs"
+        >
+          <Briefcase className="w-4 h-4" />
+          <span>Katalog Proyek UMKM</span>
+        </Link>
+        <Link
+          to="/talents"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors"
+        >
+          <GraduationCap className="w-4 h-4" />
+          <span>Direktori Mahasiswa Berprestasi</span>
+        </Link>
+      </div>
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

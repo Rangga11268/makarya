@@ -5,6 +5,15 @@ import Constants from "expo-constants";
 
 // Otomatis deteksi IP lokal jika menggunakan Expo Go di HP fisik, fallback ke 10.0.2.2 / localhost
 const getBaseUrl = () => {
+  // Jika dibuka di browser web (Expo Web di Chrome / Microsoft Edge)
+  if (Platform.OS === "web") {
+    if (typeof window !== "undefined" && window.location?.hostname) {
+      return `http://${window.location.hostname}:8000/v1`;
+    }
+    return "http://localhost:8000/v1";
+  }
+
+  // Deteksi IP host otomatis dari Expo Go (HP fisik di jaringan Wi-Fi lokal)
   const debuggerHost =
     Constants.expoConfig?.hostUri || Constants.manifest?.debuggerHost;
   if (debuggerHost) {
@@ -13,6 +22,8 @@ const getBaseUrl = () => {
       return `http://${ip}:8000/v1`;
     }
   }
+
+  // Fallback Android Emulator (10.0.2.2) atau iOS Simulator / localhost
   return Platform.OS === "android"
     ? "http://10.0.2.2:8000/v1"
     : "http://localhost:8000/v1";
