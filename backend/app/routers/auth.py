@@ -20,6 +20,7 @@ from app.models.wallet import Wallet
 from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.rating import Rating
+from app.models.dispute import Dispute
 from app.schemas.auth import (
     RegisterUmkmRequest,
     RegisterMhsRequest,
@@ -255,9 +256,6 @@ def get_my_profile(
                 Proposal.status == ProposalStatus.ACCEPTED,
                 Project.status == ProjectStatus.DONE
             ).count()
-            total_selesai = max(mhs.total_proyek_selesai or 0, done_proposals)
-            if "darell" in (current_user.email or "").lower() and total_selesai < 9:
-                total_selesai = 9
             total_selesai = done_proposals
             if mhs.total_proyek_selesai != done_proposals:
                 mhs.total_proyek_selesai = done_proposals
@@ -265,12 +263,26 @@ def get_my_profile(
 
             # Hitung rata-rata rating nyata jika ada
             avg_rating = db.query(func.avg(Rating.skor)).filter(Rating.ke_user_id == current_user.id).scalar()
+            total_ratings = db.query(Rating).filter(Rating.ke_user_id == current_user.id).count()
             if avg_rating is not None:
                 final_rating = round(float(avg_rating), 1)
             elif mhs.rating_avg:
                 final_rating = round(float(mhs.rating_avg), 1)
             else:
-                final_rating = 5.0
+                final_rating = None
+
+            # Escrow success rate berdasarkan perbandingan proyek selesai vs sengketa
+            disputed_mhs = db.query(Dispute).join(Project, Dispute.project_id == Project.id).join(
+                Proposal, Proposal.project_id == Project.id
+            ).filter(
+                Proposal.mhs_id == current_user.id,
+                Proposal.status == ProposalStatus.ACCEPTED
+            ).count()
+            if total_selesai > 0:
+                escrow_rate = round((total_selesai / (total_selesai + disputed_mhs)) * 100)
+                escrow_success_rate = f"{escrow_rate}%"
+            else:
+                escrow_success_rate = "-"
 
             profile_data.update({
                 "nama_lengkap": mhs.nama_lengkap,
@@ -290,8 +302,9 @@ def get_my_profile(
                 "nama_pemilik_rekening": portfolio_links.get("nama_pemilik_rekening") or mhs.nama_lengkap,
                 "skills": skills_list,
                 "rating_avg": final_rating,
+                "total_ulasan": total_ratings,
                 "total_proyek_selesai": total_selesai,
-                "escrow_success_rate": "100%",
+                "escrow_success_rate": escrow_success_rate,
                 "status_badge": "Mahasiswa Berprestasi & Terverifikasi",
                 "profil_subtitle": "Profil talenta muda dengan rekam jejak deliverable memuaskan",
             })
@@ -299,6 +312,26 @@ def get_my_profile(
         umkm = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
         if umkm:
             total_published = db.query(Project).filter(Project.umkm_id == current_user.id).count()
+            total_completed = db.query(Project).filter(
+                Project.umkm_id == current_user.id,
+                Project.status == ProjectStatus.DONE
+            ).count()
+
+            # Hitung rata-rata rating nyata yang diterima UMKM dari mahasiswa
+            avg_rating = db.query(func.avg(Rating.skor)).filter(Rating.ke_user_id == current_user.id).scalar()
+            total_ratings = db.query(Rating).filter(Rating.ke_user_id == current_user.id).count()
+            final_rating = round(float(avg_rating), 1) if avg_rating is not None else None
+
+            # Escrow success rate dari perbandingan proyek selesai vs sengketa/dispute
+            disputed_count = db.query(Dispute).join(Project, Dispute.project_id == Project.id).filter(
+                Project.umkm_id == current_user.id
+            ).count()
+            if total_completed > 0:
+                escrow_rate = round((total_completed / (total_completed + disputed_count)) * 100)
+                escrow_success_rate = f"{escrow_rate}%"
+            else:
+                escrow_success_rate = "-"
+
             profile_data.update({
                 "nama_usaha": umkm.nama_usaha,
                 "bidang_industri": umkm.bidang_industri,
@@ -309,9 +342,10 @@ def get_my_profile(
                 "nomor_rekening": "8270-3491-8821",
                 "nama_pemilik_rekening": umkm.nama_usaha,
                 "total_proyek_diterbitkan": total_published,
-                "rating_avg": 5.0,
-                "total_proyek_selesai": total_published,
-                "escrow_success_rate": "100%",
+                "total_proyek_selesai": total_completed,
+                "rating_avg": final_rating,
+                "total_ulasan": total_ratings,
+                "escrow_success_rate": escrow_success_rate,
                 "status_badge": "Klien UMKM Terverifikasi",
                 "profil_subtitle": "Informasi bisnis & manajemen akun UMKM",
             })

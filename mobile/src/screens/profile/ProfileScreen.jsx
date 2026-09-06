@@ -342,10 +342,12 @@ export function ProfileScreen({ navigation }) {
                 <Text style={styles.metricValue}>
                   {user?.rating_avg != null
                     ? Number(user.rating_avg).toFixed(1)
-                    : "5.0"}
+                    : "-"}
                 </Text>
               </View>
-              <Text style={styles.metricLabel}>Reputasi Skor</Text>
+              <Text style={styles.metricLabel}>
+                {user?.total_ulasan > 0 ? `Reputasi (${user.total_ulasan})` : "Reputasi Skor"}
+              </Text>
             </View>
 
             <View style={styles.metricDivider} />
@@ -353,8 +355,8 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.metricItem}>
               <Text style={styles.metricValue}>
                 {isMahasiswa
-                  ? (user?.total_proyek_selesai ?? 3)
-                  : (user?.total_proyek_diterbitkan ?? 4)}
+                  ? (user?.total_proyek_selesai ?? 0)
+                  : (user?.total_proyek_diterbitkan ?? 0)}
               </Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
@@ -365,7 +367,7 @@ export function ProfileScreen({ navigation }) {
 
             <View style={styles.metricItem}>
               <Text style={[styles.metricValue, { color: COLORS.success }]}>
-                {user?.escrow_success_rate || "100%"}
+                {user?.escrow_success_rate || "-"}
               </Text>
               <Text style={styles.metricLabel}>Sukses Escrow</Text>
             </View>

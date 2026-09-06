@@ -305,19 +305,19 @@ export function ProfilePage() {
             <span>
               {user?.rating_avg != null
                 ? Number(user.rating_avg).toFixed(1)
-                : "5.0"}
+                : "-"}
             </span>
           </div>
           <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
-            Reputasi Skor
+            Reputasi Skor {user?.total_ulasan > 0 ? `(${user.total_ulasan})` : ""}
           </span>
         </div>
 
         <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
           <span className="text-lg sm:text-2xl font-bold text-dark-900 font-serif">
             {!isUmkm
-              ? (user?.total_proyek_selesai ?? 3)
-              : (user?.total_proyek_diterbitkan ?? 4)}
+              ? (user?.total_proyek_selesai ?? 0)
+              : (user?.total_proyek_diterbitkan ?? 0)}
           </span>
           <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
             {!isUmkm ? "Proyek Tuntas" : "Proyek Diterbitkan"}
@@ -326,7 +326,7 @@ export function ProfilePage() {
 
         <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
           <span className="text-lg sm:text-2xl font-bold text-emerald-600 font-serif">
-            {user?.escrow_success_rate || "100%"}
+            {user?.escrow_success_rate || "-"}
           </span>
           <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
             Sukses Escrow

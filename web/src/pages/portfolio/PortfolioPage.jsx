@@ -61,7 +61,7 @@ export function PortfolioPage() {
       ? (
           ratings.reduce((acc, curr) => acc + curr.skor, 0) / ratings.length
         ).toFixed(1)
-      : "5.0";
+      : null;
 
   const initial = user?.email ? user.email.charAt(0).toUpperCase() : "U";
 
@@ -132,7 +132,14 @@ export function PortfolioPage() {
               Rating Rata-rata
             </span>
             <div className="flex items-center gap-1.5 mt-1">
-              <StarRating rating={parseFloat(avgRating)} size="md" />
+              {avgRating ? (
+                <>
+                  <StarRating rating={parseFloat(avgRating)} size="md" />
+                  <span className="text-sm font-bold text-dark-900">{avgRating}</span>
+                </>
+              ) : (
+                <span className="text-xs text-muted font-medium">Belum ada ulasan</span>
+              )}
             </div>
           </div>
 
