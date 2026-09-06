@@ -35,6 +35,16 @@ export function ProjectCard({ project, onPress }) {
   };
 
   const skillPills = getCategorySkills(project.kategori);
+  const rawClientName =
+    project.umkm_nama ||
+    project.umkm_profile?.nama_usaha ||
+    project.client_name ||
+    project.nama_usaha;
+  const clientName =
+    rawClientName && rawClientName.toLowerCase() !== "string"
+      ? rawClientName
+      : "Klien UMKM";
+  const clientInitial = clientName ? clientName.charAt(0).toUpperCase() : "K";
 
   return (
     <TouchableOpacity
@@ -45,14 +55,12 @@ export function ProjectCard({ project, onPress }) {
       {/* 1. Client Header: Avatar + Client Name + Time ago */}
       <View style={styles.clientHeader}>
         <View style={styles.clientAvatar}>
-          <Text style={styles.clientAvatarText}>
-            {project.umkm_nama ? project.umkm_nama.charAt(0) : "K"}
-          </Text>
+          <Text style={styles.clientAvatarText}>{clientInitial}</Text>
         </View>
 
         <View style={styles.clientInfo}>
-          <Text style={styles.clientName}>
-            {project.umkm_nama || "Klien UMKM Terverifikasi"}
+          <Text style={styles.clientName} numberOfLines={1}>
+            {clientName}
           </Text>
           <Text style={styles.postedTime}>
             Tenggat: {formatDate(project.deadline)}

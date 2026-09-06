@@ -82,7 +82,10 @@ export function LoginScreen({ navigation }) {
     } catch (err) {
       if (err.message?.includes("dibatalkan")) return;
       console.warn("Google sign-in error:", err);
-      showToast(err.response?.data?.detail || "Gagal masuk dengan Google", "danger");
+      showToast(
+        err.response?.data?.detail || "Gagal masuk dengan Google",
+        "danger",
+      );
     } finally {
       setGoogleLoading(false);
     }
@@ -164,7 +167,9 @@ export function LoginScreen({ navigation }) {
         />
 
         <View style={styles.forgotPasswordRow}>
-          <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ForgotPassword")}
+          >
             <Text style={styles.forgotPasswordLink}>Lupa Kata Sandi?</Text>
           </TouchableOpacity>
         </View>

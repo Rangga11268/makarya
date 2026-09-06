@@ -94,9 +94,7 @@ export function ProjectDetailScreen({ route, navigation }) {
       ];
 
       if (isMahasiswa) {
-        promises.push(
-          proposalApi.getMyProposals().catch(() => ({ data: [] })),
-        );
+        promises.push(proposalApi.getMyProposals().catch(() => ({ data: [] })));
       }
 
       const results = await Promise.all(promises);
@@ -152,7 +150,7 @@ export function ProjectDetailScreen({ route, navigation }) {
         setActiveTab(route.params.initialTab);
       }
       loadDetail();
-    }, [projectId, route.params?.initialTab])
+    }, [projectId, route.params?.initialTab]),
   );
 
   const handleSubmitProposal = async () => {
@@ -303,7 +301,21 @@ export function ProjectDetailScreen({ route, navigation }) {
     projectStatusUpper === "BIDDING" ||
     projectStatusUpper === "TERBUKA";
 
-
+  const clientDisplayName =
+    (project?.umkm_nama && project.umkm_nama.toLowerCase() !== "string"
+      ? project.umkm_nama
+      : null) ||
+    (project?.umkm_profile?.nama_usaha &&
+    project.umkm_profile.nama_usaha.toLowerCase() !== "string"
+      ? project.umkm_profile.nama_usaha
+      : null) ||
+    (project?.client_name && project.client_name.toLowerCase() !== "string"
+      ? project.client_name
+      : null) ||
+    (project?.nama_usaha && project.nama_usaha.toLowerCase() !== "string"
+      ? project.nama_usaha
+      : null) ||
+    "Klien UMKM";
 
   return (
     <View style={styles.container}>
@@ -320,7 +332,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                 projectTitle: project.judul,
                 partnerName: isUmkmOwner
                   ? "Mahasiswa Talenta"
-                  : project.umkm_nama || "Klien UMKM",
+                  : clientDisplayName,
                 partnerRole: isUmkmOwner ? "MHS" : "UMKM",
               })
             }
@@ -371,9 +383,7 @@ export function ProjectDetailScreen({ route, navigation }) {
           </View>
           <View style={{ flex: 1 }}>
             <View style={styles.clientNameRow}>
-              <Text style={styles.clientTitle}>
-                {project.umkm_nama || "Mitra UMKM Terverifikasi"}
-              </Text>
+              <Text style={styles.clientTitle}>{clientDisplayName}</Text>
               <View style={styles.verifiedTag}>
                 <Check size={10} color={COLORS.success} strokeWidth={3} />
                 <Text style={styles.verifiedTagText}>Mitra Kampus</Text>
@@ -394,7 +404,7 @@ export function ProjectDetailScreen({ route, navigation }) {
               projectTitle: project.judul,
               partnerName: isUmkmOwner
                 ? "Mahasiswa Talenta"
-                : project.umkm_nama || "Klien UMKM",
+                : clientDisplayName,
               partnerRole: isUmkmOwner ? "MHS" : "UMKM",
             })
           }
@@ -651,7 +661,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                         activeOpacity={0.7}
                       >
                         <Link2 size={15} color={COLORS.brandIndigo} />
-                        <Text style={styles.submittedLinkText} numberOfLines={1}>
+                        <Text
+                          style={styles.submittedLinkText}
+                          numberOfLines={1}
+                        >
                           {submissions[0].url_berkas}
                         </Text>
                       </TouchableOpacity>
@@ -665,7 +678,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                           title="Perbarui Berkas Deliverable"
                           variant="outline"
                           size="sm"
-                          icon={<UploadCloud size={15} color={COLORS.brandIndigo} />}
+                          icon={
+                            <UploadCloud size={15} color={COLORS.brandIndigo} />
+                          }
                           onPress={() => setSubmissionModal(true)}
                         />
                       </View>
@@ -674,7 +689,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                     <View style={styles.emptyBox}>
                       <Clock size={28} color={COLORS.brandIndigo} />
                       <Text style={styles.emptyText}>
-                        Proyek disetujui! Silakan kerjakan dan unggah tautan hasil kerja (Figma / Drive) Anda.
+                        Proyek disetujui! Silakan kerjakan dan unggah tautan
+                        hasil kerja (Figma / Drive) Anda.
                       </Text>
                       <Button
                         title="Unggah Deliverable Sekarang"
@@ -689,18 +705,45 @@ export function ProjectDetailScreen({ route, navigation }) {
                 </View>
               ) : (
                 <View style={styles.submissionCard}>
-                  <Text style={styles.submissionTitle}>Rencana Kerja yang Diajukan</Text>
+                  <Text style={styles.submissionTitle}>
+                    Rencana Kerja yang Diajukan
+                  </Text>
                   <Text style={styles.submissionDesc}>
                     "{myExistingProposal.cover_letter}"
                   </Text>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.borderDark }}>
-                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Tawaran Anda:</Text>
-                    <Text style={{ fontSize: 13, fontWeight: "700", color: COLORS.textDark }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 10,
+                      paddingTop: 10,
+                      borderTopWidth: 1,
+                      borderTopColor: COLORS.borderDark,
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                      Tawaran Anda:
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "700",
+                        color: COLORS.textDark,
+                      }}
+                    >
                       {formatCurrency(myExistingProposal.harga_tawar)}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
-                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Status Seleksi:</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      marginTop: 6,
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
+                      Status Seleksi:
+                    </Text>
                     <Badge
                       label={
                         myExistingProposal.status === "PENDING"
@@ -745,7 +788,7 @@ export function ProjectDetailScreen({ route, navigation }) {
               projectTitle: project.judul,
               partnerName: isUmkmOwner
                 ? "Mahasiswa Talenta"
-                : project.umkm_nama || "Klien UMKM",
+                : clientDisplayName,
               partnerRole: isUmkmOwner ? "MHS" : "UMKM",
             })
           }
@@ -762,9 +805,7 @@ export function ProjectDetailScreen({ route, navigation }) {
               activeOpacity={0.88}
             >
               <Send size={15} color="#FFFFFF" />
-              <Text style={styles.primaryApplyBtnText}>
-                Ajukan Lamaran
-              </Text>
+              <Text style={styles.primaryApplyBtnText}>Ajukan Lamaran</Text>
             </TouchableOpacity>
           ) : isAcceptedProposal ? (
             <TouchableOpacity

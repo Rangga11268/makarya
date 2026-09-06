@@ -406,8 +406,19 @@ export function TrackerScreen({ navigation }) {
                           projectId: projectId,
                           projectTitle: projectTitle,
                           partnerName: isMahasiswa
-                            ? item.project_umkm_nama || "Client"
-                            : "Talent",
+                            ? (item.project_umkm_nama &&
+                              item.project_umkm_nama.toLowerCase() !== "string"
+                                ? item.project_umkm_nama
+                                : null) ||
+                              (item.umkm_nama &&
+                              item.umkm_nama.toLowerCase() !== "string"
+                                ? item.umkm_nama
+                                : null) ||
+                              "Mitra UMKM"
+                            : (item.mahasiswa_nama &&
+                              item.mahasiswa_nama.toLowerCase() !== "string"
+                                ? item.mahasiswa_nama
+                                : null) || "Talenta Mahasiswa",
                           partnerRole: isMahasiswa ? "UMKM" : "MHS",
                         });
                       }}

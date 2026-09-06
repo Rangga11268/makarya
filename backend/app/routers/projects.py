@@ -49,6 +49,7 @@ def create_project(
         created_at=new_project.created_at,
         updated_at=new_project.updated_at,
         umkm_profile=umkm_summary,
+        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
         total_pelamar=0
     )
 
@@ -96,6 +97,7 @@ def browse_project(
             created_at=proj.created_at,
             updated_at=proj.updated_at,
             umkm_profile=umkm_summary,
+            umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
             total_pelamar=total_pelamar
         ))
     return results
@@ -113,7 +115,6 @@ def get_my_projects(
     umkm_summary = UmkmSummary.model_validate(profile) if profile else None
 
     results = []
-
     for proj in projects:
         total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
         results.append(ProjectResponse(
@@ -128,6 +129,7 @@ def get_my_projects(
             created_at=proj.created_at,
             updated_at=proj.updated_at,
             umkm_profile=umkm_summary,
+            umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
             total_pelamar=total_pelamar
         ))
     return results
@@ -158,6 +160,7 @@ def get_project_by_id(
         created_at=project.created_at,
         updated_at=project.updated_at,
         umkm_profile=umkm_summary,
+        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
         total_pelamar=total_pelamar
     )
 

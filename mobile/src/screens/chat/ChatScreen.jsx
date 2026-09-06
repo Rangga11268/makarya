@@ -49,6 +49,23 @@ export function ChatScreen({ route, navigation }) {
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
 
+  // Derive verified partner name dynamically if partnerName is generic or literal 'string'
+  const partnerMsg = messages.find(
+    (m) =>
+      m.sender_id !== user?.id &&
+      m.sender_name &&
+      m.sender_name.toLowerCase() !== "string",
+  );
+  const isGenericPartner =
+    !partnerName ||
+    partnerName.toLowerCase() === "string" ||
+    partnerName === "Mitra Kolaborasi" ||
+    partnerName === "Klien UMKM" ||
+    partnerName === "Client";
+  const resolvedPartnerName = isGenericPartner
+    ? partnerMsg?.sender_name || partnerName || "Mitra Kolaborasi"
+    : partnerName;
+
   // Attachment Modal
   const [attachModal, setAttachModal] = useState(false);
   const [attachUrl, setAttachUrl] = useState("");
@@ -233,7 +250,9 @@ export function ChatScreen({ route, navigation }) {
           {!isMe && (
             <View style={styles.senderHeader}>
               <Text style={styles.senderNameText} numberOfLines={1}>
-                {item.sender_name || partnerName}
+                {item.sender_name && item.sender_name.toLowerCase() !== "string"
+                  ? item.sender_name
+                  : resolvedPartnerName}
               </Text>
               <View style={styles.roleTagMini}>
                 <Text style={styles.roleTagMiniText}>
@@ -344,7 +363,7 @@ export function ChatScreen({ route, navigation }) {
 
         <View style={styles.headerTitleWrap}>
           <Text style={styles.headerName} numberOfLines={1}>
-            {partnerName}
+            {resolvedPartnerName}
           </Text>
           <View style={styles.headerSubRow}>
             <Text style={styles.headerProjectTitle} numberOfLines={1}>

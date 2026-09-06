@@ -57,6 +57,7 @@ class ProjectResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     umkm_profile: Optional[UmkmSummary] = None
+    umkm_nama: Optional[str] = None
     total_pelamar: int = 0
 
     model_config = ConfigDict(from_attributes=True)

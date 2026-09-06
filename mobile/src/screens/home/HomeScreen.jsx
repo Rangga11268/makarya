@@ -52,6 +52,7 @@ import {
   Plus,
   Users,
   Eye,
+  Sparkles,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -273,64 +274,11 @@ export function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0B132B" />
-
-      {/* 1. Dedicated Clean Top App Bar (Profile & Notification) */}
-      <View
-        style={[
-          styles.topAppBar,
-          {
-            paddingTop:
-              Platform.OS === "ios"
-                ? Math.max(insets.top, 44)
-                : (StatusBar.currentHeight || 24) + 6,
-          },
-        ]}
-      >
-        <TouchableOpacity
-          style={styles.topProfileButton}
-          onPress={() => navigation.navigate("ProfileTab")}
-          activeOpacity={0.85}
-        >
-          <View style={styles.avatarWrapper}>
-            <View
-              style={[
-                styles.userAvatarCircle,
-                isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-              ]}
-            >
-              <Text style={styles.avatarInitial}>{initialLetter}</Text>
-            </View>
-            <View style={styles.verifiedTickBadge}>
-              <CheckCircle2
-                size={10}
-                color="#FFFFFF"
-                fill={COLORS.brandIndigo}
-              />
-            </View>
-          </View>
-
-          <View style={styles.profileTextInfo}>
-            <Text style={styles.topProfileGreeting} numberOfLines={1}>
-              Halo, {displayName}
-            </Text>
-            <Text style={styles.topProfileRole} numberOfLines={1}>
-              {isMahasiswa
-                ? "UI/UX & Web Dev • Talenta Terverifikasi"
-                : "Klien UMKM Terverifikasi"}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.topBellButton}
-          onPress={() => setIsNotificationOpen(true)}
-          activeOpacity={0.8}
-        >
-          <Bell size={19} color="#FFFFFF" />
-          {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
-        </TouchableOpacity>
-      </View>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
 
       <ScrollView
         style={styles.scrollArea}
@@ -345,9 +293,8 @@ export function HomeScreen({ navigation }) {
           />
         }
       >
-        {/* 2. Curved Hero Header Banner (100% Clean Artwork Showcase - Zero Overlapping Elements) */}
+        {/* 1. Full Unobstructed Artwork Showcase Header Banner */}
         <View style={styles.curvedHeaderBanner}>
-          {/* Full Background Artwork with Makarya Logo & Digital Creative Ornaments */}
           <Image
             source={require("../../../assets/header-banner.jpg")}
             style={styles.headerBannerImage}
@@ -372,6 +319,49 @@ export function HomeScreen({ navigation }) {
 
         {/* Content Body */}
         <View style={styles.content}>
+          {/* Executive Profile & Notification Card Row (Cleanly placed below the artwork) */}
+          <View style={styles.profileHeaderRow}>
+            <TouchableOpacity
+              style={styles.profileUserGroup}
+              onPress={() => navigation.navigate("ProfileTab")}
+              activeOpacity={0.85}
+            >
+              <View style={styles.avatarWrapper}>
+                <View
+                  style={[
+                    styles.userAvatarCircle,
+                    isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                  ]}
+                >
+                  <Text style={styles.avatarInitial}>{initialLetter}</Text>
+                </View>
+                <View style={styles.verifiedTickBadge}>
+                  <CheckCircle2 size={11} color="#FFFFFF" fill={COLORS.success} />
+                </View>
+              </View>
+
+              <View style={styles.profileTextInfo}>
+                <Text style={styles.profileGreetingText} numberOfLines={1}>
+                  Halo, {displayName} 👋
+                </Text>
+                <Text style={styles.profileRoleText} numberOfLines={1}>
+                  {isMahasiswa
+                    ? "Talenta Digital Terverifikasi"
+                    : "Klien UMKM Terverifikasi"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.bellButton}
+              onPress={() => setIsNotificationOpen(true)}
+              activeOpacity={0.8}
+            >
+              <Bell size={20} color={COLORS.textDark} />
+              {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
+            </TouchableOpacity>
+          </View>
+
           {/* Quick Interactive Search Affordance */}
           <TouchableOpacity
             style={styles.heroSearchPill}
@@ -579,9 +569,18 @@ export function HomeScreen({ navigation }) {
                 const pCategory = isMahasiswa
                   ? item.project_kategori || item.kategori || "UMKM"
                   : item.kategori || "UMKM";
-                const pPartner = isMahasiswa
-                  ? item.project_umkm_nama || "Mitra UMKM"
-                  : item.mahasiswa_nama || "Talenta Mahasiswa";
+                const rawPartner = isMahasiswa
+                  ? item.project_umkm_nama ||
+                    item.umkm_nama ||
+                    item.client_name ||
+                    item.nama_usaha
+                  : item.mahasiswa_nama || item.student_name;
+                const pPartner =
+                  rawPartner && rawPartner.toLowerCase() !== "string"
+                    ? rawPartner
+                    : isMahasiswa
+                      ? "Mitra UMKM"
+                      : "Talenta Mahasiswa";
                 const pBudget = isMahasiswa
                   ? item.harga_tawar || item.budget || 0
                   : item.budget || item.budget_max || 0;
@@ -963,49 +962,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
 
-  // Dedicated Top App Bar (Profile & Notification)
-  topAppBar: {
-    backgroundColor: "#0B132B",
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  topProfileButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-    paddingRight: 12,
-  },
-  topProfileGreeting: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    color: "#FFFFFF",
-    letterSpacing: -0.4,
-  },
-  topProfileRole: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: "rgba(255, 255, 255, 0.72)",
-    marginTop: 2,
-  },
-  topBellButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "rgba(255, 255, 255, 0.12)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.18)",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-
-  // 2. Curved Hero Header Banner (100% Pure Artwork Showcase)
+  // 1. Curved Hero Header Banner (100% Artwork Showcase)
   curvedHeaderBanner: {
-    height: 145,
+    height: 195,
     width: "100%",
     position: "relative",
     backgroundColor: "#0B132B",
@@ -1016,19 +975,65 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  dashboardMottoText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
-    color: COLORS.textMuted,
-    marginTop: 2,
-    lineHeight: 16,
-  },
   curveContainer: {
     position: "absolute",
     bottom: -1,
     left: 0,
     right: 0,
     width: "100%",
+  },
+
+  // 2. Executive Profile & Notification Row (Placed cleanly below artwork)
+  profileHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.95)",
+    marginBottom: 16,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  profileGreetingText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15.5,
+    color: COLORS.textDark,
+    letterSpacing: -0.3,
+  },
+  profileRoleText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  bellButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.bgSurfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  bellRedDot: {
+    position: "absolute",
+    top: 8,
+    right: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.danger,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
   },
 
   profileUserGroup: {
@@ -1041,13 +1046,13 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   userAvatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
-    borderColor: "rgba(255, 255, 255, 0.85)",
+    borderColor: "rgba(79, 70, 229, 0.15)",
   },
   avatarMhs: {
     backgroundColor: COLORS.brandIndigo,
@@ -1058,28 +1063,17 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
   },
   verifiedTickBadge: {
     position: "absolute",
     bottom: -1,
     right: -1,
     backgroundColor: "#FFFFFF",
-    borderRadius: 7,
+    borderRadius: 8,
   },
   profileTextInfo: {
     flex: 1,
-  },
-  bellRedDot: {
-    position: "absolute",
-    top: 9,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.danger,
-    borderWidth: 1.5,
-    borderColor: "#0B132B",
   },
 
   // Scroll Content
@@ -1140,6 +1134,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.textDark,
     letterSpacing: -0.4,
+  },
+  dashboardMottoText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: COLORS.textMuted,
+    marginTop: 2,
+    lineHeight: 16,
   },
   dashboardDateText: {
     fontFamily: FONTS.bodyMedium,

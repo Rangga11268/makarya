@@ -76,15 +76,25 @@ def resolve_sender_display(user: User) -> Tuple[str, str]:
 
     # Cek profil mahasiswa
     if hasattr(user, "profile_mhs") and user.profile_mhs and user.profile_mhs.nama_lengkap:
-        return (user.profile_mhs.nama_lengkap, role_str)
+        name = user.profile_mhs.nama_lengkap.strip()
+        if name and name.lower() != "string":
+            return (name, role_str)
 
     # Cek profil UMKM
     if hasattr(user, "profile_umkm") and user.profile_umkm and user.profile_umkm.nama_usaha:
-        return (user.profile_umkm.nama_usaha, role_str)
+        name = user.profile_umkm.nama_usaha.strip()
+        if name and name.lower() != "string":
+            return (name, role_str)
 
-    # Fallback ke prefix email
-    name_fallback = user.email.split("@")[0] if user.email else "Pengguna"
-    return (name_fallback, role_str)
+    # Fallback ke username atau prefix email yang bersih
+    if hasattr(user, "username") and user.username and user.username.lower() != "string":
+        return (user.username.strip(), role_str)
+
+    if user.email and not user.email.startswith("user@example"):
+        name_fallback = user.email.split("@")[0].replace(".", " ").title()
+        return (name_fallback, role_str)
+
+    return ("Klien UMKM" if role_str == "UMKM" else "Mahasiswa", role_str)
 
 
 def verify_project_participation(project_id: UUID, user: User, db: Session) -> Project:
