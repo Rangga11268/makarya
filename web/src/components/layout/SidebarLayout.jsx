@@ -66,7 +66,7 @@ export function SidebarLayout() {
         navigate("/");
       },
       null,
-      true
+      true,
     );
   };
 
@@ -290,7 +290,7 @@ export function SidebarLayout() {
                         "group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all relative",
                         active
                           ? "bg-dark-900 text-white shadow-xs"
-                          : "text-dark-900/80 hover:text-dark-900 hover:bg-canvas"
+                          : "text-dark-900/80 hover:text-dark-900 hover:bg-canvas",
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -299,7 +299,7 @@ export function SidebarLayout() {
                             "w-4 h-4 transition-colors",
                             active
                               ? "text-brand-cyan"
-                              : "text-muted group-hover:text-dark-900"
+                              : "text-muted group-hover:text-dark-900",
                           )}
                         />
                         <span className="truncate">{item.label}</span>
@@ -311,7 +311,7 @@ export function SidebarLayout() {
                             "text-[10px] font-bold px-2 py-0.5 rounded-md",
                             active
                               ? "bg-white/20 text-white"
-                              : "bg-brand-indigo-light text-brand-indigo"
+                              : "bg-brand-indigo-light text-brand-indigo",
                           )}
                         >
                           {item.badge}
@@ -342,7 +342,7 @@ export function SidebarLayout() {
               </div>
               <div className="text-sm font-black text-dark-900 font-sans">
                 {formatCurrency(
-                  isUmkm ? wallet.saldo_escrow || 0 : wallet.saldo_aktif || 0
+                  isUmkm ? wallet.saldo_escrow || 0 : wallet.saldo_aktif || 0,
                 )}
               </div>
               <p className="text-[10px] text-muted leading-tight">
@@ -366,7 +366,7 @@ export function SidebarLayout() {
                   "w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 select-none shadow-xs",
                   isUmkm
                     ? "bg-brand-cyan text-slate-900"
-                    : "bg-brand-indigo text-white"
+                    : "bg-brand-indigo text-white",
                 )}
               >
                 {userInitial}
@@ -402,7 +402,7 @@ export function SidebarLayout() {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-72 bg-surface border-r border-border flex flex-col lg:hidden transform transition-transform duration-200 ease-in-out",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         <div className="h-16 px-5 flex items-center justify-between border-b border-border">
@@ -440,14 +440,14 @@ export function SidebarLayout() {
                         "flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold",
                         active
                           ? "bg-dark-900 text-white shadow-xs"
-                          : "text-dark-900/80 hover:bg-canvas"
+                          : "text-dark-900/80 hover:bg-canvas",
                       )}
                     >
                       <div className="flex items-center gap-3">
                         <Icon
                           className={cn(
                             "w-4 h-4",
-                            active ? "text-brand-cyan" : "text-muted"
+                            active ? "text-brand-cyan" : "text-muted",
                           )}
                         />
                         <span>{item.label}</span>
@@ -501,7 +501,10 @@ export function SidebarLayout() {
             </button>
 
             <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted">
-              <Link to="/" className="flex items-center gap-1.5 hover:text-dark-900 transition-colors">
+              <Link
+                to="/"
+                className="flex items-center gap-1.5 hover:text-dark-900 transition-colors"
+              >
                 <img
                   src="/logo-icon.svg"
                   alt="Makarya"
@@ -536,7 +539,7 @@ export function SidebarLayout() {
                   "w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs shadow-xs",
                   isUmkm
                     ? "bg-brand-cyan text-slate-900"
-                    : "bg-brand-indigo text-white"
+                    : "bg-brand-indigo text-white",
                 )}
               >
                 {userInitial}

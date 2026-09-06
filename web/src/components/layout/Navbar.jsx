@@ -91,7 +91,7 @@ export function Navbar() {
         navigate("/");
       },
       null,
-      true
+      true,
     );
   };
 
