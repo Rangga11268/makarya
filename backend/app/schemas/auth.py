@@ -98,3 +98,6 @@ class ProfileUpdateRequest(BaseModel):
     alamat: Optional[str] = None
     kota: Optional[str] = None
     skills: Optional[List[str]] = None
+    nama_bank: Optional[str] = None
+    nomor_rekening: Optional[str] = None
+    nama_pemilik_rekening: Optional[str] = None

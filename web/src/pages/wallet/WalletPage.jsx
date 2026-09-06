@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { walletApi } from "../../api";
+import { walletApi, authApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { useAlertStore } from "../../store/alertStore";
@@ -88,6 +89,23 @@ export function WalletPage() {
 
   useEffect(() => {
     fetchWalletData();
+    authApi
+      .getMe()
+      .then((res) => {
+        if (res?.data) {
+          setWithdrawForm((prev) => ({
+            ...prev,
+            nama_bank: res.data.nama_bank || "Bank Central Asia (BCA)",
+            nomor_rekening: res.data.nomor_rekening || "8270-3491-8821",
+            nama_pemilik:
+              res.data.nama_pemilik_rekening ||
+              res.data.nama_lengkap ||
+              res.data.nama_usaha ||
+              "Darell Rangga Putra",
+          }));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Handle UMKM Top-Up
@@ -184,11 +202,14 @@ export function WalletPage() {
         `Dana ${formatCurrency(nominal)} sedang diproses transfer ke rekening ${withdrawForm.nama_bank} (${withdrawForm.nomor_rekening}).`,
       );
       setWithdrawForm({
+      setWithdrawForm((prev) => ({
+        ...prev,
         nominal: "",
         nama_bank: "BCA",
         nomor_rekening: "",
         nama_pemilik: "",
       });
+      }));
       fetchWalletData();
     } catch (err) {
       setWithdrawError(

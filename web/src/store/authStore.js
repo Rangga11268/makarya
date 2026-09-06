@@ -32,6 +32,14 @@ export const useAuthStore = create((set, get) => ({
     set({ accessToken: newToken });
   },
 
+  updateUser: (updatedData) => {
+    const currentUser = get().user || {};
+    const newUser = { ...currentUser, ...updatedData };
+    localStorage.setItem("makarya_user", JSON.stringify(newUser));
+    set({ user: newUser });
+    return newUser;
+  },
+
   logout: () => {
     localStorage.removeItem("makarya_token");
     localStorage.removeItem("makarya_refresh_token");

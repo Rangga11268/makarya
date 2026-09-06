@@ -72,7 +72,7 @@ export function ProfileScreen({ navigation }) {
           "FastAPI",
           "Tailwind CSS",
           "Wireframing",
-        ]
+        ],
   );
 
   // Edit Profile Modal State
@@ -88,6 +88,9 @@ export function ProfileScreen({ navigation }) {
     figma_url: "",
     website_url: "",
     linkedin_url: "",
+    nama_bank: "Bank Central Asia (BCA)",
+    nomor_rekening: "8270-3491-8821",
+    nama_pemilik_rekening: "",
     nama_usaha: "",
     bidang_industri: "",
     kota: "",
@@ -140,6 +143,12 @@ export function ProfileScreen({ navigation }) {
       figma_url: user?.figma_url || "",
       website_url: user?.website_url || "",
       linkedin_url: user?.linkedin_url || "",
+      nama_bank: user?.nama_bank || "Bank Central Asia (BCA)",
+      nomor_rekening: user?.nomor_rekening || "8270-3491-8821",
+      nama_pemilik_rekening:
+        user?.nama_pemilik_rekening ||
+        user?.nama_lengkap ||
+        (isMahasiswa ? "Darell Rangga Putra" : "Kopi Nusantara"),
       nama_usaha: user?.nama_usaha || "Kopi Nusantara",
       bidang_industri: user?.bidang_industri || "Food & Beverages (F&B)",
       kota: user?.kota || "Jakarta Selatan",
@@ -162,12 +171,18 @@ export function ProfileScreen({ navigation }) {
             figma_url: editForm.figma_url.trim(),
             website_url: editForm.website_url.trim(),
             linkedin_url: editForm.linkedin_url.trim(),
+            nama_bank: editForm.nama_bank.trim(),
+            nomor_rekening: editForm.nomor_rekening.trim(),
+            nama_pemilik_rekening: editForm.nama_pemilik_rekening.trim(),
           }
         : {
             nama_usaha: editForm.nama_usaha.trim(),
             bidang_industri: editForm.bidang_industri.trim(),
             kota: editForm.kota.trim(),
             no_kontak: editForm.no_kontak.trim(),
+            nama_bank: editForm.nama_bank.trim(),
+            nomor_rekening: editForm.nomor_rekening.trim(),
+            nama_pemilik_rekening: editForm.nama_pemilik_rekening.trim(),
           };
 
       const res = await authApi.updateProfile(payload);
@@ -179,7 +194,7 @@ export function ProfileScreen({ navigation }) {
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal memperbarui profil. Coba lagi.",
-        "danger"
+        "danger",
       );
     } finally {
       setIsSaving(false);
@@ -191,7 +206,7 @@ export function ProfileScreen({ navigation }) {
     if (!targetUrl || targetUrl.trim() === "") {
       showToast(
         "Tautan belum diatur. Ketuk tombol 'Edit Profil' untuk mengaturnya.",
-        "info"
+        "info",
       );
       return;
     }
@@ -323,7 +338,9 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.metricIconRow}>
                 <Star size={14} color="#F59E0B" fill="#F59E0B" />
                 <Text style={styles.metricValue}>
-                  {user?.rating_avg ? Number(user.rating_avg).toFixed(1) : "5.0"}
+                  {user?.rating_avg
+                    ? Number(user.rating_avg).toFixed(1)
+                    : "5.0"}
                 </Text>
               </View>
               <Text style={styles.metricLabel}>Reputasi Skor</Text>
@@ -333,9 +350,7 @@ export function ProfileScreen({ navigation }) {
 
             <View style={styles.metricItem}>
               <Text style={styles.metricValue}>
-                {isMahasiswa
-                  ? user?.total_proyek_selesai ?? "14"
-                  : "8"}
+                {isMahasiswa ? (user?.total_proyek_selesai ?? "14") : "8"}
               </Text>
               <Text style={styles.metricLabel}>
                 {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
@@ -359,7 +374,9 @@ export function ProfileScreen({ navigation }) {
             activeOpacity={0.85}
           >
             <EditPencilVectorIcon size={14} color="#FFFFFF" />
-            <Text style={styles.editProfileBtnText}>Edit Profil & Portofolio</Text>
+            <Text style={styles.editProfileBtnText}>
+              Edit Profil & Portofolio
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -368,7 +385,10 @@ export function ProfileScreen({ navigation }) {
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Ringkasan Profesional</Text>
-              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+              <TouchableOpacity
+                onPress={handleOpenEditModal}
+                activeOpacity={0.7}
+              >
                 <Text style={styles.editInlineLink}>Ubah</Text>
               </TouchableOpacity>
             </View>
@@ -412,9 +432,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Program Studi & Jenjang</Text>
                 <Text style={styles.detailValue}>
-                  {user?.prodi
-                    ? `${user.prodi} (S1)`
-                    : "Sistem Informasi (S1)"}
+                  {user?.prodi ? `${user.prodi} (S1)` : "Sistem Informasi (S1)"}
                 </Text>
               </View>
             </View>
@@ -439,7 +457,10 @@ export function ProfileScreen({ navigation }) {
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Informasi Bisnis UMKM</Text>
-              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+              <TouchableOpacity
+                onPress={handleOpenEditModal}
+                activeOpacity={0.7}
+              >
                 <Text style={styles.editInlineLink}>Ubah</Text>
               </TouchableOpacity>
             </View>
@@ -520,7 +541,10 @@ export function ProfileScreen({ navigation }) {
               <Text style={styles.sectionTitle}>
                 Tautan Portofolio & Repositori
               </Text>
-              <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+              <TouchableOpacity
+                onPress={handleOpenEditModal}
+                activeOpacity={0.7}
+              >
                 <Text style={styles.editInlineLink}>Atur Tautan</Text>
               </TouchableOpacity>
             </View>
@@ -608,6 +632,12 @@ export function ProfileScreen({ navigation }) {
         {/* 6. Rekening Pencairan Honor Terdaftar */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
+            <TouchableOpacity onPress={handleOpenEditModal} activeOpacity={0.7}>
+              <Text style={styles.editInlineLink}>Ubah Rekening</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.bankAccountRow}>
             <View style={styles.bankIconCircle}>
@@ -616,6 +646,9 @@ export function ProfileScreen({ navigation }) {
             <View style={{ flex: 1 }}>
               <View style={styles.bankNameRow}>
                 <Text style={styles.bankNameText}>Bank Central Asia (BCA)</Text>
+                <Text style={styles.bankNameText}>
+                  {user?.nama_bank || "Bank Central Asia (BCA)"}
+                </Text>
                 <View style={styles.verifiedBankPill}>
                   <Check size={9} color={COLORS.success} strokeWidth={3} />
                   <Text style={styles.verifiedBankPillText}>Terverifikasi</Text>
@@ -623,6 +656,11 @@ export function ProfileScreen({ navigation }) {
               </View>
               <Text style={styles.bankAccountDetail}>
                 8270-3491-8821 • {user?.nama_lengkap || "Darell Rangga"}
+                {user?.nomor_rekening || "8270-3491-8821"} •{" "}
+                {user?.nama_pemilik_rekening ||
+                  user?.nama_lengkap ||
+                  user?.nama_usaha ||
+                  "Darell Rangga"}
               </Text>
             </View>
           </View>
@@ -823,7 +861,8 @@ export function ProfileScreen({ navigation }) {
                       Tautan Portofolio & Sosial
                     </Text>
                     <Text style={styles.portfolioSectionDesc}>
-                      Dapat langsung dibuka oleh klien UMKM untuk melihat portofoliomu
+                      Dapat langsung dibuka oleh klien UMKM untuk melihat
+                      portofoliomu
                     </Text>
                   </View>
 
@@ -865,6 +904,47 @@ export function ProfileScreen({ navigation }) {
                     }
                     placeholder="https://linkedin.com/in/username"
                     autoCapitalize="none"
+                  />
+
+                  {/* Rekening Pencairan Section */}
+                  <View style={styles.portfolioSectionHeader}>
+                    <Text style={styles.portfolioSectionTitle}>
+                      Rekening Pencairan Honor
+                    </Text>
+                    <Text style={styles.portfolioSectionDesc}>
+                      Nomor rekening untuk pencairan saldo honor escrow
+                    </Text>
+                  </View>
+
+                  <Input
+                    label="Nama Bank"
+                    value={editForm.nama_bank}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, nama_bank: v }))
+                    }
+                    placeholder="Contoh: Bank Central Asia (BCA) / Mandiri"
+                  />
+
+                  <Input
+                    label="Nomor Rekening"
+                    value={editForm.nomor_rekening}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({ ...prev, nomor_rekening: v }))
+                    }
+                    placeholder="Contoh: 8270-3491-8821"
+                    keyboardType="numeric"
+                  />
+
+                  <Input
+                    label="Nama Pemilik Rekening"
+                    value={editForm.nama_pemilik_rekening}
+                    onChangeText={(v) =>
+                      setEditForm((prev) => ({
+                        ...prev,
+                        nama_pemilik_rekening: v,
+                      }))
+                    }
+                    placeholder="Contoh: Darell Rangga Putra"
                   />
                 </>
               ) : (

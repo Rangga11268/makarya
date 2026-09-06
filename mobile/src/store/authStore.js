@@ -44,7 +44,8 @@ export const useAuthStore = create((set, get) => ({
 
   login: async (email, password) => {
     const res = await authApi.login({ email, password });
-    const { access_token, refresh_token, role, user_id, is_verified } = res.data;
+    const { access_token, refresh_token, role, user_id, is_verified } =
+      res.data;
 
     let userData = {
       id: user_id,
@@ -97,7 +98,8 @@ export const useAuthStore = create((set, get) => ({
   // Verifikasi kode OTP setelah registrasi
   verifyOtp: async (email, otp_code) => {
     const res = await authApi.verifyOtp({ email, otp_code });
-    const { access_token, refresh_token, role, user_id, is_verified } = res.data;
+    const { access_token, refresh_token, role, user_id, is_verified } =
+      res.data;
 
     let userData = {
       id: user_id,

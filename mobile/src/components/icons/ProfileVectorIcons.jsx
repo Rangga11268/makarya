@@ -139,10 +139,7 @@ export function FigmaVectorIcon({ size = 18 }) {
         fill="#F24E1E"
       />
       {/* Top Right */}
-      <Path
-        d="M12 2h4.5a2.5 2.5 0 1 1 0 5H12V2z"
-        fill="#FF7262"
-      />
+      <Path d="M12 2h4.5a2.5 2.5 0 1 1 0 5H12V2z" fill="#FF7262" />
       {/* Middle Left */}
       <Path
         d="M5 9.5A2.5 2.5 0 0 1 7.5 7H12v5H7.5A2.5 2.5 0 0 1 5 9.5z"
@@ -166,12 +163,7 @@ export function GlobeVectorIcon({ size = 18, color = COLORS.brandCyan }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
-      <Path
-        d="M2 12h20"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <Path d="M2 12h20" stroke={color} strokeWidth="2" strokeLinecap="round" />
       <Path
         d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
         stroke={color}

@@ -181,8 +181,18 @@ def refresh_token(request: Request, body: RefreshTokenRequest, db: Session = Dep
 
 
 def _parse_portfolio_links(url_portofolio: str | None) -> dict:
+    defaults = {
+        "github": "",
+        "figma": "",
+        "website": "",
+        "linkedin": "",
+        "nama_bank": "Bank Central Asia (BCA)",
+        "nomor_rekening": "8270-3491-8821",
+        "nama_pemilik_rekening": "",
+    }
     if not url_portofolio:
         return {"github": "", "figma": "", "website": "", "linkedin": ""}
+        return defaults
     try:
         data = json.loads(url_portofolio)
         if isinstance(data, dict):
@@ -191,10 +201,15 @@ def _parse_portfolio_links(url_portofolio: str | None) -> dict:
                 "figma": data.get("figma") or "",
                 "website": data.get("website") or "",
                 "linkedin": data.get("linkedin") or "",
+                "nama_bank": data.get("nama_bank") or "Bank Central Asia (BCA)",
+                "nomor_rekening": data.get("nomor_rekening") or "8270-3491-8821",
+                "nama_pemilik_rekening": data.get("nama_pemilik_rekening") or "",
             }
     except Exception:
         pass
     return {"github": "", "figma": "", "website": url_portofolio, "linkedin": ""}
+    defaults["website"] = url_portofolio
+    return defaults
 
 
 @router.get("/me")
@@ -239,6 +254,9 @@ def get_my_profile(
                 "figma_url": portfolio_links.get("figma") or "",
                 "website_url": portfolio_links.get("website") or "",
                 "linkedin_url": portfolio_links.get("linkedin") or "",
+                "nama_bank": portfolio_links.get("nama_bank") or "Bank Central Asia (BCA)",
+                "nomor_rekening": portfolio_links.get("nomor_rekening") or "8270-3491-8821",
+                "nama_pemilik_rekening": portfolio_links.get("nama_pemilik_rekening") or mhs.nama_lengkap,
                 "skills": skills_list,
                 "rating_avg": float(mhs.rating_avg) if mhs.rating_avg else 5.0,
                 "total_proyek_selesai": mhs.total_proyek_selesai or 0,
@@ -252,6 +270,9 @@ def get_my_profile(
                 "alamat": umkm.alamat or "",
                 "kota": umkm.kota or "Jakarta Selatan",
                 "no_kontak": umkm.no_kontak or "",
+                "nama_bank": "Bank Central Asia (BCA)",
+                "nomor_rekening": "8270-3491-8821",
+                "nama_pemilik_rekening": umkm.nama_usaha,
             })
 
     return profile_data
@@ -301,6 +322,12 @@ def update_profile(
             current_links["linkedin"] = body.linkedin_url.strip()
         if body.url_portofolio is not None and body.url_portofolio.strip():
             current_links["website"] = body.url_portofolio.strip()
+        if body.nama_bank is not None and body.nama_bank.strip():
+            current_links["nama_bank"] = body.nama_bank.strip()
+        if body.nomor_rekening is not None and body.nomor_rekening.strip():
+            current_links["nomor_rekening"] = body.nomor_rekening.strip()
+        if body.nama_pemilik_rekening is not None and body.nama_pemilik_rekening.strip():
+            current_links["nama_pemilik_rekening"] = body.nama_pemilik_rekening.strip()
 
         mhs.url_portofolio = json.dumps(current_links)
 

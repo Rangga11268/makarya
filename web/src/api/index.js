@@ -4,8 +4,14 @@ export const authApi = {
   login: (data) => api.post("/auth/login", data),
   registerMhs: (data) => api.post("/auth/register/mahasiswa", data),
   registerUmkm: (data) => api.post("/auth/register/umkm", data),
+  verifyOtp: (data) => api.post("/auth/verify-otp", data),
+  resendOtp: (data) => api.post("/auth/resend-otp", data),
+  forgotPassword: (data) => api.post("/auth/forgot-password", data),
+  resetPassword: (data) => api.post("/auth/reset-password", data),
+  googleAuth: (data) => api.post("/auth/google", data),
   getMe: () => api.get("/auth/me"),
   updateProfile: (data) => api.put("/auth/profile", data),
+  updateProfile: (data) => api.patch("/auth/profile", data),
 };
 
 export const projectApi = {
@@ -34,6 +40,7 @@ export const submissionApi = {
 export const walletApi = {
   getMe: () => api.get("/wallet/me"),
   getHistory: () => api.get("/wallet/history"),
+  topUp: (nominal) => api.post("/wallet/topup", { nominal }),
   requestTopUp: (data) => api.post("/wallet/topup", data),
   withdraw: (data) => api.post("/wallet/withdraw", data),
 };

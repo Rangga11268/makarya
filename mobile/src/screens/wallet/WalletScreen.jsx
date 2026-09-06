@@ -51,13 +51,31 @@ export function WalletScreen({ navigation }) {
   const [txLoading, setTxLoading] = useState(false);
   const [historyTab, setHistoryTab] = useState("ALL"); // 'ALL' | 'IN' | 'OUT'
 
+  // Rekening Bank Tujuan Pencairan (tersinkronisasi dari data profil)
+  const [destBank, setDestBank] = useState("Bank Central Asia (BCA)");
+  const [destAccount, setDestAccount] = useState("8270-3491-8821");
+  const [destOwner, setDestOwner] = useState("Darell Rangga Putra");
+
   const { showToast } = useToastStore();
 
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
+    !user?.role ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+
+  useEffect(() => {
+    if (user) {
+      if (user.nama_bank) setDestBank(user.nama_bank);
+      if (user.nomor_rekening) setDestAccount(user.nomor_rekening);
+      if (user.nama_pemilik_rekening || user.nama_lengkap || user.nama_usaha) {
+        setDestOwner(
+          user.nama_pemilik_rekening || user.nama_lengkap || user.nama_usaha
+        );
+      }
+    }
+  }, [user]);
 
   const loadWallet = async () => {
     try {
@@ -83,6 +101,12 @@ export function WalletScreen({ navigation }) {
     const num = parseInt(nominal, 10);
     if (!num || num < 50000) {
       showToast("Minimal transaksi adalah Rp 50.000", "danger");
+    const minNominal = txType === "WITHDRAW" ? 25000 : 50000;
+    if (!num || num < minNominal) {
+      showToast(
+        `Minimal transaksi adalah Rp ${formatCurrency(minNominal)}`,
+        "danger"
+      );
       return;
     }
 
@@ -100,10 +124,32 @@ export function WalletScreen({ navigation }) {
           : `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
         "success"
       );
+      if (txType === "WITHDRAW") {
+        await walletApi.withdraw({
+          nominal: num,
+          nama_bank: destBank.trim() || "BCA",
+          nomor_rekening: destAccount.trim() || "827034918821",
+          nama_pemilik: destOwner.trim() || "Darell Rangga Putra",
+        });
+        showToast(
+          `Pencairan honor Rp ${formatCurrency(num)} berhasil diajukan ke ${destBank} (${destAccount})!`,
+          "success"
+        );
+      } else {
+        await walletApi.topUp(num);
+        showToast(
+          `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
+          "success"
+        );
+      }
       setTxModal(false);
       loadWallet();
     } catch (e) {
       showToast("Gagal memproses transaksi", "danger");
+      showToast(
+        e.response?.data?.detail || "Gagal memproses transaksi",
+        "danger"
+      );
     } finally {
       setTxLoading(false);
     }
@@ -408,8 +454,36 @@ export function WalletScreen({ navigation }) {
             <Text style={styles.modalSub}>
               {txType === "WITHDRAW"
                 ? "Honor akan ditransfer ke rekening Bank BCA Anda tanpa potongan"
+                ? `Honor akan ditransfer ke rekening ${destBank} Anda`
                 : "Deposit akan disimpan aman di sistem rekening bersama escrow"}
             </Text>
+
+            {txType === "WITHDRAW" && (
+              <View style={{ marginBottom: 12, padding: 12, backgroundColor: COLORS.bgSurfaceSubtle, borderRadius: 12, borderWidth: 1, borderColor: COLORS.borderDark }}>
+                <Text style={{ fontFamily: FONTS.bodyBold, fontSize: 11, color: COLORS.textDark, marginBottom: 8 }}>
+                  Rekening Tujuan Pencairan
+                </Text>
+                <Input
+                  label="Nama Bank"
+                  value={destBank}
+                  onChangeText={setDestBank}
+                  placeholder="Contoh: BCA / Mandiri / BNI"
+                />
+                <Input
+                  label="Nomor Rekening"
+                  value={destAccount}
+                  onChangeText={setDestAccount}
+                  placeholder="Contoh: 8270-3491-8821"
+                  keyboardType="numeric"
+                />
+                <Input
+                  label="Nama Pemilik Rekening"
+                  value={destOwner}
+                  onChangeText={setDestOwner}
+                  placeholder="Contoh: Darell Rangga Putra"
+                />
+              </View>
+            )}
 
             <Input
               label="Nominal Transaksi (Rp)"
