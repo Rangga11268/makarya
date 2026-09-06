@@ -346,7 +346,7 @@ export function HomeScreen({ navigation }) {
 
               <View style={styles.profileTextInfo}>
                 <Text style={styles.profileGreetingText} numberOfLines={1}>
-                  Halo, {displayName} 👋
+                  Halo, {displayName}
                 </Text>
                 <Text style={styles.profileRoleText} numberOfLines={1}>
                   {isMahasiswa
@@ -437,7 +437,7 @@ export function HomeScreen({ navigation }) {
                 {/* Subtitle Reassurance */}
                 <Text style={styles.walletAvailableSub} numberOfLines={1}>
                   {wallet?.saldo_escrow > 0
-                    ? `🛡️ ${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
+                    ? `${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
                     : "Tersedia untuk dicairkan • Dilindungi Rekening Bersama"}
                 </Text>
 

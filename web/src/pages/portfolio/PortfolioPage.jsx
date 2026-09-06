@@ -100,7 +100,7 @@ export function PortfolioPage() {
       {/* ID Badge Card */}
       <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-4 text-center sm:text-left">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-cyan to-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
+          <div className="w-16 h-16 rounded-full bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
             {initial}
           </div>
           <div>

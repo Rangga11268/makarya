@@ -90,42 +90,36 @@ export function Navbar() {
       name: "Desain Grafis & UI/UX",
       desc: "Logo, branding, ilustrasi, prototipe Figma",
       icon: Palette,
-      color: "from-purple-500/10 to-indigo-500/10 text-indigo-600",
       path: "/projects?category=DESAIN",
     },
     {
       name: "Website & Pemrograman",
       desc: "Web statis, e-commerce, portal REST API",
       icon: Code2,
-      color: "from-blue-500/10 to-cyan-500/10 text-blue-600",
       path: "/projects?category=WEB",
     },
     {
       name: "Aplikasi Mobile",
       desc: "Aplikasi Android & iOS Flutter / React Native",
       icon: Smartphone,
-      color: "from-emerald-500/10 to-teal-500/10 text-emerald-600",
       path: "/projects?category=MOBILE",
     },
     {
       name: "Video Editing & Animasi",
       desc: "Video promosi produk, motion graphics reels",
       icon: Video,
-      color: "from-rose-500/10 to-pink-500/10 text-rose-600",
       path: "/projects?category=VIDEO",
     },
     {
       name: "Digital Marketing & Data",
       desc: "SEO, ads sosial media, analitik visual data",
       icon: BarChart3,
-      color: "from-amber-500/10 to-orange-500/10 text-amber-600",
       path: "/projects?category=MARKETING",
     },
     {
       name: "Penulisan & Riset UMKM",
       desc: "Copywriting, proposal bisnis, dan artikel SEO",
       icon: FileText,
-      color: "from-slate-500/10 to-zinc-500/10 text-slate-700",
       path: "/projects?category=WRITING",
     },
   ];
@@ -303,9 +297,7 @@ export function Navbar() {
                               onClick={() => setCategoryDropdownOpen(false)}
                               className="flex items-start gap-2.5 p-2 rounded-2xl hover:bg-slate-50 transition-colors group"
                             >
-                              <div
-                                className={`w-8 h-8 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}
-                              >
+                              <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-brand-indigo/10 group-hover:text-brand-indigo transition-colors">
                                 <Icon className="w-4 h-4" />
                               </div>
                               <div className="flex flex-col">

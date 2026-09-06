@@ -264,7 +264,9 @@ export function ProfilePage() {
 
       {/* Profile ID Card Banner */}
       <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-xs">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-cyan to-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-md select-none">
+        <div
+          className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none`}
+        >
           {initial}
         </div>
 

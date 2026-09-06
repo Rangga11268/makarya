@@ -53,7 +53,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden font-sans flex flex-col max-h-[90vh]">
         {/* Top Header Banner */}
-        <div className="relative p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-brand-indigo-dark to-slate-900 text-white">
+        <div className="relative p-6 sm:p-8 bg-slate-900 text-white border-b border-slate-800">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
@@ -63,7 +63,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
           </button>
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-cyan to-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-lg border-2 border-white/20 select-none">
+            <div className="w-20 h-20 rounded-2xl bg-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
               {initial}
             </div>
 
@@ -79,7 +79,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
 
               <p className="text-xs sm:text-sm text-slate-300 flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <span className="flex items-center gap-1">
-                  <ProdiVectorIcon size={14} className="text-brand-cyan" />
+                  <ProdiVectorIcon size={14} className="text-sky-400" />
                   {talent.prodi || "Sistem Informasi"}
                 </span>
                 <span>•</span>
@@ -398,70 +398,71 @@ export function TalentsDirectoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-sans">
-      {/* 1. Hero Showcase Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 border border-slate-800 p-8 sm:p-12 text-white shadow-xl">
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-xs border border-white/15 text-brand-cyan text-xs font-bold tracking-wide uppercase">
-            <Award className="w-3.5 h-3.5 text-amber-400" />
-            <span>Direktori Talenta Terkurasi & Terverifikasi Kampus</span>
+      {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
+      <div className="bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold uppercase tracking-wider border border-brand-indigo/15">
+              <Award className="w-3.5 h-3.5" />
+              <span>Direktori Talenta Terkurasi</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight font-normal">
+              Mahasiswa Berprestasi & Terverifikasi
+            </h1>
+            <p className="text-xs sm:text-sm text-muted max-w-2xl font-sans">
+              Temukan talenta mahasiswa terverifikasi dengan rekam jejak deliverable riil, skor ulasan memuaskan dari UMKM, dan proteksi transaksi escrow resmi platform.
+            </p>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-white tracking-tight leading-tight font-normal">
-            Mahasiswa Berprestasi & Terverifikasi
-          </h1>
-
-          <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-sans max-w-2xl">
-            Temukan talenta muda terbaik dari kampus terakreditasi dengan deliverable terbukti,
-            rating tinggi dari klien UMKM, portofolio karya nyata, dan perlindungan escrow 100%.
-          </p>
-
-          {/* 4 Trust Highlights Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center sm:text-left backdrop-blur-xs">
-              <div className="flex items-center gap-1.5 text-brand-cyan text-xs font-bold sm:justify-start justify-center">
-                <CampusVectorIcon size={14} className="text-brand-cyan" />
-                <span>100% Kampus</span>
-              </div>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
-                Terakreditasi Resmi (UBSI)
-              </span>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center sm:text-left backdrop-blur-xs">
-              <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold sm:justify-start justify-center">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                <span>5.0 / 5.0</span>
-              </div>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
-                Rata-rata Rating Kepuasan
-              </span>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center sm:text-left backdrop-blur-xs">
-              <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold sm:justify-start justify-center">
-                <Briefcase className="w-3.5 h-3.5" />
-                <span>Deliverable Riil</span>
-              </div>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
-                Rekam Jejak Tuntas
-              </span>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-3 text-center sm:text-left backdrop-blur-xs">
-              <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold sm:justify-start justify-center">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>100% Escrow</span>
-              </div>
-              <span className="text-[11px] text-slate-400 block mt-0.5">
-                Garansi Dana Aman
-              </span>
-            </div>
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="text-xs text-muted font-medium bg-canvas px-3 py-1.5 rounded-xl border border-border">
+              Total Talenta Terkurasi: <b className="text-dark-900">{talents.length}</b>
+            </span>
           </div>
         </div>
 
-        {/* Subtle Decorative Gradient Glow */}
-        <div className="absolute -right-20 -top-20 w-80 h-80 bg-brand-indigo/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -right-10 -bottom-20 w-80 h-80 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none" />
+        {/* 4 Trust Highlights Strip - Clean surface without emoji or glowing gradients */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
+              <CampusVectorIcon size={15} className="text-brand-indigo" />
+              <span>Kampus Resmi</span>
+            </div>
+            <span className="text-[11px] text-muted block mt-0.5">
+              Terakreditasi (UBSI & Mitra)
+            </span>
+          </div>
+
+          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+              <span>Skor 5.0 Rata-rata</span>
+            </div>
+            <span className="text-[11px] text-muted block mt-0.5">
+              Ulasan Klien UMKM Riil
+            </span>
+          </div>
+
+          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
+              <Briefcase className="w-3.5 h-3.5 text-slate-700" />
+              <span>Deliverable Tuntas</span>
+            </div>
+            <span className="text-[11px] text-muted block mt-0.5">
+              Rekam Jejak Terverifikasi
+            </span>
+          </div>
+
+          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>100% Proteksi Escrow</span>
+            </div>
+            <span className="text-[11px] text-muted block mt-0.5">
+              Dana Aman di Platform
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* 2. Interactive Search & Filters Section */}
@@ -542,14 +543,14 @@ export function TalentsDirectoryPage() {
           </div>
         </div>
 
-        {/* Rating & Proyek Status Filter Row */}
+        {/* Rating & Proyek Status Filter Row - Antislop: Clean labels without literal emoji */}
         <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/60">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted font-medium mr-1">Filter Rating:</span>
             {[
-              { val: 0, label: "Semua" },
-              { val: 4.8, label: "⭐ 4.8+ Unggulan" },
-              { val: 4.5, label: "⭐ 4.5+ Sangat Baik" },
+              { val: 0, label: "Semua Rating" },
+              { val: 4.8, label: "Rating 4.8+" },
+              { val: 4.5, label: "Rating 4.5+" },
             ].map((r) => (
               <button
                 key={r.val}
@@ -622,7 +623,7 @@ export function TalentsDirectoryPage() {
             return (
               <div
                 key={talent.id}
-                className="bg-surface rounded-3xl border border-border p-6 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-lg transition-all duration-200 group relative"
+                className="bg-surface rounded-3xl border border-border p-6 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
               >
                 <div>
                   {/* Top Profile Header */}
@@ -630,7 +631,7 @@ export function TalentsDirectoryPage() {
                     <div className="flex items-center gap-3.5">
                       <div
                         onClick={() => handleOpenDetail(talent)}
-                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-cyan to-brand-indigo text-white font-serif text-xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
+                        className="w-14 h-14 rounded-2xl bg-brand-indigo text-white font-serif text-xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
                       >
                         {initial}
                       </div>

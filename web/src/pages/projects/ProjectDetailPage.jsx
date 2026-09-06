@@ -420,8 +420,9 @@ export function ProjectDetailPage() {
               <div className="text-3xl sm:text-4xl font-black text-dark-900 font-sans tracking-tight">
                 {formatCurrency(project.budget_max)}
               </div>
-              <span className="text-[11px] text-emerald-700 font-semibold block">
-                ✓ 0% Potongan Komisi bagi Mahasiswa
+              <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                0% Potongan Komisi bagi Mahasiswa
               </span>
             </div>
 
@@ -432,7 +433,7 @@ export function ProjectDetailPage() {
                   size="lg"
                   className="w-full text-xs font-bold shadow-brand"
                 >
-                  Kelola Pelamar Proyek Ini →
+                  Kelola Pelamar Proyek Ini
                 </Button>
               </Link>
             ) : user?.role === "UMKM" ? (

@@ -829,7 +829,7 @@ export function CreateProjectPage() {
                 Kembali & Edit
               </Button>
               <Button
-                variant="gradient"
+                variant="brand"
                 size="lg"
                 onClick={handleFinalSubmit}
                 loading={submitting}

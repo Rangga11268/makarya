@@ -284,8 +284,7 @@ export function AdminDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
       {/* Header Banner */}
-      <div className="bg-dark-900 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-border">
-        <div className="absolute -top-16 -right-16 w-80 h-80 bg-brand-indigo/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-dark-900 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-slate-800 shadow-sm">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold border border-white/10">

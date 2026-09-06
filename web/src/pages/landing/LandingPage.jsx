@@ -68,7 +68,11 @@ export function LandingPage() {
       try {
         setLoading(true);
         const res = await projectApi.browse({ limit: 6 });
-        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        const list = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
         setLatestProjects(list);
       } catch (err) {
         setLatestProjects([]);
@@ -77,8 +81,15 @@ export function LandingPage() {
       }
 
       try {
-        const tRes = await talentApi.getTalents({ only_completed: true, limit: 4 });
-        const tList = Array.isArray(tRes?.data) ? tRes.data : Array.isArray(tRes) ? tRes : [];
+        const tRes = await talentApi.getTalents({
+          only_completed: true,
+          limit: 4,
+        });
+        const tList = Array.isArray(tRes?.data)
+          ? tRes.data
+          : Array.isArray(tRes)
+            ? tRes
+            : [];
         if (tList.length > 0) {
           setTalents(tList);
         }
@@ -107,14 +118,9 @@ export function LandingPage() {
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* 1. HERO SECTION */}
       <section className="bg-dark-900 text-white pt-12 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
-
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-indigo/30 rounded-full blur-3xl pointer-events-none" />
-
         <div className="max-w-6xl mx-auto relative z-10 space-y-8 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-semibold text-brand-cyan">
-            <Sparkles className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5" />
             Platform Micro-freelancing Mahasiswa & Solusi Digital UMKM
           </div>
 
@@ -148,7 +154,7 @@ export function LandingPage() {
                 />
               </div>
               <Button
-                variant="gradient"
+                variant="brand"
                 size="md"
                 type="submit"
                 className="shrink-0 text-xs sm:text-sm font-bold rounded-full"
@@ -491,7 +497,7 @@ export function LandingPage() {
             <div className="relative z-10">
               <Link to="/login">
                 <Button
-                  variant="gradient"
+                  variant="brand"
                   size="lg"
                   className="font-bold text-xs sm:text-sm rounded-full"
                 >

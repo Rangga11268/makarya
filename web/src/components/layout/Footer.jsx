@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { 
-  ShieldCheck, 
-  Send, 
-  GraduationCap, 
-  Building2, 
-  Lock, 
+import {
+  ShieldCheck,
+  Send,
+  GraduationCap,
+  Building2,
+  Lock,
   ArrowUpRight,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 
 export function Footer() {
@@ -21,40 +21,41 @@ export function Footer() {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!newsletterEmail.trim()) return;
-    addToast("Terima kasih! Notifikasi proyek baru telah diaktifkan.", "success");
+    addToast(
+      "Terima kasih! Notifikasi proyek baru telah diaktifkan.",
+      "success",
+    );
     setNewsletterEmail("");
   };
 
   return (
     <footer className="relative bg-surface border-t border-border mt-20 overflow-hidden font-sans">
-      
       {/* Large faint background watermark */}
       <div className="absolute left-1/2 -translate-x-1/2 top-4 select-none pointer-events-none opacity-[0.03] text-dark-900 font-serif font-black text-8xl sm:text-[180px] tracking-tight whitespace-nowrap z-0">
         Makarya Platform
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-14 pb-10">
-        
         {/* Top Pre-Footer Banner for Non-Logged In or Dashboard CTA */}
         {!isAuthenticated && (
-          <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-dark-900 to-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
-            <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-dark-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
             <div className="space-y-2 max-w-xl text-center md:text-left">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5" />
-                Mulai Karir Freelance Anda
+                <GraduationCap className="w-3.5 h-3.5" />
+                Mulai Karir Freelance Kampus
               </span>
               <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight leading-snug">
                 Dapatkan Proyek yang Cocok Hanya dalam Hitungan Menit.
               </h3>
               <p className="text-xs sm:text-sm text-slate-300">
-                Daftar dengan email kampus Anda dan segera ajukan penawaran proposal ke berbagai UMKM lokal.
+                Daftar dengan email kampus Anda dan segera ajukan penawaran
+                proposal ke berbagai UMKM lokal.
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 to="/register"
-                className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-brand-cyan to-brand-indigo hover:opacity-95 text-white transition-all shadow-brand inline-flex items-center gap-2"
+                className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-brand-indigo hover:bg-brand-indigo/90 text-white transition-all shadow-brand inline-flex items-center gap-2"
               >
                 <span>Daftar Mahasiswa</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -65,18 +66,19 @@ export function Footer() {
 
         {/* 5-Column Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-12 border-b border-border">
-          
           {/* Col 1: Brand Info (Span 4) */}
           <div className="lg:col-span-4 space-y-4">
             <Link to="/" className="inline-block">
-              <img 
-                src="/logo.webp" 
-                alt="Logo Makarya" 
+              <img
+                src="/logo.webp"
+                alt="Logo Makarya"
                 className="h-12 sm:h-14 w-auto object-contain"
               />
             </Link>
             <p className="text-xs text-muted leading-relaxed max-w-sm">
-              Platform micro-freelancing terkurasi yang menjembatani talenta mahasiswa bertalenta dengan kebutuhan digital UMKM secara amanah melalui sistem <b>Escrow Holding</b>.
+              Platform micro-freelancing terkurasi yang menjembatani talenta
+              mahasiswa bertalenta dengan kebutuhan digital UMKM secara amanah
+              melalui sistem <b>Escrow Holding</b>.
             </p>
             <div className="pt-2 flex flex-col gap-1.5 text-xs text-dark-900 font-medium">
               <span className="flex items-center gap-2 text-slate-700">
@@ -97,27 +99,42 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-muted">
               <li>
-                <Link to="/projects?category=DESIGN" className="hover:text-brand-indigo transition-colors flex items-center justify-between">
+                <Link
+                  to="/projects?category=DESIGN"
+                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                >
                   <span>Desain & Branding</span>
                 </Link>
               </li>
               <li>
-                <Link to="/projects?category=UIUX" className="hover:text-brand-indigo transition-colors flex items-center justify-between">
+                <Link
+                  to="/projects?category=UIUX"
+                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                >
                   <span>UI/UX Design</span>
                 </Link>
               </li>
               <li>
-                <Link to="/projects?category=PEMROGRAMAN" className="hover:text-brand-indigo transition-colors flex items-center justify-between">
+                <Link
+                  to="/projects?category=PEMROGRAMAN"
+                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                >
                   <span>Web & Mobile App</span>
                 </Link>
               </li>
               <li>
-                <Link to="/projects?category=VIDEO" className="hover:text-brand-indigo transition-colors flex items-center justify-between">
+                <Link
+                  to="/projects?category=VIDEO"
+                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                >
                   <span>Video & Reels</span>
                 </Link>
               </li>
               <li>
-                <Link to="/projects?category=COPYWRITING" className="hover:text-brand-indigo transition-colors flex items-center justify-between">
+                <Link
+                  to="/projects?category=COPYWRITING"
+                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                >
                   <span>Copywriting SEO</span>
                 </Link>
               </li>
@@ -131,27 +148,42 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-muted">
               <li>
-                <Link to="/projects" className="hover:text-brand-indigo transition-colors">
+                <Link
+                  to="/projects"
+                  className="hover:text-brand-indigo transition-colors"
+                >
                   Jelajah Semua Proyek
                 </Link>
               </li>
               <li>
-                <Link to="/proposals" className="hover:text-brand-indigo transition-colors">
+                <Link
+                  to="/proposals"
+                  className="hover:text-brand-indigo transition-colors"
+                >
                   Proposal & Penawaran
                 </Link>
               </li>
               <li>
-                <Link to="/portfolio" className="hover:text-brand-indigo transition-colors">
+                <Link
+                  to="/portfolio"
+                  className="hover:text-brand-indigo transition-colors"
+                >
                   Portofolio Terverifikasi
                 </Link>
               </li>
               <li>
-                <Link to="/wallet" className="hover:text-brand-indigo transition-colors">
+                <Link
+                  to="/wallet"
+                  className="hover:text-brand-indigo transition-colors"
+                >
                   Dompet & Pencairan Dana
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="hover:text-brand-indigo transition-colors">
+                <Link
+                  to="/login"
+                  className="hover:text-brand-indigo transition-colors"
+                >
                   Portal Masuk Akun
                 </Link>
               </li>
@@ -217,25 +249,31 @@ export function Footer() {
               </button>
             </form>
           </div>
-
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted">
           <div>
-            &copy; {new Date().getFullYear()} <b>Makarya Platform</b>. Hak Cipta Dilindungi Undang-Undang.
+            &copy; {new Date().getFullYear()} <b>Makarya Platform</b>. Hak Cipta
+            Dilindungi Undang-Undang.
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            <Link to="/terms" className="hover:text-dark-900 transition-colors">Syarat & Ketentuan</Link>
+            <Link to="/terms" className="hover:text-dark-900 transition-colors">
+              Syarat & Ketentuan
+            </Link>
             <span>•</span>
-            <Link to="/privacy" className="hover:text-dark-900 transition-colors">Kebijakan Privasi</Link>
+            <Link
+              to="/privacy"
+              className="hover:text-dark-900 transition-colors"
+            >
+              Kebijakan Privasi
+            </Link>
             <span>•</span>
             <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
               <Lock className="w-3 h-3" /> Escrow Terenkripsi
             </span>
           </div>
         </div>
-
       </div>
     </footer>
   );
