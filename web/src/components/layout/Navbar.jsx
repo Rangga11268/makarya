@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
+import { useAlertStore } from "../../store/alertStore";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import {
@@ -32,6 +33,7 @@ import {
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { showConfirm } = useAlertStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -79,10 +81,18 @@ export function Navbar() {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    logout();
     setUserDropdownOpen(false);
     setMobileMenuOpen(false);
-    navigate("/");
+    showConfirm(
+      "Keluar dari Akun?",
+      "Sesi kamu akan diakhiri dan kamu akan diarahkan ke halaman utama.",
+      () => {
+        logout();
+        navigate("/");
+      },
+      null,
+      true
+    );
   };
 
   const navCategories = [

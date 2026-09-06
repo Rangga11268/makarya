@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
+import { useAlertStore } from "../../store/alertStore";
 import { walletApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
@@ -29,6 +30,7 @@ import { cn } from "../../utils/cn";
 
 export function SidebarLayout() {
   const { user, logout, isAuthenticated } = useAuthStore();
+  const { showConfirm } = useAlertStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -55,11 +57,17 @@ export function SidebarLayout() {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = async () => {
-    if (window.confirm("Apakah Anda yakin ingin keluar dari akun?")) {
-      await logout();
-      navigate("/");
-    }
+  const handleLogout = () => {
+    showConfirm(
+      "Keluar dari Akun?",
+      "Sesi kamu akan diakhiri dan kamu akan diarahkan ke halaman utama.",
+      async () => {
+        await logout();
+        navigate("/");
+      },
+      null,
+      true
+    );
   };
 
   // Role-specific navigation items
