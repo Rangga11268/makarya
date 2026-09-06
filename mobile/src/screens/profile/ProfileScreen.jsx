@@ -413,9 +413,7 @@ export function ProfileScreen({ navigation }) {
               </Text>
               <View style={styles.verifiedCampusTag}>
                 <CheckCircle2 size={11} color={COLORS.success} />
-                <Text style={styles.verifiedCampusText}>
-                  Terverifikasi
-                </Text>
+                <Text style={styles.verifiedCampusText}>Terverifikasi</Text>
               </View>
             </View>
 

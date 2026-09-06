@@ -17,6 +17,7 @@ import { FONTS } from "../../theme/fonts";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { Header } from "../../components/ui/Header";
 import { NotificationModal } from "../../components/features/NotificationModal";
+import { Button } from "../../components/ui/Button";
 import { talentApi, projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
@@ -34,11 +35,14 @@ import {
   RotateCcw,
   ShieldCheck,
   Award,
-  Bell,
   X,
   Plus,
   MessageSquare,
-  User,
+  Compass,
+  SlidersHorizontal,
+  ChevronRight,
+  Briefcase,
+  Layers,
 } from "lucide-react-native";
 
 const PRODI_OPTIONS = [
@@ -50,6 +54,19 @@ const PRODI_OPTIONS = [
   { id: "Manajemen", label: "Manajemen" },
 ];
 
+const RATING_OPTIONS = [
+  { id: "ALL", label: "Semua Rating" },
+  { id: "4.5", label: "Rating ≥ 4.5" },
+  { id: "4.8", label: "Rating ≥ 4.8" },
+  { id: "5.0", label: "Rating 5.0 (Sempurna)" },
+];
+
+const PROJECT_OPTIONS = [
+  { id: "ALL", label: "Semua Riwayat" },
+  { id: "1", label: "Min. 1 Proyek Tuntas" },
+  { id: "3", label: "Min. 3 Proyek Tuntas" },
+];
+
 const FALLBACK_TALENTS = [
   {
     id: "darell-1",
@@ -58,7 +75,7 @@ const FALLBACK_TALENTS = [
     prodi: "Sistem Informasi",
     semester: 6,
     email: "darell@ubsi.ac.id",
-    bio: "Mahasiswa Sistem Informasi aktif spesialisasi Fullstack Web (FastAPI, React.js, PostgreSQL) dan antarmuka UI/UX modern responsif.",
+    bio: "Mahasiswa Sistem Informasi spesialisasi Fullstack Web (FastAPI, React.js, PostgreSQL) dan antarmuka UI/UX modern responsif.",
     rating_avg: 5.0,
     total_proyek_selesai: 3,
     escrow_success_rate: "100%",
@@ -68,25 +85,16 @@ const FALLBACK_TALENTS = [
     figma_url: "https://figma.com/@darell",
     website_url: "https://darell.dev",
     linkedin_url: "https://linkedin.com/in/darell",
-    reviews_count: 3,
+    reviews_count: 1,
     recent_reviews: [
       {
         id: "rev-1",
-        reviewer_name: "Kopi Kenangan Senja UMKM",
+        reviewer_name: "Kopi Kenangan Nusantara",
         rating: 5,
         komentar:
-          "Pengerjaan sistem POS & landing page sangat cepat, rapi, dan sesuai spesifikasi.",
-        project_title: "Pengembangan Landing Page & Web Order Kopi",
+          "Pengerjaan landing page & sistem reservasi meja sangat cepat, rapi, dan brief diikuti dengan sempurna.",
+        project_title: "Pembuatan Website Landing Page Menu & Reservasi",
         created_at: "2026-08-20T10:00:00",
-      },
-      {
-        id: "rev-2",
-        reviewer_name: "Batik Canting Solo",
-        rating: 5,
-        komentar:
-          "Website katalog produk selesai sebelum deadline. Sangat puas!",
-        project_title: "Desain & Katalog Interaktif Produk Batik",
-        created_at: "2026-08-10T14:30:00",
       },
     ],
   },
@@ -102,49 +110,51 @@ const FALLBACK_TALENTS = [
     total_proyek_selesai: 4,
     escrow_success_rate: "100%",
     status_badge: "Mahasiswa Berprestasi & Terverifikasi",
-    skills: [
-      "Logo Design",
-      "Packaging",
-      "Branding",
-      "Adobe Illustrator",
-      "Figma",
-    ],
+    skills: ["Figma", "Adobe Illustrator", "Brand Identity", "Packaging", "Typography"],
     github_url: "",
     figma_url: "https://figma.com/@adeliaputri",
     website_url: "",
     linkedin_url: "https://linkedin.com/in/adeliaputri",
-    reviews_count: 2,
+    reviews_count: 4,
     recent_reviews: [
       {
         id: "rev-3",
-        reviewer_name: "Keripik Singkong Renyah",
+        reviewer_name: "Keripik Singkong Barokah",
         rating: 5,
-        komentar:
-          "Desain packaging modern membuat produk kami tembus masuk supermarket lokal!",
-        project_title: "Redesain Kemasan Pouch Keripik Singkong",
-        created_at: "2026-08-15T09:00:00",
+        komentar: "Rebranding packaging produk sangat menarik, omset offline kami langsung naik.",
+        project_title: "Redesign Kemasan & Label Keripik Singkong",
+        created_at: "2026-08-15T11:00:00",
       },
     ],
   },
   {
-    id: "bima-3",
-    nama_lengkap: "Bima Arya",
+    id: "fajar-3",
+    nama_lengkap: "Fajar Nugraha",
     nim: "12210088",
     prodi: "Teknologi Informasi",
     semester: 6,
-    email: "bima.ti@ubsi.ac.id",
-    bio: "Spesialis landing page konversi tinggi dan integrasi CMS untuk UMKM lokal.",
+    email: "fajar.ti@ubsi.ac.id",
+    bio: "Spesialisasi mobile app Flutter & React Native dengan integrasi REST API backend, push notification, serta payment gateway.",
     rating_avg: 5.0,
     total_proyek_selesai: 2,
     escrow_success_rate: "100%",
     status_badge: "Mahasiswa Berprestasi & Terverifikasi",
-    skills: ["Next.js", "Landing Page", "REST API", "Tailwind CSS"],
-    github_url: "https://github.com/bimaarya",
+    skills: ["React Native", "Flutter", "REST API", "Firebase", "State Management"],
+    github_url: "https://github.com/fajarnugraha",
     figma_url: "",
-    website_url: "https://bima.dev",
-    linkedin_url: "https://linkedin.com/in/bimaarya",
-    reviews_count: 1,
-    recent_reviews: [],
+    website_url: "",
+    linkedin_url: "https://linkedin.com/in/fajarnugraha",
+    reviews_count: 2,
+    recent_reviews: [
+      {
+        id: "rev-4",
+        reviewer_name: "Toko Sembako Berkah Jaya",
+        rating: 5,
+        komentar: "Aplikasi kasir mobile berjalan sangat enteng di handphone operasional toko.",
+        project_title: "Aplikasi Kasir Toko Sembako",
+        created_at: "2026-08-01T09:00:00",
+      },
+    ],
   },
 ];
 
@@ -154,15 +164,21 @@ export function TalentListScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedProdi, setSelectedProdi] = useState("ALL");
-  const [minRatingFilter, setMinRatingFilter] = useState(false);
-  const [onlyCompletedFilter, setOnlyCompletedFilter] = useState(false);
+  const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'TOP_RATED'
 
+  // Filter States
+  const [selectedProdi, setSelectedProdi] = useState("ALL");
+  const [selectedMinRating, setSelectedMinRating] = useState("ALL");
+  const [selectedMinProjects, setSelectedMinProjects] = useState("ALL");
+
+  // Modals
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTalent, setSelectedTalent] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
+  // Invite collaboration state
   const [myProjects, setMyProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -176,8 +192,8 @@ export function TalentListScreen({ navigation }) {
       const params = {};
       if (searchQuery.trim()) params.keyword = searchQuery.trim();
       if (selectedProdi !== "ALL") params.prodi = selectedProdi;
-      if (minRatingFilter) params.min_rating = 4.8;
-      if (onlyCompletedFilter) params.only_completed = true;
+      if (selectedMinRating !== "ALL") params.min_rating = parseFloat(selectedMinRating);
+      if (selectedMinProjects !== "ALL") params.only_completed = true;
 
       const res = await talentApi.getTalents(params);
       const items = Array.isArray(res.data) ? res.data : [];
@@ -187,8 +203,8 @@ export function TalentListScreen({ navigation }) {
         if (
           !searchQuery &&
           selectedProdi === "ALL" &&
-          !minRatingFilter &&
-          !onlyCompletedFilter
+          selectedMinRating === "ALL" &&
+          selectedMinProjects === "ALL"
         ) {
           setTalents(FALLBACK_TALENTS);
         } else {
@@ -205,7 +221,7 @@ export function TalentListScreen({ navigation }) {
 
   useEffect(() => {
     loadTalents();
-  }, [searchQuery, selectedProdi, minRatingFilter, onlyCompletedFilter]);
+  }, [searchQuery, selectedProdi, selectedMinRating, selectedMinProjects]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -254,21 +270,41 @@ export function TalentListScreen({ navigation }) {
   const resetAllFilters = () => {
     setSearchQuery("");
     setSelectedProdi("ALL");
-    setMinRatingFilter(false);
-    setOnlyCompletedFilter(false);
+    setSelectedMinRating("ALL");
+    setSelectedMinProjects("ALL");
   };
 
-  const hasActiveFilters =
-    searchQuery.trim() !== "" ||
-    selectedProdi !== "ALL" ||
-    minRatingFilter ||
-    onlyCompletedFilter;
+  const activeFilterCount =
+    (selectedProdi !== "ALL" ? 1 : 0) +
+    (selectedMinRating !== "ALL" ? 1 : 0) +
+    (selectedMinProjects !== "ALL" ? 1 : 0);
+
+  const segmentedTabs = [
+    { id: "MATCH", label: "Best Match" },
+    { id: "RECENT", label: "Recent" },
+    { id: "TOP_RATED", label: "Top Rated" },
+  ];
+
+  // Sorting based on active tab
+  const sortedTalents = [...talents].sort((a, b) => {
+    if (activeTab === "TOP_RATED") {
+      const ratingA = Number(a.rating_avg) || 0;
+      const ratingB = Number(b.rating_avg) || 0;
+      return ratingB - ratingA;
+    }
+    if (activeTab === "RECENT") {
+      const doneA = a.total_proyek_selesai ?? 0;
+      const doneB = b.total_proyek_selesai ?? 0;
+      return doneB - doneA;
+    }
+    return 0; // Best match default
+  });
 
   const renderTalentItem = ({ item }) => {
     const initial = item.nama_lengkap
       ? item.nama_lengkap.charAt(0).toUpperCase()
       : "M";
-    const ratingScore = Number(item.rating_avg) || 5.0;
+    const ratingScore = item.rating_avg != null ? Number(item.rating_avg).toFixed(1) : "-";
     const completedCount = item.total_proyek_selesai ?? 0;
     const skillsList = Array.isArray(item.skills)
       ? item.skills.slice(0, 4)
@@ -276,65 +312,81 @@ export function TalentListScreen({ navigation }) {
 
     return (
       <View style={styles.talentCard}>
+        {/* 1. Header: Avatar + Name & Prodi + Status Tag */}
         <View style={styles.cardHeaderRow}>
           <View style={styles.avatarBox}>
             <Text style={styles.avatarLetter}>{initial}</Text>
           </View>
 
           <View style={styles.headerInfoCol}>
-            <View style={styles.nameBadgeRow}>
+            <View style={styles.nameRow}>
               <Text style={styles.talentName} numberOfLines={1}>
                 {item.nama_lengkap}
               </Text>
-              <CheckCircle2 size={15} color={COLORS.success} />
+              <CheckCircle2 size={14} color={COLORS.success} />
             </View>
 
-            <View style={styles.prodiMetaRow}>
-              <ProdiVectorIcon size={13} color={COLORS.brandCyan} />
+            <View style={styles.prodiRow}>
+              <ProdiVectorIcon size={12} color={COLORS.brandCyan} />
               <Text style={styles.prodiText} numberOfLines={1}>
                 {item.prodi || "Sistem Informasi"}
                 {item.semester ? ` • Smt ${item.semester}` : ""}
               </Text>
             </View>
           </View>
+
+          <View style={styles.statusBadgePill}>
+            <Text style={styles.statusBadgeText}>Terverifikasi</Text>
+          </View>
         </View>
 
+        {/* 2. Short Professional Bio */}
         {item.bio ? (
           <Text style={styles.bioText} numberOfLines={2}>
             {item.bio}
           </Text>
         ) : null}
 
-        <View style={styles.metricsBar}>
-          <View style={styles.metricItem}>
-            <Star size={13} color="#F59E0B" fill="#F59E0B" />
-            <Text style={styles.metricValueText}>{ratingScore.toFixed(1)}</Text>
-            <Text style={styles.metricLabelText}>
-              ({item.reviews_count ?? completedCount} ulasan)
-            </Text>
+        {/* 3. Specs Grid (Rating, Projects Done, Escrow Rate) */}
+        <View style={styles.specsGrid}>
+          <View style={styles.specItem}>
+            <Text style={styles.specLabel}>Reputasi Skor</Text>
+            <View style={styles.specMetricRow}>
+              <Star size={13} color="#F59E0B" fill="#F59E0B" />
+              <Text style={styles.specMetricValue}>{ratingScore}</Text>
+              {item.reviews_count ? (
+                <Text style={styles.specMetricSub}>({item.reviews_count})</Text>
+              ) : null}
+            </View>
           </View>
 
-          <View style={styles.metricDivider} />
+          <View style={styles.specDivider} />
 
-          <View style={styles.metricItem}>
-            <Award size={13} color={COLORS.brandIndigo} />
-            <Text style={styles.metricValueText}>{completedCount}</Text>
-            <Text style={styles.metricLabelText}>Proyek Tuntas</Text>
+          <View style={styles.specItem}>
+            <Text style={styles.specLabel}>Proyek Tuntas</Text>
+            <View style={styles.specMetricRow}>
+              <Award size={13} color={COLORS.brandIndigo} />
+              <Text style={styles.specMetricValue}>{completedCount}</Text>
+              <Text style={styles.specMetricSub}>Proyek</Text>
+            </View>
           </View>
 
-          <View style={styles.metricDivider} />
+          <View style={styles.specDivider} />
 
-          <View style={styles.metricItem}>
-            <ShieldCheck size={13} color={COLORS.success} />
-            <Text style={[styles.metricValueText, { color: COLORS.success }]}>
-              100%
-            </Text>
-            <Text style={styles.metricLabelText}>Escrow</Text>
+          <View style={styles.specItem}>
+            <Text style={styles.specLabel}>Sukses Escrow</Text>
+            <View style={styles.specMetricRow}>
+              <ShieldCheck size={13} color={COLORS.success} />
+              <Text style={[styles.specMetricValue, { color: COLORS.success }]}>
+                {item.escrow_success_rate || "100%"}
+              </Text>
+            </View>
           </View>
         </View>
 
+        {/* 4. Skills Pills */}
         {skillsList.length > 0 && (
-          <View style={styles.skillsWrap}>
+          <View style={styles.skillsRow}>
             {skillsList.map((skill, idx) => (
               <View key={idx} style={styles.skillPill}>
                 <Text style={styles.skillPillText}>{skill}</Text>
@@ -343,6 +395,7 @@ export function TalentListScreen({ navigation }) {
           </View>
         )}
 
+        {/* 5. Card Actions */}
         <View style={styles.cardActionsRow}>
           <TouchableOpacity
             style={styles.detailBtn}
@@ -355,7 +408,7 @@ export function TalentListScreen({ navigation }) {
           <TouchableOpacity
             style={styles.contactBtn}
             onPress={() => handleOpenContact(item)}
-            activeOpacity={0.8}
+            activeOpacity={0.85}
           >
             <MessageSquare size={14} color="#FFFFFF" />
             <Text style={styles.contactBtnText}>Ajak Kolaborasi</Text>
@@ -369,7 +422,7 @@ export function TalentListScreen({ navigation }) {
     <View style={styles.container}>
       {/* 1. Standardized Unified Header */}
       <Header
-        category="DIREKTORI KAMPUS RESMI"
+        category="DIREKTORI TALENTA KAMPUS"
         title="Eksplorasi Mahasiswa"
         subtitle="Temukan talenta muda terverifikasi untuk proyek usaha Anda"
         showBell={true}
@@ -377,146 +430,277 @@ export function TalentListScreen({ navigation }) {
         unreadCount={unreadNotifications}
       />
 
-      <View style={styles.searchWrapper}>
+      {/* 2. Search Bar with Filter Tuning Button */}
+      <View style={styles.searchSection}>
         <SearchBar
           placeholder="Cari nama talenta, keahlian, atau prodi..."
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery("")}
+          showFilterBtn={true}
+          onFilterPress={() => setIsFilterModalOpen(true)}
+          activeFilterCount={activeFilterCount}
         />
       </View>
 
-      <View style={styles.prodiPillsWrap}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.prodiPillsContainer}
-        >
-          {PRODI_OPTIONS.map((item) => {
-            const isSelected = selectedProdi === item.id;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => setSelectedProdi(item.id)}
-                activeOpacity={0.8}
-                style={[styles.prodiPill, isSelected && styles.prodiPillActive]}
+      {/* 3. Underline Segmented Navigation Tabs */}
+      <View style={styles.segmentedContainer}>
+        {segmentedTabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <TouchableOpacity
+              key={tab.id}
+              onPress={() => setActiveTab(tab.id)}
+              style={styles.segmentedTabItem}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.segmentedTabText,
+                  isActive && styles.segmentedTabTextActive,
+                ]}
               >
-                <Text
-                  style={[
-                    styles.prodiPillText,
-                    isSelected && styles.prodiPillTextActive,
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+                {tab.label}
+              </Text>
+              {isActive && <View style={styles.activeUnderlineBar} />}
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      <View style={styles.chipsRow}>
-        <TouchableOpacity
-          onPress={() => setMinRatingFilter(!minRatingFilter)}
-          activeOpacity={0.8}
-          style={[styles.chipBtn, minRatingFilter && styles.chipBtnActive]}
-        >
-          <Star
-            size={12}
-            color={minRatingFilter ? COLORS.brandIndigo : "#94A3B8"}
-            fill={minRatingFilter ? COLORS.brandIndigo : "none"}
-          />
-          <Text
-            style={[
-              styles.chipBtnText,
-              minRatingFilter && styles.chipBtnTextActive,
-            ]}
-          >
-            Rating 4.8+
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setOnlyCompletedFilter(!onlyCompletedFilter)}
-          activeOpacity={0.8}
-          style={[styles.chipBtn, onlyCompletedFilter && styles.chipBtnActive]}
-        >
-          <Award
-            size={12}
-            color={onlyCompletedFilter ? COLORS.brandIndigo : "#94A3B8"}
-          />
-          <Text
-            style={[
-              styles.chipBtnText,
-              onlyCompletedFilter && styles.chipBtnTextActive,
-            ]}
-          >
-            Proyek Tuntas
-          </Text>
-        </TouchableOpacity>
-
-        {hasActiveFilters && (
+      {/* 4. Active Filter Bar */}
+      {activeFilterCount > 0 && (
+        <View style={styles.activeFilterBar}>
+          <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
+          {selectedProdi !== "ALL" && (
+            <View style={styles.activeFilterPill}>
+              <Text style={styles.activeFilterPillText}>{selectedProdi}</Text>
+              <TouchableOpacity
+                onPress={() => setSelectedProdi("ALL")}
+                activeOpacity={0.7}
+              >
+                <X size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </View>
+          )}
+          {selectedMinRating !== "ALL" && (
+            <View style={styles.activeFilterPill}>
+              <Text style={styles.activeFilterPillText}>
+                Rating ≥ {selectedMinRating}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setSelectedMinRating("ALL")}
+                activeOpacity={0.7}
+              >
+                <X size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </View>
+          )}
+          {selectedMinProjects !== "ALL" && (
+            <View style={styles.activeFilterPill}>
+              <Text style={styles.activeFilterPillText}>
+                ≥ {selectedMinProjects} Proyek Selesai
+              </Text>
+              <TouchableOpacity
+                onPress={() => setSelectedMinProjects("ALL")}
+                activeOpacity={0.7}
+              >
+                <X size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </View>
+          )}
           <TouchableOpacity
             onPress={resetAllFilters}
-            activeOpacity={0.8}
-            style={styles.resetBtn}
+            style={styles.resetFilterTextBtn}
+            activeOpacity={0.7}
           >
-            <RotateCcw size={12} color={COLORS.textMuted} />
-            <Text style={styles.resetBtnText}>Reset</Text>
+            <Text style={styles.resetFilterText}>Reset</Text>
           </TouchableOpacity>
-        )}
+        </View>
+      )}
 
-        <View style={{ flex: 1 }} />
-        <Text style={styles.countSummaryText}>{talents.length} Talenta</Text>
-      </View>
-
+      {/* 5. Main Feed */}
       {loading && !refreshing ? (
         <View style={styles.loadingCenter}>
           <ActivityIndicator size="large" color={COLORS.brandIndigo} />
-          <Text style={styles.loadingText}>Memuat talenta mahasiswa...</Text>
+          <Text style={styles.loadingText}>Memuat direktori talenta...</Text>
         </View>
       ) : (
         <FlatList
-          data={talents}
+          data={sortedTalents}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderTalentItem}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={COLORS.brandIndigo}
+              colors={[COLORS.brandIndigo]}
             />
           }
+          contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <View style={styles.emptyCard}>
-              <View style={styles.emptyIconBox}>
-                <User size={32} color={COLORS.textMuted} />
-              </View>
-              <Text style={styles.emptyTitle}>Tidak ada talenta ditemukan</Text>
-              <Text style={styles.emptyDesc}>
-                {hasActiveFilters
-                  ? "Coba sesuaikan kata kunci pencarian atau reset filter program studi Anda."
-                  : "Belum ada talenta mahasiswa yang sesuai kriteria ini."}
+            <View style={styles.emptyState}>
+              <Compass size={40} color={COLORS.brandIndigo} />
+              <Text style={styles.emptyTitle}>
+                {searchQuery || activeFilterCount > 0
+                  ? "Talenta Tidak Ditemukan"
+                  : "Belum Ada Talenta"}
               </Text>
-              {hasActiveFilters && (
-                <TouchableOpacity
-                  style={styles.emptyResetBtn}
+              <Text style={styles.emptyDesc}>
+                {searchQuery || activeFilterCount > 0
+                  ? "Coba sesuaikan kata kunci pencarian atau reset filter Anda."
+                  : "Katalog mahasiswa terverifikasi akan segera ditampilkan di sini."}
+              </Text>
+              {activeFilterCount > 0 && (
+                <Button
+                  title="Reset Filter"
+                  variant="secondary"
+                  size="sm"
+                  icon={<RotateCcw size={14} color={COLORS.textDark} />}
                   onPress={resetAllFilters}
-                  activeOpacity={0.8}
-                >
-                  <RotateCcw size={13} color="#FFFFFF" />
-                  <Text style={styles.emptyResetText}>Reset Semua Filter</Text>
-                </TouchableOpacity>
+                  style={styles.emptyBtn}
+                />
               )}
             </View>
           }
-          ListFooterComponent={<View style={{ height: 100 }} />}
+          ListFooterComponent={<View style={{ height: 90 }} />}
         />
       )}
 
-      {/* Detail Modal */}
+      {/* Filter Bottom Sheet Modal */}
+      <Modal
+        visible={isFilterModalOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsFilterModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.filterModalSheet}>
+            <View style={styles.filterModalHeader}>
+              <View>
+                <Text style={styles.filterModalTitle}>Filter Direktori Talenta</Text>
+                <Text style={styles.filterModalSub}>
+                  Saring berdasarkan program studi, rating, dan pengalaman
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsFilterModalOpen(false)}
+                style={styles.modalCloseBtn}
+                activeOpacity={0.7}
+              >
+                <X size={18} color={COLORS.textDark} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
+              {/* Prodi Section */}
+              <Text style={styles.filterSectionTitle}>Program Studi</Text>
+              <View style={styles.filterChipGrid}>
+                {PRODI_OPTIONS.map((opt) => {
+                  const isSelected = selectedProdi === opt.id;
+                  return (
+                    <TouchableOpacity
+                      key={opt.id}
+                      onPress={() => setSelectedProdi(opt.id)}
+                      style={[
+                        styles.modalOptionChip,
+                        isSelected && styles.modalOptionChipActive,
+                      ]}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.modalOptionChipText,
+                          isSelected && styles.modalOptionChipTextActive,
+                        ]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Minimal Rating Section */}
+              <Text style={styles.filterSectionTitle}>Minimal Reputasi Skor</Text>
+              <View style={styles.filterChipGrid}>
+                {RATING_OPTIONS.map((opt) => {
+                  const isSelected = selectedMinRating === opt.id;
+                  return (
+                    <TouchableOpacity
+                      key={opt.id}
+                      onPress={() => setSelectedMinRating(opt.id)}
+                      style={[
+                        styles.modalOptionChip,
+                        isSelected && styles.modalOptionChipActive,
+                      ]}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.modalOptionChipText,
+                          isSelected && styles.modalOptionChipTextActive,
+                        ]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Proyek Selesai Section */}
+              <Text style={styles.filterSectionTitle}>Pengalaman Proyek Tuntas</Text>
+              <View style={styles.filterChipGrid}>
+                {PROJECT_OPTIONS.map((opt) => {
+                  const isSelected = selectedMinProjects === opt.id;
+                  return (
+                    <TouchableOpacity
+                      key={opt.id}
+                      onPress={() => setSelectedMinProjects(opt.id)}
+                      style={[
+                        styles.modalOptionChip,
+                        isSelected && styles.modalOptionChipActive,
+                      ]}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.modalOptionChipText,
+                          isSelected && styles.modalOptionChipTextActive,
+                        ]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalActionButtons}>
+              <TouchableOpacity
+                onPress={resetAllFilters}
+                style={styles.modalResetBtn}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.modalResetBtnText}>Reset</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setIsFilterModalOpen(false)}
+                style={styles.modalApplyBtn}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.modalApplyBtnText}>Terapkan Filter</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Detail Modal (Portofolio & Resume) */}
       <Modal
         visible={isDetailModalOpen}
         animationType="slide"
@@ -526,7 +710,7 @@ export function TalentListScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.detailModalCard}>
             <View style={styles.detailModalHeader}>
-              <Text style={styles.detailModalTitle}>Profil & Portofolio</Text>
+              <Text style={styles.detailModalTitle}>Portofolio & Kredensial</Text>
               <TouchableOpacity
                 onPress={() => setIsDetailModalOpen(false)}
                 style={styles.closeCircleBtn}
@@ -551,7 +735,7 @@ export function TalentListScreen({ navigation }) {
                   </View>
 
                   <View style={styles.detailInfoCol}>
-                    <View style={styles.nameBadgeRow}>
+                    <View style={styles.nameRow}>
                       <Text style={styles.detailNameText}>
                         {selectedTalent.nama_lengkap}
                       </Text>
@@ -571,11 +755,14 @@ export function TalentListScreen({ navigation }) {
                   </View>
                 </View>
 
+                {/* Metrics Summary in Modal */}
                 <View style={styles.detailBadgesRow}>
                   <View style={styles.detailBadgeItem}>
                     <Star size={14} color="#F59E0B" fill="#F59E0B" />
                     <Text style={styles.detailBadgeValue}>
-                      {Number(selectedTalent.rating_avg || 5.0).toFixed(1)}
+                      {selectedTalent.rating_avg != null
+                        ? Number(selectedTalent.rating_avg).toFixed(1)
+                        : "-"}
                     </Text>
                     <Text style={styles.detailBadgeLabel}>Skor Reputasi</Text>
                   </View>
@@ -596,29 +783,31 @@ export function TalentListScreen({ navigation }) {
                         { color: COLORS.success },
                       ]}
                     >
-                      100%
+                      {selectedTalent.escrow_success_rate || "100%"}
                     </Text>
                     <Text style={styles.detailBadgeLabel}>Sukses Escrow</Text>
                   </View>
                 </View>
 
+                {/* Bio Summary */}
                 <View style={styles.detailSectionBox}>
                   <Text style={styles.detailSectionHeading}>
-                    Ringkasan Talenta
+                    Ringkasan Profesional
                   </Text>
                   <Text style={styles.detailBioBody}>
                     {selectedTalent.bio ||
-                      "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM lokal."}
+                      "Mahasiswa aktif berfokus pada pengembangan produk digital & desain solutif untuk kemitraan UMKM."}
                   </Text>
                 </View>
 
+                {/* Skills */}
                 {Array.isArray(selectedTalent.skills) &&
                   selectedTalent.skills.length > 0 && (
                     <View style={styles.detailSectionBox}>
                       <Text style={styles.detailSectionHeading}>
-                        Keahlian Teknis
+                        Keahlian & Kemampuan
                       </Text>
-                      <View style={styles.skillsWrap}>
+                      <View style={styles.skillsRow}>
                         {selectedTalent.skills.map((skill, idx) => (
                           <View key={idx} style={styles.detailSkillPill}>
                             <Text style={styles.detailSkillText}>{skill}</Text>
@@ -628,9 +817,10 @@ export function TalentListScreen({ navigation }) {
                     </View>
                   )}
 
+                {/* Portfolio Links */}
                 <View style={styles.detailSectionBox}>
                   <Text style={styles.detailSectionHeading}>
-                    Tautan Portofolio & Karya
+                    Tautan Karya & Portofolio
                   </Text>
                   <View style={styles.portfolioLinksGrid}>
                     {selectedTalent.github_url ? (
@@ -641,7 +831,7 @@ export function TalentListScreen({ navigation }) {
                       >
                         <GithubVectorIcon size={18} color={COLORS.textDark} />
                         <Text style={styles.portfolioLinkLabel}>
-                          GitHub Repository
+                          GitHub Profile
                         </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
@@ -655,7 +845,7 @@ export function TalentListScreen({ navigation }) {
                       >
                         <FigmaVectorIcon size={18} color={COLORS.brandIndigo} />
                         <Text style={styles.portfolioLinkLabel}>
-                          Figma Workspace
+                          Figma Portofolio
                         </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
@@ -669,7 +859,7 @@ export function TalentListScreen({ navigation }) {
                       >
                         <GlobeVectorIcon size={18} color={COLORS.brandCyan} />
                         <Text style={styles.portfolioLinkLabel}>
-                          Live Website / Demo
+                          Website Portofolio
                         </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
@@ -694,26 +884,25 @@ export function TalentListScreen({ navigation }) {
                       !selectedTalent.website_url &&
                       !selectedTalent.linkedin_url && (
                         <Text style={styles.emptyMetaText}>
-                          Portofolio live belum dicantumkan.
+                          Tautan portofolio publik belum dicantumkan.
                         </Text>
                       )}
                   </View>
                 </View>
 
+                {/* Recent Reviews */}
                 {Array.isArray(selectedTalent.recent_reviews) &&
                   selectedTalent.recent_reviews.length > 0 && (
                     <View style={styles.detailSectionBox}>
                       <Text style={styles.detailSectionHeading}>
-                        Ulasan Klien UMKM (
-                        {selectedTalent.recent_reviews.length})
+                        Ulasan Kepuasan Klien ({selectedTalent.recent_reviews.length})
                       </Text>
                       <View style={styles.reviewsListWrap}>
                         {selectedTalent.recent_reviews.map((rev, idx) => (
                           <View key={idx} style={styles.reviewItemCard}>
                             <View style={styles.reviewTopRow}>
                               <Text style={styles.reviewClientName}>
-                                {rev.reviewer_name ||
-                                  "Klien UMKM Terverifikasi"}
+                                {rev.reviewer_name || "Klien UMKM Terverifikasi"}
                               </Text>
                               <View style={styles.reviewStarRow}>
                                 <Star
@@ -742,17 +931,18 @@ export function TalentListScreen({ navigation }) {
               </ScrollView>
             )}
 
-            <View style={styles.detailFooterBar}>
+            {/* Modal Bottom CTA */}
+            <View style={styles.detailModalFooter}>
               <TouchableOpacity
-                style={styles.modalCtaBtn}
+                style={styles.modalPrimaryActionBtn}
                 onPress={() => {
                   setIsDetailModalOpen(false);
-                  handleOpenContact(selectedTalent);
+                  if (selectedTalent) handleOpenContact(selectedTalent);
                 }}
                 activeOpacity={0.85}
               >
                 <MessageSquare size={16} color="#FFFFFF" />
-                <Text style={styles.modalCtaBtnText}>
+                <Text style={styles.modalPrimaryActionBtnText}>
                   Ajak Kolaborasi Proyek
                 </Text>
               </TouchableOpacity>
@@ -761,92 +951,68 @@ export function TalentListScreen({ navigation }) {
         </View>
       </Modal>
 
-      {/* Contact / Invite Modal */}
+      {/* Invite Collaboration Modal */}
       <Modal
         visible={isContactModalOpen}
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         onRequestClose={() => setIsContactModalOpen(false)}
       >
-        <View style={styles.contactOverlay}>
-          <View style={styles.contactCard}>
-            <View style={styles.contactHeader}>
-              <Text style={styles.contactTitle}>Ajak Talenta Bekerja Sama</Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.inviteModalCard}>
+            <View style={styles.detailModalHeader}>
+              <Text style={styles.detailModalTitle}>Ajak Kolaborasi Proyek</Text>
               <TouchableOpacity
                 onPress={() => setIsContactModalOpen(false)}
+                style={styles.closeCircleBtn}
                 activeOpacity={0.7}
               >
                 <X size={18} color={COLORS.textDark} />
               </TouchableOpacity>
             </View>
 
-            {selectedTalent && (
-              <View style={styles.contactTargetRow}>
-                <View style={styles.contactTargetAvatar}>
-                  <Text style={styles.contactTargetLetter}>
-                    {selectedTalent.nama_lengkap?.charAt(0) || "M"}
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.contactTargetName} numberOfLines={1}>
-                    {selectedTalent.nama_lengkap}
-                  </Text>
-                  <Text style={styles.contactTargetProdi} numberOfLines={1}>
-                    {selectedTalent.prodi} • Terverifikasi
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            <Text style={styles.contactBodyLabel}>
-              Pilih proyek kebutuhan Anda yang ingin ditawarkan kepada mahasiswa
-              ini:
+            <Text style={styles.inviteSubText}>
+              Pilih salah satu proyek aktif Anda untuk menghubungkan brief pengerjaan dengan{" "}
+              <Text style={{ fontFamily: FONTS.bodyBold, color: COLORS.textDark }}>
+                {selectedTalent?.nama_lengkap}
+              </Text>
+              .
             </Text>
 
             {loadingProjects ? (
-              <ActivityIndicator
-                size="small"
-                color={COLORS.brandIndigo}
-                style={{ marginVertical: 20 }}
-              />
+              <View style={{ padding: 24, alignItems: "center" }}>
+                <ActivityIndicator size="small" color={COLORS.brandIndigo} />
+                <Text style={styles.loadingText}>Memuat daftar proyek Anda...</Text>
+              </View>
             ) : myProjects.length > 0 ? (
-              <View style={styles.projectsSelectorWrap}>
+              <View style={styles.projectSelectList}>
                 {myProjects.map((p) => {
-                  const isSelected = selectedProjectId === p.id;
+                  const isChecked = selectedProjectId === p.id;
                   return (
                     <TouchableOpacity
                       key={p.id}
+                      style={[
+                        styles.projectOptionRow,
+                        isChecked && styles.projectOptionRowActive,
+                      ]}
                       onPress={() => setSelectedProjectId(p.id)}
                       activeOpacity={0.8}
-                      style={[
-                        styles.projectSelectOption,
-                        isSelected && styles.projectSelectOptionActive,
-                      ]}
                     >
                       <View style={{ flex: 1 }}>
-                        <Text
-                          style={[
-                            styles.projectSelectTitle,
-                            isSelected && {
-                              color: COLORS.brandIndigo,
-                              fontWeight: "700",
-                            },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {p.title}
+                        <Text style={styles.projectOptionTitle} numberOfLines={1}>
+                          {p.judul}
                         </Text>
-                        <Text style={styles.projectSelectMeta}>
+                        <Text style={styles.projectOptionMeta}>
                           Status: {p.status}
                         </Text>
                       </View>
                       <View
                         style={[
                           styles.radioCircle,
-                          isSelected && styles.radioCircleActive,
+                          isChecked && styles.radioCircleActive,
                         ]}
                       >
-                        {isSelected && <View style={styles.radioInner} />}
+                        {isChecked && <View style={styles.radioDot} />}
                       </View>
                     </TouchableOpacity>
                   );
@@ -854,12 +1020,12 @@ export function TalentListScreen({ navigation }) {
               </View>
             ) : (
               <View style={styles.noProjectsNotice}>
+                <Briefcase size={28} color={COLORS.brandIndigo} style={{ marginBottom: 8 }} />
                 <Text style={styles.noProjectsNoticeTitle}>
                   Belum Ada Proyek Aktif
                 </Text>
                 <Text style={styles.noProjectsNoticeDesc}>
-                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta
-                  ini langsung dapat meninjau dan menerima penawaran Anda.
+                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta ini langsung dapat meninjau dan menerima penawaran Anda.
                 </Text>
               </View>
             )}
@@ -895,6 +1061,7 @@ export function TalentListScreen({ navigation }) {
         </View>
       </Modal>
 
+      {/* Notification Center */}
       <NotificationModal
         visible={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
@@ -908,153 +1075,103 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bgDark,
   },
-  topHeader: {
+
+  // Search Section
+  searchSection: {
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 32,
-    paddingBottom: 14,
-    backgroundColor: COLORS.bgSurface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
-  titleArea: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  badgeCategory: {
-    fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: COLORS.brandIndigo,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 2,
-  },
-  screenTitle: {
-    fontSize: 22,
-    fontFamily: FONTS.serifBold,
-    color: COLORS.textDark,
-    letterSpacing: -0.4,
-  },
-  screenSubtitle: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
-    color: COLORS.textMuted,
-    marginTop: 2,
-    lineHeight: 16,
-  },
-  bellButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: COLORS.bgDark,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 2,
-  },
-  bellRedDot: {
-    position: "absolute",
-    top: 7,
-    right: 8,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.danger,
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
-  },
-  searchWrapper: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 10,
     paddingBottom: 8,
     backgroundColor: COLORS.bgSurface,
   },
-  prodiPillsWrap: {
+
+  // Segmented Tabs (Underline Style)
+  segmentedContainer: {
+    flexDirection: "row",
     backgroundColor: COLORS.bgSurface,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
-    paddingBottom: 12,
   },
-  prodiPillsContainer: {
-    paddingHorizontal: 20,
-    gap: 8,
+  segmentedTabItem: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: "center",
+    position: "relative",
   },
-  prodiPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: COLORS.bgDark,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+  segmentedTabText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 13,
+    fontWeight: "500",
+    color: COLORS.textMuted,
   },
-  prodiPillActive: {
+  segmentedTabTextActive: {
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  activeUnderlineBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 12,
+    right: 12,
+    height: 2.5,
     backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
+    borderRadius: 2,
   },
-  prodiPillText: {
-    fontSize: 12,
-    fontFamily: FONTS.medium,
-    color: COLORS.textSecondary,
-  },
-  prodiPillTextActive: {
-    color: "#FFFFFF",
-    fontFamily: FONTS.bold,
-  },
-  chipsRow: {
+
+  // Active Filter Bar
+  activeFilterBar: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 8,
+    backgroundColor: COLORS.canvasSoft,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderDark,
     gap: 8,
+    flexWrap: "wrap",
   },
-  chipBtn: {
+  activeFilterLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+  },
+  activeFilterPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    paddingHorizontal: 11,
-    paddingVertical: 5,
-    borderRadius: 14,
-    backgroundColor: COLORS.bgSurface,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-  },
-  chipBtnActive: {
     backgroundColor: COLORS.brandIndigoLight,
-    borderColor: COLORS.brandIndigo,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
   },
-  chipBtnText: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: COLORS.textSecondary,
-  },
-  chipBtnTextActive: {
+  activeFilterPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
     color: COLORS.brandIndigo,
-    fontFamily: FONTS.bold,
   },
-  resetBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  resetFilterTextBtn: {
+    marginLeft: "auto",
+    paddingVertical: 2,
+    paddingHorizontal: 6,
   },
-  resetBtnText: {
+  resetFilterText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: COLORS.textMuted,
+    color: COLORS.danger,
+    fontWeight: "700",
   },
-  countSummaryText: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: COLORS.textMuted,
-  },
+
+  // List & Cards
   listContent: {
     paddingHorizontal: 20,
-    paddingTop: 6,
-    gap: 14,
+    paddingTop: 12,
+    paddingBottom: 24,
+    gap: 12,
   },
   loadingCenter: {
     flex: 1,
@@ -1064,321 +1181,479 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 13,
-    fontFamily: FONTS.medium,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textMuted,
     marginTop: 12,
   },
+
   talentCard: {
     backgroundColor: COLORS.bgSurface,
     borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    padding: 16,
-    gap: 12,
-    ...SHADOWS.card,
+    ...SHADOWS.sm,
   },
   cardHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    marginBottom: 10,
   },
   avatarBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.brandIndigo,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
   },
   avatarLetter: {
-    fontSize: 20,
-    fontFamily: FONTS.serifBold,
-    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: FONTS.displayBold,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
   },
   headerInfoCol: {
     flex: 1,
-    gap: 2,
   },
-  nameBadgeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  talentName: {
-    fontSize: 15,
-    fontFamily: FONTS.bold,
-    color: COLORS.textDark,
-  },
-  prodiMetaRow: {
+  nameRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
   },
-  prodiText: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
-    color: COLORS.textMuted,
+  talentName: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
   },
-  bioText: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
-    lineHeight: 18,
-  },
-  metricsBar: {
+  prodiRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.bgDark,
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    justifyContent: "space-between",
+    gap: 4,
+    marginTop: 2,
   },
-  metricItem: {
+  prodiText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  statusBadgePill: {
+    backgroundColor: COLORS.brandCyanLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  statusBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: COLORS.brandCyan,
+  },
+
+  bioText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+
+  // Specs Grid
+  specsGrid: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+  },
+  specItem: {
+    flex: 1,
+    alignItems: "center",
+  },
+  specDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: COLORS.borderDark,
+  },
+  specLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+    marginBottom: 2,
+  },
+  specMetricRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  metricDivider: {
-    width: 1,
-    height: 14,
-    backgroundColor: COLORS.borderDark,
-  },
-  metricValueText: {
-    fontSize: 12,
-    fontFamily: FONTS.bold,
+  specMetricValue: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
-  metricLabelText: {
+  specMetricSub: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
-    fontFamily: FONTS.regular,
     color: COLORS.textMuted,
   },
-  skillsWrap: {
+
+  // Skills
+  skillsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 6,
+    marginBottom: 14,
   },
   skillPill: {
+    backgroundColor: COLORS.brandIndigoLight,
     paddingHorizontal: 9,
-    paddingVertical: 4,
+    paddingVertical: 3.5,
     borderRadius: 8,
-    backgroundColor: COLORS.bgDark,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
   },
   skillPillText: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
   },
+
+  // Card Action Buttons
   cardActionsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingTop: 4,
+    gap: 10,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+    paddingTop: 12,
   },
   detailBtn: {
     flex: 1,
-    paddingVertical: 9,
-    borderRadius: 12,
-    backgroundColor: COLORS.bgDark,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 9,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    backgroundColor: COLORS.bgSurface,
   },
   detailBtnText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   contactBtn: {
-    flex: 1.2,
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
     paddingVertical: 9,
     borderRadius: 12,
     backgroundColor: COLORS.brandIndigo,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
   },
   contactBtnText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
-  emptyCard: {
+
+  // Empty State
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 48,
+    paddingHorizontal: 32,
     backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    padding: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  emptyIconBox: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.bgDark,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
+    marginTop: 12,
   },
   emptyTitle: {
-    fontSize: 15,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.displayBold,
+    fontSize: 17,
+    fontWeight: "700",
     color: COLORS.textDark,
+    marginTop: 12,
     marginBottom: 4,
+    textAlign: "center",
   },
   emptyDesc: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
     color: COLORS.textMuted,
     textAlign: "center",
-    lineHeight: 18,
-    maxWidth: 280,
+    lineHeight: 19,
     marginBottom: 16,
   },
-  emptyResetBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 20,
-    backgroundColor: COLORS.brandIndigo,
+  emptyBtn: {
+    minWidth: 140,
   },
-  emptyResetText: {
-    fontSize: 12,
-    fontFamily: FONTS.bold,
-    color: "#FFFFFF",
-  },
+
+  // Modal Common Overlay
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    backgroundColor: "rgba(15, 23, 42, 0.55)",
     justifyContent: "flex-end",
   },
+
+  // Filter Modal Sheet
+  filterModalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: Platform.OS === "ios" ? 36 : 24,
+  },
+  filterModalHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  filterModalTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 17,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  filterModalSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  filterSectionTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    marginTop: 12,
+    marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
+  },
+  filterChipGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 6,
+  },
+  modalOptionChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  modalOptionChipActive: {
+    backgroundColor: COLORS.brandIndigoLight,
+    borderColor: COLORS.brandIndigo,
+  },
+  modalOptionChipText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    color: COLORS.textSecondary,
+  },
+  modalOptionChipTextActive: {
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  modalActionButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 18,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+  },
+  modalResetBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalResetBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+  },
+  modalApplyBtn: {
+    flex: 1,
+    backgroundColor: COLORS.brandIndigo,
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalApplyBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+
+  // Detail Modal
   detailModalCard: {
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     maxHeight: "88%",
-    paddingBottom: Platform.OS === "ios" ? 34 : 20,
+    paddingTop: 20,
+    paddingBottom: Platform.OS === "ios" ? 36 : 20,
   },
   detailModalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
   },
   detailModalTitle: {
-    fontSize: 16,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.displayBold,
+    fontSize: 17,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   closeCircleBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: COLORS.canvasSoft,
     alignItems: "center",
     justifyContent: "center",
   },
   detailScrollContent: {
-    padding: 20,
-    gap: 18,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   detailProfileTop: {
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
+    marginBottom: 16,
   },
   detailAvatarBox: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
   },
   detailAvatarLetter: {
-    fontSize: 26,
-    fontFamily: FONTS.serifBold,
+    fontSize: 22,
+    fontFamily: FONTS.displayBold,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
   detailInfoCol: {
     flex: 1,
-    gap: 3,
   },
   detailNameText: {
-    fontSize: 17,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.displayBold,
+    fontSize: 16,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   detailProdiText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
-    fontFamily: FONTS.medium,
     color: COLORS.brandCyan,
+    marginTop: 2,
   },
   detailNimText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    fontFamily: FONTS.regular,
     color: COLORS.textMuted,
+    marginTop: 1,
   },
   detailBadgesRow: {
     flexDirection: "row",
-    backgroundColor: COLORS.bgDark,
+    backgroundColor: COLORS.canvasSoft,
     borderRadius: 16,
-    padding: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    justifyContent: "space-around",
   },
   detailBadgeItem: {
+    flex: 1,
     alignItems: "center",
-    gap: 3,
   },
   detailBadgeValue: {
+    fontFamily: FONTS.displayBold,
     fontSize: 15,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: COLORS.textDark,
+    marginVertical: 2,
   },
   detailBadgeLabel: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
-    fontFamily: FONTS.medium,
     color: COLORS.textMuted,
   },
   detailSectionBox: {
-    gap: 8,
+    marginBottom: 16,
   },
   detailSectionHeading: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
     color: COLORS.textDark,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 8,
   },
   detailBioBody: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 13,
-    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     lineHeight: 20,
   },
   detailSkillPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
     backgroundColor: COLORS.brandIndigoLight,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
   },
   detailSkillText: {
-    fontSize: 12,
-    fontFamily: FONTS.medium,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    fontWeight: "600",
     color: COLORS.brandIndigo,
   },
   portfolioLinksGrid: {
@@ -1387,44 +1662,46 @@ const styles = StyleSheet.create({
   portfolioLinkCard: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
-    backgroundColor: COLORS.bgDark,
+    gap: 10,
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    gap: 10,
   },
   portfolioLinkLabel: {
     flex: 1,
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontFamily: FONTS.medium,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   emptyMetaText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
-    fontFamily: FONTS.regular,
     color: COLORS.textMuted,
-    fontStyle: "italic",
   },
   reviewsListWrap: {
-    gap: 10,
+    gap: 8,
   },
   reviewItemCard: {
-    backgroundColor: COLORS.bgDark,
-    borderRadius: 12,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
+    padding: 12,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    padding: 12,
-    gap: 4,
   },
   reviewTopRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 4,
   },
   reviewClientName: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   reviewStarRow: {
@@ -1433,185 +1710,150 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   reviewScoreText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    fontFamily: FONTS.bold,
-    color: COLORS.textDark,
+    fontWeight: "700",
+    color: "#F59E0B",
   },
   reviewProjectTitle: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
     color: COLORS.brandIndigo,
+    marginBottom: 4,
   },
   reviewCommentText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
-    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
-    lineHeight: 18,
-    fontStyle: "italic",
+    lineHeight: 17,
   },
-  detailFooterBar: {
+  detailModalFooter: {
     paddingHorizontal: 20,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderDark,
   },
-  modalCtaBtn: {
-    backgroundColor: COLORS.brandIndigo,
-    paddingVertical: 12,
-    borderRadius: 14,
+  modalPrimaryActionBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-  },
-  modalCtaBtnText: {
-    fontSize: 14,
-    fontFamily: FONTS.bold,
-    color: "#FFFFFF",
-  },
-  contactOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.6)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  contactCard: {
-    width: "100%",
-    maxWidth: 420,
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 24,
-    padding: 20,
-    gap: 14,
-  },
-  contactHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  contactTitle: {
-    fontSize: 16,
-    fontFamily: FONTS.bold,
-    color: COLORS.textDark,
-  },
-  contactTargetRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: COLORS.bgDark,
-    borderRadius: 14,
-    padding: 10,
-  },
-  contactTargetAvatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
     backgroundColor: COLORS.brandIndigo,
-    alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: 13,
+    borderRadius: 14,
   },
-  contactTargetLetter: {
-    fontSize: 16,
-    fontFamily: FONTS.serifBold,
+  modalPrimaryActionBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
-  contactTargetName: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
-    color: COLORS.textDark,
+
+  // Invite Modal
+  inviteModalCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: Platform.OS === "ios" ? 36 : 24,
   },
-  contactTargetProdi: {
-    fontSize: 11,
-    fontFamily: FONTS.regular,
-    color: COLORS.textMuted,
-  },
-  contactBodyLabel: {
+  inviteSubText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
-    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     lineHeight: 18,
+    marginTop: 10,
+    marginBottom: 14,
   },
-  projectsSelectorWrap: {
+  projectSelectList: {
     gap: 8,
-    maxHeight: 200,
+    maxHeight: 250,
   },
-  projectSelectOption: {
+  projectOptionRow: {
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    borderRadius: 12,
-    backgroundColor: COLORS.bgDark,
+    borderRadius: 14,
+    backgroundColor: COLORS.canvasSoft,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    gap: 10,
   },
-  projectSelectOptionActive: {
-    borderColor: COLORS.brandIndigo,
+  projectOptionRowActive: {
     backgroundColor: COLORS.brandIndigoLight,
+    borderColor: COLORS.brandIndigo,
   },
-  projectSelectTitle: {
-    fontSize: 12,
-    fontFamily: FONTS.medium,
+  projectOptionTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
     color: COLORS.textDark,
   },
-  projectSelectMeta: {
-    fontSize: 10,
-    fontFamily: FONTS.regular,
+  projectOptionMeta: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
   },
   radioCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: COLORS.borderLight,
+    borderColor: COLORS.textMuted,
     alignItems: "center",
     justifyContent: "center",
+    marginLeft: 10,
   },
   radioCircleActive: {
     borderColor: COLORS.brandIndigo,
   },
-  radioInner: {
-    width: 9,
-    height: 9,
-    borderRadius: 4.5,
+  radioDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     backgroundColor: COLORS.brandIndigo,
   },
   noProjectsNotice: {
-    padding: 14,
-    borderRadius: 14,
-    backgroundColor: COLORS.bgDark,
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    gap: 4,
+    marginBottom: 12,
   },
   noProjectsNoticeTitle: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
     color: COLORS.textDark,
+    marginBottom: 4,
   },
   noProjectsNoticeDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    fontFamily: FONTS.regular,
     color: COLORS.textMuted,
+    textAlign: "center",
     lineHeight: 16,
   },
   contactActionButtons: {
-    marginTop: 4,
+    marginTop: 16,
   },
   primaryInviteBtn: {
-    backgroundColor: COLORS.brandIndigo,
-    paddingVertical: 12,
-    borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    backgroundColor: COLORS.brandIndigo,
+    paddingVertical: 13,
+    borderRadius: 14,
   },
   primaryInviteBtnText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
 });
