@@ -14,16 +14,45 @@ import { COLORS } from "../theme/colors";
 
 const Stack = createStackNavigator();
 
+// Guard level modul: memastikan splash screen hanya muncul SATU KALI saat app pertama kali dibuka
+let hasShownSplash = false;
+
+const isWebSessionSplashShown = () => {
+  try {
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      return window.sessionStorage.getItem("makarya_splash_seen") === "true";
+    }
+  } catch (_) {}
+  return false;
+};
+
 export function AppNavigator() {
   const { isAuthenticated, loading, initializeAuth } = useAuthStore();
-  const [showSplash, setShowSplash] = useState(true);
+  const alreadySeen = hasShownSplash || isWebSessionSplashShown();
+  const [showSplash, setShowSplash] = useState(!alreadySeen);
 
   useEffect(() => {
     initializeAuth();
   }, []);
 
-  if (loading || showSplash) {
-    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  const handleFinishSplash = () => {
+    hasShownSplash = true;
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage) {
+        window.sessionStorage.setItem("makarya_splash_seen", "true");
+      }
+    } catch (_) {}
+    setShowSplash(false);
+  };
+
+  // Hanya tampilkan SplashScreen SATU KALI saat cold-start pertama
+  if (!hasShownSplash && !isWebSessionSplashShown() && (showSplash || loading)) {
+    return <SplashScreen onFinish={handleFinishSplash} />;
+  }
+
+  // Jika auth masih membaca storage setelah splash selesai, tampilkan canvas netral tanpa memunculkan splash screen lagi
+  if (loading) {
+    return <View style={{ flex: 1, backgroundColor: COLORS.bgDark }} />;
   }
 
   return (
