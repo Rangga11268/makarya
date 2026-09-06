@@ -107,7 +107,10 @@ export function DashboardPage() {
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
-            Selamat Datang, {user?.nama_lengkap || user?.nama_usaha || user?.email?.split("@")[0]}
+            Selamat Datang,{" "}
+            {user?.nama_lengkap ||
+              user?.nama_usaha ||
+              user?.email?.split("@")[0]}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm

@@ -74,7 +74,8 @@ const FALLBACK_TALENTS = [
         id: "rev-1",
         reviewer_name: "Kopi Kenangan Senja UMKM",
         rating: 5,
-        komentar: "Pengerjaan sistem POS & landing page sangat cepat, rapi, dan sesuai spesifikasi.",
+        komentar:
+          "Pengerjaan sistem POS & landing page sangat cepat, rapi, dan sesuai spesifikasi.",
         project_title: "Pengembangan Landing Page & Web Order Kopi",
         created_at: "2026-08-20T10:00:00",
       },
@@ -82,7 +83,8 @@ const FALLBACK_TALENTS = [
         id: "rev-2",
         reviewer_name: "Batik Canting Solo",
         rating: 5,
-        komentar: "Website katalog produk selesai sebelum deadline. Sangat puas!",
+        komentar:
+          "Website katalog produk selesai sebelum deadline. Sangat puas!",
         project_title: "Desain & Katalog Interaktif Produk Batik",
         created_at: "2026-08-10T14:30:00",
       },
@@ -100,7 +102,13 @@ const FALLBACK_TALENTS = [
     total_proyek_selesai: 4,
     escrow_success_rate: "100%",
     status_badge: "Mahasiswa Berprestasi & Terverifikasi",
-    skills: ["Logo Design", "Packaging", "Branding", "Adobe Illustrator", "Figma"],
+    skills: [
+      "Logo Design",
+      "Packaging",
+      "Branding",
+      "Adobe Illustrator",
+      "Figma",
+    ],
     github_url: "",
     figma_url: "https://figma.com/@adeliaputri",
     website_url: "",
@@ -111,7 +119,8 @@ const FALLBACK_TALENTS = [
         id: "rev-3",
         reviewer_name: "Keripik Singkong Renyah",
         rating: 5,
-        komentar: "Desain packaging modern membuat produk kami tembus masuk supermarket lokal!",
+        komentar:
+          "Desain packaging modern membuat produk kami tembus masuk supermarket lokal!",
         project_title: "Redesain Kemasan Pouch Keripik Singkong",
         created_at: "2026-08-15T09:00:00",
       },
@@ -175,7 +184,12 @@ export function TalentListScreen({ navigation }) {
       if (items.length > 0) {
         setTalents(items);
       } else {
-        if (!searchQuery && selectedProdi === "ALL" && !minRatingFilter && !onlyCompletedFilter) {
+        if (
+          !searchQuery &&
+          selectedProdi === "ALL" &&
+          !minRatingFilter &&
+          !onlyCompletedFilter
+        ) {
           setTalents(FALLBACK_TALENTS);
         } else {
           setTalents([]);
@@ -256,7 +270,9 @@ export function TalentListScreen({ navigation }) {
       : "M";
     const ratingScore = Number(item.rating_avg) || 5.0;
     const completedCount = item.total_proyek_selesai ?? 0;
-    const skillsList = Array.isArray(item.skills) ? item.skills.slice(0, 4) : [];
+    const skillsList = Array.isArray(item.skills)
+      ? item.skills.slice(0, 4)
+      : [];
 
     return (
       <View style={styles.talentCard}>
@@ -383,10 +399,7 @@ export function TalentListScreen({ navigation }) {
                 key={item.id}
                 onPress={() => setSelectedProdi(item.id)}
                 activeOpacity={0.8}
-                style={[
-                  styles.prodiPill,
-                  isSelected && styles.prodiPillActive,
-                ]}
+                style={[styles.prodiPill, isSelected && styles.prodiPillActive]}
               >
                 <Text
                   style={[
@@ -406,10 +419,7 @@ export function TalentListScreen({ navigation }) {
         <TouchableOpacity
           onPress={() => setMinRatingFilter(!minRatingFilter)}
           activeOpacity={0.8}
-          style={[
-            styles.chipBtn,
-            minRatingFilter && styles.chipBtnActive,
-          ]}
+          style={[styles.chipBtn, minRatingFilter && styles.chipBtnActive]}
         >
           <Star
             size={12}
@@ -429,10 +439,7 @@ export function TalentListScreen({ navigation }) {
         <TouchableOpacity
           onPress={() => setOnlyCompletedFilter(!onlyCompletedFilter)}
           activeOpacity={0.8}
-          style={[
-            styles.chipBtn,
-            onlyCompletedFilter && styles.chipBtnActive,
-          ]}
+          style={[styles.chipBtn, onlyCompletedFilter && styles.chipBtnActive]}
         >
           <Award
             size={12}
@@ -460,9 +467,7 @@ export function TalentListScreen({ navigation }) {
         )}
 
         <View style={{ flex: 1 }} />
-        <Text style={styles.countSummaryText}>
-          {talents.length} Talenta
-        </Text>
+        <Text style={styles.countSummaryText}>{talents.length} Talenta</Text>
       </View>
 
       {loading && !refreshing ? (
@@ -554,7 +559,9 @@ export function TalentListScreen({ navigation }) {
                     </View>
                     <Text style={styles.detailProdiText}>
                       {selectedTalent.prodi || "Sistem Informasi"}
-                      {selectedTalent.semester ? ` • Semester ${selectedTalent.semester}` : ""}
+                      {selectedTalent.semester
+                        ? ` • Semester ${selectedTalent.semester}`
+                        : ""}
                     </Text>
                     {selectedTalent.nim ? (
                       <Text style={styles.detailNimText}>
@@ -583,7 +590,12 @@ export function TalentListScreen({ navigation }) {
 
                   <View style={styles.detailBadgeItem}>
                     <ShieldCheck size={14} color={COLORS.success} />
-                    <Text style={[styles.detailBadgeValue, { color: COLORS.success }]}>
+                    <Text
+                      style={[
+                        styles.detailBadgeValue,
+                        { color: COLORS.success },
+                      ]}
+                    >
                       100%
                     </Text>
                     <Text style={styles.detailBadgeLabel}>Sukses Escrow</Text>
@@ -591,28 +603,35 @@ export function TalentListScreen({ navigation }) {
                 </View>
 
                 <View style={styles.detailSectionBox}>
-                  <Text style={styles.detailSectionHeading}>Ringkasan Talenta</Text>
+                  <Text style={styles.detailSectionHeading}>
+                    Ringkasan Talenta
+                  </Text>
                   <Text style={styles.detailBioBody}>
                     {selectedTalent.bio ||
                       "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM lokal."}
                   </Text>
                 </View>
 
-                {Array.isArray(selectedTalent.skills) && selectedTalent.skills.length > 0 && (
-                  <View style={styles.detailSectionBox}>
-                    <Text style={styles.detailSectionHeading}>Keahlian Teknis</Text>
-                    <View style={styles.skillsWrap}>
-                      {selectedTalent.skills.map((skill, idx) => (
-                        <View key={idx} style={styles.detailSkillPill}>
-                          <Text style={styles.detailSkillText}>{skill}</Text>
-                        </View>
-                      ))}
+                {Array.isArray(selectedTalent.skills) &&
+                  selectedTalent.skills.length > 0 && (
+                    <View style={styles.detailSectionBox}>
+                      <Text style={styles.detailSectionHeading}>
+                        Keahlian Teknis
+                      </Text>
+                      <View style={styles.skillsWrap}>
+                        {selectedTalent.skills.map((skill, idx) => (
+                          <View key={idx} style={styles.detailSkillPill}>
+                            <Text style={styles.detailSkillText}>{skill}</Text>
+                          </View>
+                        ))}
+                      </View>
                     </View>
-                  </View>
-                )}
+                  )}
 
                 <View style={styles.detailSectionBox}>
-                  <Text style={styles.detailSectionHeading}>Tautan Portofolio & Karya</Text>
+                  <Text style={styles.detailSectionHeading}>
+                    Tautan Portofolio & Karya
+                  </Text>
                   <View style={styles.portfolioLinksGrid}>
                     {selectedTalent.github_url ? (
                       <TouchableOpacity
@@ -621,7 +640,9 @@ export function TalentListScreen({ navigation }) {
                         activeOpacity={0.7}
                       >
                         <GithubVectorIcon size={18} color={COLORS.textDark} />
-                        <Text style={styles.portfolioLinkLabel}>GitHub Repository</Text>
+                        <Text style={styles.portfolioLinkLabel}>
+                          GitHub Repository
+                        </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
                     ) : null}
@@ -633,7 +654,9 @@ export function TalentListScreen({ navigation }) {
                         activeOpacity={0.7}
                       >
                         <FigmaVectorIcon size={18} color={COLORS.brandIndigo} />
-                        <Text style={styles.portfolioLinkLabel}>Figma Workspace</Text>
+                        <Text style={styles.portfolioLinkLabel}>
+                          Figma Workspace
+                        </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
                     ) : null}
@@ -645,7 +668,9 @@ export function TalentListScreen({ navigation }) {
                         activeOpacity={0.7}
                       >
                         <GlobeVectorIcon size={18} color={COLORS.brandCyan} />
-                        <Text style={styles.portfolioLinkLabel}>Live Website / Demo</Text>
+                        <Text style={styles.portfolioLinkLabel}>
+                          Live Website / Demo
+                        </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
                     ) : null}
@@ -657,7 +682,9 @@ export function TalentListScreen({ navigation }) {
                         activeOpacity={0.7}
                       >
                         <LinkedinVectorIcon size={18} color="#0A66C2" />
-                        <Text style={styles.portfolioLinkLabel}>LinkedIn Profile</Text>
+                        <Text style={styles.portfolioLinkLabel}>
+                          LinkedIn Profile
+                        </Text>
                         <ExternalLink size={12} color={COLORS.textMuted} />
                       </TouchableOpacity>
                     ) : null}
@@ -677,17 +704,23 @@ export function TalentListScreen({ navigation }) {
                   selectedTalent.recent_reviews.length > 0 && (
                     <View style={styles.detailSectionBox}>
                       <Text style={styles.detailSectionHeading}>
-                        Ulasan Klien UMKM ({selectedTalent.recent_reviews.length})
+                        Ulasan Klien UMKM (
+                        {selectedTalent.recent_reviews.length})
                       </Text>
                       <View style={styles.reviewsListWrap}>
                         {selectedTalent.recent_reviews.map((rev, idx) => (
                           <View key={idx} style={styles.reviewItemCard}>
                             <View style={styles.reviewTopRow}>
                               <Text style={styles.reviewClientName}>
-                                {rev.reviewer_name || "Klien UMKM Terverifikasi"}
+                                {rev.reviewer_name ||
+                                  "Klien UMKM Terverifikasi"}
                               </Text>
                               <View style={styles.reviewStarRow}>
-                                <Star size={12} color="#F59E0B" fill="#F59E0B" />
+                                <Star
+                                  size={12}
+                                  color="#F59E0B"
+                                  fill="#F59E0B"
+                                />
                                 <Text style={styles.reviewScoreText}>
                                   {rev.rating || 5}.0
                                 </Text>
@@ -719,7 +752,9 @@ export function TalentListScreen({ navigation }) {
                 activeOpacity={0.85}
               >
                 <MessageSquare size={16} color="#FFFFFF" />
-                <Text style={styles.modalCtaBtnText}>Ajak Kolaborasi Proyek</Text>
+                <Text style={styles.modalCtaBtnText}>
+                  Ajak Kolaborasi Proyek
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -764,11 +799,16 @@ export function TalentListScreen({ navigation }) {
             )}
 
             <Text style={styles.contactBodyLabel}>
-              Pilih proyek kebutuhan Anda yang ingin ditawarkan kepada mahasiswa ini:
+              Pilih proyek kebutuhan Anda yang ingin ditawarkan kepada mahasiswa
+              ini:
             </Text>
 
             {loadingProjects ? (
-              <ActivityIndicator size="small" color={COLORS.brandIndigo} style={{ marginVertical: 20 }} />
+              <ActivityIndicator
+                size="small"
+                color={COLORS.brandIndigo}
+                style={{ marginVertical: 20 }}
+              />
             ) : myProjects.length > 0 ? (
               <View style={styles.projectsSelectorWrap}>
                 {myProjects.map((p) => {
@@ -787,7 +827,10 @@ export function TalentListScreen({ navigation }) {
                         <Text
                           style={[
                             styles.projectSelectTitle,
-                            isSelected && { color: COLORS.brandIndigo, fontWeight: "700" },
+                            isSelected && {
+                              color: COLORS.brandIndigo,
+                              fontWeight: "700",
+                            },
                           ]}
                           numberOfLines={1}
                         >
@@ -815,7 +858,8 @@ export function TalentListScreen({ navigation }) {
                   Belum Ada Proyek Aktif
                 </Text>
                 <Text style={styles.noProjectsNoticeDesc}>
-                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta ini langsung dapat meninjau dan menerima penawaran Anda.
+                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta
+                  ini langsung dapat meninjau dan menerima penawaran Anda.
                 </Text>
               </View>
             )}
