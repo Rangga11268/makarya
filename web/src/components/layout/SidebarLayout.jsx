@@ -18,7 +18,6 @@ import {
   X,
   PlusCircle,
   ChevronRight,
-  Sparkles,
   Award,
   Bell,
   CheckCircle2,
@@ -239,21 +238,15 @@ export function SidebarLayout() {
       {/* 1. DESKTOP SIDEBAR */}
       <aside className="hidden lg:flex lg:flex-col lg:w-72 bg-surface border-r border-border shrink-0 z-30 select-none">
         {/* Brand Header */}
-        <div className="h-18 px-6 flex items-center justify-between border-b border-border bg-surface">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-dark-900 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5 text-brand-cyan" />
-            </div>
-            <div>
-              <span className="font-serif text-xl font-bold tracking-tight text-dark-900">
-                Makarya.
-              </span>
-              <span className="text-[10px] block font-semibold text-muted tracking-wider uppercase">
-                Portal Kolaborasi
-              </span>
-            </div>
+        <div className="h-18 px-5 flex items-center justify-between border-b border-border bg-surface">
+          <Link to="/" className="flex items-center group select-none">
+            <img
+              src="/logo.webp"
+              alt="Makarya Logo"
+              className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
+            />
           </Link>
-          <div className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15">
+          <div className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15">
             {isAdmin ? "Admin" : isUmkm ? "UMKM" : "MHS"}
           </div>
         </div>
@@ -404,14 +397,13 @@ export function SidebarLayout() {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="h-16 px-6 flex items-center justify-between border-b border-border">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-dark-900 flex items-center justify-center text-white">
-              <Sparkles className="w-4 h-4 text-brand-cyan" />
-            </div>
-            <span className="font-serif text-lg font-bold text-dark-900">
-              Makarya.
-            </span>
+        <div className="h-16 px-5 flex items-center justify-between border-b border-border">
+          <Link to="/" className="flex items-center group select-none">
+            <img
+              src="/logo.webp"
+              alt="Makarya Logo"
+              className="h-7 w-auto object-contain"
+            />
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
@@ -501,11 +493,16 @@ export function SidebarLayout() {
             </button>
 
             <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted">
-              <Link to="/" className="hover:text-dark-900 transition-colors">
-                Makarya
+              <Link to="/" className="flex items-center gap-1.5 hover:text-dark-900 transition-colors">
+                <img
+                  src="/logo-icon.svg"
+                  alt="Makarya"
+                  className="w-4 h-4 object-contain"
+                />
+                <span className="font-bold text-dark-900">Makarya</span>
               </Link>
               <span>/</span>
-              <span className="text-dark-900 font-bold capitalize">
+              <span className="text-muted font-semibold capitalize">
                 {location.pathname.split("/")[1] || "Dashboard"}
               </span>
             </div>

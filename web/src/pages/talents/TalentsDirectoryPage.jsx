@@ -97,7 +97,9 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
                   Semester {talent.semester || 6}
                 </span>
                 <span className="text-[11px] font-semibold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <Award className="w-3 h-3" /> {talent.status_badge || "Mahasiswa Berprestasi & Terverifikasi"}
+                  <Award className="w-3 h-3" />{" "}
+                  {talent.status_badge ||
+                    "Mahasiswa Berprestasi & Terverifikasi"}
                 </span>
               </div>
             </div>
@@ -221,7 +223,8 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
               !talent.website_url &&
               !talent.linkedin_url && (
                 <p className="text-xs text-muted italic bg-canvas p-3 rounded-xl border border-border">
-                  Tautan portofolio publik belum ditambahkan. Anda dapat meminta sampel pekerjaan saat berdiskusi via chat.
+                  Tautan portofolio publik belum ditambahkan. Anda dapat meminta
+                  sampel pekerjaan saat berdiskusi via chat.
                 </p>
               )}
           </div>
@@ -266,7 +269,9 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-7 h-7 rounded-full bg-slate-200 font-bold text-xs flex items-center justify-center text-slate-700">
-                          {rev.client_name ? rev.client_name.charAt(0).toUpperCase() : "K"}
+                          {rev.client_name
+                            ? rev.client_name.charAt(0).toUpperCase()
+                            : "K"}
                         </div>
                         <div>
                           <span className="text-xs font-bold text-dark-900 block leading-tight">
@@ -292,7 +297,8 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
               </div>
             ) : (
               <p className="text-xs text-muted italic bg-canvas p-3.5 rounded-xl border border-border">
-                Belum ada ulasan tertulis. Mahasiswa ini siap mengerjakan deliverable pertama untuk usaha Anda.
+                Belum ada ulasan tertulis. Mahasiswa ini siap mengerjakan
+                deliverable pertama untuk usaha Anda.
               </p>
             )}
           </div>
@@ -300,7 +306,12 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
 
         {/* Modal Bottom CTA */}
         <div className="p-4 sm:p-6 border-t border-border bg-canvas flex items-center justify-end gap-3">
-          <Button variant="outline" size="sm" onClick={onClose} className="font-semibold text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            className="font-semibold text-xs"
+          >
             Tutup
           </Button>
           <Button
@@ -328,8 +339,12 @@ export function TalentsDirectoryPage() {
   const [error, setError] = useState(null);
 
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
-  const [selectedProdi, setSelectedProdi] = useState(searchParams.get("prodi") || "");
-  const [minRating, setMinRating] = useState(searchParams.get("rating") ? Number(searchParams.get("rating")) : 0);
+  const [selectedProdi, setSelectedProdi] = useState(
+    searchParams.get("prodi") || "",
+  );
+  const [minRating, setMinRating] = useState(
+    searchParams.get("rating") ? Number(searchParams.get("rating")) : 0,
+  );
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "rating");
   const [onlyCompleted, setOnlyCompleted] = useState(false);
 
@@ -360,11 +375,17 @@ export function TalentsDirectoryPage() {
       if (minRating > 0) params.min_rating = minRating;
 
       const res = await talentApi.getTalents(params);
-      const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      const list = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
       setTalents(list);
     } catch (err) {
       console.error("Gagal memuat direktori talenta:", err);
-      setError("Gagal terhubung ke direktori talenta. Silakan coba beberapa saat lagi.");
+      setError(
+        "Gagal terhubung ke direktori talenta. Silakan coba beberapa saat lagi.",
+      );
     } finally {
       setLoading(false);
     }
@@ -428,13 +449,16 @@ export function TalentsDirectoryPage() {
               Mahasiswa Berprestasi & Terverifikasi
             </h1>
             <p className="text-xs sm:text-sm text-muted max-w-2xl font-sans">
-              Temukan talenta mahasiswa terverifikasi dengan rekam jejak deliverable riil, skor ulasan memuaskan dari UMKM, dan proteksi transaksi escrow resmi platform.
+              Temukan talenta mahasiswa terverifikasi dengan rekam jejak
+              deliverable riil, skor ulasan memuaskan dari UMKM, dan proteksi
+              transaksi escrow resmi platform.
             </p>
           </div>
 
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs text-muted font-medium bg-canvas px-3 py-1.5 rounded-xl border border-border">
-              Total Talenta Terkurasi: <b className="text-dark-900">{talents.length}</b>
+              Total Talenta Terkurasi:{" "}
+              <b className="text-dark-900">{talents.length}</b>
             </span>
           </div>
         </div>
@@ -509,7 +533,9 @@ export function TalentsDirectoryPage() {
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex items-center gap-1.5 bg-canvas px-3 py-1.5 rounded-2xl border border-border">
               <ArrowUpDown className="w-3.5 h-3.5 text-muted" />
-              <span className="text-xs text-muted font-medium hidden sm:inline">Urutkan:</span>
+              <span className="text-xs text-muted font-medium hidden sm:inline">
+                Urutkan:
+              </span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -522,7 +548,11 @@ export function TalentsDirectoryPage() {
               </select>
             </div>
 
-            {(keyword || selectedProdi || minRating > 0 || onlyCompleted || sortBy !== "rating") && (
+            {(keyword ||
+              selectedProdi ||
+              minRating > 0 ||
+              onlyCompleted ||
+              sortBy !== "rating") && (
               <Button
                 variant="outline"
                 size="sm"
@@ -564,7 +594,9 @@ export function TalentsDirectoryPage() {
         {/* Rating & Proyek Status Filter Row - Antislop: Clean labels without literal emoji */}
         <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/60">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted font-medium mr-1">Filter Rating:</span>
+            <span className="text-xs text-muted font-medium mr-1">
+              Filter Rating:
+            </span>
             {[
               { val: 0, label: "Semua Rating" },
               { val: 4.8, label: "Rating 4.8+" },
@@ -596,7 +628,8 @@ export function TalentsDirectoryPage() {
             </label>
 
             <span className="text-muted text-[11px] font-medium bg-canvas px-2.5 py-1 rounded-full border border-border">
-              Ditemukan: <b className="text-dark-900">{talents.length}</b> talenta
+              Ditemukan: <b className="text-dark-900">{talents.length}</b>{" "}
+              talenta
             </span>
           </div>
         </div>
@@ -666,7 +699,10 @@ export function TalentsDirectoryPage() {
                         </div>
 
                         <p className="text-xs text-muted flex items-center gap-1 mt-0.5 truncate">
-                          <ProdiVectorIcon size={14} className="text-brand-indigo shrink-0" />
+                          <ProdiVectorIcon
+                            size={14}
+                            className="text-brand-indigo shrink-0"
+                          />
                           <span className="truncate">{talent.prodi}</span>
                         </p>
                       </div>
@@ -723,9 +759,14 @@ export function TalentsDirectoryPage() {
                   )}
 
                   {/* Verified Portfolio Mini Link Buttons */}
-                  {(talent.github_url || talent.figma_url || talent.website_url || talent.linkedin_url) && (
+                  {(talent.github_url ||
+                    talent.figma_url ||
+                    talent.website_url ||
+                    talent.linkedin_url) && (
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="text-[11px] text-muted font-medium">Portofolio:</span>
+                      <span className="text-[11px] text-muted font-medium">
+                        Portofolio:
+                      </span>
                       <div className="flex items-center gap-1.5">
                         {talent.github_url && (
                           <a
@@ -776,23 +817,26 @@ export function TalentsDirectoryPage() {
                   )}
 
                   {/* Client Testimonial Snippet */}
-                  {talent.recent_reviews && talent.recent_reviews.length > 0 && (
-                    <div className="p-3 bg-canvas/80 rounded-2xl border border-border/80 mb-4 space-y-1">
-                      <div className="flex items-center justify-between text-[10px]">
-                        <div className="flex items-center gap-1 font-bold text-dark-900">
-                          <Quote className="w-3 h-3 text-brand-indigo" />
-                          <span className="truncate">{talent.recent_reviews[0].client_name}</span>
+                  {talent.recent_reviews &&
+                    talent.recent_reviews.length > 0 && (
+                      <div className="p-3 bg-canvas/80 rounded-2xl border border-border/80 mb-4 space-y-1">
+                        <div className="flex items-center justify-between text-[10px]">
+                          <div className="flex items-center gap-1 font-bold text-dark-900">
+                            <Quote className="w-3 h-3 text-brand-indigo" />
+                            <span className="truncate">
+                              {talent.recent_reviews[0].client_name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-0.5 text-amber-500 font-bold">
+                            <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-500" />
+                            <span>{talent.recent_reviews[0].skor}.0</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-0.5 text-amber-500 font-bold">
-                          <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-500" />
-                          <span>{talent.recent_reviews[0].skor}.0</span>
-                        </div>
+                        <p className="text-[11px] text-slate-700 italic line-clamp-2">
+                          "{talent.recent_reviews[0].ulasan}"
+                        </p>
                       </div>
-                      <p className="text-[11px] text-slate-700 italic line-clamp-2">
-                        "{talent.recent_reviews[0].ulasan}"
-                      </p>
-                    </div>
-                  )}
+                    )}
 
                   {/* Skills Pills */}
                   {talent.skills && talent.skills.length > 0 && (
