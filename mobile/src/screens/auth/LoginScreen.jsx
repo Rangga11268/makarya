@@ -187,21 +187,15 @@ export function LoginScreen({ navigation }) {
         </View>
 
         {/* Google Sign In Button */}
-        <TouchableOpacity
-          style={styles.googleBtn}
+        <Button
+          title="Masuk dengan Google"
+          variant="google"
+          size="lg"
           onPress={handleGoogleLogin}
-          disabled={googleLoading || loading}
-          activeOpacity={0.8}
-        >
-          {googleLoading ? (
-            <ActivityIndicator size="small" color={COLORS.brandIndigo} />
-          ) : (
-            <>
-              <GoogleIcon size={18} />
-              <Text style={styles.googleBtnText}>Masuk dengan Google</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          loading={googleLoading}
+          disabled={loading}
+          icon={<GoogleIcon size={18} />}
+        />
 
         {/* Register link */}
         <View style={styles.registerRow}>
@@ -360,29 +354,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
-  },
-  googleBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.bgSurface,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    borderRadius: 14,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    gap: 10,
-    elevation: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-  },
-  googleBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 14,
-    fontWeight: "600",
-    color: COLORS.textDark,
   },
   footerNotice: {
     flexDirection: "row",

@@ -8,7 +8,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -19,8 +18,8 @@ import {
   ShieldCheck,
   Mail,
   RotateCcw,
-  CheckCircle2,
   ArrowLeft,
+  ArrowRight,
   Info,
 } from "lucide-react-native";
 
@@ -38,34 +37,34 @@ export function VerificationScreen({ route, navigation }) {
   useEffect(() => {
     let interval = null;
     if (timer > 0) {
-      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [timer]);
 
   const handleOtpChange = (text, index) => {
-    const cleanText = text.replace(/[^0-9]/g, "");
+    const cleaned = text.replace(/[^0-9]/g, "");
     const newOtp = [...otp];
 
-    if (cleanText.length > 1) {
-      // User pasted full OTP
-      const pastedDigits = cleanText.slice(0, 6).split("");
-      pastedDigits.forEach((digit, i) => {
-        newOtp[i] = digit;
+    if (cleaned.length > 1) {
+      const chars = cleaned.slice(0, 6).split("");
+      chars.forEach((c, idx) => {
+        if (index + idx < 6) {
+          newOtp[index + idx] = c;
+        }
       });
       setOtp(newOtp);
-      const nextIndex = Math.min(pastedDigits.length, 5);
-      inputRefs.current[nextIndex]?.focus();
+      const nextIdx = Math.min(index + chars.length, 5);
+      inputRefs.current[nextIdx]?.focus();
       return;
     }
 
-    newOtp[index] = cleanText;
+    newOtp[index] = cleaned;
     setOtp(newOtp);
 
-    // Auto advance to next box
-    if (cleanText && index < 5) {
+    if (cleaned && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -77,17 +76,16 @@ export function VerificationScreen({ route, navigation }) {
   };
 
   const handleVerify = async () => {
-    const fullOtp = otp.join("");
-    if (fullOtp.length < 6) {
-      showToast("Masukkan 6 digit kode verifikasi", "warning");
+    const code = otp.join("");
+    if (code.length < 6) {
+      showToast("Harap masukkan 6 digit kode OTP secara lengkap", "warning");
       return;
     }
 
     try {
       setLoading(true);
-      await verifyOtp(email, fullOtp);
-      showToast("Akun Anda berhasil diverifikasi & aktif!", "success");
-      // Sesi otomatis aktif, AppNavigator akan langsung mengarahkan ke MainTabs
+      await verifyOtp(email, code);
+      showToast("Akun Anda berhasil diverifikasi!", "success");
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Kode OTP tidak valid atau telah kedaluwarsa",
@@ -120,6 +118,7 @@ export function VerificationScreen({ route, navigation }) {
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         {/* Back navigation */}
         <TouchableOpacity
@@ -127,7 +126,9 @@ export function VerificationScreen({ route, navigation }) {
           onPress={() => navigation.navigate("Login")}
           activeOpacity={0.7}
         >
-          <ArrowLeft size={18} color={COLORS.textPrimary} />
+          <View style={styles.backIconCircle}>
+            <ArrowLeft size={16} color={COLORS.textDark} />
+          </View>
           <Text style={styles.backText}>Kembali ke Masuk</Text>
         </TouchableOpacity>
 
@@ -176,37 +177,34 @@ export function VerificationScreen({ route, navigation }) {
           </Text>
         </View>
 
-        {/* Action Button */}
+        {/* Action Button - Fully consistent Pill CTA */}
         <Button
+          title="Verifikasi & Masuk Sekarang"
           variant="brand"
           size="lg"
           onPress={handleVerify}
           loading={loading}
+          iconRight={<ArrowRight size={18} color="#FFFFFF" />}
           style={styles.verifyBtn}
-        >
-          Verifikasi & Masuk Sekarang
-        </Button>
+        />
 
         {/* Resend Timer Controls */}
         <View style={styles.resendContainer}>
           <Text style={styles.resendNotice}>Belum menerima kode verifikasi?</Text>
           {timer > 0 ? (
-            <Text style={styles.timerText}>Kirim ulang dalam {timer} detik</Text>
+            <View style={styles.timerBadge}>
+              <Text style={styles.timerText}>Kirim ulang dalam {timer} detik</Text>
+            </View>
           ) : (
-            <TouchableOpacity
+            <Button
+              title="Kirim Ulang Kode OTP"
+              variant="soft"
+              size="md"
               onPress={handleResend}
-              disabled={resending}
+              loading={resending}
+              icon={<RotateCcw size={15} color={COLORS.brandIndigo} />}
               style={styles.resendBtn}
-            >
-              {resending ? (
-                <ActivityIndicator size="small" color={COLORS.brandIndigo} />
-              ) : (
-                <>
-                  <RotateCcw size={14} color={COLORS.brandIndigo} />
-                  <Text style={styles.resendBtnText}>Kirim Ulang Kode OTP</Text>
-                </>
-              )}
-            </TouchableOpacity>
+            />
           )}
         </View>
       </ScrollView>
@@ -217,27 +215,38 @@ export function VerificationScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 24,
-    paddingTop: 48,
+    backgroundColor: COLORS.bgDark,
+    paddingHorizontal: 22,
+    paddingTop: 50,
     paddingBottom: 36,
   },
   backBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     alignSelf: "flex-start",
     marginBottom: 24,
     paddingVertical: 4,
   },
+  backIconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   backText: {
     fontSize: 13,
-    fontFamily: FONTS.medium,
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.bodyMedium,
+    fontWeight: "600",
+    color: COLORS.textDark,
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 28,
   },
   iconCircle: {
     width: 72,
@@ -252,17 +261,19 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.displayBold,
+    fontWeight: "700",
+    color: COLORS.textDark,
     textAlign: "center",
+    letterSpacing: -0.4,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 13,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
     textAlign: "center",
-    lineHeight: 19,
+    lineHeight: 20,
     paddingHorizontal: 12,
   },
   targetBadge: {
@@ -270,47 +281,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     marginTop: 14,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.bgSurface,
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.borderDark,
   },
   targetEmail: {
     fontSize: 12,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   otpRow: {
     flexDirection: "row",
     justifyContent: "center",
     gap: 10,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   otpBox: {
     width: 48,
     height: 56,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1.5,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
+    borderColor: COLORS.borderDark,
+    backgroundColor: COLORS.bgSurface,
     fontSize: 22,
-    fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: COLORS.textDark,
   },
   otpBoxFilled: {
     borderColor: COLORS.brandIndigo,
-    backgroundColor: "#F5F3FF",
+    backgroundColor: COLORS.brandIndigoLight,
   },
   infoCallout: {
     flexDirection: "row",
-    backgroundColor: "#EEF2FF",
+    backgroundColor: COLORS.brandIndigoLight,
     borderWidth: 1,
-    borderColor: "#C7D2FE",
+    borderColor: "rgba(79, 70, 229, 0.2)",
     padding: 12,
-    borderRadius: 14,
-    marginBottom: 24,
+    borderRadius: 16,
+    marginBottom: 22,
   },
   infoIcon: {
     marginRight: 8,
@@ -319,39 +332,41 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 12,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular,
     color: "#3730A3",
-    lineHeight: 17,
+    lineHeight: 18,
   },
   boldText: {
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
   },
   verifyBtn: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   resendContainer: {
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   resendNotice: {
     fontSize: 12,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
+  },
+  timerBadge: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   timerText: {
     fontSize: 12,
-    fontFamily: FONTS.bold,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyMedium,
+    fontWeight: "600",
+    color: COLORS.textMuted,
   },
   resendBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: 4,
-  },
-  resendBtnText: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
-    color: COLORS.brandIndigo,
+    marginTop: 2,
   },
 });

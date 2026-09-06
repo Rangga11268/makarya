@@ -204,13 +204,13 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
         {/* Action Buttons Row */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.skipBtn}
+          <Button
+            title="Lewati"
+            variant="secondary"
+            size="md"
             onPress={handleSkip}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.skipBtnText}>Lewati</Text>
-          </TouchableOpacity>
+            style={styles.skipBtn}
+          />
 
           <Button
             title={
@@ -473,19 +473,6 @@ const styles = StyleSheet.create({
   },
   skipBtn: {
     flex: 1,
-    backgroundColor: COLORS.canvasSoft,
-    paddingVertical: 14,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-  },
-  skipBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#64748B",
   },
   nextBtn: {
     flex: 1.5,

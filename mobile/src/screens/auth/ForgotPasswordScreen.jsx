@@ -19,6 +19,7 @@ import {
   Mail,
   Lock,
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   Info,
 } from "lucide-react-native";
@@ -43,7 +44,7 @@ export function ForgotPasswordScreen({ navigation }) {
     try {
       setLoading(true);
       await forgotPassword(email.trim());
-      showToast("Kode OTP reset password telah dikirim!", "success");
+      showToast("Kode OTP pemulihan telah dikirim ke email Anda", "info");
       setStep(2);
     } catch (err) {
       showToast(
@@ -94,6 +95,7 @@ export function ForgotPasswordScreen({ navigation }) {
       <ScrollView
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         {/* Back Button */}
         <TouchableOpacity
@@ -107,9 +109,11 @@ export function ForgotPasswordScreen({ navigation }) {
           }}
           activeOpacity={0.7}
         >
-          <ArrowLeft size={18} color={COLORS.textPrimary} />
+          <View style={styles.backIconCircle}>
+            <ArrowLeft size={16} color={COLORS.textDark} />
+          </View>
           <Text style={styles.backText}>
-            {step === 2 ? "Ganti Email" : "Kembali ke Masuk"}
+            {step === 2 ? "Ganti Alamat Email" : "Kembali ke Masuk"}
           </Text>
         </TouchableOpacity>
 
@@ -122,16 +126,16 @@ export function ForgotPasswordScreen({ navigation }) {
           </Text>
           <Text style={styles.subtitle}>
             {step === 1
-              ? "Masukkan email yang terdaftar pada akun Makarya Anda untuk menerima kode pemulihan."
+              ? "Masukkan email yang terdaftar pada akun Makarya Anda untuk menerima kode verifikasi pemulihan."
               : `Masukkan 6 digit kode OTP yang dikirimkan ke ${email} dan tentukan kata sandi baru Anda.`}
           </Text>
         </View>
 
         {step === 1 ? (
-          <View style={styles.form}>
+          <View style={styles.formContainer}>
             <Input
               label="Alamat Email Terdaftar"
-              placeholder="Contoh: nama@domain.com"
+              placeholder="nama@kampus.ac.id atau email UMKM"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -140,17 +144,17 @@ export function ForgotPasswordScreen({ navigation }) {
             />
 
             <Button
+              title="Kirim Kode Pemulihan"
               variant="brand"
               size="lg"
               onPress={handleRequestOtp}
               loading={loading}
+              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
               style={styles.submitBtn}
-            >
-              Kirim Kode Pemulihan
-            </Button>
+            />
           </View>
         ) : (
-          <View style={styles.form}>
+          <View style={styles.formContainer}>
             <Input
               label="Kode OTP Pemulihan"
               placeholder="Masukkan 6 digit (contoh: 123456)"
@@ -172,7 +176,7 @@ export function ForgotPasswordScreen({ navigation }) {
               placeholder="Minimal 8 karakter"
               value={newPassword}
               onChangeText={setNewPassword}
-              secureTextEntry
+              isPassword={true}
               icon={<Lock size={18} color={COLORS.textMuted} />}
             />
 
@@ -181,19 +185,19 @@ export function ForgotPasswordScreen({ navigation }) {
               placeholder="Ketik ulang kata sandi baru"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
-              secureTextEntry
+              isPassword={true}
               icon={<Lock size={18} color={COLORS.textMuted} />}
             />
 
             <Button
+              title="Simpan Kata Sandi & Masuk"
               variant="brand"
               size="lg"
               onPress={handleResetPassword}
               loading={loading}
+              iconRight={<CheckCircle2 size={18} color="#FFFFFF" />}
               style={styles.submitBtn}
-            >
-              Simpan Kata Sandi & Masuk
-            </Button>
+            />
           </View>
         )}
       </ScrollView>
@@ -204,27 +208,38 @@ export function ForgotPasswordScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: COLORS.background,
-    paddingHorizontal: 24,
-    paddingTop: 48,
+    backgroundColor: COLORS.bgDark,
+    paddingHorizontal: 22,
+    paddingTop: 50,
     paddingBottom: 36,
   },
   backBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     alignSelf: "flex-start",
     marginBottom: 24,
     paddingVertical: 4,
   },
+  backIconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   backText: {
     fontSize: 13,
-    fontFamily: FONTS.medium,
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.bodyMedium,
+    fontWeight: "600",
+    color: COLORS.textDark,
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 26,
   },
   iconCircle: {
     width: 72,
@@ -239,41 +254,51 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: FONTS.bold,
-    color: COLORS.textPrimary,
+    fontFamily: FONTS.displayBold,
+    fontWeight: "700",
+    color: COLORS.textDark,
     textAlign: "center",
+    letterSpacing: -0.4,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 13,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
     textAlign: "center",
-    lineHeight: 19,
+    lineHeight: 20,
     paddingHorizontal: 12,
   },
-  form: {
-    gap: 16,
+  formContainer: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    gap: 12,
   },
   infoBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: COLORS.brandIndigoLight,
     borderWidth: 1,
-    borderColor: "#C7D2FE",
-    padding: 10,
-    borderRadius: 12,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+    padding: 12,
+    borderRadius: 14,
+    marginBottom: 4,
   },
   infoText: {
-    fontSize: 11,
-    fontFamily: FONTS.regular,
+    fontSize: 12,
+    fontFamily: FONTS.bodyRegular,
     color: "#3730A3",
+    flex: 1,
   },
   boldText: {
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
   },
   submitBtn: {
-    marginTop: 8,
+    marginTop: 6,
   },
 });

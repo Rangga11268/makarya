@@ -11,6 +11,7 @@ import { FONTS } from "../../theme/fonts";
 
 export function Button({
   title,
+  children,
   onPress,
   variant = "brand",
   size = "md",
@@ -24,10 +25,13 @@ export function Button({
   const isBrand =
     variant === "brand" || variant === "lime" || variant === "primary";
   const isSecondary = variant === "secondary" || variant === "dark";
+  const isGoogle = variant === "google" || variant === "white";
   const isOutline = variant === "outline";
   const isSoft = variant === "soft";
   const isGhost = variant === "ghost";
   const isDanger = variant === "danger";
+
+  const buttonText = title ?? (typeof children === "string" ? children : null);
 
   return (
     <TouchableOpacity
@@ -39,6 +43,7 @@ export function Button({
         styles[size],
         isBrand && styles.brand,
         isSecondary && styles.secondary,
+        isGoogle && styles.google,
         isOutline && styles.outline,
         isSoft && styles.soft,
         isGhost && styles.ghost,
@@ -51,7 +56,7 @@ export function Button({
         <ActivityIndicator
           size="small"
           color={
-            isOutline || isGhost || isSoft || isSecondary
+            isOutline || isGhost || isSoft || isSecondary || isGoogle
               ? COLORS.brandIndigo
               : COLORS.textInverse
           }
@@ -59,21 +64,26 @@ export function Button({
       ) : (
         <View style={styles.content}>
           {Icon && <View style={styles.iconLeft}>{Icon}</View>}
-          <Text
-            style={[
-              styles.text,
-              styles[`text_${size}`],
-              isBrand && styles.textBrand,
-              isSecondary && styles.textSecondary,
-              isOutline && styles.textOutline,
-              isSoft && styles.textSoft,
-              isGhost && styles.textGhost,
-              isDanger && styles.textDanger,
-              textStyle,
-            ]}
-          >
-            {title}
-          </Text>
+          {buttonText ? (
+            <Text
+              style={[
+                styles.text,
+                styles[`text_${size}`],
+                isBrand && styles.textBrand,
+                isSecondary && styles.textSecondary,
+                isGoogle && styles.textGoogle,
+                isOutline && styles.textOutline,
+                isSoft && styles.textSoft,
+                isGhost && styles.textGhost,
+                isDanger && styles.textDanger,
+                textStyle,
+              ]}
+            >
+              {buttonText}
+            </Text>
+          ) : (
+            children
+          )}
           {IconRight && <View style={styles.iconRight}>{IconRight}</View>}
         </View>
       )}
@@ -111,6 +121,12 @@ const styles = StyleSheet.create({
   },
   secondary: {
     backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    ...SHADOWS.sm,
+  },
+  google: {
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     ...SHADOWS.sm,
@@ -157,6 +173,9 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   textSecondary: {
+    color: COLORS.textDark,
+  },
+  textGoogle: {
     color: COLORS.textDark,
   },
   textOutline: {
