@@ -61,6 +61,7 @@ export function PostProjectScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Header
+        category="PASANG PROYEK"
         title="Pasang Proyek UMKM"
         subtitle="Dapatkan penawaran proposal dari mahasiswa kampus"
         onBack={() => navigation.goBack()}

@@ -356,10 +356,10 @@ export function ProposalBoardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 font-sans">
       {/* 1. Header Bar: Workspace Title & Wallet Summary */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-5 sm:p-6 rounded-3xl border border-border shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 sm:p-8 rounded-3xl border border-border shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-border bg-canvas text-xs font-semibold text-dark-900">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans flex items-center gap-1.5">
               {isUmkm ? (
                 <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
               ) : (
@@ -369,17 +369,18 @@ export function ProposalBoardPage() {
                 {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
               </span>
             </span>
-            <span className="text-[11px] text-muted">
+            <span className="text-muted/60 text-xs">•</span>
+            <span className="text-xs text-muted font-sans font-normal">
               Pusat Kolaborasi Real-Time & Garansi Escrow
             </span>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
             {isUmkm
               ? "Kelola Proyek & Ruang Diskusi Terpadu"
               : "Papan Proyek, Obrolan & Deliverable"}
           </h1>
-          <p className="text-xs text-muted">
+          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
               ? "Bahas brief secara langsung, evaluasi tawaran pelamar, dan rilis honor saat pekerjaan tuntas."
               : "Berdiskusi langsung dengan klien, bagikan tautan Figma/Drive, dan serahkan hasil deliverable."}

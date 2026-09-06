@@ -47,7 +47,11 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <HomeTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
+            <HomeTabIcon
+              focused={focused}
+              size={22}
+              color={COLORS.brandIndigo}
+            />
           ),
         }}
       />
@@ -59,7 +63,11 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
-            <ExploreTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
+            <ExploreTabIcon
+              focused={focused}
+              size={22}
+              color={COLORS.brandIndigo}
+            />
           ),
         }}
       />
@@ -71,7 +79,11 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Workspace",
           tabBarIcon: ({ focused }) => (
-            <WorkspaceTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
+            <WorkspaceTabIcon
+              focused={focused}
+              size={22}
+              color={COLORS.brandIndigo}
+            />
           ),
         }}
       />
@@ -83,7 +95,11 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Wallet",
           tabBarIcon: ({ focused }) => (
-            <WalletTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
+            <WalletTabIcon
+              focused={focused}
+              size={22}
+              color={COLORS.brandIndigo}
+            />
           ),
         }}
       />
@@ -95,7 +111,11 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ focused }) => (
-            <ProfileTabIcon focused={focused} size={22} color={COLORS.brandIndigo} />
+            <ProfileTabIcon
+              focused={focused}
+              size={22}
+              color={COLORS.brandIndigo}
+            />
           ),
         }}
       />

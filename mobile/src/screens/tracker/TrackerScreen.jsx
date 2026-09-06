@@ -16,6 +16,7 @@ import { useAuthStore } from "../../store/authStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
+import { Header } from "../../components/ui/Header";
 import {
   Layers,
   ArrowRight,
@@ -149,29 +150,27 @@ export function TrackerScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Sleek, Uncluttered Header */}
-      <View style={styles.header}>
-        <View style={styles.headerMainRow}>
-          <View>
-            <Text style={styles.headerTitle}>Workspace</Text>
-            <Text style={styles.headerSubtitle}>
-              {activeJobsCount} in progress • {items.length} total
-            </Text>
-          </View>
-
-          {!isMahasiswa && (
+      {/* 1. Standardized Unified Header */}
+      <Header
+        category="WORKSPACE"
+        title="Ruang Kerja & Proyek"
+        subtitle={`${activeJobsCount} sedang berjalan • ${items.length} total proyek`}
+        rightAction={
+          !isMahasiswa ? (
             <TouchableOpacity
               style={styles.newProjectBtn}
               onPress={() => navigation.navigate("PostProject")}
               activeOpacity={0.85}
             >
               <Plus size={14} color="#FFFFFF" strokeWidth={2.5} />
-              <Text style={styles.newProjectBtnText}>New Project</Text>
+              <Text style={styles.newProjectBtnText}>Proyek Baru</Text>
             </TouchableOpacity>
-          )}
-        </View>
+          ) : null
+        }
+      />
 
-        {/* 2. Clean Segmented Pill Tabs */}
+      {/* 2. Clean Segmented Pill Tabs */}
+      <View style={styles.tabBarWrapper}>
         <View style={styles.tabBar}>
           {segmentedTabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -448,34 +447,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC", // Clean, bright backdrop
   },
 
-  // 1. Header
-  header: {
-    backgroundColor: "#FFFFFF",
-    paddingTop: Platform.OS === "ios" ? 54 : 44,
+  tabBarWrapper: {
+    backgroundColor: COLORS.bgSurface,
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
-    ...SHADOWS.sm,
-  },
-  headerMainRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 14,
-  },
-  headerTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 22,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 2,
   },
   newProjectBtn: {
     flexDirection: "row",

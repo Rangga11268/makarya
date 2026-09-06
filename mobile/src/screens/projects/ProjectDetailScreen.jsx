@@ -320,6 +320,7 @@ export function ProjectDetailScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Header
+        category="DETAIL SPESIFIKASI PROYEK"
         title="Detail Proyek"
         subtitle={`Kategori: ${project.kategori || "UMKM Digital"}`}
         onBack={() => navigation.goBack()}

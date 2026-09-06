@@ -95,20 +95,21 @@ export function DashboardPage() {
       {/* TOP WELCOME BANNER */}
       {/* ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-dark-900 text-white tracking-wider">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
               {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
             </span>
-            <span className="text-xs text-muted flex items-center gap-1">
+            <span className="text-muted/60 text-xs">•</span>
+            <span className="text-xs text-muted flex items-center gap-1 font-sans">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               Akun Terverifikasi
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-normal text-dark-900 tracking-tight">
-            Selamat Datang, {user?.email?.split("@")[0]}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+            Selamat Datang, {user?.nama_lengkap || user?.nama_usaha || user?.email?.split("@")[0]}
           </h1>
-          <p className="text-xs sm:text-sm text-muted">
+          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
               ? "Pantau proyek aktif Anda, tinjau lamaran masuk dari mahasiswa, dan kelola saldo escrow."
               : "Pantau pengerjaan proyek aktif Anda, cek status proposal, dan tarik honor kerja."}

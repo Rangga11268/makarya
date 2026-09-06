@@ -560,8 +560,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === "ios" ? 54 : 16,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "ios" ? 54 : 34,
     paddingBottom: 14,
     backgroundColor: COLORS.bgSurface,
     borderBottomWidth: 1,

@@ -66,7 +66,11 @@ export function BrowseProjectsPage() {
       if (keyword.trim()) params.keyword = keyword.trim();
 
       const res = await projectApi.browse(params);
-      const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      const data = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
       setProjects(data);
       setCurrentPage(1); // Reset page on new search/filter
     } catch (err) {
@@ -202,12 +206,17 @@ export function BrowseProjectsPage() {
                 Mencari Talenta Mahasiswa untuk Direkrut Langsung?
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Jelajahi direktori mahasiswa berprestasi dengan portofolio terverifikasi dan ulasan UMKM riil.
+                Jelajahi direktori mahasiswa berprestasi dengan portofolio
+                terverifikasi dan ulasan UMKM riil.
               </p>
             </div>
           </div>
           <Link to="/talents" className="shrink-0">
-            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand">
+            <Button
+              variant="brand"
+              size="sm"
+              className="text-xs font-bold shadow-brand"
+            >
               Buka Direktori Mahasiswa
             </Button>
           </Link>
@@ -342,7 +351,9 @@ export function BrowseProjectsPage() {
           {error && paginatedProjects.length === 0 ? (
             <div className="p-8 bg-surface rounded-3xl border border-rose-200 text-center space-y-3 shadow-xs">
               <p className="text-sm font-bold text-rose-700">{error}</p>
-              <p className="text-xs text-muted">Pastikan server backend aktif di http://127.0.0.1:8000</p>
+              <p className="text-xs text-muted">
+                Pastikan server backend aktif di http://127.0.0.1:8000
+              </p>
               <Button
                 variant="brand"
                 size="sm"

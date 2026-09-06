@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { ArrowLeft, Bell, CheckCircle2 } from "lucide-react-native";
 
 export function Header({
+  category,
   title,
   subtitle,
   onBack,
@@ -80,6 +81,11 @@ export function Header({
         ) : (
           /* Standard Title + Subtitle Header */
           <View style={styles.titleContainer}>
+            {category ? (
+              <Text style={styles.categoryText} numberOfLines={1}>
+                {category}
+              </Text>
+            ) : null}
             <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
@@ -144,8 +150,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 18,
-    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "ios" ? 54 : 34,
     paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: COLORS.bgDark,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -195,18 +201,28 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
   },
+  categoryText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    marginBottom: 2,
+  },
   title: {
     fontFamily: FONTS.displayBold,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     color: COLORS.textDark,
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   subtitle: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 2,
+    lineHeight: 16,
     fontWeight: "400",
   },
   userProfileSection: {

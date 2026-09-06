@@ -158,27 +158,25 @@ export function WalletScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Universal Top Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTitleGroup}>
-          <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Dompet Honor" : "Dompet & Escrow"}
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {isMahasiswa
-              ? "Saldo honor & pencairan rekening terproteksi"
-              : "Saldo deposit & proteksi transaksi proyek"}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => loadWallet()}
-          style={styles.refreshIconBtn}
-          activeOpacity={0.7}
-        >
-          <History size={18} color={COLORS.textDark} />
-        </TouchableOpacity>
-      </View>
+      {/* 1. Standardized Unified Header */}
+      <Header
+        category="KEUANGAN & ESCROW"
+        title={isMahasiswa ? "Dompet Honor" : "Dompet & Escrow"}
+        subtitle={
+          isMahasiswa
+            ? "Saldo honor & pencairan rekening terproteksi"
+            : "Saldo deposit & proteksi transaksi proyek"
+        }
+        rightAction={
+          <TouchableOpacity
+            onPress={() => loadWallet()}
+            style={styles.refreshIconBtn}
+            activeOpacity={0.7}
+          >
+            <History size={18} color={COLORS.textDark} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         style={styles.scrollArea}

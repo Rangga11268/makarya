@@ -19,8 +19,16 @@ import { Button } from "../../components/ui/Button";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import { Plus, Compass, Bell, RotateCcw, X, SlidersHorizontal } from "lucide-react-native";
+import {
+  Plus,
+  Compass,
+  Bell,
+  RotateCcw,
+  X,
+  SlidersHorizontal,
+} from "lucide-react-native";
 import { TalentListScreen } from "../talents/TalentListScreen";
+import { Header } from "../../components/ui/Header";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
@@ -39,7 +47,7 @@ export function ProjectListScreen({ navigation, route }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'NEW'
   const [categoryFilter, setCategoryFilter] = useState(
-    route?.params?.category || "ALL"
+    route?.params?.category || "ALL",
   );
 
   // Modals
@@ -151,19 +159,20 @@ export function ProjectListScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Header (Matching Mockup Screen 3 "Discover Jobs") */}
-      <View style={styles.header}>
-        <View style={styles.headerTitleGroup}>
-          <Text style={styles.headerTitle}>
-            {isMahasiswa ? "Discover Jobs" : "Manage Projects"}
-          </Text>
-          <Text style={styles.headerSubtitle}>
-            {isMahasiswa ? "Find verified micro-gigs & submit pitches" : "Track listings & recruit student talent"}
-          </Text>
-        </View>
-
-        <View style={styles.headerRightGroup}>
-          {!isMahasiswa ? (
+      {/* 1. Standardized Unified Header */}
+      <Header
+        category={isMahasiswa ? "KATALOG PROYEK KAMPUS" : "MANAJEMEN PROYEK"}
+        title={isMahasiswa ? "Jelajah Proyek UMKM" : "Kelola Proyek"}
+        subtitle={
+          isMahasiswa
+            ? "Temukan peluang kerja freelance dan ajukan penawaran terbaik"
+            : "Pantau daftar proyek & rekrut talenta mahasiswa"
+        }
+        showBell={isMahasiswa}
+        onBellPress={() => setIsNotificationOpen(true)}
+        unreadCount={unreadNotifications}
+        rightAction={
+          !isMahasiswa ? (
             <TouchableOpacity
               onPress={() => navigation.navigate("PostProject")}
               style={styles.postProjectBtn}
@@ -172,18 +181,9 @@ export function ProjectListScreen({ navigation, route }) {
               <Plus size={16} color="#FFFFFF" />
               <Text style={styles.postProjectBtnText}>Post Job</Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.bellBtn}
-              onPress={() => setIsNotificationOpen(true)}
-              activeOpacity={0.8}
-            >
-              <Bell size={20} color={COLORS.textDark} />
-              {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+          ) : null
+        }
+      />
 
       {/* 2. Search Bar with Filter Tuning Button */}
       <View style={styles.searchSection}>

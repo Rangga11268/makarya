@@ -15,6 +15,7 @@ import {
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { SearchBar } from "../../components/ui/SearchBar";
+import { Header } from "../../components/ui/Header";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { talentApi, projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
@@ -350,24 +351,15 @@ export function TalentListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topHeader}>
-        <View style={styles.titleArea}>
-          <Text style={styles.badgeCategory}>Direktori Kampus Resmi</Text>
-          <Text style={styles.screenTitle}>Eksplorasi Mahasiswa</Text>
-          <Text style={styles.screenSubtitle}>
-            Temukan talenta muda terverifikasi untuk proyek usaha Anda
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.bellButton}
-          onPress={() => setIsNotificationOpen(true)}
-          activeOpacity={0.8}
-        >
-          <Bell size={20} color={COLORS.textDark} />
-          {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
-        </TouchableOpacity>
-      </View>
+      {/* 1. Standardized Unified Header */}
+      <Header
+        category="DIREKTORI KAMPUS RESMI"
+        title="Eksplorasi Mahasiswa"
+        subtitle="Temukan talenta muda terverifikasi untuk proyek usaha Anda"
+        showBell={true}
+        onBellPress={() => setIsNotificationOpen(true)}
+        unreadCount={unreadNotifications}
+      />
 
       <View style={styles.searchWrapper}>
         <SearchBar

@@ -277,6 +277,7 @@ export function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Header
+        category="PENGATURAN IDENTITAS"
         title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
           isMahasiswa
