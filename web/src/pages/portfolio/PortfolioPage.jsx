@@ -136,10 +136,14 @@ export function PortfolioPage() {
               {avgRating ? (
                 <>
                   <StarRating rating={parseFloat(avgRating)} size="md" />
-                  <span className="text-sm font-bold text-dark-900">{avgRating}</span>
+                  <span className="text-sm font-bold text-dark-900">
+                    {avgRating}
+                  </span>
                 </>
               ) : (
-                <span className="text-xs text-muted font-medium">Belum ada ulasan</span>
+                <span className="text-xs text-muted font-medium">
+                  Belum ada ulasan
+                </span>
               )}
             </div>
           </div>

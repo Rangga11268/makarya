@@ -309,7 +309,8 @@ export function ProfilePage() {
             </span>
           </div>
           <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
-            Reputasi Skor {user?.total_ulasan > 0 ? `(${user.total_ulasan})` : ""}
+            Reputasi Skor{" "}
+            {user?.total_ulasan > 0 ? `(${user.total_ulasan})` : ""}
           </span>
         </div>
 
