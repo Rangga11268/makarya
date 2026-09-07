@@ -327,14 +327,22 @@ export function HomeScreen({ navigation }) {
               activeOpacity={0.85}
             >
               <View style={styles.avatarWrapper}>
-                <View
-                  style={[
-                    styles.userAvatarCircle,
-                    isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-                  ]}
-                >
-                  <Text style={styles.avatarInitial}>{initialLetter}</Text>
-                </View>
+                {user?.url_foto ? (
+                  <Image
+                    source={{ uri: user.url_foto }}
+                    style={styles.userAvatarImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.userAvatarCircle,
+                      isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                    ]}
+                  >
+                    <Text style={styles.avatarInitial}>{initialLetter}</Text>
+                  </View>
+                )}
                 <View style={styles.verifiedTickBadge}>
                   <CheckCircle2
                     size={11}
@@ -1055,6 +1063,13 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "rgba(79, 70, 229, 0.15)",
+  },
+  userAvatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     borderColor: "rgba(79, 70, 229, 0.15)",
   },

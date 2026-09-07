@@ -11,6 +11,7 @@ import {
   Linking,
   ActivityIndicator,
   Platform,
+  Image,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -314,9 +315,17 @@ export function TalentListScreen({ navigation }) {
       <View style={styles.talentCard}>
         {/* 1. Header: Avatar + Name & Prodi + Status Tag */}
         <View style={styles.cardHeaderRow}>
-          <View style={styles.avatarBox}>
-            <Text style={styles.avatarLetter}>{initial}</Text>
-          </View>
+          {item.url_foto ? (
+            <Image
+              source={{ uri: item.url_foto }}
+              style={styles.avatarImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.avatarBox}>
+              <Text style={styles.avatarLetter}>{initial}</Text>
+            </View>
+          )}
 
           <View style={styles.headerInfoCol}>
             <View style={styles.nameRow}>
@@ -1206,6 +1215,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
+  },
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 10,
   },
   avatarLetter: {

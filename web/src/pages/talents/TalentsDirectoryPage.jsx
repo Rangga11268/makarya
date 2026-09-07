@@ -63,9 +63,17 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
           </button>
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
-              {initial}
-            </div>
+            {talent.url_foto ? (
+              <img
+                src={talent.url_foto}
+                alt={talent.nama_lengkap}
+                className="w-20 h-20 rounded-2xl object-cover shrink-0 shadow-sm border border-white/20 select-none"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-2xl bg-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
+                {initial}
+              </div>
+            )}
 
             <div className="text-center sm:text-left space-y-1.5 flex-1">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
@@ -680,12 +688,21 @@ export function TalentsDirectoryPage() {
                   {/* Top Profile Header */}
                   <div className="flex items-start justify-between gap-3 mb-4">
                     <div className="flex items-center gap-3.5">
-                      <div
-                        onClick={() => handleOpenDetail(talent)}
-                        className="w-14 h-14 rounded-2xl bg-brand-indigo text-white font-serif text-xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
-                      >
-                        {initial}
-                      </div>
+                      {talent.url_foto ? (
+                        <img
+                          src={talent.url_foto}
+                          alt={talent.nama_lengkap}
+                          onClick={() => handleOpenDetail(talent)}
+                          className="w-14 h-14 rounded-2xl object-cover shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer border border-border"
+                        />
+                      ) : (
+                        <div
+                          onClick={() => handleOpenDetail(talent)}
+                          className="w-14 h-14 rounded-2xl bg-brand-indigo text-white font-serif text-xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
+                        >
+                          {initial}
+                        </div>
+                      )}
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">

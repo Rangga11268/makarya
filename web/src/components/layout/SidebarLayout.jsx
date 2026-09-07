@@ -361,16 +361,24 @@ export function SidebarLayout() {
               to="/profile"
               className="flex items-center gap-3 min-w-0 flex-1"
             >
-              <div
-                className={cn(
-                  "w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 select-none shadow-xs",
-                  isUmkm
-                    ? "bg-brand-cyan text-slate-900"
-                    : "bg-brand-indigo text-white",
-                )}
-              >
-                {userInitial}
-              </div>
+              {user?.url_foto ? (
+                <img
+                  src={user.url_foto}
+                  alt={userDisplayName}
+                  className="w-9 h-9 rounded-xl object-cover shrink-0 select-none shadow-xs border border-border"
+                />
+              ) : (
+                <div
+                  className={cn(
+                    "w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 select-none shadow-xs",
+                    isUmkm
+                      ? "bg-brand-cyan text-slate-900"
+                      : "bg-brand-indigo text-white",
+                  )}
+                >
+                  {userInitial}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <span className="text-xs font-bold text-dark-900 truncate block">
                   {userDisplayName}
@@ -467,9 +475,17 @@ export function SidebarLayout() {
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-3 min-w-0 flex-1"
             >
-              <div className="w-8 h-8 rounded-xl bg-brand-indigo text-white font-bold flex items-center justify-center text-xs shrink-0">
-                {userInitial}
-              </div>
+              {user?.url_foto ? (
+                <img
+                  src={user.url_foto}
+                  alt={userDisplayName}
+                  className="w-8 h-8 rounded-xl object-cover shrink-0 select-none shadow-xs border border-border"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-xl bg-brand-indigo text-white font-bold flex items-center justify-center text-xs shrink-0">
+                  {userInitial}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <span className="text-xs font-bold text-dark-900 truncate block">
                   {userDisplayName}
@@ -534,16 +550,24 @@ export function SidebarLayout() {
             </Link>
 
             <Link to="/profile" className="flex items-center gap-2">
-              <div
-                className={cn(
-                  "w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs shadow-xs",
-                  isUmkm
-                    ? "bg-brand-cyan text-slate-900"
-                    : "bg-brand-indigo text-white",
-                )}
-              >
-                {userInitial}
-              </div>
+              {user?.url_foto ? (
+                <img
+                  src={user.url_foto}
+                  alt={userDisplayName}
+                  className="w-8 h-8 rounded-xl object-cover shrink-0 shadow-xs border border-border"
+                />
+              ) : (
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs shadow-xs",
+                    isUmkm
+                      ? "bg-brand-cyan text-slate-900"
+                      : "bg-brand-indigo text-white",
+                  )}
+                >
+                  {userInitial}
+                </div>
+              )}
             </Link>
           </div>
         </header>

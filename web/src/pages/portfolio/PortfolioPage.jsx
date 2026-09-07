@@ -100,9 +100,17 @@ export function PortfolioPage() {
       {/* ID Badge Card */}
       <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
         <div className="flex items-center gap-4 text-center sm:text-left">
-          <div className="w-16 h-16 rounded-full bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
-            {initial}
-          </div>
+          {user?.url_foto ? (
+            <img
+              src={user.url_foto}
+              alt="Avatar"
+              className="w-16 h-16 rounded-full object-cover shrink-0 shadow-xs border-2 border-slate-100"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
+              {initial}
+            </div>
+          )}
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-dark-900 font-sans">

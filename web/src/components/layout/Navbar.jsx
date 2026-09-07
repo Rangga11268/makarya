@@ -440,9 +440,17 @@ export function Navbar() {
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                     className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all shadow-xs group cursor-pointer select-none"
                   >
-                    <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                      {initialLetter}
-                    </div>
+                    {user?.url_foto ? (
+                      <img
+                        src={user.url_foto}
+                        alt="Profile"
+                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-slate-200"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                        {initialLetter}
+                      </div>
+                    )}
                     <div className="hidden sm:flex flex-col text-left leading-none">
                       <span className="text-[11px] font-bold text-slate-900 truncate max-w-[100px]">
                         {user?.email?.split("@")[0]}

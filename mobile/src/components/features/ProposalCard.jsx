@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../ui/Button";
@@ -20,11 +20,19 @@ export function ProposalCard({
     <View style={styles.card}>
       {/* Mhs Info */}
       <View style={styles.header}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {mhs.nama_lengkap ? mhs.nama_lengkap.charAt(0) : "M"}
-          </Text>
-        </View>
+        {mhs.url_foto ? (
+          <Image
+            source={{ uri: mhs.url_foto }}
+            style={styles.avatarImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>
+              {mhs.nama_lengkap ? mhs.nama_lengkap.charAt(0) : "M"}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.info}>
           <Text style={styles.name}>
@@ -130,6 +138,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
+  },
+  avatarImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 10,
   },
   avatarText: {

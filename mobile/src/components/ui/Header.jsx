@@ -55,18 +55,26 @@ export function Header({
             activeOpacity={0.8}
           >
             <View style={styles.avatarWrapper}>
-              <View
-                style={[
-                  styles.avatarCircle,
-                  userProfile.isMahasiswa
-                    ? styles.avatarMhs
-                    : styles.avatarUmkm,
-                ]}
-              >
-                <Text style={styles.avatarText}>
-                  {userProfile.initial || "U"}
-                </Text>
-              </View>
+              {userProfile.photoUrl || userProfile.url_foto ? (
+                <Image
+                  source={{ uri: userProfile.photoUrl || userProfile.url_foto }}
+                  style={styles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.avatarCircle,
+                    userProfile.isMahasiswa
+                      ? styles.avatarMhs
+                      : styles.avatarUmkm,
+                  ]}
+                >
+                  <Text style={styles.avatarText}>
+                    {userProfile.initial || "U"}
+                  </Text>
+                </View>
+              )}
               <View style={styles.verifiedCheckBadge}>
                 <CheckCircle2
                   size={11}
@@ -113,16 +121,24 @@ export function Header({
             style={styles.userMiniAvatar}
             activeOpacity={0.8}
           >
-            <View
-              style={[
-                styles.miniAvatarCircle,
-                userProfile.isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-              ]}
-            >
-              <Text style={styles.miniAvatarText}>
-                {userProfile.initial || "U"}
-              </Text>
-            </View>
+            {userProfile.photoUrl || userProfile.url_foto ? (
+              <Image
+                source={{ uri: userProfile.photoUrl || userProfile.url_foto }}
+                style={styles.miniAvatarImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View
+                style={[
+                  styles.miniAvatarCircle,
+                  userProfile.isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                ]}
+              >
+                <Text style={styles.miniAvatarText}>
+                  {userProfile.initial || "U"}
+                </Text>
+              </View>
+            )}
             <View style={styles.miniVerifiedBadge}>
               <CheckCircle2
                 size={10}
@@ -248,6 +264,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
   avatarMhs: {
     backgroundColor: COLORS.brandIndigo,
   },
@@ -298,6 +319,11 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
+  },
+  miniAvatarImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   miniAvatarText: {
     fontFamily: FONTS.displayBold,
