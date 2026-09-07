@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { authApi } from "../../api";
@@ -30,6 +30,8 @@ import {
   Plus,
   X,
   Star,
+  Camera,
+  Loader2,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -37,6 +39,48 @@ export function ProfilePage() {
   const { addToast } = useToastStore();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const fileInputRef = useRef(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      addToast("Harap pilih file gambar (JPG/PNG/WebP)", "error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      addToast("Ukuran gambar maksimal 5MB", "error");
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64Data = event.target.result;
+          const res = await authApi.updateProfile({ photo_url: base64Data });
+          if (res?.data) {
+            updateUser(res.data);
+            addToast("Foto profil berhasil diperbarui!", "success");
+          }
+        } catch (err) {
+          console.error("Gagal mengunggah foto profil:", err);
+          addToast("Gagal memperbarui foto profil. Coba lagi.", "error");
+        } finally {
+          setUploadingPhoto(false);
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setUploadingPhoto(false);
+      addToast("Gagal membaca file gambar.", "error");
+    }
+  };
 
   const isUmkm = user?.role === "UMKM";
 
@@ -265,9 +309,43 @@ export function ProfilePage() {
       {/* Profile ID Card Banner */}
       <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-xs">
         <div
-          className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none`}
+          className="relative group cursor-pointer shrink-0"
+          onClick={() => fileInputRef.current?.click()}
+          title="Klik untuk mengubah foto profil"
         >
-          {initial}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          {user?.url_foto ? (
+            <img
+              src={user.url_foto}
+              alt="Foto Profil"
+              className="w-20 h-20 rounded-full object-cover shadow-xs border-2 border-slate-200"
+            />
+          ) : (
+            <div
+              className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-3xl font-bold flex items-center justify-center shadow-xs select-none`}
+            >
+              {initial}
+            </div>
+          )}
+
+          {/* Hover overlay with camera icon */}
+          <div className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+            <Camera className="w-5 h-5" />
+            <span className="text-[9px] font-bold mt-0.5">Ubah</span>
+          </div>
+
+          {/* Uploading spinner */}
+          {uploadingPhoto && (
+            <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center text-white">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+          )}
         </div>
 
         <div className="flex-1 text-center sm:text-left space-y-1.5">

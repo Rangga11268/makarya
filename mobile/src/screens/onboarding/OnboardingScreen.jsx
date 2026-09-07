@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
+  ScrollView,
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -43,10 +44,16 @@ const slides = [
 
 export function OnboardingScreen({ navigation, onComplete }) {
   const [current, setCurrent] = useState(0);
+  const scrollRef = useRef(null);
+
+  const goToSlide = (index) => {
+    scrollRef.current?.scrollTo({ x: index * width, animated: true });
+    setCurrent(index);
+  };
 
   const goNext = () => {
     if (current < slides.length - 1) {
-      setCurrent(current + 1);
+      goToSlide(current + 1);
     } else {
       onComplete ? onComplete() : navigation.navigate("Login");
     }
@@ -56,22 +63,41 @@ export function OnboardingScreen({ navigation, onComplete }) {
     onComplete ? onComplete() : navigation.navigate("Login");
   };
 
+  const handleScroll = (e) => {
+    const page = Math.round(e.nativeEvent.contentOffset.x / width);
+    if (page !== current) setCurrent(page);
+  };
+
   const slide = slides[current];
 
   return (
     <View style={s.container}>
-      {/* Full-bleed illustration */}
+      {/* Full-bleed swipeable illustration area */}
       <View style={s.imageWrapper}>
-        <Image
-          source={slide.image}
-          style={s.illustration}
-          resizeMode="cover"
-        />
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={handleScroll}
+          scrollEventThrottle={16}
+          style={s.scrollView}
+        >
+          {slides.map((sl, i) => (
+            <View key={sl.id} style={s.slidePage}>
+              <Image
+                source={sl.image}
+                style={s.illustration}
+                resizeMode="cover"
+              />
+            </View>
+          ))}
+        </ScrollView>
 
-        {/* Dark scrim at top so logo & badge are always readable */}
+        {/* Dark scrim at top so logo & badge are readable */}
         <View style={s.topScrim} />
 
-        {/* Top logo bar overlaid on image */}
+        {/* Top logo bar */}
         <View style={s.topBar}>
           <View style={s.logoPill}>
             <Image
@@ -87,17 +113,18 @@ export function OnboardingScreen({ navigation, onComplete }) {
         </View>
       </View>
 
-      {/* Bottom content sheet */}
+      {/* Bottom content sheet — content changes with current slide */}
       <View style={s.sheet}>
         <View style={s.slideBadge}>
           <Text style={s.slideBadgeText}>{slide.badge}</Text>
         </View>
 
+        {/* Pagination dots — tappable */}
         <View style={s.dots}>
           {slides.map((_, i) => (
             <TouchableOpacity
               key={i}
-              onPress={() => setCurrent(i)}
+              onPress={() => goToSlide(i)}
               style={[s.dot, i === current && s.dotActive]}
             />
           ))}
@@ -136,6 +163,13 @@ const s = StyleSheet.create({
   imageWrapper: {
     flex: 1,
     position: "relative",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  slidePage: {
+    width,
+    height: "100%",
   },
   illustration: {
     width: "100%",

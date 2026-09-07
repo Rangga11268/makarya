@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
   TextInput,
   KeyboardAvoidingView,
+  Image,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
@@ -50,6 +52,7 @@ import {
   X,
   MapPin,
   Building,
+  Camera,
 } from "lucide-react-native";
 
 export function ProfileScreen({ navigation }) {
@@ -58,6 +61,47 @@ export function ProfileScreen({ navigation }) {
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [escrowAlertsEnabled, setEscrowAlertsEnabled] = useState(true);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  const handlePickPhoto = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        showToast("Izin akses galeri diperlukan untuk memilih foto", "error");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setIsUploadingPhoto(true);
+        const asset = result.assets[0];
+        const base64Data = asset.base64
+          ? `data:image/jpeg;base64,${asset.base64}`
+          : asset.uri;
+
+        const res = await authApi.updateProfile({
+          photo_url: base64Data,
+        });
+
+        if (res?.data) {
+          updateUser(res.data);
+          showToast("Foto profil berhasil diperbarui!", "success");
+        }
+      }
+    } catch (err) {
+      console.error("Gagal memperbarui foto profil:", err);
+      showToast("Gagal mengunggah foto profil.", "error");
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
 
   // Skills State
   const [skillModal, setSkillModal] = useState(false);
@@ -294,18 +338,39 @@ export function ProfileScreen({ navigation }) {
       >
         {/* 1. Profile Hero Card */}
         <View style={styles.profileCard}>
-          <View
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handlePickPhoto}
+            disabled={isUploadingPhoto}
             style={[
               styles.avatarCircle,
               isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
             ]}
           >
-            <Text style={styles.avatarInitial}>
-              {isMahasiswa
-                ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
-                : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
-            </Text>
-          </View>
+            {user?.url_foto ? (
+              <Image
+                source={{ uri: user.url_foto }}
+                style={styles.avatarImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={styles.avatarInitial}>
+                {isMahasiswa
+                  ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
+                  : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
+              </Text>
+            )}
+
+            {isUploadingPhoto ? (
+              <View style={styles.avatarLoadingOverlay}>
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              </View>
+            ) : (
+              <View style={styles.avatarEditBadge}>
+                <Camera size={12} color="#FFFFFF" />
+              </View>
+            )}
+          </TouchableOpacity>
 
           <Text style={styles.userName}>
             {isMahasiswa
@@ -1085,12 +1150,38 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   avatarCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
+    position: "relative",
+  },
+  avatarImage: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+  },
+  avatarLoadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 38,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarEditBadge: {
+    position: "absolute",
+    bottom: -2,
+    right: -2,
+    backgroundColor: COLORS.brandIndigo,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   avatarMhs: {
     backgroundColor: COLORS.brandIndigo,

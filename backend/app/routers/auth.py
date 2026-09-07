@@ -296,6 +296,7 @@ def get_my_profile(
                 "universitas": "Universitas Bina Sarana Informatika" if "ubsi" in (current_user.email or "").lower() else "Perguruan Tinggi Terakreditasi",
                 "semester": 6,
                 "bio": mhs.bio or "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
+                "url_foto": mhs.url_foto or None,
                 "url_portofolio": mhs.url_portofolio,
                 "github_url": portfolio_links.get("github") or "",
                 "figma_url": portfolio_links.get("figma") or "",
@@ -308,7 +309,6 @@ def get_my_profile(
                 "rating_avg": final_rating,
                 "total_ulasan": total_ratings,
                 "total_proyek_selesai": total_selesai,
-                "escrow_success_rate": "100%",
                 "escrow_success_rate": escrow_success_rate,
                 "status_badge": "Mahasiswa Berprestasi & Terverifikasi",
                 "profil_subtitle": "Profil talenta muda dengan rekam jejak deliverable memuaskan",
@@ -343,13 +343,11 @@ def get_my_profile(
                 "alamat": umkm.alamat or "",
                 "kota": umkm.kota or "Jakarta Selatan",
                 "no_kontak": umkm.no_kontak or "",
+                "url_foto": umkm.url_foto_usaha or None,
                 "nama_bank": "Bank Central Asia (BCA)",
                 "nomor_rekening": "8270-3491-8821",
                 "nama_pemilik_rekening": umkm.nama_usaha,
                 "total_proyek_diterbitkan": total_published,
-                "rating_avg": 5.0,
-                "total_proyek_selesai": total_published,
-                "escrow_success_rate": "100%",
                 "total_proyek_selesai": total_completed,
                 "rating_avg": final_rating,
                 "total_ulasan": total_ratings,
@@ -384,6 +382,8 @@ def update_profile(
             mhs.nim = body.nim.strip() if body.nim else None
         if body.bio is not None:
             mhs.bio = body.bio.strip()
+        if body.photo_url is not None:
+            mhs.url_foto = body.photo_url if body.photo_url.strip() else None
 
         # Update Prodi jika ada
         if body.prodi_id is not None:
@@ -452,6 +452,8 @@ def update_profile(
             umkm.kota = body.kota.strip()
         if body.no_kontak is not None:
             umkm.no_kontak = body.no_kontak.strip()
+        if body.photo_url is not None:
+            umkm.url_foto_usaha = body.photo_url if body.photo_url.strip() else None
 
         db.commit()
         db.refresh(umkm)
