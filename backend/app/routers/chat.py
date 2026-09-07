@@ -1,6 +1,6 @@
 import json
 from uuid import UUID
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from fastapi import (
     APIRouter,
     Depends,
@@ -67,34 +67,39 @@ manager = ConnectionManager()
 # ============================================================================
 # 2. HELPER: SENDER PROFILE RESOLVER & ACCESS AUTHORIZATION
 # ============================================================================
-def resolve_sender_display(user: User) -> Tuple[str, str]:
-    """Mendapatkan nama tampilan dan role pengguna untuk bubble chat."""
+def resolve_sender_display(user: User) -> Tuple[str, str, Optional[str]]:
+    """Mendapatkan nama tampilan, role, dan foto profil pengguna untuk bubble chat."""
     if not user:
-        return ("Pengguna", "USER")
+        return ("Pengguna", "USER", None)
 
     role_str = user.role.value if hasattr(user.role, "value") else str(user.role)
+    photo_url = None
 
     # Cek profil mahasiswa
-    if hasattr(user, "profile_mhs") and user.profile_mhs and user.profile_mhs.nama_lengkap:
-        name = user.profile_mhs.nama_lengkap.strip()
-        if name and name.lower() != "string":
-            return (name, role_str)
+    if hasattr(user, "profile_mhs") and user.profile_mhs:
+        photo_url = user.profile_mhs.url_foto
+        if user.profile_mhs.nama_lengkap:
+            name = user.profile_mhs.nama_lengkap.strip()
+            if name and name.lower() != "string":
+                return (name, role_str, photo_url)
 
     # Cek profil UMKM
-    if hasattr(user, "profile_umkm") and user.profile_umkm and user.profile_umkm.nama_usaha:
-        name = user.profile_umkm.nama_usaha.strip()
-        if name and name.lower() != "string":
-            return (name, role_str)
+    if hasattr(user, "profile_umkm") and user.profile_umkm:
+        photo_url = user.profile_umkm.url_foto_usaha
+        if user.profile_umkm.nama_usaha:
+            name = user.profile_umkm.nama_usaha.strip()
+            if name and name.lower() != "string":
+                return (name, role_str, photo_url)
 
     # Fallback ke username atau prefix email yang bersih
     if hasattr(user, "username") and user.username and user.username.lower() != "string":
-        return (user.username.strip(), role_str)
+        return (user.username.strip(), role_str, photo_url)
 
     if user.email and not user.email.startswith("user@example"):
         name_fallback = user.email.split("@")[0].replace(".", " ").title()
-        return (name_fallback, role_str)
+        return (name_fallback, role_str, photo_url)
 
-    return ("Klien UMKM" if role_str == "UMKM" else "Mahasiswa", role_str)
+    return ("Klien UMKM" if role_str == "UMKM" else "Mahasiswa", role_str, photo_url)
 
 
 def verify_project_participation(project_id: UUID, user: User, db: Session) -> Project:
@@ -166,10 +171,10 @@ def get_chat_messages(
             m.is_read = True
         db.commit()
 
-    # Format response dengan nama dan role pengirim
+    # Format response dengan nama, role, dan foto pengirim
     response_list = []
     for m in messages:
-        sender_name, sender_role = resolve_sender_display(m.sender)
+        sender_name, sender_role, sender_photo = resolve_sender_display(m.sender)
 
         response_list.append(
             ChatMessageResponse(
@@ -178,6 +183,7 @@ def get_chat_messages(
                 sender_id=m.sender_id,
                 sender_name=sender_name,
                 sender_role=sender_role,
+                sender_photo=sender_photo,
                 message=m.message,
                 attachment_url=m.attachment_url,
                 attachment_type=m.attachment_type,
@@ -223,7 +229,7 @@ async def send_chat_message(
     db.commit()
     db.refresh(new_msg)
 
-    sender_name, sender_role = resolve_sender_display(current_user)
+    sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
 
     msg_response = ChatMessageResponse(
         id=new_msg.id,
@@ -231,6 +237,7 @@ async def send_chat_message(
         sender_id=new_msg.sender_id,
         sender_name=sender_name,
         sender_role=sender_role,
+        sender_photo=sender_photo,
         message=new_msg.message,
         attachment_url=new_msg.attachment_url,
         attachment_type=new_msg.attachment_type,
@@ -342,7 +349,7 @@ async def websocket_chat_endpoint(
                 db.commit()
                 db.refresh(new_msg)
 
-                sender_name, sender_role = resolve_sender_display(current_user)
+                sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
 
                 broadcast_data = {
                     "id": str(new_msg.id),
@@ -350,6 +357,7 @@ async def websocket_chat_endpoint(
                     "sender_id": str(new_msg.sender_id),
                     "sender_name": sender_name,
                     "sender_role": sender_role,
+                    "sender_photo": sender_photo,
                     "message": new_msg.message,
                     "attachment_url": new_msg.attachment_url,
                     "attachment_type": new_msg.attachment_type,

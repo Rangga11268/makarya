@@ -131,7 +131,9 @@ export function Header({
               <View
                 style={[
                   styles.miniAvatarCircle,
-                  userProfile.isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                  userProfile.isMahasiswa
+                    ? styles.avatarMhs
+                    : styles.avatarUmkm,
                 ]}
               >
                 <Text style={styles.miniAvatarText}>

@@ -32,9 +32,17 @@ export function ProjectCard({ project }) {
         {/* Top Header: UMKM Client Info & Days Left */}
         <div className="flex items-center justify-between gap-2 mb-3.5 pb-3 border-b border-border-subtle">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 rounded-full bg-brand-indigo-light text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
-              <Building2 className="w-4 h-4" />
-            </div>
+            {project.umkm_profile?.url_foto_usaha || project.umkm_profile?.url_foto || project.umkm_foto ? (
+              <img
+                src={project.umkm_profile?.url_foto_usaha || project.umkm_profile?.url_foto || project.umkm_foto}
+                alt={project.umkm_profile?.nama_usaha || "UMKM"}
+                className="w-8 h-8 rounded-full object-cover shrink-0 border border-border"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-brand-indigo-light text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
+                <Building2 className="w-4 h-4" />
+              </div>
+            )}
             <div className="truncate">
               <h4 className="text-xs font-bold text-dark-900 truncate font-sans">
                 {project.umkm_profile?.nama_usaha || "Klien UMKM"}

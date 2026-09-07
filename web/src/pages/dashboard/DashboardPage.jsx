@@ -94,29 +94,47 @@ export function DashboardPage() {
       {/* ========================================================================= */}
       {/* TOP WELCOME BANNER */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-              {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
-            </span>
-            <span className="text-muted/60 text-xs">•</span>
-            <span className="text-xs text-muted flex items-center gap-1 font-sans">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              Akun Terverifikasi
-            </span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
+        <div className="flex items-center gap-5">
+          <Link to="/profile" className="shrink-0 group">
+            {user?.url_foto ? (
+              <img
+                src={user.url_foto}
+                alt="Avatar"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xs border-2 border-slate-100 group-hover:scale-105 transition-transform"
+              />
+            ) : (
+              <div
+                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform`}
+              >
+                {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U").charAt(0).toUpperCase()}
+              </div>
+            )}
+          </Link>
+
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
+                {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
+              </span>
+              <span className="text-muted/60 text-xs">•</span>
+              <span className="text-xs text-muted flex items-center gap-1 font-sans">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                Akun Terverifikasi
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+              Selamat Datang,{" "}
+              {user?.nama_lengkap ||
+                user?.nama_usaha ||
+                user?.email?.split("@")[0]}
+            </h1>
+            <p className="text-xs sm:text-sm text-muted font-sans mt-0.5">
+              {isUmkm
+                ? "Pantau proyek aktif Anda, tinjau lamaran masuk dari mahasiswa, dan kelola saldo escrow."
+                : "Pantau pengerjaan proyek aktif Anda, cek status proposal, dan tarik honor kerja."}
+            </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
-            Selamat Datang,{" "}
-            {user?.nama_lengkap ||
-              user?.nama_usaha ||
-              user?.email?.split("@")[0]}
-          </h1>
-          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
-            {isUmkm
-              ? "Pantau proyek aktif Anda, tinjau lamaran masuk dari mahasiswa, dan kelola saldo escrow."
-              : "Pantau pengerjaan proyek aktif Anda, cek status proposal, dan tarik honor kerja."}
-          </p>
         </div>
 
         <div className="flex items-center gap-3">

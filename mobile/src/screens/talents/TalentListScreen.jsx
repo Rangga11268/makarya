@@ -111,7 +111,13 @@ const FALLBACK_TALENTS = [
     total_proyek_selesai: 4,
     escrow_success_rate: "100%",
     status_badge: "Mahasiswa Berprestasi & Terverifikasi",
-    skills: ["Figma", "Adobe Illustrator", "Brand Identity", "Packaging", "Typography"],
+    skills: [
+      "Figma",
+      "Adobe Illustrator",
+      "Brand Identity",
+      "Packaging",
+      "Typography",
+    ],
     github_url: "",
     figma_url: "https://figma.com/@adeliaputri",
     website_url: "",
@@ -122,7 +128,8 @@ const FALLBACK_TALENTS = [
         id: "rev-3",
         reviewer_name: "Keripik Singkong Barokah",
         rating: 5,
-        komentar: "Rebranding packaging produk sangat menarik, omset offline kami langsung naik.",
+        komentar:
+          "Rebranding packaging produk sangat menarik, omset offline kami langsung naik.",
         project_title: "Redesign Kemasan & Label Keripik Singkong",
         created_at: "2026-08-15T11:00:00",
       },
@@ -140,7 +147,13 @@ const FALLBACK_TALENTS = [
     total_proyek_selesai: 2,
     escrow_success_rate: "100%",
     status_badge: "Mahasiswa Berprestasi & Terverifikasi",
-    skills: ["React Native", "Flutter", "REST API", "Firebase", "State Management"],
+    skills: [
+      "React Native",
+      "Flutter",
+      "REST API",
+      "Firebase",
+      "State Management",
+    ],
     github_url: "https://github.com/fajarnugraha",
     figma_url: "",
     website_url: "",
@@ -151,7 +164,8 @@ const FALLBACK_TALENTS = [
         id: "rev-4",
         reviewer_name: "Toko Sembako Berkah Jaya",
         rating: 5,
-        komentar: "Aplikasi kasir mobile berjalan sangat enteng di handphone operasional toko.",
+        komentar:
+          "Aplikasi kasir mobile berjalan sangat enteng di handphone operasional toko.",
         project_title: "Aplikasi Kasir Toko Sembako",
         created_at: "2026-08-01T09:00:00",
       },
@@ -193,7 +207,8 @@ export function TalentListScreen({ navigation }) {
       const params = {};
       if (searchQuery.trim()) params.keyword = searchQuery.trim();
       if (selectedProdi !== "ALL") params.prodi = selectedProdi;
-      if (selectedMinRating !== "ALL") params.min_rating = parseFloat(selectedMinRating);
+      if (selectedMinRating !== "ALL")
+        params.min_rating = parseFloat(selectedMinRating);
       if (selectedMinProjects !== "ALL") params.only_completed = true;
 
       const res = await talentApi.getTalents(params);
@@ -305,7 +320,8 @@ export function TalentListScreen({ navigation }) {
     const initial = item.nama_lengkap
       ? item.nama_lengkap.charAt(0).toUpperCase()
       : "M";
-    const ratingScore = item.rating_avg != null ? Number(item.rating_avg).toFixed(1) : "-";
+    const ratingScore =
+      item.rating_avg != null ? Number(item.rating_avg).toFixed(1) : "-";
     const completedCount = item.total_proyek_selesai ?? 0;
     const skillsList = Array.isArray(item.skills)
       ? item.skills.slice(0, 4)
@@ -588,7 +604,9 @@ export function TalentListScreen({ navigation }) {
           <View style={styles.filterModalSheet}>
             <View style={styles.filterModalHeader}>
               <View>
-                <Text style={styles.filterModalTitle}>Filter Direktori Talenta</Text>
+                <Text style={styles.filterModalTitle}>
+                  Filter Direktori Talenta
+                </Text>
                 <Text style={styles.filterModalSub}>
                   Saring berdasarkan program studi, rating, dan pengalaman
                 </Text>
@@ -602,7 +620,10 @@ export function TalentListScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ maxHeight: 420 }}
+            >
               {/* Prodi Section */}
               <Text style={styles.filterSectionTitle}>Program Studi</Text>
               <View style={styles.filterChipGrid}>
@@ -632,7 +653,9 @@ export function TalentListScreen({ navigation }) {
               </View>
 
               {/* Minimal Rating Section */}
-              <Text style={styles.filterSectionTitle}>Minimal Reputasi Skor</Text>
+              <Text style={styles.filterSectionTitle}>
+                Minimal Reputasi Skor
+              </Text>
               <View style={styles.filterChipGrid}>
                 {RATING_OPTIONS.map((opt) => {
                   const isSelected = selectedMinRating === opt.id;
@@ -660,7 +683,9 @@ export function TalentListScreen({ navigation }) {
               </View>
 
               {/* Proyek Selesai Section */}
-              <Text style={styles.filterSectionTitle}>Pengalaman Proyek Tuntas</Text>
+              <Text style={styles.filterSectionTitle}>
+                Pengalaman Proyek Tuntas
+              </Text>
               <View style={styles.filterChipGrid}>
                 {PROJECT_OPTIONS.map((opt) => {
                   const isSelected = selectedMinProjects === opt.id;
@@ -719,7 +744,9 @@ export function TalentListScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.detailModalCard}>
             <View style={styles.detailModalHeader}>
-              <Text style={styles.detailModalTitle}>Portofolio & Kredensial</Text>
+              <Text style={styles.detailModalTitle}>
+                Portofolio & Kredensial
+              </Text>
               <TouchableOpacity
                 onPress={() => setIsDetailModalOpen(false)}
                 style={styles.closeCircleBtn}
@@ -904,14 +931,16 @@ export function TalentListScreen({ navigation }) {
                   selectedTalent.recent_reviews.length > 0 && (
                     <View style={styles.detailSectionBox}>
                       <Text style={styles.detailSectionHeading}>
-                        Ulasan Kepuasan Klien ({selectedTalent.recent_reviews.length})
+                        Ulasan Kepuasan Klien (
+                        {selectedTalent.recent_reviews.length})
                       </Text>
                       <View style={styles.reviewsListWrap}>
                         {selectedTalent.recent_reviews.map((rev, idx) => (
                           <View key={idx} style={styles.reviewItemCard}>
                             <View style={styles.reviewTopRow}>
                               <Text style={styles.reviewClientName}>
-                                {rev.reviewer_name || "Klien UMKM Terverifikasi"}
+                                {rev.reviewer_name ||
+                                  "Klien UMKM Terverifikasi"}
                               </Text>
                               <View style={styles.reviewStarRow}>
                                 <Star
@@ -970,7 +999,9 @@ export function TalentListScreen({ navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.inviteModalCard}>
             <View style={styles.detailModalHeader}>
-              <Text style={styles.detailModalTitle}>Ajak Kolaborasi Proyek</Text>
+              <Text style={styles.detailModalTitle}>
+                Ajak Kolaborasi Proyek
+              </Text>
               <TouchableOpacity
                 onPress={() => setIsContactModalOpen(false)}
                 style={styles.closeCircleBtn}
@@ -981,8 +1012,11 @@ export function TalentListScreen({ navigation }) {
             </View>
 
             <Text style={styles.inviteSubText}>
-              Pilih salah satu proyek aktif Anda untuk menghubungkan brief pengerjaan dengan{" "}
-              <Text style={{ fontFamily: FONTS.bodyBold, color: COLORS.textDark }}>
+              Pilih salah satu proyek aktif Anda untuk menghubungkan brief
+              pengerjaan dengan{" "}
+              <Text
+                style={{ fontFamily: FONTS.bodyBold, color: COLORS.textDark }}
+              >
                 {selectedTalent?.nama_lengkap}
               </Text>
               .
@@ -991,7 +1025,9 @@ export function TalentListScreen({ navigation }) {
             {loadingProjects ? (
               <View style={{ padding: 24, alignItems: "center" }}>
                 <ActivityIndicator size="small" color={COLORS.brandIndigo} />
-                <Text style={styles.loadingText}>Memuat daftar proyek Anda...</Text>
+                <Text style={styles.loadingText}>
+                  Memuat daftar proyek Anda...
+                </Text>
               </View>
             ) : myProjects.length > 0 ? (
               <View style={styles.projectSelectList}>
@@ -1008,7 +1044,10 @@ export function TalentListScreen({ navigation }) {
                       activeOpacity={0.8}
                     >
                       <View style={{ flex: 1 }}>
-                        <Text style={styles.projectOptionTitle} numberOfLines={1}>
+                        <Text
+                          style={styles.projectOptionTitle}
+                          numberOfLines={1}
+                        >
                           {p.judul}
                         </Text>
                         <Text style={styles.projectOptionMeta}>
@@ -1029,12 +1068,17 @@ export function TalentListScreen({ navigation }) {
               </View>
             ) : (
               <View style={styles.noProjectsNotice}>
-                <Briefcase size={28} color={COLORS.brandIndigo} style={{ marginBottom: 8 }} />
+                <Briefcase
+                  size={28}
+                  color={COLORS.brandIndigo}
+                  style={{ marginBottom: 8 }}
+                />
                 <Text style={styles.noProjectsNoticeTitle}>
                   Belum Ada Proyek Aktif
                 </Text>
                 <Text style={styles.noProjectsNoticeDesc}>
-                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta ini langsung dapat meninjau dan menerima penawaran Anda.
+                  Anda dapat membuat deskripsi proyek baru sekarang agar talenta
+                  ini langsung dapat meninjau dan menerima penawaran Anda.
                 </Text>
               </View>
             )}

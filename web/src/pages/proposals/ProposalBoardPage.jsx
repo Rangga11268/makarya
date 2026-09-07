@@ -347,6 +347,13 @@ export function ProposalBoardPage() {
         ?.nama_lengkap || "Mahasiswa Talenta"
     : selectedProposal?.project_umkm_nama || "Klien UMKM";
 
+  const activePartnerPhoto = isUmkm
+    ? projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
+        ?.url_foto
+    : selectedProposal?.project_umkm_foto ||
+      selectedProposal?.umkm_foto ||
+      selectedProject?.umkm_profile?.url_foto_usaha;
+
   const activePartnerRole = isUmkm ? "MHS" : "UMKM";
 
   const activeDeliverable = isUmkm
@@ -631,9 +638,17 @@ export function ProposalBoardPage() {
                 {/* Partner Info & Quick Metas */}
                 <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs">
-                      {activePartnerName.charAt(0)}
-                    </div>
+                    {activePartnerPhoto ? (
+                      <img
+                        src={activePartnerPhoto}
+                        alt={activePartnerName}
+                        className="w-8 h-8 rounded-full object-cover border border-border shrink-0 shadow-xs"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs shrink-0">
+                        {activePartnerName.charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <span className="font-bold text-dark-900 block leading-tight">
                         {activePartnerName}
@@ -737,6 +752,7 @@ export function ProposalBoardPage() {
                     projectTitle={activeProjectTitle}
                     partnerName={activePartnerName}
                     partnerRole={activePartnerRole}
+                    partnerPhoto={activePartnerPhoto}
                   />
                 </div>
               )}
@@ -960,6 +976,17 @@ export function ProposalBoardPage() {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                               <div>
                                 <div className="flex items-center gap-2">
+                                  {prop.mhs_profile?.url_foto ? (
+                                    <img
+                                      src={prop.mhs_profile.url_foto}
+                                      alt={prop.mhs_profile?.nama_lengkap || "Pelamar"}
+                                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border shadow-xs"
+                                    />
+                                  ) : (
+                                    <div className="w-7 h-7 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
+                                      {(prop.mhs_profile?.nama_lengkap || "M").charAt(0).toUpperCase()}
+                                    </div>
+                                  )}
                                   <span className="text-xs font-bold text-dark-900">
                                     {prop.mhs_profile?.nama_lengkap ||
                                       "Mahasiswa Pelamar"}

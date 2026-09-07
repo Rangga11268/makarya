@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   Platform,
+  Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
@@ -262,6 +263,11 @@ export function TrackerScreen({ navigation }) {
           const partnerName = isMahasiswa
             ? item.project_umkm_nama || "Mitra UMKM Kampus"
             : "Daftar Proyek Anda";
+          const partnerPhoto = isMahasiswa
+            ? item.project_umkm_foto ||
+              item.umkm_foto ||
+              item.project?.umkm_profile?.url_foto_usaha
+            : item.mhs_profile?.url_foto || item.mhs_foto;
           const category = isMahasiswa
             ? item.project_kategori || item.kategori || "UMKM"
             : item.kategori || "UMKM";
@@ -308,19 +314,27 @@ export function TrackerScreen({ navigation }) {
               {/* Card Header: Category Icon + Partner Info + Status Badge */}
               <View style={styles.cardHeader}>
                 <View style={styles.partnerRow}>
-                  <View
-                    style={[
-                      styles.categoryBox,
-                      isAccepted && styles.categoryBoxActive,
-                    ]}
-                  >
-                    {renderProjectCategoryVectorIcon(
-                      category,
-                      projectTitle,
-                      18,
-                      isAccepted ? COLORS.success : COLORS.brandIndigo,
-                    )}
-                  </View>
+                  {partnerPhoto ? (
+                    <Image
+                      source={{ uri: partnerPhoto }}
+                      style={styles.partnerAvatarImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.categoryBox,
+                        isAccepted && styles.categoryBoxActive,
+                      ]}
+                    >
+                      {renderProjectCategoryVectorIcon(
+                        category,
+                        projectTitle,
+                        18,
+                        isAccepted ? COLORS.success : COLORS.brandIndigo,
+                      )}
+                    </View>
+                  )}
                   <View style={{ flex: 1 }}>
                     <Text style={styles.partnerName} numberOfLines={1}>
                       {partnerName}
@@ -404,6 +418,7 @@ export function TrackerScreen({ navigation }) {
                         navigation.navigate("Chat", {
                           projectId: projectId,
                           projectTitle: projectTitle,
+                          partnerPhoto: partnerPhoto,
                           partnerName: isMahasiswa
                             ? (item.project_umkm_nama &&
                               item.project_umkm_nama.toLowerCase() !== "string"
@@ -565,6 +580,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
+  },
+  partnerAvatarImage: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   categoryBoxActive: {
     backgroundColor: COLORS.successBg,

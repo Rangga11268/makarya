@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Badge } from "../ui/Badge";
@@ -45,6 +45,11 @@ export function ProjectCard({ project, onPress }) {
       ? rawClientName
       : "Klien UMKM";
   const clientInitial = clientName ? clientName.charAt(0).toUpperCase() : "K";
+  const clientPhoto =
+    project.umkm_profile?.url_foto_usaha ||
+    project.umkm_profile?.url_foto ||
+    project.umkm_foto ||
+    project.url_foto;
 
   return (
     <TouchableOpacity
@@ -54,9 +59,17 @@ export function ProjectCard({ project, onPress }) {
     >
       {/* 1. Client Header: Avatar + Client Name + Time ago */}
       <View style={styles.clientHeader}>
-        <View style={styles.clientAvatar}>
-          <Text style={styles.clientAvatarText}>{clientInitial}</Text>
-        </View>
+        {clientPhoto ? (
+          <Image
+            source={{ uri: clientPhoto }}
+            style={styles.clientAvatarImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.clientAvatar}>
+            <Text style={styles.clientAvatarText}>{clientInitial}</Text>
+          </View>
+        )}
 
         <View style={styles.clientInfo}>
           <Text style={styles.clientName} numberOfLines={1}>
@@ -132,6 +145,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
+  },
+  clientAvatarImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     marginRight: 10,
   },
   clientAvatarText: {

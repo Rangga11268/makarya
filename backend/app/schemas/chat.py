@@ -50,6 +50,7 @@ class ChatMessageResponse(BaseModel):
     sender_id: UUID
     sender_name: Optional[str] = None
     sender_role: Optional[str] = None
+    sender_photo: Optional[str] = None
     message: str
     attachment_url: Optional[str] = None
     attachment_type: Optional[str] = None

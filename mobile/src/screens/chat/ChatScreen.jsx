@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Modal,
   Linking,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, SHADOWS } from "../../theme/colors";
@@ -42,6 +43,10 @@ export function ChatScreen({ route, navigation }) {
   const projectTitle = route.params?.projectTitle || "Ruang Kolaborasi Proyek";
   const partnerName = route.params?.partnerName || "Mitra Kolaborasi";
   const partnerRole = route.params?.partnerRole || "User";
+  const partnerPhoto =
+    route.params?.partnerPhoto ||
+    route.params?.photoUrl ||
+    route.params?.url_foto;
 
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -240,6 +245,23 @@ export function ChatScreen({ route, navigation }) {
           isMe ? styles.bubbleRowMe : styles.bubbleRowPartner,
         ]}
       >
+        {!isMe &&
+          (item.sender_photo || partnerPhoto ? (
+            <Image
+              source={{ uri: item.sender_photo || partnerPhoto }}
+              style={styles.chatAvatarSmall}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.chatAvatarPlaceholder}>
+              <Text style={styles.chatAvatarPlaceholderText}>
+                {(item.sender_name || resolvedPartnerName || "P")
+                  .charAt(0)
+                  .toUpperCase()}
+              </Text>
+            </View>
+          ))}
+
         <View
           style={[
             styles.bubbleBox,
@@ -341,6 +363,38 @@ export function ChatScreen({ route, navigation }) {
             )}
           </View>
         </View>
+
+        {isMe &&
+          (user?.url_foto ? (
+            <Image
+              source={{ uri: user.url_foto }}
+              style={styles.chatAvatarSmall}
+              resizeMode="cover"
+            />
+          ) : (
+            <View
+              style={[
+                styles.chatAvatarPlaceholder,
+                styles.chatAvatarPlaceholderMe,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.chatAvatarPlaceholderText,
+                  { color: "#FFFFFF" },
+                ]}
+              >
+                {(
+                  user?.nama_lengkap ||
+                  user?.nama_usaha ||
+                  user?.email ||
+                  "U"
+                )
+                  .charAt(0)
+                  .toUpperCase()}
+              </Text>
+            </View>
+          ))}
       </View>
     );
   };
@@ -362,19 +416,38 @@ export function ChatScreen({ route, navigation }) {
         </TouchableOpacity>
 
         <View style={styles.headerTitleWrap}>
-          <Text style={styles.headerName} numberOfLines={1}>
-            {resolvedPartnerName}
-          </Text>
-          <View style={styles.headerSubRow}>
-            <Text style={styles.headerProjectTitle} numberOfLines={1}>
-              {projectTitle}
-            </Text>
-            <View
-              style={[
-                styles.onlineDot,
-                wsConnected ? styles.onlineDotActive : styles.onlineDotInactive,
-              ]}
-            />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            {partnerPhoto ? (
+              <Image
+                source={{ uri: partnerPhoto }}
+                style={styles.headerPartnerAvatar}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.headerPartnerAvatarPlaceholder}>
+                <Text style={styles.headerPartnerAvatarText}>
+                  {resolvedPartnerName.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.headerName} numberOfLines={1}>
+                {resolvedPartnerName}
+              </Text>
+              <View style={styles.headerSubRow}>
+                <Text style={styles.headerProjectTitle} numberOfLines={1}>
+                  {projectTitle}
+                </Text>
+                <View
+                  style={[
+                    styles.onlineDot,
+                    wsConnected
+                      ? styles.onlineDotActive
+                      : styles.onlineDotInactive,
+                  ]}
+                />
+              </View>
+            </View>
           </View>
         </View>
 
@@ -644,7 +717,58 @@ const styles = StyleSheet.create({
   },
   bubbleRow: {
     flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 6,
     width: "100%",
+  },
+  chatAvatarSmall: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 2,
+  },
+  chatAvatarPlaceholder: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 2,
+  },
+  chatAvatarPlaceholderMe: {
+    backgroundColor: COLORS.brandIndigo,
+  },
+  chatAvatarPlaceholderText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
+  },
+  headerPartnerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  headerPartnerAvatarPlaceholder: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerPartnerAvatarText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
   },
   bubbleRowMe: {
     justifyContent: "flex-end",

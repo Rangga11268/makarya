@@ -19,6 +19,7 @@ export function WorkroomChatPanel({
   projectTitle = "Diskusi Proyek",
   partnerName = "Mitra Kolaborasi",
   partnerRole = "USER",
+  partnerPhoto = null,
 }) {
   const { user, accessToken } = useAuthStore();
   const { addToast } = useToastStore();
@@ -115,7 +116,7 @@ export function WorkroomChatPanel({
         socket.close();
       }
     };
-  }, [projectId]);
+  }, [projectId, accessToken]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -198,9 +199,17 @@ export function WorkroomChatPanel({
       {/* 1. Chat Header Bar */}
       <div className="px-5 py-3.5 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0 border border-brand-indigo/20">
-            <MessageSquare className="w-4 h-4" />
-          </div>
+          {partnerPhoto ? (
+            <img
+              src={partnerPhoto}
+              alt={partnerName}
+              className="w-9 h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0 border border-brand-indigo/20">
+              <MessageSquare className="w-4 h-4" />
+            </div>
+          )}
           <div>
             <div className="flex items-center gap-2">
               <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight">
@@ -257,8 +266,23 @@ export function WorkroomChatPanel({
             return (
               <div
                 key={m.id || idx}
-                className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
               >
+                {!isMe &&
+                  (m.sender_photo || partnerPhoto ? (
+                    <img
+                      src={m.sender_photo || partnerPhoto}
+                      alt={m.sender_name || partnerName}
+                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
+                      {(m.sender_name || partnerName || "P")
+                        .charAt(0)
+                        .toUpperCase()}
+                    </div>
+                  ))}
+
                 <div
                   className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs shadow-xs ${
                     isMe
@@ -325,6 +349,26 @@ export function WorkroomChatPanel({
                     )}
                   </div>
                 </div>
+
+                {isMe &&
+                  (user?.url_foto ? (
+                    <img
+                      src={user.url_foto}
+                      alt="Me"
+                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
+                      {(
+                        user?.nama_lengkap ||
+                        user?.nama_usaha ||
+                        user?.email ||
+                        "U"
+                      )
+                        .charAt(0)
+                        .toUpperCase()}
+                    </div>
+                  ))}
               </div>
             );
           })
