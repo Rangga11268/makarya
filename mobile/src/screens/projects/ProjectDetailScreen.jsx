@@ -17,6 +17,8 @@ import { Header } from "../../components/ui/Header";
 import { ProjectDetailSkeleton } from "../../components/ui/Skeleton";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { ProposalSubmitModal } from "../../components/features/projects/ProposalSubmitModal";
+import { DeliverableUploadModal } from "../../components/features/projects/DeliverableUploadModal";
 import { Badge } from "../../components/ui/Badge";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
@@ -876,107 +878,31 @@ export function ProjectDetailScreen({ route, navigation }) {
       </View>
 
       {/* Modal 1: Proposal Lamaran Sheet */}
-      <Modal visible={proposalModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
-            <Text style={styles.modalSub}>
-              Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
-            </Text>
-
-            <Input
-              label="Tawaran Honor (Rp)"
-              placeholder={String(project.budget_max)}
-              value={hargaTawar}
-              onChangeText={setHargaTawar}
-              keyboardType="numeric"
-            />
-
-            <Input
-              label="Estimasi Waktu Pengerjaan (Hari)"
-              placeholder="5"
-              value={estimasiHari}
-              onChangeText={setEstimasiHari}
-              keyboardType="numeric"
-            />
-
-            <Input
-              label="Cover Letter / Rencana Kerja"
-              placeholder="Jelaskan keahlian relevan dan bagaimana Anda akan menyelesaikan proyek ini..."
-              value={coverLetter}
-              onChangeText={setCoverLetter}
-              multiline
-              numberOfLines={4}
-            />
-
-            <View style={styles.modalActions}>
-              <Button
-                title="Batal"
-                variant="secondary"
-                size="md"
-                onPress={() => setProposalModal(false)}
-                style={{ flex: 1 }}
-              />
-              <Button
-                title="Kirim Lamaran"
-                variant="brand"
-                size="md"
-                onPress={handleSubmitProposal}
-                loading={submitLoading}
-                style={{ flex: 2 }}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ProposalSubmitModal
+        visible={proposalModal}
+        onClose={() => setProposalModal(false)}
+        hargaTawar={hargaTawar}
+        setHargaTawar={setHargaTawar}
+        estimasiHari={estimasiHari}
+        setEstimasiHari={setEstimasiHari}
+        coverLetter={coverLetter}
+        setCoverLetter={setCoverLetter}
+        budgetMax={project.budget_max}
+        onSubmit={handleSubmitProposal}
+        loading={submitLoading}
+      />
 
       {/* Modal 2: Deliverable Upload Sheet */}
-      <Modal visible={submissionModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>Unggah Hasil Pekerjaan</Text>
-            <Text style={styles.modalSub}>
-              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau
-              Loom video)
-            </Text>
-
-            <Input
-              label="Tautan Berkas Deliverable"
-              placeholder="https://figma.com/file/... atau https://drive.google.com/..."
-              value={urlBerkas}
-              onChangeText={setUrlBerkas}
-              autoCapitalize="none"
-            />
-
-            <Input
-              label="Catatan Pengiriman & Ringkasan Hasil"
-              placeholder="Jelaskan apa saja yang telah selesai dikerjakan sesuai brief..."
-              value={catatanPengiriman}
-              onChangeText={setCatatanPengiriman}
-              multiline
-              numberOfLines={3}
-            />
-
-            <View style={styles.modalActions}>
-              <Button
-                title="Batal"
-                variant="secondary"
-                size="md"
-                onPress={() => setSubmissionModal(false)}
-                style={{ flex: 1 }}
-              />
-              <Button
-                title="Kirim Hasil Kerja"
-                variant="brand"
-                size="md"
-                onPress={handleUploadWork}
-                loading={uploadLoading}
-                style={{ flex: 2 }}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <DeliverableUploadModal
+        visible={submissionModal}
+        onClose={() => setSubmissionModal(false)}
+        urlBerkas={urlBerkas}
+        setUrlBerkas={setUrlBerkas}
+        catatanPengiriman={catatanPengiriman}
+        setCatatanPengiriman={setCatatanPengiriman}
+        onSubmit={handleUploadWork}
+        loading={uploadLoading}
+      />
     </View>
   );
 }
@@ -1545,37 +1471,5 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
-  },
-
-  // Modal Sheet
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.6)",
-    justifyContent: "flex-end",
-  },
-  modalSheet: {
-    backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: Platform.OS === "ios" ? 40 : 24,
-  },
-  modalTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    marginBottom: 4,
-  },
-  modalSub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginBottom: 16,
-  },
-  modalActions: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
   },
 });
