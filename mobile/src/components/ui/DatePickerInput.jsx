@@ -7,13 +7,30 @@ import {
   Modal,
   Platform,
 } from "react-native";
-import { Calendar, ChevronLeft, ChevronRight, X, Clock, Check } from "lucide-react-native";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Clock,
+  Check,
+} from "lucide-react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 
 const MONTH_NAMES = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 ];
 
 const DAY_NAMES = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
@@ -22,7 +39,15 @@ function formatIndonesianDate(dateStr) {
   if (!dateStr) return "Pilih tanggal deadline...";
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
-  const dayName = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][d.getDay()];
+  const dayName = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+  ][d.getDay()];
   const day = d.getDate();
   const monthName = MONTH_NAMES[d.getMonth()];
   const year = d.getFullYear();
@@ -60,10 +85,14 @@ export function DatePickerInput({
   const [modalOpen, setModalOpen] = useState(false);
 
   // Initialize internal calendar view to selected date or today + 7
-  const initialDate = value ? new Date(value) : new Date(Date.now() + 7 * 86400000);
+  const initialDate = value
+    ? new Date(value)
+    : new Date(Date.now() + 7 * 86400000);
   const [viewYear, setViewYear] = useState(initialDate.getFullYear());
   const [viewMonth, setViewMonth] = useState(initialDate.getMonth());
-  const [tempSelected, setTempSelected] = useState(value || toDateString(initialDate));
+  const [tempSelected, setTempSelected] = useState(
+    value || toDateString(initialDate),
+  );
 
   const daysRemaining = calculateDaysRemaining(value);
 
@@ -134,10 +163,7 @@ export function DatePickerInput({
 
       {/* Trigger Button Field */}
       <TouchableOpacity
-        style={[
-          styles.fieldWrapper,
-          error ? styles.fieldError : null,
-        ]}
+        style={[styles.fieldWrapper, error ? styles.fieldError : null]}
         onPress={handleOpen}
         activeOpacity={0.8}
       >
@@ -146,7 +172,9 @@ export function DatePickerInput({
             <Calendar size={18} color={COLORS.brandIndigo} />
           </View>
           <View style={styles.fieldTextCol}>
-            <Text style={[styles.mainDateText, !value && styles.placeholderText]}>
+            <Text
+              style={[styles.mainDateText, !value && styles.placeholderText]}
+            >
               {formatIndonesianDate(value)}
             </Text>
             {daysRemaining !== null && daysRemaining >= 0 && (
@@ -163,14 +191,21 @@ export function DatePickerInput({
           <View
             style={[
               styles.remainBadge,
-              daysRemaining <= 3 ? styles.remainBadgeUrgent : styles.remainBadgeNormal,
+              daysRemaining <= 3
+                ? styles.remainBadgeUrgent
+                : styles.remainBadgeNormal,
             ]}
           >
-            <Clock size={11} color={daysRemaining <= 3 ? "#B45309" : COLORS.brandIndigo} />
+            <Clock
+              size={11}
+              color={daysRemaining <= 3 ? "#B45309" : COLORS.brandIndigo}
+            />
             <Text
               style={[
                 styles.remainBadgeText,
-                daysRemaining <= 3 ? styles.remainBadgeTextUrgent : styles.remainBadgeTextNormal,
+                daysRemaining <= 3
+                  ? styles.remainBadgeTextUrgent
+                  : styles.remainBadgeTextNormal,
               ]}
             >
               +{daysRemaining} Hari
@@ -197,9 +232,12 @@ export function DatePickerInput({
             {/* Modal Header */}
             <View style={styles.modalHeader}>
               <View>
-                <Text style={styles.modalTitle}>Pilih Batas Akhir (Deadline)</Text>
+                <Text style={styles.modalTitle}>
+                  Pilih Batas Akhir (Deadline)
+                </Text>
                 <Text style={styles.modalSub}>
-                  Tentukan waktu yang realistis agar mahasiswa menghasilkan karya prima
+                  Tentukan waktu yang realistis agar mahasiswa menghasilkan
+                  karya prima
                 </Text>
               </View>
               <TouchableOpacity
@@ -213,7 +251,9 @@ export function DatePickerInput({
 
             {/* Quick Preset Pills */}
             <View style={styles.presetSection}>
-              <Text style={styles.presetSectionTitle}>Pilihan Cepat Waktu:</Text>
+              <Text style={styles.presetSectionTitle}>
+                Pilihan Cepat Waktu:
+              </Text>
               <View style={styles.presetRow}>
                 {[
                   { label: "+3 Hari (Kilat)", days: 3 },
@@ -221,16 +261,26 @@ export function DatePickerInput({
                   { label: "+14 Hari (2 Minggu)", days: 14 },
                   { label: "+30 Hari (1 Bulan)", days: 30 },
                 ].map((item) => {
-                  const itemStr = toDateString(new Date(Date.now() + item.days * 86400000));
+                  const itemStr = toDateString(
+                    new Date(Date.now() + item.days * 86400000),
+                  );
                   const isMatch = tempSelected === itemStr;
                   return (
                     <TouchableOpacity
                       key={item.days}
                       onPress={() => handleApplyPreset(item.days)}
-                      style={[styles.presetPill, isMatch && styles.presetPillActive]}
+                      style={[
+                        styles.presetPill,
+                        isMatch && styles.presetPillActive,
+                      ]}
                       activeOpacity={0.75}
                     >
-                      <Text style={[styles.presetPillText, isMatch && styles.presetPillTextActive]}>
+                      <Text
+                        style={[
+                          styles.presetPillText,
+                          isMatch && styles.presetPillTextActive,
+                        ]}
+                      >
                         {item.label}
                       </Text>
                     </TouchableOpacity>
@@ -282,7 +332,9 @@ export function DatePickerInput({
               <View style={styles.gridDays}>
                 {daysCells.map((cell, idx) => {
                   if (!cell) {
-                    return <View key={`empty-${idx}`} style={styles.dayCellEmpty} />;
+                    return (
+                      <View key={`empty-${idx}`} style={styles.dayCellEmpty} />
+                    );
                   }
                   return (
                     <TouchableOpacity
@@ -654,4 +706,3 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 });
-

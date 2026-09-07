@@ -330,7 +330,6 @@ export function ApplyProposalPage() {
 
                   <div>
                     <Input
-                      label="Estimasi Waktu Selesai (Hari)"
                       label="Estimasi Waktu Selesai"
                       type="number"
                       min="1"

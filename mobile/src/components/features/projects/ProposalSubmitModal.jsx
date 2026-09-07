@@ -1,5 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet, Modal, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { Input } from "../../ui/Input";
@@ -28,27 +37,52 @@ export function ProposalSubmitModal({
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.modalOverlay}
+      >
         <View style={styles.modalSheet}>
           <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
           <Text style={styles.modalSub}>
             Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
           </Text>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
+            <Text style={styles.modalSub}>
+              Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
+            </Text>
 
-          <Input
-            label="Tawaran Honor (Rp)"
           <CurrencyInput
             label="Tawaran Honor Pengerjaan"
             placeholder={String(budgetMax || "")}
             value={hargaTawar}
-            onChangeText={setHargaTawar}
-            keyboardType="numeric"
             onChangeValue={(val) => setHargaTawar(String(val))}
-            helperText={budgetMax ? `Batas budget maksimal klien: Rp ${formatNumberDots(budgetMax)}` : undefined}
+            helperText={
+              budgetMax
+                ? `Batas budget maksimal klien: Rp ${formatNumberDots(budgetMax)}`
+                : undefined
+            }
             required
           />
+            <CurrencyInput
+              label="Tawaran Honor Pengerjaan"
+              placeholder={String(budgetMax || "")}
+              value={hargaTawar}
+              onChangeValue={(val) => setHargaTawar(String(val))}
+              helperText={
+                budgetMax
+                  ? `Batas budget maksimal klien: Rp ${formatNumberDots(budgetMax)}`
+                  : undefined
+              }
+              required
+            />
 
           <Input
-            label="Estimasi Waktu Pengerjaan (Hari)"
             label="Estimasi Waktu Pengerjaan"
             placeholder="5"
             value={estimasiHari}
@@ -57,6 +91,15 @@ export function ProposalSubmitModal({
             suffix="Hari Kerja"
             required
           />
+            <Input
+              label="Estimasi Waktu Pengerjaan"
+              placeholder="5"
+              value={estimasiHari}
+              onChangeText={setEstimasiHari}
+              keyboardType="numeric"
+              suffix="Hari Kerja"
+              required
+            />
 
           <Input
             label="Cover Letter / Rencana Kerja"
@@ -67,6 +110,15 @@ export function ProposalSubmitModal({
             numberOfLines={4}
             required
           />
+            <Input
+              label="Cover Letter / Rencana Kerja"
+              placeholder="Jelaskan keahlian relevan dan bagaimana Anda akan menyelesaikan proyek ini..."
+              value={coverLetter}
+              onChangeText={setCoverLetter}
+              multiline
+              numberOfLines={4}
+              required
+            />
 
           <View style={styles.modalActions}>
             <Button
@@ -85,8 +137,27 @@ export function ProposalSubmitModal({
               style={{ flex: 2 }}
             />
           </View>
+            <View style={styles.modalActions}>
+              <Button
+                title="Batal"
+                variant="secondary"
+                size="md"
+                onPress={onClose}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Kirim Lamaran"
+                variant="brand"
+                size="md"
+                onPress={onSubmit}
+                loading={loading}
+                style={{ flex: 2 }}
+              />
+            </View>
+          </ScrollView>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -101,6 +172,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    maxHeight: "88%",
+  },
+  scrollContent: {
     padding: 20,
     paddingBottom: Platform.OS === "ios" ? 40 : 24,
   },

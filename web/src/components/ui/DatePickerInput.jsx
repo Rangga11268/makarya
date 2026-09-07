@@ -3,8 +3,18 @@ import { cn } from "../../utils/cn";
 import { Calendar, Clock } from "lucide-react";
 
 const MONTH_NAMES = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 ];
 
 function formatIndonesianDate(dateStr) {
@@ -69,7 +79,7 @@ export function DatePickerInput({
                 "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border",
                 daysRemaining <= 3
                   ? "bg-amber-50 text-amber-800 border-amber-200"
-                  : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                  : "bg-emerald-50 text-emerald-800 border-emerald-200",
               )}
             >
               <Clock className="w-3 h-3" />
@@ -95,7 +105,7 @@ export function DatePickerInput({
             "w-full rounded-2xl border bg-surface py-2.5 pl-10 pr-4 text-sm font-semibold text-dark-900 transition-all font-sans focus:outline-none focus:ring-2 focus:ring-brand-indigo/15 cursor-pointer shadow-2xs",
             error
               ? "border-rose-300 focus:border-rose-500 bg-rose-50/20"
-              : "border-border focus:border-brand-indigo"
+              : "border-border focus:border-brand-indigo",
           )}
         />
       </div>
@@ -118,7 +128,9 @@ export function DatePickerInput({
           { label: "+14 Hari (2 Minggu)", days: 14 },
           { label: "+30 Hari (1 Bulan)", days: 30 },
         ].map((item) => {
-          const itemDateStr = toDateString(new Date(Date.now() + item.days * 86400000));
+          const itemDateStr = toDateString(
+            new Date(Date.now() + item.days * 86400000),
+          );
           const isSelected = value === itemDateStr;
           return (
             <button
@@ -129,7 +141,7 @@ export function DatePickerInput({
                 "px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all",
                 isSelected
                   ? "bg-brand-indigo text-white border-brand-indigo shadow-xs"
-                  : "bg-canvas border-border text-muted hover:text-dark-900 hover:bg-surface"
+                  : "bg-canvas border-border text-muted hover:text-dark-900 hover:bg-surface",
               )}
             >
               {item.label}
@@ -138,11 +150,14 @@ export function DatePickerInput({
         })}
       </div>
 
-      {error && <span className="text-xs font-medium text-rose-600 pl-1">{error}</span>}
+      {error && (
+        <span className="text-xs font-medium text-rose-600 pl-1">{error}</span>
+      )}
       {helperText && !error && (
-        <span className="text-[11px] text-muted font-normal leading-snug pl-1">{helperText}</span>
+        <span className="text-[11px] text-muted font-normal leading-snug pl-1">
+          {helperText}
+        </span>
       )}
     </div>
   );
 }
-

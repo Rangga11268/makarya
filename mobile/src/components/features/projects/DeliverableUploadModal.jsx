@@ -1,5 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet, Modal, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { Input } from "../../ui/Input";
@@ -23,12 +32,27 @@ export function DeliverableUploadModal({
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.modalOverlay}
+      >
         <View style={styles.modalSheet}>
           <Text style={styles.modalTitle}>Unggah Hasil Pekerjaan</Text>
           <Text style={styles.modalSub}>
             Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau Loom
             video)
           </Text>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Text style={styles.modalTitle}>Unggah Hasil Pekerjaan</Text>
+            <Text style={styles.modalSub}>
+              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau Loom
+              video)
+            </Text>
 
           <Input
             label="Tautan Berkas Deliverable"
@@ -37,6 +61,13 @@ export function DeliverableUploadModal({
             onChangeText={setUrlBerkas}
             autoCapitalize="none"
           />
+            <Input
+              label="Tautan Berkas Deliverable"
+              placeholder="https://figma.com/file/... atau https://drive.google.com/..."
+              value={urlBerkas}
+              onChangeText={setUrlBerkas}
+              autoCapitalize="none"
+            />
 
           <Input
             label="Catatan Pengiriman & Ringkasan Hasil"
@@ -46,6 +77,14 @@ export function DeliverableUploadModal({
             multiline
             numberOfLines={3}
           />
+            <Input
+              label="Catatan Pengiriman & Ringkasan Hasil"
+              placeholder="Jelaskan apa saja yang telah selesai dikerjakan sesuai brief..."
+              value={catatanPengiriman}
+              onChangeText={setCatatanPengiriman}
+              multiline
+              numberOfLines={3}
+            />
 
           <View style={styles.modalActions}>
             <Button
@@ -64,8 +103,27 @@ export function DeliverableUploadModal({
               style={{ flex: 2 }}
             />
           </View>
+            <View style={styles.modalActions}>
+              <Button
+                title="Batal"
+                variant="secondary"
+                size="md"
+                onPress={onClose}
+                style={{ flex: 1 }}
+              />
+              <Button
+                title="Kirim Hasil Kerja"
+                variant="brand"
+                size="md"
+                onPress={onSubmit}
+                loading={loading}
+                style={{ flex: 2 }}
+              />
+            </View>
+          </ScrollView>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -80,6 +138,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgSurface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    maxHeight: "88%",
+  },
+  scrollContent: {
     padding: 20,
     paddingBottom: Platform.OS === "ios" ? 40 : 24,
   },

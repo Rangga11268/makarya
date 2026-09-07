@@ -800,7 +800,6 @@ export function WalletPage() {
           </div>
 
           <CurrencyInput
-            label="Nominal Deposit (Rp)"
             label="Nominal Deposit"
             placeholder="500.000"
             value={topUpNominal}

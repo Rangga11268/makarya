@@ -38,7 +38,6 @@ export function Input({
 
   return (
     <View style={[styles.container, style]}>
-      {label && <Text style={styles.label}>{label}</Text>}
       {label && (
         <View style={styles.labelRow}>
           <Text style={styles.label}>{label}</Text>
@@ -73,6 +72,16 @@ export function Input({
           numberOfLines={numberOfLines}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          scrollEnabled={multiline ? false : undefined}
+          textAlignVertical={multiline ? "top" : "center"}
+          onFocus={(e) => {
+            setIsFocused(true);
+            rest.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            rest.onBlur?.(e);
+          }}
           style={[styles.input, multiline && styles.multilineInput, inputStyle]}
           {...rest}
         />
@@ -131,10 +140,8 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "600",
     fontWeight: "700",
     color: COLORS.textDark,
-    marginBottom: 7,
     letterSpacing: 0.1,
   },
   requiredStar: {
@@ -193,12 +200,12 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     color: COLORS.textDark,
     fontSize: 14,
-    paddingVertical: 12,
     paddingVertical: 11,
     fontWeight: "500",
   },
   multilineInput: {
     height: 90,
+    minHeight: 80,
     textAlignVertical: "top",
     paddingVertical: 0,
   },

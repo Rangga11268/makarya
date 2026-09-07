@@ -31,13 +31,17 @@ export function CurrencyInput({
   const rawNumericString = String(value || "").replace(/\D/g, "");
   const numericVal = rawNumericString ? parseInt(rawNumericString, 10) : 0;
   const displayFormatted = formatNumberDots(rawNumericString);
-  const terbilangText = showTerbilang && numericVal > 0 ? terbilangRupiah(numericVal) : "";
+  const terbilangText =
+    showTerbilang && numericVal > 0 ? terbilangRupiah(numericVal) : "";
 
   const handleChangeText = (text) => {
     const cleanDigits = text.replace(/\D/g, "");
     const num = cleanDigits ? parseInt(cleanDigits, 10) : 0;
     if (onChangeValue) {
-      onChangeValue(cleanDigits ? num : "", cleanDigits ? formatNumberDots(cleanDigits) : "");
+      onChangeValue(
+        cleanDigits ? num : "",
+        cleanDigits ? formatNumberDots(cleanDigits) : "",
+      );
     }
   };
 
@@ -103,7 +107,11 @@ export function CurrencyInput({
       {/* Terbilang Live Preview */}
       {terbilangText ? (
         <View style={styles.terbilangRow}>
-          <Sparkles size={11} color={COLORS.brandIndigo} style={{ marginTop: 2 }} />
+          <Sparkles
+            size={11}
+            color={COLORS.brandIndigo}
+            style={{ marginTop: 2 }}
+          />
           <Text style={styles.terbilangText} numberOfLines={2}>
             {terbilangText}
           </Text>
@@ -119,17 +127,11 @@ export function CurrencyInput({
               <TouchableOpacity
                 key={nom}
                 onPress={() => handleQuickSelect(nom)}
-                style={[
-                  styles.chipBtn,
-                  isSelected && styles.chipBtnActive,
-                ]}
+                style={[styles.chipBtn, isSelected && styles.chipBtnActive]}
                 activeOpacity={0.7}
               >
                 <Text
-                  style={[
-                    styles.chipText,
-                    isSelected && styles.chipTextActive,
-                  ]}
+                  style={[styles.chipText, isSelected && styles.chipTextActive]}
                 >
                   {formatNumberDots(nom)}
                 </Text>
@@ -293,4 +295,3 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
 });
-

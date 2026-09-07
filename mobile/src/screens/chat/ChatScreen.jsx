@@ -470,6 +470,8 @@ export function ChatScreen({ route, navigation }) {
           renderItem={renderMessageItem}
           contentContainerStyle={styles.messagesList}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <View style={styles.emptyIconBox}>

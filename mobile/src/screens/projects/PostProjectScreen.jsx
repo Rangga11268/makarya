@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
@@ -12,7 +20,6 @@ import { CategoryChip } from "../../components/ui/CategoryChip";
 import { CATEGORIES } from "../../constants/categories";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import { ShieldCheck, Calendar } from "lucide-react-native";
 import { ShieldCheck } from "lucide-react-native";
 
 export function PostProjectScreen({ navigation }) {
@@ -63,6 +70,10 @@ export function PostProjectScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <Header
         category="PASANG PROYEK"
         title="Pasang Proyek UMKM"
@@ -73,6 +84,7 @@ export function PostProjectScreen({ navigation }) {
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         {/* Kategori Selector Pills */}
@@ -113,15 +125,10 @@ export function PostProjectScreen({ navigation }) {
           required
         />
 
-        <Input
-          label="Maksimal Anggaran (Maks Rp 2.000.000)"
-          placeholder="300000"
         <CurrencyInput
           label="Maksimal Anggaran Honor"
           placeholder="300.000"
           value={budgetMax}
-          onChangeText={setBudgetMax}
-          keyboardType="numeric"
           onChangeValue={(val) => setBudgetMax(String(val))}
           quickNominals={[100000, 250000, 500000, 1000000, 2000000]}
           helperText="Maksimal anggaran proyek platform: Rp 2.000.000"
@@ -131,14 +138,9 @@ export function PostProjectScreen({ navigation }) {
         {/* Smart Pricing Suggester */}
         <PricingSuggester category={kategori} budget={budgetMax} />
 
-        <Input
-          label="Tenggat Waktu Pengerjaan (YYYY-MM-DD)"
-          placeholder="2026-09-30"
         <DatePickerInput
           label="Tenggat Waktu Pengerjaan (Batas Deadline)"
           value={deadline}
-          onChangeText={setDeadline}
-          icon={<Calendar size={18} color={COLORS.textMuted} />}
           onChangeDate={setDeadline}
           helperText="Pilih waktu yang realistis agar mahasiswa menghasilkan karya berkualitas."
           required
@@ -163,6 +165,7 @@ export function PostProjectScreen({ navigation }) {
         />
       </ScrollView>
     </View>
+    </KeyboardAvoidingView>
   );
 }
 

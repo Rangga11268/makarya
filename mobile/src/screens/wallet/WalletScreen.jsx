@@ -490,44 +490,15 @@ export function WalletScreen({ navigation }) {
               </View>
             )}
 
-            <Input
-              label="Nominal Transaksi (Rp)"
-              placeholder="500000"
             <CurrencyInput
               label={`Nominal ${txType === "TOPUP" ? "Top Up Saldo" : "Penarikan Dana"}`}
               placeholder="100.000"
               value={nominal}
-              onChangeText={setNominal}
-              keyboardType="numeric"
               onChangeValue={(val) => setNominal(String(val))}
               quickNominals={[50000, 100000, 250000, 500000, 1000000]}
               helperText={`Minimal transaksi: Rp ${txType === "WITHDRAW" ? "25.000" : "50.000"}`}
               required
             />
-
-            {/* Quick Chips */}
-            <View style={styles.quickNominalsRow}>
-              {["100000", "250000", "500000", "1000000"].map((n) => (
-                <TouchableOpacity
-                  key={n}
-                  onPress={() => setNominal(n)}
-                  style={[
-                    styles.quickNomChip,
-                    nominal === n && styles.quickNomChipActive,
-                  ]}
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    style={[
-                      styles.quickNomText,
-                      nominal === n && styles.quickNomTextActive,
-                    ]}
-                  >
-                    {formatCurrency(parseInt(n, 10))}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
 
             <View style={styles.modalActionsRow}>
               <Button

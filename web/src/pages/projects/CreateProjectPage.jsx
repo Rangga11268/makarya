@@ -662,43 +662,20 @@ export function CreateProjectPage() {
           <form onSubmit={handleStep3Next} className="space-y-6">
             {/* Budget Input & Recommendation */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
-                  Maksimal Anggaran Honor (Budget Max)
-                </label>
-                <span className="text-lg font-black text-brand-indigo font-sans">
-                  {formatCurrency(formData.budget_max)}
-                </span>
-              </div>
-
-              <input
-                type="range"
-                min="50000"
-                max="2000000"
-                step="50000"
               <CurrencyInput
                 label="Maksimal Anggaran Honor (Budget Max)"
                 value={formData.budget_max}
-                onChange={(e) =>
                 onChange={(val) =>
                   setFormData({
                     ...formData,
-                    budget_max: parseInt(e.target.value, 10),
                     budget_max: val ? Math.min(2000000, Math.max(0, val)) : "",
                   })
                 }
-                className="w-full accent-brand-indigo cursor-pointer"
                 quickNominals={[100000, 250000, 500000, 1000000, 2000000]}
                 helperText={`Rekomendasi pasar kategori ${currentCatObj.label}: ${currentCatObj.recommendedBudget}`}
                 required
               />
 
-              <div className="flex items-center justify-between text-xs text-muted">
-                <span>Rp 50.000 (Paling Ringan)</span>
-                <span className="font-bold text-dark-900 bg-canvas px-3 py-1 rounded-full border border-border">
-                  Rekomendasi Pasar: {currentCatObj.recommendedBudget}
-                </span>
-                <span>Rp 2.000.000 (Maksimal Platform)</span>
               <div className="pt-1">
                 <input
                   type="range"
@@ -723,13 +700,9 @@ export function CreateProjectPage() {
             </div>
 
             {/* Deadline Picker */}
-            <Input
             <DatePickerInput
               label="Tenggat Waktu Selesai (Batas Akhir Deliverable)"
-              type="date"
               value={formData.deadline}
-              onChange={(e) =>
-                setFormData({ ...formData, deadline: e.target.value })
               onChange={(dateStr) =>
                 setFormData({ ...formData, deadline: dateStr })
               }
