@@ -43,6 +43,7 @@ class ProposalResponse(BaseModel):
     project_status : Optional[str] = None
     project_budget_max : Optional[Decimal] = None
     project_umkm_nama : Optional[str] = None
+    project_umkm_foto : Optional[str] = None
     project_deskripsi : Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

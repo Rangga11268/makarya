@@ -262,12 +262,12 @@ export function TrackerScreen({ navigation }) {
           const projectTitle = isMahasiswa ? item.project_judul : item.judul;
           const partnerName = isMahasiswa
             ? item.project_umkm_nama || "Mitra UMKM Kampus"
-            : "Daftar Proyek Anda";
+            : item.accepted_mhs_nama || "Daftar Proyek Anda";
           const partnerPhoto = isMahasiswa
             ? item.project_umkm_foto ||
               item.umkm_foto ||
               item.project?.umkm_profile?.url_foto_usaha
-            : item.mhs_profile?.url_foto || item.mhs_foto;
+            : item.accepted_mhs_foto || item.mhs_profile?.url_foto || item.mhs_foto;
           const category = isMahasiswa
             ? item.project_kategori || item.kategori || "UMKM"
             : item.kategori || "UMKM";

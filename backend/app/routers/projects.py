@@ -8,12 +8,25 @@ from app.core.database import get_db
 from app.dependencies import get_current_user, require_role
 from app.models.user import User, UserRole
 from app.models.project import Project, ProjectCategory, ProjectStatus
-from app.models.profile import ProfileUmkm
-from app.models.proposal import Proposal
+from app.models.profile import ProfileUmkm, ProfileMhs
+from app.models.proposal import Proposal, ProposalStatus
 from app.schemas.project import ProjectCreateRequest, ProjectUpdateRequest, ProjectResponse, UmkmSummary
 
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
+
+
+def _resolve_accepted_mhs(proj_id: UUID, db: Session):
+    accepted_prop = (
+        db.query(Proposal)
+        .filter(Proposal.project_id == proj_id, Proposal.status == ProposalStatus.ACCEPTED)
+        .first()
+    )
+    if accepted_prop:
+        mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == accepted_prop.mhs_id).first()
+        if mhs_profile:
+            return (mhs_profile.nama_lengkap, mhs_profile.url_foto)
+    return (None, None)
 
 
 @router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
@@ -84,6 +97,7 @@ def browse_project(
         profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
         umkm_summary = UmkmSummary.model_validate(profile) if profile else None
         total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
+        acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
 
         results.append(ProjectResponse(
             id=proj.id,
@@ -98,6 +112,8 @@ def browse_project(
             updated_at=proj.updated_at,
             umkm_profile=umkm_summary,
             umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
+            accepted_mhs_nama=acc_nama,
+            accepted_mhs_foto=acc_foto,
             total_pelamar=total_pelamar
         ))
     return results
@@ -117,6 +133,7 @@ def get_my_projects(
     results = []
     for proj in projects:
         total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
+        acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
         results.append(ProjectResponse(
             id=proj.id,
             umkm_id=proj.umkm_id,
@@ -130,6 +147,8 @@ def get_my_projects(
             updated_at=proj.updated_at,
             umkm_profile=umkm_summary,
             umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
+            accepted_mhs_nama=acc_nama,
+            accepted_mhs_foto=acc_foto,
             total_pelamar=total_pelamar
         ))
     return results
@@ -147,6 +166,7 @@ def get_project_by_id(
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
     umkm_summary = UmkmSummary.model_validate(profile) if profile else None
     total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
+    acc_nama, acc_foto = _resolve_accepted_mhs(project.id, db)
 
     return ProjectResponse(
         id=project.id,
@@ -161,6 +181,8 @@ def get_project_by_id(
         updated_at=project.updated_at,
         umkm_profile=umkm_summary,
         umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
+        accepted_mhs_nama=acc_nama,
+        accepted_mhs_foto=acc_foto,
         total_pelamar=total_pelamar
     )
 

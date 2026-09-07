@@ -109,6 +109,11 @@ def get_my_proposals(
                 if (proj and proj.umkm and proj.umkm.profile_umkm and proj.umkm.profile_umkm.nama_usaha)
                 else (proj.umkm.email.split("@")[0] if proj and proj.umkm else None)
             ),
+            project_umkm_foto=(
+                proj.umkm.profile_umkm.url_foto_usaha
+                if (proj and proj.umkm and proj.umkm.profile_umkm and proj.umkm.profile_umkm.url_foto_usaha)
+                else None
+            ),
             project_deskripsi=proj.deskripsi_raw if proj else None,
         ))
     return results

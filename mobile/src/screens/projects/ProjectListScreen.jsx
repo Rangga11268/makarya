@@ -53,7 +53,7 @@ export function ProjectListScreen({ navigation, route }) {
   // Modals
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const [selectedStatus, setSelectedStatus] = useState("OPEN");
   const [selectedBudgetRange, setSelectedBudgetRange] = useState("ALL");
 
   const { getUnreadCount } = useNotificationStore();
@@ -69,9 +69,13 @@ export function ProjectListScreen({ navigation, route }) {
     try {
       setLoading(true);
       if (isMahasiswa) {
-        const res = await projectApi.browse({
-          search: searchQuery.trim() || undefined,
-        });
+        const params = {
+          keyword: searchQuery.trim() || undefined,
+        };
+        if (selectedStatus !== "ALL") {
+          params.status = selectedStatus;
+        }
+        const res = await projectApi.browse(params);
         const items = Array.isArray(res.data)
           ? res.data
           : res.data?.items || [];
@@ -89,7 +93,7 @@ export function ProjectListScreen({ navigation, route }) {
 
   useEffect(() => {
     loadProjects();
-  }, [searchQuery, user?.role]);
+  }, [searchQuery, user?.role, selectedStatus]);
 
   const segmentedTabs = [
     { id: "MATCH", label: "Best Match" },
@@ -98,12 +102,12 @@ export function ProjectListScreen({ navigation, route }) {
   ];
 
   const activeFilterCount =
-    (selectedStatus !== "ALL" ? 1 : 0) +
+    (selectedStatus !== "OPEN" ? 1 : 0) +
     (selectedBudgetRange !== "ALL" ? 1 : 0) +
     (categoryFilter !== "ALL" ? 1 : 0);
 
   const resetFilters = () => {
-    setSelectedStatus("ALL");
+    setSelectedStatus("OPEN");
     setSelectedBudgetRange("ALL");
     setCategoryFilter("ALL");
   };

@@ -107,7 +107,9 @@ export function DashboardPage() {
               <div
                 className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform`}
               >
-                {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U").charAt(0).toUpperCase()}
+                {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
+                  .charAt(0)
+                  .toUpperCase()}
               </div>
             )}
           </Link>

@@ -41,6 +41,7 @@ class UmkmSummary(BaseModel):
     nama_usaha: str
     bidang_industri: Optional[str] = None
     kota: Optional[str] = None
+    url_foto_usaha: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,6 +59,8 @@ class ProjectResponse(BaseModel):
     updated_at: datetime
     umkm_profile: Optional[UmkmSummary] = None
     umkm_nama: Optional[str] = None
+    accepted_mhs_nama: Optional[str] = None
+    accepted_mhs_foto: Optional[str] = None
     total_pelamar: int = 0
 
     model_config = ConfigDict(from_attributes=True)

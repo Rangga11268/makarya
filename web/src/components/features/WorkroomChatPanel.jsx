@@ -204,10 +204,19 @@ export function WorkroomChatPanel({
               src={partnerPhoto}
               alt={partnerName}
               className="w-9 h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
             />
           ) : (
-            <div className="w-9 h-9 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0 border border-brand-indigo/20">
-              <MessageSquare className="w-4 h-4" />
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
+                partnerRole === "UMKM"
+                  ? "bg-amber-100 text-amber-900 border-amber-200"
+                  : "bg-brand-indigo text-white border-brand-indigo"
+              }`}
+            >
+              {(partnerName || "M").charAt(0).toUpperCase()}
             </div>
           )}
           <div>
@@ -216,7 +225,9 @@ export function WorkroomChatPanel({
                 {partnerName}
               </h4>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
-                {partnerRole === "UMKM" ? "Klien UMKM" : "Mahasiswa Terverifikasi"}
+                {partnerRole === "UMKM"
+                  ? "Klien UMKM"
+                  : "Mahasiswa Terverifikasi"}
               </span>
             </div>
             <p className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">

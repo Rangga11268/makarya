@@ -159,6 +159,19 @@ def login(request: Request, body: LoginRequest, db: Session = Depends(get_db)):
     access_token = create_access_token(subject=user.id, role=user.role.value)
     refresh_token = create_refresh_token(subject=user.id)
 
+    nama = None
+    url_foto = None
+    if user.role == UserRole.MHS:
+        mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == user.id).first()
+        if mhs:
+            nama = mhs.nama_lengkap
+            url_foto = mhs.url_foto
+    elif user.role == UserRole.UMKM:
+        umkm = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == user.id).first()
+        if umkm:
+            nama = umkm.nama_usaha
+            url_foto = umkm.url_foto_usaha
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
@@ -166,6 +179,8 @@ def login(request: Request, body: LoginRequest, db: Session = Depends(get_db)):
         email=user.email,
         role=user.role,
         is_verified=user.is_active,
+        nama=nama,
+        url_foto=url_foto,
     )
 
 

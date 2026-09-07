@@ -29,7 +29,7 @@ import {
 import { cn } from "../../utils/cn";
 
 export function SidebarLayout() {
-  const { user, logout, isAuthenticated } = useAuthStore();
+  const { user, logout, isAuthenticated, fetchProfile } = useAuthStore();
   const { showConfirm } = useAlertStore();
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,13 +42,18 @@ export function SidebarLayout() {
   const isMahasiswa = role === "MHS" || role === "MAHASISWA";
   const isAdmin = role === "ADMIN";
 
-  // Fetch quick wallet info for sidebar card
+  // Fetch quick wallet info for sidebar card & ensure user profile photo is loaded
   useEffect(() => {
-    if (isAuthenticated && !isAdmin) {
-      walletApi
-        .getMe()
-        .then((res) => setWallet(res.data))
-        .catch(() => {});
+    if (isAuthenticated) {
+      if (!isAdmin) {
+        walletApi
+          .getMe()
+          .then((res) => setWallet(res.data))
+          .catch(() => {});
+      }
+      if (fetchProfile) {
+        fetchProfile();
+      }
     }
   }, [isAuthenticated, isAdmin, location.pathname]);
 

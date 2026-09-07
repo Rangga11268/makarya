@@ -523,6 +523,25 @@ export function ProposalBoardPage() {
                         {proj.judul}
                       </h4>
 
+                      {proj.accepted_mhs_nama && (
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          {proj.accepted_mhs_foto ? (
+                            <img
+                              src={proj.accepted_mhs_foto}
+                              alt={proj.accepted_mhs_nama}
+                              className="w-4 h-4 rounded-full object-cover shrink-0 border border-border"
+                            />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-[9px] shrink-0">
+                              {proj.accepted_mhs_nama.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <span className="text-[11px] text-muted truncate">
+                            {proj.accepted_mhs_nama}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/60 text-[11px] text-muted">
                         <span className="font-extrabold text-dark-900">
                           {formatCurrency(proj.budget_max)}
@@ -581,6 +600,23 @@ export function ProposalBoardPage() {
                     <h4 className="text-xs sm:text-sm font-bold text-dark-900 line-clamp-1">
                       {prop.project_judul}
                     </h4>
+
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      {prop.project_umkm_foto ? (
+                        <img
+                          src={prop.project_umkm_foto}
+                          alt={prop.project_umkm_nama || "Klien UMKM"}
+                          className="w-4 h-4 rounded-full object-cover shrink-0 border border-border"
+                        />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-[9px] shrink-0">
+                          {(prop.project_umkm_nama || "K").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-[11px] text-muted truncate">
+                        {prop.project_umkm_nama || "Klien UMKM"}
+                      </span>
+                    </div>
 
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/60 text-[11px] text-muted">
                       <span className="font-extrabold text-dark-900">
@@ -979,12 +1015,17 @@ export function ProposalBoardPage() {
                                   {prop.mhs_profile?.url_foto ? (
                                     <img
                                       src={prop.mhs_profile.url_foto}
-                                      alt={prop.mhs_profile?.nama_lengkap || "Pelamar"}
+                                      alt={
+                                        prop.mhs_profile?.nama_lengkap ||
+                                        "Pelamar"
+                                      }
                                       className="w-7 h-7 rounded-full object-cover shrink-0 border border-border shadow-xs"
                                     />
                                   ) : (
                                     <div className="w-7 h-7 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
-                                      {(prop.mhs_profile?.nama_lengkap || "M").charAt(0).toUpperCase()}
+                                      {(prop.mhs_profile?.nama_lengkap || "M")
+                                        .charAt(0)
+                                        .toUpperCase()}
                                     </div>
                                   )}
                                   <span className="text-xs font-bold text-dark-900">

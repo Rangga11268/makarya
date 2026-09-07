@@ -71,6 +71,14 @@ export function ChatScreen({ route, navigation }) {
     ? partnerMsg?.sender_name || partnerName || "Mitra Kolaborasi"
     : partnerName;
 
+  const resolvedPartnerPhoto =
+    partnerPhoto ||
+    messages.find((m) => m.sender_id !== user?.id && m.sender_photo)?.sender_photo ||
+    null;
+
+  const userPhoto =
+    user?.url_foto || user?.url_foto_usaha || user?.photoUrl || null;
+
   // Attachment Modal
   const [attachModal, setAttachModal] = useState(false);
   const [attachUrl, setAttachUrl] = useState("");
@@ -246,9 +254,9 @@ export function ChatScreen({ route, navigation }) {
         ]}
       >
         {!isMe &&
-          (item.sender_photo || partnerPhoto ? (
+          (item.sender_photo || resolvedPartnerPhoto ? (
             <Image
-              source={{ uri: item.sender_photo || partnerPhoto }}
+              source={{ uri: item.sender_photo || resolvedPartnerPhoto }}
               style={styles.chatAvatarSmall}
               resizeMode="cover"
             />
@@ -365,9 +373,9 @@ export function ChatScreen({ route, navigation }) {
         </View>
 
         {isMe &&
-          (user?.url_foto ? (
+          (userPhoto ? (
             <Image
-              source={{ uri: user.url_foto }}
+              source={{ uri: userPhoto }}
               style={styles.chatAvatarSmall}
               resizeMode="cover"
             />
@@ -379,17 +387,9 @@ export function ChatScreen({ route, navigation }) {
               ]}
             >
               <Text
-                style={[
-                  styles.chatAvatarPlaceholderText,
-                  { color: "#FFFFFF" },
-                ]}
+                style={[styles.chatAvatarPlaceholderText, { color: "#FFFFFF" }]}
               >
-                {(
-                  user?.nama_lengkap ||
-                  user?.nama_usaha ||
-                  user?.email ||
-                  "U"
-                )
+                {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
                   .charAt(0)
                   .toUpperCase()}
               </Text>
@@ -417,9 +417,9 @@ export function ChatScreen({ route, navigation }) {
 
         <View style={styles.headerTitleWrap}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            {partnerPhoto ? (
+            {resolvedPartnerPhoto ? (
               <Image
-                source={{ uri: partnerPhoto }}
+                source={{ uri: resolvedPartnerPhoto }}
                 style={styles.headerPartnerAvatar}
                 resizeMode="cover"
               />

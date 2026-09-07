@@ -43,6 +43,8 @@ class TokenResponse(BaseModel):
     email: str
     role: UserRole
     is_verified: bool
+    nama: Optional[str] = None
+    url_foto: Optional[str] = None
 
 # Schema untuk request refresh token
 class RefreshTokenRequest(BaseModel):
