@@ -86,37 +86,31 @@ export function ProfilePage() {
 
   // Form states for Mahasiswa
   const [mhsData, setMhsData] = useState({
-    nama_lengkap: "Darell Rangga Putra",
-    nim: "12210001",
-    prodi: "Sistem Informasi",
-    semester: 6,
-    bio: "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
-    github_url: "https://github.com/darell-rangga",
-    figma_url: "https://figma.com/@darell_makarya",
-    website_url: "https://darell.design",
-    linkedin_url: "https://linkedin.com/in/darell-rangga",
-    skills: [
-      "UI/UX Design",
-      "Figma",
-      "React Native",
-      "FastAPI",
-      "Tailwind CSS",
-    ],
-    nama_bank: "Bank Central Asia (BCA)",
-    nomor_rekening: "8270-3491-8821",
-    nama_pemilik_rekening: "Darell Rangga Putra",
+    nama_lengkap: user?.nama_lengkap || user?.nama || "",
+    nim: user?.nim || "",
+    prodi: user?.prodi || "",
+    semester: user?.semester || "",
+    bio: user?.bio || "",
+    github_url: user?.github_url || "",
+    figma_url: user?.figma_url || "",
+    website_url: user?.website_url || "",
+    linkedin_url: user?.linkedin_url || "",
+    skills: Array.isArray(user?.skills) ? user.skills : [],
+    nama_bank: user?.nama_bank || "",
+    nomor_rekening: user?.nomor_rekening || "",
+    nama_pemilik_rekening: user?.nama_pemilik_rekening || user?.nama_lengkap || user?.nama || "",
   });
 
   // Form states for UMKM
   const [umkmData, setUmkmData] = useState({
-    nama_usaha: "Kedai Kopi Nusantara",
-    bidang_industri: "F&B / Kuliner",
-    kota: "Jakarta Selatan",
-    alamat: "Jl. Margonda Raya No. 45, Beji",
-    no_kontak: "081298765432",
-    nama_bank: "Bank Central Asia (BCA)",
-    nomor_rekening: "8270-3491-8821",
-    nama_pemilik_rekening: "Kedai Kopi Nusantara",
+    nama_usaha: user?.nama_usaha || user?.nama || "",
+    bidang_industri: user?.bidang_industri || "",
+    kota: user?.kota || "",
+    alamat: user?.alamat || "",
+    no_kontak: user?.no_kontak || "",
+    nama_bank: user?.nama_bank || "",
+    nomor_rekening: user?.nomor_rekening || "",
+    nama_pemilik_rekening: user?.nama_pemilik_rekening || user?.nama_usaha || user?.nama || "",
   });
 
   const [newSkillInput, setNewSkillInput] = useState("");
@@ -152,41 +146,39 @@ export function ProfilePage() {
           const d = res.data;
           if (isUmkm) {
             setUmkmData({
-              nama_usaha: d.nama_usaha || "Kedai Kopi Nusantara",
-              bidang_industri: d.bidang_industri || "F&B / Kuliner",
-              kota: d.kota || "Jakarta Selatan",
+              nama_usaha: d.nama_usaha || "",
+              bidang_industri: d.bidang_industri || "",
+              kota: d.kota || "",
               alamat: d.alamat || "",
-              no_kontak: d.no_kontak || "081298765432",
-              nama_bank: d.nama_bank || "Bank Central Asia (BCA)",
-              nomor_rekening: d.nomor_rekening || "8270-3491-8821",
+              no_kontak: d.no_kontak || "",
+              nama_bank: d.nama_bank || "",
+              nomor_rekening: d.nomor_rekening || "",
               nama_pemilik_rekening:
                 d.nama_pemilik_rekening ||
                 d.nama_usaha ||
-                "Kedai Kopi Nusantara",
+                "",
             });
           } else {
             setMhsData({
-              nama_lengkap: d.nama_lengkap || "Darell Rangga Putra",
-              nim: d.nim || "12210001",
-              prodi: d.prodi || "Sistem Informasi",
-              semester: d.semester || 6,
-              bio:
-                d.bio ||
-                "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
+              nama_lengkap: d.nama_lengkap || "",
+              nim: d.nim || "",
+              prodi: d.prodi || "",
+              semester: d.semester || "",
+              bio: d.bio || "",
               github_url: d.github_url || "",
               figma_url: d.figma_url || "",
               website_url: d.website_url || "",
               linkedin_url: d.linkedin_url || "",
               skills:
-                Array.isArray(d.skills) && d.skills.length > 0
+                Array.isArray(d.skills)
                   ? d.skills
-                  : ["UI/UX Design", "Figma", "React Native", "FastAPI"],
-              nama_bank: d.nama_bank || "Bank Central Asia (BCA)",
-              nomor_rekening: d.nomor_rekening || "8270-3491-8821",
+                  : [],
+              nama_bank: d.nama_bank || "",
+              nomor_rekening: d.nomor_rekening || "",
               nama_pemilik_rekening:
                 d.nama_pemilik_rekening ||
                 d.nama_lengkap ||
-                "Darell Rangga Putra",
+                "",
             });
           }
           if (updateUser) {
@@ -765,7 +757,7 @@ export function ProfilePage() {
                       setMhsData({ ...mhsData, nomor_rekening: e.target.value })
                     }
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono font-bold"
-                    placeholder="8270-3491-8821"
+                    placeholder="Contoh: 1234567890"
                   />
                 </div>
 
@@ -784,7 +776,7 @@ export function ProfilePage() {
                       })
                     }
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                    placeholder="Contoh: Darell Rangga Putra"
+                    placeholder="Contoh: Nama sesuai buku tabungan"
                   />
                 </div>
               </div>
@@ -818,7 +810,7 @@ export function ProfilePage() {
                       setUmkmData({ ...umkmData, nama_usaha: e.target.value })
                     }
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                    placeholder="Contoh: Kopi Nusantara Jaya"
+                    placeholder="Contoh: Kopi Senja Studio"
                   />
                 </div>
 
@@ -942,7 +934,7 @@ export function ProfilePage() {
                       })
                     }
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono font-bold"
-                    placeholder="8270-3491-8821"
+                    placeholder="Contoh: 1234567890"
                   />
                 </div>
 
@@ -961,7 +953,7 @@ export function ProfilePage() {
                       })
                     }
                     className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-                    placeholder="Contoh: Kedai Kopi Nusantara"
+                    placeholder="Contoh: Nama Pemilik / Nama Usaha"
                   />
                 </div>
               </div>

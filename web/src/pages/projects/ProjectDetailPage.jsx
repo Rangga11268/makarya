@@ -216,9 +216,24 @@ export function ProjectDetailPage() {
 
               {/* Client Pill */}
               <div className="flex items-center gap-3 pt-1">
-                <div className="w-9 h-9 rounded-full bg-dark-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                  {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
-                </div>
+                {project.umkm_profile?.url_foto_usaha ||
+                project.umkm_profile?.url_foto ? (
+                  <img
+                    src={
+                      project.umkm_profile.url_foto_usaha ||
+                      project.umkm_profile.url_foto
+                    }
+                    alt={project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                    className="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs border border-border"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-dark-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                    {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
+                  </div>
+                )}
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-dark-900">
@@ -518,9 +533,24 @@ export function ProjectDetailPage() {
 
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-dark-900 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
-                  {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
-                </div>
+                {project.umkm_profile?.url_foto_usaha ||
+                project.umkm_profile?.url_foto ? (
+                  <img
+                    src={
+                      project.umkm_profile.url_foto_usaha ||
+                      project.umkm_profile.url_foto
+                    }
+                    alt={project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                    className="w-11 h-11 rounded-2xl object-cover shrink-0 shadow-xs border border-border"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="w-11 h-11 rounded-2xl bg-dark-900 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
+                    {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
+                  </div>
+                )}
                 <div>
                   <h4 className="text-sm font-bold text-dark-900 leading-snug">
                     {project.umkm_profile?.nama_usaha || "Klien UMKM"}

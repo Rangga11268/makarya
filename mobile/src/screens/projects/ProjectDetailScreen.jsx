@@ -8,6 +8,7 @@ import {
   Alert,
   Modal,
   Platform,
+  Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
@@ -302,7 +303,10 @@ export function ProjectDetailScreen({ route, navigation }) {
           title="Detail Proyek"
           onBack={() => navigation.goBack()}
         />
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
           <ProjectDetailSkeleton />
         </ScrollView>
       </View>
@@ -330,6 +334,13 @@ export function ProjectDetailScreen({ route, navigation }) {
       ? project.nama_usaha
       : null) ||
     "Klien UMKM";
+
+  const clientPhoto =
+    project?.umkm_profile?.url_foto_usaha ||
+    project?.umkm_profile?.url_foto ||
+    project?.umkm_foto ||
+    project?.project_umkm_foto ||
+    project?.url_foto;
 
   return (
     <View style={styles.container}>
@@ -393,9 +404,17 @@ export function ProjectDetailScreen({ route, navigation }) {
 
         {/* 3. Client UMKM Profile Info */}
         <View style={styles.clientBox}>
-          <View style={styles.clientAvatarBox}>
-            <Building2 size={20} color={COLORS.brandIndigo} />
-          </View>
+          {clientPhoto ? (
+            <Image
+              source={{ uri: clientPhoto }}
+              style={styles.clientAvatarImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.clientAvatarBox}>
+              <Building2 size={20} color={COLORS.brandIndigo} />
+            </View>
+          )}
           <View style={{ flex: 1 }}>
             <View style={styles.clientNameRow}>
               <Text style={styles.clientTitle}>{clientDisplayName}</Text>
@@ -1114,6 +1133,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
+  },
+  clientAvatarImage: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
   },
   clientNameRow: {
     flexDirection: "row",

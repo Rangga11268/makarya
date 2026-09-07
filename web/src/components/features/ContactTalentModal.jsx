@@ -5,6 +5,8 @@ import { projectApi } from "../../api";
 import { Card } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { StarRating } from "../ui/StarRating";
+import { formatStatus } from "../../utils/formatStatus";
+import { formatCurrency } from "../../utils/formatCurrency";
 import {
   X,
   MessageSquare,
@@ -180,27 +182,73 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                     Memeriksa daftar proyek aktif Anda...
                   </div>
                 ) : myProjects.length > 0 ? (
-                  <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-2xl space-y-3">
+                  <div className="p-4 bg-indigo-50/40 border border-indigo-100 rounded-2xl space-y-3">
                     <label className="text-xs font-bold text-indigo-950 block">
-                      Pilih Proyek Anda untuk Diskusi / Chat:
+                      Pilih Proyek Anda untuk Diskusi / Kolaborasi:
                     </label>
-                    <select
-                      value={selectedProjectId}
-                      onChange={(e) => setSelectedProjectId(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-surface border border-indigo-200 rounded-xl text-dark-900 font-sans focus:outline-none focus:border-brand-indigo"
-                    >
-                      {myProjects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.judul} ({p.status})
-                        </option>
-                      ))}
-                    </select>
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {myProjects.map((p) => {
+                        const isSelected = selectedProjectId === p.id;
+                        const isOpen =
+                          p.status === "OPEN" || p.status === "BIDDING";
+                        const isInProgress = p.status === "IN_PROGRESS";
+
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => setSelectedProjectId(p.id)}
+                            className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
+                              isSelected
+                                ? "bg-white border-brand-indigo ring-1.5 ring-brand-indigo shadow-xs"
+                                : "bg-white/80 border-border hover:border-indigo-300"
+                            }`}
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-dark-900 truncate block">
+                                  {p.judul}
+                                </span>
+                                <span
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                                    isOpen
+                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                      : isInProgress
+                                        ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                        : "bg-slate-100 text-slate-700 border border-slate-200"
+                                  }`}
+                                >
+                                  {formatStatus(p.status)}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-muted">
+                                <span className="font-bold text-brand-indigo font-mono">
+                                  {formatCurrency(p.budget_max)}
+                                </span>
+                                <span>•</span>
+                                <span>{p.kategori || "UMKM Digital"}</span>
+                              </div>
+                            </div>
+                            <div
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected
+                                  ? "border-brand-indigo bg-brand-indigo"
+                                  : "border-slate-300 bg-white"
+                              }`}
+                            >
+                              {isSelected && (
+                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
 
                     <Button
                       variant="brand"
                       size="sm"
                       onClick={handleOpenProjectChat}
-                      className="w-full font-bold text-xs shadow-brand"
+                      className="w-full font-bold text-xs shadow-brand py-2.5 mt-2"
                     >
                       <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                       Buka Ruang Diskusi Proyek

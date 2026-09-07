@@ -30,7 +30,7 @@ import {
 } from "../../components/icons/CategoryIcons";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import { projectApi, walletApi, proposalApi } from "../../api";
+import { projectApi, walletApi, proposalApi, talentApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
   ShieldCheck,
@@ -65,6 +65,7 @@ export function HomeScreen({ navigation }) {
   const [myProjects, setMyProjects] = useState([]);
   const [browseProjects, setBrowseProjects] = useState([]);
   const [myProposals, setMyProposals] = useState([]);
+  const [featuredTalents, setFeaturedTalents] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -98,14 +99,19 @@ export function HomeScreen({ navigation }) {
         setBrowseProjects(pItems);
         setMyProposals(Array.isArray(propRes.data) ? propRes.data : []);
       } else {
-        const [walletRes, myProjRes] = await Promise.all([
+        const [walletRes, myProjRes, talentsRes] = await Promise.all([
           walletApi
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
           projectApi.getMyProjects().catch(() => ({ data: [] })),
+          talentApi.getTalents({ limit: 4 }).catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
         setMyProjects(Array.isArray(myProjRes.data) ? myProjRes.data : []);
+        const tItems = Array.isArray(talentsRes.data)
+          ? talentsRes.data
+          : talentsRes.data?.items || [];
+        setFeaturedTalents(tItems);
       }
     } finally {
       setRefreshing(false);
@@ -211,33 +217,6 @@ export function HomeScreen({ navigation }) {
         },
       ];
 
-  const featuredTalents = [
-    {
-      id: "1",
-      name: "Darell Rangga Putra",
-      prodi: "Sistem Informasi",
-      rating: 5.0,
-      totalJobs: 14,
-      skills: ["Fullstack Web", "React & FastAPI", "UI Design"],
-    },
-    {
-      id: "2",
-      name: "Adelia Putri",
-      prodi: "Desain Komunikasi Visual",
-      rating: 4.9,
-      totalJobs: 11,
-      skills: ["Branding", "Packaging", "Logo Vector"],
-    },
-    {
-      id: "3",
-      name: "Bima Arya",
-      prodi: "Teknologi Informasi",
-      rating: 5.0,
-      totalJobs: 8,
-      skills: ["Landing Page", "Next.js", "WordPress"],
-    },
-  ];
-
   // Ongoing Projects (prioritize in-progress / accepted, then pending)
   const ongoingProjectsList = isMahasiswa
     ? [...myProposals]
@@ -261,8 +240,8 @@ export function HomeScreen({ navigation }) {
         .slice(0, 2);
 
   const displayName = isMahasiswa
-    ? user?.nama_lengkap || "Darell Rangga"
-    : user?.nama_usaha || "Brand UMKM Anda";
+    ? user?.nama_lengkap || user?.nama || user?.email?.split("@")[0] || "Darell Rangga"
+    : user?.nama_usaha || user?.nama || user?.email?.split("@")[0] || "Brand UMKM Anda";
 
   const initialLetter = displayName.charAt(0).toUpperCase() || "D";
 
@@ -936,22 +915,42 @@ export function HomeScreen({ navigation }) {
                     Anda
                   </Text>
                 </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("ProjectsTab")}
+                  style={styles.seeAllWithArrow}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.seeMoreLink}>Eksplor</Text>
+                  <ArrowRight size={13} color={COLORS.brandIndigo} />
+                </TouchableOpacity>
               </View>
 
-              <TalentBentoCard
-                talent={featuredTalents[0]}
-                variant="featured"
-                onPress={() => navigation.navigate("ProjectsTab")}
-              />
+              {featuredTalents.length > 0 ? (
+                <>
+                  <TalentBentoCard
+                    talent={featuredTalents[0]}
+                    variant="featured"
+                    onPress={() => navigation.navigate("ProjectsTab")}
+                  />
 
-              {featuredTalents.slice(1).map((t) => (
-                <TalentBentoCard
-                  key={t.id}
-                  talent={t}
-                  variant="standard"
-                  onPress={() => navigation.navigate("ProjectsTab")}
-                />
-              ))}
+                  {featuredTalents.slice(1).map((t) => (
+                    <TalentBentoCard
+                      key={t.id}
+                      talent={t}
+                      variant="standard"
+                      onPress={() => navigation.navigate("ProjectsTab")}
+                    />
+                  ))}
+                </>
+              ) : (
+                <View style={styles.emptyCardBox}>
+                  <Users size={32} color={COLORS.textDim} />
+                  <Text style={styles.emptyCardTitle}>Belum Ada Talenta</Text>
+                  <Text style={styles.emptyCardSubtitle}>
+                    Buka direktori untuk melihat profil mahasiswa terverifikasi.
+                  </Text>
+                </View>
+              )}
             </View>
           )}
         </View>

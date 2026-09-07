@@ -286,59 +286,59 @@ export function ProjectListScreen({ navigation, route }) {
       ) : (
         <FlatList
           data={filteredProjects}
-        keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={loadProjects}
-            tintColor={COLORS.brandIndigo}
-            colors={[COLORS.brandIndigo]}
-          />
-        }
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          !loading && (
-            <View style={styles.emptyState}>
-              <Compass size={40} color={COLORS.brandIndigo} />
-              <Text style={styles.emptyTitle}>
-                {searchQuery || activeFilterCount > 0
-                  ? "No Projects Found"
-                  : "No Projects Available"}
-              </Text>
-              <Text style={styles.emptyDesc}>
-                {searchQuery || activeFilterCount > 0
-                  ? "Coba ubah kata kunci atau atur ulang filter pencarian Anda."
-                  : isMahasiswa
-                    ? "Proyek UMKM baru akan segera muncul di sini."
-                    : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
-              </Text>
-              {activeFilterCount > 0 && (
-                <Button
-                  title="Reset Filters"
-                  variant="secondary"
-                  size="sm"
-                  icon={<RotateCcw size={14} color={COLORS.textDark} />}
-                  onPress={resetFilters}
-                  style={styles.emptyBtn}
-                />
-              )}
-            </View>
-          )
-        }
-        renderItem={({ item }) => (
-          <View style={styles.projectCardWrapper}>
-            <ProjectCard
-              project={item}
-              onPress={() =>
-                navigation.navigate("ProjectDetail", {
-                  id: item.id,
-                  projectId: item.id,
-                })
-              }
+          keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={loadProjects}
+              tintColor={COLORS.brandIndigo}
+              colors={[COLORS.brandIndigo]}
             />
-          </View>
-        )}
-      />
+          }
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            !loading && (
+              <View style={styles.emptyState}>
+                <Compass size={40} color={COLORS.brandIndigo} />
+                <Text style={styles.emptyTitle}>
+                  {searchQuery || activeFilterCount > 0
+                    ? "No Projects Found"
+                    : "No Projects Available"}
+                </Text>
+                <Text style={styles.emptyDesc}>
+                  {searchQuery || activeFilterCount > 0
+                    ? "Coba ubah kata kunci atau atur ulang filter pencarian Anda."
+                    : isMahasiswa
+                      ? "Proyek UMKM baru akan segera muncul di sini."
+                      : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
+                </Text>
+                {activeFilterCount > 0 && (
+                  <Button
+                    title="Reset Filters"
+                    variant="secondary"
+                    size="sm"
+                    icon={<RotateCcw size={14} color={COLORS.textDark} />}
+                    onPress={resetFilters}
+                    style={styles.emptyBtn}
+                  />
+                )}
+              </View>
+            )
+          }
+          renderItem={({ item }) => (
+            <View style={styles.projectCardWrapper}>
+              <ProjectCard
+                project={item}
+                onPress={() =>
+                  navigation.navigate("ProjectDetail", {
+                    id: item.id,
+                    projectId: item.id,
+                  })
+                }
+              />
+            </View>
+          )}
+        />
       )}
 
       {/* Filter Bottom Sheet Modal */}

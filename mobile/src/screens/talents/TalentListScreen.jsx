@@ -23,6 +23,8 @@ import { TalentCardSkeleton } from "../../components/ui/Skeleton";
 import { talentApi, projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
+import { formatStatus } from "../../utils/formatStatus";
+import { formatCurrency } from "../../utils/formatCurrency";
 import {
   ProdiVectorIcon,
   GithubVectorIcon,
@@ -1057,15 +1059,49 @@ export function TalentListScreen({ navigation }) {
                       activeOpacity={0.8}
                     >
                       <View style={{ flex: 1 }}>
-                        <Text
-                          style={styles.projectOptionTitle}
-                          numberOfLines={1}
-                        >
-                          {p.judul}
-                        </Text>
-                        <Text style={styles.projectOptionMeta}>
-                          Status: {p.status}
-                        </Text>
+                        <View style={styles.projectOptionTopRow}>
+                          <Text
+                            style={[
+                              styles.projectOptionTitle,
+                              isChecked && { color: COLORS.brandIndigo },
+                            ]}
+                            numberOfLines={1}
+                          >
+                            {p.judul}
+                          </Text>
+                          <View
+                            style={[
+                              styles.statusPillSmall,
+                              p.status === "OPEN" || p.status === "BIDDING"
+                                ? styles.statusPillOpen
+                                : p.status === "IN_PROGRESS"
+                                  ? styles.statusPillInProgress
+                                  : styles.statusPillDone,
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.statusPillSmallText,
+                                p.status === "OPEN" || p.status === "BIDDING"
+                                  ? styles.statusTextOpen
+                                  : p.status === "IN_PROGRESS"
+                                    ? styles.statusTextInProgress
+                                    : styles.statusTextDone,
+                              ]}
+                            >
+                              {formatStatus(p.status)}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.projectOptionMetaRow}>
+                          <Text style={styles.projectOptionBudgetText}>
+                            Pagu: {formatCurrency(p.budget_max)}
+                          </Text>
+                          <Text style={styles.projectOptionDot}>•</Text>
+                          <Text style={styles.projectOptionCategoryText}>
+                            {p.kategori || "UMKM Digital"}
+                          </Text>
+                        </View>
                       </View>
                       <View
                         style={[
@@ -1861,17 +1897,71 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoLight,
     borderColor: COLORS.brandIndigo,
   },
+  projectOptionTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
   projectOptionTitle: {
+    flex: 1,
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
   },
-  projectOptionMeta: {
+  projectOptionMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    gap: 6,
+  },
+  projectOptionBudgetText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: COLORS.brandIndigo,
+  },
+  projectOptionDot: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+  },
+  projectOptionCategoryText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
-    marginTop: 2,
+  },
+  statusPillSmall: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+  },
+  statusPillOpen: {
+    backgroundColor: "#ECFDF5",
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  statusPillInProgress: {
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  statusPillDone: {
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+  },
+  statusPillSmallText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+  },
+  statusTextOpen: {
+    color: "#065F46",
+  },
+  statusTextInProgress: {
+    color: "#1D4ED8",
+  },
+  statusTextDone: {
+    color: "#475569",
   },
   radioCircle: {
     width: 20,

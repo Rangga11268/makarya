@@ -108,16 +108,9 @@ export function ProfileScreen({ navigation }) {
   const [skillModal, setSkillModal] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const [skillsList, setSkillsList] = useState(
-    user?.skills && user.skills.length > 0
+    user?.skills && Array.isArray(user.skills)
       ? user.skills
-      : [
-          "UI/UX Design",
-          "Figma",
-          "React Native",
-          "FastAPI",
-          "Tailwind CSS",
-          "Wireframing",
-        ],
+      : [],
   );
 
   // Edit Profile Modal State
@@ -128,13 +121,13 @@ export function ProfileScreen({ navigation }) {
     bio: "",
     prodi: "",
     nim: "",
-    semester: "6",
+    semester: "",
     github_url: "",
     figma_url: "",
     website_url: "",
     linkedin_url: "",
-    nama_bank: "Bank Central Asia (BCA)",
-    nomor_rekening: "8270-3491-8821",
+    nama_bank: "",
+    nomor_rekening: "",
     nama_pemilik_rekening: "",
     nama_usaha: "",
     bidang_industri: "",
@@ -173,31 +166,27 @@ export function ProfileScreen({ navigation }) {
 
   const handleOpenEditModal = () => {
     setEditForm({
-      nama_lengkap:
-        user?.nama_lengkap ||
-        (isMahasiswa ? "Darell Rangga Putra" : "Brand UMKM Anda"),
-      bio:
-        user?.bio ||
-        (isMahasiswa
-          ? "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM."
-          : "Pelaku usaha mikro kecil menengah yang bertumbuh bersama talenta muda Makarya."),
-      prodi: user?.prodi || "Sistem Informasi",
-      nim: user?.nim || "12210001",
-      semester: user?.semester ? String(user.semester) : "6",
+      nama_lengkap: user?.nama_lengkap || user?.nama || "",
+      bio: user?.bio || "",
+      prodi: user?.prodi || "",
+      nim: user?.nim || "",
+      semester: user?.semester ? String(user.semester) : "",
       github_url: user?.github_url || "",
       figma_url: user?.figma_url || "",
       website_url: user?.website_url || "",
       linkedin_url: user?.linkedin_url || "",
-      nama_bank: user?.nama_bank || "Bank Central Asia (BCA)",
-      nomor_rekening: user?.nomor_rekening || "8270-3491-8821",
+      nama_bank: user?.nama_bank || "",
+      nomor_rekening: user?.nomor_rekening || "",
       nama_pemilik_rekening:
         user?.nama_pemilik_rekening ||
         user?.nama_lengkap ||
-        (isMahasiswa ? "Darell Rangga Putra" : "Kopi Nusantara"),
-      nama_usaha: user?.nama_usaha || "Kopi Nusantara",
-      bidang_industri: user?.bidang_industri || "Food & Beverages (F&B)",
-      kota: user?.kota || "Jakarta Selatan",
-      no_kontak: user?.no_kontak || "081298765432",
+        user?.nama_usaha ||
+        user?.nama ||
+        "",
+      nama_usaha: user?.nama_usaha || user?.nama || "",
+      bidang_industri: user?.bidang_industri || "",
+      kota: user?.kota || "",
+      no_kontak: user?.no_kontak || "",
     });
     setEditModalVisible(true);
   };
@@ -375,8 +364,8 @@ export function ProfileScreen({ navigation }) {
 
           <Text style={styles.userName}>
             {isMahasiswa
-              ? user?.nama_lengkap || "Darell Rangga Putra"
-              : user?.nama_usaha || "Brand UMKM Anda"}
+              ? user?.nama_lengkap || user?.nama || "Talenta Mahasiswa"
+              : user?.nama_usaha || user?.nama || "Pelaku Usaha UMKM"}
           </Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
 
@@ -491,7 +480,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Perguruan Tinggi</Text>
                 <Text style={styles.detailValue}>
-                  {user?.universitas || "Universitas Bina Sarana Informatika"}
+                  {user?.universitas || "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -504,7 +493,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Program Studi & Jenjang</Text>
                 <Text style={styles.detailValue}>
-                  {user?.prodi ? `${user.prodi} (S1)` : "Sistem Informasi (S1)"}
+                  {user?.prodi ? `${user.prodi} (S1)` : "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -518,8 +507,8 @@ export function ProfileScreen({ navigation }) {
                 <Text style={styles.detailLabel}>Status Akademik & NIM</Text>
                 <Text style={styles.detailValue}>
                   {user?.nim
-                    ? `${user.nim} • Semester ${user.semester || 6} (Aktif)`
-                    : "12210001 • Semester 6 (Aktif)"}
+                    ? `${user.nim}${user.semester ? ` • Semester ${user.semester}` : ""} (Aktif)`
+                    : "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -544,7 +533,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Bidang Industri</Text>
                 <Text style={styles.detailValue}>
-                  {user?.bidang_industri || "Food & Beverages (F&B)"}
+                  {user?.bidang_industri || "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -556,7 +545,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Lokasi Operasional</Text>
                 <Text style={styles.detailValue}>
-                  {user?.kota || "Jakarta Selatan"}
+                  {user?.kota || "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -568,7 +557,7 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>No. Kontak Bisnis</Text>
                 <Text style={styles.detailValue}>
-                  {user?.no_kontak || "081298765432"}
+                  {user?.no_kontak || "Belum diatur"}
                 </Text>
               </View>
             </View>
@@ -717,19 +706,25 @@ export function ProfileScreen({ navigation }) {
             <View style={{ flex: 1 }}>
               <View style={styles.bankNameRow}>
                 <Text style={styles.bankNameText}>
-                  {user?.nama_bank || "Bank Central Asia (BCA)"}
+                  {user?.nama_bank || "Belum Mengatur Rekening"}
                 </Text>
-                <View style={styles.verifiedBankPill}>
-                  <Check size={9} color={COLORS.success} strokeWidth={3} />
-                  <Text style={styles.verifiedBankPillText}>Terverifikasi</Text>
-                </View>
+                {user?.nomor_rekening ? (
+                  <View style={styles.verifiedBankPill}>
+                    <Check size={9} color={COLORS.success} strokeWidth={3} />
+                    <Text style={styles.verifiedBankPillText}>Terverifikasi</Text>
+                  </View>
+                ) : null}
               </View>
               <Text style={styles.bankAccountDetail}>
-                {user?.nomor_rekening || "8270-3491-8821"} •{" "}
-                {user?.nama_pemilik_rekening ||
-                  user?.nama_lengkap ||
-                  user?.nama_usaha ||
-                  "Darell Rangga"}
+                {user?.nomor_rekening
+                  ? `${user.nomor_rekening} • ${
+                      user?.nama_pemilik_rekening ||
+                      user?.nama_lengkap ||
+                      user?.nama_usaha ||
+                      user?.nama ||
+                      "-"
+                    }`
+                  : "Tambahkan data rekening untuk kemudahan transaksi & pencairan escrow"}
               </Text>
             </View>
           </View>
@@ -1013,7 +1008,7 @@ export function ProfileScreen({ navigation }) {
                         nama_pemilik_rekening: v,
                       }))
                     }
-                    placeholder="Contoh: Darell Rangga Putra"
+                    placeholder="Contoh: Nama sesuai buku tabungan"
                   />
                 </>
               ) : (

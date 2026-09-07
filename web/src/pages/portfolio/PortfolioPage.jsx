@@ -120,7 +120,10 @@ export function PortfolioPage() {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-dark-900 font-sans">
-                {user?.nama || user?.nama_lengkap || user?.nama_usaha || user?.email}
+                {user?.nama ||
+                  user?.nama_lengkap ||
+                  user?.nama_usaha ||
+                  user?.email}
               </h3>
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>

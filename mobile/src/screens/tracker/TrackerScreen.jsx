@@ -212,7 +212,10 @@ export function TrackerScreen({ navigation }) {
 
       {/* 3. Breathable Project Feed */}
       {loading && items.length === 0 ? (
-        <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        >
           <TrackerCardSkeleton />
           <TrackerCardSkeleton />
           <TrackerCardSkeleton />
@@ -220,249 +223,252 @@ export function TrackerScreen({ navigation }) {
       ) : (
         <FlatList
           data={filteredItems}
-        keyExtractor={(item) => String(item.id)}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={loadData}
-            tintColor={COLORS.brandIndigo}
-            colors={[COLORS.brandIndigo]}
-          />
-        }
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          !loading && (
-            <View style={styles.emptyBox}>
-              <View style={styles.emptyIconCircle}>
-                <Briefcase size={28} color={COLORS.brandIndigo} />
-              </View>
-              <Text style={styles.emptyTitle}>No projects in this tab</Text>
-              <Text style={styles.emptyDesc}>
-                {isMahasiswa
-                  ? "Explore verified micro-gigs and submit your offer to get started."
-                  : "Post your first project listing to connect with top campus talents."}
-              </Text>
-              {isMahasiswa ? (
-                <TouchableOpacity
-                  style={styles.emptyCtaBtn}
-                  onPress={() => navigation.navigate("ProjectsTab")}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.emptyCtaBtnText}>Explore Projects</Text>
-                  <ArrowRight size={14} color="#FFFFFF" />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.emptyCtaBtn}
-                  onPress={() => navigation.navigate("PostProject")}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.emptyCtaBtnText}>+ Post New Project</Text>
-                  <ArrowRight size={14} color="#FFFFFF" />
-                </TouchableOpacity>
-              )}
-            </View>
-          )
-        }
-        renderItem={({ item }) => {
-          // Determine roles & properties
-          const projectId = isMahasiswa ? item.project_id : item.id;
-          const projectTitle = isMahasiswa ? item.project_judul : item.judul;
-          const partnerName = isMahasiswa
-            ? item.project_umkm_nama || "Mitra UMKM Kampus"
-            : item.accepted_mhs_nama || "Daftar Proyek Anda";
-          const partnerPhoto = isMahasiswa
-            ? item.project_umkm_foto ||
-              item.umkm_foto ||
-              item.project?.umkm_profile?.url_foto_usaha
-            : item.accepted_mhs_foto ||
-              item.mhs_profile?.url_foto ||
-              item.mhs_foto;
-          const category = isMahasiswa
-            ? item.project_kategori || item.kategori || "UMKM"
-            : item.kategori || "UMKM";
-          const createdAt = item.created_at;
-
-          // Status & Chat Logic
-          const isDone = isMahasiswa
-            ? item.project_status === "DONE" ||
-              item.project_status === "COMPLETED" ||
-              ["DONE", "COMPLETED", "SELESAI"].includes(item.status)
-            : ["DONE", "COMPLETED", "SELESAI"].includes(item.status);
-
-          const isAccepted = isMahasiswa
-            ? item.status === "ACCEPTED" && !isDone
-            : item.status === "IN_PROGRESS";
-
-          const isPending = isMahasiswa
-            ? item.status === "PENDING"
-            : item.status === "OPEN" || item.status === "BIDDING";
-
-          const isReview = !isMahasiswa && item.status === "REVIEW";
-
-          const isDeclined = ["REJECTED", "WITHDRAWN", "CANCELLED"].includes(
-            item.status,
-          );
-
-          // Chat is relevant when work is active or in review!
-          const canChat = isAccepted || isReview;
-
-          return (
-            <TouchableOpacity
-              activeOpacity={0.88}
-              onPress={() =>
-                navigation.navigate("ProjectDetail", {
-                  id: projectId,
-                  projectId: projectId,
-                })
-              }
-              style={[
-                styles.projectCard,
-                isAccepted && styles.projectCardActive,
-              ]}
-            >
-              {/* Card Header: Category Icon + Partner Info + Status Badge */}
-              <View style={styles.cardHeader}>
-                <View style={styles.partnerRow}>
-                  {partnerPhoto ? (
-                    <Image
-                      source={{ uri: partnerPhoto }}
-                      style={styles.partnerAvatarImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View
-                      style={[
-                        styles.categoryBox,
-                        isAccepted && styles.categoryBoxActive,
-                      ]}
-                    >
-                      {renderProjectCategoryVectorIcon(
-                        category,
-                        projectTitle,
-                        18,
-                        isAccepted ? COLORS.success : COLORS.brandIndigo,
-                      )}
-                    </View>
-                  )}
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.partnerName} numberOfLines={1}>
-                      {partnerName}
-                    </Text>
-                    <Text style={styles.postDate}>
-                      {isMahasiswa ? "Applied " : "Posted "}
-                      {formatDate(createdAt)}
-                    </Text>
-                  </View>
+          keyExtractor={(item) => String(item.id)}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={loadData}
+              tintColor={COLORS.brandIndigo}
+              colors={[COLORS.brandIndigo]}
+            />
+          }
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            !loading && (
+              <View style={styles.emptyBox}>
+                <View style={styles.emptyIconCircle}>
+                  <Briefcase size={28} color={COLORS.brandIndigo} />
                 </View>
-
-                {/* Clean Status Pill */}
-                {isAccepted ? (
-                  <View style={styles.statusPillActive}>
-                    <View style={styles.pulseDotGreen} />
-                    <Text style={styles.statusTextActive}>In Progress</Text>
-                  </View>
-                ) : isReview ? (
-                  <View style={styles.statusPillReview}>
-                    <View style={styles.pulseDotPurple} />
-                    <Text style={styles.statusTextReview}>Delivered</Text>
-                  </View>
-                ) : isPending ? (
-                  <View style={styles.statusPillPending}>
-                    <Text style={styles.statusTextPending}>
-                      {isMahasiswa
-                        ? "Under Review"
-                        : `${item.total_pelamar || 0} Proposals`}
-                    </Text>
-                  </View>
-                ) : isDone ? (
-                  <View style={styles.statusPillDone}>
-                    <Text style={styles.statusTextDone}>Completed</Text>
-                  </View>
+                <Text style={styles.emptyTitle}>No projects in this tab</Text>
+                <Text style={styles.emptyDesc}>
+                  {isMahasiswa
+                    ? "Explore verified micro-gigs and submit your offer to get started."
+                    : "Post your first project listing to connect with top campus talents."}
+                </Text>
+                {isMahasiswa ? (
+                  <TouchableOpacity
+                    style={styles.emptyCtaBtn}
+                    onPress={() => navigation.navigate("ProjectsTab")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.emptyCtaBtnText}>Explore Projects</Text>
+                    <ArrowRight size={14} color="#FFFFFF" />
+                  </TouchableOpacity>
                 ) : (
-                  <View style={styles.statusPillDeclined}>
-                    <Text style={styles.statusTextDeclined}>
-                      {isDeclined ? "Declined" : item.status}
+                  <TouchableOpacity
+                    style={styles.emptyCtaBtn}
+                    onPress={() => navigation.navigate("PostProject")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.emptyCtaBtnText}>
+                      + Post New Project
                     </Text>
-                  </View>
+                    <ArrowRight size={14} color="#FFFFFF" />
+                  </TouchableOpacity>
                 )}
               </View>
+            )
+          }
+          renderItem={({ item }) => {
+            // Determine roles & properties
+            const projectId = isMahasiswa ? item.project_id : item.id;
+            const projectTitle = isMahasiswa ? item.project_judul : item.judul;
+            const partnerName = isMahasiswa
+              ? item.project_umkm_nama || "Mitra UMKM Kampus"
+              : item.accepted_mhs_nama || "Daftar Proyek Anda";
+            const partnerPhoto = isMahasiswa
+              ? item.project_umkm_foto ||
+                item.umkm_foto ||
+                item.project?.umkm_profile?.url_foto_usaha
+              : item.accepted_mhs_foto ||
+                item.mhs_profile?.url_foto ||
+                item.mhs_foto;
+            const category = isMahasiswa
+              ? item.project_kategori || item.kategori || "UMKM"
+              : item.kategori || "UMKM";
+            const createdAt = item.created_at;
 
-              {/* Project Title */}
-              <Text style={styles.cardTitle} numberOfLines={2}>
-                {projectTitle || "Project Assignment"}
-              </Text>
+            // Status & Chat Logic
+            const isDone = isMahasiswa
+              ? item.project_status === "DONE" ||
+                item.project_status === "COMPLETED" ||
+                ["DONE", "COMPLETED", "SELESAI"].includes(item.status)
+              : ["DONE", "COMPLETED", "SELESAI"].includes(item.status);
 
-              {/* Bottom Row: Metadata & Quick Actions */}
-              <View style={styles.cardBottomRow}>
-                {/* Meta info: Budget, Timeline, Escrow */}
-                <View style={styles.metaInfo}>
-                  <Text style={styles.budgetHighlight}>
-                    {formatCurrency(
-                      isMahasiswa ? item.harga_tawar : item.budget_max,
+            const isAccepted = isMahasiswa
+              ? item.status === "ACCEPTED" && !isDone
+              : item.status === "IN_PROGRESS";
+
+            const isPending = isMahasiswa
+              ? item.status === "PENDING"
+              : item.status === "OPEN" || item.status === "BIDDING";
+
+            const isReview = !isMahasiswa && item.status === "REVIEW";
+
+            const isDeclined = ["REJECTED", "WITHDRAWN", "CANCELLED"].includes(
+              item.status,
+            );
+
+            // Chat is relevant when work is active or in review!
+            const canChat = isAccepted || isReview;
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.88}
+                onPress={() =>
+                  navigation.navigate("ProjectDetail", {
+                    id: projectId,
+                    projectId: projectId,
+                  })
+                }
+                style={[
+                  styles.projectCard,
+                  isAccepted && styles.projectCardActive,
+                ]}
+              >
+                {/* Card Header: Category Icon + Partner Info + Status Badge */}
+                <View style={styles.cardHeader}>
+                  <View style={styles.partnerRow}>
+                    {partnerPhoto ? (
+                      <Image
+                        source={{ uri: partnerPhoto }}
+                        style={styles.partnerAvatarImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View
+                        style={[
+                          styles.categoryBox,
+                          isAccepted && styles.categoryBoxActive,
+                        ]}
+                      >
+                        {renderProjectCategoryVectorIcon(
+                          category,
+                          projectTitle,
+                          18,
+                          isAccepted ? COLORS.success : COLORS.brandIndigo,
+                        )}
+                      </View>
                     )}
-                  </Text>
-                  <Text style={styles.metaDivider}>•</Text>
-                  <View style={styles.metaIconText}>
-                    <Clock size={11} color={COLORS.textMuted} />
-                    <Text style={styles.metaLabel}>
-                      {isMahasiswa
-                        ? `${item.estimasi_hari || 5}d`
-                        : `${item.total_pelamar || 0} bids`}
-                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.partnerName} numberOfLines={1}>
+                        {partnerName}
+                      </Text>
+                      <Text style={styles.postDate}>
+                        {isMahasiswa ? "Applied " : "Posted "}
+                        {formatDate(createdAt)}
+                      </Text>
+                    </View>
                   </View>
-                  <Text style={styles.metaDivider}>•</Text>
-                  <View style={styles.metaIconText}>
-                    <ShieldCheck size={11} color={COLORS.success} />
-                    <Text style={styles.escrowLabel}>Escrow</Text>
-                  </View>
-                </View>
 
-                {/* Quick Action: Direct Chat & View */}
-                <View style={styles.actionGroup}>
-                  {canChat && (
-                    <TouchableOpacity
-                      style={styles.quickChatBtn}
-                      onPress={(e) => {
-                        e.stopPropagation();
-                        navigation.navigate("Chat", {
-                          projectId: projectId,
-                          projectTitle: projectTitle,
-                          partnerPhoto: partnerPhoto,
-                          partnerName: isMahasiswa
-                            ? (item.project_umkm_nama &&
-                              item.project_umkm_nama.toLowerCase() !== "string"
-                                ? item.project_umkm_nama
-                                : null) ||
-                              (item.umkm_nama &&
-                              item.umkm_nama.toLowerCase() !== "string"
-                                ? item.umkm_nama
-                                : null) ||
-                              "Mitra UMKM"
-                            : (item.mahasiswa_nama &&
-                              item.mahasiswa_nama.toLowerCase() !== "string"
-                                ? item.mahasiswa_nama
-                                : null) || "Talenta Mahasiswa",
-                          partnerRole: isMahasiswa ? "UMKM" : "MHS",
-                        });
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <MessageSquare size={12} color={COLORS.brandIndigo} />
-                      <Text style={styles.quickChatBtnText}>Chat</Text>
-                    </TouchableOpacity>
+                  {/* Clean Status Pill */}
+                  {isAccepted ? (
+                    <View style={styles.statusPillActive}>
+                      <View style={styles.pulseDotGreen} />
+                      <Text style={styles.statusTextActive}>In Progress</Text>
+                    </View>
+                  ) : isReview ? (
+                    <View style={styles.statusPillReview}>
+                      <View style={styles.pulseDotPurple} />
+                      <Text style={styles.statusTextReview}>Delivered</Text>
+                    </View>
+                  ) : isPending ? (
+                    <View style={styles.statusPillPending}>
+                      <Text style={styles.statusTextPending}>
+                        {isMahasiswa
+                          ? "Under Review"
+                          : `${item.total_pelamar || 0} Proposals`}
+                      </Text>
+                    </View>
+                  ) : isDone ? (
+                    <View style={styles.statusPillDone}>
+                      <Text style={styles.statusTextDone}>Completed</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.statusPillDeclined}>
+                      <Text style={styles.statusTextDeclined}>
+                        {isDeclined ? "Declined" : item.status}
+                      </Text>
+                    </View>
                   )}
+                </View>
 
-                  <View style={styles.chevronBox}>
-                    <ChevronRight size={14} color={COLORS.textMuted} />
+                {/* Project Title */}
+                <Text style={styles.cardTitle} numberOfLines={2}>
+                  {projectTitle || "Project Assignment"}
+                </Text>
+
+                {/* Bottom Row: Metadata & Quick Actions */}
+                <View style={styles.cardBottomRow}>
+                  {/* Meta info: Budget, Timeline, Escrow */}
+                  <View style={styles.metaInfo}>
+                    <Text style={styles.budgetHighlight}>
+                      {formatCurrency(
+                        isMahasiswa ? item.harga_tawar : item.budget_max,
+                      )}
+                    </Text>
+                    <Text style={styles.metaDivider}>•</Text>
+                    <View style={styles.metaIconText}>
+                      <Clock size={11} color={COLORS.textMuted} />
+                      <Text style={styles.metaLabel}>
+                        {isMahasiswa
+                          ? `${item.estimasi_hari || 5}d`
+                          : `${item.total_pelamar || 0} bids`}
+                      </Text>
+                    </View>
+                    <Text style={styles.metaDivider}>•</Text>
+                    <View style={styles.metaIconText}>
+                      <ShieldCheck size={11} color={COLORS.success} />
+                      <Text style={styles.escrowLabel}>Escrow</Text>
+                    </View>
+                  </View>
+
+                  {/* Quick Action: Direct Chat & View */}
+                  <View style={styles.actionGroup}>
+                    {canChat && (
+                      <TouchableOpacity
+                        style={styles.quickChatBtn}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          navigation.navigate("Chat", {
+                            projectId: projectId,
+                            projectTitle: projectTitle,
+                            partnerPhoto: partnerPhoto,
+                            partnerName: isMahasiswa
+                              ? (item.project_umkm_nama &&
+                                item.project_umkm_nama.toLowerCase() !==
+                                  "string"
+                                  ? item.project_umkm_nama
+                                  : null) ||
+                                (item.umkm_nama &&
+                                item.umkm_nama.toLowerCase() !== "string"
+                                  ? item.umkm_nama
+                                  : null) ||
+                                "Mitra UMKM"
+                              : (item.mahasiswa_nama &&
+                                item.mahasiswa_nama.toLowerCase() !== "string"
+                                  ? item.mahasiswa_nama
+                                  : null) || "Talenta Mahasiswa",
+                            partnerRole: isMahasiswa ? "UMKM" : "MHS",
+                          });
+                        }}
+                        activeOpacity={0.8}
+                      >
+                        <MessageSquare size={12} color={COLORS.brandIndigo} />
+                        <Text style={styles.quickChatBtnText}>Chat</Text>
+                      </TouchableOpacity>
+                    )}
+
+                    <View style={styles.chevronBox}>
+                      <ChevronRight size={14} color={COLORS.textMuted} />
+                    </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
-      />
+              </TouchableOpacity>
+            );
+          }}
+        />
       )}
     </View>
   );

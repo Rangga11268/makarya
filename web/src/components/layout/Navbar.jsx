@@ -32,10 +32,16 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, fetchProfile } = useAuthStore();
   const { showConfirm } = useAlertStore();
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && fetchProfile) {
+      fetchProfile();
+    }
+  }, [isAuthenticated, fetchProfile]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -445,6 +451,9 @@ export function Navbar() {
                         src={user.url_foto}
                         alt="Profile"
                         className="w-7 h-7 rounded-full object-cover shadow-xs border border-slate-200"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -452,8 +461,11 @@ export function Navbar() {
                       </div>
                     )}
                     <div className="hidden sm:flex flex-col text-left leading-none">
-                      <span className="text-[11px] font-bold text-slate-900 truncate max-w-[100px]">
-                        {user?.email?.split("@")[0]}
+                      <span className="text-[11px] font-bold text-slate-900 truncate max-w-[120px]">
+                        {user?.nama ||
+                          user?.nama_lengkap ||
+                          user?.nama_usaha ||
+                          user?.email?.split("@")[0]}
                       </span>
                       <span className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">
                         {roleInfo.label}
@@ -464,12 +476,18 @@ export function Navbar() {
 
                   {/* Dropdown Menu */}
                   {userDropdownOpen && (
-                    <div className="absolute right-0 mt-3 w-60 bg-white rounded-3xl border border-slate-200 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl border border-slate-200 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-2.5 border-b border-slate-100 bg-slate-50 rounded-2xl mb-1">
                         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
                           Akun Terhubung
                         </span>
                         <span className="text-xs font-bold text-slate-900 truncate block mt-0.5">
+                          {user?.nama ||
+                            user?.nama_lengkap ||
+                            user?.nama_usaha ||
+                            user?.email}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono truncate block mt-0.5">
                           {user?.email}
                         </span>
                         <Badge

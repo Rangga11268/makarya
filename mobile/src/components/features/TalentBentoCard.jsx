@@ -1,11 +1,28 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
-import { Star, ArrowUpRight } from "lucide-react-native";
+import { Star, ArrowUpRight, CheckCircle2 } from "lucide-react-native";
 
-export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
+export function TalentBentoCard({ talent = {}, onPress, variant = "dark" }) {
+  const [imgError, setImgError] = useState(false);
   const isFeatured = variant === "lime" || variant === "featured";
+
+  const talentName = talent.nama_lengkap || talent.name || "Talenta Mahasiswa";
+  const initial = talentName ? talentName.charAt(0).toUpperCase() : "M";
+  const prodiText = talent.prodi || "Sistem Informasi • Mahasiswa";
+  const ratingScore =
+    talent.rating_avg != null
+      ? Number(talent.rating_avg).toFixed(1)
+      : talent.rating?.toFixed(1) || "5.0";
+  const completedJobs =
+    talent.total_proyek_selesai != null
+      ? talent.total_proyek_selesai
+      : talent.totalJobs || 0;
+  const skillsList =
+    Array.isArray(talent.skills) && talent.skills.length > 0
+      ? talent.skills
+      : ["Digital Solutions", "Figma", "Web"];
 
   return (
     <TouchableOpacity
@@ -18,41 +35,60 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
     >
       {/* Top row: Avatar + Name + Rating */}
       <View style={styles.topRow}>
-        <View
-          style={[
-            styles.avatarPlaceholder,
-            isFeatured ? styles.avatarFeatured : styles.avatarStandard,
-          ]}
-        >
-          <Text
+        {talent.url_foto && !imgError ? (
+          <Image
+            source={{ uri: talent.url_foto }}
             style={[
-              styles.avatarText,
-              isFeatured
-                ? styles.avatarTextFeatured
-                : styles.avatarTextStandard,
+              styles.avatarImage,
+              isFeatured && styles.avatarImageFeatured,
+            ]}
+            resizeMode="cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <View
+            style={[
+              styles.avatarPlaceholder,
+              isFeatured ? styles.avatarFeatured : styles.avatarStandard,
             ]}
           >
-            {talent.name ? talent.name.charAt(0) : "M"}
-          </Text>
-        </View>
+            <Text
+              style={[
+                styles.avatarText,
+                isFeatured
+                  ? styles.avatarTextFeatured
+                  : styles.avatarTextStandard,
+              ]}
+            >
+              {initial}
+            </Text>
+          </View>
+        )}
 
         <View style={styles.info}>
-          <Text
-            style={[
-              styles.name,
-              isFeatured ? styles.textWhite : styles.textDark,
-            ]}
-            numberOfLines={1}
-          >
-            {talent.name}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+            <Text
+              style={[
+                styles.name,
+                isFeatured ? styles.textWhite : styles.textDark,
+              ]}
+              numberOfLines={1}
+            >
+              {talentName}
+            </Text>
+            <CheckCircle2
+              size={13}
+              color={isFeatured ? "#6EE7B7" : COLORS.success}
+            />
+          </View>
           <Text
             style={[
               styles.prodi,
               isFeatured ? styles.textMutedFeatured : styles.textMuted,
             ]}
+            numberOfLines={1}
           >
-            {talent.prodi}
+            {prodiText}
           </Text>
         </View>
 
@@ -64,11 +100,7 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
               : styles.ratingBadgeStandard,
           ]}
         >
-          <Star
-            size={12}
-            color={isFeatured ? "#F59E0B" : "#F59E0B"}
-            fill={isFeatured ? "#F59E0B" : "#F59E0B"}
-          />
+          <Star size={12} color="#F59E0B" fill="#F59E0B" />
           <Text
             style={[
               styles.ratingText,
@@ -77,7 +109,7 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
                 : styles.ratingTextStandard,
             ]}
           >
-            {talent.rating?.toFixed(1) || "5.0"}
+            {ratingScore}
           </Text>
         </View>
       </View>
@@ -97,14 +129,15 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
             styles.roleValue,
             isFeatured ? styles.textWhite : styles.textDark,
           ]}
+          numberOfLines={1}
         >
-          {talent.skills?.[0] || "Desain Grafis & Web"}
+          {skillsList[0] || "Desain Grafis & Web"}
         </Text>
       </View>
 
       {/* Skills Chips */}
       <View style={styles.skillsRow}>
-        {(talent.skills || []).slice(0, 3).map((s, idx) => (
+        {skillsList.slice(0, 3).map((s, idx) => (
           <View
             key={idx}
             style={[
@@ -148,7 +181,7 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
               isFeatured ? styles.textWhite : styles.textDark,
             ]}
           >
-            {talent.totalJobs || 0} Proyek
+            {completedJobs} Proyek
           </Text>
         </View>
 
@@ -166,7 +199,7 @@ export function TalentBentoCard({ talent, onPress, variant = "dark" }) {
                 : styles.actionTextStandard,
             ]}
           >
-            Lihat Profil
+            Lihat Portofolio
           </Text>
           <ArrowUpRight
             size={14}
@@ -209,6 +242,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+    backgroundColor: COLORS.canvasSoft,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  avatarImageFeatured: {
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   avatarFeatured: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
