@@ -89,6 +89,7 @@ class ProfileUpdateRequest(BaseModel):
     prodi: Optional[str] = None
     semester: Optional[int] = None
     bio: Optional[str] = None
+    photo_url: Optional[str] = None
     url_portofolio: Optional[str] = None
     github_url: Optional[str] = None
     figma_url: Optional[str] = None

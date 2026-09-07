@@ -65,7 +65,8 @@ export function ProfileScreen({ navigation }) {
 
   const handlePickPhoto = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         showToast("Izin akses galeri diperlukan untuk memilih foto", "error");
         return;
