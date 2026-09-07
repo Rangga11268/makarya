@@ -108,9 +108,7 @@ export function ProfileScreen({ navigation }) {
   const [skillModal, setSkillModal] = useState(false);
   const [newSkill, setNewSkill] = useState("");
   const [skillsList, setSkillsList] = useState(
-    user?.skills && Array.isArray(user.skills)
-      ? user.skills
-      : [],
+    user?.skills && Array.isArray(user.skills) ? user.skills : [],
   );
 
   // Edit Profile Modal State
@@ -711,7 +709,9 @@ export function ProfileScreen({ navigation }) {
                 {user?.nomor_rekening ? (
                   <View style={styles.verifiedBankPill}>
                     <Check size={9} color={COLORS.success} strokeWidth={3} />
-                    <Text style={styles.verifiedBankPillText}>Terverifikasi</Text>
+                    <Text style={styles.verifiedBankPillText}>
+                      Terverifikasi
+                    </Text>
                   </View>
                 ) : null}
               </View>

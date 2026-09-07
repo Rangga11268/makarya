@@ -33,41 +33,16 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [latestProjects, setLatestProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTalents, setLoadingTalents] = useState(true);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [openFaq, setOpenFaq] = useState(0);
-
-  const [talents, setTalents] = useState([
-    {
-      id: "1",
-      nama_lengkap: "Darell Rangga Putra",
-      prodi: "Sistem Informasi",
-      rating_avg: 5.0,
-      total_proyek_selesai: 9,
-      skills: ["FastAPI", "React.js", "PostgreSQL", "Tailwind CSS"],
-    },
-    {
-      id: "2",
-      nama_lengkap: "Adelia Putri",
-      prodi: "Desain Komunikasi Visual",
-      rating_avg: 4.9,
-      total_proyek_selesai: 11,
-      skills: ["Figma", "Branding", "Logo Design", "Illustrator"],
-    },
-    {
-      id: "3",
-      nama_lengkap: "Bima Arya",
-      prodi: "Teknologi Informasi",
-      rating_avg: 5.0,
-      total_proyek_selesai: 6,
-      skills: ["Landing Page", "Next.js", "WordPress", "SEO"],
-    },
-  ]);
+  const [talents, setTalents] = useState([]);
 
   useEffect(() => {
     async function loadPublicData() {
       try {
         setLoading(true);
-        const res = await projectApi.browse({ limit: 6 });
+        const res = await projectApi.browse({ limit: 6, status: "OPEN" });
         const list = Array.isArray(res?.data)
           ? res.data
           : Array.isArray(res)
@@ -81,20 +56,19 @@ export function LandingPage() {
       }
 
       try {
-        const tRes = await talentApi.getTalents({
-          only_completed: true,
-          limit: 4,
-        });
+        setLoadingTalents(true);
+        const tRes = await talentApi.getTalents({ limit: 4 });
         const tList = Array.isArray(tRes?.data)
           ? tRes.data
           : Array.isArray(tRes)
             ? tRes
             : [];
-        if (tList.length > 0) {
-          setTalents(tList);
-        }
+        setTalents(tList);
       } catch (tErr) {
         console.warn("Gagal memuat talenta riil dari API:", tErr);
+        setTalents([]);
+      } finally {
+        setLoadingTalents(false);
       }
     }
     loadPublicData();
@@ -106,13 +80,17 @@ export function LandingPage() {
   };
 
   const categories = [
-    { code: "DESIGN", title: "Desain Grafis & Kemasan", count: 2 },
-    { code: "UIUX", title: "UI/UX & Desain Aplikasi", count: 2 },
-    { code: "PEMROGRAMAN", title: "Website & Pemrograman", count: 2 },
-    { code: "VIDEO", title: "Video Reels & Promosi", count: 2 },
-    { code: "COPYWRITING", title: "Copywriting & Artikel SEO", count: 2 },
-    { code: "ADMIN_DATA", title: "Admin & Pengolahan Data", count: 2 },
+    { code: "DESIGN", title: "Desain Grafis & Kemasan" },
+    { code: "UIUX", title: "UI/UX & Desain Aplikasi" },
+    { code: "PEMROGRAMAN", title: "Website & Pemrograman" },
+    { code: "VIDEO", title: "Video Reels & Promosi" },
+    { code: "COPYWRITING", title: "Copywriting & Artikel SEO" },
+    { code: "ADMIN_DATA", title: "Admin & Pengolahan Data" },
   ];
+
+  const getCategoryCount = (code) => {
+    return latestProjects.filter((p) => p.kategori === code).length;
+  };
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
@@ -285,7 +263,7 @@ export function LandingPage() {
                 key={cat.code}
                 code={cat.code}
                 title={cat.title}
-                projectCount={cat.count}
+                projectCount={getCategoryCount(cat.code)}
                 onClick={() => navigate(`/projects?category=${cat.code}`)}
               />
             ))}
@@ -382,18 +360,36 @@ export function LandingPage() {
           subtitle="Profil talenta muda dengan rekam jejak deliverable memuaskan dan portofolio karya nyata."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {talents.map((talent, idx) => (
-            <TalentCard
-              key={talent.id || idx}
-              name={talent.nama_lengkap}
-              prodi={talent.prodi}
-              rating={Number(talent.rating_avg) || 5.0}
-              totalJobs={talent.total_proyek_selesai || 0}
-              skills={talent.skills || []}
-            />
-          ))}
-        </div>
+        {loadingTalents ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((n) => (
+              <div
+                key={n}
+                className="h-56 bg-surface rounded-2xl border border-border animate-pulse"
+              />
+            ))}
+          </div>
+        ) : talents.length === 0 ? (
+          <div className="text-center py-12 bg-surface rounded-2xl border border-border">
+            <p className="text-sm font-semibold text-muted">
+              Belum ada data talenta yang dimuat saat ini.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {talents.map((talent, idx) => (
+              <TalentCard
+                key={talent.id || idx}
+                name={talent.nama_lengkap}
+                prodi={talent.prodi}
+                rating={Number(talent.rating_avg) || 5.0}
+                totalJobs={talent.total_proyek_selesai || 0}
+                skills={talent.skills || []}
+                avatarUrl={talent.url_foto}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="mt-8 text-center">
           <Link to="/talents">

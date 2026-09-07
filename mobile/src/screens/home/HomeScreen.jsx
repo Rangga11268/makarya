@@ -240,8 +240,14 @@ export function HomeScreen({ navigation }) {
         .slice(0, 2);
 
   const displayName = isMahasiswa
-    ? user?.nama_lengkap || user?.nama || user?.email?.split("@")[0] || "Darell Rangga"
-    : user?.nama_usaha || user?.nama || user?.email?.split("@")[0] || "Brand UMKM Anda";
+    ? user?.nama_lengkap ||
+      user?.nama ||
+      user?.email?.split("@")[0] ||
+      "Darell Rangga"
+    : user?.nama_usaha ||
+      user?.nama ||
+      user?.email?.split("@")[0] ||
+      "Brand UMKM Anda";
 
   const initialLetter = displayName.charAt(0).toUpperCase() || "D";
 
@@ -535,9 +541,9 @@ export function HomeScreen({ navigation }) {
           {/* 4. Modern Ongoing Projects Showcase */}
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
-              <View>
+              <View style={styles.sectionHeaderTitleCol}>
                 <Text style={styles.sectionMainTitle}>Ongoing Projects</Text>
-                <Text style={styles.sectionSubTitle}>
+                <Text style={styles.sectionSubTitle} numberOfLines={1}>
                   {isMahasiswa
                     ? "Proyek aktif & proposal dalam seleksi"
                     : "Status pengerjaan proyek bisnis Anda"}
@@ -545,9 +551,11 @@ export function HomeScreen({ navigation }) {
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate("TrackerTab")}
+                style={styles.seeAllPill}
                 activeOpacity={0.7}
               >
-                <Text style={styles.seeMoreLink}>Workspace →</Text>
+                <Text style={styles.seeAllPillText}>Workspace</Text>
+                <ArrowRight size={11} color={COLORS.brandIndigo} />
               </TouchableOpacity>
             </View>
 
@@ -780,17 +788,19 @@ export function HomeScreen({ navigation }) {
           {/* 5. Modern Bespoke Vector Category Hub */}
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeaderRow}>
-              <View>
+              <View style={styles.sectionHeaderTitleCol}>
                 <Text style={styles.sectionMainTitle}>Kategori Keahlian</Text>
-                <Text style={styles.sectionSubTitle}>
+                <Text style={styles.sectionSubTitle} numberOfLines={1}>
                   Jelajahi talenta & proyek berdasarkan bidang
                 </Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate("ProjectsTab")}
+                style={styles.seeAllPill}
                 activeOpacity={0.7}
               >
-                <Text style={styles.seeMoreLink}>See All</Text>
+                <Text style={styles.seeAllPillText}>Semua</Text>
+                <ArrowRight size={11} color={COLORS.brandIndigo} />
               </TouchableOpacity>
             </View>
 
@@ -828,21 +838,21 @@ export function HomeScreen({ navigation }) {
           {isMahasiswa ? (
             <View style={styles.sectionContainer}>
               <View style={styles.sectionHeaderRow}>
-                <View>
+                <View style={styles.sectionHeaderTitleCol}>
                   <Text style={styles.sectionMainTitle}>
                     Peluang Proyek Terbaru
                   </Text>
-                  <Text style={styles.sectionSubTitle}>
+                  <Text style={styles.sectionSubTitle} numberOfLines={1}>
                     Peluang kerja baru dari UMKM terverifikasi
                   </Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("ProjectsTab")}
-                  style={styles.seeAllWithArrow}
+                  style={styles.seeAllPill}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.seeMoreLink}>Eksplor</Text>
-                  <ArrowRight size={13} color={COLORS.brandIndigo} />
+                  <Text style={styles.seeAllPillText}>Eksplor</Text>
+                  <ArrowRight size={11} color={COLORS.brandIndigo} />
                 </TouchableOpacity>
               </View>
 
@@ -906,42 +916,33 @@ export function HomeScreen({ navigation }) {
             /* UMKM View: Featured Student Talents */
             <View style={styles.sectionContainer}>
               <View style={styles.sectionHeaderRow}>
-                <View>
+                <View style={styles.sectionHeaderTitleCol}>
                   <Text style={styles.sectionMainTitle}>
                     Talenta Mahasiswa Unggulan
                   </Text>
-                  <Text style={styles.sectionSubTitle}>
-                    Talenta muda terverifikasi siap membantu akselerasi bisnis
-                    Anda
+                  <Text style={styles.sectionSubTitle} numberOfLines={1}>
+                    Mahasiswa terverifikasi siap membantu akselerasi bisnis
                   </Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("ProjectsTab")}
-                  style={styles.seeAllWithArrow}
+                  style={styles.seeAllPill}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.seeMoreLink}>Eksplor</Text>
-                  <ArrowRight size={13} color={COLORS.brandIndigo} />
+                  <Text style={styles.seeAllPillText}>Eksplor</Text>
+                  <ArrowRight size={11} color={COLORS.brandIndigo} />
                 </TouchableOpacity>
               </View>
 
               {featuredTalents.length > 0 ? (
-                <>
+                featuredTalents.map((t, idx) => (
                   <TalentBentoCard
-                    talent={featuredTalents[0]}
-                    variant="featured"
+                    key={t.id || idx}
+                    talent={t}
+                    variant={idx === 0 ? "featured" : "standard"}
                     onPress={() => navigation.navigate("ProjectsTab")}
                   />
-
-                  {featuredTalents.slice(1).map((t) => (
-                    <TalentBentoCard
-                      key={t.id}
-                      talent={t}
-                      variant="standard"
-                      onPress={() => navigation.navigate("ProjectsTab")}
-                    />
-                  ))}
-                </>
+                ))
               ) : (
                 <View style={styles.emptyCardBox}>
                   <Users size={32} color={COLORS.textDim} />
@@ -1365,9 +1366,13 @@ const styles = StyleSheet.create({
   },
   sectionHeaderRow: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 12,
+  },
+  sectionHeaderTitleCol: {
+    flex: 1,
+    marginRight: 10,
   },
   sectionMainTitle: {
     fontFamily: FONTS.displayBold,
@@ -1380,6 +1385,23 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 2,
+  },
+  seeAllPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 11,
+    paddingVertical: 5.5,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E0E7FF",
+    flexShrink: 0,
+  },
+  seeAllPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11.5,
+    color: COLORS.brandIndigo,
   },
   seeMoreLink: {
     fontFamily: FONTS.bodyBold,

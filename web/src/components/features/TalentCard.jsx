@@ -8,15 +8,26 @@ export function TalentCard({
   rating = 5.0,
   totalJobs = 0,
   skills = [],
+  avatarUrl,
 }) {
+  const [imgError, setImgError] = React.useState(false);
   const initial = name ? name.charAt(0).toUpperCase() : "M";
 
   return (
     <div className="bg-surface rounded-2xl border border-border p-5 flex flex-col justify-between hover:border-brand-indigo/30 hover:shadow-xs transition-all duration-200 group">
       <div>
         <div className="flex items-start gap-3.5 mb-3.5">
-          <div className="w-12 h-12 rounded-full bg-brand-indigo text-white font-serif text-lg font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
-            {initial}
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-brand-indigo text-white font-serif text-lg font-bold flex items-center justify-center shrink-0 shadow-xs select-none relative">
+            {avatarUrl && !imgError ? (
+              <img
+                src={avatarUrl}
+                alt={name}
+                className="w-full h-full object-cover"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              initial
+            )}
           </div>
 
           <div className="flex-1 min-w-0">

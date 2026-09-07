@@ -98,7 +98,8 @@ export function ProfilePage() {
     skills: Array.isArray(user?.skills) ? user.skills : [],
     nama_bank: user?.nama_bank || "",
     nomor_rekening: user?.nomor_rekening || "",
-    nama_pemilik_rekening: user?.nama_pemilik_rekening || user?.nama_lengkap || user?.nama || "",
+    nama_pemilik_rekening:
+      user?.nama_pemilik_rekening || user?.nama_lengkap || user?.nama || "",
   });
 
   // Form states for UMKM
@@ -110,7 +111,8 @@ export function ProfilePage() {
     no_kontak: user?.no_kontak || "",
     nama_bank: user?.nama_bank || "",
     nomor_rekening: user?.nomor_rekening || "",
-    nama_pemilik_rekening: user?.nama_pemilik_rekening || user?.nama_usaha || user?.nama || "",
+    nama_pemilik_rekening:
+      user?.nama_pemilik_rekening || user?.nama_usaha || user?.nama || "",
   });
 
   const [newSkillInput, setNewSkillInput] = useState("");
@@ -154,9 +156,7 @@ export function ProfilePage() {
               nama_bank: d.nama_bank || "",
               nomor_rekening: d.nomor_rekening || "",
               nama_pemilik_rekening:
-                d.nama_pemilik_rekening ||
-                d.nama_usaha ||
-                "",
+                d.nama_pemilik_rekening || d.nama_usaha || "",
             });
           } else {
             setMhsData({
@@ -169,16 +169,11 @@ export function ProfilePage() {
               figma_url: d.figma_url || "",
               website_url: d.website_url || "",
               linkedin_url: d.linkedin_url || "",
-              skills:
-                Array.isArray(d.skills)
-                  ? d.skills
-                  : [],
+              skills: Array.isArray(d.skills) ? d.skills : [],
               nama_bank: d.nama_bank || "",
               nomor_rekening: d.nomor_rekening || "",
               nama_pemilik_rekening:
-                d.nama_pemilik_rekening ||
-                d.nama_lengkap ||
-                "",
+                d.nama_pemilik_rekening || d.nama_lengkap || "",
             });
           }
           if (updateUser) {
