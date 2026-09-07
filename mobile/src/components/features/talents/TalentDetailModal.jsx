@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ScrollView,
   Platform,
   Image,
-} from 'react-native';
+} from "react-native";
 import {
   X,
   Star,
@@ -17,15 +17,15 @@ import {
   CheckCircle2,
   ExternalLink,
   MessageSquare,
-} from 'lucide-react-native';
-import { COLORS } from '../../../theme/colors';
-import { FONTS } from '../../../theme/fonts';
+} from "lucide-react-native";
+import { COLORS } from "../../../theme/colors";
+import { FONTS } from "../../../theme/fonts";
 import {
   GithubVectorIcon,
   FigmaVectorIcon,
   GlobeVectorIcon,
   LinkedinVectorIcon,
-} from '../../icons/ProfileVectorIcons';
+} from "../../icons/ProfileVectorIcons";
 
 export function TalentDetailModal({
   visible,
@@ -79,7 +79,9 @@ export function TalentDetailModal({
 
               <View style={styles.detailInfoCol}>
                 <View style={styles.nameRow}>
-                  <Text style={styles.detailNameText}>{talent.nama_lengkap}</Text>
+                  <Text style={styles.detailNameText}>
+                    {talent.nama_lengkap}
+                  </Text>
                   <CheckCircle2 size={16} color={COLORS.success} />
                 </View>
                 <Text style={styles.detailProdiText}>
@@ -117,10 +119,7 @@ export function TalentDetailModal({
               <View style={styles.detailBadgeItem}>
                 <ShieldCheck size={14} color={COLORS.success} />
                 <Text
-                  style={[
-                    styles.detailBadgeValue,
-                    { color: COLORS.success },
-                  ]}
+                  style={[styles.detailBadgeValue, { color: COLORS.success }]}
                 >
                   {talent.escrow_success_rate || "100%"}
                 </Text>
@@ -130,7 +129,9 @@ export function TalentDetailModal({
 
             {/* Bio Summary */}
             <View style={styles.detailSectionBox}>
-              <Text style={styles.detailSectionHeading}>Ringkasan Profesional</Text>
+              <Text style={styles.detailSectionHeading}>
+                Ringkasan Profesional
+              </Text>
               <Text style={styles.detailBioBody}>
                 {talent.bio ||
                   "Mahasiswa aktif berfokus pada pengembangan produk digital & desain solutif untuk kemitraan UMKM."}
@@ -140,7 +141,9 @@ export function TalentDetailModal({
             {/* Skills */}
             {Array.isArray(talent.skills) && talent.skills.length > 0 && (
               <View style={styles.detailSectionBox}>
-                <Text style={styles.detailSectionHeading}>Keahlian & Kemampuan</Text>
+                <Text style={styles.detailSectionHeading}>
+                  Keahlian & Kemampuan
+                </Text>
                 <View style={styles.skillsRow}>
                   {talent.skills.map((skill, idx) => (
                     <View key={idx} style={styles.detailSkillPill}>
@@ -164,7 +167,9 @@ export function TalentDetailModal({
                     activeOpacity={0.7}
                   >
                     <GithubVectorIcon size={18} color={COLORS.textDark} />
-                    <Text style={styles.portfolioLinkLabel}>GitHub Profile</Text>
+                    <Text style={styles.portfolioLinkLabel}>
+                      GitHub Profile
+                    </Text>
                     <ExternalLink size={12} color={COLORS.textMuted} />
                   </TouchableOpacity>
                 ) : null}
@@ -176,7 +181,9 @@ export function TalentDetailModal({
                     activeOpacity={0.7}
                   >
                     <FigmaVectorIcon size={18} color={COLORS.brandIndigo} />
-                    <Text style={styles.portfolioLinkLabel}>Figma Portofolio</Text>
+                    <Text style={styles.portfolioLinkLabel}>
+                      Figma Portofolio
+                    </Text>
                     <ExternalLink size={12} color={COLORS.textMuted} />
                   </TouchableOpacity>
                 ) : null}
@@ -188,7 +195,9 @@ export function TalentDetailModal({
                     activeOpacity={0.7}
                   >
                     <GlobeVectorIcon size={18} color={COLORS.brandCyan} />
-                    <Text style={styles.portfolioLinkLabel}>Website Portofolio</Text>
+                    <Text style={styles.portfolioLinkLabel}>
+                      Website Portofolio
+                    </Text>
                     <ExternalLink size={12} color={COLORS.textMuted} />
                   </TouchableOpacity>
                 ) : null}
@@ -200,7 +209,9 @@ export function TalentDetailModal({
                     activeOpacity={0.7}
                   >
                     <LinkedinVectorIcon size={18} color="#0A66C2" />
-                    <Text style={styles.portfolioLinkLabel}>LinkedIn Profile</Text>
+                    <Text style={styles.portfolioLinkLabel}>
+                      LinkedIn Profile
+                    </Text>
                     <ExternalLink size={12} color={COLORS.textMuted} />
                   </TouchableOpacity>
                 ) : null}

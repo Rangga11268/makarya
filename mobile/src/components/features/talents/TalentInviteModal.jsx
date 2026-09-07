@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   Modal,
   Platform,
   ActivityIndicator,
-} from 'react-native';
-import { X, Briefcase, Plus } from 'lucide-react-native';
-import { COLORS } from '../../../theme/colors';
-import { FONTS } from '../../../theme/fonts';
-import { formatStatus } from '../../../utils/formatStatus';
-import { formatCurrency } from '../../../utils/formatCurrency';
+} from "react-native";
+import { X, Briefcase, Plus } from "lucide-react-native";
+import { COLORS } from "../../../theme/colors";
+import { FONTS } from "../../../theme/fonts";
+import { formatStatus } from "../../../utils/formatStatus";
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 export function TalentInviteModal({
   visible,
@@ -48,7 +48,9 @@ export function TalentInviteModal({
           <Text style={styles.inviteSubText}>
             Pilih salah satu proyek aktif Anda untuk menghubungkan brief
             pengerjaan dengan{" "}
-            <Text style={{ fontFamily: FONTS.bodyBold, color: COLORS.textDark }}>
+            <Text
+              style={{ fontFamily: FONTS.bodyBold, color: COLORS.textDark }}
+            >
               {talent?.nama_lengkap}
             </Text>
             .
@@ -92,8 +94,8 @@ export function TalentInviteModal({
                             p.status === "OPEN" || p.status === "BIDDING"
                               ? styles.statusPillOpen
                               : p.status === "IN_PROGRESS"
-                              ? styles.statusPillInProgress
-                              : styles.statusPillDone,
+                                ? styles.statusPillInProgress
+                                : styles.statusPillDone,
                           ]}
                         >
                           <Text
@@ -102,8 +104,8 @@ export function TalentInviteModal({
                               p.status === "OPEN" || p.status === "BIDDING"
                                 ? styles.statusTextOpen
                                 : p.status === "IN_PROGRESS"
-                                ? styles.statusTextInProgress
-                                : styles.statusTextDone,
+                                  ? styles.statusTextInProgress
+                                  : styles.statusTextDone,
                             ]}
                           >
                             {formatStatus(p.status)}
@@ -143,8 +145,8 @@ export function TalentInviteModal({
                 Belum Ada Proyek Aktif
               </Text>
               <Text style={styles.noProjectsNoticeDesc}>
-                Anda dapat membuat deskripsi proyek baru sekarang agar talenta ini
-                langsung dapat meninjau dan menerima penawaran Anda.
+                Anda dapat membuat deskripsi proyek baru sekarang agar talenta
+                ini langsung dapat meninjau dan menerima penawaran Anda.
               </Text>
             </View>
           )}

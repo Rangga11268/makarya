@@ -1,15 +1,11 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Platform,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, Platform } from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { Input } from "../../ui/Input";
+import { CurrencyInput } from "../../ui/CurrencyInput";
 import { Button } from "../../ui/Button";
+import { formatNumberDots } from "../../../utils/terbilang";
 
 export function ProposalSubmitModal({
   visible,
@@ -25,7 +21,12 @@ export function ProposalSubmitModal({
   loading = false,
 }) {
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <View style={styles.modalOverlay}>
         <View style={styles.modalSheet}>
           <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
@@ -35,18 +36,26 @@ export function ProposalSubmitModal({
 
           <Input
             label="Tawaran Honor (Rp)"
+          <CurrencyInput
+            label="Tawaran Honor Pengerjaan"
             placeholder={String(budgetMax || "")}
             value={hargaTawar}
             onChangeText={setHargaTawar}
             keyboardType="numeric"
+            onChangeValue={(val) => setHargaTawar(String(val))}
+            helperText={budgetMax ? `Batas budget maksimal klien: Rp ${formatNumberDots(budgetMax)}` : undefined}
+            required
           />
 
           <Input
             label="Estimasi Waktu Pengerjaan (Hari)"
+            label="Estimasi Waktu Pengerjaan"
             placeholder="5"
             value={estimasiHari}
             onChangeText={setEstimasiHari}
             keyboardType="numeric"
+            suffix="Hari Kerja"
+            required
           />
 
           <Input
@@ -56,6 +65,7 @@ export function ProposalSubmitModal({
             onChangeText={setCoverLetter}
             multiline
             numberOfLines={4}
+            required
           />
 
           <View style={styles.modalActions}>

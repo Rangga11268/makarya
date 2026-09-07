@@ -14,6 +14,7 @@ import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
+import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -492,9 +493,16 @@ export function WalletScreen({ navigation }) {
             <Input
               label="Nominal Transaksi (Rp)"
               placeholder="500000"
+            <CurrencyInput
+              label={`Nominal ${txType === "TOPUP" ? "Top Up Saldo" : "Penarikan Dana"}`}
+              placeholder="100.000"
               value={nominal}
               onChangeText={setNominal}
               keyboardType="numeric"
+              onChangeValue={(val) => setNominal(String(val))}
+              quickNominals={[50000, 100000, 250000, 500000, 1000000]}
+              helperText={`Minimal transaksi: Rp ${txType === "WITHDRAW" ? "25.000" : "50.000"}`}
+              required
             />
 
             {/* Quick Chips */}

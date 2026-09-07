@@ -315,6 +315,15 @@ export function ApplyProposalPage() {
                     placeholder="750.000"
                     value={hargaTawar}
                     onChange={(val) => setHargaTawar(val)}
+                    quickNominals={
+                      project.budget_max
+                        ? [
+                            Math.round(project.budget_max * 0.5),
+                            Math.round(project.budget_max * 0.75),
+                            project.budget_max,
+                          ]
+                        : undefined
+                    }
                     helperText={`Maksimal sesuai batas budget proyek: ${formatCurrency(project.budget_max)}`}
                     required
                   />
@@ -322,12 +331,14 @@ export function ApplyProposalPage() {
                   <div>
                     <Input
                       label="Estimasi Waktu Selesai (Hari)"
+                      label="Estimasi Waktu Selesai"
                       type="number"
                       min="1"
                       max="90"
                       placeholder="Contoh: 3"
                       value={estimasiHari}
                       onChange={(e) => setEstimasiHari(e.target.value)}
+                      suffix="Hari Kerja"
                       required
                     />
                     <div className="flex items-center gap-1.5 mt-2">

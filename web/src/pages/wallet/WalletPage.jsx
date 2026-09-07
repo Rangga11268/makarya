@@ -711,6 +711,7 @@ export function WalletPage() {
             onChange={(val) =>
               setWithdrawForm({ ...withdrawForm, nominal: val })
             }
+            quickNominals={[50000, 100000, 250000, 500000]}
             helperText="Minimal penarikan Rp 25.000"
             required
           />
@@ -800,9 +801,11 @@ export function WalletPage() {
 
           <CurrencyInput
             label="Nominal Deposit (Rp)"
+            label="Nominal Deposit"
             placeholder="500.000"
             value={topUpNominal}
             onChange={(val) => setTopUpNominal(val)}
+            quickNominals={[100000, 250000, 500000, 1000000]}
             helperText="Minimal top-up saldo Rp 50.000"
             required
           />

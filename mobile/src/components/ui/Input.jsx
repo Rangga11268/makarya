@@ -23,6 +23,9 @@ export function Input({
   numberOfLines = 1,
   error,
   helperText,
+  required = false,
+  prefix,
+  suffix,
   icon: Icon,
   style,
   inputStyle,
@@ -36,6 +39,13 @@ export function Input({
   return (
     <View style={[styles.container, style]}>
       {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <View style={styles.labelRow}>
+          <Text style={styles.label}>{label}</Text>
+          {required && <Text style={styles.requiredStar}>*</Text>}
+        </View>
+      )}
+
       <View
         style={[
           styles.inputWrapper,
@@ -45,6 +55,13 @@ export function Input({
         ]}
       >
         {Icon && <View style={styles.icon}>{Icon}</View>}
+
+        {prefix && (
+          <View style={styles.prefixContainer}>
+            <Text style={styles.prefixText}>{prefix}</Text>
+          </View>
+        )}
+
         <TextInput
           value={value}
           onChangeText={onChangeText}
@@ -59,6 +76,12 @@ export function Input({
           style={[styles.input, multiline && styles.multilineInput, inputStyle]}
           {...rest}
         />
+
+        {suffix && (
+          <View style={styles.suffixContainer}>
+            <Text style={styles.suffixText}>{suffix}</Text>
+          </View>
+        )}
 
         {/* 1. Password Eye / EyeOff Toggle */}
         {isPassword ? (
@@ -99,13 +122,25 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
+  labelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+    gap: 4,
+  },
   label: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textDark,
     marginBottom: 7,
     letterSpacing: 0.1,
+  },
+  requiredStar: {
+    color: COLORS.danger,
+    fontSize: 13,
+    fontWeight: "700",
   },
   inputWrapper: {
     flexDirection: "row",
@@ -115,10 +150,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: COLORS.borderDark,
     paddingHorizontal: 14,
+    minHeight: 48,
   },
   inputFocused: {
     borderColor: COLORS.brandIndigo,
     backgroundColor: "#FFFFFF",
+    shadowColor: COLORS.brandIndigo,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
   multilineWrapper: {
     alignItems: "flex-start",
@@ -127,12 +168,33 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
+  prefixContainer: {
+    marginRight: 6,
+    paddingRight: 6,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.borderDark,
+  },
+  prefixText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12.5,
+    color: COLORS.brandIndigo,
+  },
+  suffixContainer: {
+    marginLeft: 6,
+    paddingLeft: 6,
+  },
+  suffixText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
   input: {
     flex: 1,
     fontFamily: FONTS.bodyMedium,
     color: COLORS.textDark,
     fontSize: 14,
     paddingVertical: 12,
+    paddingVertical: 11,
     fontWeight: "500",
   },
   multilineInput: {
@@ -157,6 +219,7 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: COLORS.danger,
+    backgroundColor: "#FEF2F2",
   },
   errorText: {
     fontFamily: FONTS.bodyRegular,

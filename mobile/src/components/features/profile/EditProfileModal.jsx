@@ -50,10 +50,7 @@ export function EditProfileModal({
                 Perbarui informasi agar profilmu selalu mutakhir
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.closeBtn}
-              onPress={onClose}
-            >
+            <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
               <X size={18} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>

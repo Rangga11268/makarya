@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   Modal,
   ScrollView,
   Platform,
-} from 'react-native';
-import { X } from 'lucide-react-native';
-import { COLORS } from '../../../theme/colors';
-import { FONTS } from '../../../theme/fonts';
+} from "react-native";
+import { X } from "lucide-react-native";
+import { COLORS } from "../../../theme/colors";
+import { FONTS } from "../../../theme/fonts";
 
 export function TalentFilterModal({
   visible,
@@ -37,7 +37,9 @@ export function TalentFilterModal({
         <View style={styles.filterModalSheet}>
           <View style={styles.filterModalHeader}>
             <View>
-              <Text style={styles.filterModalTitle}>Filter Direktori Talenta</Text>
+              <Text style={styles.filterModalTitle}>
+                Filter Direktori Talenta
+              </Text>
               <Text style={styles.filterModalSub}>
                 Saring berdasarkan program studi, rating, dan pengalaman
               </Text>
@@ -51,7 +53,10 @@ export function TalentFilterModal({
             </TouchableOpacity>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 420 }}
+          >
             {/* Prodi Section */}
             <Text style={styles.filterSectionTitle}>Program Studi</Text>
             <View style={styles.filterChipGrid}>
@@ -109,7 +114,9 @@ export function TalentFilterModal({
             </View>
 
             {/* Proyek Selesai Section */}
-            <Text style={styles.filterSectionTitle}>Pengalaman Proyek Tuntas</Text>
+            <Text style={styles.filterSectionTitle}>
+              Pengalaman Proyek Tuntas
+            </Text>
             <View style={styles.filterChipGrid}>
               {projectOptions.map((opt) => {
                 const isSelected = selectedMinProjects === opt.id;
@@ -163,8 +170,8 @@ export function TalentFilterModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.55)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    justifyContent: "flex-end",
   },
   filterModalSheet: {
     backgroundColor: COLORS.bgSurface,
@@ -172,12 +179,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 28,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: Platform.OS === 'ios' ? 36 : 24,
+    paddingBottom: Platform.OS === "ios" ? 36 : 24,
   },
   filterModalHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
     marginBottom: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
@@ -186,7 +193,7 @@ const styles = StyleSheet.create({
   filterModalTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 17,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.textDark,
   },
   filterModalSub: {
@@ -200,22 +207,22 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     backgroundColor: COLORS.canvasSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   filterSectionTitle: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.textDark,
     marginTop: 12,
     marginBottom: 8,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.3,
   },
   filterChipGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
     marginBottom: 6,
   },
@@ -238,12 +245,12 @@ const styles = StyleSheet.create({
   },
   modalOptionChipTextActive: {
     fontFamily: FONTS.bodyBold,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   modalActionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     marginTop: 18,
     paddingTop: 12,
@@ -256,13 +263,13 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalResetBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.textMuted,
   },
   modalApplyBtn: {
@@ -270,13 +277,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     paddingVertical: 12,
     borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalApplyBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
 });

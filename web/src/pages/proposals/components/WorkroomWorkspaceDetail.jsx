@@ -166,7 +166,7 @@ export function WorkroomWorkspaceDetail({
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900"
+                  : "bg-canvas border border-border text-muted hover:text-dark-900"
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -244,9 +244,7 @@ export function WorkroomWorkspaceDetail({
                 <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
                   <span>
                     Jumlah Revisi:{" "}
-                    <b>
-                      {activeDeliverable.jumlah_revisi || 0} dari 2 kali
-                    </b>
+                    <b>{activeDeliverable.jumlah_revisi || 0} dari 2 kali</b>
                   </span>
                   <span>
                     Diserahkan:{" "}
@@ -267,9 +265,7 @@ export function WorkroomWorkspaceDetail({
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setSelectedSubmissionForRevision(
-                          activeDeliverable,
-                        );
+                        setSelectedSubmissionForRevision(activeDeliverable);
                         setRevisionModalOpen(true);
                       }}
                       disabled={activeDeliverable.jumlah_revisi >= 2}
@@ -284,9 +280,7 @@ export function WorkroomWorkspaceDetail({
                     <Button
                       variant="brand"
                       size="sm"
-                      onClick={() =>
-                        handleApproveWork(activeDeliverable.id)
-                      }
+                      onClick={() => handleApproveWork(activeDeliverable.id)}
                       className="text-xs font-bold shadow-brand"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
@@ -304,9 +298,7 @@ export function WorkroomWorkspaceDetail({
                       variant="brand"
                       size="sm"
                       onClick={() =>
-                        handleOpenSubmission(
-                          selectedProposal.project_id,
-                        )
+                        handleOpenSubmission(selectedProposal.project_id)
                       }
                       className="text-xs font-bold shadow-brand"
                     >
@@ -327,8 +319,8 @@ export function WorkroomWorkspaceDetail({
                         Deliverable Disetujui & Proyek Selesai!
                       </span>
                       <span className="text-[11px] text-emerald-800">
-                        Dana honor escrow telah 100% diteruskan ke
-                        dompet mahasiswa.
+                        Dana honor escrow telah 100% diteruskan ke dompet
+                        mahasiswa.
                       </span>
                     </div>
                   </div>
@@ -422,10 +414,7 @@ export function WorkroomWorkspaceDetail({
                           {prop.mhs_profile?.url_foto ? (
                             <img
                               src={prop.mhs_profile.url_foto}
-                              alt={
-                                prop.mhs_profile?.nama_lengkap ||
-                                "Pelamar"
-                              }
+                              alt={prop.mhs_profile?.nama_lengkap || "Pelamar"}
                               className="w-7 h-7 rounded-full object-cover shrink-0 border border-border shadow-xs"
                             />
                           ) : (
@@ -470,18 +459,14 @@ export function WorkroomWorkspaceDetail({
                     </div>
 
                     {(() => {
-                      const parsed = parseCoverLetter(
-                        prop.cover_letter,
-                      );
+                      const parsed = parseCoverLetter(prop.cover_letter);
                       return (
                         <div className="bg-surface p-3.5 rounded-xl border border-border text-xs text-dark-900/90 leading-relaxed mb-3 space-y-2">
                           <div>
                             <span className="font-bold text-dark-900 block mb-0.5">
                               Rencana Pengerjaan Pelamar:
                             </span>
-                            <p className="whitespace-pre-wrap">
-                              {parsed.text}
-                            </p>
+                            <p className="whitespace-pre-wrap">{parsed.text}</p>
                           </div>
 
                           {parsed.tools.length > 0 && (
@@ -581,8 +566,7 @@ export function WorkroomWorkspaceDetail({
               <p className="font-bold text-dark-900">
                 {isUmkm
                   ? selectedProject?.kategori
-                  : selectedProposal?.project_kategori ||
-                    "Desain Kreatif"}
+                  : selectedProposal?.project_kategori || "Desain Kreatif"}
               </p>
             </div>
 
@@ -607,8 +591,7 @@ export function WorkroomWorkspaceDetail({
             </span>
             <p className="text-dark-900 leading-relaxed whitespace-pre-wrap">
               {isUmkm
-                ? selectedProject?.deskripsi_raw ||
-                  "Rincian brief proyek UMKM."
+                ? selectedProject?.deskripsi_raw || "Rincian brief proyek UMKM."
                 : selectedProposal?.project_deskripsi ||
                   "Brief kebutuhan proyek yang telah diterbitkan oleh klien UMKM."}
             </p>
@@ -618,9 +601,7 @@ export function WorkroomWorkspaceDetail({
           {!isUmkm &&
             selectedProposal &&
             (() => {
-              const parsed = parseCoverLetter(
-                selectedProposal.cover_letter,
-              );
+              const parsed = parseCoverLetter(selectedProposal.cover_letter);
               return (
                 <div className="bg-canvas p-4 rounded-2xl border border-border space-y-3 text-xs">
                   <div>

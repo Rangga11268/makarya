@@ -7,13 +7,7 @@ import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { MahasiswaProfileForm } from "./components/MahasiswaProfileForm";
 import { UmkmProfileForm } from "./components/UmkmProfileForm";
-import {
-  Save,
-  CheckCircle2,
-  Star,
-  Camera,
-  Loader2,
-} from "lucide-react";
+import { Save, CheckCircle2, Star, Camera, Loader2 } from "lucide-react";
 
 export function ProfilePage() {
   const { user, updateUser } = useAuthStore();
