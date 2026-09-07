@@ -13,6 +13,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
+import { ProjectDetailSkeleton } from "../../components/ui/Skeleton";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
@@ -293,7 +294,20 @@ export function ProjectDetailScreen({ route, navigation }) {
     );
   };
 
-  if (!project) return null;
+  if (!project) {
+    return (
+      <View style={styles.container}>
+        <Header
+          category="DETAIL SPESIFIKASI PROYEK"
+          title="Detail Proyek"
+          onBack={() => navigation.goBack()}
+        />
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+          <ProjectDetailSkeleton />
+        </ScrollView>
+      </View>
+    );
+  }
 
   const projectStatusUpper = project?.status?.toUpperCase() || "";
   const isBiddingOpen =

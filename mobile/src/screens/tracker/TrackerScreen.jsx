@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   RefreshControl,
   Platform,
@@ -18,6 +19,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
 import { Header } from "../../components/ui/Header";
+import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
 import {
   Layers,
   ArrowRight,
@@ -209,8 +211,15 @@ export function TrackerScreen({ navigation }) {
       </View>
 
       {/* 3. Breathable Project Feed */}
-      <FlatList
-        data={filteredItems}
+      {loading && items.length === 0 ? (
+        <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
+          <TrackerCardSkeleton />
+          <TrackerCardSkeleton />
+          <TrackerCardSkeleton />
+        </ScrollView>
+      ) : (
+        <FlatList
+          data={filteredItems}
         keyExtractor={(item) => String(item.id)}
         refreshControl={
           <RefreshControl
@@ -267,7 +276,9 @@ export function TrackerScreen({ navigation }) {
             ? item.project_umkm_foto ||
               item.umkm_foto ||
               item.project?.umkm_profile?.url_foto_usaha
-            : item.accepted_mhs_foto || item.mhs_profile?.url_foto || item.mhs_foto;
+            : item.accepted_mhs_foto ||
+              item.mhs_profile?.url_foto ||
+              item.mhs_foto;
           const category = isMahasiswa
             ? item.project_kategori || item.kategori || "UMKM"
             : item.kategori || "UMKM";
@@ -452,6 +463,7 @@ export function TrackerScreen({ navigation }) {
           );
         }}
       />
+      )}
     </View>
   );
 }

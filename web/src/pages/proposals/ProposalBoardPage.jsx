@@ -610,7 +610,9 @@ export function ProposalBoardPage() {
                         />
                       ) : (
                         <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-[9px] shrink-0">
-                          {(prop.project_umkm_nama || "K").charAt(0).toUpperCase()}
+                          {(prop.project_umkm_nama || "K")
+                            .charAt(0)
+                            .toUpperCase()}
                         </div>
                       )}
                       <span className="text-[11px] text-muted truncate">

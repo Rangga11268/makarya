@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
@@ -14,17 +14,19 @@ export function ProposalCard({
   loadingAccept,
   loadingReject,
 }) {
+  const [imgError, setImgError] = useState(false);
   const mhs = proposal.mhs_profile || {};
 
   return (
     <View style={styles.card}>
       {/* Mhs Info */}
       <View style={styles.header}>
-        {mhs.url_foto ? (
+        {mhs.url_foto && !imgError ? (
           <Image
             source={{ uri: mhs.url_foto }}
             style={styles.avatarImage}
             resizeMode="cover"
+            onError={() => setImgError(true)}
           />
         ) : (
           <View style={styles.avatar}>
@@ -47,7 +49,6 @@ export function ProposalCard({
           <Star size={11} color="#F59E0B" fill="#F59E0B" />
           <Text style={styles.ratingText}>
             {mhs.rating_avg ? Number(mhs.rating_avg).toFixed(1) : "5.0"}
-            {mhs.rating_avg ? Number(mhs.rating_avg).toFixed(1) : "Baru"}
           </Text>
         </View>
       </View>

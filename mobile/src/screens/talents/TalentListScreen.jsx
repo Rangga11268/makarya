@@ -19,6 +19,7 @@ import { SearchBar } from "../../components/ui/SearchBar";
 import { Header } from "../../components/ui/Header";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { Button } from "../../components/ui/Button";
+import { TalentCardSkeleton } from "../../components/ui/Skeleton";
 import { talentApi, projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
@@ -546,10 +547,14 @@ export function TalentListScreen({ navigation }) {
 
       {/* 5. Main Feed */}
       {loading && !refreshing ? (
-        <View style={styles.loadingCenter}>
-          <ActivityIndicator size="large" color={COLORS.brandIndigo} />
-          <Text style={styles.loadingText}>Memuat direktori talenta...</Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <TalentCardSkeleton />
+          <TalentCardSkeleton />
+          <TalentCardSkeleton />
+        </ScrollView>
       ) : (
         <FlatList
           data={sortedTalents}
@@ -762,13 +767,21 @@ export function TalentListScreen({ navigation }) {
                 contentContainerStyle={styles.detailScrollContent}
               >
                 <View style={styles.detailProfileTop}>
-                  <View style={styles.detailAvatarBox}>
-                    <Text style={styles.detailAvatarLetter}>
-                      {selectedTalent.nama_lengkap
-                        ? selectedTalent.nama_lengkap.charAt(0).toUpperCase()
-                        : "M"}
-                    </Text>
-                  </View>
+                  {selectedTalent.url_foto ? (
+                    <Image
+                      source={{ uri: selectedTalent.url_foto }}
+                      style={styles.detailAvatarImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={styles.detailAvatarBox}>
+                      <Text style={styles.detailAvatarLetter}>
+                        {selectedTalent.nama_lengkap
+                          ? selectedTalent.nama_lengkap.charAt(0).toUpperCase()
+                          : "M"}
+                      </Text>
+                    </View>
+                  )}
 
                   <View style={styles.detailInfoCol}>
                     <View style={styles.nameRow}>
@@ -1631,6 +1644,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
+  },
+  detailAvatarImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: COLORS.canvasSoft,
   },
   detailAvatarLetter: {
     fontSize: 22,

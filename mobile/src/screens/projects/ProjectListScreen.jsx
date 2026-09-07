@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   RefreshControl,
   Platform,
@@ -11,6 +12,7 @@ import {
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { ProjectCard } from "../../components/features/ProjectCard";
+import { ProjectCardSkeleton } from "../../components/ui/Skeleton";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { FilterModal } from "../../components/features/FilterModal";
 import { NotificationModal } from "../../components/features/NotificationModal";
@@ -272,8 +274,18 @@ export function ProjectListScreen({ navigation, route }) {
       )}
 
       {/* 5. Projects Feed List */}
-      <FlatList
-        data={filteredProjects}
+      {loading && projects.length === 0 ? (
+        <ScrollView
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <ProjectCardSkeleton />
+          <ProjectCardSkeleton />
+          <ProjectCardSkeleton />
+        </ScrollView>
+      ) : (
+        <FlatList
+          data={filteredProjects}
         keyExtractor={(item) => item.id}
         refreshControl={
           <RefreshControl
@@ -327,6 +339,7 @@ export function ProjectListScreen({ navigation, route }) {
           </View>
         )}
       />
+      )}
 
       {/* Filter Bottom Sheet Modal */}
       <FilterModal

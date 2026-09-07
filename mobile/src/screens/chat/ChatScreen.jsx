@@ -19,6 +19,7 @@ import { FONTS } from "../../theme/fonts";
 import { chatApi, getChatWsUrl } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { ChatSkeleton } from "../../components/ui/Skeleton";
 import {
   ArrowLeft,
   Send,
@@ -73,7 +74,8 @@ export function ChatScreen({ route, navigation }) {
 
   const resolvedPartnerPhoto =
     partnerPhoto ||
-    messages.find((m) => m.sender_id !== user?.id && m.sender_photo)?.sender_photo ||
+    messages.find((m) => m.sender_id !== user?.id && m.sender_photo)
+      ?.sender_photo ||
     null;
 
   const userPhoto =
@@ -459,10 +461,7 @@ export function ChatScreen({ route, navigation }) {
 
       {/* 2. Messages List */}
       {loading ? (
-        <View style={styles.centerLoading}>
-          <ActivityIndicator size="large" color={COLORS.brandIndigo} />
-          <Text style={styles.loadingText}>Menghubungkan ke ruang chat...</Text>
-        </View>
+        <ChatSkeleton />
       ) : (
         <FlatList
           ref={flatListRef}

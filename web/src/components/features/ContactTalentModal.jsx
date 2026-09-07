@@ -66,11 +66,22 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
         {/* Modal Header */}
         <div className="p-6 border-b border-border flex items-center justify-between bg-canvas/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-brand-indigo text-white font-serif font-bold text-base flex items-center justify-center shadow-xs">
-              {talent.nama_lengkap
-                ? talent.nama_lengkap.charAt(0).toUpperCase()
-                : "M"}
-            </div>
+            {talent.url_foto ? (
+              <img
+                src={talent.url_foto}
+                alt={talent.nama_lengkap || "Talenta"}
+                className="w-10 h-10 rounded-full object-cover shadow-xs border border-border"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-brand-indigo text-white font-serif font-bold text-base flex items-center justify-center shadow-xs">
+                {talent.nama_lengkap
+                  ? talent.nama_lengkap.charAt(0).toUpperCase()
+                  : "M"}
+              </div>
+            )}
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="text-base font-bold text-dark-900 leading-tight">

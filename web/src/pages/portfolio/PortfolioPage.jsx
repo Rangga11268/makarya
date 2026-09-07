@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 export function PortfolioPage() {
-  const { user } = useAuthStore();
+  const { user, fetchProfile } = useAuthStore();
   const isUmkm = user?.role === "UMKM";
 
   const [ratings, setRatings] = useState([]);
@@ -32,6 +32,9 @@ export function PortfolioPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (fetchProfile) {
+      fetchProfile();
+    }
     async function loadData() {
       if (!user?.id) return;
       try {
@@ -103,21 +106,25 @@ export function PortfolioPage() {
           {user?.url_foto ? (
             <img
               src={user.url_foto}
-              alt="Avatar"
-              className="w-16 h-16 rounded-full object-cover shrink-0 shadow-xs border-2 border-slate-100"
+              alt={user?.nama || "Avatar"}
+              className="w-16 h-16 rounded-2xl object-cover shrink-0 shadow-xs border-2 border-slate-100"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
-              {initial}
+            <div className="w-16 h-16 rounded-2xl bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
+              {(user?.nama || user?.email || "U").charAt(0).toUpperCase()}
             </div>
           )}
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-dark-900 font-sans">
-                {user?.email}
+                {user?.nama || user?.nama_lengkap || user?.nama_usaha || user?.email}
               </h3>
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             </div>
+            <p className="text-xs text-muted font-mono">{user?.email}</p>
             <div className="flex items-center gap-1.5 text-xs text-muted mt-0.5">
               {isUmkm ? (
                 <>
@@ -140,7 +147,6 @@ export function PortfolioPage() {
               Rating Rata-rata
             </span>
             <div className="flex items-center gap-1.5 mt-1">
-              <StarRating rating={parseFloat(avgRating)} size="md" />
               {avgRating ? (
                 <>
                   <StarRating rating={parseFloat(avgRating)} size="md" />

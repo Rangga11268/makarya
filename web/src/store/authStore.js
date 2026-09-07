@@ -41,7 +41,11 @@ export const useAuthStore = create((set, get) => ({
           ...currentUser,
           ...res.data,
           url_foto: res.data.url_foto || currentUser.url_foto,
-          nama: res.data.nama_lengkap || res.data.nama_usaha || currentUser.nama || currentUser.email?.split("@")[0],
+          nama:
+            res.data.nama_lengkap ||
+            res.data.nama_usaha ||
+            currentUser.nama ||
+            currentUser.email?.split("@")[0],
         };
         localStorage.setItem("makarya_user", JSON.stringify(updatedUser));
         set({ user: updatedUser });
