@@ -24,12 +24,18 @@ import {
   MapPin,
   ArrowRight,
   ShieldCheck,
+  User,
+  GraduationCap,
 } from "lucide-react-native";
 import { styles as s } from "./LoginScreen.styles"; // Reuse base layout logic
 
 const { height } = Dimensions.get("window");
 
 export function RegisterScreen({ navigation }) {
+  const [role, setRole] = useState("UMKM"); // Default mobile = UMKM
+  const [namaLengkap, setNamaLengkap] = useState("");
+  const [nim, setNim] = useState("");
+  
   const [namaUsaha, setNamaUsaha] = useState("");
   const [bidangIndustri, setBidangIndustri] = useState("Kuliner & F&B");
   const [kota, setKota] = useState("");
@@ -39,29 +45,47 @@ export function RegisterScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { registerUmkm, loginWithGoogle } = useAuthStore();
+  const { registerUmkm, registerMhs, loginWithGoogle } = useAuthStore();
   const { showToast } = useToastStore();
 
   const handleRegister = async () => {
-    if (!namaUsaha.trim() || !email.trim() || !password.trim()) {
-      showToast("Nama usaha, email, dan password wajib diisi", "danger");
-      return;
+    if (role === "UMKM") {
+      if (!namaUsaha.trim() || !email.trim() || !password.trim()) {
+        showToast("Nama usaha, email, dan password wajib diisi", "danger");
+        return;
+      }
+    } else {
+      if (!namaLengkap.trim() || !nim.trim() || !email.trim() || !password.trim()) {
+        showToast("Semua data mahasiswa wajib diisi", "danger");
+        return;
+      }
     }
 
     try {
       setLoading(true);
-      await registerUmkm({
-        nama_usaha: namaUsaha.trim(),
-        bidang_industri: bidangIndustri,
-        kota: kota.trim() || "Bekasi",
-        no_kontak: noKontak.trim() || "081234567890",
-        email: email.trim(),
-        password,
-      });
+      if (role === "UMKM") {
+        await registerUmkm({
+          nama_usaha: namaUsaha.trim(),
+          bidang_industri: bidangIndustri,
+          kota: kota.trim() || "Bekasi",
+          no_kontak: noKontak.trim() || "081234567890",
+          email: email.trim(),
+          password,
+        });
+      } else {
+        await registerMhs({
+          nama_lengkap: namaLengkap.trim(),
+          nim: nim.trim(),
+          prodi_id: 1, // Default fallback jika API tidak minta
+          email: email.trim(),
+          password,
+        });
+      }
+
       showToast("Kode verifikasi OTP telah dikirimkan!", "success");
       navigation.navigate("Verification", {
         email: email.trim(),
-        role: "CLIENT_UMKM",
+        role: role === "UMKM" ? "CLIENT_UMKM" : "MAHASISWA",
       });
     } catch (err) {
       showToast(

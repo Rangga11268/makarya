@@ -68,6 +68,11 @@ export const talentApi = {
   getTalentDetail: (id) => api.get(`/talents/${id}`),
 };
 
+export const notificationApi = {
+  getMyNotifications: (params) => api.get("/notifications", { params }),
+  markAllAsRead: () => api.patch("/notifications/read-all"),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   const isHttps = window.location.protocol === "https:";
   const wsProto = isHttps ? "wss:" : "ws:";

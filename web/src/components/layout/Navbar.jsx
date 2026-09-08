@@ -31,6 +31,8 @@ import {
   Zap,
 } from "lucide-react";
 
+import { NotificationBell } from "../features/NotificationBell";
+
 export function Navbar() {
   const { user, isAuthenticated, logout, fetchProfile } = useAuthStore();
   const { showConfirm } = useAlertStore();
@@ -439,6 +441,9 @@ export function Navbar() {
                     </Button>
                   </Link>
                 )}
+
+                {/* Real-time Notification Bell */}
+                <NotificationBell />
 
                 {/* User Dropdown Trigger */}
                 <div className="relative" ref={userDropdownRef}>

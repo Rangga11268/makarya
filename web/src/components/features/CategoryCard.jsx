@@ -15,6 +15,7 @@ export function CategoryCard({
   title,
   projectCount = 0,
   active = false,
+  image,
   onClick,
   className,
 }) {
@@ -38,6 +39,43 @@ export function CategoryCard({
         return <CategoryDataSvg size={46} />;
     }
   };
+
+  if (image) {
+    return (
+      <div
+        onClick={onClick}
+        className={cn(
+          "group relative rounded-2xl overflow-hidden border border-border bg-surface transition-all duration-300 cursor-pointer flex flex-col justify-between select-none shadow-xs hover:shadow-lg hover:-translate-y-1",
+          active && "ring-2 ring-brand-indigo border-brand-indigo",
+          className,
+        )}
+      >
+        {/* Visual Thumbnail */}
+        <div className="relative w-full h-40 sm:h-44 overflow-hidden bg-slate-100">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+          
+          <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs text-dark-900 flex items-center justify-center shadow-xs transition-transform group-hover:scale-110">
+            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+        </div>
+
+        {/* Card Meta */}
+        <div className="p-4 bg-surface flex flex-col justify-between flex-1">
+          <h3 className="text-sm sm:text-base font-bold text-dark-900 font-sans line-clamp-1 group-hover:text-brand-indigo transition-colors">
+            {title}
+          </h3>
+          <span className="text-xs font-semibold text-muted mt-1">
+            {projectCount} Proyek Aktif
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

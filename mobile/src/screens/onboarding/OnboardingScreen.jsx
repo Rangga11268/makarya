@@ -36,21 +36,21 @@ const slides = [
     subtitle:
       "Klien mendepositkan dana ke rekening bersama Makarya sebelum proyek berjalan. Begitu tugas disetujui, dana langsung cair ke rekeningmu.",
     image: require("../../../assets/onboarding_2.jpg"),
-    bgColor: "#091424", // Deep Midnight Navy
-    accentColor: "#4F46E5", // Brand Indigo
+    bgColor: "#091424", // Deep Midnight Navy (Unified)
+    accentColor: "#4F46E5", // Brand Indigo (Unified)
     badgeBg: "rgba(79, 70, 229, 0.22)",
     badgeBorder: "rgba(129, 140, 248, 0.4)",
     badgeText: "#A5B4FC",
   },
   {
     id: "3",
-    badge: "Ruang Kerja Digital",
-    title: "Lacak Target &\nDiskusi Proyek",
+    badge: "Kolaborasi Real-Time",
+    title: "Pantau Proyek\ndari Genggamanmu",
     subtitle:
-      "Kirim proposal, pantau tenggat waktu per milestone, dan koordinasi langsung dengan pemilik usaha tanpa repot berganti aplikasi.",
+      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM dalam satu platform terpadu.",
     image: require("../../../assets/onboarding_3.jpg"),
-    bgColor: "#091424", // Deep Midnight Navy
-    accentColor: "#4F46E5", // Brand Indigo
+    bgColor: "#091424", // Deep Midnight Navy (Unified)
+    accentColor: "#4F46E5", // Brand Indigo (Unified)
     badgeBg: "rgba(79, 70, 229, 0.22)",
     badgeBorder: "rgba(129, 140, 248, 0.4)",
     badgeText: "#A5B4FC",
