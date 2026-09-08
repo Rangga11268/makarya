@@ -606,45 +606,132 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 6. ESCROW GUARANTEE SECTION */}
+      {/* 6. ESCROW GUARANTEE SECTION (Editorial Split-Layout with Live Mockup Card) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#0F172A] text-white rounded-3xl p-8 sm:p-14 border border-slate-800 relative overflow-hidden">
-          <div className="max-w-3xl space-y-3 mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              <Lock className="w-3.5 h-3.5" />
-              Sistem Escrow Terlindungi
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-              Standar Transaksi Aman Tanpa Cemas
-            </h2>
-            <p className="text-sm text-slate-300 font-normal leading-relaxed">
-              Memutus risiko penipuan dan wanprestasi dengan jaminan Rekening Bersama resmi Makarya.
-            </p>
-          </div>
+        <div className="bg-slate-50 border border-slate-200/90 rounded-3xl p-8 sm:p-12 lg:p-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold tracking-wide">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Garansi Keamanan Rekening Bersama (Escrow)
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
-              <div className="text-xs font-bold text-brand-cyan tracking-wider uppercase">Langkah 01</div>
-              <h3 className="text-base font-bold text-white">UMKM Deposit Dana ke Escrow</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Sebelum mahasiswa mulai bekerja, nilai kontrak disetor ke rekening escrow Makarya. Mahasiswa tenang karena dana sudah terjamin.
+              <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-snug">
+                Transaksi aman tanpa rasa cemas, dari awal brief sampai hasil akhir disetujui.
+              </h2>
+
+              <p className="text-sm sm:text-base text-slate-600 font-normal leading-relaxed">
+                Makarya memastikan setiap rupiah dana pelaku usaha aman di rekening perantara resmi, dan setiap jerih payah karya mahasiswa terbayar 100% tepat waktu tanpa potongan komisi.
               </p>
+
+              {/* 3 Value Points with Minimalist Monochrome Line-Art */}
+              <div className="space-y-4 pt-2">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 text-slate-900 mt-0.5 shadow-xs">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">Dana Terkunci Aman di Awal</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                      UMKM menyetor dana ke escrow sebelum proyek dimulai. Mahasiswa tenang karena imbalan sudah terjamin dan tidak bisa dibatalkan sepihak.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 text-slate-900 mt-0.5 shadow-xs">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">Pemeriksaan Hasil & Hak Revisi</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                      Periksa berkas deliverable langsung di ruang kerja digital. Anda berhak meminta revisi sebelum menyetujui pelepasan dana.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 text-slate-900 mt-0.5 shadow-xs">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">Jaminan Integritas Mahasiswa Kampus</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                      Setiap mahasiswa terikat data identitas resmi (.ac.id/KTM). Jika terjadi wanprestasi, dana otomatis dikembalikan utuh ke UMKM.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
-              <div className="text-xs font-bold text-brand-cyan tracking-wider uppercase">Langkah 02</div>
-              <h3 className="text-base font-bold text-white">Pengerjaan & Progres Transparan</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Mahasiswa mengunggah progres berkala di ruang kerja digital. UMKM dapat meninjau revisi dan memberi masukan langsung.
-              </p>
-            </div>
+            {/* Right Interactive Mockup Card */}
+            <div className="lg:col-span-5">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-lg space-y-5 relative">
+                {/* Mock Card Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">Kontrak Escrow #MKY-8821</div>
+                      <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        Dana Terlindungi 100%
+                      </div>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-md bg-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                    Pengerjaan
+                  </span>
+                </div>
 
-            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
-              <div className="text-xs font-bold text-emerald-400 tracking-wider uppercase">Langkah 03</div>
-              <h3 className="text-base font-bold text-white">Puas Baru Cair 100% Utuh</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Setelah hasil akhir disetujui, dana langsung dicairkan ke saldo mahasiswa secara utuh tanpa potongan komisi platform.
-              </p>
+                {/* Contract Subject */}
+                <div className="space-y-1">
+                  <div className="text-[11px] text-slate-400 font-medium">Kebutuhan Proyek:</div>
+                  <div className="text-sm font-bold text-slate-900">Redesign Kemasan & Label Botol Kopi</div>
+                  <div className="text-xs text-slate-500">Klien: Aura Coffee Roasters • Mahasiswa: Darell (DKV)</div>
+                </div>
+
+                {/* Escrow Value Box */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] text-slate-500 block font-medium">Nominal Diamankan:</span>
+                    <span className="text-xl font-extrabold text-slate-900">Rp 450.000</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-full">
+                    ✓ Rekening Bersama
+                  </span>
+                </div>
+
+                {/* Live Timeline Steps */}
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex items-center gap-2.5 text-slate-700 font-medium">
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                    <span>1. UMKM Setor Dana Kontrak</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-slate-700 font-medium">
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                    <span>2. Mahasiswa Unggah File Final</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-brand-indigo font-bold">
+                    <span className="w-5 h-5 rounded-full bg-brand-indigo text-white flex items-center justify-center text-[10px]">3</span>
+                    <span>3. UMKM Periksa & Setujui Rilis Dana</span>
+                  </div>
+                </div>
+
+                {/* Mock Action Button */}
+                <div className="pt-2">
+                  <div className="w-full py-2.5 px-4 rounded-xl bg-slate-900 text-white text-xs font-bold text-center flex items-center justify-center gap-2 shadow-sm">
+                    <span>Setujui & Selesaikan Proyek</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
+                  <p className="text-[10px] text-center text-slate-400 mt-2">
+                    Dana baru berpindah ke dompet mahasiswa setelah tombol ini diklik.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
