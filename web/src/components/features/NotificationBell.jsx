@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Bell, Check, X, Clock, AlertCircle } from "lucide-react";
-import { notificationApi } from "../../../api";
 import { notificationApi } from "../../api";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
@@ -30,7 +29,11 @@ export function NotificationBell() {
     try {
       setLoading(true);
       const res = await notificationApi.getMyNotifications({ limit: 15 });
-      const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      const data = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
       setNotifications(data);
     } catch (err) {
       console.warn("Failed fetching notifications:", err);
@@ -94,7 +97,9 @@ export function NotificationBell() {
 
           <div className="max-h-[400px] overflow-y-auto p-2 space-y-1">
             {loading ? (
-              <div className="p-8 text-center text-xs text-muted">Memuat...</div>
+              <div className="p-8 text-center text-xs text-muted">
+                Memuat...
+              </div>
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center text-xs text-muted flex flex-col items-center justify-center">
                 <Bell className="w-6 h-6 text-slate-300 mb-2" />
@@ -116,7 +121,9 @@ export function NotificationBell() {
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className={`text-xs text-dark-900 ${!notif.is_read ? "font-bold" : "font-semibold"}`}>
+                        <h4
+                          className={`text-xs text-dark-900 ${!notif.is_read ? "font-bold" : "font-semibold"}`}
+                        >
                           {notif.judul}
                         </h4>
                         <span className="text-[9px] text-muted flex items-center gap-1 shrink-0 whitespace-nowrap">

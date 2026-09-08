@@ -2,93 +2,218 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi, talentApi } from "../../api";
-import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { SectionHeader } from "../../components/ui/SectionHeader";
 import { CategoryCard } from "../../components/features/CategoryCard";
-import { HowItWorksStep } from "../../components/features/HowItWorksStep";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { TalentCard } from "../../components/features/TalentCard";
 import {
   Search,
-  ShieldCheck,
-  Sparkles,
   ArrowRight,
-  Compass,
-  ShieldCheck,
-  Search,
-  ArrowUpRight,
-  CheckCircle2,
-  Users,
   ChevronDown,
   HelpCircle,
   Briefcase,
   GraduationCap,
   Building2,
-  GraduationCap,
   Lock,
-  PlusCircle,
-  ArrowUpRight,
-  TrendingUp,
-  Award,
-  ChevronDown,
-  HelpCircle,
-  X,
   Star,
-  Zap,
   Layers,
 } from "lucide-react";
 
+// Premium Line-Art Icons (Fiverr Screenshot 1 & 2 Standard, Monochrome, Stroke 1.5px)
+function IconProgramming() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <rect width="20" height="13" x="2" y="3" rx="2" />
+      <path d="M7 21h10M12 16v5M8 9.5l-2 2 2 2M16 9.5l2 2-2 2M13 8.5l-2 6" />
+    </svg>
+  );
+}
+
+function IconGraphics() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <rect width="18" height="18" x="3" y="3" rx="3" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="M21 15l-5-5L5 21" />
+    </svg>
+  );
+}
+
+function IconUIUX() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <rect width="14" height="20" x="5" y="2" rx="2.5" />
+      <path d="M9 6h6M8 11h8M9 15h3" />
+      <circle cx="12" cy="18.5" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+function IconVideo() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <rect width="20" height="15" x="2" y="5" rx="2" />
+      <polygon points="10 9 15 12.5 10 16 10 9" />
+      <path d="M6 5v3M18 5v3M6 16v4M18 16v4" />
+    </svg>
+  );
+}
+
+function IconWriting() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
+
+function IconData() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+    </svg>
+  );
+}
+
+function IconMarketing() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M2 19h20M9 9l3-3 3 3M12 6v8" />
+    </svg>
+  );
+}
+
+function IconPhoto() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </svg>
+  );
+}
+
+function IconConsulting() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <polyline points="16 11 18 13 22 9" />
+    </svg>
+  );
+}
+
+// 4 Pillars Trust Line-Art Icons (Screenshot 2: Fiverr "Make it all happen with freelancers")
+function IconFiverrGrid() {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="14" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="4" y="14" width="6.5" height="6.5" rx="1.5" />
+      <path d="M17.5 14v6.5M14 17.5h6.5" />
+      <rect x="4" y="24" width="6.5" height="2" rx="0.5" />
+      <path d="M25 14v6.5M21.5 17.5h6.5" />
+    </svg>
+  );
+}
+
+function IconFiverrCheckLoop() {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+      <path d="M16 5a11 11 0 1 1-10.5 14.5" />
+      <path d="M5.5 13.5l.5 6 6-.5" />
+      <circle cx="16" cy="16" r="6.5" />
+      <path d="M13.5 16l2 2 3.5-3.5" />
+    </svg>
+  );
+}
+
+function IconFiverrLightning() {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+      <rect x="4" y="4" width="24" height="24" rx="3.5" />
+      <path d="M17 8.5l-6.5 8.5h5.5l-2 6.5 8.5-9.5h-5.5l3-5.5z" />
+    </svg>
+  );
+}
+
+function IconFiverrEscrowPay() {
+  return (
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+      <rect x="4" y="5" width="24" height="18" rx="3" />
+      <path d="M4 19l-1 4 4.5-1.5" />
+      <path d="M12.5 13.5a3.5 3.5 0 0 0 7 0" />
+      <circle cx="12" cy="10" r="1" fill="currentColor" />
+      <circle cx="20" cy="10" r="1" fill="currentColor" />
+      <path d="M16 27v3M13 29h6" />
+    </svg>
+  );
+}
+
 export function LandingPage() {
-  const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const [latestProjects, setLatestProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingTalents, setLoadingTalents] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [loadingTalents, setLoadingTalents] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [activeTab, setActiveTab] = useState("projects");
   const [openFaq, setOpenFaq] = useState(0);
   const [talents, setTalents] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadPublicData() {
+      // Timeout guard 2.5 detik agar UI tidak pernah loading abadi
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 2500)
+      );
+
       try {
         setLoading(true);
-        const res = await projectApi.browse({ limit: 6, status: "OPEN" });
+        const fetchProj = projectApi.browse({ limit: 6, status: "OPEN" });
+        const res = await Promise.race([fetchProj, timeoutPromise]);
         const list = Array.isArray(res?.data)
           ? res.data
           : Array.isArray(res)
             ? res
             : [];
-        setLatestProjects(list);
+        if (isMounted) setLatestProjects(list);
       } catch (err) {
-        setLatestProjects([]);
+        if (isMounted) setLatestProjects([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
 
       try {
         setLoadingTalents(true);
-        const tRes = await talentApi.getTalents({ limit: 4 });
+        const fetchTalents = talentApi.getTalents({ limit: 4 });
+        const tRes = await Promise.race([fetchTalents, timeoutPromise]);
         const tList = Array.isArray(tRes?.data)
           ? tRes.data
           : Array.isArray(tRes)
             ? tRes
             : [];
-        setTalents(tList);
+        if (isMounted) setTalents(tList);
       } catch (tErr) {
-        console.warn("Gagal memuat talenta riil dari API:", tErr);
-        setTalents([]);
+        if (isMounted) setTalents([]);
       } finally {
-        setLoadingTalents(false);
+        if (isMounted) setLoadingTalents(false);
       }
     }
+
     loadPublicData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    navigate(`/projects?keyword=${encodeURIComponent(searchKeyword)}`);
     if (searchKeyword.trim()) {
       navigate(`/projects?keyword=${encodeURIComponent(searchKeyword.trim())}`);
     } else {
@@ -100,13 +225,21 @@ export function LandingPage() {
     navigate(`/projects?keyword=${encodeURIComponent(tag)}`);
   };
 
-  const categories = [
-    { code: "DESIGN", title: "Desain Grafis & Kemasan" },
-    { code: "UIUX", title: "UI/UX & Desain Aplikasi" },
-    { code: "PEMROGRAMAN", title: "Website & Pemrograman" },
-    { code: "VIDEO", title: "Video Reels & Promosi" },
-    { code: "COPYWRITING", title: "Copywriting & Artikel SEO" },
-    { code: "ADMIN_DATA", title: "Admin & Pengolahan Data" },
+  // 9 Kategori Icon Line-Art Minimalis ala Screenshot 1 Fiverr
+  const quickCategories = [
+    { title: "Website & Pemrograman", icon: <IconProgramming />, query: "Website" },
+    { title: "Desain Grafis & Logo", icon: <IconGraphics />, query: "Desain" },
+    { title: "UI/UX & Desain Aplikasi", icon: <IconUIUX />, query: "UI/UX" },
+    { title: "Video Reels & Promosi", icon: <IconVideo />, query: "Video" },
+    { title: "Copywriting & Artikel", icon: <IconWriting />, query: "Copywriting" },
+    { title: "Admin & Data Excel", icon: <IconData />, query: "Data" },
+    { title: "Pemasaran Digital", icon: <IconMarketing />, query: "Marketing" },
+    { title: "Foto & Katalog Produk", icon: <IconPhoto />, query: "Katalog" },
+    { title: "Konsultasi Usaha", icon: <IconConsulting />, query: "Konsultasi" },
+  ];
+
+  // 6 Kategori Showcase dengan Gambar Produk Real (Anti-Slop)
+  const visualCategories = [
     {
       code: "DESIGN",
       title: "Desain Grafis & Kemasan",
@@ -149,13 +282,12 @@ export function LandingPage() {
     return latestProjects.filter((p) => p.kategori === code).length;
   };
 
-  const popularTags = [
-    "Desain Logo",
-    "Landing Page UMKM",
-    "Video TikTok/Reels",
-    "UI/UX Figma",
-    "Katalog Produk",
-    "Input Data Excel",
+  const heroTags = [
+    "Website Development",
+    "Desain Grafis & Logo",
+    "Video TikTok & Reels",
+    "UI/UX Mobile Apps",
+    "Katalog Produk UMKM",
   ];
 
   const faqs = [
@@ -178,192 +310,153 @@ export function LandingPage() {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
-      {/* 1. HERO SECTION */}
-      <section className="bg-dark-900 text-white pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
-        {/* Background Visual Element (Slight ambient gradient) */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-indigo/30 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-cyan/20 rounded-full blur-[100px]" />
-    <div className="space-y-16 sm:space-y-24 pb-20 font-sans text-dark-900 bg-[#FAFAFC]">
-      {/* 1. HERO SECTION - Search-First & High Credibility (Fiverr & Dribbble Benchmark) */}
-      <section className="relative bg-[#0F172A] text-white pt-20 pb-24 sm:pt-28 sm:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden border-b border-slate-800">
-        {/* Ambient Studio Background */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand-indigo/25 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 left-1/3 w-80 h-80 bg-brand-cyan/15 rounded-full blur-3xl" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+    <div className="space-y-16 sm:space-y-24 pb-20 font-sans text-slate-900 bg-white">
+      {/* 1. HERO SECTION - Simple, Bold, Cinematic (Persis Screenshot 3 Fiverr) */}
+      <section className="relative bg-[#0b1324] text-white pt-24 pb-20 sm:pt-32 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Subtle Ambient Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+          <div className="absolute top-0 right-1/4 w-[600px] h-[500px] bg-slate-800/40 rounded-full blur-[140px]" />
+          <div className="absolute bottom-0 left-10 w-[500px] h-[400px] bg-brand-indigo/20 rounded-full blur-[120px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px]" />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10 flex flex-col items-center text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-bold tracking-wider uppercase text-brand-cyan">
-            <ShieldCheck className="w-4 h-4" />
-            Platform Micro-Freelancing Kampus Resmi
-        <div className="max-w-5xl mx-auto relative z-10 text-center space-y-8">
-          {/* Official Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold tracking-wide text-brand-cyan backdrop-blur-md">
-            <ShieldCheck className="w-4 h-4 text-brand-cyan shrink-0" />
-            <span>Platform Micro-Freelancing Kampus Resmi & Terpercaya</span>
-          </div>
-
-          <div className="max-w-4xl space-y-5">
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.05] text-white">
-              Kerjakan Proyek Nyata.<br className="hidden sm:block" /> Bangun Pengalamanmu.
-          {/* Core Value Headline */}
-          <div className="space-y-4 max-w-4xl mx-auto">
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.12] text-white">
-              Solusi Digital Cepat untuk UMKM, <br className="hidden sm:inline" />
-              Dikerjakan Mahasiswa Berbakat.
+        <div className="max-w-6xl mx-auto relative z-10 space-y-7">
+          {/* Headline Sederhana & Kuat ala Fiverr */}
+          <div className="max-w-3xl space-y-4">
+            <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight text-white leading-[1.1]">
+              Serahkan kebutuhan digital bisnismu pada mahasiswa bertalenta.
             </h1>
-            <p className="text-sm sm:text-lg text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed">
-              Makarya menghubungkan mahasiswa berbakat dengan UMKM yang membutuhkan solusi digital. Aman dengan rekening bersama, dan jadikan setiap proyek sebagai langkah awal karirmu.
-            <p className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-              Temukan talenta terverifikasi dari kampus ternama untuk desain grafis, website, video, hingga data. Aman dengan sistem Escrow.
+            <p className="text-base sm:text-lg text-slate-300 font-normal">
+              Dari desain logo, kemasan, website, video reels hingga data, temukan mahasiswa terverifikasi kampus dengan transaksi aman Rekening Bersama.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full max-w-md mx-auto">
-            <Link to="/projects" className="w-full sm:w-auto">
-              <Button
-                variant="brand"
-                size="lg"
-                className="w-full sm:w-auto text-sm font-bold shadow-brand justify-center rounded-full"
-              >
-                Mulai Cari Proyek
-              </Button>
-            </Link>
-          {/* Search-First Bar */}
+          {/* Search Bar Rapi & Kotak Submit Gelap (Persis Screenshot 3 Fiverr) */}
           <form
             onSubmit={handleSearchSubmit}
-            className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-2 p-2 bg-white rounded-2xl shadow-2xl border border-slate-200"
+            className="w-full max-w-3xl bg-white rounded-xl shadow-2xl p-1.5 flex items-center gap-2 border border-slate-200"
           >
-            <div className="flex items-center gap-3 px-3 py-2 sm:py-0 w-full">
-              <Search className="w-5 h-5 text-slate-400 shrink-0" />
-              <input
-                type="text"
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                placeholder="Cari keahlian: logo, website, video reels, UI/UX..."
-                className="w-full bg-transparent border-none text-slate-900 placeholder:text-slate-400 text-sm sm:text-base focus:outline-none focus:ring-0"
-              />
-            </div>
-            <Button
+            <input
+              type="text"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              placeholder="Apa layanan yang sedang Anda butuhkan hari ini?"
+              className="w-full px-4 py-3 bg-transparent border-none text-slate-900 placeholder:text-slate-400 text-sm sm:text-base focus:outline-none focus:ring-0 font-normal"
+            />
+            <button
               type="submit"
-              variant="brand"
-              size="lg"
-              className="w-full sm:w-auto px-7 py-3 rounded-xl font-bold text-sm shrink-0 shadow-brand hover:brightness-105"
+              className="w-12 h-12 rounded-lg bg-[#222325] hover:bg-black text-white flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+              title="Cari Layanan"
             >
-              Cari Solusi
-            </Button>
+              <Search className="w-5 h-5" />
+            </button>
           </form>
 
-            <Link to="/login" className="w-full sm:w-auto">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="w-full sm:w-auto text-sm font-bold justify-center rounded-full bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-none"
-          {/* Popular Tag Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400 pt-1">
-            <span className="font-medium text-slate-400">Paling dicari:</span>
-            {popularTags.map((tag) => (
+          {/* Quick Filter Tag Pills dengan tanda Panah (Persis Screenshot 3 Fiverr) */}
+          <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs">
+            {heroTags.map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => handleTagClick(tag)}
-                className="px-3 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer text-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-slate-200 hover:text-white transition-colors cursor-pointer text-xs font-medium backdrop-blur-xs"
               >
-                Butuh Freelancer UMKM?
-              </Button>
-            </Link>
-                {tag}
+                <span>{tag}</span>
+                <span className="text-slate-400 font-sans">→</span>
               </button>
             ))}
           </div>
 
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-semibold text-slate-400">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Proyek Terstruktur
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Pembayaran Escrow Aman
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Khusus Kampus & UMKM
-            </span>
-          {/* 3 Pillars Trust Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 max-w-3xl mx-auto border-t border-slate-800/80">
-            <div className="flex items-center justify-center sm:justify-start gap-2.5 text-xs text-slate-300 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Escrow 100% (Dana Terproteksi)</span>
-            </div>
-            <div className="flex items-center justify-center gap-2.5 text-xs text-slate-300 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-brand-cyan shrink-0" />
-              <span>Mahasiswa Terverifikasi Kampus</span>
-            </div>
-            <div className="flex items-center justify-center sm:justify-end gap-2.5 text-xs text-slate-300 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>0% Potongan Komisi Freelancer</span>
-            </div>
+          {/* Trusted By Bar Monokrom (Persis Bar Meta Google Netflix di Fiverr) */}
+          <div className="pt-10 border-t border-slate-800/80 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs text-slate-400">
+            <span className="font-semibold text-slate-400">Dipercaya talenta dari:</span>
+            <span className="font-bold tracking-wider text-slate-300">UNIVERSITAS INDONESIA</span>
+            <span className="font-bold tracking-wider text-slate-300">ITB</span>
+            <span className="font-bold tracking-wider text-slate-300">UNIVERSITAS GADJAH MADA</span>
+            <span className="font-bold tracking-wider text-slate-300">UNDIP</span>
+            <span className="font-bold tracking-wider text-slate-300">UNAIR</span>
+            <span className="font-bold tracking-wider text-slate-300">ITS SURABAYA</span>
           </div>
         </div>
       </section>
 
-      {/* 2. STATS & SOCIAL PROOF */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
-        <div className="bg-surface rounded-3xl border border-border shadow-float p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 text-center divide-y sm:divide-y-0 sm:divide-x divide-border">
-          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
-            <span className="text-3xl sm:text-4xl font-extrabold text-dark-900 tracking-tight">500+</span>
-            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">Mahasiswa Terverifikasi</span>
-      {/* 2. STATS BAR COUNTER */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
-        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-          <div className="pt-2 sm:pt-0">
-            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">500+</div>
-            <div className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Mahasiswa Terverifikasi</div>
-          </div>
-          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
-            <span className="text-3xl sm:text-4xl font-extrabold text-brand-indigo tracking-tight">250+</span>
-            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">Proyek Terselesaikan</span>
-          <div className="pt-2 sm:pt-0">
-            <div className="text-3xl sm:text-4xl font-extrabold text-brand-indigo tracking-tight">250+</div>
-            <div className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Proyek Selesai</div>
-          </div>
-          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
-            <span className="text-3xl sm:text-4xl font-extrabold text-dark-900 tracking-tight">100+</span>
-            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">UMKM Terbantu</span>
-          <div className="pt-2 sm:pt-0">
-            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">100+</div>
-            <div className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Mitra UMKM Aktif</div>
-          </div>
-          <div className="pt-2 sm:pt-0">
-            <div className="text-3xl sm:text-4xl font-extrabold text-emerald-600 tracking-tight">100%</div>
-            <div className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Jaminan Dana Aman</div>
-          </div>
+      {/* 2. CATEGORY TILES DENGAN IKON LINE-ART FIVERR (Persis Screenshot 1 Fiverr) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3 sm:gap-4">
+          {quickCategories.map((cat, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => handleTagClick(cat.query)}
+              className="bg-white border border-slate-200/90 hover:border-slate-400 rounded-2xl p-4 flex flex-col justify-between items-start text-left gap-6 hover:shadow-md transition-all group cursor-pointer"
+            >
+              <div className="p-1 text-slate-900 group-hover:scale-105 transition-transform duration-200">
+                {cat.icon}
+              </div>
+              <span className="text-xs font-bold text-slate-800 leading-tight group-hover:text-brand-indigo transition-colors line-clamp-2">
+                {cat.title}
+              </span>
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* 3. PROBLEM & SOLUTION SECTION (2 Columns) */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24 pt-10">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight">
-            Mencari pengalaman tidak harus menunggu lulus.
+      {/* 3. FOUR PILLARS TRUST GRID (Persis Screenshot 2 Fiverr: "Make it all happen with freelancers") */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="border-b border-slate-200 pb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-10">
+            Semua kebutuhan usaha tuntas bersama mahasiswa bertalenta
           </h2>
-          <p className="text-muted text-base sm:text-lg">
-            Makarya mempertemukan talenta muda yang butuh portofolio dengan pelaku usaha mikro yang butuh solusi digital terjangkau.
-          </p>
-      {/* 3. VISUAL CATEGORIES SHOWCASE (Dribbble & Fiverr Gallery Standard) */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Pillar 1 */}
+            <div className="space-y-4">
+              <IconFiverrGrid />
+              <p className="text-sm font-medium text-slate-700 leading-snug">
+                Akses ratusan talenta terverifikasi kampus dari berbagai program studi unggulan.
+              </p>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="space-y-4">
+              <IconFiverrCheckLoop />
+              <p className="text-sm font-medium text-slate-700 leading-snug">
+                Alur kerja praktis: buat brief kebutuhan, tinjau proposal, dan pilih yang paling cocok.
+              </p>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="space-y-4">
+              <IconFiverrLightning />
+              <p className="text-sm font-medium text-slate-700 leading-snug">
+                Pengerjaan cepat dan berkualitas tinggi, tetap terjangkau dan tepat waktu.
+              </p>
+            </div>
+
+            {/* Pillar 4 */}
+            <div className="space-y-4">
+              <IconFiverrEscrowPay />
+              <p className="text-sm font-medium text-slate-700 leading-snug">
+                Bayar hanya saat Anda 100% puas: dana aman di rekening bersama Makarya.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. VISUAL CATEGORIES SHOWCASE DENGAN FOTO PRODUK REAL (Dribbble & Fiverr Standards) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-indigo mb-2">
               <Layers className="w-4 h-4" />
-              Katalog Layanan Unggulan
+              Katalog Layanan Digital
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Eksplorasi Layanan Digital Terpopuler
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              Eksplorasi Karya & Jasa Terpopuler
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Pilih spesialisasi yang sesuai dengan kebutuhan peningkatan bisnis Anda.
+              Pratinjau portofolio riil mahasiswa yang siap mengerjakan kebutuhan bisnis Anda.
             </p>
           </div>
           <Link
@@ -375,14 +468,8 @@ export function LandingPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {/* MHS Box */}
-          <div className="bg-canvas border border-border rounded-3xl p-8 sm:p-10 space-y-6 shadow-xs relative overflow-hidden">
-            <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-indigo/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="w-12 h-12 rounded-2xl bg-white border border-border shadow-xs flex items-center justify-center text-dark-900 mb-6">
-              <GraduationCap className="w-6 h-6" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => (
+          {visualCategories.map((cat) => (
             <CategoryCard
               key={cat.code}
               category={cat}
@@ -394,53 +481,32 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 4. INTERACTIVE SHOWCASE TABS (Live Projects vs Talent Directory) */}
+      {/* 5. SHOWCASE PROYEK TERBUKA & DIREKTORI TALENTA (Langsung Muat Data, Anti-Loading Hang) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-sm space-y-8">
+        <div className="bg-slate-50/70 rounded-3xl p-6 sm:p-10 border border-slate-200/80 space-y-8">
           {/* Header with Switcher Tabs */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                 Peluang Nyata & Talenta Terpilih
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Jelajahi tawaran kerja yang sedang buka atau temukan mahasiswa berbakat untuk bisnis Anda.
+                Jelajahi pekerjaan aktif dari UMKM atau rekrut langsung mahasiswa berprestasi.
               </p>
             </div>
-            <h3 className="text-2xl font-bold text-dark-900">Mahasiswa kesulitan...</h3>
-            <ul className="space-y-4 text-sm text-slate-600">
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                <span>Mendapatkan pengalaman kerja nyata yang dibayar adil.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                <span>Mencari proyek freelance yang aman tanpa takut penipuan.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                <span>Membangun portofolio riil sebelum wisuda.</span>
-              </li>
-            </ul>
-          </div>
 
-          {/* UMKM Box */}
-          <div className="bg-dark-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xs relative overflow-hidden">
-             <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mb-6">
-              <Building2 className="w-6 h-6" />
             {/* Pill Switcher */}
-            <div className="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80 self-start md:self-auto">
+            <div className="inline-flex p-1 rounded-xl bg-white border border-slate-200 shadow-xs self-start md:self-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab("projects")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   activeTab === "projects"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-[#222325] text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Briefcase className="w-4 h-4 text-brand-indigo" />
+                <Briefcase className="w-4 h-4" />
                 <span>Proyek Terbuka ({latestProjects.length})</span>
               </button>
               <button
@@ -448,45 +514,16 @@ export function LandingPage() {
                 onClick={() => setActiveTab("talents")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   activeTab === "talents"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-[#222325] text-white shadow-xs"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Star className="w-4 h-4 text-amber-500" />
+                <Star className="w-4 h-4" />
                 <span>Direktori Talenta ({talents.length})</span>
               </button>
             </div>
-            <h3 className="text-2xl font-bold text-white">UMKM kesulitan...</h3>
-            <ul className="space-y-4 text-sm text-slate-300">
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <span>Menyewa agency digital profesional karena budget terbatas.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <span>Menemukan freelancer mandiri yang terpercaya dan terverifikasi.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <span>Mendeskripsikan kebutuhan digital (logo, web, admin) dengan tepat.</span>
-              </li>
-            </ul>
           </div>
-        </div>
-      </section>
 
-      {/* 4. HOW IT WORKS (Minimalist Timeline) */}
-      <section
-        id="cara-kerja"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24 pt-10"
-      >
-        <div className="bg-surface border border-border rounded-3xl p-8 sm:p-12 shadow-xs space-y-12">
-          <SectionHeader
-            centered
-            badgeText="Alur Transaksi Tanpa Cemas"
-            title="Bagaimana Makarya Melindungi UMKM & Mahasiswa?"
-            subtitle="Sistem rekening bersama otomatis menjamin keamanan dana klien dan kepastian pembayaran honor bagi mahasiswa."
-          />
           {/* Tab Content: Projects */}
           {activeTab === "projects" && (
             <div className="space-y-6">
@@ -495,7 +532,7 @@ export function LandingPage() {
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="h-56 bg-slate-50 border border-slate-100 rounded-2xl animate-pulse"
+                      className="h-56 bg-white border border-slate-200 rounded-2xl animate-pulse"
                     />
                   ))}
                 </div>
@@ -506,9 +543,9 @@ export function LandingPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 px-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200">
+                <div className="text-center py-12 px-4 rounded-2xl bg-white border border-dashed border-slate-300">
                   <Briefcase className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <p className="text-sm font-semibold text-slate-700">Belum ada proyek terbuka saat ini</p>
+                  <p className="text-sm font-bold text-slate-800">Belum ada proyek terbuka saat ini</p>
                   <p className="text-xs text-slate-500 mt-1">Jadilah yang pertama memasang kebutuhan pekerjaan digital.</p>
                   <Link to="/login" className="inline-block mt-4">
                     <Button variant="brand" size="sm">Pasang Proyek Pertama</Button>
@@ -516,30 +553,9 @@ export function LandingPage() {
                 </div>
               )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <HowItWorksStep
-              stepNumber={1}
-              iconName="escrow"
-              isHighlight={true}
-              title="Pasang Brief & Kunci Dana"
-              description="Klien UMKM menentukan kebutuhan dan anggaran. Saat proposal mahasiswa disetujui, dana otomatis diamankan di rekening penampung resmi Makarya."
-            />
-            <HowItWorksStep
-              stepNumber={2}
-              iconName="work"
-              title="Mahasiswa Mengerjakan Karya"
-              description="Mahasiswa mengerjakan pesanan dengan tenang karena honor sudah terjamin di awal, sesuai batas waktu dan instruksi brief."
-            />
-            <HowItWorksStep
-              stepNumber={3}
-              iconName="complete"
-              title="Periksa Hasil & Cairkan Honor"
-              description="Klien menerima dan memeriksa berkas pengerjaan. Setelah disetujui, dana langsung dicairkan utuh ke dompet saldo mahasiswa."
-            />
-          </div>
-              <div className="text-center pt-4">
+              <div className="text-center pt-2">
                 <Link to="/projects">
-                  <Button variant="outline" size="md" className="font-bold">
+                  <Button variant="outline" size="md" className="font-bold border-slate-300 hover:border-slate-400">
                     <span>Lihat Semua Proyek Terbuka</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -556,7 +572,7 @@ export function LandingPage() {
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
-                      className="h-64 bg-slate-50 border border-slate-100 rounded-2xl animate-pulse"
+                      className="h-64 bg-white border border-slate-200 rounded-2xl animate-pulse"
                     />
                   ))}
                 </div>
@@ -567,9 +583,9 @@ export function LandingPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 px-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200">
+                <div className="text-center py-12 px-4 rounded-2xl bg-white border border-dashed border-slate-300">
                   <GraduationCap className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <p className="text-sm font-semibold text-slate-700">Mahasiswa sedang mempersiapkan portofolio</p>
+                  <p className="text-sm font-bold text-slate-800">Mahasiswa sedang mempersiapkan portofolio</p>
                   <p className="text-xs text-slate-500 mt-1">Daftarkan dirimu sebagai talenta terverifikasi kampus sekarang.</p>
                   <Link to="/register" className="inline-block mt-4">
                     <Button variant="brand" size="sm">Daftar Jadi Freelancer</Button>
@@ -577,9 +593,9 @@ export function LandingPage() {
                 </div>
               )}
 
-              <div className="text-center pt-4">
+              <div className="text-center pt-2">
                 <Link to="/talents">
-                  <Button variant="outline" size="md" className="font-bold">
+                  <Button variant="outline" size="md" className="font-bold border-slate-300 hover:border-slate-400">
                     <span>Jelajahi Seluruh Direktori Talenta</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -590,222 +606,85 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 5. LATEST LIVE PROJECTS PREVIEW */}
-      <section
-        id="proyek"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
-      >
-        <SectionHeader
-          badgeText="Peluang Terbaru"
-          title="Proyek UMKM Siap Dikerjakan"
-          subtitle="Tinjau kebutuhan digital terbaru dari pemilik usaha lokal dan ajukan penawaran terbaik Anda."
-          action={
-            <Link to="/projects">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs font-bold rounded-full border-slate-300"
-              >
-                Lihat Semua Proyek
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </Button>
-            </Link>
-          }
-        />
-
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="h-64 bg-surface rounded-card border border-border animate-pulse"
-              />
-            ))}
-      {/* 5. ESCROW STANDARD - Solid Security Architecture (Anti-Slop, No Whining Box) */}
+      {/* 6. ESCROW GUARANTEE SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl p-8 sm:p-14 border border-slate-700 relative overflow-hidden">
-          <div className="max-w-3xl space-y-4 relative z-10 mb-12">
+        <div className="bg-[#0F172A] text-white rounded-3xl p-8 sm:p-14 border border-slate-800 relative overflow-hidden">
+          <div className="max-w-3xl space-y-3 mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
               <Lock className="w-3.5 h-3.5" />
               Sistem Escrow Terlindungi
             </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Standar Transaksi Aman Tanpa Rasa Khawatir
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+              Standar Transaksi Aman Tanpa Cemas
             </h2>
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-              Kami memutus rantai penipuan freelancer dan keterlambatan bayar dengan sistem Rekening Bersama resmi Makarya.
+            <p className="text-sm text-slate-300 font-normal leading-relaxed">
+              Memutus risiko penipuan dan wanprestasi dengan jaminan Rekening Bersama resmi Makarya.
             </p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestProjects.slice(0, 6).map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        )}
-      </section>
 
-      {/* 6. TALENT SHOWCASE */}
-      <section
-        id="talenta"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
-      >
-        <SectionHeader
-          badgeText="Talenta Kampus Teruji"
-          title="Mahasiswa Berprestasi & Terverifikasi"
-          subtitle="Profil talenta muda dengan rekam jejak deliverable memuaskan dan portofolio karya nyata."
-        />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-            {/* Step 1 */}
-            <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/80 rounded-2xl p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-indigo/20 border border-brand-indigo/40 flex items-center justify-center font-extrabold text-brand-cyan text-sm">
-                01
-              </div>
-              <h3 className="text-lg font-bold text-white">UMKM Deposit Dana ke Escrow</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Sebelum mahasiswa mulai bekerja, UMKM menyetor nilai kontrak ke rekening bersama Makarya. Mahasiswa tenang karena dana sudah pasti ada.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
+              <div className="text-xs font-bold text-brand-cyan tracking-wider uppercase">Langkah 01</div>
+              <h3 className="text-base font-bold text-white">UMKM Deposit Dana ke Escrow</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Sebelum mahasiswa mulai bekerja, nilai kontrak disetor ke rekening escrow Makarya. Mahasiswa tenang karena dana sudah terjamin.
               </p>
             </div>
 
-        {loadingTalents ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((n) => (
-              <div
-                key={n}
-                className="h-56 bg-surface rounded-2xl border border-border animate-pulse"
-              />
-            ))}
-            {/* Step 2 */}
-            <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/80 rounded-2xl p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-brand-cyan/20 border border-brand-cyan/40 flex items-center justify-center font-extrabold text-brand-cyan text-sm">
-                02
-              </div>
-              <h3 className="text-lg font-bold text-white">Pengerjaan & Progres Transparan</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Mahasiswa mengunggah draft berkala di workspace Makarya. UMKM dapat mereview revisi dan memberi masukan secara langsung.
+            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
+              <div className="text-xs font-bold text-brand-cyan tracking-wider uppercase">Langkah 02</div>
+              <h3 className="text-base font-bold text-white">Pengerjaan & Progres Transparan</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Mahasiswa mengunggah progres berkala di ruang kerja digital. UMKM dapat meninjau revisi dan memberi masukan langsung.
               </p>
             </div>
 
-            {/* Step 3 */}
-            <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/80 rounded-2xl p-6 space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-extrabold text-emerald-400 text-sm">
-                03
-              </div>
-              <h3 className="text-lg font-bold text-white">Puas Baru Cair 100% Utuh</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Setelah hasil akhir disetujui, dana langsung dicairkan ke rekening mahasiswa secara penuh tanpa pemotongan komisi platform.
+            <div className="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 space-y-3">
+              <div className="text-xs font-bold text-emerald-400 tracking-wider uppercase">Langkah 03</div>
+              <h3 className="text-base font-bold text-white">Puas Baru Cair 100% Utuh</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Setelah hasil akhir disetujui, dana langsung dicairkan ke saldo mahasiswa secara utuh tanpa potongan komisi platform.
               </p>
             </div>
           </div>
-        ) : talents.length === 0 ? (
-          <div className="text-center py-12 bg-surface rounded-2xl border border-border">
-            <p className="text-sm font-semibold text-muted">
-              Belum ada data talenta yang dimuat saat ini.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {talents.map((talent, idx) => (
-              <TalentCard
-                key={talent.id || idx}
-                name={talent.nama_lengkap}
-                prodi={talent.prodi}
-                rating={Number(talent.rating_avg) || 5.0}
-                totalJobs={talent.total_proyek_selesai || 0}
-                skills={talent.skills || []}
-                avatarUrl={talent.url_foto}
-              />
-            ))}
-          </div>
-        )}
-
-        <div className="mt-8 text-center">
-          <Link to="/talents">
-            <Button
-              variant="outline"
-              size="md"
-              className="rounded-full text-xs font-bold gap-2 hover:bg-dark-900 hover:text-white transition-all shadow-xs"
-            >
-              <span>Jelajah Seluruh Direktori Talenta Berprestasi</span>
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
         </div>
       </section>
 
-      {/* 6. PERTANYAAN UMUM (FAQ) */}
-      <section
-        id="faq"
-        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 scroll-mt-24"
-      >
-        <SectionHeader
-          centered
-          badgeText="Pusat Informasi & Bantuan"
-          title="Pertanyaan yang Sering Diajukan"
-          subtitle="Pelajari bagaimana sistem rekening bersama (Escrow) dan standar mutu Makarya melindungi Anda."
-        />
-      {/* 6. FAQ ACCORDION */}
+      {/* 7. FAQ ACCORDION */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Pertanyaan yang Sering Diajukan
           </h2>
           <p className="text-sm text-slate-500">
-            Hal mendasar mengenai alur kerja, keamanan transaksi, dan kebijakan platform.
+            Hal mendasar mengenai alur kerja, keamanan transaksi, dan perlindungan pengguna.
           </p>
         </div>
 
         <div className="space-y-3">
-          {[
-            {
-              q: "Bagaimana sistem Escrow Makarya melindungi dana UMKM?",
-              a: "Saat Anda menyetujui proposal mahasiswa, dana proyek otomatis dikunci di rekening bersama resmi Makarya. Dana TIDAK akan ditransfer ke mahasiswa sampai Anda memeriksa hasil kerja deliverable dan menekan tombol 'Setujui & Selesaikan'.",
-            },
-            {
-              q: "Bagaimana jika hasil kerja mahasiswa tidak sesuai dengan kesepakatan?",
-              a: "Anda berhak meminta revisi resmi melalui sistem. Jika mahasiswa tetap gagal memenuhi kesepakatan brief, Anda dapat mengajukan mediasi sengketa ke Administrator Makarya untuk pengembalian dana (refund) secara proporsional.",
-            },
-            {
-              q: "Apakah seluruh mahasiswa yang terdaftar terverifikasi resmi?",
-              a: "Ya. Setiap mahasiswa wajib melalui proses validasi identitas kampus (KYC) menggunakan alamat email institusi berdomain .ac.id, Nomor Induk Mahasiswa (NIM) aktif, dan Program Studi terkait.",
-            },
-            {
-              q: "Apakah ada potongan biaya komisi bagi mahasiswa?",
-              a: "0% Potongan Komisi. Makarya berkomitmen penuh memberdayakan talenta muda, sehingga 100% honor yang disepakati akan diterima utuh oleh mahasiswa tanpa biaya perantara.",
-            },
-            {
-              q: "Berapa batas pagu anggaran untuk proyek di Makarya?",
-              a: "Maksimal Rp 2.000.000 per proyek. Batasan ini ditetapkan untuk memastikan proyek tetap dalam ruang lingkup micro-freelancing yang adil dan terjangkau bagi pelaku UMKM.",
-            },
-          ].map((faq, idx) => {
           {faqs.map((faq, idx) => {
             const isOpen = openFaq === idx;
             return (
               <div
                 key={idx}
-                className="bg-surface rounded-2xl border border-border overflow-hidden transition-all duration-200"
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-200 shadow-sm"
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-200 shadow-xs"
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-canvas/50 transition-colors"
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/80 transition-colors"
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50 transition-colors"
                 >
-                  <span className="text-sm font-bold text-dark-900 flex items-center gap-2.5">
                   <span className="text-sm font-bold text-slate-900 flex items-center gap-2.5">
                     <HelpCircle className="w-4 h-4 text-brand-indigo shrink-0" />
                     {faq.q}
                   </span>
                   <ChevronDown
-                    className={`w-4 h-4 text-muted transition-transform duration-200 shrink-0 ${
                     className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${
                       isOpen ? "rotate-180 text-brand-indigo" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-xs text-muted leading-relaxed border-t border-border/50 bg-canvas/30 animate-in fade-in">
                   <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50">
                     {faq.a}
                   </div>
@@ -816,29 +695,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 7. PRE-FOOTER DUAL CTA CARDS */}
-      {/* 7. PRE-FOOTER DUAL ACTION BENTO GRID */}
+      {/* 8. PRE-FOOTER DUAL ACTION BENTO GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* UMKM Card */}
-          <div className="bg-brand-indigo text-white p-6 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 shadow-brand">
-            <div className="space-y-3 relative z-10">
           <div className="bg-brand-indigo text-white p-8 sm:p-12 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-8 shadow-brand">
             <div className="space-y-4 relative z-10">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold uppercase tracking-wider">
-                Untuk Pelaku Usaha UMKM
                 <Building2 className="w-3.5 h-3.5" />
                 Untuk Pemilik Usaha / UMKM
               </span>
-              <h3 className="text-xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
-                Tingkatkan Citra Usaha Anda Tanpa Biaya Mahal Agency.
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
                 Tingkatkan Citra Bisnis Anda Tanpa Beban Biaya Agency.
               </h3>
               <p className="text-xs sm:text-sm text-indigo-100 leading-relaxed font-normal">
-                Dapatkan logo, kemasan produk, website responsif, atau video
-                promosi dari mahasiswa kreatif dengan harga terjangkau dan
-                jaminan dana aman 100%.
                 Dapatkan logo profesional, kemasan produk menawan, website responsif, atau konten video reels dari talenta muda kreatif dengan jaminan perlindungan dana 100%.
               </p>
             </div>
@@ -847,7 +717,6 @@ export function LandingPage() {
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-white hover:bg-slate-100 text-dark-900 border-0 shadow-lg justify-center"
                   className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-white hover:bg-slate-100 text-slate-900 border-0 shadow-lg justify-center rounded-xl"
                 >
                   <span>Pasang Kebutuhan Proyek</span>
@@ -858,23 +727,16 @@ export function LandingPage() {
           </div>
 
           {/* Mahasiswa Card */}
-          <div className="bg-dark-900 text-white p-6 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 border border-slate-800 shadow-sm">
-            <div className="space-y-3 relative z-10">
-          <div className="bg-slate-900 text-white p-8 sm:p-12 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-8 border border-slate-800 shadow-sm">
+          <div className="bg-[#0b1324] text-white p-8 sm:p-12 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-8 border border-slate-800 shadow-sm">
             <div className="space-y-4 relative z-10">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold uppercase tracking-wider border border-white/10">
                 <GraduationCap className="w-3.5 h-3.5" />
                 Untuk Mahasiswa Bertalenta
               </span>
-              <h3 className="text-xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
-                Ubah Keterampilan Kampus Menjadi Penghasilan & Portofolio.
-              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
+              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
                 Ubah Kemampuan Kampus Menjadi Penghasilan & Portofolio Nyata.
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Bantu UMKM lokal bertumbuh, dapatkan bayaran utuh tanpa potongan
-                komisi, dan otomatis miliki portofolio profesional untuk melamar
-                kerja.
                 Bantu UMKM lokal berkembang, dapatkan penghasilan utuh tanpa potongan komisi, dan otomatis miliki portofolio terverifikasi untuk melamar karir profesional.
               </p>
             </div>
@@ -883,10 +745,8 @@ export function LandingPage() {
                 <Button
                   variant="brand"
                   size="lg"
-                  className="w-full sm:w-auto font-bold text-xs sm:text-sm shadow-brand justify-center"
                   className="w-full sm:w-auto font-bold text-xs sm:text-sm shadow-brand justify-center rounded-xl"
                 >
-                  <span>Daftar Akun Mahasiswa</span>
                   <span>Daftar Sebagai Freelancer</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
