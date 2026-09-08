@@ -156,215 +156,192 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-between">
-      {/* 1. TOP CURVED HERO IMAGE & BRAND FRAME */}
-      <div className="relative w-full bg-dark-900 text-white pt-10 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden rounded-b-[36px] sm:rounded-b-[56px] border-b border-border shadow-md">
-        {/* Background Ambient Glow & Visual */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
-          <img
-            src="/images/login_hero.jpg"
-            alt="Makarya Hero"
-            className="w-full h-full object-cover"
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-[calc(100vh-5rem)] flex items-center justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch w-full max-w-5xl">
+        {/* Left Column: Visual Artwork & Social Proof Banner */}
+        <div className="lg:col-span-6 flex">
+          <AuthArtwork
+            headline="Kembangkan Karir Freelance Nyata Sejak Masa Kuliah."
+            subtext="Makarya menghubungkan keahlian digital mahasiswa dengan ribuan UMKM yang siap membayar secara adil dan aman."
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-dark-900/40 via-dark-900/75 to-dark-900" />
         </div>
 
-        <div className="max-w-xl mx-auto relative z-10 text-center space-y-3.5">
-          <Link to="/" className="inline-block group">
-            <img
-              src="/logo.webp"
-              alt="Logo Makarya"
-              className="h-10 sm:h-12 w-auto object-contain mx-auto transition-transform group-hover:scale-105 brightness-0 invert"
-            />
-          </Link>
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold border border-white/15">
-            <ShieldCheck className="w-3.5 h-3.5 text-brand-cyan" />
-            <span>Platform Kolaborasi Kampus & UMKM Terverifikasi</span>
+        {/* Right Column: Clean Form Container */}
+        <div className="lg:col-span-6 flex flex-col justify-center space-y-6">
+          <div className="text-left space-y-2">
+            <Link to="/" className="inline-block">
+              <img
+                src="/logo.webp"
+                alt="Logo Makarya"
+                className="h-14 sm:h-16 w-auto object-contain mb-3"
+              />
+            </Link>
+            <h1 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight">
+              Masuk ke Akun Anda
+            </h1>
+            <p className="text-xs sm:text-sm text-muted font-sans font-normal">
+              Akses dashboard proyek, proposal, dan dompet pencairan dana escrow
+            </p>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-            Masuk ke Akun Anda
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-md mx-auto leading-relaxed">
-            Akses dashboard proyek, pantau proposal kerja, dan kelola saldo
-            rekening bersama escrow aman.
-          </p>
-        </div>
-      </div>
-
-      {/* 2. ELEVATED BOTTOM SHEET FORM CARD (Overlapping Hero) */}
-      <div className="max-w-xl w-full mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-20 pb-12">
-        {/* Form Card */}
-        <Card className="p-6 sm:p-8 bg-surface rounded-3xl border border-border shadow-float space-y-5">
-          {/* Quick Fill Test Accounts Bar (Flat & Minimalist inside card) */}
-          <div className="space-y-2 pb-4 border-b border-border/70">
+          {/* Quick Fill Test Accounts Chips */}
+          <div className="p-3.5 bg-canvas border border-border rounded-2xl space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-700 flex items-center gap-1.5 font-sans">
+              <span className="font-bold text-dark-900 flex items-center gap-1.5 font-sans">
                 <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
-                Akses Uji Coba Cepat:
+                Pilih Akun Uji Coba Cepat:
               </span>
-              <span className="text-[11px] text-muted font-mono">
-                Sandi: password123
+              <span className="text-[10px] text-muted">
+                Password: password123
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => fillTestAccount("darell@ubsi.ac.id")}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
-                  email === "darell@ubsi.ac.id"
-                    ? "bg-brand-indigo text-white border-brand-indigo shadow-xs"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-                }`}
+                className="px-2.5 py-1 rounded-full bg-surface hover:bg-brand-indigo hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
               >
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span className="truncate">Mahasiswa</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
-                  email === "kopi.nusantara@gmail.com"
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-                }`}
-              >
-                <UserCheck className="w-3.5 h-3.5" />
-                <span className="truncate">Klien UMKM</span>
+                <GraduationCap className="w-3 h-3 text-brand-indigo" />
+                Mahasiswa (Darell)
               </button>
               <button
                 type="button"
                 onClick={() => fillTestAccount("admin@makarya.id")}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
-                  email === "admin@makarya.id"
-                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                    : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
-                }`}
+                className="px-2.5 py-1 rounded-full bg-surface hover:bg-dark-900 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
-                <span className="truncate">Admin</span>
+                <ShieldCheck className="w-3 h-3 text-rose-600" />
+                Admin Platform
+              </button>
+              <button
+                type="button"
+                onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
+                className="px-2.5 py-1 rounded-full bg-surface hover:bg-emerald-700 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
+              >
+                <UserCheck className="w-3 h-3 text-emerald-600" />
+                Klien UMKM (Kopi)
               </button>
             </div>
           </div>
 
-          {/* Google OAuth Direct Button */}
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-surface hover:bg-slate-50 text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer"
-          >
-            <GoogleVectorIcon size={18} />
-            <span>Masuk dengan Akun Google</span>
-          </button>
+          <Card className="p-6 sm:p-7 shadow-xs">
+            {/* Google OAuth Direct Button */}
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4"
+            >
+              <GoogleVectorIcon size={18} />
+              <span>Masuk dengan Google (Tanpa Verifikasi OTP)</span>
+            </button>
 
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-surface px-3 text-muted font-medium">
-                Atau masuk dengan email
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            {error && (
-              <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
-                {error}
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
               </div>
-            )}
-
-            <div className="space-y-1.5 text-left">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider font-sans">
-                Email Akun / Kampus
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  placeholder="Contoh: darell@ubsi.ac.id"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/15 rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none transition-all font-sans"
-                />
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-surface px-2 text-muted font-semibold">
+                  Atau masuk dengan email
+                </span>
               </div>
             </div>
 
-            <div className="space-y-1.5 text-left">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider font-sans">
-                  Password
+            <form onSubmit={handleLogin} className="space-y-4">
+              {error && (
+                <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
+                  Email Akun / Kampus
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setForgotEmail(email);
-                    setForgotStep(1);
-                    setForgotError(null);
-                    setForgotModalOpen(true);
-                  }}
-                  className="text-xs text-brand-indigo hover:underline font-semibold"
-                >
-                  Lupa Password?
-                </button>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    placeholder="nama@kampus.ac.id atau email UMKM"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all font-sans"
+                  />
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Masukkan kata sandi akun Anda"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 focus:bg-white border border-slate-200 focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/15 rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none transition-all font-sans"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+
+              <div className="space-y-1.5 text-left">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(email);
+                      setForgotStep(1);
+                      setForgotError(null);
+                      setForgotModalOpen(true);
+                    }}
+                    className="text-xs text-brand-indigo hover:underline font-semibold"
+                  >
+                    Lupa Password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full pl-10 pr-10 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all font-sans"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              <Button
+                variant="brand"
+                size="lg"
+                type="submit"
+                loading={loading}
+                className="w-full text-sm font-bold shadow-brand mt-2 justify-center"
+              >
+                <span>Masuk Sekarang</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+            </form>
+
+            <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
+              Belum memiliki akun mahasiswa?{" "}
+              <Link
+                to="/register"
+                className="font-bold text-brand-indigo hover:underline"
+              >
+                Daftar Mahasiswa (.ac.id)
+              </Link>
             </div>
+          </Card>
 
-            <Button
-              variant="brand"
-              size="lg"
-              type="submit"
-              loading={loading}
-              className="w-full text-sm font-bold shadow-brand mt-2 justify-center"
-            >
-              <span>Masuk Sekarang</span>
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Button>
-          </form>
-
-          <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
-            Belum memiliki akun Makarya?{" "}
-            <Link
-              to="/register"
-              className="font-bold text-brand-indigo hover:underline"
-            >
-              Daftar Akun Baru
-            </Link>
+          {/* Security Trust Badge */}
+          <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>
+              Garansi Rekening Bersama (Escrow) & Keamanan Data OWASP Top 10
+            </span>
           </div>
-        </Card>
-
-        {/* Security Trust Badge */}
-        <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans text-center">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            Garansi Rekening Bersama (Escrow) & Keamanan Data OWASP Top 10
-          </span>
         </div>
       </div>
 
