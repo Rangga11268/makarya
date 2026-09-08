@@ -1,19 +1,48 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from app.core.config import settings
-from app.core.database import get_db
+from app.core.database import get_db, SessionLocal
 from app.core.limiter import limiter
 from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat, talents
+from app.routers.notifications import router as notifications_router
+from app.services.scheduler import run_project_deadline_check
+
+# Inisialisasi Scheduler Background
+scheduler = BackgroundScheduler()
+
+def daily_project_check():
+    db = SessionLocal()
+    try:
+        run_project_deadline_check(db)
+    finally:
+        db.close()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Dijalankan saat aplikasi startup
+    # Eksekusi cron setiap hari pukul 00:00
+    scheduler.add_job(daily_project_check, "cron", hour=0, minute=0)
+    scheduler.start()
+    
+    yield
+    
+    # Dijalankan saat shutdown
+    scheduler.shutdown()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
     description="Backend API Platfrom Makarya (Mahasiswa Berkarya.)",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # Pasang Rate Limiter state & execption handler
@@ -30,7 +59,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Daftarkan router auth
+# Daftarkan router
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["Authentication"])
 app.include_router(projects.router, prefix=settings.API_V1_STR, tags=["Projects"])
 app.include_router(proposals.router, prefix=settings.API_V1_STR, tags=["Proposals"])
@@ -40,6 +69,7 @@ app.include_router(ratings.router, prefix=settings.API_V1_STR, tags=["Ratings & 
 app.include_router(disputes.router, prefix=settings.API_V1_STR, tags=["Dispute Resolution"])
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["Realtime Collaboration Chat"])
 app.include_router(talents.router, prefix=settings.API_V1_STR, tags=["Talents & Directory"])
+app.include_router(notifications_router, prefix=settings.API_V1_STR, tags=["Notifications"])
 
 
 @app.get("/", tags=["Cek Health"])
