@@ -70,8 +70,6 @@ export function Input({
           keyboardType={keyboardType}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           scrollEnabled={multiline ? false : undefined}
           textAlignVertical={multiline ? "top" : "center"}
           onFocus={(e) => {
@@ -152,21 +150,17 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: COLORS.borderDark,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
     paddingHorizontal: 14,
-    minHeight: 48,
+    minHeight: 46,
   },
   inputFocused: {
     borderColor: COLORS.brandIndigo,
     backgroundColor: "#FFFFFF",
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1.5,
   },
   multilineWrapper: {
     alignItems: "flex-start",

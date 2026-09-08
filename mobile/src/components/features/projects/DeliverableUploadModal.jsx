@@ -43,8 +43,8 @@ export function DeliverableUploadModal({
           >
             <Text style={styles.modalTitle}>Unggah Hasil Pekerjaan</Text>
             <Text style={styles.modalSub}>
-              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau Loom
-              video)
+              Sertakan link berkas proyek (Google Drive, Figma, GitHub, atau
+              Loom video)
             </Text>
 
             <Input

@@ -104,22 +104,15 @@ export function LoginScreen({ navigation }) {
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
       {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
-      <View style={[s.heroSection, { height: height * 0.42 }]}>
+      <View style={[s.heroSection, { height: height * 0.38 }]}>
         <Image
-          source={require("../../../assets/onboarding_3.jpg")}
+          source={require("../../../assets/login_hero.jpg")}
           style={s.heroImage}
           resizeMode="cover"
         />
         <View style={s.heroOverlay} />
 
         <View style={s.heroContent}>
-          <Image
-            source={require("../../../assets/logo.webp")}
-            style={s.brandLogo}
-            resizeMode="contain"
-            tintColor="#FFFFFF"
-          />
-
           <View style={s.heroBadge}>
             <ShieldCheck size={11} color="#6EE7B7" />
             <Text style={s.heroBadgeText}>Platform Kolaborasi Terverifikasi</Text>
@@ -127,7 +120,7 @@ export function LoginScreen({ navigation }) {
 
           <Text style={s.welcomeText}>Masuk ke Akun Anda</Text>
           <Text style={s.subtitle}>
-            Akses dashboard proyek, pantau proposal kerja, dan kelola saldo rekening escrow aman.
+            Akses dashboard proyek, proposal kerja, dan transaksi escrow aman.
           </Text>
         </View>
       </View>
@@ -140,57 +133,73 @@ export function LoginScreen({ navigation }) {
           keyboardShouldPersistTaps="handled"
         >
           {/* Quick Fill Test Accounts Chips */}
-          <View style={s.testAccountBox}>
-            <View style={s.testHeader}>
-              <View style={s.testTitleRow}>
-                <Sparkles size={13} color={COLORS.brandIndigo} />
-                <Text style={s.testTitle}>Akses Cepat Uji Coba</Text>
-              </View>
-              <Text style={s.testPassNotice}>Kata sandi: password123</Text>
+          <View style={s.quickFillHeader}>
+            <View style={s.quickFillTitleRow}>
+              <Sparkles size={12} color={COLORS.brandIndigo} />
+              <Text style={s.quickFillTitle}>Uji Coba Cepat</Text>
             </View>
-
-            <View style={s.chipRow}>
-              <TouchableOpacity
-                style={[
-                  s.chip,
-                  email === "darell@ubsi.ac.id" && s.chipActiveMhs,
-                ]}
-                onPress={() => fillTestAccount("darell@ubsi.ac.id")}
-                activeOpacity={0.75}
-              >
-                <View style={s.chipIconBgIndigo}>
-                  <GraduationCap size={12} color={COLORS.brandIndigo} />
-                </View>
-                <View>
-                  <Text style={s.chipLabel}>Mahasiswa</Text>
-                  <Text style={s.chipEmail}>darell@ubsi.ac.id</Text>
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  s.chip,
-                  email === "kopi.nusantara@gmail.com" && s.chipActiveUmkm,
-                ]}
-                onPress={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                activeOpacity={0.75}
-              >
-                <View style={s.chipIconBgGreen}>
-                  <Store size={12} color={COLORS.success} />
-                </View>
-                <View>
-                  <Text style={s.chipLabel}>Klien UMKM</Text>
-                  <Text style={s.chipEmail}>kopi.nusantara@...</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+            <Text style={s.quickFillNotice}>Sandi: password123</Text>
           </View>
 
-          {/* Form Input Area (No internal card, flows naturally on surface) */}
+          <View style={s.chipContainer}>
+            <TouchableOpacity
+              style={[
+                s.chipItem,
+                email === "darell@ubsi.ac.id" && s.chipItemActiveMhs,
+              ]}
+              onPress={() => fillTestAccount("darell@ubsi.ac.id")}
+              activeOpacity={0.75}
+            >
+              <GraduationCap
+                size={14}
+                color={
+                  email === "darell@ubsi.ac.id"
+                    ? COLORS.brandIndigo
+                    : COLORS.textMuted
+                }
+              />
+              <Text
+                style={[
+                  s.chipText,
+                  email === "darell@ubsi.ac.id" && s.chipTextActiveMhs,
+                ]}
+              >
+                Mahasiswa
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                s.chipItem,
+                email === "kopi.nusantara@gmail.com" && s.chipItemActiveUmkm,
+              ]}
+              onPress={() => fillTestAccount("kopi.nusantara@gmail.com")}
+              activeOpacity={0.75}
+            >
+              <Store
+                size={14}
+                color={
+                  email === "kopi.nusantara@gmail.com"
+                    ? COLORS.success
+                    : COLORS.textMuted
+                }
+              />
+              <Text
+                style={[
+                  s.chipText,
+                  email === "kopi.nusantara@gmail.com" && s.chipTextActiveUmkm,
+                ]}
+              >
+                Klien UMKM
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Form Input Area */}
           <View style={s.formArea}>
             <Input
               label="Email Akun / Kampus"
-              placeholder="nama@kampus.ac.id atau email usaha"
+              placeholder="Contoh: darell@ubsi.ac.id"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -200,7 +209,7 @@ export function LoginScreen({ navigation }) {
 
             <Input
               label="Kata Sandi"
-              placeholder="Masukkan kata sandi akun"
+              placeholder="Masukkan kata sandi Anda"
               value={password}
               onChangeText={setPassword}
               isPassword={true}

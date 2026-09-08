@@ -5,7 +5,7 @@ import { FONTS } from "../../theme/fonts";
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#0B132B",
+    backgroundColor: "#091424",
   },
   heroSection: {
     width: "100%",
@@ -20,19 +20,19 @@ export const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(11, 19, 43, 0.75)",
+    backgroundColor: "rgba(9, 20, 36, 0.45)",
   },
   heroContent: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 32,
-    paddingTop: 10,
+    justifyContent: "flex-end",
+    paddingHorizontal: 28,
+    paddingBottom: 44,
   },
   brandLogo: {
-    width: 140,
-    height: 40,
-    marginBottom: 16,
+    width: 130,
+    height: 36,
+    marginBottom: 12,
   },
   heroBadge: {
     flexDirection: "row",
@@ -43,8 +43,8 @@ export const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: "rgba(255, 255, 255, 0.12)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    marginBottom: 12,
+    borderColor: "rgba(255, 255, 255, 0.18)",
+    marginBottom: 8,
   },
   heroBadgeText: {
     fontFamily: FONTS.bodyBold,
@@ -55,115 +55,95 @@ export const styles = StyleSheet.create({
   },
   welcomeText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 26,
+    fontSize: 24,
     color: "#F8FAFC",
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   subtitle: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 13,
+    fontSize: 12.5,
     color: "#CBD5E1",
-    lineHeight: 20,
+    lineHeight: 18,
     textAlign: "center",
   },
   bottomSheet: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    marginTop: -32, // Seamless overlap
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    marginTop: -24,
     overflow: "hidden",
   },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 40,
+    paddingTop: 24,
+    paddingBottom: 36,
   },
-  testAccountBox: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    marginBottom: 20,
-    ...SHADOWS.sm,
-  },
-  testHeader: {
+  quickFillHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  testTitleRow: {
+  quickFillTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
   },
-  testTitle: {
+  quickFillTitle: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    color: "#1E293B",
-  },
-  testPassNotice: {
-    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#64748B",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
-  chipRow: {
-    flexDirection: "column",
-    gap: 10,
+  quickFillNotice: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#94A3B8",
   },
-  chip: {
+  chipContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 20,
+  },
+  chipItem: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    backgroundColor: "#F8FAFC",
-    paddingHorizontal: 12,
+    justifyContent: "center",
+    gap: 6,
     paddingVertical: 10,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    backgroundColor: "#F8FAFC",
   },
-  chipActiveMhs: {
+  chipItemActiveMhs: {
     borderColor: COLORS.brandIndigo,
     backgroundColor: "#EEF2FF",
   },
-  chipActiveUmkm: {
+  chipItemActiveUmkm: {
     borderColor: COLORS.success,
     backgroundColor: "#ECFDF5",
   },
-  chipIconBgIndigo: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#EEF2FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chipIconBgGreen: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#ECFDF5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chipLabel: {
+  chipText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    color: "#0F172A",
+    color: "#334155",
   },
-  chipEmail: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: "#64748B",
-    marginTop: 2,
+  chipTextActiveMhs: {
+    color: COLORS.brandIndigo,
+  },
+  chipTextActiveUmkm: {
+    color: "#059669",
   },
   formArea: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   forgotPasswordRow: {
     alignItems: "flex-end",
