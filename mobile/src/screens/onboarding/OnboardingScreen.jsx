@@ -2,18 +2,18 @@ import React, { useState, useRef } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Dimensions,
   Image,
   ScrollView,
+  StatusBar,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
-import { FONTS } from "../../theme/fonts";
+import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { Button } from "../../components/ui/Button";
-import { ShieldCheck, ArrowRight } from "lucide-react-native";
+import { ArrowRight } from "lucide-react-native";
+import { styles as s } from "./OnboardingScreen.styles";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const slides = [
   {
@@ -21,24 +21,39 @@ const slides = [
     badge: "Platform Mahasiswa #1",
     title: "Hasilkan Uang Nyata\nSelagi Kuliah",
     subtitle:
-      "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata \u2014 bangun portofolio, raih honor, mulai dari laptop-mu.",
+      "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata, bangun portofolio dan raih honor langsung dari laptop-mu.",
     image: require("../../../assets/onboarding_1.jpg"),
+    bgColor: "#091424", // Deep Midnight Navy
+    accentColor: "#4F46E5", // Brand Indigo
+    badgeBg: "rgba(79, 70, 229, 0.22)",
+    badgeBorder: "rgba(129, 140, 248, 0.4)",
+    badgeText: "#A5B4FC",
   },
   {
     id: "2",
     badge: "Proteksi Pembayaran",
     title: "Honormu Aman,\n100% Terjamin",
     subtitle:
-      "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai & disetujui \u2014 langsung cair ke dompetmu.",
+      "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai dan disetujui, langsung cair ke dompetmu.",
     image: require("../../../assets/onboarding_2.jpg"),
+    bgColor: "#091424", // Deep Midnight Navy (Unified)
+    accentColor: "#4F46E5", // Brand Indigo (Unified)
+    badgeBg: "rgba(79, 70, 229, 0.22)",
+    badgeBorder: "rgba(129, 140, 248, 0.4)",
+    badgeText: "#A5B4FC",
   },
   {
     id: "3",
     badge: "Kolaborasi Real-Time",
     title: "Pantau Proyek\ndari Genggamanmu",
     subtitle:
-      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM \u2014 semua tersentralisasi dalam satu platform.",
+      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM dalam satu platform terpadu.",
     image: require("../../../assets/onboarding_3.jpg"),
+    bgColor: "#091424", // Deep Midnight Navy (Unified)
+    accentColor: "#4F46E5", // Brand Indigo (Unified)
+    badgeBg: "rgba(79, 70, 229, 0.22)",
+    badgeBorder: "rgba(129, 140, 248, 0.4)",
+    badgeText: "#A5B4FC",
   },
 ];
 
@@ -71,220 +86,107 @@ export function OnboardingScreen({ navigation, onComplete }) {
   const slide = slides[current];
 
   return (
-    <View style={s.container}>
-      {/* Full-bleed swipeable illustration area */}
-      <View style={s.imageWrapper}>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onMomentumScrollEnd={handleScroll}
-          scrollEventThrottle={16}
-          style={s.scrollView}
-        >
-          {slides.map((sl, i) => (
-            <View key={sl.id} style={s.slidePage}>
-              <Image
-                source={sl.image}
-                style={s.illustration}
-                resizeMode="cover"
-              />
-            </View>
-          ))}
-        </ScrollView>
+    <View style={[s.container, { backgroundColor: slide.bgColor }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-        {/* Dark scrim at top so logo & badge are readable */}
-        <View style={s.topScrim} />
-
-        {/* Top logo bar */}
-        <View style={s.topBar}>
-          <View style={s.logoPill}>
+      {/* Swipeable Full-Screen Slides */}
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleScroll}
+        scrollEventThrottle={16}
+        style={s.scrollView}
+      >
+        {slides.map((sl) => (
+          <View
+            key={sl.id}
+            style={[s.slidePage, { backgroundColor: sl.bgColor }]}
+          >
+            {/* Background Illustration covering top 60% */}
             <Image
-              source={require("../../../assets/logo.webp")}
-              style={s.logo}
-              resizeMode="contain"
+              source={sl.image}
+              style={s.bgImage}
+              resizeMode="cover"
             />
-          </View>
-          <View style={s.platformBadge}>
-            <ShieldCheck size={11} color={COLORS.brandIndigo} />
-            <Text style={s.platformBadgeText}>Terverifikasi Kampus</Text>
-          </View>
-        </View>
-      </View>
 
-      {/* Bottom content sheet — content changes with current slide */}
-      <View style={s.sheet}>
-        <View style={s.slideBadge}>
-          <Text style={s.slideBadgeText}>{slide.badge}</Text>
-        </View>
+            {/* Smooth SVG Multi-stop Gradient Blend from Image into Solid Canvas */}
+            <View style={s.gradientOverlay} pointerEvents="none">
+              <Svg height="100%" width="100%">
+                <Defs>
+                  <LinearGradient id={`grad-${sl.id}`} x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor={sl.bgColor} stopOpacity="0" />
+                    <Stop offset="30%" stopColor={sl.bgColor} stopOpacity="0.25" />
+                    <Stop offset="65%" stopColor={sl.bgColor} stopOpacity="0.8" />
+                    <Stop offset="90%" stopColor={sl.bgColor} stopOpacity="1" />
+                    <Stop offset="100%" stopColor={sl.bgColor} stopOpacity="1" />
+                  </LinearGradient>
+                </Defs>
+                <Rect x="0" y="0" width="100%" height="100%" fill={`url(#grad-${sl.id})`} />
+              </Svg>
+            </View>
 
-        {/* Pagination dots — tappable */}
+            {/* Content Section - Flowing naturally over the blend */}
+            <View style={s.contentArea}>
+              <View
+                style={[
+                  s.slideBadge,
+                  {
+                    backgroundColor: sl.badgeBg,
+                    borderColor: sl.badgeBorder,
+                  },
+                ]}
+              >
+                <Text style={[s.slideBadgeText, { color: sl.badgeText }]}>
+                  {sl.badge}
+                </Text>
+              </View>
+
+              <Text style={s.headline}>{sl.title}</Text>
+              <Text style={s.sub}>{sl.subtitle}</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Top Skip Button */}
+      {current < slides.length - 1 && (
+        <TouchableOpacity
+          style={s.topSkipBtn}
+          activeOpacity={0.7}
+          onPress={goSkip}
+        >
+          <Text style={s.topSkipText}>Lewati</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Bottom Controls */}
+      <View style={s.bottomBar}>
         <View style={s.dots}>
-          {slides.map((_, i) => (
+          {slides.map((sl, i) => (
             <TouchableOpacity
               key={i}
               onPress={() => goToSlide(i)}
-              style={[s.dot, i === current && s.dotActive]}
+              style={[
+                s.dot,
+                i === current && [
+                  s.dotActive,
+                  { backgroundColor: slide.accentColor },
+                ],
+              ]}
             />
           ))}
         </View>
 
-        <Text style={s.headline}>{slide.title}</Text>
-        <Text style={s.sub}>{slide.subtitle}</Text>
-
-        <View style={s.btnRow}>
-          <Button
-            title="Lewati"
-            variant="secondary"
-            size="md"
-            onPress={goSkip}
-            style={s.skipBtn}
-          />
-          <Button
-            title={current === slides.length - 1 ? "Mulai Sekarang" : "Lanjut"}
-            variant="brand"
-            size="md"
-            iconRight={<ArrowRight size={16} color="#FFFFFF" />}
-            onPress={goNext}
-            style={s.nextBtn}
-          />
-        </View>
+        <Button
+          title={current === slides.length - 1 ? "Mulai Sekarang" : "Lanjut"}
+          size="lg"
+          iconRight={<ArrowRight size={18} color="#FFFFFF" />}
+          onPress={goNext}
+          style={[s.nextBtn, { backgroundColor: slide.accentColor }]}
+        />
       </View>
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0C1A2E",
-  },
-  imageWrapper: {
-    flex: 1,
-    position: "relative",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  slidePage: {
-    width,
-    height: "100%",
-  },
-  illustration: {
-    width: "100%",
-    height: "100%",
-  },
-  topScrim: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 160,
-    backgroundColor: "rgba(0,0,0,0.38)",
-    borderBottomLeftRadius: 60,
-    borderBottomRightRadius: 60,
-  },
-  topBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 22,
-    paddingTop: 54,
-  },
-  logoPill: {
-    backgroundColor: "rgba(255,255,255,0.92)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  logo: {
-    width: 110,
-    height: 30,
-  },
-  platformBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "rgba(238,242,255,0.92)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-  },
-  platformBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-  },
-  sheet: {
-    backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 44,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.lg,
-    marginTop: -36,
-  },
-  slideBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 99,
-    marginBottom: 12,
-  },
-  slideBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-    letterSpacing: 0.3,
-  },
-  dots: {
-    flexDirection: "row",
-    gap: 6,
-    marginBottom: 14,
-  },
-  dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: COLORS.borderDark,
-  },
-  dotActive: {
-    width: 22,
-    backgroundColor: COLORS.brandIndigo,
-  },
-  headline: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 24,
-    color: COLORS.textDark,
-    letterSpacing: -0.5,
-    lineHeight: 32,
-    marginBottom: 10,
-  },
-  sub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 14,
-    color: COLORS.textMuted,
-    lineHeight: 22,
-    marginBottom: 24,
-  },
-  btnRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  skipBtn: { flex: 1 },
-  nextBtn: { flex: 1.5 },
-});

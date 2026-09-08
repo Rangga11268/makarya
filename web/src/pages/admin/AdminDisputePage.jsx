@@ -128,7 +128,7 @@ export function AdminDisputePage() {
         <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
           Pusat Keadilan Ekosistem
         </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
           Pusat Resolusi Sengketa (Admin Mediation)
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -163,14 +163,14 @@ export function AdminDisputePage() {
           ))}
         </div>
 
-        <div className="relative min-w-[240px]">
+        <div className="relative w-full sm:w-auto sm:min-w-[240px]">
           <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Cari ID / keluhan sengketa..."
-            value={searchKeyword}
+            placeholder="Cari ID, judul proyek, pihak terkait..."
+            value={searchQuery}
             onChange={(e) => {
-              setSearchKeyword(e.target.value);
+              setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
             className="w-full pl-9 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo font-sans"

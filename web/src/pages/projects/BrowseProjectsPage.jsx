@@ -179,7 +179,7 @@ export function BrowseProjectsPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             Katalog Peluang & Spesialisasi
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             Jelajah Proyek UMKM Aktif
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">

@@ -94,18 +94,18 @@ export function DashboardPage() {
       {/* ========================================================================= */}
       {/* TOP WELCOME BANNER */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
-        <div className="flex items-center gap-5">
-          <Link to="/profile" className="shrink-0 group">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-5 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+          <Link to="/profile" className="shrink-0 self-start sm:self-auto group">
             {user?.url_foto ? (
               <img
                 src={user.url_foto}
                 alt="Avatar"
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xs border-2 border-slate-100 group-hover:scale-105 transition-transform"
+                className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xs border-2 border-slate-100 group-hover:scale-105 transition-transform"
               />
             ) : (
               <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform`}
+                className={`w-14 h-14 sm:w-20 sm:h-20 rounded-2xl ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} text-xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform`}
               >
                 {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
                   .charAt(0)
@@ -114,24 +114,24 @@ export function DashboardPage() {
             )}
           </Link>
 
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-muted font-sans">
                 {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
               </span>
-              <span className="text-muted/60 text-xs">•</span>
-              <span className="text-xs text-muted flex items-center gap-1 font-sans">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="text-muted/60 text-xs hidden sm:inline">•</span>
+              <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 font-sans bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-150">
+                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                 Akun Terverifikasi
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
               Selamat Datang,{" "}
               {user?.nama_lengkap ||
                 user?.nama_usaha ||
                 user?.email?.split("@")[0]}
             </h1>
-            <p className="text-xs sm:text-sm text-muted font-sans mt-0.5">
+            <p className="text-xs sm:text-sm text-muted font-sans leading-relaxed">
               {isUmkm
                 ? "Pantau proyek aktif Anda, tinjau lamaran masuk dari mahasiswa, dan kelola saldo escrow."
                 : "Pantau pengerjaan proyek aktif Anda, cek status proposal, dan tarik honor kerja."}
@@ -139,24 +139,24 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60 flex items-center justify-end">
           {isUmkm ? (
-            <Link to="/projects/new">
+            <Link to="/projects/new" className="w-full sm:w-auto">
               <Button
                 variant="brand"
                 size="md"
-                className="text-xs font-bold shadow-brand"
+                className="w-full sm:w-auto text-xs font-bold shadow-brand justify-center"
               >
                 <PlusCircle className="w-4 h-4 mr-1.5" />
                 Pasang Proyek Baru
               </Button>
             </Link>
           ) : (
-            <Link to="/projects">
+            <Link to="/projects" className="w-full sm:w-auto">
               <Button
                 variant="brand"
                 size="md"
-                className="text-xs font-bold shadow-brand"
+                className="w-full sm:w-auto text-xs font-bold shadow-brand justify-center"
               >
                 <Compass className="w-4 h-4 mr-1.5" />
                 Jelajah Proyek Terbuka
@@ -338,37 +338,39 @@ export function DashboardPage() {
                   {myProjects.slice(0, 5).map((project) => (
                     <div
                       key={project.id}
-                      className="p-4 bg-canvas border border-border/80 hover:border-dark-900/30 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-4 bg-canvas border border-border/80 hover:border-dark-900/30 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-surface border border-border text-dark-900">
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-surface border border-border text-dark-900 shrink-0">
                             {project.kategori}
                           </span>
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-border bg-surface text-dark-900">
+                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-border bg-surface text-dark-900 shrink-0">
                             {formatStatus(project.status)}
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-dark-900">
+                        <h4 className="text-sm font-bold text-dark-900 truncate">
                           {project.judul}
                         </h4>
                         <span className="text-xs text-muted block">
                           Batas Anggaran:{" "}
-                          <b className="text-dark-900">
+                          <b className="text-dark-900 font-bold">
                             {formatCurrency(project.budget_max)}
                           </b>
                         </span>
                       </div>
 
-                      <Link to="/proposals" className="shrink-0">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full sm:w-auto text-xs font-bold text-dark-900"
-                        >
-                          Kelola Pelamar →
-                        </Button>
-                      </Link>
+                      <div className="pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60 flex items-center justify-end shrink-0">
+                        <Link to="/proposals" className="w-full sm:w-auto">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full sm:w-auto text-xs font-bold text-dark-900 justify-center"
+                          >
+                            Kelola Pelamar →
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -401,38 +403,40 @@ export function DashboardPage() {
                 {myProposals.slice(0, 5).map((prop) => (
                   <div
                     key={prop.id}
-                    className="p-4 bg-canvas border border-border/80 hover:border-dark-900/30 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="p-4 bg-canvas border border-border/80 hover:border-dark-900/30 rounded-2xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-border bg-surface text-dark-900">
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-border bg-surface text-dark-900 shrink-0">
                           {formatStatus(prop.status)}
                         </span>
                         <span className="text-[11px] text-muted">
                           Estimasi: {prop.estimasi_hari} Hari
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-dark-900">
+                      <h4 className="text-sm font-bold text-dark-900 truncate">
                         {prop.project_judul ||
                           `Lamaran Proyek #${prop.project_id?.slice(0, 8)}`}
                       </h4>
                       <span className="text-xs text-muted block">
                         Harga Tawar Anda:{" "}
-                        <b className="text-dark-900">
+                        <b className="text-dark-900 font-bold">
                           {formatCurrency(prop.harga_tawar)}
                         </b>
                       </span>
                     </div>
 
-                    <Link to="/proposals" className="shrink-0">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full sm:w-auto text-xs font-bold text-dark-900"
-                      >
-                        Lihat Detail Pengerjaan →
-                      </Button>
-                    </Link>
+                    <div className="pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60 flex items-center justify-end shrink-0">
+                      <Link to="/proposals" className="w-full sm:w-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto text-xs font-bold text-dark-900 justify-center"
+                        >
+                          Lihat Detail Pengerjaan →
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>

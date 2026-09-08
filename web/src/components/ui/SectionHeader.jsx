@@ -17,7 +17,7 @@ export function SectionHeader({
             {badgeText}
           </span>
         )}
-        <h2 className="text-2xl sm:text-3xl font-serif font-normal text-dark-900 tracking-tight leading-snug">
+        <h2 className="text-2xl sm:text-3xl font-bold text-dark-900 tracking-tight leading-snug">
           {title}
         </h2>
         {subtitle && (

@@ -37,9 +37,10 @@ export default {
         }
       },
       fontFamily: {
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
         sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['"Syne"', '"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        serif: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'], // Alias ke modern sans untuk kompatibilitas class lama
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
         card: "18px",

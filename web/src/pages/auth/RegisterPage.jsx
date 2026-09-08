@@ -259,7 +259,7 @@ export function RegisterPage() {
                 className="h-14 sm:h-16 w-auto object-contain mb-3"
               />
             </Link>
-            <h1 className="text-3xl sm:text-4xl font-serif text-dark-900 tracking-tight font-normal">
+            <h1 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight">
               {isOtpStep
                 ? "Verifikasi Kode OTP"
                 : role === "MHS"

@@ -103,7 +103,7 @@ export function LandingPage() {
           </div>
 
           <div className="max-w-4xl space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-[1.1] text-white font-normal">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white">
               Solusi Digital UMKM dari Mahasiswa Berbakat, Aman dengan Rekening
               Bersama.
             </h1>
@@ -211,7 +211,7 @@ export function LandingPage() {
               <span className="inline-flex items-center px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
                 Katalog Keahlian
               </span>
-              <h2 className="text-3xl sm:text-4xl font-serif font-normal text-dark-900 tracking-tight leading-snug">
+              <h2 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
                 Kategori Layanan Paling Dibutuhkan UMKM.
               </h2>
               <p className="text-xs sm:text-sm text-muted leading-relaxed font-sans font-normal">
@@ -476,26 +476,26 @@ export function LandingPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* UMKM Card */}
-          <div className="bg-brand-indigo text-white p-8 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 shadow-brand">
-            <div className="space-y-2 relative z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">
+          <div className="bg-brand-indigo text-white p-6 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 shadow-brand">
+            <div className="space-y-3 relative z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold uppercase tracking-wider">
                 Untuk Pelaku Usaha UMKM
               </span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-normal">
+              <h3 className="text-xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
                 Tingkatkan Citra Usaha Anda Tanpa Biaya Mahal Agency.
               </h3>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-indigo-100 leading-relaxed font-normal">
                 Dapatkan logo, kemasan produk, website responsif, atau video
                 promosi dari mahasiswa kreatif dengan harga terjangkau dan
                 jaminan dana aman 100%.
               </p>
             </div>
-            <div className="relative z-10">
-              <Link to="/login">
+            <div className="relative z-10 pt-2">
+              <Link to="/login" className="inline-block w-full sm:w-auto">
                 <Button
-                  variant="brand"
+                  variant="secondary"
                   size="lg"
-                  className="font-bold text-xs sm:text-sm rounded-full"
+                  className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-white hover:bg-slate-100 text-dark-900 border-0 shadow-lg justify-center"
                 >
                   <span>Pasang Kebutuhan Proyek</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -505,12 +505,12 @@ export function LandingPage() {
           </div>
 
           {/* Mahasiswa Card */}
-          <div className="bg-dark-900 text-white p-8 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 border border-border">
-            <div className="space-y-2 relative z-10">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-cyan">
+          <div className="bg-dark-900 text-white p-6 sm:p-10 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-6 border border-slate-800 shadow-sm">
+            <div className="space-y-3 relative z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold uppercase tracking-wider border border-white/10">
                 Untuk Mahasiswa Bertalenta
               </span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-normal">
+              <h3 className="text-xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
                 Ubah Keterampilan Kampus Menjadi Penghasilan & Portofolio.
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
@@ -519,12 +519,12 @@ export function LandingPage() {
                 kerja.
               </p>
             </div>
-            <div className="relative z-10">
-              <Link to="/register">
+            <div className="relative z-10 pt-2">
+              <Link to="/register" className="inline-block w-full sm:w-auto">
                 <Button
                   variant="brand"
                   size="lg"
-                  className="font-bold text-xs sm:text-sm shadow-brand rounded-full"
+                  className="w-full sm:w-auto font-bold text-xs sm:text-sm shadow-brand justify-center"
                 >
                   <span>Daftar Akun Mahasiswa</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />

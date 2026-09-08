@@ -210,7 +210,7 @@ export function ProjectDetailPage() {
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-dark-900 tracking-tight leading-snug font-normal">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
                 {project.judul}
               </h1>
 

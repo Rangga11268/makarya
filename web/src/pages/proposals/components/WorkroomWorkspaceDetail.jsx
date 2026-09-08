@@ -80,7 +80,7 @@ export function WorkroomWorkspaceDetail({
         </div>
 
         {/* Partner Info & Quick Metas */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
           <div className="flex items-center gap-2.5">
             {activePartnerPhoto ? (
               <img
@@ -105,7 +105,7 @@ export function WorkroomWorkspaceDetail({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-muted text-[11px]">
+          <div className="flex items-center justify-between sm:justify-end gap-4 text-muted text-[11px] pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60">
             <div>
               <span className="block text-[10px]">Nilai Kontrak:</span>
               <span className="font-extrabold text-dark-900 text-xs">
@@ -129,30 +129,30 @@ export function WorkroomWorkspaceDetail({
         </div>
 
         {/* Sub-Nav Segmented Tabs for the Active Workroom */}
-        <div className="flex items-center gap-1.5 pt-2 border-t border-border overflow-x-auto scrollbar-none">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 pt-2 border-t border-border">
           <button
             onClick={() => setActiveStageTab("chat")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
               activeStageTab === "chat"
                 ? "bg-brand-indigo text-white shadow-brand"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Obrolan & Kolaborasi</span>
+            <span>Obrolan</span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </button>
 
           <button
             onClick={() => setActiveStageTab("deliverable")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               activeStageTab === "deliverable"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
             }`}
           >
             <FileCheck2 className="w-3.5 h-3.5" />
-            <span>Hasil Deliverable</span>
+            <span>Deliverable</span>
             {activeDeliverable && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-extrabold">
                 Ada
@@ -163,27 +163,27 @@ export function WorkroomWorkspaceDetail({
           {isUmkm && (
             <button
               onClick={() => setActiveStageTab("applicants")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas border border-border text-muted hover:text-dark-900"
+                : "bg-canvas border border-border text-muted hover:text-dark-900"
               }`}
             >
               <Users className="w-3.5 h-3.5" />
-              <span>Pelamar Masuk ({projectProposals.length})</span>
+              <span>Pelamar ({projectProposals.length})</span>
             </button>
           )}
 
           <button
             onClick={() => setActiveStageTab("brief")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               activeStageTab === "brief"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Rincian Kontrak</span>
+            <span>Brief & Kontrak</span>
           </button>
         </div>
       </div>

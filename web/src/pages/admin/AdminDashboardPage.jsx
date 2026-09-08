@@ -291,7 +291,7 @@ export function AdminDashboardPage() {
               <ShieldCheck className="w-4 h-4" />
               Makarya Operations & Oversight Control
             </div>
-            <h1 className="text-2xl sm:text-3xl font-serif tracking-tight font-normal text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               Pusat Kendali & Pengawasan Administrator
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-normal max-w-xl">
@@ -621,7 +621,7 @@ export function AdminDashboardPage() {
               ))}
             </div>
 
-            <div className="relative min-w-[240px]">
+            <div className="relative w-full sm:w-auto sm:min-w-[240px]">
               <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -896,7 +896,7 @@ export function AdminDashboardPage() {
               ))}
             </div>
 
-            <div className="relative min-w-[240px]">
+            <div className="relative w-full sm:w-auto sm:min-w-[240px]">
               <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -1090,7 +1090,7 @@ export function AdminDashboardPage() {
               ))}
             </div>
 
-            <div className="relative min-w-[240px]">
+            <div className="relative w-full sm:w-auto sm:min-w-[240px]">
               <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"

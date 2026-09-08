@@ -256,7 +256,7 @@ export function ProfilePage() {
         <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
           Pengaturan Akun & Identitas
         </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
           Kelola Profil {isUmkm ? "Usaha UMKM" : "Talenta Mahasiswa"}
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -290,7 +290,7 @@ export function ProfilePage() {
             />
           ) : (
             <div
-              className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} font-serif text-3xl font-bold flex items-center justify-center shadow-xs select-none`}
+              className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} text-3xl font-bold flex items-center justify-center shadow-xs select-none`}
             >
               {initial}
             </div>

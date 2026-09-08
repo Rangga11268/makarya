@@ -256,7 +256,7 @@ export function WalletPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             Sistem Keuangan & Rekening Bersama
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             Dompet & Keuangan Makarya
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -438,7 +438,7 @@ export function WalletPage() {
             ))}
           </div>
 
-          <div className="relative min-w-[240px]">
+          <div className="relative w-full sm:w-auto sm:min-w-[240px]">
             <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"

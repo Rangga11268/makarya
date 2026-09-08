@@ -31,7 +31,7 @@ export function Footer() {
   return (
     <footer className="relative bg-surface border-t border-border mt-20 overflow-hidden font-sans">
       {/* Large faint background watermark */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-4 select-none pointer-events-none opacity-[0.03] text-dark-900 font-serif font-black text-8xl sm:text-[180px] tracking-tight whitespace-nowrap z-0">
+      <div className="absolute left-1/2 -translate-x-1/2 top-4 select-none pointer-events-none opacity-[0.03] text-dark-900 font-sans font-black text-8xl sm:text-[180px] tracking-tight whitespace-nowrap z-0">
         Makarya Platform
       </div>
 
@@ -44,7 +44,7 @@ export function Footer() {
                 <GraduationCap className="w-3.5 h-3.5" />
                 Mulai Karir Freelance Kampus
               </span>
-              <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight leading-snug">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
                 Dapatkan Proyek yang Cocok Hanya dalam Hitungan Menit.
               </h3>
               <p className="text-xs sm:text-sm text-slate-300">

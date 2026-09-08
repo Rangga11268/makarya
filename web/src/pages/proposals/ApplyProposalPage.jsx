@@ -215,7 +215,7 @@ export function ApplyProposalPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             Formulir Lamaran Resmi Mahasiswa
           </span>
-          <h1 className="text-3xl sm:text-4xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
+          <h1 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             Ajukan Proposal & Penawaran Kerja
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">

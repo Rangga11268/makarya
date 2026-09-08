@@ -358,7 +358,7 @@ export function ProposalBoardPage() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1 font-normal">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             {isUmkm
               ? "Kelola Proyek & Ruang Diskusi Terpadu"
               : "Papan Proyek, Obrolan & Deliverable"}
@@ -421,7 +421,7 @@ export function ProposalBoardPage() {
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]">
+          <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 text-[11px]">
             {(isUmkm
               ? [
                   { key: "ALL", label: "Semua" },
@@ -439,7 +439,7 @@ export function ProposalBoardPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveFilter(tab.key)}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all whitespace-nowrap ${
+                className={`py-1.5 px-2 rounded-xl font-bold transition-all text-center justify-center flex items-center ${
                   activeFilter === tab.key
                     ? "bg-dark-900 text-white shadow-xs"
                     : "bg-canvas text-muted hover:text-dark-900 border border-border"

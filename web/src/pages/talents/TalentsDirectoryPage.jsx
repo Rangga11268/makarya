@@ -453,7 +453,7 @@ export function TalentsDirectoryPage() {
               <Award className="w-3.5 h-3.5" />
               <span>Direktori Talenta Terkurasi</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight font-normal">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight">
               Mahasiswa Berprestasi & Terverifikasi
             </h1>
             <p className="text-xs sm:text-sm text-muted max-w-2xl font-sans">

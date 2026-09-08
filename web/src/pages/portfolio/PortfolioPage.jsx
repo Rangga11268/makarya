@@ -76,7 +76,7 @@ export function PortfolioPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             {isUmkm ? "Profil & Riwayat Kemitraan" : "Reputasi & Kinerja Kerja"}
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-dark-900 tracking-tight leading-tight mt-1">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             {isUmkm ? "Rekam Jejak Usaha UMKM" : "Portofolio Karya Mahasiswa"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -113,7 +113,7 @@ export function PortfolioPage() {
               }}
             />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-brand-indigo text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
+            <div className="w-16 h-16 rounded-2xl bg-brand-indigo text-white text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
               {(user?.nama || user?.email || "U").charAt(0).toUpperCase()}
             </div>
           )}

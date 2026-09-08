@@ -23,7 +23,7 @@ export function AuthArtwork({
           <span>Platform Micro-freelancing Kampus Resmi</span>
         </div>
 
-        <h2 className="text-3xl xl:text-4xl font-serif text-white tracking-tight leading-tight max-w-md">
+        <h2 className="text-3xl xl:text-4xl font-bold text-white tracking-tight leading-tight max-w-md">
           {headline}
         </h2>
         <p className="text-xs xl:text-sm text-slate-300 font-sans max-w-sm leading-relaxed">
