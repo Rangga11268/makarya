@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Dimensions,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
@@ -23,7 +25,9 @@ import {
   ArrowRight,
   ShieldCheck,
 } from "lucide-react-native";
-import { styles } from "./RegisterScreen.styles";
+import { styles as s } from "./LoginScreen.styles"; // Reuse base layout logic
+
+const { height } = Dimensions.get("window");
 
 export function RegisterScreen({ navigation }) {
   const [namaUsaha, setNamaUsaha] = useState("");
@@ -101,151 +105,187 @@ export function RegisterScreen({ navigation }) {
   ];
 
   return (
-    <View style={styles.screen}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
+    <View style={s.screen}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
+      <View style={[s.heroSection, { height: height * 0.38 }]}>
+        <Image
+          source={require("../../../assets/onboarding_2.jpg")}
+          style={s.heroImage}
+          resizeMode="cover"
+        />
+        <View style={s.heroOverlay} />
+
+        <View style={s.heroContent}>
           <Image
             source={require("../../../assets/logo.webp")}
-            style={styles.brandLogo}
+            style={s.brandLogo}
             resizeMode="contain"
+            tintColor="#FFFFFF"
           />
-          <Text style={styles.title}>Daftar Akun UMKM</Text>
-          <Text style={styles.subtitle}>
-            Pasang proyek digital dan temukan mahasiswa bertalenta terbaik untuk bisnis Anda.
+
+          <View style={s.heroBadge}>
+            <ShieldCheck size={11} color="#6EE7B7" />
+            <Text style={s.heroBadgeText}>Akses Talenta Kampus Terverifikasi</Text>
+          </View>
+
+          <Text style={s.welcomeText}>Daftar Akun UMKM</Text>
+          <Text style={s.subtitle}>
+            Pasang proyek digital dan temukan mahasiswa bertalenta terbaik untuk memajukan bisnis Anda.
           </Text>
         </View>
+      </View>
 
-        <View style={styles.formCard}>
-          <Input
-            label="Nama Brand / Usaha UMKM"
-            placeholder="Contoh: Kopi Nusantara"
-            value={namaUsaha}
-            onChangeText={setNamaUsaha}
-            icon={<Building2 size={18} color={COLORS.textMuted} />}
-          />
+      {/* 2. ELEVATED BOTTOM SHEET (Seamless Curve) */}
+      <View style={s.bottomSheet}>
+        <ScrollView
+          contentContainerStyle={s.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Form Input Area */}
+          <View style={s.formArea}>
+            <Input
+              label="Nama Brand / Usaha UMKM"
+              placeholder="Contoh: Kopi Nusantara"
+              value={namaUsaha}
+              onChangeText={setNamaUsaha}
+              icon={<Building2 size={18} color={COLORS.textMuted} />}
+            />
 
-          {/* Bidang Industri Chips */}
-          <View style={styles.industryContainer}>
-            <Text style={styles.label}>Bidang Industri</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.industryScroll}
-            >
-              {industries.map((ind) => {
-                const selected = bidangIndustri === ind;
-                return (
-                  <TouchableOpacity
-                    key={ind}
-                    onPress={() => setBidangIndustri(ind)}
-                    style={[
-                      styles.industryChip,
-                      selected && styles.industryChipActive,
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text
+            {/* Bidang Industri Chips */}
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.textDark, marginBottom: 8 }}>
+                Bidang Industri
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ flexDirection: "row" }}
+              >
+                {industries.map((ind) => {
+                  const selected = bidangIndustri === ind;
+                  return (
+                    <TouchableOpacity
+                      key={ind}
+                      onPress={() => setBidangIndustri(ind)}
                       style={[
-                        styles.industryText,
-                        selected && styles.industryTextActive,
+                        {
+                          paddingHorizontal: 14,
+                          paddingVertical: 7,
+                          borderRadius: 999,
+                          backgroundColor: "#F1F5F9",
+                          borderWidth: 1,
+                          borderColor: "#E2E8F0",
+                          marginRight: 8,
+                        },
+                        selected && {
+                          backgroundColor: COLORS.brandIndigo,
+                          borderColor: COLORS.brandIndigo,
+                        },
                       ]}
+                      activeOpacity={0.7}
                     >
-                      {ind}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+                      <Text
+                        style={[
+                          { fontFamily: FONTS.bodyMedium, fontSize: 12, color: "#64748B" },
+                          selected && { fontFamily: FONTS.bodyBold, color: "#FFFFFF" },
+                        ]}
+                      >
+                        {ind}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <Input
+              label="Kota / Lokasi Usaha"
+              placeholder="Contoh: Bekasi"
+              value={kota}
+              onChangeText={setKota}
+              icon={<MapPin size={18} color={COLORS.textMuted} />}
+            />
+
+            <Input
+              label="Nomor WhatsApp"
+              placeholder="08123456789"
+              value={noKontak}
+              onChangeText={setNoKontak}
+              keyboardType="phone-pad"
+              icon={<Phone size={18} color={COLORS.textMuted} />}
+            />
+
+            <Input
+              label="Email Resmi Akun"
+              placeholder="kontak@usahaanda.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              icon={<Mail size={18} color={COLORS.textMuted} />}
+            />
+
+            <Input
+              label="Kata Sandi"
+              placeholder="Minimal 6 karakter"
+              value={password}
+              onChangeText={setPassword}
+              isPassword={true}
+              icon={<Lock size={18} color={COLORS.textMuted} />}
+            />
+
+            <Button
+              title="Buat Akun UMKM Baru"
+              variant="brand"
+              size="lg"
+              onPress={handleRegister}
+              loading={loading}
+              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
+              style={s.loginBtn}
+            />
+
+            {/* Divider */}
+            <View style={s.dividerRow}>
+              <View style={s.dividerLine} />
+              <Text style={s.dividerText}>atau</Text>
+              <View style={s.dividerLine} />
+            </View>
+
+            {/* Google Sign Up Button */}
+            <Button
+              title="Daftar Cepat dengan Google"
+              variant="google"
+              size="lg"
+              onPress={handleGoogleRegister}
+              loading={googleLoading}
+              disabled={loading}
+              icon={<GoogleIcon size={18} />}
+            />
           </View>
 
-          <Input
-            label="Kota / Lokasi Usaha"
-            placeholder="Contoh: Bekasi"
-            value={kota}
-            onChangeText={setKota}
-            icon={<MapPin size={18} color={COLORS.textMuted} />}
-          />
-
-          <Input
-            label="Nomor WhatsApp"
-            placeholder="08123456789"
-            value={noKontak}
-            onChangeText={setNoKontak}
-            keyboardType="phone-pad"
-            icon={<Phone size={18} color={COLORS.textMuted} />}
-          />
-
-          <Input
-            label="Email Resmi Akun"
-            placeholder="kontak@usahaanda.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            icon={<Mail size={18} color={COLORS.textMuted} />}
-          />
-
-          <Input
-            label="Kata Sandi"
-            placeholder="Minimal 6 karakter"
-            value={password}
-            onChangeText={setPassword}
-            isPassword={true}
-            icon={<Lock size={18} color={COLORS.textMuted} />}
-          />
-
-          <Button
-            title="Buat Akun UMKM Baru"
-            variant="brand"
-            size="lg"
-            onPress={handleRegister}
-            loading={loading}
-            iconRight={<ArrowRight size={18} color="#FFFFFF" />}
-            style={styles.registerBtn}
-          />
-
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>atau</Text>
-            <View style={styles.dividerLine} />
+          {/* Login footer link */}
+          <View style={s.registerRow}>
+            <Text style={s.registerText}>Sudah memiliki akun Makarya? </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Login")}
+              activeOpacity={0.7}
+            >
+              <Text style={s.registerLink}>Masuk di Sini</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Google Sign Up Button */}
-          <Button
-            title="Daftar Cepat dengan Google"
-            variant="google"
-            size="lg"
-            onPress={handleGoogleRegister}
-            loading={googleLoading}
-            disabled={loading}
-            icon={<GoogleIcon size={18} />}
-          />
-        </View>
-
-        <View style={styles.loginRow}>
-          <Text style={styles.loginText}>Sudah memiliki akun Makarya? </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Login")}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.loginLink}>Masuk di Sini</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Security Trust Footnote */}
-        <View style={styles.securityBadge}>
-          <ShieldCheck size={15} color={COLORS.brandIndigo} />
-          <Text style={styles.securityText}>
-            Pendaftaran aman, data terverifikasi, dan bebas biaya pendaftaran awal.
-          </Text>
-        </View>
-      </ScrollView>
+          {/* Security Trust Badge */}
+          <View style={[s.securityBadge, { marginTop: 10 }]}>
+            <ShieldCheck size={14} color={COLORS.brandIndigo} />
+            <Text style={s.securityText}>
+              Pendaftaran Gratis • Verifikasi Otomatis • Keamanan Data Terjamin
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }

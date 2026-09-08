@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Dimensions,
 } from "react-native";
-import { COLORS } from "../../theme/colors";
+import { COLORS, SHADOWS } from "../../theme/colors";
+import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
@@ -23,7 +25,9 @@ import {
   Store,
   ArrowRight,
 } from "lucide-react-native";
-import { styles } from "./LoginScreen.styles";
+import { styles as s } from "./LoginScreen.styles";
+
+const { height } = Dimensions.get("window");
 
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -96,151 +100,171 @@ export function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.screen}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Top Header & Branding */}
-        <View style={styles.header}>
+    <View style={s.screen}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
+      <View style={[s.heroSection, { height: height * 0.42 }]}>
+        <Image
+          source={require("../../../assets/onboarding_3.jpg")}
+          style={s.heroImage}
+          resizeMode="cover"
+        />
+        <View style={s.heroOverlay} />
+
+        <View style={s.heroContent}>
           <Image
             source={require("../../../assets/logo.webp")}
-            style={styles.brandLogo}
+            style={s.brandLogo}
             resizeMode="contain"
+            tintColor="#FFFFFF"
           />
-          <Text style={styles.welcomeText}>Selamat Datang Kembali</Text>
-          <Text style={styles.subtitle}>
-            Masuk untuk mengelola proyek, proposal kerja, dan transaksi escrow aman.
+
+          <View style={s.heroBadge}>
+            <ShieldCheck size={11} color="#6EE7B7" />
+            <Text style={s.heroBadgeText}>Platform Kolaborasi Terverifikasi</Text>
+          </View>
+
+          <Text style={s.welcomeText}>Masuk ke Akun Anda</Text>
+          <Text style={s.subtitle}>
+            Akses dashboard proyek, pantau proposal kerja, dan kelola saldo rekening escrow aman.
           </Text>
         </View>
+      </View>
 
-        {/* Quick Fill Test Accounts Section */}
-        <View style={styles.testAccountBox}>
-          <View style={styles.testHeader}>
-            <View style={styles.testTitleRow}>
-              <Sparkles size={13} color={COLORS.brandIndigo} />
-              <Text style={styles.testTitle}>Akses Cepat Uji Coba</Text>
+      {/* 2. ELEVATED BOTTOM SHEET (Seamless Curve) */}
+      <View style={s.bottomSheet}>
+        <ScrollView
+          contentContainerStyle={s.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Quick Fill Test Accounts Chips */}
+          <View style={s.testAccountBox}>
+            <View style={s.testHeader}>
+              <View style={s.testTitleRow}>
+                <Sparkles size={13} color={COLORS.brandIndigo} />
+                <Text style={s.testTitle}>Akses Cepat Uji Coba</Text>
+              </View>
+              <Text style={s.testPassNotice}>Kata sandi: password123</Text>
             </View>
-            <Text style={styles.testPassNotice}>Kata sandi: password123</Text>
+
+            <View style={s.chipRow}>
+              <TouchableOpacity
+                style={[
+                  s.chip,
+                  email === "darell@ubsi.ac.id" && s.chipActiveMhs,
+                ]}
+                onPress={() => fillTestAccount("darell@ubsi.ac.id")}
+                activeOpacity={0.75}
+              >
+                <View style={s.chipIconBgIndigo}>
+                  <GraduationCap size={12} color={COLORS.brandIndigo} />
+                </View>
+                <View>
+                  <Text style={s.chipLabel}>Mahasiswa</Text>
+                  <Text style={s.chipEmail}>darell@ubsi.ac.id</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  s.chip,
+                  email === "kopi.nusantara@gmail.com" && s.chipActiveUmkm,
+                ]}
+                onPress={() => fillTestAccount("kopi.nusantara@gmail.com")}
+                activeOpacity={0.75}
+              >
+                <View style={s.chipIconBgGreen}>
+                  <Store size={12} color={COLORS.success} />
+                </View>
+                <View>
+                  <Text style={s.chipLabel}>Klien UMKM</Text>
+                  <Text style={s.chipEmail}>kopi.nusantara@...</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={styles.chipRow}>
-            <TouchableOpacity
-              style={[
-                styles.chip,
-                email === "darell@ubsi.ac.id" && styles.chipActiveMhs,
-              ]}
-              onPress={() => fillTestAccount("darell@ubsi.ac.id")}
-              activeOpacity={0.75}
-            >
-              <View style={styles.chipIconBgIndigo}>
-                <GraduationCap size={12} color={COLORS.brandIndigo} />
-              </View>
-              <View>
-                <Text style={styles.chipLabel}>Mahasiswa</Text>
-                <Text style={styles.chipEmail}>darell@ubsi.ac.id</Text>
-              </View>
-            </TouchableOpacity>
+          {/* Form Input Area (No internal card, flows naturally on surface) */}
+          <View style={s.formArea}>
+            <Input
+              label="Email Akun / Kampus"
+              placeholder="nama@kampus.ac.id atau email usaha"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              icon={<Mail size={18} color={COLORS.textMuted} />}
+            />
 
-            <TouchableOpacity
-              style={[
-                styles.chip,
-                email === "kopi.nusantara@gmail.com" && styles.chipActiveUmkm,
-              ]}
-              onPress={() => fillTestAccount("kopi.nusantara@gmail.com")}
-              activeOpacity={0.75}
-            >
-              <View style={styles.chipIconBgGreen}>
-                <Store size={12} color={COLORS.success} />
-              </View>
-              <View>
-                <Text style={styles.chipLabel}>Klien UMKM</Text>
-                <Text style={styles.chipEmail}>kopi.nusantara@...</Text>
-              </View>
-            </TouchableOpacity>
+            <Input
+              label="Kata Sandi"
+              placeholder="Masukkan kata sandi akun"
+              value={password}
+              onChangeText={setPassword}
+              isPassword={true}
+              icon={<Lock size={18} color={COLORS.textMuted} />}
+            />
+
+            <View style={s.forgotPasswordRow}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ForgotPassword")}
+                activeOpacity={0.7}
+              >
+                <Text style={s.forgotPasswordLink}>Lupa Kata Sandi?</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Button
+              title="Masuk Sekarang"
+              variant="brand"
+              size="lg"
+              onPress={handleLogin}
+              loading={loading}
+              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
+              style={s.loginBtn}
+            />
+
+            {/* Divider */}
+            <View style={s.dividerRow}>
+              <View style={s.dividerLine} />
+              <Text style={s.dividerText}>atau</Text>
+              <View style={s.dividerLine} />
+            </View>
+
+            {/* Google Sign In */}
+            <Button
+              title="Masuk dengan Akun Google"
+              variant="google"
+              size="lg"
+              onPress={handleGoogleLogin}
+              loading={googleLoading}
+              disabled={loading}
+              icon={<GoogleIcon size={18} />}
+            />
           </View>
-        </View>
 
-        {/* Main Login Form Container */}
-        <View style={styles.formCard}>
-          <Input
-            label="Email Akun / Kampus"
-            placeholder="nama@kampus.ac.id atau email usaha"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            icon={<Mail size={18} color={COLORS.textMuted} />}
-          />
-
-          <Input
-            label="Kata Sandi"
-            placeholder="Masukkan kata sandi akun"
-            value={password}
-            onChangeText={setPassword}
-            isPassword={true}
-            icon={<Lock size={18} color={COLORS.textMuted} />}
-          />
-
-          <View style={styles.forgotPasswordRow}>
+          {/* Register footer link */}
+          <View style={s.registerRow}>
+            <Text style={s.registerText}>Belum memiliki akun Makarya? </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate("ForgotPassword")}
+              onPress={() => navigation.navigate("Register")}
               activeOpacity={0.7}
             >
-              <Text style={styles.forgotPasswordLink}>Lupa Kata Sandi?</Text>
+              <Text style={s.registerLink}>Daftar Sekarang</Text>
             </TouchableOpacity>
           </View>
 
-          <Button
-            title="Masuk Sekarang"
-            variant="brand"
-            size="lg"
-            onPress={handleLogin}
-            loading={loading}
-            iconRight={<ArrowRight size={18} color="#FFFFFF" />}
-            style={styles.loginBtn}
-          />
-
-          {/* Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>atau</Text>
-            <View style={styles.dividerLine} />
+          {/* Security Trust Footnote */}
+          <View style={s.securityBadge}>
+            <ShieldCheck size={14} color={COLORS.brandIndigo} />
+            <Text style={s.securityText}>
+              Dilindungi Enkripsi & Garansi Rekening Bersama (Escrow)
+            </Text>
           </View>
-
-          {/* Google Sign In */}
-          <Button
-            title="Masuk dengan Akun Google"
-            variant="google"
-            size="lg"
-            onPress={handleGoogleLogin}
-            loading={googleLoading}
-            disabled={loading}
-            icon={<GoogleIcon size={18} />}
-          />
-        </View>
-
-        {/* Register footer link */}
-        <View style={styles.registerRow}>
-          <Text style={styles.registerText}>Belum memiliki akun Makarya? </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Register")}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.registerLink}>Daftar Sekarang</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Security Trust Footnote */}
-        <View style={styles.securityBadge}>
-          <ShieldCheck size={15} color={COLORS.brandIndigo} />
-          <Text style={styles.securityText}>
-            Dilindungi oleh Sistem Rekening Bersama Escrow & Enkripsi Data
-          </Text>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </View>
   );
 }
