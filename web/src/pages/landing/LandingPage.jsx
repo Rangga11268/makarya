@@ -17,12 +17,22 @@ import {
   Lock,
   Star,
   Layers,
+  CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 
 // Premium Line-Art Icons (Fiverr Screenshot 1 & 2 Standard, Monochrome, Stroke 1.5px)
 function IconProgramming() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <rect width="20" height="13" x="2" y="3" rx="2" />
       <path d="M7 21h10M12 16v5M8 9.5l-2 2 2 2M16 9.5l2 2-2 2M13 8.5l-2 6" />
     </svg>
@@ -31,7 +41,15 @@ function IconProgramming() {
 
 function IconGraphics() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <rect width="18" height="18" x="3" y="3" rx="3" />
       <circle cx="8.5" cy="8.5" r="1.5" />
       <path d="M21 15l-5-5L5 21" />
@@ -41,7 +59,15 @@ function IconGraphics() {
 
 function IconUIUX() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <rect width="14" height="20" x="5" y="2" rx="2.5" />
       <path d="M9 6h6M8 11h8M9 15h3" />
       <circle cx="12" cy="18.5" r="0.75" fill="currentColor" />
@@ -51,7 +77,15 @@ function IconUIUX() {
 
 function IconVideo() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <rect width="20" height="15" x="2" y="5" rx="2" />
       <polygon points="10 9 15 12.5 10 16 10 9" />
       <path d="M6 5v3M18 5v3M6 16v4M18 16v4" />
@@ -61,7 +95,15 @@ function IconVideo() {
 
 function IconWriting() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <polyline points="14 2 14 8 20 8" />
       <line x1="16" y1="13" x2="8" y2="13" />
@@ -73,7 +115,15 @@ function IconWriting() {
 
 function IconData() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <rect width="18" height="18" x="3" y="3" rx="2" />
       <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
     </svg>
@@ -82,7 +132,15 @@ function IconData() {
 
 function IconMarketing() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M2 19h20M9 9l3-3 3 3M12 6v8" />
     </svg>
   );
@@ -90,7 +148,15 @@ function IconMarketing() {
 
 function IconPhoto() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
       <circle cx="12" cy="13" r="4" />
     </svg>
@@ -99,7 +165,15 @@ function IconPhoto() {
 
 function IconConsulting() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-slate-900">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-8 h-8 text-slate-900"
+    >
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <polyline points="16 11 18 13 22 9" />
@@ -110,7 +184,15 @@ function IconConsulting() {
 // 4 Pillars Trust Line-Art Icons (Screenshot 2: Fiverr "Make it all happen with freelancers")
 function IconFiverrGrid() {
   return (
-    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-9 h-9 text-slate-900"
+    >
       <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
       <rect x="14" y="4" width="6.5" height="6.5" rx="1.5" />
       <rect x="4" y="14" width="6.5" height="6.5" rx="1.5" />
@@ -123,7 +205,15 @@ function IconFiverrGrid() {
 
 function IconFiverrCheckLoop() {
   return (
-    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-9 h-9 text-slate-900"
+    >
       <path d="M16 5a11 11 0 1 1-10.5 14.5" />
       <path d="M5.5 13.5l.5 6 6-.5" />
       <circle cx="16" cy="16" r="6.5" />
@@ -134,7 +224,15 @@ function IconFiverrCheckLoop() {
 
 function IconFiverrLightning() {
   return (
-    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-9 h-9 text-slate-900"
+    >
       <rect x="4" y="4" width="24" height="24" rx="3.5" />
       <path d="M17 8.5l-6.5 8.5h5.5l-2 6.5 8.5-9.5h-5.5l3-5.5z" />
     </svg>
@@ -143,7 +241,15 @@ function IconFiverrLightning() {
 
 function IconFiverrEscrowPay() {
   return (
-    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="w-9 h-9 text-slate-900">
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-9 h-9 text-slate-900"
+    >
       <rect x="4" y="5" width="24" height="18" rx="3" />
       <path d="M4 19l-1 4 4.5-1.5" />
       <path d="M12.5 13.5a3.5 3.5 0 0 0 7 0" />
@@ -170,7 +276,7 @@ export function LandingPage() {
     async function loadPublicData() {
       // Timeout guard 2.5 detik agar UI tidak pernah loading abadi
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 2500)
+        setTimeout(() => reject(new Error("Timeout")), 2500),
       );
 
       try {
@@ -227,15 +333,27 @@ export function LandingPage() {
 
   // 9 Kategori Icon Line-Art Minimalis ala Screenshot 1 Fiverr
   const quickCategories = [
-    { title: "Website & Pemrograman", icon: <IconProgramming />, query: "Website" },
+    {
+      title: "Website & Pemrograman",
+      icon: <IconProgramming />,
+      query: "Website",
+    },
     { title: "Desain Grafis & Logo", icon: <IconGraphics />, query: "Desain" },
     { title: "UI/UX & Desain Aplikasi", icon: <IconUIUX />, query: "UI/UX" },
     { title: "Video Reels & Promosi", icon: <IconVideo />, query: "Video" },
-    { title: "Copywriting & Artikel", icon: <IconWriting />, query: "Copywriting" },
+    {
+      title: "Copywriting & Artikel",
+      icon: <IconWriting />,
+      query: "Copywriting",
+    },
     { title: "Admin & Data Excel", icon: <IconData />, query: "Data" },
     { title: "Pemasaran Digital", icon: <IconMarketing />, query: "Marketing" },
     { title: "Foto & Katalog Produk", icon: <IconPhoto />, query: "Katalog" },
-    { title: "Konsultasi Usaha", icon: <IconConsulting />, query: "Konsultasi" },
+    {
+      title: "Konsultasi Usaha",
+      icon: <IconConsulting />,
+      query: "Konsultasi",
+    },
   ];
 
   // 6 Kategori Showcase dengan Gambar Produk Real (Anti-Slop)
@@ -327,7 +445,9 @@ export function LandingPage() {
               Serahkan kebutuhan digital bisnismu pada mahasiswa bertalenta.
             </h1>
             <p className="text-base sm:text-lg text-slate-300 font-normal">
-              Dari desain logo, kemasan, website, video reels hingga data, temukan mahasiswa terverifikasi kampus dengan transaksi aman Rekening Bersama.
+              Dari desain logo, kemasan, website, video reels hingga data,
+              temukan mahasiswa terverifikasi kampus dengan transaksi aman
+              Rekening Bersama.
             </p>
           </div>
 
@@ -369,13 +489,25 @@ export function LandingPage() {
 
           {/* Trusted By Bar Monokrom (Persis Bar Meta Google Netflix di Fiverr) */}
           <div className="pt-10 border-t border-slate-800/80 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs text-slate-400">
-            <span className="font-semibold text-slate-400">Dipercaya talenta dari:</span>
-            <span className="font-bold tracking-wider text-slate-300">UNIVERSITAS INDONESIA</span>
+            <span className="font-semibold text-slate-400">
+              Dipercaya talenta dari:
+            </span>
+            <span className="font-bold tracking-wider text-slate-300">
+              UNIVERSITAS INDONESIA
+            </span>
             <span className="font-bold tracking-wider text-slate-300">ITB</span>
-            <span className="font-bold tracking-wider text-slate-300">UNIVERSITAS GADJAH MADA</span>
-            <span className="font-bold tracking-wider text-slate-300">UNDIP</span>
-            <span className="font-bold tracking-wider text-slate-300">UNAIR</span>
-            <span className="font-bold tracking-wider text-slate-300">ITS SURABAYA</span>
+            <span className="font-bold tracking-wider text-slate-300">
+              UNIVERSITAS GADJAH MADA
+            </span>
+            <span className="font-bold tracking-wider text-slate-300">
+              UNDIP
+            </span>
+            <span className="font-bold tracking-wider text-slate-300">
+              UNAIR
+            </span>
+            <span className="font-bold tracking-wider text-slate-300">
+              ITS SURABAYA
+            </span>
           </div>
         </div>
       </section>
@@ -413,7 +545,8 @@ export function LandingPage() {
             <div className="space-y-4">
               <IconFiverrGrid />
               <p className="text-sm font-medium text-slate-700 leading-snug">
-                Akses ratusan talenta terverifikasi kampus dari berbagai program studi unggulan.
+                Akses ratusan talenta terverifikasi kampus dari berbagai program
+                studi unggulan.
               </p>
             </div>
 
@@ -421,7 +554,8 @@ export function LandingPage() {
             <div className="space-y-4">
               <IconFiverrCheckLoop />
               <p className="text-sm font-medium text-slate-700 leading-snug">
-                Alur kerja praktis: buat brief kebutuhan, tinjau proposal, dan pilih yang paling cocok.
+                Alur kerja praktis: buat brief kebutuhan, tinjau proposal, dan
+                pilih yang paling cocok.
               </p>
             </div>
 
@@ -429,7 +563,8 @@ export function LandingPage() {
             <div className="space-y-4">
               <IconFiverrLightning />
               <p className="text-sm font-medium text-slate-700 leading-snug">
-                Pengerjaan cepat dan berkualitas tinggi, tetap terjangkau dan tepat waktu.
+                Pengerjaan cepat dan berkualitas tinggi, tetap terjangkau dan
+                tepat waktu.
               </p>
             </div>
 
@@ -437,7 +572,8 @@ export function LandingPage() {
             <div className="space-y-4">
               <IconFiverrEscrowPay />
               <p className="text-sm font-medium text-slate-700 leading-snug">
-                Bayar hanya saat Anda 100% puas: dana aman di rekening bersama Makarya.
+                Bayar hanya saat Anda 100% puas: dana aman di rekening bersama
+                Makarya.
               </p>
             </div>
           </div>
@@ -456,7 +592,8 @@ export function LandingPage() {
               Eksplorasi Karya & Jasa Terpopuler
             </h2>
             <p className="text-sm text-slate-500 mt-1">
-              Pratinjau portofolio riil mahasiswa yang siap mengerjakan kebutuhan bisnis Anda.
+              Pratinjau portofolio riil mahasiswa yang siap mengerjakan
+              kebutuhan bisnis Anda.
             </p>
           </div>
           <Link
@@ -491,7 +628,8 @@ export function LandingPage() {
                 Peluang Nyata & Talenta Terpilih
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                Jelajahi pekerjaan aktif dari UMKM atau rekrut langsung mahasiswa berprestasi.
+                Jelajahi pekerjaan aktif dari UMKM atau rekrut langsung
+                mahasiswa berprestasi.
               </p>
             </div>
 
@@ -545,17 +683,27 @@ export function LandingPage() {
               ) : (
                 <div className="text-center py-12 px-4 rounded-2xl bg-white border border-dashed border-slate-300">
                   <Briefcase className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <p className="text-sm font-bold text-slate-800">Belum ada proyek terbuka saat ini</p>
-                  <p className="text-xs text-slate-500 mt-1">Jadilah yang pertama memasang kebutuhan pekerjaan digital.</p>
+                  <p className="text-sm font-bold text-slate-800">
+                    Belum ada proyek terbuka saat ini
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Jadilah yang pertama memasang kebutuhan pekerjaan digital.
+                  </p>
                   <Link to="/login" className="inline-block mt-4">
-                    <Button variant="brand" size="sm">Pasang Proyek Pertama</Button>
+                    <Button variant="brand" size="sm">
+                      Pasang Proyek Pertama
+                    </Button>
                   </Link>
                 </div>
               )}
 
               <div className="text-center pt-2">
                 <Link to="/projects">
-                  <Button variant="outline" size="md" className="font-bold border-slate-300 hover:border-slate-400">
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="font-bold border-slate-300 hover:border-slate-400"
+                  >
                     <span>Lihat Semua Proyek Terbuka</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -585,17 +733,28 @@ export function LandingPage() {
               ) : (
                 <div className="text-center py-12 px-4 rounded-2xl bg-white border border-dashed border-slate-300">
                   <GraduationCap className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <p className="text-sm font-bold text-slate-800">Mahasiswa sedang mempersiapkan portofolio</p>
-                  <p className="text-xs text-slate-500 mt-1">Daftarkan dirimu sebagai talenta terverifikasi kampus sekarang.</p>
+                  <p className="text-sm font-bold text-slate-800">
+                    Mahasiswa sedang mempersiapkan portofolio
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Daftarkan dirimu sebagai talenta terverifikasi kampus
+                    sekarang.
+                  </p>
                   <Link to="/register" className="inline-block mt-4">
-                    <Button variant="brand" size="sm">Daftar Jadi Freelancer</Button>
+                    <Button variant="brand" size="sm">
+                      Daftar Jadi Freelancer
+                    </Button>
                   </Link>
                 </div>
               )}
 
               <div className="text-center pt-2">
                 <Link to="/talents">
-                  <Button variant="outline" size="md" className="font-bold border-slate-300 hover:border-slate-400">
+                  <Button
+                    variant="outline"
+                    size="md"
+                    className="font-bold border-slate-300 hover:border-slate-400"
+                  >
                     <span>Jelajahi Seluruh Direktori Talenta</span>
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -618,11 +777,14 @@ export function LandingPage() {
               </div>
 
               <h2 className="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-snug">
-                Transaksi aman tanpa rasa cemas, dari awal brief sampai hasil akhir disetujui.
+                Transaksi aman tanpa rasa cemas, dari awal brief sampai hasil
+                akhir disetujui.
               </h2>
 
               <p className="text-sm sm:text-base text-slate-600 font-normal leading-relaxed">
-                Makarya memastikan setiap rupiah dana pelaku usaha aman di rekening perantara resmi, dan setiap jerih payah karya mahasiswa terbayar 100% tepat waktu tanpa potongan komisi.
+                Makarya memastikan setiap rupiah dana pelaku usaha aman di
+                rekening perantara resmi, dan setiap jerih payah karya mahasiswa
+                terbayar 100% tepat waktu tanpa potongan komisi.
               </p>
 
               {/* 3 Value Points with Minimalist Monochrome Line-Art */}
@@ -632,9 +794,13 @@ export function LandingPage() {
                     <Lock className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Dana Terkunci Aman di Awal</h3>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Dana Terkunci Aman di Awal
+                    </h3>
                     <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                      UMKM menyetor dana ke escrow sebelum proyek dimulai. Mahasiswa tenang karena imbalan sudah terjamin dan tidak bisa dibatalkan sepihak.
+                      UMKM menyetor dana ke escrow sebelum proyek dimulai.
+                      Mahasiswa tenang karena imbalan sudah terjamin dan tidak
+                      bisa dibatalkan sepihak.
                     </p>
                   </div>
                 </div>
@@ -644,9 +810,13 @@ export function LandingPage() {
                     <CheckCircle2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Pemeriksaan Hasil & Hak Revisi</h3>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Pemeriksaan Hasil & Hak Revisi
+                    </h3>
                     <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                      Periksa berkas deliverable langsung di ruang kerja digital. Anda berhak meminta revisi sebelum menyetujui pelepasan dana.
+                      Periksa berkas deliverable langsung di ruang kerja
+                      digital. Anda berhak meminta revisi sebelum menyetujui
+                      pelepasan dana.
                     </p>
                   </div>
                 </div>
@@ -656,9 +826,13 @@ export function LandingPage() {
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Jaminan Integritas Mahasiswa Kampus</h3>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      Jaminan Integritas Mahasiswa Kampus
+                    </h3>
                     <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                      Setiap mahasiswa terikat data identitas resmi (.ac.id/KTM). Jika terjadi wanprestasi, dana otomatis dikembalikan utuh ke UMKM.
+                      Setiap mahasiswa terikat data identitas resmi
+                      (.ac.id/KTM). Jika terjadi wanprestasi, dana otomatis
+                      dikembalikan utuh ke UMKM.
                     </p>
                   </div>
                 </div>
@@ -675,7 +849,9 @@ export function LandingPage() {
                       <Lock className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-900">Kontrak Escrow #MKY-8821</div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Kontrak Escrow #MKY-8821
+                      </div>
                       <div className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                         Dana Terlindungi 100%
@@ -689,16 +865,26 @@ export function LandingPage() {
 
                 {/* Contract Subject */}
                 <div className="space-y-1">
-                  <div className="text-[11px] text-slate-400 font-medium">Kebutuhan Proyek:</div>
-                  <div className="text-sm font-bold text-slate-900">Redesign Kemasan & Label Botol Kopi</div>
-                  <div className="text-xs text-slate-500">Klien: Aura Coffee Roasters • Mahasiswa: Darell (DKV)</div>
+                  <div className="text-[11px] text-slate-400 font-medium">
+                    Kebutuhan Proyek:
+                  </div>
+                  <div className="text-sm font-bold text-slate-900">
+                    Redesign Kemasan & Label Botol Kopi
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Klien: Aura Coffee Roasters • Mahasiswa: Darell (DKV)
+                  </div>
                 </div>
 
                 {/* Escrow Value Box */}
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-slate-500 block font-medium">Nominal Diamankan:</span>
-                    <span className="text-xl font-extrabold text-slate-900">Rp 450.000</span>
+                    <span className="text-[11px] text-slate-500 block font-medium">
+                      Nominal Diamankan:
+                    </span>
+                    <span className="text-xl font-extrabold text-slate-900">
+                      Rp 450.000
+                    </span>
                   </div>
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-full">
                     ✓ Rekening Bersama
@@ -708,15 +894,21 @@ export function LandingPage() {
                 {/* Live Timeline Steps */}
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center gap-2.5 text-slate-700 font-medium">
-                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">
+                      ✓
+                    </span>
                     <span>1. UMKM Setor Dana Kontrak</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-slate-700 font-medium">
-                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">
+                      ✓
+                    </span>
                     <span>2. Mahasiswa Unggah File Final</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-brand-indigo font-bold">
-                    <span className="w-5 h-5 rounded-full bg-brand-indigo text-white flex items-center justify-center text-[10px]">3</span>
+                    <span className="w-5 h-5 rounded-full bg-brand-indigo text-white flex items-center justify-center text-[10px]">
+                      3
+                    </span>
                     <span>3. UMKM Periksa & Setujui Rilis Dana</span>
                   </div>
                 </div>
@@ -728,7 +920,8 @@ export function LandingPage() {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                   <p className="text-[10px] text-center text-slate-400 mt-2">
-                    Dana baru berpindah ke dompet mahasiswa setelah tombol ini diklik.
+                    Dana baru berpindah ke dompet mahasiswa setelah tombol ini
+                    diklik.
                   </p>
                 </div>
               </div>
@@ -744,7 +937,8 @@ export function LandingPage() {
             Pertanyaan yang Sering Diajukan
           </h2>
           <p className="text-sm text-slate-500">
-            Hal mendasar mengenai alur kerja, keamanan transaksi, dan perlindungan pengguna.
+            Hal mendasar mengenai alur kerja, keamanan transaksi, dan
+            perlindungan pengguna.
           </p>
         </div>
 
@@ -796,7 +990,9 @@ export function LandingPage() {
                 Tingkatkan Citra Bisnis Anda Tanpa Beban Biaya Agency.
               </h3>
               <p className="text-xs sm:text-sm text-indigo-100 leading-relaxed font-normal">
-                Dapatkan logo profesional, kemasan produk menawan, website responsif, atau konten video reels dari talenta muda kreatif dengan jaminan perlindungan dana 100%.
+                Dapatkan logo profesional, kemasan produk menawan, website
+                responsif, atau konten video reels dari talenta muda kreatif
+                dengan jaminan perlindungan dana 100%.
               </p>
             </div>
             <div className="relative z-10 pt-2">
@@ -824,7 +1020,9 @@ export function LandingPage() {
                 Ubah Kemampuan Kampus Menjadi Penghasilan & Portofolio Nyata.
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Bantu UMKM lokal berkembang, dapatkan penghasilan utuh tanpa potongan komisi, dan otomatis miliki portofolio terverifikasi untuk melamar karir profesional.
+                Bantu UMKM lokal berkembang, dapatkan penghasilan utuh tanpa
+                potongan komisi, dan otomatis miliki portofolio terverifikasi
+                untuk melamar karir profesional.
               </p>
             </div>
             <div className="relative z-10 pt-2">
