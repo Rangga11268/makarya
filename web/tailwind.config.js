@@ -37,10 +37,10 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
-        serif: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'], // Alias ke modern sans untuk kompatibilitas class lama
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        heading: ['"Geist Sans"', 'sans-serif'],
+        sans: ['"Inter"', 'sans-serif'],
+        serif: ['"Geist Sans"', 'sans-serif'], // Alias sementara agar class lama yang pakai font-serif otomatis terganti ke Geist
+        mono: ['"Inter"', 'sans-serif'],
       },
       borderRadius: {
         card: "18px",
