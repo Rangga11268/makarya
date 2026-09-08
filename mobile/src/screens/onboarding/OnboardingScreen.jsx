@@ -18,13 +18,11 @@ const { width } = Dimensions.get("window");
 const slides = [
   {
     id: "1",
-    badge: "Platform Mahasiswa #1",
-    title: "Hasilkan Uang Nyata\nSelagi Kuliah",
+    badge: "Karier & Portofolio",
+    title: "Bangun Portofolio,\nRaih Honor Kuliah",
     subtitle:
-      "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata, bangun portofolio dan raih honor langsung dari laptop-mu.",
+      "Kerjakan proyek digital nyata dari UMKM lokal. Setiap hasil kerjamu terbit resmi sebagai bukti kompetensi untuk melamar kerja.",
     image: require("../../../assets/onboarding_1.jpg"),
-    bgColor: "#091424", // Deep Navy Slate
-    accentColor: "#4F46E5", // Indigo
     bgColor: "#091424", // Deep Midnight Navy
     accentColor: "#4F46E5", // Brand Indigo
     badgeBg: "rgba(79, 70, 229, 0.22)",
@@ -33,36 +31,26 @@ const slides = [
   },
   {
     id: "2",
-    badge: "Proteksi Pembayaran",
-    title: "Honormu Aman,\n100% Terjamin",
+    badge: "Garansi Rekening Bersama",
+    title: "Honor Aman,\nPasti Dibayar",
     subtitle:
-      "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai dan disetujui, langsung cair ke dompetmu.",
+      "Klien mendepositkan dana ke rekening bersama Makarya sebelum proyek berjalan. Begitu tugas disetujui, dana langsung cair ke rekeningmu.",
     image: require("../../../assets/onboarding_2.jpg"),
-    bgColor: "#061A14", // Deep Forest Emerald
-    accentColor: "#059669", // Emerald
-    badgeBg: "rgba(5, 150, 105, 0.22)",
-    badgeBorder: "rgba(52, 211, 153, 0.4)",
-    badgeText: "#6EE7B7",
-    bgColor: "#091424", // Deep Midnight Navy (Unified)
-    accentColor: "#4F46E5", // Brand Indigo (Unified)
+    bgColor: "#091424", // Deep Midnight Navy
+    accentColor: "#4F46E5", // Brand Indigo
     badgeBg: "rgba(79, 70, 229, 0.22)",
     badgeBorder: "rgba(129, 140, 248, 0.4)",
     badgeText: "#A5B4FC",
   },
   {
     id: "3",
-    badge: "Kolaborasi Real-Time",
-    title: "Pantau Proyek\ndari Genggamanmu",
+    badge: "Ruang Kerja Digital",
+    title: "Lacak Target &\nDiskusi Proyek",
     subtitle:
-      "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM dalam satu platform terpadu.",
+      "Kirim proposal, pantau tenggat waktu per milestone, dan koordinasi langsung dengan pemilik usaha tanpa repot berganti aplikasi.",
     image: require("../../../assets/onboarding_3.jpg"),
-    bgColor: "#140D26", // Deep Violet Night
-    accentColor: "#7C3AED", // Violet
-    badgeBg: "rgba(124, 58, 237, 0.22)",
-    badgeBorder: "rgba(167, 139, 250, 0.4)",
-    badgeText: "#C4B5FD",
-    bgColor: "#091424", // Deep Midnight Navy (Unified)
-    accentColor: "#4F46E5", // Brand Indigo (Unified)
+    bgColor: "#091424", // Deep Midnight Navy
+    accentColor: "#4F46E5", // Brand Indigo
     badgeBg: "rgba(79, 70, 229, 0.22)",
     badgeBorder: "rgba(129, 140, 248, 0.4)",
     badgeText: "#A5B4FC",

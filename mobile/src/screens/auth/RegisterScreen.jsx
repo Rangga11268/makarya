@@ -106,7 +106,11 @@ export function RegisterScreen({ navigation }) {
 
   return (
     <View style={s.screen}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
 
       {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
       <View style={[s.heroSection, { height: height * 0.38 }]}>
@@ -120,12 +124,15 @@ export function RegisterScreen({ navigation }) {
         <View style={s.heroContent}>
           <View style={s.heroBadge}>
             <ShieldCheck size={11} color="#6EE7B7" />
-            <Text style={s.heroBadgeText}>Akses Talenta Kampus Terverifikasi</Text>
+            <Text style={s.heroBadgeText}>
+              Akses Talenta Kampus Terverifikasi
+            </Text>
           </View>
 
           <Text style={s.welcomeText}>Daftar Akun UMKM</Text>
           <Text style={s.subtitle}>
-            Pasang proyek dan temukan mahasiswa bertalenta terbaik untuk bisnis Anda.
+            Pasang proyek dan temukan mahasiswa bertalenta terbaik untuk bisnis
+            Anda.
           </Text>
         </View>
       </View>
@@ -149,7 +156,14 @@ export function RegisterScreen({ navigation }) {
 
             {/* Bidang Industri Chips */}
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.textDark, marginBottom: 8 }}>
+              <Text
+                style={{
+                  fontFamily: FONTS.bodyBold,
+                  fontSize: 12,
+                  color: COLORS.textDark,
+                  marginBottom: 8,
+                }}
+              >
                 Bidang Industri
               </Text>
               <ScrollView
@@ -182,8 +196,15 @@ export function RegisterScreen({ navigation }) {
                     >
                       <Text
                         style={[
-                          { fontFamily: FONTS.bodyMedium, fontSize: 12, color: "#64748B" },
-                          selected && { fontFamily: FONTS.bodyBold, color: "#FFFFFF" },
+                          {
+                            fontFamily: FONTS.bodyMedium,
+                            fontSize: 12,
+                            color: "#64748B",
+                          },
+                          selected && {
+                            fontFamily: FONTS.bodyBold,
+                            color: "#FFFFFF",
+                          },
                         ]}
                       >
                         {ind}
