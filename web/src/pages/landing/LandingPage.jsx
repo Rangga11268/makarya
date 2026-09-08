@@ -95,188 +95,148 @@ export function LandingPage() {
   return (
     <div className="space-y-16 sm:space-y-24 pb-16 font-sans">
       {/* 1. HERO SECTION */}
-      <section className="bg-dark-900 text-white pt-12 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
-        <div className="max-w-6xl mx-auto relative z-10 space-y-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-semibold text-brand-cyan">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Platform Micro-freelancing Mahasiswa & Solusi Digital UMKM
+      <section className="bg-dark-900 text-white pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden border-b border-border">
+        {/* Background Visual Element (Slight ambient gradient) */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-indigo/30 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-cyan/20 rounded-full blur-[100px]" />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10 flex flex-col items-center text-center space-y-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-bold tracking-wider uppercase text-brand-cyan">
+            <ShieldCheck className="w-4 h-4" />
+            Platform Micro-Freelancing Kampus Resmi
           </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white">
-              Solusi Digital UMKM dari Mahasiswa Berbakat, Aman dengan Rekening
-              Bersama.
+          <div className="max-w-4xl space-y-5">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.05] text-white">
+              Kerjakan Proyek Nyata.<br className="hidden sm:block" /> Bangun Pengalamanmu.
             </h1>
-            <p className="text-sm sm:text-base text-slate-300 font-sans max-w-2xl leading-relaxed font-normal">
-              Dapatkan desain logo, kemasan produk, website landing page, dan
-              konten video promosi berkualitas tanpa tarif mahal agency. Dana
-              Anda aman terkunci di sistem Escrow hingga pekerjaan selesai dan
-              Anda setujui.
+            <p className="text-sm sm:text-lg text-slate-300 font-sans max-w-2xl mx-auto leading-relaxed">
+              Makarya menghubungkan mahasiswa berbakat dengan UMKM yang membutuhkan solusi digital. Aman dengan rekening bersama, dan jadikan setiap proyek sebagai langkah awal karirmu.
             </p>
           </div>
 
-          {/* Search Bar & Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-            <form
-              onSubmit={handleSearchSubmit}
-              className="w-full max-w-2xl bg-surface p-2 rounded-full border border-border shadow-float flex items-center gap-2"
-            >
-              <div className="flex items-center gap-2 pl-4 flex-1">
-                <Search className="w-4 h-4 text-muted shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Cari kebutuhan: desain logo, website toko, video reels, artikel..."
-                  value={searchKeyword}
-                  onChange={(e) => setSearchKeyword(e.target.value)}
-                  className="w-full text-xs sm:text-sm text-dark-900 bg-transparent placeholder:text-muted/60 focus:outline-none font-sans"
-                />
-              </div>
-              <Button
-                variant="brand"
-                size="md"
-                type="submit"
-                className="shrink-0 text-xs sm:text-sm font-bold rounded-full"
-              >
-                Cari Proyek
-              </Button>
-            </form>
-
-            <Link
-              to={
-                isAuthenticated
-                  ? user?.role === "UMKM"
-                    ? "/projects/new"
-                    : "/projects"
-                  : "/login"
-              }
-            >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full max-w-md mx-auto">
+            <Link to="/projects" className="w-full sm:w-auto">
               <Button
                 variant="brand"
                 size="lg"
-                className="w-full sm:w-auto text-xs sm:text-sm font-bold shadow-brand shrink-0 rounded-full"
+                className="w-full sm:w-auto text-sm font-bold shadow-brand justify-center rounded-full"
               >
-                <PlusCircle className="w-4 h-4 mr-1.5" />
-                Pasang Proyek UMKM
+                Mulai Cari Proyek
+              </Button>
+            </Link>
+
+            <Link to="/login" className="w-full sm:w-auto">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="w-full sm:w-auto text-sm font-bold justify-center rounded-full bg-white/10 border-white/20 text-white hover:bg-white/20 shadow-none"
+              >
+                Butuh Freelancer UMKM?
               </Button>
             </Link>
           </div>
 
-          {/* Key Trust Stats Bar */}
-          <div className="pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs text-left">
-            <div>
-              <span className="text-slate-400 block font-normal">
-                Jaminan Keamanan
-              </span>
-              <span className="text-base sm:text-lg font-bold font-sans text-emerald-400 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4" /> 100% Proteksi Escrow
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block font-normal">
-                Identitas Terverifikasi
-              </span>
-              <span className="text-base sm:text-lg font-bold font-sans text-brand-cyan flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4" /> Email Kampus .ac.id
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block font-normal">
-                Pagu Anggaran Wajar
-              </span>
-              <span className="text-base sm:text-lg font-bold font-sans text-white">
-                Maksimal Rp 2 Juta
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400 block font-normal">
-                Komisi Mahasiswa
-              </span>
-              <span className="text-base sm:text-lg font-bold font-sans text-emerald-400 flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" /> 0% Potongan Honor
-              </span>
-            </div>
+          <div className="pt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs font-semibold text-slate-400">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Proyek Terstruktur
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Pembayaran Escrow Aman
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Khusus Kampus & UMKM
+            </span>
           </div>
         </div>
       </section>
 
-      {/* 2. MOST DEMANDING CATEGORIES */}
-      <section
-        id="kategori"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: Editorial Headline */}
-          <div className="lg:col-span-4 flex flex-col justify-between space-y-6 bg-surface p-7 sm:p-8 rounded-3xl border border-border shadow-xs">
-            <div className="space-y-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
-                Katalog Keahlian
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
-                Kategori Layanan Paling Dibutuhkan UMKM.
-              </h2>
-              <p className="text-xs sm:text-sm text-muted leading-relaxed font-sans font-normal">
-                Pilih spesialisasi yang tepat untuk memperkuat citra merek,
-                menjangkau lebih banyak pelanggan, dan mendongkrak omset usaha
-                Anda.
-              </p>
-            </div>
-
-            <div className="pt-4 border-t border-border">
-              <Link to="/projects">
-                <Button
-                  variant="brand"
-                  size="md"
-                  className="w-full sm:w-auto text-xs font-bold shadow-brand rounded-full"
-                >
-                  <span>Jelajah Semua Kategori</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
-              </Link>
-            </div>
+      {/* 2. STATS & SOCIAL PROOF */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
+        <div className="bg-surface rounded-3xl border border-border shadow-float p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 text-center divide-y sm:divide-y-0 sm:divide-x divide-border">
+          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
+            <span className="text-3xl sm:text-4xl font-extrabold text-dark-900 tracking-tight">500+</span>
+            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">Mahasiswa Terverifikasi</span>
           </div>
-
-          {/* Middle Column: Featured Student Photography Card */}
-          <div className="lg:col-span-3 relative rounded-3xl overflow-hidden min-h-[300px] border border-border shadow-xs group">
-            <img
-              src="/images/student-workspace.webp"
-              alt="Mahasiswa Berkarya"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-dark-900/90 via-dark-900/30 to-transparent flex flex-col justify-end p-6 text-white space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold text-white w-fit border border-white/20">
-                <GraduationCap className="w-3.5 h-3.5 text-brand-cyan" />
-                Talenta Kampus Aktif
-              </div>
-              <h4 className="text-base font-bold font-sans">
-                Ribuan Mahasiswa Siap Membantu Usaha Anda
-              </h4>
-              <p className="text-[11px] text-slate-300 font-normal">
-                Karya profesional, harga bersahabat, terverifikasi resmi.
-              </p>
-            </div>
+          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
+            <span className="text-3xl sm:text-4xl font-extrabold text-brand-indigo tracking-tight">250+</span>
+            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">Proyek Terselesaikan</span>
           </div>
-
-          {/* Right Column: Category Cards Grid */}
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {categories.map((cat) => (
-              <CategoryCard
-                key={cat.code}
-                code={cat.code}
-                title={cat.title}
-                projectCount={getCategoryCount(cat.code)}
-                onClick={() => navigate(`/projects?category=${cat.code}`)}
-              />
-            ))}
+          <div className="w-full sm:w-auto pt-4 sm:pt-0 px-4">
+            <span className="text-3xl sm:text-4xl font-extrabold text-dark-900 tracking-tight">100+</span>
+            <span className="block text-xs font-semibold text-muted uppercase tracking-wider mt-1">UMKM Terbantu</span>
           </div>
         </div>
       </section>
 
-      {/* 3. HOW IT WORKS */}
+      {/* 3. PROBLEM & SOLUTION SECTION (2 Columns) */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24 pt-10">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight">
+            Mencari pengalaman tidak harus menunggu lulus.
+          </h2>
+          <p className="text-muted text-base sm:text-lg">
+            Makarya mempertemukan talenta muda yang butuh portofolio dengan pelaku usaha mikro yang butuh solusi digital terjangkau.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {/* MHS Box */}
+          <div className="bg-canvas border border-border rounded-3xl p-8 sm:p-10 space-y-6 shadow-xs relative overflow-hidden">
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-indigo/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="w-12 h-12 rounded-2xl bg-white border border-border shadow-xs flex items-center justify-center text-dark-900 mb-6">
+              <GraduationCap className="w-6 h-6" />
+            </div>
+            <h3 className="text-2xl font-bold text-dark-900">Mahasiswa kesulitan...</h3>
+            <ul className="space-y-4 text-sm text-slate-600">
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                <span>Mendapatkan pengalaman kerja nyata yang dibayar adil.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                <span>Mencari proyek freelance yang aman tanpa takut penipuan.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                <span>Membangun portofolio riil sebelum wisuda.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* UMKM Box */}
+          <div className="bg-dark-900 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xs relative overflow-hidden">
+             <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white mb-6">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-2xl font-bold text-white">UMKM kesulitan...</h3>
+            <ul className="space-y-4 text-sm text-slate-300">
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <span>Menyewa agency digital profesional karena budget terbatas.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <span>Menemukan freelancer mandiri yang terpercaya dan terverifikasi.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <span>Mendeskripsikan kebutuhan digital (logo, web, admin) dengan tepat.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. HOW IT WORKS (Minimalist Timeline) */}
       <section
         id="cara-kerja"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24 pt-10"
       >
-        <div className="bg-canvas border border-border rounded-3xl p-6 sm:p-10 shadow-xs space-y-8">
+        <div className="bg-surface border border-border rounded-3xl p-8 sm:p-12 shadow-xs space-y-12">
           <SectionHeader
             centered
             badgeText="Alur Transaksi Tanpa Cemas"
@@ -284,31 +244,31 @@ export function LandingPage() {
             subtitle="Sistem rekening bersama otomatis menjamin keamanan dana klien dan kepastian pembayaran honor bagi mahasiswa."
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <HowItWorksStep
               stepNumber={1}
               iconName="escrow"
               isHighlight={true}
-              title="1. Pasang Brief & Kunci Dana"
+              title="Pasang Brief & Kunci Dana"
               description="Klien UMKM menentukan kebutuhan dan anggaran. Saat proposal mahasiswa disetujui, dana otomatis diamankan di rekening penampung resmi Makarya."
             />
             <HowItWorksStep
               stepNumber={2}
               iconName="work"
-              title="2. Mahasiswa Mengerjakan Karya"
+              title="Mahasiswa Mengerjakan Karya"
               description="Mahasiswa mengerjakan pesanan dengan tenang karena honor sudah terjamin di awal, sesuai batas waktu dan instruksi brief."
             />
             <HowItWorksStep
               stepNumber={3}
               iconName="complete"
-              title="3. Periksa Hasil & Cairkan Honor"
+              title="Periksa Hasil & Cairkan Honor"
               description="Klien menerima dan memeriksa berkas pengerjaan. Setelah disetujui, dana langsung dicairkan utuh ke dompet saldo mahasiswa."
             />
           </div>
         </div>
       </section>
 
-      {/* 4. LATEST LIVE PROJECTS PREVIEW */}
+      {/* 5. LATEST LIVE PROJECTS PREVIEW */}
       <section
         id="proyek"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
@@ -322,7 +282,7 @@ export function LandingPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs font-bold rounded-full"
+                className="text-xs font-bold rounded-full border-slate-300"
               >
                 Lihat Semua Proyek
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -332,7 +292,7 @@ export function LandingPage() {
         />
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
@@ -341,7 +301,7 @@ export function LandingPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestProjects.slice(0, 6).map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
@@ -349,7 +309,7 @@ export function LandingPage() {
         )}
       </section>
 
-      {/* 5. TALENT SHOWCASE */}
+      {/* 6. TALENT SHOWCASE */}
       <section
         id="talenta"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24"
@@ -361,7 +321,7 @@ export function LandingPage() {
         />
 
         {loadingTalents ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((n) => (
               <div
                 key={n}
@@ -376,7 +336,7 @@ export function LandingPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {talents.map((talent, idx) => (
               <TalentCard
                 key={talent.id || idx}
