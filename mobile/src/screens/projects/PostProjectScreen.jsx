@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
 import {
   View,
   Text,
@@ -69,7 +68,6 @@ export function PostProjectScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -164,7 +162,6 @@ export function PostProjectScreen({ navigation }) {
           style={styles.submitBtn}
         />
       </ScrollView>
-    </View>
     </KeyboardAvoidingView>
   );
 }

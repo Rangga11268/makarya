@@ -23,6 +23,8 @@ const slides = [
     subtitle:
       "Gabung ribuan mahasiswa yang sudah mengerjakan proyek UMKM nyata, bangun portofolio dan raih honor langsung dari laptop-mu.",
     image: require("../../../assets/onboarding_1.jpg"),
+    bgColor: "#091424", // Deep Navy Slate
+    accentColor: "#4F46E5", // Indigo
     bgColor: "#091424", // Deep Midnight Navy
     accentColor: "#4F46E5", // Brand Indigo
     badgeBg: "rgba(79, 70, 229, 0.22)",
@@ -36,6 +38,11 @@ const slides = [
     subtitle:
       "Dana proyek dikunci di rekening bersama escrow sebelum kerjaan dimulai. Selesai dan disetujui, langsung cair ke dompetmu.",
     image: require("../../../assets/onboarding_2.jpg"),
+    bgColor: "#061A14", // Deep Forest Emerald
+    accentColor: "#059669", // Emerald
+    badgeBg: "rgba(5, 150, 105, 0.22)",
+    badgeBorder: "rgba(52, 211, 153, 0.4)",
+    badgeText: "#6EE7B7",
     bgColor: "#091424", // Deep Midnight Navy (Unified)
     accentColor: "#4F46E5", // Brand Indigo (Unified)
     badgeBg: "rgba(79, 70, 229, 0.22)",
@@ -49,6 +56,11 @@ const slides = [
     subtitle:
       "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM dalam satu platform terpadu.",
     image: require("../../../assets/onboarding_3.jpg"),
+    bgColor: "#140D26", // Deep Violet Night
+    accentColor: "#7C3AED", // Violet
+    badgeBg: "rgba(124, 58, 237, 0.22)",
+    badgeBorder: "rgba(167, 139, 250, 0.4)",
+    badgeText: "#C4B5FD",
     bgColor: "#091424", // Deep Midnight Navy (Unified)
     accentColor: "#4F46E5", // Brand Indigo (Unified)
     badgeBg: "rgba(79, 70, 229, 0.22)",

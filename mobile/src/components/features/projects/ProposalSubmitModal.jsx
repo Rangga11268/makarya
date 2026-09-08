@@ -1,5 +1,4 @@
 import React from "react";
-import { View, Text, StyleSheet, Modal, Platform } from "react-native";
 import {
   View,
   Text,
@@ -36,16 +35,11 @@ export function ProposalSubmitModal({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.modalOverlay}
       >
         <View style={styles.modalSheet}>
-          <Text style={styles.modalTitle}>Kirim Proposal Lamaran</Text>
-          <Text style={styles.modalSub}>
-            Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
-          </Text>
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -57,18 +51,6 @@ export function ProposalSubmitModal({
               Tawarkan harga dan rencana kerja terbaik Anda untuk proyek ini
             </Text>
 
-          <CurrencyInput
-            label="Tawaran Honor Pengerjaan"
-            placeholder={String(budgetMax || "")}
-            value={hargaTawar}
-            onChangeValue={(val) => setHargaTawar(String(val))}
-            helperText={
-              budgetMax
-                ? `Batas budget maksimal klien: Rp ${formatNumberDots(budgetMax)}`
-                : undefined
-            }
-            required
-          />
             <CurrencyInput
               label="Tawaran Honor Pengerjaan"
               placeholder={String(budgetMax || "")}
@@ -82,15 +64,6 @@ export function ProposalSubmitModal({
               required
             />
 
-          <Input
-            label="Estimasi Waktu Pengerjaan"
-            placeholder="5"
-            value={estimasiHari}
-            onChangeText={setEstimasiHari}
-            keyboardType="numeric"
-            suffix="Hari Kerja"
-            required
-          />
             <Input
               label="Estimasi Waktu Pengerjaan"
               placeholder="5"
@@ -101,15 +74,6 @@ export function ProposalSubmitModal({
               required
             />
 
-          <Input
-            label="Cover Letter / Rencana Kerja"
-            placeholder="Jelaskan keahlian relevan dan bagaimana Anda akan menyelesaikan proyek ini..."
-            value={coverLetter}
-            onChangeText={setCoverLetter}
-            multiline
-            numberOfLines={4}
-            required
-          />
             <Input
               label="Cover Letter / Rencana Kerja"
               placeholder="Jelaskan keahlian relevan dan bagaimana Anda akan menyelesaikan proyek ini..."
@@ -120,23 +84,6 @@ export function ProposalSubmitModal({
               required
             />
 
-          <View style={styles.modalActions}>
-            <Button
-              title="Batal"
-              variant="secondary"
-              size="md"
-              onPress={onClose}
-              style={{ flex: 1 }}
-            />
-            <Button
-              title="Kirim Lamaran"
-              variant="brand"
-              size="md"
-              onPress={onSubmit}
-              loading={loading}
-              style={{ flex: 2 }}
-            />
-          </View>
             <View style={styles.modalActions}>
               <Button
                 title="Batal"
@@ -156,7 +103,6 @@ export function ProposalSubmitModal({
             </View>
           </ScrollView>
         </View>
-      </View>
       </KeyboardAvoidingView>
     </Modal>
   );
