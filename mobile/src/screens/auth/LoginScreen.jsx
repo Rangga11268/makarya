@@ -101,7 +101,11 @@ export function LoginScreen({ navigation }) {
 
   return (
     <View style={s.screen}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
 
       {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
       <View style={[s.heroSection, { height: height * 0.38 }]}>
@@ -115,7 +119,9 @@ export function LoginScreen({ navigation }) {
         <View style={s.heroContent}>
           <View style={s.heroBadge}>
             <ShieldCheck size={11} color="#6EE7B7" />
-            <Text style={s.heroBadgeText}>Platform Kolaborasi Terverifikasi</Text>
+            <Text style={s.heroBadgeText}>
+              Platform Kolaborasi Terverifikasi
+            </Text>
           </View>
 
           <Text style={s.welcomeText}>Masuk ke Akun Anda</Text>

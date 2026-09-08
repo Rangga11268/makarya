@@ -187,7 +187,8 @@ export function LoginPage() {
             Masuk ke Akun Anda
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-md mx-auto leading-relaxed">
-            Akses dashboard proyek, pantau proposal kerja, dan kelola saldo rekening bersama escrow aman.
+            Akses dashboard proyek, pantau proposal kerja, dan kelola saldo
+            rekening bersama escrow aman.
           </p>
         </div>
       </div>

@@ -111,20 +111,13 @@ export function RegisterScreen({ navigation }) {
       {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
       <View style={[s.heroSection, { height: height * 0.38 }]}>
         <Image
-          source={require("../../../assets/onboarding_2.jpg")}
+          source={require("../../../assets/register_hero.jpg")}
           style={s.heroImage}
           resizeMode="cover"
         />
         <View style={s.heroOverlay} />
 
         <View style={s.heroContent}>
-          <Image
-            source={require("../../../assets/logo.webp")}
-            style={s.brandLogo}
-            resizeMode="contain"
-            tintColor="#FFFFFF"
-          />
-
           <View style={s.heroBadge}>
             <ShieldCheck size={11} color="#6EE7B7" />
             <Text style={s.heroBadgeText}>Akses Talenta Kampus Terverifikasi</Text>
@@ -132,7 +125,7 @@ export function RegisterScreen({ navigation }) {
 
           <Text style={s.welcomeText}>Daftar Akun UMKM</Text>
           <Text style={s.subtitle}>
-            Pasang proyek digital dan temukan mahasiswa bertalenta terbaik untuk memajukan bisnis Anda.
+            Pasang proyek dan temukan mahasiswa bertalenta terbaik untuk bisnis Anda.
           </Text>
         </View>
       </View>
@@ -211,7 +204,7 @@ export function RegisterScreen({ navigation }) {
 
             <Input
               label="Nomor WhatsApp"
-              placeholder="08123456789"
+              placeholder="Contoh: 081234567890"
               value={noKontak}
               onChangeText={setNoKontak}
               keyboardType="phone-pad"
@@ -220,7 +213,7 @@ export function RegisterScreen({ navigation }) {
 
             <Input
               label="Email Resmi Akun"
-              placeholder="kontak@usahaanda.com"
+              placeholder="Contoh: kontak@usahaanda.com"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -230,7 +223,7 @@ export function RegisterScreen({ navigation }) {
 
             <Input
               label="Kata Sandi"
-              placeholder="Minimal 6 karakter"
+              placeholder="Minimal 8 karakter"
               value={password}
               onChangeText={setPassword}
               isPassword={true}

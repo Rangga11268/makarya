@@ -275,6 +275,21 @@ export function RegisterPage() {
             </p>
           </div>
 
+          {/* Mobile Hero Banner */}
+          <div className="lg:hidden relative w-full h-32 rounded-2xl overflow-hidden border border-border shadow-2xs">
+            <img
+              src="/images/register_hero.jpg"
+              alt="Makarya Registrasi"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-900/80 via-dark-900/30 to-transparent flex items-end p-3">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-brand-cyan" />
+                Platform Kolaborasi Kampus & UMKM Terverifikasi
+              </span>
+            </div>
+          </div>
+
           <Card className="p-6 sm:p-7 shadow-xs">
             {isOtpStep ? (
               /* OTP VERIFICATION VIEW */

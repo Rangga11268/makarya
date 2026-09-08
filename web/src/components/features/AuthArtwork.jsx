@@ -16,6 +16,16 @@ export function AuthArtwork({
 }) {
   return (
     <div className="hidden lg:flex flex-col justify-between bg-dark-900 text-white p-10 xl:p-14 rounded-3xl relative overflow-hidden border border-slate-800 shadow-2xl h-full min-h-[640px]">
+      {/* Background 3D Artwork */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-30">
+        <img
+          src="/images/register_hero.jpg"
+          alt="Makarya Register Artwork"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-900/60 via-dark-900/85 to-dark-900" />
+      </div>
+
       {/* Top Header Badge */}
       <div className="relative z-10 space-y-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-brand-cyan">
