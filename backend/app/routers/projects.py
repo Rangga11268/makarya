@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from app.core.database import get_db
-from app.dependencies import get_current_user, require_role
+from app.dependencies import get_current_user, require_role, get_optional_current_user
 from app.models.user import User, UserRole
 from app.models.project import Project, ProjectCategory, ProjectStatus
 from app.models.profile import ProfileUmkm, ProfileMhs
@@ -37,6 +37,65 @@ def _resolve_accepted_mhs(proj_id: UUID, db: Session):
         if mhs_profile:
             return (mhs_profile.nama_lengkap, mhs_profile.url_foto)
     return (None, None)
+
+
+def _calculate_match_score(proj: Project, mhs_profile: Optional[ProfileMhs]):
+    if not mhs_profile:
+        return (None, None)
+
+    score = 45
+    reasons = []
+
+    proj_cat = proj.kategori.value.lower() if hasattr(proj.kategori, "value") else str(proj.kategori).lower()
+    proj_text = f"{proj.judul} {proj.deskripsi_raw}".lower()
+
+    skills = mhs_profile.skills or []
+    matched_skills = []
+    category_matched = False
+
+    for ms in skills:
+        s_name = ms.skill.nama_skill if ms.skill else ""
+        s_cat = ms.skill.kategori.lower() if ms.skill and ms.skill.kategori else ""
+
+        if s_cat and (s_cat in proj_cat or proj_cat in s_cat):
+            category_matched = True
+
+        if s_name and (s_name.lower() in proj_text or s_name.lower() in proj_cat):
+            matched_skills.append(s_name)
+            level_val = ms.tingkat.value if hasattr(ms.tingkat, "value") else str(ms.tingkat)
+            if level_val == "ADVANCED":
+                score += 15
+            elif level_val == "INTERMEDIATE":
+                score += 10
+            else:
+                score += 8
+
+    if category_matched:
+        score += 25
+        cat_display = proj.kategori.value if hasattr(proj.kategori, "value") else str(proj.kategori)
+        reasons.append(f"Kategori sesuai ({cat_display})")
+
+    if matched_skills:
+        unique_skills = list(dict.fromkeys(matched_skills))[:3]
+        reasons.append(f"Keahlian cocok: {', '.join(unique_skills)}")
+
+    if mhs_profile.total_proyek_selesai and mhs_profile.total_proyek_selesai > 0:
+        score += 8
+        reasons.append(f"Rekam jejak ({mhs_profile.total_proyek_selesai} proyek)")
+
+    if mhs_profile.rating_avg and float(mhs_profile.rating_avg) >= 4.5:
+        score += 7
+        reasons.append(f"Rating tinggi ({float(mhs_profile.rating_avg):.1f} / 5.0)")
+
+    if not category_matched and not matched_skills:
+        final_score = min(score, 50)
+    else:
+        final_score = min(max(score, 60), 98)
+
+    if not reasons:
+        reasons.append("Proyek terbuka untuk umum")
+
+    return (final_score, reasons)
 
 
 @router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
@@ -85,7 +144,8 @@ def browse_project(
     status: Optional[ProjectStatus] = Query(None, description="Default OPEN, Filter Berdasarkan status proyek"),
     skip: int = Query(0, ge=0, description="Jumlah data yang dilewati"),
     limit: int = Query(20, ge=1, le=100, description="Jumlah data yang diambil"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_current_user),
 ):
     from datetime import date
     today = date.today()
@@ -106,12 +166,17 @@ def browse_project(
 
     projects = query.offset(skip).limit(limit).all()
 
+    mhs_profile = None
+    if current_user and current_user.role == UserRole.MHS:
+        mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
+
     results = []
     for proj in projects:
         profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
         umkm_summary = UmkmSummary.model_validate(profile) if profile else None
         total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
         acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
+        match_score, match_reasons = _calculate_match_score(proj, mhs_profile)
 
         results.append(ProjectResponse(
             id=proj.id,
@@ -128,7 +193,9 @@ def browse_project(
             umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
             accepted_mhs_nama=acc_nama,
             accepted_mhs_foto=acc_foto,
-            total_pelamar=total_pelamar
+            total_pelamar=total_pelamar,
+            match_score=match_score,
+            match_reasons=match_reasons,
         ))
     return results
 
@@ -172,6 +239,7 @@ def get_project_by_id(
     # Melihat detail proyek berdasarkan ID
     id: UUID,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_current_user),
 ):
     project = db.query(Project).filter(Project.id == id).first()
     if not project:
@@ -191,6 +259,12 @@ def get_project_by_id(
     total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
     acc_nama, acc_foto = _resolve_accepted_mhs(project.id, db)
 
+    mhs_profile = None
+    if current_user and current_user.role == UserRole.MHS:
+        mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
+
+    match_score, match_reasons = _calculate_match_score(project, mhs_profile)
+
     return ProjectResponse(
         id=project.id,
         umkm_id=project.umkm_id,
@@ -206,7 +280,9 @@ def get_project_by_id(
         umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
         accepted_mhs_nama=acc_nama,
         accepted_mhs_foto=acc_foto,
-        total_pelamar=total_pelamar
+        total_pelamar=total_pelamar,
+        match_score=match_score,
+        match_reasons=match_reasons,
     )
 
 @router.patch("/{id}", response_model=ProjectResponse)

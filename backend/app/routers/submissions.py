@@ -243,10 +243,16 @@ def request_revision(
             detail="Batas maksimal revisi telah tercapai (Maks 2x). UMKM wajib Approve atau ajukan Dispute mediasi admin.",
         )
 
+    checklist_text = ""
+    if body.checklist_items:
+        clean_items = [it.strip() for it in body.checklist_items if it.strip()]
+        if clean_items:
+            checklist_text = "\n\nDaftar Poin Perbaikan:\n" + "\n".join(f"- [ ] {it}" for it in clean_items)
+
     # Tambah counter revisi & perbarui status
     submission.jumlah_revisi += 1
     submission.status = SubmissionStatus.REVISION_REQUESTED
-    submission.catatan_pengiriman = f"[Revisi #{submission.jumlah_revisi}] {body.alasan_revisi}"
+    submission.catatan_pengiriman = f"[Revisi #{submission.jumlah_revisi}] {body.alasan_revisi}{checklist_text}"
 
     db.commit()
     db.refresh(submission)

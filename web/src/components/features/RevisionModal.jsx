@@ -4,16 +4,33 @@ import { TextArea } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { submissionApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
-import { AlertCircle, RotateCcw } from "lucide-react";
+import { AlertCircle, RotateCcw, Plus, X, ListChecks } from "lucide-react";
 
 export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions = 0, onSuccess }) {
   const [alasan, setAlasan] = useState("");
+  const [checklist, setChecklist] = useState([""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { addToast } = useToastStore();
 
   const maxRevisions = 2;
   const remaining = maxRevisions - currentRevisions;
+
+  const addChecklistItem = () => {
+    setChecklist((prev) => [...prev, ""]);
+  };
+
+  const updateChecklistItem = (index, val) => {
+    setChecklist((prev) => {
+      const next = [...prev];
+      next[index] = val;
+      return next;
+    });
+  };
+
+  const removeChecklistItem = (index) => {
+    setChecklist((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,13 +41,16 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
       return;
     }
 
+    const validChecklist = checklist.map((c) => c.trim()).filter(Boolean);
+
     try {
       setLoading(true);
       await submissionApi.requestRevision(submissionId, {
         alasan_revisi: alasan.trim(),
+        checklist_items: validChecklist.length > 0 ? validChecklist : undefined,
       });
 
-      addToast("Permintaan revisi telah berhasil dikirim ke mahasiswa!", "info");
+      addToast("Permintaan revisi dan daftar periksa telah berhasil dikirim ke mahasiswa!", "info");
       onSuccess?.();
       onClose();
     } catch (err) {
@@ -62,13 +82,59 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
         )}
 
         <TextArea
-          label="Uraian Rincian Revisi yang Diinginkan"
-          rows={4}
-          placeholder="Tuliskan bagian mana yang perlu diperbaiki, misalnya: 'Mohon warna font diganti menjadi putih dan resolusi logo dinaikkan...'"
+          label="Ringkasan Catatan Revisi"
+          rows={3}
+          placeholder="Tuliskan gambaran umum bagian yang perlu diperbaiki..."
           value={alasan}
           onChange={(e) => setAlasan(e.target.value)}
           required
         />
+
+        {/* Structured Checklist Items */}
+        <div className="space-y-2 pt-1 border-t border-border">
+          <div className="flex items-center justify-between">
+            <label className="font-bold text-dark-900 flex items-center gap-1.5 text-xs">
+              <ListChecks className="w-4 h-4 text-brand-indigo" />
+              <span>Daftar Poin Perbaikan Spesifik (Opsional)</span>
+            </label>
+            <span className="text-[11px] text-muted">Akan muncul sebagai checklist bagi mahasiswa</span>
+          </div>
+
+          <div className="space-y-2">
+            {checklist.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-muted font-bold text-[11px] w-4 text-right">
+                  {index + 1}.
+                </span>
+                <input
+                  type="text"
+                  value={item}
+                  onChange={(e) => updateChecklistItem(index, e.target.value)}
+                  placeholder="Misal: Perbaiki kontras warna tombol sesuai WCAG"
+                  className="flex-1 px-3 py-1.5 rounded-xl border border-border bg-surface text-xs text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+                />
+                {checklist.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeChecklistItem(index)}
+                    className="p-1 rounded-lg text-muted hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={addChecklistItem}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-indigo hover:text-brand-indigo-dark transition-colors pt-1"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Poin Perbaikan</span>
+          </button>
+        </div>
 
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
           <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>

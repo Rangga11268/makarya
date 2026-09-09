@@ -6,7 +6,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { daysRemaining, isExpired } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
 import { useAuthStore } from "../../store/authStore";
-import { Clock, Tag, Building2, ArrowRight, AlertCircle } from "lucide-react";
+import { Clock, Tag, Building2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export function ProjectCard({ project }) {
   const { user } = useAuthStore();
@@ -90,10 +90,22 @@ export function ProjectCard({ project }) {
       {/* Footer Meta: Category Badge, Budget, & Action */}
       <div className="pt-3 border-t border-border-subtle mt-2 space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <Badge variant="neutral" className="text-[11px] px-2.5 py-0.5">
-            <Tag className="w-3 h-3 mr-1 text-slate-500" />
-            {categoryLabels[project.kategori] || project.kategori}
-          </Badge>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Badge variant="neutral" className="text-[11px] px-2.5 py-0.5">
+              <Tag className="w-3 h-3 mr-1 text-slate-500" />
+              {categoryLabels[project.kategori] || project.kategori}
+            </Badge>
+
+            {project.match_score && isMhs ? (
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/90"
+                title={project.match_reasons?.join(" • ") || "Kecocokan Keahlian"}
+              >
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <span>{project.match_score}% Cocok</span>
+              </span>
+            ) : null}
+          </div>
 
           <div className="text-right">
             <span className="text-[10px] text-muted block uppercase tracking-wider font-semibold">

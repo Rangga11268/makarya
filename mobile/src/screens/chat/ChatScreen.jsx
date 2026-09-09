@@ -34,6 +34,7 @@ import {
   Briefcase,
   X,
   Radio,
+  AlertTriangle,
 } from "lucide-react-native";
 
 export function ChatScreen({ route, navigation }) {
@@ -487,6 +488,42 @@ export function ChatScreen({ route, navigation }) {
         />
       )}
 
+      {/* Anti-Bypass Escrow Guard Warning */}
+      {(() => {
+        if (!inputText || inputText.trim().length < 5) return null;
+        const text = inputText.trim();
+        let warn = null;
+        if (/(?:\+?62|08)[0-9\s.-]{8,14}/.test(text)) {
+          warn = {
+            title: "Nomor Kontak / WA Terdeteksi",
+            desc: "Demi keamanan Anda, hindari bertukar kontak di luar ruang kerja. Komunikasi di luar sistem membatalkan proteksi Escrow 100% jika terjadi wanprestasi.",
+          };
+        } else if (
+          /\b(rekening|rek|transfer|bca|mandiri|bri|bni|cimb|bsi|dana|ovo|gopay|seabank|jago)\b[^\n\r]*?\d{4,}/i.test(text) ||
+          /\b(transfer langsung|bayar langsung|tanpa aplikasi|luar aplikasi|direct transfer|tf langsung)\b/i.test(text)
+        ) {
+          warn = {
+            title: "Indikasi Pembayaran Luar Sistem",
+            desc: "Peringatan: Seluruh pembayaran wajib melalui Escrow Makarya. Pembayaran di luar sistem berisiko penipuan dan tidak dilindungi garansi saldo.",
+          };
+        }
+        if (!warn) return null;
+        return (
+          <View style={styles.bypassWarningBox}>
+            <AlertTriangle size={15} color="#D97706" style={{ marginTop: 2 }} />
+            <View style={{ flex: 1 }}>
+              <View style={styles.bypassWarningTitleRow}>
+                <Text style={styles.bypassWarningTitle}>{warn.title}</Text>
+                <View style={styles.bypassBadge}>
+                  <Text style={styles.bypassBadgeText}>Proteksi Escrow</Text>
+                </View>
+              </View>
+              <Text style={styles.bypassWarningDesc}>{warn.desc}</Text>
+            </View>
+          </View>
+        );
+      })()}
+
       {/* 3. Bottom Input Bar */}
       <View style={styles.inputContainer}>
         {/* Tombol Lampiran */}
@@ -912,6 +949,54 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
     marginTop: 6,
+  },
+
+  // Bypass Warning Box
+  bypassWarningBox: {
+    marginHorizontal: 14,
+    marginBottom: 8,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: "#FFFBEB",
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  bypassWarningTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  bypassWarningTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#78350F",
+  },
+  bypassBadge: {
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#FCD34D",
+  },
+  bypassBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: "#92400E",
+  },
+  bypassWarningDesc: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    lineHeight: 15,
+    color: "#92400E",
+    marginTop: 2,
   },
 
   // Input Bar

@@ -207,10 +207,45 @@ export function ProjectDetailPage() {
                   {formatStatus(project.status)}
                 </Badge>
 
+                {project.match_score && user?.role === "MHS" && (
+                  <div
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800"
+                    title={project.match_reasons?.join(" • ") || "Kecocokan Keahlian"}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{project.match_score}% Cocok</span>
+                  </div>
+                )}
+
                 <span className="text-xs text-muted font-mono">
                   ID: #{project.id?.substring(0, 8)}
                 </span>
               </div>
+
+              {/* Match Score Reason Breakdown for Mahasiswa */}
+              {project.match_score && user?.role === "MHS" && project.match_reasons?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      Kesesuaian Bakat: {project.match_score}% Cocok
+                    </span>
+                    <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300/50">
+                      Rekomendasi Profil
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {project.match_reasons.map((reason, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[11px] font-medium text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs"
+                      >
+                        ✓ {reason}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
                 {project.judul}

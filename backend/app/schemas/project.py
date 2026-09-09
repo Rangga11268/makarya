@@ -76,5 +76,7 @@ class ProjectResponse(BaseModel):
     accepted_mhs_nama: Optional[str] = None
     accepted_mhs_foto: Optional[str] = None
     total_pelamar: int = 0
+    match_score: Optional[int] = None
+    match_reasons: Optional[List[str]] = None
 
     model_config = ConfigDict(from_attributes=True)

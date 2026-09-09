@@ -24,6 +24,7 @@ import {
   TerminateProjectModal,
   ResignProposalModal,
 } from "../../components/features/projects/ContractActionModals";
+import { InvoiceReceiptModal } from "../../components/features/projects/InvoiceReceiptModal";
 import { Badge } from "../../components/ui/Badge";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
@@ -87,6 +88,7 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [reopenModal, setReopenModal] = useState(false);
   const [terminateModal, setTerminateModal] = useState(false);
   const [resignModal, setResignModal] = useState(false);
+  const [invoiceModal, setInvoiceModal] = useState(false);
 
   const { showToast } = useToastStore();
 
@@ -422,6 +424,49 @@ export function ProjectDetailScreen({ route, navigation }) {
     project?.project_umkm_foto ||
     project?.url_foto;
 
+  const renderSubmissionNote = (note) => {
+    if (!note) return null;
+    const lines = note.split("\n");
+    const checklistItems = lines
+      .filter(
+        (l) => l.trim().startsWith("- [ ]") || l.trim().startsWith("- [x]"),
+      )
+      .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
+    const generalNote = lines
+      .filter(
+        (l) =>
+          !l.trim().startsWith("- [ ]") &&
+          !l.trim().startsWith("- [x]") &&
+          !l.trim().toLowerCase().startsWith("daftar poin perbaikan"),
+      )
+      .join("\n")
+      .trim();
+
+    return (
+      <View style={{ marginTop: 6, gap: 6 }}>
+        {generalNote ? (
+          <Text style={styles.fileNotesText}>Catatan: "{generalNote}"</Text>
+        ) : null}
+        {checklistItems.length > 0 ? (
+          <View style={styles.mobileChecklistCard}>
+            <Text style={styles.mobileChecklistTitle}>Daftar Poin Perbaikan:</Text>
+            {checklistItems.map((it, cIdx) => (
+              <View key={cIdx} style={styles.mobileChecklistItemRow}>
+                <Check
+                  size={12}
+                  color="#059669"
+                  strokeWidth={2.5}
+                  style={{ marginTop: 2 }}
+                />
+                <Text style={styles.mobileChecklistItemText}>{it}</Text>
+              </View>
+            ))}
+          </View>
+        ) : null}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -472,12 +517,43 @@ export function ProjectDetailScreen({ route, navigation }) {
               </Text>
             </View>
 
-            <View style={styles.escrowPill}>
+            <TouchableOpacity
+              style={styles.escrowPill}
+              onPress={() => setInvoiceModal(true)}
+              activeOpacity={0.8}
+            >
               <ShieldCheck size={13} color={COLORS.brandCyan} />
-              <Text style={styles.escrowPillText}>Garansi Escrow 100%</Text>
-            </View>
+              <Text style={styles.escrowPillText}>Faktur Escrow 100%</Text>
+            </TouchableOpacity>
           </View>
         </View>
+
+        {/* Match Score Card for Mahasiswa */}
+        {project.match_score && isMahasiswa ? (
+          <View style={styles.matchScoreCard}>
+            <View style={styles.matchScoreCardHeader}>
+              <View style={styles.matchScoreBadgeLarge}>
+                <Check size={12} color="#065F46" strokeWidth={3} />
+                <Text style={styles.matchScoreBadgeLargeText}>
+                  {project.match_score}% Cocok
+                </Text>
+              </View>
+              <Text style={styles.matchScoreCardSub}>
+                Profil & keahlian Anda sesuai dengan proyek ini
+              </Text>
+            </View>
+            {project.match_reasons && project.match_reasons.length > 0 ? (
+              <View style={styles.matchReasonsWrap}>
+                {project.match_reasons.map((reason, idx) => (
+                  <View key={idx} style={styles.matchReasonPill}>
+                    <Check size={9} color="#065F46" strokeWidth={2.5} />
+                    <Text style={styles.matchReasonText}>{reason}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </View>
+        ) : null}
 
         {/* 2. Interactive Escrow Progress Stepper */}
         <ProjectStatusBar currentStatus={project.status} />
@@ -580,11 +656,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                         </Text>
                       </View>
                     </View>
-                    {sub.catatan_pengiriman ? (
-                      <Text style={styles.fileNotesText}>
-                        Catatan: "{sub.catatan_pengiriman}"
-                      </Text>
-                    ) : null}
+                    {renderSubmissionNote(sub.catatan_pengiriman)}
                   </View>
                 ))}
 
@@ -757,11 +829,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                           {sub.url_berkas}
                         </Text>
                       </TouchableOpacity>
-                      {sub.catatan_pengiriman ? (
-                        <Text style={styles.submissionDesc}>
-                          Catatan: "{sub.catatan_pengiriman}"
-                        </Text>
-                      ) : null}
+                      {renderSubmissionNote(sub.catatan_pengiriman)}
                       <Button
                         title="Setujui & Lepas Escrow"
                         variant="brand"
@@ -814,10 +882,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                           {submissions[0].url_berkas}
                         </Text>
                       </TouchableOpacity>
-                      {submissions[0].catatan_pengiriman && (
-                        <Text style={styles.submissionDesc}>
-                          Catatan: "{submissions[0].catatan_pengiriman}"
-                        </Text>
+                      {renderSubmissionNote(
+                        submissions[0].catatan_pengiriman,
                       )}
                       <View style={{ marginTop: 10, gap: 8 }}>
                         <Button
@@ -1080,6 +1146,20 @@ export function ProjectDetailScreen({ route, navigation }) {
         onConfirm={handleResignProposal}
         loading={actionLoading}
       />
+
+      {/* Modal 6: Official Escrow Invoice Receipt */}
+      <InvoiceReceiptModal
+        visible={invoiceModal}
+        onClose={() => setInvoiceModal(false)}
+        project={project}
+        proposal={myExistingProposal || (proposals && proposals[0])}
+        clientName={clientDisplayName}
+        mhsName={
+          isAcceptedProposal
+            ? user?.nama || user?.nama_lengkap
+            : (proposals && proposals[0]?.mhs_nama) || undefined
+        }
+      />
     </View>
   );
 }
@@ -1105,6 +1185,68 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 6,
     elevation: 2,
+  },
+  matchScoreCard: {
+    backgroundColor: "#ECFDF5",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+    marginBottom: 14,
+  },
+  matchScoreCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  matchScoreBadgeLarge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#D1FAE5",
+    borderWidth: 1,
+    borderColor: "#6EE7B7",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  matchScoreBadgeLargeText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#065F46",
+  },
+  matchScoreCardSub: {
+    flex: 1,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#047857",
+  },
+  matchReasonsWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#A7F3D0",
+  },
+  matchReasonPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  matchReasonText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    color: "#065F46",
   },
   badgeRow: {
     flexDirection: "row",
@@ -1667,6 +1809,34 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#9F1239",
+    lineHeight: 16,
+  },
+  mobileChecklistCard: {
+    backgroundColor: "#F0FDF4",
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#BBF7D0",
+    marginTop: 6,
+    gap: 4,
+  },
+  mobileChecklistTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#14532D",
+    marginBottom: 2,
+  },
+  mobileChecklistItemRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+  },
+  mobileChecklistItemText: {
+    flex: 1,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: "#166534",
     lineHeight: 16,
   },
 });

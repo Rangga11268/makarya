@@ -149,6 +149,9 @@ export function ProjectListScreen({ navigation, route }) {
       return matchesCategory && matchesSearch && matchesStatus && matchesBudget;
     })
     .sort((a, b) => {
+      if (activeTab === "MATCH") {
+        return (b.match_score || 0) - (a.match_score || 0);
+      }
       if (activeTab === "NEW") {
         return (b.budget_max || 0) - (a.budget_max || 0);
       }

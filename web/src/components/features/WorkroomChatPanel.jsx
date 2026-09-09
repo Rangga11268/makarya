@@ -424,6 +424,44 @@ export function WorkroomChatPanel({
         </div>
       )}
 
+      {/* Anti-Bypass Escrow Guard Warning */}
+      {(() => {
+        if (!inputText || inputText.trim().length < 5) return null;
+        const text = inputText.trim();
+        let warn = null;
+        if (/(?:\+?62|08)[0-9\s.-]{8,14}/.test(text)) {
+          warn = {
+            title: "Nomor Kontak / WhatsApp Terdeteksi",
+            desc: "Demi keamanan Anda, hindari bertukar kontak pribadi di luar ruang kerja. Komunikasi di luar sistem membatalkan garansi proteksi Escrow 100% jika terjadi wanprestasi.",
+          };
+        } else if (
+          /\b(rekening|rek|transfer|bca|mandiri|bri|bni|cimb|bsi|dana|ovo|gopay|seabank|jago)\b[^\n\r]*?\d{4,}/i.test(text) ||
+          /\b(transfer langsung|bayar langsung|tanpa aplikasi|luar aplikasi|direct transfer|tf langsung)\b/i.test(text)
+        ) {
+          warn = {
+            title: "Indikasi Pembayaran Luar Sistem",
+            desc: "Peringatan: Seluruh pembayaran wajib diproses melalui Escrow Makarya. Pembayaran di luar sistem rentan penipuan dan tidak dilindungi garansi saldo.",
+          };
+        }
+        if (!warn) return null;
+        return (
+          <div className="mx-3 my-1.5 p-2.5 rounded-xl bg-amber-50 border border-amber-200/90 flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="font-semibold text-amber-950 flex items-center gap-1.5">
+                <span>{warn.title}</span>
+                <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium border border-amber-300/60">
+                  Proteksi Escrow
+                </span>
+              </div>
+              <p className="mt-0.5 text-[11px] leading-relaxed text-amber-900/90">
+                {warn.desc}
+              </p>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* 4. Bottom Input Bar */}
       <form
         onSubmit={handleSendMessage}

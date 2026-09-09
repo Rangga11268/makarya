@@ -92,7 +92,11 @@ export function ReopenProjectModal({
           >
             {/* Warning Callout */}
             <View style={styles.alertBox}>
-              <AlertTriangle size={18} color="#D97706" style={{ marginTop: 2 }} />
+              <AlertTriangle
+                size={18}
+                color="#D97706"
+                style={{ marginTop: 2 }}
+              />
               <View style={{ flex: 1 }}>
                 <Text style={styles.alertTitle}>
                   Pembatalan Kontrak & Refund Escrow
@@ -264,7 +268,11 @@ export function TerminateProjectModal({
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
+                style={{
+                  flex: 1.5,
+                  borderColor: "#FECACA",
+                  backgroundColor: "#FEF2F2",
+                }}
                 onPress={handleConfirm}
                 loading={loading}
               />
@@ -341,21 +349,27 @@ export function ResignProposalModal({
             contentContainerStyle={styles.scrollContent}
           >
             <View style={[styles.alertBox, styles.alertBoxDanger]}>
-              <AlertTriangle size={18} color="#DC2626" style={{ marginTop: 2 }} />
+              <AlertTriangle
+                size={18}
+                color="#DC2626"
+                style={{ marginTop: 2 }}
+              />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.alertTitle, { color: "#991B1B" }]}>
                   Perhatian Sebelum Mengundurkan Diri
                 </Text>
                 <Text style={[styles.alertDesc, { color: "#B91C1C" }]}>
-                  Penugasan Anda pada proyek ini akan dihentikan. Dana escrow akan
-                  dikembalikan ke klien UMKM dan proyek dibuka kembali untuk mahasiswa lain.
+                  Penugasan Anda pada proyek ini akan dihentikan. Dana escrow
+                  akan dikembalikan ke klien UMKM dan proyek dibuka kembali
+                  untuk mahasiswa lain.
                 </Text>
               </View>
             </View>
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>
-                Alasan Pengunduran Diri <Text style={{ color: COLORS.danger }}>*</Text>
+                Alasan Pengunduran Diri{" "}
+                <Text style={{ color: COLORS.danger }}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -369,11 +383,7 @@ export function ResignProposalModal({
                 multiline
                 numberOfLines={3}
               />
-              {error ? (
-                <Text style={styles.errorText}>
-                  {error}
-                </Text>
-              ) : null}
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>
 
             <View style={styles.actionRow}>
@@ -390,7 +400,11 @@ export function ResignProposalModal({
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
+                style={{
+                  flex: 1.5,
+                  borderColor: "#FECACA",
+                  backgroundColor: "#FEF2F2",
+                }}
                 onPress={handleConfirm}
                 loading={loading}
               />

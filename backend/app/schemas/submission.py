@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, HttpUrl, ConfigDict
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from app.models.submission import SubmissionStatus
 
 # Schema request untuk kirim hasil kerja(Khusus mahasiswa)
@@ -13,6 +13,7 @@ class SubmissionCreateRequest(BaseModel):
 # Schema request minta revisi (KHUSUS UMKM)
 class RevisionRequest(BaseModel):
     alasan_revisi: str = Field(..., min_length=10, max_length=1000, description="Uraian alasan mengapa hasil kerja perlu direvisi (minimal 10 karakter, maksimal 1000 karakter)")
+    checklist_items: Optional[List[str]] = Field(None, description="Daftar poin perbaikan terstruktur (opsional)")
 
 
 # Schema respon kirim hasil kerja / minta revisi

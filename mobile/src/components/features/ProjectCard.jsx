@@ -14,6 +14,7 @@ import {
   Building2,
   Clock,
   Briefcase,
+  Check,
 } from "lucide-react-native";
 
 export function ProjectCard({ project, onPress }) {
@@ -89,9 +90,20 @@ export function ProjectCard({ project, onPress }) {
           </Text>
         </View>
 
-        <View style={styles.escrowChip}>
-          <ShieldCheck size={12} color={COLORS.brandCyan} />
-          <Text style={styles.escrowText}>Escrow</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+          {project.match_score ? (
+            <View style={styles.matchScorePill}>
+              <Check size={10} color="#065F46" strokeWidth={2.5} />
+              <Text style={styles.matchScorePillText}>
+                {project.match_score}%
+              </Text>
+            </View>
+          ) : null}
+
+          <View style={styles.escrowChip}>
+            <ShieldCheck size={12} color={COLORS.brandCyan} />
+            <Text style={styles.escrowText}>Escrow</Text>
+          </View>
         </View>
       </View>
 
@@ -180,6 +192,23 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.textMuted,
     marginTop: 1,
+  },
+  matchScorePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2.5,
+    backgroundColor: "#ECFDF5",
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+    paddingHorizontal: 6,
+    paddingVertical: 2.5,
+    borderRadius: 8,
+  },
+  matchScorePillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+    fontWeight: "700",
+    color: "#065F46",
   },
   escrowChip: {
     flexDirection: "row",

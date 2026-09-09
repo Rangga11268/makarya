@@ -18,7 +18,87 @@ import {
   Clock,
   AlertCircle,
   XCircle,
+  ListChecks,
 } from "lucide-react";
+
+function RevisionChecklistInteractive({ items = [], isMhs = false }) {
+  const [checkedIndices, setCheckedIndices] = React.useState({});
+
+  const toggleCheck = (idx) => {
+    setCheckedIndices((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const total = items.length;
+  const completed = Object.values(checkedIndices).filter(Boolean).length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return (
+    <div className="p-4 rounded-2xl bg-surface border border-border shadow-xs space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <ListChecks className="w-4 h-4 text-brand-indigo" />
+          <span className="text-xs font-bold text-dark-900">
+            Daftar Periksa Poin Revisi
+          </span>
+        </div>
+        <span className="text-[11px] font-bold text-dark-900 bg-canvas px-2.5 py-0.5 rounded-full border border-border">
+          {completed} dari {total} selesai ({percent}%)
+        </span>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-emerald-600 transition-all duration-300 rounded-full"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
+      <div className="space-y-1.5 pt-1">
+        {items.map((item, idx) => {
+          const isDone = !!checkedIndices[idx];
+          return (
+            <label
+              key={idx}
+              onClick={() => toggleCheck(idx)}
+              className={`flex items-start gap-2.5 p-2 rounded-xl border transition-colors cursor-pointer select-none ${
+                isDone
+                  ? "bg-emerald-50/50 border-emerald-200/80 text-muted"
+                  : "bg-canvas border-border text-dark-900 hover:bg-slate-50"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={isDone}
+                onChange={() => {}}
+                className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              />
+              <span
+                className={`text-xs flex-1 leading-relaxed ${
+                  isDone ? "line-through text-slate-500" : "font-medium"
+                }`}
+              >
+                {item}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+
+      {isMhs && percent === 100 && (
+        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 font-semibold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>Semua poin perbaikan telah dicentang. Silakan unggah berkas hasil revisi Anda.</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
 
 export function WorkroomWorkspaceDetail({
   activeProjectId,
@@ -44,6 +124,8 @@ export function WorkroomWorkspaceDetail({
   onOpenTerminateModal,
   onOpenResignModal,
 }) {
+  const [invoiceModalOpen, setInvoiceModalOpen] = React.useState(false);
+
   if (!activeProjectId) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
@@ -186,6 +268,17 @@ export function WorkroomWorkspaceDetail({
                 )}
               </span>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setInvoiceModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-dark-900 font-bold text-[11px] hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer shrink-0"
+              title="Cetak Faktur Bukti Transaksi Escrow Resmi"
+            >
+              <FileText className="w-3.5 h-3.5 text-brand-indigo" />
+              <span>Faktur Escrow</span>
+            </button>
+
             {isUmkm && (
               <Link
                 to={`/projects/${selectedProject?.id}`}
@@ -302,14 +395,53 @@ export function WorkroomWorkspaceDetail({
                   </a>
                 </div>
 
-                {activeDeliverable.catatan_pengiriman && (
-                  <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
-                    <span className="font-bold text-dark-900 block mb-0.5">
-                      Catatan Pengiriman Mahasiswa:
-                    </span>
-                    "{activeDeliverable.catatan_pengiriman}"
-                  </div>
-                )}
+                {activeDeliverable.catatan_pengiriman && (() => {
+                  const note = activeDeliverable.catatan_pengiriman;
+                  const isRevision =
+                    note.includes("[Revisi #") ||
+                    activeDeliverable.status === "REVISION_REQUESTED";
+
+                  const lines = note.split("\n");
+                  const checklistItems = lines
+                    .filter(
+                      (l) =>
+                        l.trim().startsWith("- [ ]") ||
+                        l.trim().startsWith("- [x]"),
+                    )
+                    .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
+
+                  const generalNote = lines
+                    .filter(
+                      (l) =>
+                        !l.trim().startsWith("- [ ]") &&
+                        !l.trim().startsWith("- [x]") &&
+                        !l.trim().toLowerCase().startsWith("daftar poin perbaikan"),
+                    )
+                    .join("\n")
+                    .trim();
+
+                  return (
+                    <div className="space-y-2.5">
+                      <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
+                        <span className="font-bold text-dark-900 block mb-0.5">
+                          {isRevision
+                            ? "Catatan Permintaan Revisi Klien:"
+                            : "Catatan Pengiriman Mahasiswa:"}
+                        </span>
+                        <p className="whitespace-pre-line leading-relaxed">
+                          {generalNote || note}
+                        </p>
+                      </div>
+
+                      {checklistItems.length > 0 && (
+                        <RevisionChecklistInteractive
+                          items={checklistItems}
+                          isMhs={!isUmkm}
+                        />
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
                   <span>
@@ -811,6 +943,16 @@ export function WorkroomWorkspaceDetail({
           </div>
         </div>
       )}
+
+      {/* Official Escrow Invoice Receipt Modal */}
+      <InvoiceReceiptModal
+        isOpen={invoiceModalOpen}
+        onClose={() => setInvoiceModalOpen(false)}
+        project={selectedProject}
+        proposal={selectedProposal}
+        umkmName={isUmkm ? undefined : activePartnerName}
+        mhsName={isUmkm ? activePartnerName : undefined}
+      />
     </div>
   );
 }
