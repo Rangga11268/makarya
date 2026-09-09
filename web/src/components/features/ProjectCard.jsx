@@ -6,7 +6,14 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { daysRemaining, isExpired } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
 import { useAuthStore } from "../../store/authStore";
-import { Clock, Tag, Building2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Clock,
+  Tag,
+  Building2,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 export function ProjectCard({ project }) {
   const { user } = useAuthStore();
@@ -99,7 +106,9 @@ export function ProjectCard({ project }) {
             {project.match_score && isMhs ? (
               <span
                 className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/90"
-                title={project.match_reasons?.join(" • ") || "Kecocokan Keahlian"}
+                title={
+                  project.match_reasons?.join(" • ") || "Kecocokan Keahlian"
+                }
               >
                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                 <span>{project.match_score}% Cocok</span>

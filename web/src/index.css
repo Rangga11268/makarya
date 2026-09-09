@@ -45,7 +45,11 @@
   body {
     background: #ffffff !important;
   }
-  nav, header, footer, aside, .print\:hidden {
+  nav,
+  header,
+  footer,
+  aside,
+  .print\:hidden {
     display: none !important;
   }
 }

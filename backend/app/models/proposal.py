@@ -22,6 +22,9 @@ class Proposal(Base):
     cover_letter = Column(Text, nullable=False)
     estimasi_hari = Column(Integer, nullable=False)
     status = Column(SqlEnum(ProposalStatus, name="proposal_status_enum"), default=ProposalStatus.PENDING, nullable=False)
+    slot_id = Column(UUID(as_uuid=True), ForeignKey("project_slots.id", ondelete="SET NULL"), nullable=True, index=True)
+    withdraw_reason = Column(Text, nullable=True)
+    withdrawn_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now(), nullable=False)
 
@@ -29,3 +32,4 @@ class Proposal(Base):
     project = relationship("Project", back_populates="proposals")
     mahasiswa = relationship("User", backref="my_proposals")
     submission = relationship("Submission", back_populates="proposal", uselist=False, cascade="all, delete-orphan")
+    slot = relationship("ProjectSlot", foreign_keys=[slot_id])

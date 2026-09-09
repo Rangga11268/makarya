@@ -40,6 +40,8 @@ import {
   Share2,
   MessageSquare,
   PlusCircle,
+  XCircle,
+  FileText,
 } from "lucide-react";
 import { ProjectChatModal } from "../../components/features/ProjectChatModal";
 
@@ -210,7 +212,9 @@ export function ProjectDetailPage() {
                 {project.match_score && user?.role === "MHS" && (
                   <div
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800"
-                    title={project.match_reasons?.join(" • ") || "Kecocokan Keahlian"}
+                    title={
+                      project.match_reasons?.join(" • ") || "Kecocokan Keahlian"
+                    }
                   >
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                     <span>{project.match_score}% Cocok</span>
@@ -223,29 +227,31 @@ export function ProjectDetailPage() {
               </div>
 
               {/* Match Score Reason Breakdown for Mahasiswa */}
-              {project.match_score && user?.role === "MHS" && project.match_reasons?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      Kesesuaian Bakat: {project.match_score}% Cocok
-                    </span>
-                    <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300/50">
-                      Rekomendasi Profil
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {project.match_reasons.map((reason, idx) => (
-                      <span
-                        key={idx}
-                        className="text-[11px] font-medium text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs"
-                      >
-                        ✓ {reason}
+              {project.match_score &&
+                user?.role === "MHS" &&
+                project.match_reasons?.length > 0 && (
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        Kesesuaian Bakat: {project.match_score}% Cocok
                       </span>
-                    ))}
+                      <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300/50">
+                        Rekomendasi Profil
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {project.match_reasons.map((reason, idx) => (
+                        <span
+                          key={idx}
+                          className="text-[11px] font-medium text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs"
+                        >
+                          ✓ {reason}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
                 {project.judul}
@@ -334,6 +340,110 @@ export function ProjectDetailPage() {
                 </span>
               </div>
             </div>
+
+            {/* Cancellation Audit Banner */}
+            {project.status === "CANCELLED" && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-rose-200 text-xs space-y-3 text-dark-900 mt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                      <XCircle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
+                        Audit Pembatalan Proyek
+                      </span>
+                      <span className="font-bold text-dark-900 text-sm">
+                        Proyek Telah Ditutup & Dibatalkan
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-slate-200 text-dark-900">
+                      Inisiator:{" "}
+                      {project.cancelled_by_role === "UMKM"
+                        ? "Klien UMKM"
+                        : project.cancelled_by_role === "MAHASISWA"
+                        ? "Mahasiswa Terpilih"
+                        : project.cancelled_by_role === "SYSTEM_EXPIRED"
+                        ? "Sistem (Kedaluwarsa)"
+                        : "Pihak Terkait"}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      Escrow Aman
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-slate-200/80 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold text-[11px] text-dark-900">
+                    <FileText className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Alasan Pembatalan:</span>
+                  </div>
+                  <p className="text-xs text-dark-900 italic font-medium leading-relaxed">
+                    "{project.cancel_reason || "Proyek telah dibatalkan."}"
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Team Project Slots Section */}
+            {project.tipe_kolaborasi === "TIM" && project.slots?.length > 0 && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/40 border border-indigo-200/70 space-y-3 mt-2">
+                <div className="flex items-center justify-between gap-2 border-b border-indigo-200/60 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-brand-indigo shrink-0" />
+                    <h3 className="font-bold text-xs text-dark-900 uppercase tracking-wider">
+                      Formasi Slot Tim Proyek ({project.slots.length} Peran Dibuka)
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                    Mode Tim Multi-Talenta
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                  {project.slots.map((slot) => {
+                    const isFilled =
+                      slot.status === "IN_PROGRESS" || slot.status === "COMPLETED";
+                    return (
+                      <div
+                        key={slot.id}
+                        className="p-3 rounded-xl bg-white border border-indigo-100 text-xs space-y-1.5 shadow-2xs"
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-bold text-dark-900 truncate">
+                            {slot.nama_peran}
+                          </span>
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                              isFilled
+                                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                : "bg-amber-50 text-amber-800 border-amber-200"
+                            }`}
+                          >
+                            {isFilled ? "Terisi" : "Terbuka"}
+                          </span>
+                        </div>
+                        {slot.deskripsi_tugas && (
+                          <p className="text-[11px] text-muted line-clamp-2">
+                            {slot.deskripsi_tugas}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100 font-bold">
+                          <span className="text-muted">Pagu:</span>
+                          <span className="text-brand-indigo">
+                            {formatCurrency(slot.alokasi_budget)}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Brief Description Body */}
             <div className="space-y-3 pt-2">

@@ -132,7 +132,7 @@ export function ReopenProjectModal({
 
             {/* Input Alasan */}
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Alasan Pembatalan Kontrak</Text>
+              <Text style={styles.label}>Alasan Penggantian Mahasiswa</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={reason}
@@ -142,6 +142,9 @@ export function ReopenProjectModal({
                 multiline
                 numberOfLines={3}
               />
+              <Text style={styles.helperText}>
+                Alasan ini akan dicatat dalam riwayat proyek dan dapat dibaca oleh mahasiswa terkait.
+              </Text>
             </View>
 
             <View style={styles.actionRow}>
@@ -242,16 +245,21 @@ export function TerminateProjectModal({
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Alasan Pembatalan (Opsional)</Text>
+              <Text style={styles.label}>
+                Alasan Pembatalan Proyek <Text style={{ color: COLORS.danger }}>*</Text>
+              </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={reason}
                 onChangeText={setReason}
-                placeholder="Contoh: Rencana kebutuhan proyek berubah..."
+                placeholder="Jelaskan alasan pembatalan proyek ini..."
                 placeholderTextColor={COLORS.textDim}
                 multiline
                 numberOfLines={3}
               />
+              <Text style={styles.helperText}>
+                Alasan ini akan dicatat dalam audit pembatalan proyek dan dapat dilihat oleh mahasiswa pelamar/publik.
+              </Text>
             </View>
 
             <View style={styles.actionRow}>
@@ -383,6 +391,9 @@ export function ResignProposalModal({
                 multiline
                 numberOfLines={3}
               />
+              <Text style={styles.helperText}>
+                Alasan pengunduran diri akan dicatat dan dapat dilihat oleh pihak klien UMKM.
+              </Text>
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>
 

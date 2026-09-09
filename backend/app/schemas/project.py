@@ -13,12 +13,33 @@ class ProjectCreateRequest(BaseModel):
     budget_max: Decimal = Field(..., gt=0, le=2000000, description="Budget maksimal project Rp 2.000.000")
     deadline: date = Field(..., description="Tenggat waktu pengerjaan project")
 
+    tipe_kolaborasi: Optional[str] = Field("INDIVIDU", description="INDIVIDU atau TIM")
+    slots: Optional[List["ProjectSlotCreateRequest"]] = None
+
     @field_validator('deadline')
     @classmethod
     def validate_deadline_feature(cls, v: date) -> date:
         if v <= date.today():
             raise ValueError("Tenggat waktu harus berupa tanggal di masa depan")
         return v
+
+class ProjectSlotCreateRequest(BaseModel):
+    nama_peran: str = Field(..., min_length=2, max_length=100, description="Nama peran (misal UI/UX Designer)")
+    deskripsi_tugas: Optional[str] = Field(None, description="Deskripsi tugas singkat")
+    alokasi_budget: Decimal = Field(..., gt=0, le=2000000, description="Alokasi budget untuk peran ini")
+
+class ProjectSlotResponse(BaseModel):
+    id: UUID
+    project_id: UUID
+    nama_peran: str
+    deskripsi_tugas: Optional[str] = None
+    alokasi_budget: Decimal
+    status: str
+    accepted_mhs_id: Optional[UUID] = None
+    accepted_mhs_nama: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 # Schema untuk update project (khusus UMKM)
 class ProjectUpdateRequest(BaseModel):
@@ -78,5 +99,10 @@ class ProjectResponse(BaseModel):
     total_pelamar: int = 0
     match_score: Optional[int] = None
     match_reasons: Optional[List[str]] = None
+    cancel_reason: Optional[str] = None
+    cancelled_by_role: Optional[str] = None
+    cancelled_at: Optional[datetime] = None
+    tipe_kolaborasi: Optional[str] = "INDIVIDU"
+    slots: Optional[List[ProjectSlotResponse]] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -435,8 +435,12 @@ export function WorkroomChatPanel({
             desc: "Demi keamanan Anda, hindari bertukar kontak pribadi di luar ruang kerja. Komunikasi di luar sistem membatalkan garansi proteksi Escrow 100% jika terjadi wanprestasi.",
           };
         } else if (
-          /\b(rekening|rek|transfer|bca|mandiri|bri|bni|cimb|bsi|dana|ovo|gopay|seabank|jago)\b[^\n\r]*?\d{4,}/i.test(text) ||
-          /\b(transfer langsung|bayar langsung|tanpa aplikasi|luar aplikasi|direct transfer|tf langsung)\b/i.test(text)
+          /\b(rekening|rek|transfer|bca|mandiri|bri|bni|cimb|bsi|dana|ovo|gopay|seabank|jago)\b[^\n\r]*?\d{4,}/i.test(
+            text,
+          ) ||
+          /\b(transfer langsung|bayar langsung|tanpa aplikasi|luar aplikasi|direct transfer|tf langsung)\b/i.test(
+            text,
+          )
         ) {
           warn = {
             title: "Indikasi Pembayaran Luar Sistem",

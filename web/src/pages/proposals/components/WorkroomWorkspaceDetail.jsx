@@ -91,7 +91,10 @@ function RevisionChecklistInteractive({ items = [], isMhs = false }) {
       {isMhs && percent === 100 && (
         <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>Semua poin perbaikan telah dicentang. Silakan unggah berkas hasil revisi Anda.</span>
+          <span>
+            Semua poin perbaikan telah dicentang. Silakan unggah berkas hasil
+            revisi Anda.
+          </span>
         </div>
       )}
     </div>
@@ -228,6 +231,142 @@ export function WorkroomWorkspaceDetail({
                 </Button>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Cancellation / Termination Audit Banner */}
+        {(selectedProject?.status === "CANCELLED" || selectedProposal?.status === "WITHDRAWN") && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-rose-200 text-xs space-y-3.5 text-dark-900">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                  <XCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
+                    Audit Pembatalan Kontrak
+                  </span>
+                  <span className="font-bold text-dark-900 text-sm">
+                    {selectedProject?.status === "CANCELLED"
+                      ? "Proyek Telah Dibatalkan Secara Permanen"
+                      : "Penugasan Mahasiswa Ditarik / Mundur"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-slate-200 text-dark-900">
+                  Status: {selectedProject?.status === "CANCELLED" ? "Dibatalkan" : "Mundur (Withdrawn)"}
+                </span>
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  Escrow Dikembalikan 100%
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
+                <span className="text-[10px] text-muted block font-semibold">Pihak Inisiator</span>
+                <p className="font-bold text-dark-900">
+                  {selectedProject?.cancelled_by_role === "UMKM"
+                    ? "Klien UMKM"
+                    : selectedProject?.cancelled_by_role === "MAHASISWA"
+                    ? "Mahasiswa Terpilih"
+                    : selectedProject?.cancelled_by_role === "SYSTEM_EXPIRED"
+                    ? "Sistem (Tenggat Kedaluwarsa)"
+                    : (selectedProposal?.status === "WITHDRAWN" ? "Pengunduran Diri Mahasiswa" : "Pihak Pengelola")}
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
+                <span className="text-[10px] text-muted block font-semibold">Waktu Tercatat</span>
+                <p className="font-bold text-dark-900">
+                  {selectedProject?.cancelled_at
+                    ? formatDate(selectedProject.cancelled_at)
+                    : selectedProposal?.withdrawn_at
+                    ? formatDate(selectedProposal.withdrawn_at)
+                    : "Terekam di sistem"}
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+                <span className="text-[10px] text-emerald-800 block font-semibold">Jaminan Escrow</span>
+                <p className="font-bold text-emerald-950">
+                  Dana aman 100% di Saldo Aktif Klien
+                </p>
+              </div>
+            </div>
+
+            {/* Kotak Transparansi Alasan */}
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-[11px] text-dark-900">
+                <FileText className="w-3.5 h-3.5 text-slate-500" />
+                <span>Alasan Resmi:</span>
+              </div>
+              <p className="text-xs text-dark-900 italic font-medium leading-relaxed">
+                "{selectedProject?.cancel_reason || selectedProposal?.withdraw_reason || "Tidak ada catatan alasan tambahan."}"
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Team Project Slots (If Multi-Talent Project) */}
+        {selectedProject?.tipe_kolaborasi === "TIM" && selectedProject?.slots?.length > 0 && (
+          <div className="p-4 rounded-2xl bg-indigo-50/40 border border-indigo-200/70 space-y-3">
+            <div className="flex items-center justify-between gap-2 border-b border-indigo-200/50 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-brand-indigo shrink-0" />
+                <span className="font-bold text-xs text-dark-900">
+                  Formasi Tim Proyek ({selectedProject.slots.length} Peran)
+                </span>
+              </div>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo uppercase tracking-wider">
+                Proyek Tim
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {selectedProject.slots.map((slot) => {
+                const isFilled = slot.status === "IN_PROGRESS" || slot.status === "COMPLETED";
+                return (
+                  <div
+                    key={slot.id}
+                    className={`p-3 rounded-xl border text-xs ${
+                      isFilled
+                        ? "bg-white border-emerald-200"
+                        : "bg-white border-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1.5 mb-1">
+                      <span className="font-bold text-dark-900 truncate">{slot.nama_peran}</span>
+                      <span
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                          isFilled
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : "bg-amber-50 text-amber-800 border-amber-200"
+                        }`}
+                      >
+                        {isFilled ? "Terisi" : "Terbuka"}
+                      </span>
+                    </div>
+                    {slot.deskripsi_tugas && (
+                      <p className="text-[11px] text-muted line-clamp-1 mb-1.5">
+                        {slot.deskripsi_tugas}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100">
+                      <span className="font-bold text-dark-900">
+                        {formatCurrency(slot.alokasi_budget)}
+                      </span>
+                      <span className="text-[10px] text-muted truncate max-w-[100px]">
+                        {slot.accepted_mhs_nama || "Mencari talenta"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
@@ -395,53 +534,57 @@ export function WorkroomWorkspaceDetail({
                   </a>
                 </div>
 
-                {activeDeliverable.catatan_pengiriman && (() => {
-                  const note = activeDeliverable.catatan_pengiriman;
-                  const isRevision =
-                    note.includes("[Revisi #") ||
-                    activeDeliverable.status === "REVISION_REQUESTED";
+                {activeDeliverable.catatan_pengiriman &&
+                  (() => {
+                    const note = activeDeliverable.catatan_pengiriman;
+                    const isRevision =
+                      note.includes("[Revisi #") ||
+                      activeDeliverable.status === "REVISION_REQUESTED";
 
-                  const lines = note.split("\n");
-                  const checklistItems = lines
-                    .filter(
-                      (l) =>
-                        l.trim().startsWith("- [ ]") ||
-                        l.trim().startsWith("- [x]"),
-                    )
-                    .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
+                    const lines = note.split("\n");
+                    const checklistItems = lines
+                      .filter(
+                        (l) =>
+                          l.trim().startsWith("- [ ]") ||
+                          l.trim().startsWith("- [x]"),
+                      )
+                      .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
 
-                  const generalNote = lines
-                    .filter(
-                      (l) =>
-                        !l.trim().startsWith("- [ ]") &&
-                        !l.trim().startsWith("- [x]") &&
-                        !l.trim().toLowerCase().startsWith("daftar poin perbaikan"),
-                    )
-                    .join("\n")
-                    .trim();
+                    const generalNote = lines
+                      .filter(
+                        (l) =>
+                          !l.trim().startsWith("- [ ]") &&
+                          !l.trim().startsWith("- [x]") &&
+                          !l
+                            .trim()
+                            .toLowerCase()
+                            .startsWith("daftar poin perbaikan"),
+                      )
+                      .join("\n")
+                      .trim();
 
-                  return (
-                    <div className="space-y-2.5">
-                      <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
-                        <span className="font-bold text-dark-900 block mb-0.5">
-                          {isRevision
-                            ? "Catatan Permintaan Revisi Klien:"
-                            : "Catatan Pengiriman Mahasiswa:"}
-                        </span>
-                        <p className="whitespace-pre-line leading-relaxed">
-                          {generalNote || note}
-                        </p>
+                    return (
+                      <div className="space-y-2.5">
+                        <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
+                          <span className="font-bold text-dark-900 block mb-0.5">
+                            {isRevision
+                              ? "Catatan Permintaan Revisi Klien:"
+                              : "Catatan Pengiriman Mahasiswa:"}
+                          </span>
+                          <p className="whitespace-pre-line leading-relaxed">
+                            {generalNote || note}
+                          </p>
+                        </div>
+
+                        {checklistItems.length > 0 && (
+                          <RevisionChecklistInteractive
+                            items={checklistItems}
+                            isMhs={!isUmkm}
+                          />
+                        )}
                       </div>
-
-                      {checklistItems.length > 0 && (
-                        <RevisionChecklistInteractive
-                          items={checklistItems}
-                          isMhs={!isUmkm}
-                        />
-                      )}
-                    </div>
-                  );
-                })()}
+                    );
+                  })()}
 
                 <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
                   <span>

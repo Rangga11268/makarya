@@ -29,6 +29,7 @@ import {
   FileText,
   AlertCircle,
   CheckCircle2,
+  Users,
 } from "lucide-react";
 
 export function ApplyProposalPage() {
@@ -44,6 +45,7 @@ export function ApplyProposalPage() {
   const [error, setError] = useState(null);
 
   // Form State
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [hargaTawar, setHargaTawar] = useState("");
   const [estimasiHari, setEstimasiHari] = useState("3");
   const [coverLetter, setCoverLetter] = useState("");
@@ -80,7 +82,14 @@ export function ApplyProposalPage() {
         const projectId = extractIdFromSlug(id);
         const res = await projectApi.getDetail(projectId);
         setProject(res.data);
-        setHargaTawar(res.data.budget_max || "");
+        if (res.data.tipe_kolaborasi === "TIM" && res.data.slots?.length > 0) {
+          const firstOpen =
+            res.data.slots.find((s) => s.status === "OPEN") || res.data.slots[0];
+          setSelectedSlotId(firstOpen.id);
+          setHargaTawar(firstOpen.alokasi_budget || "");
+        } else {
+          setHargaTawar(res.data.budget_max || "");
+        }
       } catch (err) {
         console.error("Gagal memuat detail proyek:", err);
         setError("Proyek tidak ditemukan atau telah ditutup.");
@@ -90,6 +99,11 @@ export function ApplyProposalPage() {
     }
     loadProject();
   }, [id, user?.role]);
+
+  const handleSlotSelect = (slot) => {
+    setSelectedSlotId(slot.id);
+    setHargaTawar(slot.alokasi_budget || "");
+  };
 
   const toggleTool = (tool) => {
     if (selectedTools.includes(tool)) {
@@ -124,9 +138,16 @@ export function ApplyProposalPage() {
       setError("Harga penawaran wajib diisi dan lebih dari Rp 0");
       return;
     }
-    if (nominal > parseFloat(project.budget_max)) {
+
+    const targetMaxBudget =
+      project.tipe_kolaborasi === "TIM" && selectedSlotId
+        ? project.slots?.find((s) => s.id === selectedSlotId)?.alokasi_budget ||
+          project.budget_max
+        : project.budget_max;
+
+    if (nominal > parseFloat(targetMaxBudget)) {
       setError(
-        `Penawaran tidak boleh melebihi batas budget klien (${formatCurrency(project.budget_max)})`,
+        `Penawaran tidak boleh melebihi pagu anggaran peran (${formatCurrency(targetMaxBudget)})`,
       );
       return;
     }
@@ -145,12 +166,17 @@ export function ApplyProposalPage() {
 
     try {
       setSubmitting(true);
-      await proposalApi.submit({
+      const payload = {
         project_id: project.id,
         harga_tawar: nominal,
         estimasi_hari: parseInt(estimasiHari, 10),
         cover_letter: fullPitch,
-      });
+      };
+      if (project.tipe_kolaborasi === "TIM" && selectedSlotId) {
+        payload.slot_id = selectedSlotId;
+      }
+
+      await proposalApi.submit(payload);
 
       showSuccess(
         "Proposal Berhasil Dikirim!",
@@ -297,6 +323,69 @@ export function ApplyProposalPage() {
                 <div className="p-4 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{error}</span>
+                </div>
+              )}
+
+              {/* Slot Selection for Team Projects */}
+              {project.tipe_kolaborasi === "TIM" && project.slots?.length > 0 && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/40 border border-indigo-200/80 space-y-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-indigo-200/60 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-brand-indigo shrink-0" />
+                      <span className="font-bold text-xs text-dark-900">
+                        Pilih Slot Peran yang Ingin Anda Lamar
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                      Proyek Tim
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {project.slots.map((slot) => {
+                      const isSelected = selectedSlotId === slot.id;
+                      const isOpen = slot.status === "OPEN";
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          disabled={!isOpen}
+                          onClick={() => handleSlotSelect(slot)}
+                          className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                            !isOpen
+                              ? "opacity-50 bg-slate-100 border-slate-200 cursor-not-allowed"
+                              : isSelected
+                              ? "bg-white border-brand-indigo ring-2 ring-brand-indigo/30 shadow-xs"
+                              : "bg-white border-slate-200 hover:border-slate-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1.5 mb-1">
+                            <span className="font-bold text-xs text-dark-900">{slot.nama_peran}</span>
+                            <span
+                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                isOpen
+                                  ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                  : "bg-slate-200 text-slate-600 border-slate-300"
+                              }`}
+                            >
+                              {isOpen ? "Tersedia" : "Sudah Terisi"}
+                            </span>
+                          </div>
+                          {slot.deskripsi_tugas && (
+                            <p className="text-[11px] text-muted line-clamp-2 mb-2">
+                              {slot.deskripsi_tugas}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100 font-bold">
+                            <span className="text-muted">Pagu Peran:</span>
+                            <span className="text-brand-indigo font-extrabold">
+                              {formatCurrency(slot.alokasi_budget)}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

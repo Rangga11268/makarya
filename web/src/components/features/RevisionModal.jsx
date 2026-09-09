@@ -6,7 +6,13 @@ import { submissionApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { AlertCircle, RotateCcw, Plus, X, ListChecks } from "lucide-react";
 
-export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions = 0, onSuccess }) {
+export function RevisionModal({
+  isOpen,
+  onClose,
+  submissionId,
+  currentRevisions = 0,
+  onSuccess,
+}) {
   const [alasan, setAlasan] = useState("");
   const [checklist, setChecklist] = useState([""]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +43,9 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
     setError(null);
 
     if (!alasan.trim() || alasan.trim().length < 10) {
-      setError("Mohon uraikan alasan revisi minimal 10 karakter agar jelas bagi mahasiswa.");
+      setError(
+        "Mohon uraikan alasan revisi minimal 10 karakter agar jelas bagi mahasiswa.",
+      );
       return;
     }
 
@@ -50,11 +58,15 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
         checklist_items: validChecklist.length > 0 ? validChecklist : undefined,
       });
 
-      addToast("Permintaan revisi dan daftar periksa telah berhasil dikirim ke mahasiswa!", "info");
+      addToast(
+        "Permintaan revisi dan daftar periksa telah berhasil dikirim ke mahasiswa!",
+        "info",
+      );
       onSuccess?.();
       onClose();
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal mengajukan permintaan revisi.";
+      const msg =
+        err.response?.data?.detail || "Gagal mengajukan permintaan revisi.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -62,7 +74,11 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Ajukan Permintaan Revisi Hasil Kerja">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Ajukan Permintaan Revisi Hasil Kerja"
+    >
       <form onSubmit={handleSubmit} className="space-y-4 font-sans text-xs">
         <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl space-y-1.5 text-amber-900">
           <div className="flex items-center gap-1.5 font-bold">
@@ -70,8 +86,8 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
             <span>Kebijakan Batas Revisi Fair-Use (Maksimal 2 Kali)</span>
           </div>
           <p className="leading-relaxed">
-            Untuk melindungi mahasiswa dari eksploitasi, batas maksimal revisi adalah 2 kali.
-            Kesempatan revisi tersisa: <b>{remaining} kali</b>.
+            Untuk melindungi mahasiswa dari eksploitasi, batas maksimal revisi
+            adalah 2 kali. Kesempatan revisi tersisa: <b>{remaining} kali</b>.
           </p>
         </div>
 
@@ -97,7 +113,9 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
               <ListChecks className="w-4 h-4 text-brand-indigo" />
               <span>Daftar Poin Perbaikan Spesifik (Opsional)</span>
             </label>
-            <span className="text-[11px] text-muted">Akan muncul sebagai checklist bagi mahasiswa</span>
+            <span className="text-[11px] text-muted">
+              Akan muncul sebagai checklist bagi mahasiswa
+            </span>
           </div>
 
           <div className="space-y-2">
@@ -137,7 +155,12 @@ export function RevisionModal({ isOpen, onClose, submissionId, currentRevisions 
         </div>
 
         <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={loading}
+          >
             Batal
           </Button>
           <Button variant="brand" size="md" type="submit" loading={loading}>

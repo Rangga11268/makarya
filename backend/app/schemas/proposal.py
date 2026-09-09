@@ -8,6 +8,7 @@ from app.models.proposal import ProposalStatus
 # Schema request kirim proposal (Khusus mhs)
 class ProposalCreateRequest(BaseModel):
     project_id : UUID
+    slot_id : Optional[UUID] = None
     harga_tawar : Decimal = Field(..., gt=0, le=2000000, description="Penawaran harga maks Rp 2.000.000")
     cover_letter : str = Field(..., min_length=20, description="Alasan dan portfolio relevan minimal 20 karakter")
     estimasi_hari : int = Field(..., ge=1, le=90, description="Estimasi pengerjaan dalam 1 hingga 90 hari")
@@ -34,10 +35,14 @@ class ProposalResponse(BaseModel):
     id : UUID
     project_id : UUID
     mhs_id : UUID
+    slot_id : Optional[UUID] = None
+    slot_nama_peran : Optional[str] = None
     harga_tawar : Decimal
     cover_letter : str
     estimasi_hari : int
     status : ProposalStatus
+    withdraw_reason : Optional[str] = None
+    withdrawn_at : Optional[datetime] = None
     created_at : datetime
     updated_at : datetime
     mhs_profile : Optional[MhsSummary] = None

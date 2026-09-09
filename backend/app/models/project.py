@@ -37,6 +37,11 @@ class Project(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now(), nullable=False)
 
+    cancel_reason = Column(Text, nullable=True)
+    cancelled_by_role = Column(String(50), nullable=True)
+    cancelled_at = Column(DateTime(timezone=True), nullable=True)
+    tipe_kolaborasi = Column(String(20), default="INDIVIDU", nullable=False)
+
     #  Cek apakah bugdet_max nya tidak boleh lebih dari > 2 juta dan kurang dari 0
     __table_args__ = (
         CheckConstraint('budget_max > 0 AND budget_max <= 2000000', name='check_budget_limit'),
@@ -46,6 +51,25 @@ class Project(Base):
     umkm = relationship("User", backref="projects")
     proposals = relationship("Proposal", back_populates="project", cascade="all, delete-orphan")
     ai_requirements = relationship("AIRequirement", back_populates="project", cascade="all, delete-orphan")
+    slots = relationship("ProjectSlot", back_populates="project", cascade="all, delete-orphan")
+
+
+class ProjectSlot(Base):
+    __tablename__ = "project_slots"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    nama_peran = Column(String(100), nullable=False)
+    deskripsi_tugas = Column(Text, nullable=True)
+    alokasi_budget = Column(Numeric(12, 2), nullable=False)
+    status = Column(String(30), default="OPEN", nullable=False)  # OPEN, IN_PROGRESS, COMPLETED, CANCELLED
+    accepted_mhs_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    # Relationship
+    project = relationship("Project", back_populates="slots")
+    accepted_mhs = relationship("User", foreign_keys=[accepted_mhs_id])
+
 
 
     

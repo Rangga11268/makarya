@@ -8,7 +8,7 @@ from sqlalchemy import or_
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role, get_optional_current_user
 from app.models.user import User, UserRole
-from app.models.project import Project, ProjectCategory, ProjectStatus
+from app.models.project import Project, ProjectCategory, ProjectStatus, ProjectSlot
 from app.models.profile import ProfileUmkm, ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
@@ -20,7 +20,9 @@ from app.schemas.project import (
     UmkmSummary,
     ProjectReopenRequest,
     ProjectTerminateRequest,
+    ProjectSlotResponse,
 )
+from sqlalchemy.sql import func
 
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
@@ -37,6 +39,65 @@ def _resolve_accepted_mhs(proj_id: UUID, db: Session):
         if mhs_profile:
             return (mhs_profile.nama_lengkap, mhs_profile.url_foto)
     return (None, None)
+
+
+def _build_project_response(
+    proj: Project,
+    db: Session,
+    mhs_profile: Optional[ProfileMhs] = None,
+    umkm_profile: Optional[ProfileUmkm] = None,
+) -> ProjectResponse:
+    if not umkm_profile:
+        umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
+    umkm_summary = UmkmSummary.model_validate(umkm_profile) if umkm_profile else None
+
+    total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
+    acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
+    match_score, match_reasons = _calculate_match_score(proj, mhs_profile)
+
+    slot_responses = []
+    if proj.slots:
+        for s in proj.slots:
+            slot_mhs_nama = None
+            if s.accepted_mhs_id:
+                m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == s.accepted_mhs_id).first()
+                slot_mhs_nama = m_prof.nama_lengkap if m_prof else "Mahasiswa Terpilih"
+            slot_responses.append(ProjectSlotResponse(
+                id=s.id,
+                project_id=s.project_id,
+                nama_peran=s.nama_peran,
+                deskripsi_tugas=s.deskripsi_tugas,
+                alokasi_budget=s.alokasi_budget,
+                status=s.status,
+                accepted_mhs_id=s.accepted_mhs_id,
+                accepted_mhs_nama=slot_mhs_nama,
+                created_at=s.created_at
+            ))
+
+    return ProjectResponse(
+        id=proj.id,
+        umkm_id=proj.umkm_id,
+        judul=proj.judul,
+        deskripsi_raw=proj.deskripsi_raw,
+        kategori=proj.kategori,
+        budget_max=proj.budget_max,
+        deadline=proj.deadline,
+        status=proj.status,
+        created_at=proj.created_at,
+        updated_at=proj.updated_at,
+        umkm_profile=umkm_summary,
+        umkm_nama=umkm_profile.nama_usaha if umkm_profile and umkm_profile.nama_usaha else None,
+        accepted_mhs_nama=acc_nama,
+        accepted_mhs_foto=acc_foto,
+        total_pelamar=total_pelamar,
+        match_score=match_score,
+        match_reasons=match_reasons,
+        cancel_reason=proj.cancel_reason,
+        cancelled_by_role=proj.cancelled_by_role,
+        cancelled_at=proj.cancelled_at,
+        tipe_kolaborasi=proj.tipe_kolaborasi or "INDIVIDU",
+        slots=slot_responses if slot_responses else None,
+    )
 
 
 def _calculate_match_score(proj: Project, mhs_profile: Optional[ProfileMhs]):
@@ -101,7 +162,7 @@ def _calculate_match_score(proj: Project, mhs_profile: Optional[ProfileMhs]):
 @router.post("", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
 def create_project(
     body: ProjectCreateRequest,
-    db = Depends(get_db),
+    db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
     # Membuat proyek baru (Khusus klien UMKM terverifikasi)
@@ -113,27 +174,28 @@ def create_project(
         budget_max=body.budget_max,
         deadline=body.deadline,
         status=ProjectStatus.OPEN,
+        tipe_kolaborasi=(body.tipe_kolaborasi or "INDIVIDU").upper(),
     )
+    db.add(new_project)
+    db.flush()
 
-    # Ambil profile UMKM pembuat proyek
+    if (body.tipe_kolaborasi or "").upper() == "TIM" and body.slots:
+        for s in body.slots:
+            new_slot = ProjectSlot(
+                project_id=new_project.id,
+                nama_peran=s.nama_peran,
+                deskripsi_tugas=s.deskripsi_tugas,
+                alokasi_budget=s.alokasi_budget,
+                status="OPEN"
+            )
+            db.add(new_slot)
+
+    db.commit()
+    db.refresh(new_project)
+
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
+    return _build_project_response(new_project, db, umkm_profile=profile)
 
-    return ProjectResponse(
-        id=new_project.id,
-        umkm_id=new_project.umkm_id,
-        judul=new_project.judul,
-        deskripsi_raw=new_project.deskripsi_raw,
-        kategori=new_project.kategori,
-        budget_max=new_project.budget_max,
-        deadline=new_project.deadline,
-        status=new_project.status,
-        created_at=new_project.created_at,
-        updated_at=new_project.updated_at,
-        umkm_profile=umkm_summary,
-        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-        total_pelamar=0
-    )
 
 @router.get("", response_model=List[ProjectResponse])
 def browse_project(
@@ -170,34 +232,7 @@ def browse_project(
     if current_user and current_user.role == UserRole.MHS:
         mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
 
-    results = []
-    for proj in projects:
-        profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
-        umkm_summary = UmkmSummary.model_validate(profile) if profile else None
-        total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
-        acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
-        match_score, match_reasons = _calculate_match_score(proj, mhs_profile)
-
-        results.append(ProjectResponse(
-            id=proj.id,
-            umkm_id=proj.umkm_id,
-            judul=proj.judul,
-            deskripsi_raw=proj.deskripsi_raw,
-            kategori=proj.kategori,
-            budget_max=proj.budget_max,
-            deadline=proj.deadline,
-            status=proj.status,
-            created_at=proj.created_at,
-            updated_at=proj.updated_at,
-            umkm_profile=umkm_summary,
-            umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-            accepted_mhs_nama=acc_nama,
-            accepted_mhs_foto=acc_foto,
-            total_pelamar=total_pelamar,
-            match_score=match_score,
-            match_reasons=match_reasons,
-        ))
-    return results
+    return [_build_project_response(p, db, mhs_profile=mhs_profile) for p in projects]
 
 
 @router.get("/my-projects", response_model=List[ProjectResponse])
@@ -206,37 +241,13 @@ def get_my_projects(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    # Melihat seluruh proyek yang dibuat oleh UMKM yang sedang login
-    projects = db.query(Project).filter(Project.umkm_id == current_user.id).all()
+    projects = db.query(Project).filter(Project.umkm_id == current_user.id).order_by(Project.created_at.desc()).all()
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
+    return [_build_project_response(p, db, umkm_profile=profile) for p in projects]
 
-    results = []
-    for proj in projects:
-        total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
-        acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
-        results.append(ProjectResponse(
-            id=proj.id,
-            umkm_id=proj.umkm_id,
-            judul=proj.judul,
-            deskripsi_raw=proj.deskripsi_raw,
-            kategori=proj.kategori,
-            budget_max=proj.budget_max,
-            deadline=proj.deadline,
-            status=proj.status,
-            created_at=proj.created_at,
-            updated_at=proj.updated_at,
-            umkm_profile=umkm_summary,
-            umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-            accepted_mhs_nama=acc_nama,
-            accepted_mhs_foto=acc_foto,
-            total_pelamar=total_pelamar
-        ))
-    return results
 
 @router.get("/{id}", response_model=ProjectResponse)
 def get_project_by_id(
-    # Melihat detail proyek berdasarkan ID
     id: UUID,
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_current_user),
@@ -248,6 +259,9 @@ def get_project_by_id(
     from datetime import date
     if project.status in [ProjectStatus.OPEN, ProjectStatus.BIDDING] and project.deadline and project.deadline < date.today():
         project.status = ProjectStatus.CANCELLED
+        project.cancel_reason = "Tenggat waktu penawaran/pengerjaan telah berakhir (kedaluwarsa otomatis sistem)"
+        project.cancelled_by_role = "SYSTEM_EXPIRED"
+        project.cancelled_at = func.now()
         for prop in project.proposals:
             if prop.status == ProposalStatus.PENDING:
                 prop.status = ProposalStatus.REJECTED
@@ -255,35 +269,12 @@ def get_project_by_id(
         db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
-    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
-    acc_nama, acc_foto = _resolve_accepted_mhs(project.id, db)
-
     mhs_profile = None
     if current_user and current_user.role == UserRole.MHS:
         mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
 
-    match_score, match_reasons = _calculate_match_score(project, mhs_profile)
+    return _build_project_response(project, db, mhs_profile=mhs_profile, umkm_profile=profile)
 
-    return ProjectResponse(
-        id=project.id,
-        umkm_id=project.umkm_id,
-        judul=project.judul,
-        deskripsi_raw=project.deskripsi_raw,
-        kategori=project.kategori,
-        budget_max=project.budget_max,
-        deadline=project.deadline,
-        status=project.status,
-        created_at=project.created_at,
-        updated_at=project.updated_at,
-        umkm_profile=umkm_summary,
-        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-        accepted_mhs_nama=acc_nama,
-        accepted_mhs_foto=acc_foto,
-        total_pelamar=total_pelamar,
-        match_score=match_score,
-        match_reasons=match_reasons,
-    )
 
 @router.patch("/{id}", response_model=ProjectResponse)
 def update_project(
@@ -292,16 +283,13 @@ def update_project(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    # Mengupdate proyek yang dibuat oleh UMKM yang sedang login
     project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk mengubah proyek ini")
 
-    #  BOLA / IDOR Check cek apakah user yang benar-benar pemilik proyek ini
     if project.umkm_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk mengubah proyek ini")
 
-    # Validasi status proyek, tidak boleh mengedit jika sudah ada proposal yang di terima (IN_PROGRESS/DONE)
     if project.status != ProjectStatus.OPEN and project.status != ProjectStatus.BIDDING:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Proyek dengan status '{project.status.value}' tidak dapat diubah")
 
@@ -313,42 +301,24 @@ def update_project(
     db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
-    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
+    return _build_project_response(project, db, umkm_profile=profile)
 
-    return ProjectResponse(
-        id=project.id,
-        umkm_id=project.umkm_id,
-        judul=project.judul,
-        deskripsi_raw=project.deskripsi_raw,
-        kategori=project.kategori,
-        budget_max=project.budget_max,
-        deadline=project.deadline,
-        status=project.status,
-        created_at=project.created_at,
-        updated_at=project.updated_at,
-        umkm_profile=umkm_summary,
-        total_pelamar=total_pelamar
-    )
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(
-    id  : UUID,
+    id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    # Mengahapus proyek (Hanya pemilik proyek yang dapat menghapus proyeknya sendiri & jika proyek belum ada proposal yang diterima)
     project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk menghapus proyek ini")
 
-    # Bola guard
     if project.umkm_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk menghapus proyek ini")
 
-    # Cegah pengahpusan proyek jika sudah berjalan atau sudah selesai (IN_PROGRESS/DONE)
     if project.status == ProjectStatus.IN_PROGRESS or project.status == ProjectStatus.DONE:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Proyek dengan status '{project.status.value}' proyek sedang berjalan atau sudah selesai tidak dapat dihapus")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Proyek dengan status '{project.status.value}' sedang berjalan atau sudah selesai dan tidak dapat dihapus")
 
     db.delete(project)
     db.commit()
@@ -362,14 +332,6 @@ def reopen_project(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    """
-    Klien UMKM membatalkan kontrak pengerjaan mahasiswa dan membuka kembali proyek ke katalog eksplorasi.
-    1. Validasi kepemilikan dan status proyek (harus IN_PROGRESS).
-    2. Kembalikan dana escrow mahasiswa yang diterima ke saldo aktif UMKM (REFUND).
-    3. Ubah status proposal mahasiswa yang diterima menjadi WITHDRAWN.
-    4. Ubah status proyek menjadi OPEN (dan perbarui deadline jika diberikan).
-    5. Kirim notifikasi ke mahasiswa dan UMKM.
-    """
     project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk mengelola proyek ini")
@@ -413,6 +375,14 @@ def reopen_project(
             db.add(ledger_entry)
 
         accepted_prop.status = ProposalStatus.WITHDRAWN
+        accepted_prop.withdraw_reason = body.reason or "Kontrak dibatalkan oleh klien UMKM dan proyek dibuka kembali ke eksplorasi"
+        accepted_prop.withdrawn_at = func.now()
+
+        if accepted_prop.slot_id:
+            slot = db.query(ProjectSlot).filter(ProjectSlot.id == accepted_prop.slot_id).first()
+            if slot:
+                slot.status = "OPEN"
+                slot.accepted_mhs_id = None
 
         alasan_text = f" Alasan: {body.reason}" if body.reason else ""
         notif_mhs = Notification(
@@ -443,27 +413,7 @@ def reopen_project(
     db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
-    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
-    acc_nama, acc_foto = _resolve_accepted_mhs(project.id, db)
-
-    return ProjectResponse(
-        id=project.id,
-        umkm_id=project.umkm_id,
-        judul=project.judul,
-        deskripsi_raw=project.deskripsi_raw,
-        kategori=project.kategori,
-        budget_max=project.budget_max,
-        deadline=project.deadline,
-        status=project.status,
-        created_at=project.created_at,
-        updated_at=project.updated_at,
-        umkm_profile=umkm_summary,
-        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-        accepted_mhs_nama=acc_nama,
-        accepted_mhs_foto=acc_foto,
-        total_pelamar=total_pelamar
-    )
+    return _build_project_response(project, db, umkm_profile=profile)
 
 
 @router.post("/{id}/terminate-and-cancel", response_model=ProjectResponse)
@@ -473,14 +423,6 @@ def terminate_and_cancel_project(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    """
-    Klien UMKM membatalkan proyek secara permanen (CANCELLED) saat IN_PROGRESS:
-    1. Validasi kepemilikan dan status proyek (harus IN_PROGRESS).
-    2. Kembalikan dana escrow mahasiswa yang diterima ke saldo aktif UMKM (REFUND).
-    3. Ubah status proposal mahasiswa yang diterima menjadi WITHDRAWN.
-    4. Ubah status proyek menjadi CANCELLED.
-    5. Kirim notifikasi ke mahasiswa dan UMKM.
-    """
     project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk mengelola proyek ini")
@@ -516,6 +458,13 @@ def terminate_and_cancel_project(
             db.add(ledger_entry)
 
         accepted_prop.status = ProposalStatus.WITHDRAWN
+        accepted_prop.withdraw_reason = body.reason or "Proyek dibatalkan secara permanen oleh klien UMKM"
+        accepted_prop.withdrawn_at = func.now()
+
+        if accepted_prop.slot_id:
+            slot = db.query(ProjectSlot).filter(ProjectSlot.id == accepted_prop.slot_id).first()
+            if slot:
+                slot.status = "CANCELLED"
 
         alasan_text = f" Alasan: {body.reason}" if body.reason else ""
         notif_mhs = Notification(
@@ -528,6 +477,9 @@ def terminate_and_cancel_project(
         db.add(notif_mhs)
 
     project.status = ProjectStatus.CANCELLED
+    project.cancel_reason = body.reason or "Dibatalkan secara permanen oleh klien UMKM"
+    project.cancelled_by_role = "UMKM"
+    project.cancelled_at = func.now()
 
     pesan_umkm = f"Proyek '{project.judul}' telah berhasil dibatalkan secara permanen."
     if nominal_refund > 0:
@@ -546,23 +498,4 @@ def terminate_and_cancel_project(
     db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
-    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
-    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
-
-    return ProjectResponse(
-        id=project.id,
-        umkm_id=project.umkm_id,
-        judul=project.judul,
-        deskripsi_raw=project.deskripsi_raw,
-        kategori=project.kategori,
-        budget_max=project.budget_max,
-        deadline=project.deadline,
-        status=project.status,
-        created_at=project.created_at,
-        updated_at=project.updated_at,
-        umkm_profile=umkm_summary,
-        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
-        accepted_mhs_nama=None,
-        accepted_mhs_foto=None,
-        total_pelamar=total_pelamar
-    )
+    return _build_project_response(project, db, umkm_profile=profile)

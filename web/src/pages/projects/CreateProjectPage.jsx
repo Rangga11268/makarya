@@ -28,6 +28,8 @@ import {
   Plus,
   Trash2,
   Cpu,
+  Users,
+  Info,
 } from "lucide-react";
 
 export function CreateProjectPage() {
@@ -49,6 +51,19 @@ export function CreateProjectPage() {
     deskripsi_raw: "",
     budget_max: 500000,
     deadline: "",
+    tipe_kolaborasi: "INDIVIDU", // "INDIVIDU" | "TIM"
+    slots: [
+      {
+        nama_peran: "Desainer Visual",
+        alokasi_budget: 250000,
+        deskripsi_tugas: "Membuat konsep rancangan dan aset visual",
+      },
+      {
+        nama_peran: "Pelaksana Teknis / Web",
+        alokasi_budget: 250000,
+        deskripsi_tugas: "Implementasi dan penyusunan deliverable final",
+      },
+    ],
     // Step 2 AI Parsed Requirements
     deliverables: [],
     recommendedSkills: [],
@@ -232,6 +247,42 @@ export function CreateProjectPage() {
     });
   };
 
+  // Slot Management for Team Projects
+  const handleAddSlot = () => {
+    if (formData.slots.length >= 5) {
+      setErrorMessage("Maksimal 5 slot peran dalam satu proyek tim.");
+      return;
+    }
+    setFormData({
+      ...formData,
+      slots: [
+        ...formData.slots,
+        {
+          nama_peran: `Peran ${formData.slots.length + 1}`,
+          alokasi_budget: 150000,
+          deskripsi_tugas: "",
+        },
+      ],
+    });
+  };
+
+  const handleRemoveSlot = (index) => {
+    if (formData.slots.length <= 2) {
+      setErrorMessage("Proyek tim minimal memerlukan 2 slot peran.");
+      return;
+    }
+    setFormData({
+      ...formData,
+      slots: formData.slots.filter((_, idx) => idx !== index),
+    });
+  };
+
+  const handleSlotChange = (index, field, value) => {
+    const updated = [...formData.slots];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, slots: updated });
+  };
+
   // Step 3 Validation & Next
   const handleStep3Next = (e) => {
     e.preventDefault();
@@ -247,6 +298,34 @@ export function CreateProjectPage() {
     if (!formData.deadline) {
       setErrorMessage("Tentukan batas tenggat waktu selesai proyek.");
       return;
+    }
+
+    if (formData.tipe_kolaborasi === "TIM") {
+      if (!formData.slots || formData.slots.length < 2) {
+        setErrorMessage("Proyek tim memerlukan minimal 2 slot peran.");
+        return;
+      }
+      for (let i = 0; i < formData.slots.length; i++) {
+        const s = formData.slots[i];
+        if (!s.nama_peran.trim()) {
+          setErrorMessage(`Nama peran untuk Slot #${i + 1} belum diisi.`);
+          return;
+        }
+        if (!s.alokasi_budget || parseFloat(s.alokasi_budget) <= 0) {
+          setErrorMessage(`Alokasi budget untuk Slot #${i + 1} harus lebih dari Rp 0.`);
+          return;
+        }
+      }
+      const totalSlotBudget = formData.slots.reduce(
+        (sum, s) => sum + (parseFloat(s.alokasi_budget) || 0),
+        0,
+      );
+      if (totalSlotBudget > budget) {
+        setErrorMessage(
+          `Total alokasi budget slot (Rp ${totalSlotBudget.toLocaleString()}) melebihi budget maksimal proyek (Rp ${budget.toLocaleString()}). Silakan sesuaikan kembali.`,
+        );
+        return;
+      }
     }
 
     setCurrentStep(4);
@@ -268,13 +347,24 @@ export function CreateProjectPage() {
 
       const fullDescription = `${formData.deskripsi_raw.trim()}${deliverablesText}`;
 
-      const res = await projectApi.create({
+      const payload = {
         judul: formData.judul.trim(),
         kategori: formData.kategori,
         budget_max: parseFloat(formData.budget_max),
         deadline: formData.deadline,
         deskripsi_raw: fullDescription,
-      });
+        tipe_kolaborasi: formData.tipe_kolaborasi,
+      };
+
+      if (formData.tipe_kolaborasi === "TIM" && formData.slots?.length > 0) {
+        payload.slots = formData.slots.map((s) => ({
+          nama_peran: s.nama_peran.trim(),
+          deskripsi_tugas: s.deskripsi_tugas?.trim() || "",
+          alokasi_budget: parseFloat(s.alokasi_budget) || 0,
+        }));
+      }
+
+      const res = await projectApi.create(payload);
 
       addToast(
         "Selamat! Proyek berhasil diterbitkan ke pasar Makarya.",
@@ -710,6 +800,198 @@ export function CreateProjectPage() {
               required
             />
 
+            {/* Tipe Kolaborasi: Individu vs Tim */}
+            <div className="space-y-3 pt-1">
+              <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
+                Mode Penugasan Talenta
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, tipe_kolaborasi: "INDIVIDU" })
+                  }
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                    formData.tipe_kolaborasi === "INDIVIDU"
+                      ? "bg-brand-indigo/5 border-brand-indigo ring-1 ring-brand-indigo"
+                      : "bg-surface border-border hover:border-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-xs text-dark-900">
+                      Pengerjaan Individu (1 Talenta)
+                    </span>
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        formData.tipe_kolaborasi === "INDIVIDU"
+                          ? "border-brand-indigo bg-brand-indigo text-white"
+                          : "border-border"
+                      }`}
+                    >
+                      {formData.tipe_kolaborasi === "INDIVIDU" && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted leading-relaxed">
+                    Satu mahasiswa terpilih akan bertanggung jawab menyelesaikan seluruh rincian kebutuhan proyek.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, tipe_kolaborasi: "TIM" })
+                  }
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                    formData.tipe_kolaborasi === "TIM"
+                      ? "bg-brand-indigo/5 border-brand-indigo ring-1 ring-brand-indigo"
+                      : "bg-surface border-border hover:border-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-xs text-dark-900 flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-brand-indigo" />
+                      Pengerjaan Tim Multi-Talenta
+                    </span>
+                    <div
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                        formData.tipe_kolaborasi === "TIM"
+                          ? "border-brand-indigo bg-brand-indigo text-white"
+                          : "border-border"
+                      }`}
+                    >
+                      {formData.tipe_kolaborasi === "TIM" && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted leading-relaxed">
+                    Buka beberapa slot peran terpisah (misal: Desainer + Developer) dengan alokasi budget mandiri.
+                  </p>
+                </button>
+              </div>
+
+              {/* Slot Builder if TIM */}
+              {formData.tipe_kolaborasi === "TIM" && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3.5 animate-in fade-in">
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-200/80 pb-2.5">
+                    <div>
+                      <h4 className="font-bold text-xs text-dark-900">
+                        Atur Formasi Slot Peran Tim ({formData.slots.length} Peran)
+                      </h4>
+                      <p className="text-[11px] text-muted">
+                        Tentukan peran keahlian dan alokasi budget untuk masing-masing mahasiswa pelamar.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddSlot}
+                      className="text-xs font-bold shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" />
+                      Tambah Peran
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {formData.slots.map((slot, sIdx) => (
+                      <div
+                        key={sIdx}
+                        className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5 shadow-2xs"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-extrabold text-brand-indigo uppercase tracking-wider">
+                            Slot Peran #{sIdx + 1}
+                          </span>
+                          {formData.slots.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSlot(sIdx)}
+                              className="text-muted hover:text-rose-600 transition-colors p-1"
+                              title="Hapus peran ini"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          <div>
+                            <label className="text-[10px] font-semibold text-dark-900 block mb-1">
+                              Nama Peran (misal: UI/UX Designer)
+                            </label>
+                            <input
+                              type="text"
+                              value={slot.nama_peran}
+                              onChange={(e) =>
+                                handleSlotChange(sIdx, "nama_peran", e.target.value)
+                              }
+                              placeholder="Contoh: Graphic Designer / Copywriter"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-semibold text-dark-900 block mb-1">
+                              Alokasi Budget (Rp)
+                            </label>
+                            <input
+                              type="number"
+                              value={slot.alokasi_budget}
+                              onChange={(e) =>
+                                handleSlotChange(
+                                  sIdx,
+                                  "alokasi_budget",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              min="50000"
+                              max="2000000"
+                              step="25000"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-indigo font-semibold text-dark-900"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] font-semibold text-muted block mb-1">
+                            Deskripsi Singkat Tugas (Opsional)
+                          </label>
+                          <input
+                            type="text"
+                            value={slot.deskripsi_tugas}
+                            onChange={(e) =>
+                              handleSlotChange(sIdx, "deskripsi_tugas", e.target.value)
+                            }
+                            placeholder="Contoh: Merancang wireframe dan prototipe di Figma"
+                            className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/60 font-bold text-dark-900">
+                    <span>Total Alokasi Seluruh Slot:</span>
+                    <span className="text-brand-indigo text-sm">
+                      {formatCurrency(
+                        formData.slots.reduce(
+                          (acc, s) => acc + (parseFloat(s.alokasi_budget) || 0),
+                          0
+                        )
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Wallet Escrow Info */}
             <div className="p-4 rounded-2xl bg-canvas border border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
@@ -806,6 +1088,44 @@ export function CreateProjectPage() {
                 ))}
               </ul>
             </div>
+
+            {/* Team Slots Summary (If TIM) */}
+            {formData.tipe_kolaborasi === "TIM" && formData.slots?.length > 0 && (
+              <div className="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-200/80 space-y-3 text-left">
+                <div className="flex items-center justify-between gap-2 border-b border-indigo-200/60 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-brand-indigo shrink-0" />
+                    <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
+                      Formasi Slot Tim Proyek ({formData.slots.length} Peran):
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                    Mode Tim Multi-Talenta
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {formData.slots.map((s, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-white border border-indigo-100 text-xs space-y-1 shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-dark-900">{s.nama_peran}</span>
+                        <span className="font-extrabold text-brand-indigo">
+                          {formatCurrency(s.alokasi_budget)}
+                        </span>
+                      </div>
+                      {s.deskripsi_tugas && (
+                        <p className="text-[11px] text-muted line-clamp-2">
+                          {s.deskripsi_tugas}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Escrow Guarantee Commitment */}
             <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start gap-3">

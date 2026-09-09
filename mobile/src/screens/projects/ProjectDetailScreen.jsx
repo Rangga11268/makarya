@@ -55,6 +55,7 @@ import {
   AlertTriangle,
   RotateCcw,
   XCircle,
+  Users,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -77,6 +78,7 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [estimasiHari, setEstimasiHari] = useState("5");
   const [coverLetter, setCoverLetter] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   // Submission modal for Mahasiswa
   const [submissionModal, setSubmissionModal] = useState(false);
@@ -147,7 +149,13 @@ export function ProjectDetailScreen({ route, navigation }) {
       }
       setMyExistingProposal(foundProp || null);
 
-      if (pRes.data?.budget_max) {
+      if (pRes.data?.tipe_kolaborasi === "TIM" && Array.isArray(pRes.data?.slots) && pRes.data.slots.length > 0) {
+        const firstOpenSlot = pRes.data.slots.find((s) => s.status === "OPEN") || pRes.data.slots[0];
+        setSelectedSlot(firstOpenSlot);
+        if (firstOpenSlot?.alokasi_budget) {
+          setHargaTawar(String(firstOpenSlot.alokasi_budget));
+        }
+      } else if (pRes.data?.budget_max) {
         setHargaTawar(String(pRes.data.budget_max));
       }
     } catch (err) {
@@ -182,12 +190,16 @@ export function ProjectDetailScreen({ route, navigation }) {
       return;
     }
 
+    if (project?.tipe_kolaborasi === "TIM" && project.slots?.length > 0 && !selectedSlot) {
+      showToast("Pilih salah satu peran tim yang ingin Anda lamar", "danger");
+      return;
+    }
+
     const harga = parseInt(hargaTawar, 10);
-    if (harga > (project?.budget_max || 0)) {
+    const maxBudget = selectedSlot ? selectedSlot.alokasi_budget : (project?.budget_max || 0);
+    if (harga > maxBudget) {
       showToast(
-        `Harga tawar tidak boleh melebihi budget max (${formatCurrency(
-          project.budget_max,
-        )})`,
+        `Harga tawar tidak boleh melebihi pagu peran (${formatCurrency(maxBudget)})`,
         "danger",
       );
       return;
@@ -197,6 +209,7 @@ export function ProjectDetailScreen({ route, navigation }) {
       setSubmitLoading(true);
       await proposalApi.submit({
         project_id: projectId,
+        slot_id: selectedSlot?.id || undefined,
         harga_tawar: harga,
         estimasi_hari: parseInt(estimasiHari, 10) || 5,
         cover_letter: coverLetter.trim(),
@@ -449,7 +462,9 @@ export function ProjectDetailScreen({ route, navigation }) {
         ) : null}
         {checklistItems.length > 0 ? (
           <View style={styles.mobileChecklistCard}>
-            <Text style={styles.mobileChecklistTitle}>Daftar Poin Perbaikan:</Text>
+            <Text style={styles.mobileChecklistTitle}>
+              Daftar Poin Perbaikan:
+            </Text>
             {checklistItems.map((it, cIdx) => (
               <View key={cIdx} style={styles.mobileChecklistItemRow}>
                 <Check
@@ -557,6 +572,124 @@ export function ProjectDetailScreen({ route, navigation }) {
 
         {/* 2. Interactive Escrow Progress Stepper */}
         <ProjectStatusBar currentStatus={project.status} />
+
+        {/* Cancellation / Expiry Audit Trail Card */}
+        {project.status === "CANCELLED" && (
+          <View style={styles.cancellationAuditCard}>
+            <View style={styles.cancellationAuditHeader}>
+              <View style={styles.cancellationAuditBadgeRow}>
+                <View style={styles.cancellationBadge}>
+                  <XCircle size={14} color="#DC2626" />
+                  <Text style={styles.cancellationBadgeText}>
+                    {project.cancelled_by_role === "MAHASISWA"
+                      ? "Mahasiswa Mengundurkan Diri"
+                      : project.cancelled_by_role === "UMKM"
+                        ? "Dibatalkan Klien UMKM"
+                        : project.cancelled_by_role === "SYSTEM_EXPIRED"
+                          ? "Kedaluwarsa Otomatis (Tenggat)"
+                          : "Proyek Dibatalkan"}
+                  </Text>
+                </View>
+                <View style={styles.refundEscrowBadge}>
+                  <ShieldCheck size={12} color="#059669" />
+                  <Text style={styles.refundEscrowBadgeText}>
+                    100% Escrow Dikembalikan
+                  </Text>
+                </View>
+              </View>
+              {project.cancelled_at ? (
+                <Text style={styles.cancellationTimeText}>
+                  Waktu: {formatDate(project.cancelled_at)}
+                </Text>
+              ) : null}
+            </View>
+
+            <View style={styles.cancellationReasonBox}>
+              <Text style={styles.cancellationReasonLabel}>Alasan Pembatalan Resmi:</Text>
+              <Text style={styles.cancellationReasonQuote}>
+                "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Team Collaboration Slots Card */}
+        {project.tipe_kolaborasi === "TIM" && Array.isArray(project.slots) && project.slots.length > 0 && (
+          <View style={styles.teamSlotsCard}>
+            <View style={styles.teamSlotsCardHeader}>
+              <View style={styles.teamSlotsIconBox}>
+                <Users size={16} color={COLORS.brandIndigo} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.teamSlotsCardTitle}>
+                  Formasi Tim Proyek ({project.slots.length} Talenta)
+                </Text>
+                <Text style={styles.teamSlotsCardSub}>
+                  Proyek kolaborasi multi-peran dengan alokasi escrow independen tiap posisi.
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.teamSlotsList}>
+              {project.slots.map((s, idx) => {
+                const isSlotOpen = s.status === "OPEN";
+                const isSlotDone = s.status === "COMPLETED";
+                return (
+                  <View key={s.id || idx} style={styles.teamSlotItem}>
+                    <View style={styles.teamSlotItemTop}>
+                      <View style={{ flex: 1, marginRight: 8 }}>
+                        <Text style={styles.teamSlotItemRole}>{s.nama_peran}</Text>
+                        <Text style={styles.teamSlotItemBudget}>
+                          Pagu: {formatCurrency(s.alokasi_budget)}
+                        </Text>
+                      </View>
+                      <View
+                        style={[
+                          styles.teamSlotStatusTag,
+                          isSlotOpen
+                            ? styles.teamSlotStatusTagOpen
+                            : isSlotDone
+                              ? styles.teamSlotStatusTagDone
+                              : styles.teamSlotStatusTagActive,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.teamSlotStatusText,
+                            isSlotOpen
+                              ? styles.teamSlotStatusTextOpen
+                              : isSlotDone
+                                ? styles.teamSlotStatusTextDone
+                                : styles.teamSlotStatusTextActive,
+                          ]}
+                        >
+                          {isSlotOpen
+                            ? "Mencari Talenta"
+                            : isSlotDone
+                              ? "Selesai"
+                              : "Sedang Dikerjakan"}
+                        </Text>
+                      </View>
+                    </View>
+                    {s.deskripsi_tugas ? (
+                      <Text style={styles.teamSlotItemDesc}>
+                        {s.deskripsi_tugas}
+                      </Text>
+                    ) : null}
+                    {s.mahasiswa_nama ? (
+                      <View style={styles.assignedMhsRow}>
+                        <CheckCircle2 size={12} color="#059669" />
+                        <Text style={styles.assignedMhsText}>
+                          Talenta: {s.mahasiswa_nama}
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         {/* 3. Client UMKM Profile Info */}
         <View style={styles.clientBox}>
@@ -882,9 +1015,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                           {submissions[0].url_berkas}
                         </Text>
                       </TouchableOpacity>
-                      {renderSubmissionNote(
-                        submissions[0].catatan_pengiriman,
-                      )}
+                      {renderSubmissionNote(submissions[0].catatan_pengiriman)}
                       <View style={{ marginTop: 10, gap: 8 }}>
                         <Button
                           title="Perbarui Berkas Deliverable"
@@ -988,19 +1119,33 @@ export function ProjectDetailScreen({ route, navigation }) {
                       label={
                         myExistingProposal.status === "PENDING"
                           ? "Menunggu Keputusan Klien"
-                          : myExistingProposal.status === "REJECTED"
-                            ? "Lamaran Ditolak"
-                            : "Disetujui"
+                          : myExistingProposal.status === "WITHDRAWN"
+                            ? "Mengundurkan Diri (Batal)"
+                            : myExistingProposal.status === "REJECTED"
+                              ? "Lamaran Ditolak"
+                              : "Disetujui"
                       }
                       variant={
                         myExistingProposal.status === "PENDING"
                           ? "warning"
-                          : myExistingProposal.status === "REJECTED"
-                            ? "danger"
-                            : "success"
+                          : myExistingProposal.status === "WITHDRAWN"
+                            ? "neutral"
+                            : myExistingProposal.status === "REJECTED"
+                              ? "danger"
+                              : "success"
                       }
                     />
                   </View>
+                  {myExistingProposal.status === "WITHDRAWN" && myExistingProposal.withdraw_reason && (
+                    <View style={styles.withdrawnDetailBox}>
+                      <Text style={styles.withdrawnDetailLabel}>
+                        Alasan Pengunduran Diri:
+                      </Text>
+                      <Text style={styles.withdrawnDetailText}>
+                        "{myExistingProposal.withdraw_reason}"
+                      </Text>
+                    </View>
+                  )}
                 </View>
               )}
             </View>
@@ -1103,9 +1248,15 @@ export function ProjectDetailScreen({ route, navigation }) {
         setEstimasiHari={setEstimasiHari}
         coverLetter={coverLetter}
         setCoverLetter={setCoverLetter}
-        budgetMax={project.budget_max}
+        budgetMax={selectedSlot ? selectedSlot.alokasi_budget : project.budget_max}
         onSubmit={handleSubmitProposal}
         loading={submitLoading}
+        slots={project.tipe_kolaborasi === "TIM" ? project.slots : []}
+        selectedSlotId={selectedSlot?.id}
+        onSelectSlot={(slot) => {
+          setSelectedSlot(slot);
+          setHargaTawar(String(slot.alokasi_budget));
+        }}
       />
 
       {/* Modal 2: Deliverable Upload Sheet */}
@@ -1838,5 +1989,212 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#166534",
     lineHeight: 16,
+  },
+  cancellationAuditCard: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    marginBottom: 14,
+    gap: 10,
+  },
+  cancellationAuditHeader: {
+    gap: 6,
+  },
+  cancellationAuditBadgeRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 8,
+  },
+  cancellationBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "#FEE2E2",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  cancellationBadgeText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#991B1B",
+  },
+  refundEscrowBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  refundEscrowBadgeText: {
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#065F46",
+  },
+  cancellationTimeText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: "#991B1B",
+  },
+  cancellationReasonBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+  },
+  cancellationReasonLabel: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#7F1D1D",
+    marginBottom: 3,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  cancellationReasonQuote: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: "#450A0A",
+    fontStyle: "italic",
+    lineHeight: 17,
+  },
+  teamSlotsCard: {
+    backgroundColor: COLORS.bgSurface,
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 14,
+    ...SHADOWS.sm,
+  },
+  teamSlotsCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+  teamSlotsIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: "#EEF2FF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  teamSlotsCardTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  teamSlotsCardSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  teamSlotsList: {
+    gap: 8,
+  },
+  teamSlotItem: {
+    backgroundColor: COLORS.bgDark,
+    borderRadius: 12,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  teamSlotItemTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 4,
+  },
+  teamSlotItemRole: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  teamSlotItemBudget: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
+    marginTop: 1,
+  },
+  teamSlotStatusTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  teamSlotStatusTagOpen: {
+    backgroundColor: "#ECFDF5",
+  },
+  teamSlotStatusTagActive: {
+    backgroundColor: "#EFF6FF",
+  },
+  teamSlotStatusTagDone: {
+    backgroundColor: "#F1F5F9",
+  },
+  teamSlotStatusText: {
+    fontSize: 10,
+    fontWeight: "700",
+  },
+  teamSlotStatusTextOpen: {
+    color: "#059669",
+  },
+  teamSlotStatusTextActive: {
+    color: "#2563EB",
+  },
+  teamSlotStatusTextDone: {
+    color: "#64748B",
+  },
+  teamSlotItemDesc: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    lineHeight: 15,
+    marginTop: 2,
+  },
+  assignedMhsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 6,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+  },
+  assignedMhsText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#065F46",
+  },
+  withdrawnDetailBox: {
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  withdrawnDetailLabel: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#64748B",
+    marginBottom: 2,
+  },
+  withdrawnDetailText: {
+    fontSize: 11,
+    fontStyle: "italic",
+    color: "#334155",
   },
 });
