@@ -4,6 +4,7 @@ import { Button } from "../../../components/ui/Button";
 import { WorkroomChatPanel } from "../../../components/features/WorkroomChatPanel";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
+import { formatDate, isExpired } from "../../../utils/formatDate";
 import {
   Briefcase,
   ShieldCheck,
@@ -16,6 +17,7 @@ import {
   CheckCircle2,
   UploadCloud,
   Clock,
+  AlertCircle,
 } from "lucide-react";
 
 export function WorkroomWorkspaceDetail({
@@ -72,12 +74,34 @@ export function WorkroomWorkspaceDetail({
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
+              </div>
+            )}
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Garansi Escrow Aman</span>
             </div>
           </div>
         </div>
+
+        {/* Overdue Warning Callout */}
+        {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
+          <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex items-start gap-2.5 text-rose-900">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="flex-1 space-y-0.5">
+              <span className="font-bold block">Peringatan Tenggat Waktu Terlewati</span>
+              <p className="text-[11px] text-rose-700 leading-relaxed">
+                {isUmkm
+                  ? "Pengerjaan proyek oleh mahasiswa telah melewati tenggat waktu yang ditentukan. Anda dapat mendiskusikan kelanjutan via obrolan di bawah atau mengajukan mediasi/sengketa jika diperlukan."
+                  : "Batas waktu pengerjaan proyek telah terlewati. Harap segera kirimkan hasil kerja final (deliverable) pada tab Unggah Berkas untuk mencegah pembatalan atau pengajuan sengketa oleh klien."}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Partner Info & Quick Metas */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">

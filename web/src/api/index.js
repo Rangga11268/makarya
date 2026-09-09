@@ -71,6 +71,7 @@ export const talentApi = {
 export const notificationApi = {
   getMyNotifications: (params) => api.get("/notifications", { params }),
   markAllAsRead: () => api.patch("/notifications/read-all"),
+  markAsRead: (id) => api.patch(`/notifications/${id}/read`),
 };
 
 export const getChatWsUrl = (projectId, token) => {

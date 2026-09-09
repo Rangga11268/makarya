@@ -1,4 +1,19 @@
 import { create } from "zustand";
+import { notificationApi } from "../api";
+
+function formatRelativeTime(dateString) {
+  if (!dateString) return "Baru saja";
+  try {
+    const diff = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
+    if (diff < 60) return "Baru saja";
+    if (diff < 3600) return `${Math.floor(diff / 60)} mnt lalu`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
+    if (diff < 172800) return "Kemarin";
+    return `${Math.floor(diff / 86400)} hari lalu`;
+  } catch {
+    return "Baru saja";
+  }
+}
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [
@@ -53,6 +68,8 @@ export const useNotificationStore = create((set, get) => ({
       role: "UMKM",
     },
   ],
+  notifications: [],
+  loading: false,
 
   getUnreadCount: (role) => {
     const isMhs =
@@ -60,6 +77,25 @@ export const useNotificationStore = create((set, get) => ({
     const targetRole = isMhs ? "MHS" : "UMKM";
     return get().notifications.filter((n) => n.role === targetRole && !n.isRead)
       .length;
+  fetchNotifications: async () => {
+    try {
+      set({ loading: true });
+      const res = await notificationApi.getMyNotifications({ limit: 30 });
+      const raw = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+      const normalized = raw.map((n) => ({
+        id: String(n.id),
+        title: n.judul || n.title || "Pemberitahuan Sistem",
+        message: n.pesan || n.message || "",
+        type: n.tipe || n.type || "INFO",
+        time: formatRelativeTime(n.created_at),
+        isRead: Boolean(n.is_read ?? n.isRead),
+        url: n.url_referensi,
+        createdAt: n.created_at,
+      }));
+      set({ notifications: normalized, loading: false });
+    } catch {
+      set({ loading: false });
+    }
   },
 
   getRoleNotifications: (role) => {
@@ -67,23 +103,45 @@ export const useNotificationStore = create((set, get) => ({
       role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
     const targetRole = isMhs ? "MHS" : "UMKM";
     return get().notifications.filter((n) => n.role === targetRole);
+  getUnreadCount: () => {
+    return get().notifications.filter((n) => !n.isRead).length;
   },
 
   markAsRead: (id) =>
+  getRoleNotifications: () => {
+    return get().notifications;
+  },
+
+  markAsRead: async (id) => {
     set((state) => ({
       notifications: state.notifications.map((n) =>
         n.id === id ? { ...n, isRead: true } : n,
+        n.id === String(id) ? { ...n, isRead: true } : n,
       ),
     })),
+    }));
+    try {
+      await notificationApi.markAsRead(id);
+    } catch {
+      // silent fallback
+    }
+  },
 
   markAllAsRead: (role) => {
     const isMhs =
       role === "MHS" || role === "MAHASISWA" || role?.includes?.(".ac.id");
     const targetRole = isMhs ? "MHS" : "UMKM";
+  markAllAsRead: async () => {
     set((state) => ({
       notifications: state.notifications.map((n) =>
         n.role === targetRole ? { ...n, isRead: true } : n,
       ),
+      notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
     }));
+    try {
+      await notificationApi.markAllAsRead();
+    } catch {
+      // silent fallback
+    }
   },
 }));

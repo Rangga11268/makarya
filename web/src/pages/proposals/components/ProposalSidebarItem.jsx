@@ -1,6 +1,7 @@
 import React from "react";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
+import { formatDate, isExpired } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
 
 export function ProposalSidebarItem({
@@ -13,6 +14,7 @@ export function ProposalSidebarItem({
   if (isUmkm) {
     const proj = item;
     const isDone = proj.status === "DONE" || proj.status === "COMPLETED";
+    const overdue = proj.status === "IN_PROGRESS" && isExpired(proj.deadline);
 
     return (
       <div
@@ -34,9 +36,15 @@ export function ProposalSidebarItem({
                 : proj.status === "IN_PROGRESS"
                   ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
                   : "bg-amber-50 text-amber-800 border-amber-200"
+                : overdue
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : proj.status === "IN_PROGRESS"
+                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                    : "bg-amber-50 text-amber-800 border-amber-200"
             }`}
           >
             {isDone ? "Selesai" : formatStatus(proj.status)}
+            {isDone ? "Selesai" : overdue ? "Lewat Tenggat" : formatStatus(proj.status)}
           </span>
         </div>
 
@@ -99,6 +107,9 @@ export function ProposalSidebarItem({
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : isAccepted
                 ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                ? isExpired(prop.project_deadline || prop.deadline)
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
                 : prop.status === "REJECTED"
                   ? "bg-rose-50 text-rose-800 border-rose-200"
                   : "bg-amber-50 text-amber-800 border-amber-200"
@@ -108,6 +119,9 @@ export function ProposalSidebarItem({
             ? "Selesai"
             : isAccepted
               ? "Dikerjakan"
+              ? isExpired(prop.project_deadline || prop.deadline)
+                ? "Lewat Tenggat"
+                : "Dikerjakan"
               : formatStatus(prop.status)}
         </span>
       </div>

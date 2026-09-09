@@ -1,4 +1,5 @@
 import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -20,18 +21,31 @@ import {
   Briefcase,
   Sparkles,
   FileCheck,
+  AlertTriangle,
 } from "lucide-react-native";
 
 export function NotificationModal({ visible, onClose }) {
   const { user } = useAuthStore();
   const { getRoleNotifications, markAsRead, markAllAsRead, getUnreadCount } =
     useNotificationStore();
+  const {
+    getRoleNotifications,
+    markAsRead,
+    markAllAsRead,
+    getUnreadCount,
+    fetchNotifications,
+  } = useNotificationStore();
 
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+  useEffect(() => {
+    if (visible) {
+      fetchNotifications();
+    }
+  }, [visible]);
 
   const notifications = getRoleNotifications(user?.role);
   const unreadCount = getUnreadCount(user?.role);
@@ -45,6 +59,9 @@ export function NotificationModal({ visible, onClose }) {
         return <Wallet size={18} color={COLORS.success} />;
       case "SUBMISSION":
         return <FileCheck size={18} color={COLORS.brandCyan} />;
+      case "SYSTEM":
+      case "WARNING":
+        return <AlertTriangle size={18} color={COLORS.danger || "#EF4444"} />;
       case "INFO":
       default:
         return <Sparkles size={18} color={COLORS.brandIndigo} />;

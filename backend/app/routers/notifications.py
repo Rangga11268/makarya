@@ -37,3 +37,20 @@ def mark_all_as_read(
     ).update({"is_read": True})
     db.commit()
     return {"message": "Semua notifikasi telah ditandai dibaca"}
+
+@router.patch("/{notification_id}/read", status_code=status.HTTP_200_OK)
+def mark_one_as_read(
+    notification_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Menandai satu notifikasi tertentu sebagai telah dibaca"""
+    notif = db.query(Notification).filter(
+        Notification.id == notification_id,
+        Notification.user_id == current_user.id
+    ).first()
+    if notif:
+        notif.is_read = True
+        db.commit()
+    return {"message": "Notifikasi telah ditandai dibaca"}
+

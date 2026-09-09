@@ -71,6 +71,7 @@ export function HomeScreen({ navigation }) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const { getUnreadCount } = useNotificationStore();
+  const { getUnreadCount, fetchNotifications } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
 
   const isMahasiswa =
@@ -82,6 +83,7 @@ export function HomeScreen({ navigation }) {
   const loadData = async () => {
     try {
       setRefreshing(true);
+      fetchNotifications().catch(() => {});
       if (isMahasiswa) {
         const [walletRes, browseRes, propRes] = await Promise.all([
           walletApi

@@ -62,6 +62,12 @@ export const talentApi = {
   getTalentDetail: (id) => api.get(`/talents/${id}`),
 };
 
+export const notificationApi = {
+  getMyNotifications: (params) => api.get("/notifications", { params }),
+  markAllAsRead: () => api.patch("/notifications/read-all"),
+  markAsRead: (id) => api.patch(`/notifications/${id}/read`),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   let host = Platform.OS === "android" ? "10.0.2.2:8000" : "localhost:8000";
   const debuggerHost =

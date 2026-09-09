@@ -27,6 +27,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatDate, isExpired } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import {
   ShieldCheck,
@@ -46,6 +47,7 @@ import {
   ChevronRight,
   Check,
   MessageSquare,
+  AlertTriangle,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -633,6 +635,14 @@ export function ProjectDetailScreen({ route, navigation }) {
                     <Text style={styles.emptyText}>
                       Mahasiswa belum mengunggah hasil deliverable.
                     </Text>
+                    {isExpired(project?.deadline) && (
+                      <View style={styles.overdueCallout}>
+                        <AlertTriangle size={14} color="#BE123C" />
+                        <Text style={styles.overdueCalloutText}>
+                          Tenggat pengerjaan telah terlewati. Anda dapat menghubungi mahasiswa via chat atau membuka mediasi sengketa jika diperlukan.
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 ) : (
                   submissions.map((sub) => (
@@ -733,6 +743,14 @@ export function ProjectDetailScreen({ route, navigation }) {
                         Proyek disetujui! Silakan kerjakan dan unggah tautan
                         hasil kerja (Figma / Drive) Anda.
                       </Text>
+                      {isExpired(project?.deadline) && (
+                        <View style={styles.overdueCallout}>
+                          <AlertTriangle size={14} color="#BE123C" />
+                          <Text style={styles.overdueCalloutText}>
+                            Tenggat pengerjaan telah terlewati. Harap segera unggah hasil deliverable Anda untuk menghindari pengajuan sengketa oleh klien UMKM.
+                          </Text>
+                        </View>
+                      )}
                       <Button
                         title="Unggah Deliverable Sekarang"
                         variant="brand"
@@ -1488,5 +1506,25 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
+  },
+  overdueCallout: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    backgroundColor: "#FFF1F2",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#FECDD3",
+    marginTop: 10,
+    marginBottom: 6,
+    width: "100%",
+  },
+  overdueCalloutText: {
+    flex: 1,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#9F1239",
+    lineHeight: 16,
   },
 });
