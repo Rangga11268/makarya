@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useAlertStore } from "../../store/alertStore";
-import { 
-  AlertSuccessSvg, 
-  AlertErrorSvg, 
-  AlertWarningSvg, 
-  AlertInfoSvg, 
-  AlertConfirmSvg 
+import {
+  AlertSuccessSvg,
+  AlertErrorSvg,
+  AlertWarningSvg,
+  AlertInfoSvg,
+  AlertConfirmSvg,
 } from "./AlertIcons";
 import { cn } from "../../utils/cn";
 
@@ -72,7 +72,8 @@ export function AlertModal() {
     success: {
       bg: "bg-emerald-50/80",
       border: "border-emerald-200",
-      buttonBg: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20",
+      buttonBg:
+        "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20",
     },
     error: {
       bg: "bg-rose-50/80",
@@ -82,19 +83,21 @@ export function AlertModal() {
     warning: {
       bg: "bg-amber-50/80",
       border: "border-amber-200",
-      buttonBg: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20",
+      buttonBg:
+        "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20",
     },
     confirm: {
       bg: "bg-slate-100/80",
       border: "border-slate-200",
-      buttonBg: isDestructive 
+      buttonBg: isDestructive
         ? "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20"
         : "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",
     },
     info: {
       bg: "bg-sky-50/80",
       border: "border-sky-200",
-      buttonBg: "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",
+      buttonBg:
+        "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",
     },
   };
 
@@ -110,13 +113,12 @@ export function AlertModal() {
 
       {/* Centered Modal Card */}
       <div className="relative w-full max-w-[380px] bg-surface rounded-[28px] border border-border shadow-2xl p-6 sm:p-7 flex flex-col items-center text-center z-10 animate-in zoom-in-95 fade-in duration-200">
-        
         {/* Top Circular Icon Ring with Rich SVG (Tunggal Jaya Transport Style) */}
         <div
           className={cn(
             "w-20 h-20 rounded-full border-2 flex items-center justify-center mb-4.5 shadow-2xs transition-transform duration-300 hover:scale-105",
             currentTheme.bg,
-            currentTheme.border
+            currentTheme.border,
           )}
         >
           {getAlertIcon()}
@@ -151,13 +153,12 @@ export function AlertModal() {
             className={cn(
               "py-3 px-4 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all select-none cursor-pointer",
               showCancel ? "flex-[1.3]" : "w-full",
-              currentTheme.buttonBg
+              currentTheme.buttonBg,
             )}
           >
             {confirmText || "Mengerti"}
           </button>
         </div>
-
       </div>
     </div>
   );

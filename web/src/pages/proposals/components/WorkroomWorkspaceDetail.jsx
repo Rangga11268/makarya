@@ -166,7 +166,7 @@ export function WorkroomWorkspaceDetail({
               className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900"
+                  : "bg-canvas border border-border text-muted hover:text-dark-900"
               }`}
             >
               <Users className="w-3.5 h-3.5" />

@@ -269,7 +269,7 @@ export function SidebarLayout() {
           <div className="px-5 pt-4">
             <Link to="/projects/new">
               <button className="w-full py-2.5 px-4 rounded-2xl bg-dark-900 hover:bg-dark-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer">
-                <PlusCircle className="w-4 h-4 text-brand-cyan" />
+                <PlusCircle className="w-4 h-4 text-white" />
                 <span>Pasang Proyek Baru</span>
               </button>
             </Link>
@@ -303,7 +303,7 @@ export function SidebarLayout() {
                           className={cn(
                             "w-4 h-4 transition-colors",
                             active
-                              ? "text-brand-cyan"
+                              ? "text-white"
                               : "text-muted group-hover:text-dark-900",
                           )}
                         />
@@ -375,10 +375,7 @@ export function SidebarLayout() {
               ) : (
                 <div
                   className={cn(
-                    "w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 select-none shadow-xs",
-                    isUmkm
-                      ? "bg-brand-cyan text-slate-900"
-                      : "bg-brand-indigo text-white",
+                    "w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs shrink-0 select-none shadow-xs bg-dark-900 text-white",
                   )}
                 >
                   {userInitial}
@@ -460,7 +457,7 @@ export function SidebarLayout() {
                         <Icon
                           className={cn(
                             "w-4 h-4",
-                            active ? "text-brand-cyan" : "text-muted",
+                            active ? "text-white" : "text-muted",
                           )}
                         />
                         <span>{item.label}</span>
@@ -564,10 +561,7 @@ export function SidebarLayout() {
               ) : (
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs shadow-xs",
-                    isUmkm
-                      ? "bg-brand-cyan text-slate-900"
-                      : "bg-brand-indigo text-white",
+                    "w-8 h-8 rounded-xl font-bold flex items-center justify-center text-xs shadow-xs bg-dark-900 text-white",
                   )}
                 >
                   {userInitial}

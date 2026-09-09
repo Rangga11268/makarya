@@ -26,8 +26,6 @@ def daily_project_check():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Dijalankan saat aplikasi startup
-    # Eksekusi cron setiap hari pukul 00:00
     # Dijalankan saat aplikasi startup:
     # 1. Jalankan langsung pemeriksaan deadline saat server mulai
     try:

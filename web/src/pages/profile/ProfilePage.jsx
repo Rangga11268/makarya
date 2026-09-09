@@ -289,9 +289,7 @@ export function ProfilePage() {
               className="w-20 h-20 rounded-full object-cover shadow-xs border-2 border-slate-200"
             />
           ) : (
-            <div
-              className={`w-20 h-20 rounded-full ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} text-3xl font-bold flex items-center justify-center shadow-xs select-none`}
-            >
+            <div className="w-20 h-20 rounded-full bg-dark-900 text-white text-3xl font-bold flex items-center justify-center shadow-xs select-none">
               {initial}
             </div>
           )}

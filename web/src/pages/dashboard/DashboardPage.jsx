@@ -96,7 +96,10 @@ export function DashboardPage() {
       {/* ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-5 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
-          <Link to="/profile" className="shrink-0 self-start sm:self-auto group">
+          <Link
+            to="/profile"
+            className="shrink-0 self-start sm:self-auto group"
+          >
             {user?.url_foto ? (
               <img
                 src={user.url_foto}
@@ -104,9 +107,7 @@ export function DashboardPage() {
                 className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xs border-2 border-slate-100 group-hover:scale-105 transition-transform"
               />
             ) : (
-              <div
-                className={`w-14 h-14 sm:w-20 sm:h-20 rounded-2xl ${isUmkm ? "bg-brand-cyan text-slate-900" : "bg-brand-indigo text-white"} text-xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform`}
-              >
+              <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-dark-900 text-white text-xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform">
                 {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
                   .charAt(0)
                   .toUpperCase()}

@@ -146,7 +146,8 @@ export function ProjectDetailPage() {
   }
 
   const daysLeft = daysRemaining(project?.deadline);
-  const expired = isExpired(project?.deadline) || project?.status === "CANCELLED";
+  const expired =
+    isExpired(project?.deadline) || project?.status === "CANCELLED";
   const isOwner = user?.id === project.umkm_id;
 
   return (
@@ -493,7 +494,8 @@ export function ProjectDetailPage() {
                   Tenggat Waktu Berakhir
                 </Button>
                 <p className="text-[11px] text-center text-rose-600 font-medium">
-                  Penerimaan proposal untuk proyek ini telah ditutup karena melewati batas tenggat waktu.
+                  Penerimaan proposal untuk proyek ini telah ditutup karena
+                  melewati batas tenggat waktu.
                 </p>
               </div>
             ) : (

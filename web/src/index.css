@@ -11,7 +11,12 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     letter-spacing: -0.015em;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight font-semibold text-dark-900;
     letter-spacing: -0.02em;
   }
@@ -28,10 +33,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D4D4D8;
+  background: #d4d4d8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A1A1AA;
+  background: #a1a1aa;
 }
