@@ -374,11 +374,18 @@ def resign_proposal(
     profile_mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
     nama_mhs = profile_mhs.nama_lengkap if profile_mhs else current_user.email
 
+    from datetime import date
+    is_deadline_valid = project.deadline and project.deadline >= date.today()
+    if is_deadline_valid:
+        keterangan_tenggat = "Dana escrow telah dikembalikan ke Saldo Aktif Anda dan proyek telah dibuka kembali ke katalog eksplorasi."
+    else:
+        keterangan_tenggat = "Dana escrow telah dikembalikan ke Saldo Aktif Anda. Karena tenggat waktu pengerjaan sebelumnya telah lewat, silakan perbarui tenggat waktu baru agar proyek dapat ditayangkan kembali di katalog eksplorasi."
+
     # Kirim notifikasi ke UMKM
     notif_umkm = Notification(
         user_id=project.umkm_id,
         judul="Mahasiswa Mengundurkan Diri dari Proyek",
-        pesan=f"Mahasiswa {nama_mhs} mengundurkan diri dari proyek '{project.judul}'. Alasan: {body.reason}. Dana escrow Rp {int(proposal.harga_tawar):,} telah dikembalikan ke Saldo Aktif Anda dan proyek telah dibuka kembali ke katalog eksplorasi.",
+        pesan=f"Mahasiswa {nama_mhs} mengundurkan diri dari proyek '{project.judul}'. Alasan: {body.reason}. {keterangan_tenggat}",
         tipe=NotificationType.PROPOSAL,
         url_referensi=f"/workroom/{project.id}"
     )
