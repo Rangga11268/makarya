@@ -155,14 +155,13 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
-  const isExpired =
-    Boolean(
-      project?.deadline &&
-      new Date(project.deadline) < new Date().setHours(0, 0, 0, 0),
-    ) || project?.status === "CANCELLED";
+  const isProjectExpired =
+    Boolean(project?.deadline && isExpired(project.deadline)) ||
+    project?.status === "CANCELLED";
   const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
   const isOpenForApply =
-    (project?.status === "OPEN" || project?.status === "BIDDING") && !isExpired;
+    (project?.status === "OPEN" || project?.status === "BIDDING") &&
+    !isProjectExpired;
   const canApply =
     isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
 
@@ -707,11 +706,14 @@ export function ProjectDetailScreen({ route, navigation }) {
                     <Text style={styles.emptyText}>
                       Mahasiswa belum mengunggah hasil deliverable.
                     </Text>
-                    {isExpired(project?.deadline) && (
+                    {isProjectExpired && (
                       <View style={styles.overdueCallout}>
                         <AlertTriangle size={14} color="#BE123C" />
                         <Text style={styles.overdueCalloutText}>
-                          Tenggat pengerjaan telah terlewati. Anda dapat mengganti mahasiswa dan membuka kembali proyek ke katalog eksplorasi (escrow dikembalikan ke Saldo Aktif), atau membatalkan proyek.
+                          Tenggat pengerjaan telah terlewati. Anda dapat
+                          mengganti mahasiswa dan membuka kembali proyek ke
+                          katalog eksplorasi (escrow dikembalikan ke Saldo
+                          Aktif), atau membatalkan proyek.
                         </Text>
                       </View>
                     )}
@@ -845,12 +847,13 @@ export function ProjectDetailScreen({ route, navigation }) {
                         Proyek disetujui! Silakan kerjakan dan unggah tautan
                         hasil kerja (Figma / Drive) Anda.
                       </Text>
-                      {isExpired(project?.deadline) && (
+                      {isProjectExpired && (
                         <View style={styles.overdueCallout}>
                           <AlertTriangle size={14} color="#BE123C" />
                           <Text style={styles.overdueCalloutText}>
                             Tenggat pengerjaan telah terlewati. Harap segera
-                            unggah hasil deliverable Anda atau ajukan pengunduran diri jika Anda berhalangan melanjutkan.
+                            unggah hasil deliverable Anda atau ajukan
+                            pengunduran diri jika Anda berhalangan melanjutkan.
                           </Text>
                         </View>
                       )}
@@ -1003,7 +1006,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                 Pelamar ({proposals.length})
               </Text>
             </TouchableOpacity>
-          ) : isExpired ? (
+          ) : isProjectExpired ? (
             <View
               style={[
                 styles.closedStatusPill,
