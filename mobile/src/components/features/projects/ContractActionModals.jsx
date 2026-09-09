@@ -81,8 +81,10 @@ export function ReopenProjectModal({
                 <Text style={styles.alertDesc}>
                   Penugasan mahasiswa saat ini akan dihentikan. Seluruh dana
                   escrow sebesar{" "}
-                  <strong>{formatCurrency(project.budget_max)}</strong> akan
-                  langsung dikembalikan ke Saldo Aktif Anda.
+                  <Text style={{ fontWeight: "700" }}>
+                    {formatCurrency(project.budget_max)}
+                  </Text>{" "}
+                  akan langsung dikembalikan ke Saldo Aktif Anda.
                 </Text>
               </View>
             </View>
@@ -222,7 +224,11 @@ export function TerminateProjectModal({
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
+                style={{
+                  flex: 1.5,
+                  borderColor: "#FECACA",
+                  backgroundColor: "#FEF2F2",
+                }}
                 onPress={handleConfirm}
                 loading={loading}
               />
@@ -294,7 +300,8 @@ export function ResignProposalModal({
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>
-                Alasan Pengunduran Diri <Text style={{ color: "#EF4444" }}>*</Text>
+                Alasan Pengunduran Diri{" "}
+                <Text style={{ color: "#EF4444" }}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -329,7 +336,11 @@ export function ResignProposalModal({
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
+                style={{
+                  flex: 1.5,
+                  borderColor: "#FECACA",
+                  backgroundColor: "#FEF2F2",
+                }}
                 onPress={handleConfirm}
                 loading={loading}
               />
