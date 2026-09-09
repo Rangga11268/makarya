@@ -18,6 +18,9 @@ export const projectApi = {
   browse: (params) => api.get("/projects", { params }),
   getDetail: (id) => api.get(`/projects/${id}`),
   getMyProjects: () => api.get("/projects/my-projects"),
+  reopen: (id, data) => api.post(`/projects/${id}/reopen`, data),
+  terminateAndCancel: (id, data) =>
+    api.post(`/projects/${id}/terminate-and-cancel`, data),
 };
 
 export const proposalApi = {
@@ -26,6 +29,7 @@ export const proposalApi = {
   getByProject: (projectId) => api.get(`/proposals/project/${projectId}`),
   accept: (id) => api.patch(`/proposals/${id}/accept`),
   reject: (id) => api.patch(`/proposals/${id}/reject`),
+  resign: (id, data) => api.post(`/proposals/${id}/resign`, data),
 };
 
 export const submissionApi = {

@@ -70,7 +70,6 @@ export function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
-  const { getUnreadCount } = useNotificationStore();
   const { getUnreadCount, fetchNotifications } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
 

@@ -51,12 +51,8 @@ def run_project_deadline_check(db: Session):
         db.add(notif_umkm)
         
     # ---------------------------------------------------------
-    # Kasus 2: Pengingat H-1 untuk Proyek IN_PROGRESS
     # Kasus 2: Pengingat H-1 & Peringatan Overdue untuk Proyek IN_PROGRESS
     # ---------------------------------------------------------
-    # Karena kita menyimpan 'estimasi_hari' pada proposal, kita asumsikan 
-    # deadline pengerjaan = tanggal_diterima (updated_at) + estimasi_hari
-    
     # Tentukan batas waktu pengerjaan berdasarkan estimasi selesai atau deadline proyek
     in_progress_proposals = db.query(Proposal).filter(
         Proposal.status == ProposalStatus.ACCEPTED,
@@ -66,36 +62,15 @@ def run_project_deadline_check(db: Session):
     today_start = datetime.combine(today, datetime.min.time())
 
     for prop in in_progress_proposals:
-        # Asumsikan updated_at adalah waktu diterima
-        tanggal_mulai = prop.updated_at.date()
         # Hitung estimasi selesai
         tanggal_mulai = prop.updated_at.date() if prop.updated_at else today
         estimasi_selesai = tanggal_mulai + timedelta(days=prop.estimasi_hari)
         
-        if estimasi_selesai == tomorrow:
-            # Pengingat H-1 Mahasiswa
-            notif_mhs_reminder = Notification(
-                user_id=prop.mhs_id,
-                judul="Pengingat Tenggat Proyek (H-1)",
-                pesan=f"Harap segera kumpul hasil kerja untuk proyek '{prop.project.judul}'. Tenggat waktu besok!",
-                tipe=NotificationType.SYSTEM,
-                url_referensi=f"/proposals/{prop.id}"
-            )
-            db.add(notif_mhs_reminder)
         # Batas efektif adalah deadline proyek jika ditentukan dan lebih awal, atau estimasi proposal
         effective_deadline = estimasi_selesai
         if prop.project.deadline and prop.project.deadline < effective_deadline:
             effective_deadline = prop.project.deadline
 
-            # Pengingat H-1 UMKM
-            notif_umkm_reminder = Notification(
-                user_id=prop.project.umkm_id,
-                judul="Pengingat Pengerjaan Proyek (H-1)",
-                pesan=f"Proyek '{prop.project.judul}' yang dikerjakan mahasiswa akan jatuh tempo besok. Harap cek ruang kerja Anda.",
-                tipe=NotificationType.SYSTEM,
-                url_referensi=f"/projects/{prop.project.id}"
-            )
-            db.add(notif_umkm_reminder)
         if effective_deadline == tomorrow:
             # Cek apakah notifikasi H-1 sudah pernah dikirim hari ini
             already_notified = db.query(Notification).filter(
@@ -125,16 +100,6 @@ def run_project_deadline_check(db: Session):
                 )
                 db.add(notif_umkm_reminder)
             
-        elif estimasi_selesai < today:
-            # Lewat deadline namun masih IN_PROGRESS
-            notif_mhs_late = Notification(
-                user_id=prop.mhs_id,
-                judul="Peringatan Keterlambatan Proyek",
-                pesan=f"Anda telah melewati batas waktu pengerjaan proyek '{prop.project.judul}'. Harap segera unggah deliverable atau UMKM berhak mengajukan sengketa.",
-                tipe=NotificationType.SYSTEM,
-                url_referensi=f"/proposals/{prop.id}"
-            )
-            db.add(notif_mhs_late)
         elif effective_deadline < today:
             # Cek apakah notifikasi keterlambatan sudah pernah dikirim hari ini
             already_notified_mhs = db.query(Notification).filter(

@@ -12,6 +12,9 @@ class ProposalCreateRequest(BaseModel):
     cover_letter : str = Field(..., min_length=20, description="Alasan dan portfolio relevan minimal 20 karakter")
     estimasi_hari : int = Field(..., ge=1, le=90, description="Estimasi pengerjaan dalam 1 hingga 90 hari")
 
+class ProposalResignRequest(BaseModel):
+    reason: str = Field(..., min_length=5, description="Alasan pengunduran diri minimal 5 karakter")
+
 
 # Schema ringkas profile mahasiswa (Nested di response proposal untuk UMKM)
 class MhsSummary(BaseModel):

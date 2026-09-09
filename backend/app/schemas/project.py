@@ -35,6 +35,20 @@ class ProjectUpdateRequest(BaseModel):
             raise ValueError("Tenggat waktu harus berupa tanggal di masa depan")
         return v
 
+class ProjectReopenRequest(BaseModel):
+    new_deadline: Optional[date] = Field(None, description="Tenggat waktu baru untuk proyek")
+    reason: Optional[str] = Field(None, description="Alasan pembatalan kontrak dengan mahasiswa")
+
+    @field_validator('new_deadline')
+    @classmethod
+    def validate_new_deadline(cls, v: Optional[date]) -> Optional[date]:
+        if v and v <= date.today():
+            raise ValueError("Tenggat waktu baru harus berupa tanggal di masa depan")
+        return v
+
+class ProjectTerminateRequest(BaseModel):
+    reason: Optional[str] = Field(None, description="Alasan pembatalan proyek")
+
 # Schema ringkas pemilik umkm(nested response proyek)
 class UmkmSummary(BaseModel):
     user_id: Optional[UUID] = None

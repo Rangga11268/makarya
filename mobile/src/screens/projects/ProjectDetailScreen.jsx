@@ -19,6 +19,11 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { ProposalSubmitModal } from "../../components/features/projects/ProposalSubmitModal";
 import { DeliverableUploadModal } from "../../components/features/projects/DeliverableUploadModal";
+import {
+  ReopenProjectModal,
+  TerminateProjectModal,
+  ResignProposalModal,
+} from "../../components/features/projects/ContractActionModals";
 import { Badge } from "../../components/ui/Badge";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
@@ -26,7 +31,6 @@ import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { formatDate } from "../../utils/formatDate";
 import { formatDate, isExpired } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import {
@@ -48,6 +52,8 @@ import {
   Check,
   MessageSquare,
   AlertTriangle,
+  RotateCcw,
+  XCircle,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -76,6 +82,11 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [urlBerkas, setUrlBerkas] = useState("");
   const [catatanPengiriman, setCatatanPengiriman] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
+
+  // Contract & Escrow Action Modals
+  const [reopenModal, setReopenModal] = useState(false);
+  const [terminateModal, setTerminateModal] = useState(false);
+  const [resignModal, setResignModal] = useState(false);
 
   const { showToast } = useToastStore();
 
@@ -302,6 +313,67 @@ export function ProjectDetailScreen({ route, navigation }) {
         },
       ],
     );
+  };
+
+  const handleReopenProject = async ({ new_deadline, reason }) => {
+    try {
+      setActionLoading(true);
+      await projectApi.reopen(projectId, {
+        new_deadline,
+        reason,
+      });
+      showToast(
+        "Proyek dibuka kembali & escrow dikembalikan ke Saldo Aktif!",
+        "success",
+      );
+      setReopenModal(false);
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal membuka kembali proyek",
+        "danger",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTerminateProject = async ({ reason }) => {
+    try {
+      setActionLoading(true);
+      await projectApi.terminateAndCancel(projectId, { reason });
+      showToast(
+        "Proyek berhasil dibatalkan & escrow dikembalikan ke Saldo Aktif.",
+        "success",
+      );
+      setTerminateModal(false);
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal membatalkan proyek",
+        "danger",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleResignProposal = async ({ reason }) => {
+    if (!myExistingProposal) return;
+    try {
+      setActionLoading(true);
+      await proposalApi.resign(myExistingProposal.id, { reason });
+      showToast("Pengunduran diri berhasil diajukan.", "success");
+      setResignModal(false);
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal mengajukan pengunduran diri",
+        "danger",
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (!project) {
@@ -639,8 +711,29 @@ export function ProjectDetailScreen({ route, navigation }) {
                       <View style={styles.overdueCallout}>
                         <AlertTriangle size={14} color="#BE123C" />
                         <Text style={styles.overdueCalloutText}>
-                          Tenggat pengerjaan telah terlewati. Anda dapat menghubungi mahasiswa via chat atau membuka mediasi sengketa jika diperlukan.
+                          Tenggat pengerjaan telah terlewati. Anda dapat mengganti mahasiswa dan membuka kembali proyek ke katalog eksplorasi (escrow dikembalikan ke Saldo Aktif), atau membatalkan proyek.
                         </Text>
+                      </View>
+                    )}
+
+                    {project?.status === "IN_PROGRESS" && (
+                      <View style={{ marginTop: 14, width: "100%", gap: 8 }}>
+                        <Button
+                          title="Ganti Mahasiswa & Buka ke Eksplorasi"
+                          variant="brand"
+                          size="sm"
+                          icon={<RotateCcw size={14} color="#FFF" />}
+                          onPress={() => setReopenModal(true)}
+                        />
+                        <Button
+                          title="Batalkan Proyek (Refund Escrow)"
+                          variant="outline"
+                          size="sm"
+                          icon={<XCircle size={14} color="#BE123C" />}
+                          textStyle={{ color: "#BE123C" }}
+                          style={{ borderColor: "#FECACA" }}
+                          onPress={() => setTerminateModal(true)}
+                        />
                       </View>
                     )}
                   </View>
@@ -724,7 +817,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                           Catatan: "{submissions[0].catatan_pengiriman}"
                         </Text>
                       )}
-                      <View style={{ marginTop: 10 }}>
+                      <View style={{ marginTop: 10, gap: 8 }}>
                         <Button
                           title="Perbarui Berkas Deliverable"
                           variant="outline"
@@ -733,6 +826,15 @@ export function ProjectDetailScreen({ route, navigation }) {
                             <UploadCloud size={15} color={COLORS.brandIndigo} />
                           }
                           onPress={() => setSubmissionModal(true)}
+                        />
+                        <Button
+                          title="Ajukan Pengunduran Diri"
+                          variant="outline"
+                          size="sm"
+                          icon={<XCircle size={14} color="#BE123C" />}
+                          textStyle={{ color: "#BE123C" }}
+                          style={{ borderColor: "#FECACA" }}
+                          onPress={() => setResignModal(true)}
                         />
                       </View>
                     </>
@@ -747,7 +849,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                         <View style={styles.overdueCallout}>
                           <AlertTriangle size={14} color="#BE123C" />
                           <Text style={styles.overdueCalloutText}>
-                            Tenggat pengerjaan telah terlewati. Harap segera unggah hasil deliverable Anda untuk menghindari pengajuan sengketa oleh klien UMKM.
+                            Tenggat pengerjaan telah terlewati. Harap segera
+                            unggah hasil deliverable Anda atau ajukan pengunduran diri jika Anda berhalangan melanjutkan.
                           </Text>
                         </View>
                       )}
@@ -758,6 +861,15 @@ export function ProjectDetailScreen({ route, navigation }) {
                         icon={<UploadCloud size={16} color="#FFF" />}
                         onPress={() => setSubmissionModal(true)}
                         style={{ marginTop: 12 }}
+                      />
+                      <Button
+                        title="Ajukan Pengunduran Diri"
+                        variant="outline"
+                        size="sm"
+                        icon={<XCircle size={14} color="#BE123C" />}
+                        textStyle={{ color: "#BE123C" }}
+                        style={{ borderColor: "#FECACA", marginTop: 8 }}
+                        onPress={() => setResignModal(true)}
                       />
                     </View>
                   )}
@@ -937,6 +1049,33 @@ export function ProjectDetailScreen({ route, navigation }) {
         setCatatanPengiriman={setCatatanPengiriman}
         onSubmit={handleUploadWork}
         loading={uploadLoading}
+      />
+
+      {/* Modal 3: Reopen Project Modal (UMKM) */}
+      <ReopenProjectModal
+        visible={reopenModal}
+        onClose={() => setReopenModal(false)}
+        project={project}
+        onConfirm={handleReopenProject}
+        loading={actionLoading}
+      />
+
+      {/* Modal 4: Terminate Project Modal (UMKM) */}
+      <TerminateProjectModal
+        visible={terminateModal}
+        onClose={() => setTerminateModal(false)}
+        project={project}
+        onConfirm={handleTerminateProject}
+        loading={actionLoading}
+      />
+
+      {/* Modal 5: Resign Proposal Modal (Mahasiswa) */}
+      <ResignProposalModal
+        visible={resignModal}
+        onClose={() => setResignModal(false)}
+        proposal={myExistingProposal}
+        onConfirm={handleResignProposal}
+        loading={actionLoading}
       />
     </View>
   );

@@ -1,4 +1,3 @@
-import React from "react";
 import React, { useEffect } from "react";
 import {
   View,
@@ -26,8 +25,6 @@ import {
 
 export function NotificationModal({ visible, onClose }) {
   const { user } = useAuthStore();
-  const { getRoleNotifications, markAsRead, markAllAsRead, getUnreadCount } =
-    useNotificationStore();
   const {
     getRoleNotifications,
     markAsRead,
@@ -36,11 +33,6 @@ export function NotificationModal({ visible, onClose }) {
     fetchNotifications,
   } = useNotificationStore();
 
-  const isMahasiswa =
-    user?.role === "MHS" ||
-    user?.role === "MAHASISWA" ||
-    (user?.email && user.email.includes(".ac.id")) ||
-    user?.email === "darell@ubsi.ac.id";
   useEffect(() => {
     if (visible) {
       fetchNotifications();

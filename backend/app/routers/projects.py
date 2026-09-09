@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
@@ -10,7 +11,16 @@ from app.models.user import User, UserRole
 from app.models.project import Project, ProjectCategory, ProjectStatus
 from app.models.profile import ProfileUmkm, ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
-from app.schemas.project import ProjectCreateRequest, ProjectUpdateRequest, ProjectResponse, UmkmSummary
+from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.notification import Notification, NotificationType
+from app.schemas.project import (
+    ProjectCreateRequest,
+    ProjectUpdateRequest,
+    ProjectResponse,
+    UmkmSummary,
+    ProjectReopenRequest,
+    ProjectTerminateRequest,
+)
 
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
@@ -267,3 +277,216 @@ def delete_project(
     db.delete(project)
     db.commit()
     return None
+
+
+@router.post("/{id}/reopen", response_model=ProjectResponse)
+def reopen_project(
+    id: UUID,
+    body: ProjectReopenRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.UMKM))
+):
+    """
+    Klien UMKM membatalkan kontrak pengerjaan mahasiswa dan membuka kembali proyek ke katalog eksplorasi.
+    1. Validasi kepemilikan dan status proyek (harus IN_PROGRESS).
+    2. Kembalikan dana escrow mahasiswa yang diterima ke saldo aktif UMKM (REFUND).
+    3. Ubah status proposal mahasiswa yang diterima menjadi WITHDRAWN.
+    4. Ubah status proyek menjadi OPEN (dan perbarui deadline jika diberikan).
+    5. Kirim notifikasi ke mahasiswa dan UMKM.
+    """
+    project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk mengelola proyek ini")
+
+    if project.status != ProjectStatus.IN_PROGRESS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Hanya proyek dengan status 'IN_PROGRESS' yang dapat dibuka kembali. Status proyek saat ini: {project.status.value}"
+        )
+
+    if body.new_deadline:
+        project.deadline = body.new_deadline
+    elif project.deadline <= date.today():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tenggat waktu proyek sebelumnya telah lewat. Harap tentukan tanggal tenggat baru di masa depan untuk membuka kembali proyek."
+        )
+
+    accepted_prop = (
+        db.query(Proposal)
+        .filter(Proposal.project_id == project.id, Proposal.status == ProposalStatus.ACCEPTED)
+        .first()
+    )
+
+    nominal_refund = Decimal("0")
+    if accepted_prop:
+        nominal_refund = accepted_prop.harga_tawar
+
+        wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).with_for_update().first()
+        if wallet and wallet.saldo_escrow >= nominal_refund:
+            wallet.saldo_escrow -= nominal_refund
+            wallet.saldo_aktif += nominal_refund
+
+            ledger_entry = LedgerLog(
+                wallet_id=wallet.id,
+                project_id=project.id,
+                tipe=TransactionType.REFUND,
+                nominal=nominal_refund,
+                keterangan=f"Pengembalian escrow proyek '{project.judul}' ke saldo aktif karena pembatalan kontrak dengan mahasiswa"
+            )
+            db.add(ledger_entry)
+
+        accepted_prop.status = ProposalStatus.WITHDRAWN
+
+        alasan_text = f" Alasan: {body.reason}" if body.reason else ""
+        notif_mhs = Notification(
+            user_id=accepted_prop.mhs_id,
+            judul="Kontrak Proyek Dibatalkan oleh UMKM",
+            pesan=f"Kontrak kerja sama Anda untuk proyek '{project.judul}' telah dibatalkan oleh klien UMKM.{alasan_text}",
+            tipe=NotificationType.PROPOSAL,
+            url_referensi="/proposals"
+        )
+        db.add(notif_mhs)
+
+    project.status = ProjectStatus.OPEN
+
+    pesan_umkm = f"Proyek '{project.judul}' berhasil dibuka kembali ke katalog eksplorasi."
+    if nominal_refund > 0:
+        pesan_umkm += f" Dana escrow sebesar Rp {int(nominal_refund):,} telah dikembalikan ke Saldo Aktif Anda."
+
+    notif_umkm = Notification(
+        user_id=current_user.id,
+        judul="Proyek Berhasil Dibuka Kembali",
+        pesan=pesan_umkm,
+        tipe=NotificationType.PROPOSAL,
+        url_referensi=f"/workroom/{project.id}"
+    )
+    db.add(notif_umkm)
+
+    db.commit()
+    db.refresh(project)
+
+    profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
+    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
+    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
+    acc_nama, acc_foto = _resolve_accepted_mhs(project.id, db)
+
+    return ProjectResponse(
+        id=project.id,
+        umkm_id=project.umkm_id,
+        judul=project.judul,
+        deskripsi_raw=project.deskripsi_raw,
+        kategori=project.kategori,
+        budget_max=project.budget_max,
+        deadline=project.deadline,
+        status=project.status,
+        created_at=project.created_at,
+        updated_at=project.updated_at,
+        umkm_profile=umkm_summary,
+        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
+        accepted_mhs_nama=acc_nama,
+        accepted_mhs_foto=acc_foto,
+        total_pelamar=total_pelamar
+    )
+
+
+@router.post("/{id}/terminate-and-cancel", response_model=ProjectResponse)
+def terminate_and_cancel_project(
+    id: UUID,
+    body: ProjectTerminateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.UMKM))
+):
+    """
+    Klien UMKM membatalkan proyek secara permanen (CANCELLED) saat IN_PROGRESS:
+    1. Validasi kepemilikan dan status proyek (harus IN_PROGRESS).
+    2. Kembalikan dana escrow mahasiswa yang diterima ke saldo aktif UMKM (REFUND).
+    3. Ubah status proposal mahasiswa yang diterima menjadi WITHDRAWN.
+    4. Ubah status proyek menjadi CANCELLED.
+    5. Kirim notifikasi ke mahasiswa dan UMKM.
+    """
+    project = db.query(Project).filter(Project.id == id, Project.umkm_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan atau Anda tidak memiliki izin untuk mengelola proyek ini")
+
+    if project.status != ProjectStatus.IN_PROGRESS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Hanya proyek dengan status 'IN_PROGRESS' yang dapat dibatalkan melalui fitur ini. Status proyek saat ini: {project.status.value}"
+        )
+
+    accepted_prop = (
+        db.query(Proposal)
+        .filter(Proposal.project_id == project.id, Proposal.status == ProposalStatus.ACCEPTED)
+        .first()
+    )
+
+    nominal_refund = Decimal("0")
+    if accepted_prop:
+        nominal_refund = accepted_prop.harga_tawar
+
+        wallet = db.query(Wallet).filter(Wallet.user_id == current_user.id).with_for_update().first()
+        if wallet and wallet.saldo_escrow >= nominal_refund:
+            wallet.saldo_escrow -= nominal_refund
+            wallet.saldo_aktif += nominal_refund
+
+            ledger_entry = LedgerLog(
+                wallet_id=wallet.id,
+                project_id=project.id,
+                tipe=TransactionType.REFUND,
+                nominal=nominal_refund,
+                keterangan=f"Pengembalian escrow proyek '{project.judul}' ke saldo aktif karena pembatalan total proyek oleh UMKM"
+            )
+            db.add(ledger_entry)
+
+        accepted_prop.status = ProposalStatus.WITHDRAWN
+
+        alasan_text = f" Alasan: {body.reason}" if body.reason else ""
+        notif_mhs = Notification(
+            user_id=accepted_prop.mhs_id,
+            judul="Proyek Dibatalkan oleh UMKM",
+            pesan=f"Proyek '{project.judul}' telah dibatalkan oleh klien UMKM.{alasan_text}",
+            tipe=NotificationType.PROPOSAL,
+            url_referensi="/proposals"
+        )
+        db.add(notif_mhs)
+
+    project.status = ProjectStatus.CANCELLED
+
+    pesan_umkm = f"Proyek '{project.judul}' telah berhasil dibatalkan secara permanen."
+    if nominal_refund > 0:
+        pesan_umkm += f" Seluruh dana escrow sebesar Rp {int(nominal_refund):,} telah dikembalikan ke Saldo Aktif Anda."
+
+    notif_umkm = Notification(
+        user_id=current_user.id,
+        judul="Proyek Berhasil Dibatalkan",
+        pesan=pesan_umkm,
+        tipe=NotificationType.PROPOSAL,
+        url_referensi=f"/projects/{project.id}"
+    )
+    db.add(notif_umkm)
+
+    db.commit()
+    db.refresh(project)
+
+    profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
+    umkm_summary = UmkmSummary.model_validate(profile) if profile else None
+    total_pelamar = db.query(Proposal).filter(Proposal.project_id == project.id).count()
+
+    return ProjectResponse(
+        id=project.id,
+        umkm_id=project.umkm_id,
+        judul=project.judul,
+        deskripsi_raw=project.deskripsi_raw,
+        kategori=project.kategori,
+        budget_max=project.budget_max,
+        deadline=project.deadline,
+        status=project.status,
+        created_at=project.created_at,
+        updated_at=project.updated_at,
+        umkm_profile=umkm_summary,
+        umkm_nama=profile.nama_usaha if profile and profile.nama_usaha else None,
+        accepted_mhs_nama=None,
+        accepted_mhs_foto=None,
+        total_pelamar=total_pelamar
+    )

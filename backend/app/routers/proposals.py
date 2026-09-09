@@ -8,8 +8,9 @@ from app.models.user import User, UserRole
 from app.models.project import Project, ProjectStatus
 from app.models.profile import ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
+from app.models.notification import Notification, NotificationType
 from app.models.wallet import Wallet, LedgerLog, TransactionType
-from app.schemas.proposal import ProposalCreateRequest, ProposalResponse, MhsSummary
+from app.schemas.proposal import ProposalCreateRequest, ProposalResponse, MhsSummary, ProposalResignRequest
 
 
 router = APIRouter(prefix="/proposals", tags=["Proposals"])
@@ -290,6 +291,113 @@ def reject_proposal(
     profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == proposal.mhs_id).first()
     mhs_summary = MhsSummary.model_validate(profile) if profile else None
 
+    umkm_nama = (
+        project.umkm.profile_umkm.nama_usaha
+        if (project and project.umkm and project.umkm.profile_umkm)
+        else (project.umkm.username if (project and project.umkm) else None)
+    )
+
+    return ProposalResponse(
+        id=proposal.id,
+        project_id=proposal.project_id,
+        mhs_id=proposal.mhs_id,
+        harga_tawar=proposal.harga_tawar,
+        cover_letter=proposal.cover_letter,
+        estimasi_hari=proposal.estimasi_hari,
+        status=proposal.status,
+        created_at=proposal.created_at,
+        updated_at=proposal.updated_at,
+        mhs_profile=mhs_summary,
+        project_judul=project.judul if project else None,
+        project_kategori=project.kategori.value if (project and project.kategori) else None,
+        project_status=project.status.value if (project and project.status) else None,
+        project_budget_max=project.budget_max if project else None,
+        project_umkm_nama=umkm_nama,
+    )
+
+
+@router.post("/{id}/resign", response_model=ProposalResponse)
+def resign_proposal(
+    id: UUID,
+    body: ProposalResignRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.MHS))
+):
+    """
+    Mahasiswa mengajukan pengunduran diri dari proyek yang sedang berjalan (IN_PROGRESS):
+    1. Validasi proposal ACCEPTED dan dimiliki mahasiswa yang sedang login.
+    2. Validasi status proyek (harus IN_PROGRESS).
+    3. Kembalikan dana escrow ke saldo aktif UMKM (REFUND).
+    4. Ubah status proposal menjadi WITHDRAWN.
+    5. Ubah status proyek menjadi OPEN agar UMKM bisa mencari mahasiswa baru.
+    6. Kirim notifikasi ke UMKM dan mahasiswa.
+    """
+    proposal = db.query(Proposal).filter(Proposal.id == id, Proposal.mhs_id == current_user.id).first()
+    if not proposal:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal tidak ditemukan atau bukan milik Anda")
+
+    if proposal.status != ProposalStatus.ACCEPTED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Hanya proposal dengan status 'ACCEPTED' yang dapat diajukan pengunduran diri. Status saat ini: {proposal.status.value}"
+        )
+
+    project = db.query(Project).filter(Project.id == proposal.project_id).first()
+    if not project or project.status != ProjectStatus.IN_PROGRESS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Proyek tidak dalam status 'IN_PROGRESS'"
+        )
+
+    # Kembalikan dana escrow UMKM ke saldo aktif UMKM
+    wallet = db.query(Wallet).filter(Wallet.user_id == project.umkm_id).with_for_update().first()
+    if wallet and wallet.saldo_escrow >= proposal.harga_tawar:
+        wallet.saldo_escrow -= proposal.harga_tawar
+        wallet.saldo_aktif += proposal.harga_tawar
+
+        ledger_entry = LedgerLog(
+            wallet_id=wallet.id,
+            project_id=project.id,
+            tipe=TransactionType.REFUND,
+            nominal=proposal.harga_tawar,
+            keterangan=f"Pengembalian escrow proyek '{project.judul}' ke saldo aktif karena pengunduran diri mahasiswa"
+        )
+        db.add(ledger_entry)
+
+    # Ubah status proposal menjadi WITHDRAWN
+    proposal.status = ProposalStatus.WITHDRAWN
+
+    # Ubah status proyek menjadi OPEN agar dapat dilamar kembali
+    project.status = ProjectStatus.OPEN
+
+    # Ambil nama mahasiswa
+    profile_mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
+    nama_mhs = profile_mhs.nama_lengkap if profile_mhs else current_user.email
+
+    # Kirim notifikasi ke UMKM
+    notif_umkm = Notification(
+        user_id=project.umkm_id,
+        judul="Mahasiswa Mengundurkan Diri dari Proyek",
+        pesan=f"Mahasiswa {nama_mhs} mengundurkan diri dari proyek '{project.judul}'. Alasan: {body.reason}. Dana escrow Rp {int(proposal.harga_tawar):,} telah dikembalikan ke Saldo Aktif Anda dan proyek telah dibuka kembali ke katalog eksplorasi.",
+        tipe=NotificationType.PROPOSAL,
+        url_referensi=f"/workroom/{project.id}"
+    )
+    db.add(notif_umkm)
+
+    # Kirim notifikasi ke Mahasiswa
+    notif_mhs = Notification(
+        user_id=current_user.id,
+        judul="Pengunduran Diri Berhasil",
+        pesan=f"Anda telah mengundurkan diri dari proyek '{project.judul}'. Status penugasan Anda telah berakhir.",
+        tipe=NotificationType.PROPOSAL,
+        url_referensi="/proposals"
+    )
+    db.add(notif_mhs)
+
+    db.commit()
+    db.refresh(proposal)
+
+    mhs_summary = MhsSummary.model_validate(profile_mhs) if profile_mhs else None
     umkm_nama = (
         project.umkm.profile_umkm.nama_usaha
         if (project and project.umkm and project.umkm.profile_umkm)

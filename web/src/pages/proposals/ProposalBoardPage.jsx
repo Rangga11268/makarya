@@ -10,6 +10,11 @@ import { Button } from "../../components/ui/Button";
 import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
 import { RevisionModal } from "../../components/features/RevisionModal";
+import {
+  ReopenProjectModal,
+  TerminateProjectModal,
+  ResignProposalModal,
+} from "./components/ContractActionModals";
 import { ProposalSidebarItem } from "./components/ProposalSidebarItem";
 import { WorkroomWorkspaceDetail } from "./components/WorkroomWorkspaceDetail";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -82,6 +87,10 @@ export function ProposalBoardPage() {
   const [selectedSubmissionForRevision, setSelectedSubmissionForRevision] =
     useState(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [reopenModalOpen, setReopenModalOpen] = useState(false);
+  const [terminateModalOpen, setTerminateModalOpen] = useState(false);
+  const [resignModalOpen, setResignModalOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // 1. Initial Data Loading
   const loadData = async () => {
@@ -262,6 +271,76 @@ export function ProposalBoardPage() {
   const handleOpenSubmission = (projectId) => {
     setSelectedProjectId(projectId);
     setSubmissionModalOpen(true);
+  };
+
+  // UMKM: Reopen Project (Cancel Contract & Re-open to Explore)
+  const handleReopenProject = async (payload) => {
+    if (!selectedProject) return;
+    try {
+      setActionLoading(true);
+      await projectApi.reopen(selectedProject.id, payload);
+      setReopenModalOpen(false);
+      showSuccess(
+        "Proyek Berhasil Dibuka Kembali!",
+        "Kontrak dengan mahasiswa telah dibatalkan dan saldo escrow telah dikembalikan ke Saldo Aktif Anda. Proyek kini dapat dilamar kembali di eksplorasi.",
+      );
+      await loadData();
+      setActiveStageTab("applicants");
+    } catch (err) {
+      showError(
+        "Gagal Membuka Kembali Proyek",
+        err.response?.data?.detail ||
+          "Terjadi kesalahan saat membuka kembali proyek.",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // UMKM: Terminate and Cancel Project (Permanent Cancellation)
+  const handleTerminateProject = async (payload) => {
+    if (!selectedProject) return;
+    try {
+      setActionLoading(true);
+      await projectApi.terminateAndCancel(selectedProject.id, payload);
+      setTerminateModalOpen(false);
+      showSuccess(
+        "Proyek Berhasil Dibatalkan",
+        "Proyek telah ditutup secara permanen dan saldo escrow telah dikembalikan ke Saldo Aktif Anda.",
+      );
+      await loadData();
+    } catch (err) {
+      showError(
+        "Gagal Membatalkan Proyek",
+        err.response?.data?.detail ||
+          "Terjadi kesalahan saat membatalkan proyek.",
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // MHS: Resign from Project
+  const handleResignProposal = async (payload) => {
+    if (!selectedProposal) return;
+    try {
+      setActionLoading(true);
+      await proposalApi.resign(selectedProposal.id, payload);
+      setResignModalOpen(false);
+      showSuccess(
+        "Pengunduran Diri Berhasil",
+        "Anda telah resmi mengundurkan diri dari proyek ini. Dana escrow telah dikembalikan ke klien UMKM.",
+      );
+      await loadData();
+    } catch (err) {
+      showError(
+        "Gagal Mengundurkan Diri",
+        err.response?.data?.detail ||
+          "Terjadi kesalahan saat mengajukan pengunduran diri.",
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   // Filtered lists for left navigator
@@ -516,6 +595,9 @@ export function ProposalBoardPage() {
             handleRejectProposal={handleRejectProposal}
             handleAcceptProposal={handleAcceptProposal}
             parseCoverLetter={parseCoverLetter}
+            onOpenReopenModal={() => setReopenModalOpen(true)}
+            onOpenTerminateModal={() => setTerminateModalOpen(true)}
+            onOpenResignModal={() => setResignModalOpen(true)}
           />
         </div>
       </div>
@@ -543,6 +625,31 @@ export function ProposalBoardPage() {
         onClose={() => setRatingModalOpen(false)}
         projectId={selectedProject?.id || selectedProjectId}
         onSuccess={() => loadData()}
+      />
+
+      {/* Contract & Escrow Action Modals */}
+      <ReopenProjectModal
+        isOpen={reopenModalOpen}
+        onClose={() => setReopenModalOpen(false)}
+        project={selectedProject}
+        onConfirm={handleReopenProject}
+        loading={actionLoading}
+      />
+
+      <TerminateProjectModal
+        isOpen={terminateModalOpen}
+        onClose={() => setTerminateModalOpen(false)}
+        project={selectedProject}
+        onConfirm={handleTerminateProject}
+        loading={actionLoading}
+      />
+
+      <ResignProposalModal
+        isOpen={resignModalOpen}
+        onClose={() => setResignModalOpen(false)}
+        proposal={selectedProposal}
+        onConfirm={handleResignProposal}
+        loading={actionLoading}
       />
     </div>
   );

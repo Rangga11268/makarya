@@ -25,7 +25,6 @@ export function NotificationBell() {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
     return () => {
       clearInterval(interval);
       document.removeEventListener("mousedown", handleClickOutside);
@@ -72,8 +71,6 @@ export function NotificationBell() {
   const toggleDropdown = () => {
     setOpen(!open);
     if (!open && unreadCount > 0) {
-      // Optimistically mark all read when opening panel if there are unreads
-      handleMarkAllRead();
       fetchNotifications();
     }
   };
@@ -128,7 +125,6 @@ export function NotificationBell() {
                 <Link
                   key={notif.id}
                   to={notif.url_referensi || "#"}
-                  onClick={() => setOpen(false)}
                   onClick={() => handleItemClick(notif)}
                   className={`block p-3 rounded-2xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 ${
                     !notif.is_read ? "bg-brand-indigo/5" : ""

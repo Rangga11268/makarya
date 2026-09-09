@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
 import { WorkroomChatPanel } from "../../../components/features/WorkroomChatPanel";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { formatDate } from "../../../utils/formatDate";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import {
   Briefcase,
@@ -18,6 +17,7 @@ import {
   UploadCloud,
   Clock,
   AlertCircle,
+  XCircle,
 } from "lucide-react";
 
 export function WorkroomWorkspaceDetail({
@@ -40,6 +40,9 @@ export function WorkroomWorkspaceDetail({
   handleRejectProposal,
   handleAcceptProposal,
   parseCoverLetter,
+  onOpenReopenModal,
+  onOpenTerminateModal,
+  onOpenResignModal,
 }) {
   if (!activeProjectId) {
     return (
@@ -73,14 +76,16 @@ export function WorkroomWorkspaceDetail({
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
-                <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
-              </div>
-            )}
+            {selectedProject?.deadline &&
+              isExpired(selectedProject.deadline) && (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                  <span>
+                    Lewat Tenggat ({formatDate(selectedProject.deadline)})
+                  </span>
+                </div>
+              )}
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Garansi Escrow Aman</span>
@@ -90,16 +95,57 @@ export function WorkroomWorkspaceDetail({
 
         {/* Overdue Warning Callout */}
         {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
-          <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex items-start gap-2.5 text-rose-900">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            <div className="flex-1 space-y-0.5">
-              <span className="font-bold block">Peringatan Tenggat Waktu Terlewati</span>
-              <p className="text-[11px] text-rose-700 leading-relaxed">
-                {isUmkm
-                  ? "Pengerjaan proyek oleh mahasiswa telah melewati tenggat waktu yang ditentukan. Anda dapat mendiskusikan kelanjutan via obrolan di bawah atau mengajukan mediasi/sengketa jika diperlukan."
-                  : "Batas waktu pengerjaan proyek telah terlewati. Harap segera kirimkan hasil kerja final (deliverable) pada tab Unggah Berkas untuk mencegah pembatalan atau pengajuan sengketa oleh klien."}
-              </p>
+          <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex flex-col gap-2 text-rose-900">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-0.5">
+                <span className="font-bold block">
+                  Peringatan Tenggat Waktu Terlewati
+                </span>
+                <p className="text-[11px] text-rose-700 leading-relaxed">
+                  {isUmkm
+                    ? "Pengerjaan proyek oleh mahasiswa telah melewati batas tenggat waktu yang ditentukan. Anda dapat mendiskusikan kelanjutan via obrolan, membatalkan kontrak untuk membuka kembali proyek ke eksplorasi (escrow dikembalikan), atau membatalkan proyek."
+                    : "Batas waktu pengerjaan proyek telah terlewati. Harap segera kirimkan hasil kerja final (deliverable) atau ajukan pengunduran diri jika Anda berhalangan melanjutkan."}
+                </p>
+              </div>
             </div>
+
+            {isUmkm && selectedProject?.status === "IN_PROGRESS" && (
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-rose-200/60 pl-6.5">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  onClick={onOpenReopenModal}
+                  className="text-xs font-bold shadow-brand"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                  Ganti Mahasiswa & Buka ke Eksplorasi
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onOpenTerminateModal}
+                  className="text-xs font-bold text-rose-700 border-rose-300 hover:bg-rose-100"
+                >
+                  <XCircle className="w-3.5 h-3.5 mr-1" />
+                  Batalkan Proyek
+                </Button>
+              </div>
+            )}
+
+            {!isUmkm && selectedProposal?.status === "ACCEPTED" && (
+              <div className="flex items-center gap-2 pt-2 border-t border-rose-200/60 pl-6.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onOpenResignModal}
+                  className="text-xs font-bold text-rose-700 border-rose-300 hover:bg-rose-100"
+                >
+                  <XCircle className="w-3.5 h-3.5 mr-1" />
+                  Ajukan Pengunduran Diri
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -674,6 +720,95 @@ export function WorkroomWorkspaceDetail({
                 </div>
               );
             })()}
+
+          {/* Contract & Escrow Management Section */}
+          <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3 text-xs">
+            <div className="flex items-center justify-between border-b border-border/80 pb-2.5">
+              <div>
+                <span className="font-bold text-dark-900 block text-xs">
+                  Manajemen Kontrak & Garansi Escrow
+                </span>
+                <span className="text-[11px] text-muted">
+                  Opsi pengelolaan kelanjutan penugasan dan pengembalian saldo
+                  escrow
+                </span>
+              </div>
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            </div>
+
+            {isUmkm && selectedProject?.status === "IN_PROGRESS" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col justify-between gap-3">
+                  <div>
+                    <span className="font-bold text-dark-900 block text-xs mb-1">
+                      Ganti Mahasiswa (Buka ke Eksplorasi)
+                    </span>
+                    <p className="text-[11px] text-muted leading-relaxed">
+                      Jika mahasiswa tidak merespons atau tidak dapat
+                      melanjutkan, batalkan kontrak ini. Dana escrow otomatis
+                      kembali ke Saldo Aktif Anda dan proyek dibuka kembali
+                      untuk pelamar baru.
+                    </p>
+                  </div>
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={onOpenReopenModal}
+                    className="text-xs font-bold w-full shadow-brand"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                    Buka Kembali ke Eksplorasi
+                  </Button>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col justify-between gap-3">
+                  <div>
+                    <span className="font-bold text-dark-900 block text-xs mb-1">
+                      Batalkan Proyek Permanen
+                    </span>
+                    <p className="text-[11px] text-muted leading-relaxed">
+                      Hentikan seluruh pengerjaan proyek. Status proyek akan
+                      menjadi Dibatalkan (CANCELLED) dan 100% saldo escrow
+                      dikembalikan ke Saldo Aktif.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onOpenTerminateModal}
+                    className="text-xs font-bold w-full text-rose-600 border-rose-200 hover:bg-rose-50"
+                  >
+                    <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                    Batalkan Proyek
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {!isUmkm && selectedProposal?.status === "ACCEPTED" && (
+              <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="font-bold text-dark-900 block text-xs mb-0.5">
+                    Ajukan Pengunduran Diri dari Proyek
+                  </span>
+                  <p className="text-[11px] text-muted leading-relaxed">
+                    Jika Anda menghadapi kendala tak terduga yang menghalangi
+                    penyelesaian proyek, Anda dapat mengajukan pengunduran diri
+                    secara resmi. Dana escrow akan dikembalikan ke klien UMKM.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onOpenResignModal}
+                  className="text-xs font-bold shrink-0 text-rose-600 border-rose-200 hover:bg-rose-50"
+                >
+                  <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                  Pengunduran Diri
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
