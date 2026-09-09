@@ -485,7 +485,7 @@ export function HomeScreen({ navigation }) {
                 <View
                   style={[
                     styles.metricTileIconWrap,
-                    { backgroundColor: "#EEF2FF" },
+                    { backgroundColor: "#F1F5F9" },
                   ]}
                 >
                   <Briefcase size={16} color={COLORS.brandIndigo} />
@@ -601,17 +601,17 @@ export function HomeScreen({ navigation }) {
                   ? "#10B981"
                   : isReview
                     ? "#F59E0B"
-                    : "#6366F1";
+                    : "#64748B";
                 const statusBg = isAccepted
                   ? "#ECFDF5"
                   : isReview
                     ? "#FFFBEB"
-                    : "#EEF2FF";
+                    : "#F1F5F9";
                 const statusTextColor = isAccepted
                   ? "#065F46"
                   : isReview
                     ? "#92400E"
-                    : "#3730A3";
+                    : "#334155";
                 const progressPercent = isAccepted
                   ? "70%"
                   : isReview
@@ -1136,7 +1136,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1162,7 +1162,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   dashboardDateText: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11.5,
     color: COLORS.textMuted,
   },
@@ -1183,7 +1183,7 @@ const styles = StyleSheet.create({
     right: 14,
     bottom: -8,
     borderRadius: 28,
-    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
   },
   floatingWalletCard: {
     backgroundColor: "#FFFFFF",
@@ -1209,7 +1209,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   walletBalanceTitle: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
   },
@@ -1217,17 +1217,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(14, 165, 233, 0.08)",
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 8,
     paddingVertical: 3.5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(14, 165, 233, 0.2)",
+    borderColor: "#E2E8F0",
   },
   walletEscrowChipText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
-    color: "#0284C7",
+    color: "#334155",
   },
   walletAmountRow: {
     flexDirection: "row",
@@ -1262,19 +1262,19 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(226, 232, 240, 0.8)",
   },
   walletMaskedId: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10.5,
     color: COLORS.textDim,
     letterSpacing: 0.3,
   },
   walletBrandMark: {
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
   },
   walletBrandMarkText: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 9.5,
     color: COLORS.brandIndigo,
     letterSpacing: 0.6,
@@ -1310,9 +1310,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   quickActionLabel: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: COLORS.textDark,
+    color: "#334155",
     textAlign: "center",
   },
 
@@ -1354,7 +1354,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   metricTileLabel: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10.5,
     color: COLORS.textMuted,
     textAlign: "center",
@@ -1390,21 +1390,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F8FAFC",
     paddingHorizontal: 11,
     paddingVertical: 5.5,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E0E7FF",
+    borderColor: "#E2E8F0",
     flexShrink: 0,
   },
   seeAllPillText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11.5,
     color: COLORS.brandIndigo,
   },
   seeMoreLink: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
     color: COLORS.brandIndigo,
   },
@@ -1448,7 +1448,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   ongoingStatusText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     letterSpacing: 0.2,
   },
@@ -1464,7 +1464,7 @@ const styles = StyleSheet.create({
     borderColor: "#E2E8F0",
   },
   ongoingDaysText: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10.5,
     color: COLORS.textMuted,
   },
@@ -1486,14 +1486,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ongoingCategoryMicroText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 9.5,
     color: COLORS.brandIndigo,
     letterSpacing: 0.6,
     marginBottom: 2,
   },
   ongoingMainTitle: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.headingBold,
     fontSize: 14.5,
     color: COLORS.textDark,
     lineHeight: 19,
@@ -1526,12 +1526,12 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   milestonePhaseText: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: "#64748B",
   },
   milestoneBudgetText: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.bodyBold,
     fontSize: 12.5,
     color: COLORS.brandIndigo,
     fontVariant: ["tabular-nums"],
@@ -1556,14 +1556,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     borderWidth: 1,
-    borderColor: "#E0E7FF",
+    borderColor: "#E2E8F0",
     paddingVertical: 9,
     borderRadius: 12,
   },
   ongoingChatBtnText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.brandIndigo,
   },
@@ -1578,7 +1578,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   ongoingWorkspaceBtnText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: "#FFFFFF",
   },
@@ -1602,7 +1602,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1610,7 +1610,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyOngoingTitle: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.headingBold,
     fontSize: 13,
     color: COLORS.textDark,
   },
@@ -1625,13 +1625,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: 10,
   },
   emptyOngoingCtaText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10.5,
     color: COLORS.brandIndigo,
   },
@@ -1662,7 +1662,7 @@ const styles = StyleSheet.create({
   categoryBentoTileActive: {
     borderColor: COLORS.brandIndigo,
     borderWidth: 1.5,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F8FAFC",
   },
   categoryTileIconWrap: {
     width: 44,
@@ -1676,7 +1676,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   categoryTileTitle: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 13,
     color: COLORS.textDark,
     letterSpacing: -0.2,
@@ -1713,7 +1713,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   endCapMainText: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.headingBold,
     fontSize: 13,
     color: COLORS.textDark,
     textAlign: "center",
@@ -1738,7 +1738,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   endCapPillText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: "#FFFFFF",
   },

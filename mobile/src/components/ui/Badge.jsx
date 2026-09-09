@@ -10,34 +10,34 @@ export function Badge({ label, variant = "neutral", style, textStyle }) {
       case "brand":
       case "indigo":
         return {
-          bg: "rgba(79, 70, 229, 0.1)",
+          bg: "#F1F5F9",
           text: COLORS.brandIndigo,
-          border: "rgba(79, 70, 229, 0.25)",
+          border: "#E2E8F0",
         };
       case "cyan":
       case "info":
         return {
-          bg: "rgba(14, 165, 233, 0.1)",
-          text: COLORS.brandCyan,
-          border: "rgba(14, 165, 233, 0.25)",
+          bg: "#F8FAFC",
+          text: "#334155",
+          border: "#E2E8F0",
         };
       case "success":
         return {
-          bg: "rgba(16, 185, 129, 0.1)",
-          text: COLORS.success,
-          border: "rgba(16, 185, 129, 0.25)",
+          bg: "#ECFDF5",
+          text: "#059669",
+          border: "#A7F3D0",
         };
       case "warning":
         return {
-          bg: "rgba(245, 158, 11, 0.1)",
-          text: COLORS.warning,
-          border: "rgba(245, 158, 11, 0.25)",
+          bg: "#FFFBEB",
+          text: "#D97706",
+          border: "#FDE68A",
         };
       case "danger":
         return {
-          bg: "rgba(239, 68, 68, 0.1)",
-          text: COLORS.danger,
-          border: "rgba(239, 68, 68, 0.25)",
+          bg: "#FEF2F2",
+          text: "#DC2626",
+          border: "#FECACA",
         };
       case "dark":
         return {
@@ -77,15 +77,15 @@ export function Badge({ label, variant = "neutral", style, textStyle }) {
 
 const styles = StyleSheet.create({
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
     borderRadius: 999,
     alignSelf: "flex-start",
   },
   text: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    fontWeight: "700",
+    fontWeight: "600",
     letterSpacing: 0.1,
   },
 });

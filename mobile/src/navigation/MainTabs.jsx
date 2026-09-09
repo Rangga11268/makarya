@@ -34,8 +34,8 @@ export function MainTabs() {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: COLORS.brandIndigo,
-        tabBarInactiveTintColor: COLORS.textMuted,
+        tabBarActiveTintColor: COLORS.textDark,
+        tabBarInactiveTintColor: COLORS.textDim,
         tabBarLabelStyle: styles.tabLabel,
         tabBarItemStyle: styles.tabItem,
       }}
@@ -47,11 +47,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <HomeTabIcon
-              focused={focused}
-              size={22}
-              color={COLORS.brandIndigo}
-            />
+            <HomeTabIcon focused={focused} size={22} />
           ),
         }}
       />
@@ -63,11 +59,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Explore",
           tabBarIcon: ({ focused }) => (
-            <ExploreTabIcon
-              focused={focused}
-              size={22}
-              color={COLORS.brandIndigo}
-            />
+            <ExploreTabIcon focused={focused} size={22} />
           ),
         }}
       />
@@ -79,11 +71,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Workspace",
           tabBarIcon: ({ focused }) => (
-            <WorkspaceTabIcon
-              focused={focused}
-              size={22}
-              color={COLORS.brandIndigo}
-            />
+            <WorkspaceTabIcon focused={focused} size={22} />
           ),
         }}
       />
@@ -95,11 +83,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Wallet",
           tabBarIcon: ({ focused }) => (
-            <WalletTabIcon
-              focused={focused}
-              size={22}
-              color={COLORS.brandIndigo}
-            />
+            <WalletTabIcon focused={focused} size={22} />
           ),
         }}
       />
@@ -111,11 +95,7 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ focused }) => (
-            <ProfileTabIcon
-              focused={focused}
-              size={22}
-              color={COLORS.brandIndigo}
-            />
+            <ProfileTabIcon focused={focused} size={22} />
           ),
         }}
       />

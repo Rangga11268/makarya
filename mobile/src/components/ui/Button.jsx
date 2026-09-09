@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   text: {
-    fontFamily: FONTS.bodyBold,
-    fontWeight: "700",
+    fontFamily: FONTS.bodyMedium,
+    fontWeight: "600",
     letterSpacing: -0.1,
   },
   text_sm: {

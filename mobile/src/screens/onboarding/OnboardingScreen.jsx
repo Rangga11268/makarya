@@ -23,11 +23,11 @@ const slides = [
     subtitle:
       "Kerjakan proyek digital nyata dari UMKM lokal. Setiap hasil kerjamu terbit resmi sebagai bukti kompetensi untuk melamar kerja.",
     image: require("../../../assets/onboarding_1.jpg"),
-    bgColor: "#091424", // Deep Midnight Navy
-    accentColor: "#4F46E5", // Brand Indigo
-    badgeBg: "rgba(79, 70, 229, 0.22)",
-    badgeBorder: "rgba(129, 140, 248, 0.4)",
-    badgeText: "#A5B4FC",
+    bgColor: "#091424",
+    accentColor: "#0F172A",
+    badgeBg: "rgba(255, 255, 255, 0.12)",
+    badgeBorder: "rgba(255, 255, 255, 0.22)",
+    badgeText: "#F8FAFC",
   },
   {
     id: "2",
@@ -36,11 +36,11 @@ const slides = [
     subtitle:
       "Klien mendepositkan dana ke rekening bersama Makarya sebelum proyek berjalan. Begitu tugas disetujui, dana langsung cair ke rekeningmu.",
     image: require("../../../assets/onboarding_2.jpg"),
-    bgColor: "#091424", // Deep Midnight Navy (Unified)
-    accentColor: "#4F46E5", // Brand Indigo (Unified)
-    badgeBg: "rgba(79, 70, 229, 0.22)",
-    badgeBorder: "rgba(129, 140, 248, 0.4)",
-    badgeText: "#A5B4FC",
+    bgColor: "#091424",
+    accentColor: "#059669",
+    badgeBg: "rgba(16, 185, 129, 0.18)",
+    badgeBorder: "rgba(110, 231, 183, 0.35)",
+    badgeText: "#6EE7B7",
   },
   {
     id: "3",
@@ -49,11 +49,11 @@ const slides = [
     subtitle:
       "Kirim proposal, lacak milestone, chat langsung dengan klien UMKM dalam satu platform terpadu.",
     image: require("../../../assets/onboarding_3.jpg"),
-    bgColor: "#091424", // Deep Midnight Navy (Unified)
-    accentColor: "#4F46E5", // Brand Indigo (Unified)
-    badgeBg: "rgba(79, 70, 229, 0.22)",
-    badgeBorder: "rgba(129, 140, 248, 0.4)",
-    badgeText: "#A5B4FC",
+    bgColor: "#091424",
+    accentColor: "#0F172A",
+    badgeBg: "rgba(255, 255, 255, 0.12)",
+    badgeBorder: "rgba(255, 255, 255, 0.22)",
+    badgeText: "#E2E8F0",
   },
 ];
 

@@ -9,18 +9,18 @@ export const COLORS = {
   canvasSoft: "#F1F5F9",
   surfaceLight: "#FFFFFF",
   
-  // Brand Palette (Premium Indigo & Electric Sky)
-  brandIndigo: "#4F46E5",      // Indigo 600: Primary CTA & key interactive highlights
-  brandIndigoDark: "#4338CA",  // Indigo 700: Pressed state / deep gradient
-  brandIndigoLight: "#EEF2FF", // Indigo 50: Soft active pills & backgrounds
-  brandIndigoSubtle: "rgba(79, 70, 229, 0.08)",
-  brandCyan: "#0EA5E9",        // Sky 500: Secondary accents & active info
-  brandCyanLight: "#E0F2FE",   // Sky 50: Soft info pills
-  brandCyanSubtle: "rgba(14, 165, 233, 0.08)",
+  // Brand Palette (High-End Deep Slate & Graphite - No cheap neon purple/blue)
+  brandIndigo: "#0F172A",      // Slate 900: Primary CTA & key interactive highlights
+  brandIndigoDark: "#020617",  // Slate 950: Pressed state
+  brandIndigoLight: "#F1F5F9", // Slate 100: Soft active pills & backgrounds
+  brandIndigoSubtle: "rgba(15, 23, 42, 0.04)",
+  brandCyan: "#334155",        // Slate 700: Secondary accents & meta
+  brandCyanLight: "#F8FAFC",   // Slate 50: Soft info pills
+  brandCyanSubtle: "rgba(51, 65, 85, 0.04)",
   
-  accentLime: "#4F46E5",
-  accentCyan: "#0EA5E9",
-  accentPurple: "#818CF8",
+  accentLime: "#0F172A",
+  accentCyan: "#334155",
+  accentPurple: "#475569",
   
   // High-Contrast Modern Typography Scale
   textDark: "#0F172A",        // Slate 900: High-emphasis titles & headings
@@ -29,12 +29,12 @@ export const COLORS = {
   textSecondary: "#334155",    // Slate 700: Body copy & form labels
   textMuted: "#64748B",        // Slate 500: Subtitles, timestamps & meta labels
   textDim: "#94A3B8",          // Slate 400: Placeholder & disabled text
-  textInverse: "#FFFFFF",      // Pure White: Text inside buttons & dark cards
+  textInverse: "#FFFFFF",      // Pure White: Text inside dark buttons
   
   // Borders, Dividers & Outlines
   borderDark: "#E2E8F0",       // Slate 200: Standard hairline border
   borderSubtle: "#F1F5F9",     // Slate 100: Soft inner dividers
-  borderFocus: "#4F46E5",      // Indigo 600: Focused input borders
+  borderFocus: "#0F172A",      // Slate 900: Focused input borders
   borderLight: "#CBD5E1",      // Slate 300: Hover / active borders
   
   // Semantic Status Colors
@@ -50,9 +50,9 @@ export const COLORS = {
   dangerBg: "#FEF2F2",         // Red 50: Soft badge background
   dangerBorder: "#FECACA",
   
-  info: "#0EA5E9",             // Sky 500: General info
-  infoBg: "#F0F9FF",
-  infoBorder: "#BAE6FD",
+  info: "#0F172A",             // Slate 900: General info
+  infoBg: "#F1F5F9",
+  infoBorder: "#E2E8F0",
 };
 
 export const SHADOWS = {
@@ -78,10 +78,10 @@ export const SHADOWS = {
     elevation: 6,
   },
   brandGlow: {
-    shadowColor: "#4F46E5",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
 };

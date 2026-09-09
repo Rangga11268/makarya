@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -27,14 +27,14 @@ const BANNER_DATA = [
   {
     id: "banner-1",
     tag: "100% GARANSI ESCROW",
-    tagColor: "#818CF8",
+    tagColor: "#94A3B8",
     title: "Dana Aman Terjamin di Setiap Proyek",
     desc: "Honor tersimpan aman di escrow & cair langsung setelah deliverable disetujui.",
     cta: "Eksplor Proyek",
-    gradStart: "#312E81",
-    gradMid: "#3730A3",
-    gradEnd: "#4F46E5",
-    accentColor: "#A5B4FC",
+    gradStart: "#091424",
+    gradMid: "#0F172A",
+    gradEnd: "#1E293B",
+    accentColor: "#CBD5E1",
     type: "shield",
   },
   {

@@ -56,7 +56,15 @@ export function RegisterScreen({ navigation }) {
       }
     } else {
       if (!namaLengkap.trim() || !nim.trim() || !email.trim() || !password.trim()) {
-        showToast("Semua data mahasiswa wajib diisi", "danger");
+        showToast("Nama lengkap, NIM, email, dan password wajib diisi", "danger");
+        return;
+      }
+      const lowerEmail = email.trim().toLowerCase();
+      if (!lowerEmail.endsWith(".ac.id") && !lowerEmail.endsWith(".edu")) {
+        showToast(
+          "Email mahasiswa wajib berakhiran .ac.id atau .edu",
+          "danger",
+        );
         return;
       }
     }
@@ -76,7 +84,7 @@ export function RegisterScreen({ navigation }) {
         await registerMhs({
           nama_lengkap: namaLengkap.trim(),
           nim: nim.trim(),
-          prodi_id: 1, // Default fallback jika API tidak minta
+          prodi_id: 1,
           email: email.trim(),
           password,
         });
@@ -149,14 +157,19 @@ export function RegisterScreen({ navigation }) {
           <View style={s.heroBadge}>
             <ShieldCheck size={11} color="#6EE7B7" />
             <Text style={s.heroBadgeText}>
-              Akses Talenta Kampus Terverifikasi
+              {role === "UMKM"
+                ? "Akses Talenta Kampus Terverifikasi"
+                : "Eksklusif Mahasiswa Kampus"}
             </Text>
           </View>
 
-          <Text style={s.welcomeText}>Daftar Akun UMKM</Text>
+          <Text style={s.welcomeText}>
+            {role === "UMKM" ? "Daftar Akun UMKM" : "Daftar Akun Mahasiswa"}
+          </Text>
           <Text style={s.subtitle}>
-            Pasang proyek dan temukan mahasiswa bertalenta terbaik untuk bisnis
-            Anda.
+            {role === "UMKM"
+              ? "Pasang proyek dan temukan mahasiswa bertalenta terbaik untuk bisnis Anda."
+              : "Dapatkan proyek berbayar, validasi keterampilan, dan bangun portofolio impian."}
           </Text>
         </View>
       </View>
@@ -168,115 +181,209 @@ export function RegisterScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* Role Switcher Segment */}
+          <View style={s.roleSelectorWrapper}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setRole("UMKM")}
+              style={[
+                s.roleTabItem,
+                role === "UMKM" && s.roleTabItemActive,
+              ]}
+            >
+              <Building2
+                size={16}
+                color={role === "UMKM" ? "#0F172A" : "#64748B"}
+              />
+              <Text
+                style={[
+                  s.roleTabText,
+                  role === "UMKM" && s.roleTabTextActive,
+                ]}
+              >
+                Pelaku UMKM
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setRole("MAHASISWA")}
+              style={[
+                s.roleTabItem,
+                role === "MAHASISWA" && s.roleTabItemActive,
+              ]}
+            >
+              <GraduationCap
+                size={16}
+                color={role === "MAHASISWA" ? "#0F172A" : "#64748B"}
+              />
+              <Text
+                style={[
+                  s.roleTabText,
+                  role === "MAHASISWA" && s.roleTabTextActive,
+                ]}
+              >
+                Mahasiswa
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Form Input Area */}
           <View style={s.formArea}>
-            <Input
-              label="Nama Brand / Usaha UMKM"
-              placeholder="Contoh: Kopi Nusantara"
-              value={namaUsaha}
-              onChangeText={setNamaUsaha}
-              icon={<Building2 size={18} color={COLORS.textMuted} />}
-            />
+            {role === "UMKM" ? (
+              <>
+                <Input
+                  label="Nama Brand / Usaha UMKM"
+                  placeholder="Contoh: Kopi Nusantara"
+                  value={namaUsaha}
+                  onChangeText={setNamaUsaha}
+                  icon={<Building2 size={18} color={COLORS.textMuted} />}
+                />
 
-            {/* Bidang Industri Chips */}
-            <View style={{ marginBottom: 16 }}>
-              <Text
-                style={{
-                  fontFamily: FONTS.bodyBold,
-                  fontSize: 12,
-                  color: COLORS.textDark,
-                  marginBottom: 8,
-                }}
-              >
-                Bidang Industri
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{ flexDirection: "row" }}
-              >
-                {industries.map((ind) => {
-                  const selected = bidangIndustri === ind;
-                  return (
-                    <TouchableOpacity
-                      key={ind}
-                      onPress={() => setBidangIndustri(ind)}
-                      style={[
-                        {
-                          paddingHorizontal: 14,
-                          paddingVertical: 7,
-                          borderRadius: 999,
-                          backgroundColor: "#F1F5F9",
-                          borderWidth: 1,
-                          borderColor: "#E2E8F0",
-                          marginRight: 8,
-                        },
-                        selected && {
-                          backgroundColor: COLORS.brandIndigo,
-                          borderColor: COLORS.brandIndigo,
-                        },
-                      ]}
-                      activeOpacity={0.7}
-                    >
-                      <Text
-                        style={[
-                          {
-                            fontFamily: FONTS.bodyMedium,
-                            fontSize: 12,
-                            color: "#64748B",
-                          },
-                          selected && {
-                            fontFamily: FONTS.bodyBold,
-                            color: "#FFFFFF",
-                          },
-                        ]}
-                      >
-                        {ind}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
+                {/* Bidang Industri Chips */}
+                <View style={{ marginBottom: 16 }}>
+                  <Text
+                    style={{
+                      fontFamily: FONTS.bodyMedium,
+                      fontSize: 12,
+                      color: COLORS.textDark,
+                      marginBottom: 8,
+                    }}
+                  >
+                    Bidang Industri
+                  </Text>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={{ flexDirection: "row" }}
+                  >
+                    {industries.map((ind) => {
+                      const selected = bidangIndustri === ind;
+                      return (
+                        <TouchableOpacity
+                          key={ind}
+                          onPress={() => setBidangIndustri(ind)}
+                          style={[
+                            {
+                              paddingHorizontal: 14,
+                              paddingVertical: 7,
+                              borderRadius: 999,
+                              backgroundColor: "#F1F5F9",
+                              borderWidth: 1,
+                              borderColor: "#E2E8F0",
+                              marginRight: 8,
+                            },
+                            selected && {
+                              backgroundColor: COLORS.brandIndigo,
+                              borderColor: COLORS.brandIndigo,
+                            },
+                          ]}
+                          activeOpacity={0.7}
+                        >
+                          <Text
+                            style={[
+                              {
+                                fontFamily: FONTS.bodyMedium,
+                                fontSize: 12,
+                                color: "#64748B",
+                              },
+                              selected && {
+                                fontFamily: FONTS.bodyBold,
+                                color: "#FFFFFF",
+                              },
+                            ]}
+                          >
+                            {ind}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
 
-            <Input
-              label="Kota / Lokasi Usaha"
-              placeholder="Contoh: Bekasi"
-              value={kota}
-              onChangeText={setKota}
-              icon={<MapPin size={18} color={COLORS.textMuted} />}
-            />
+                <Input
+                  label="Kota / Lokasi Usaha"
+                  placeholder="Contoh: Bekasi"
+                  value={kota}
+                  onChangeText={setKota}
+                  icon={<MapPin size={18} color={COLORS.textMuted} />}
+                />
 
-            <Input
-              label="Nomor WhatsApp"
-              placeholder="Contoh: 081234567890"
-              value={noKontak}
-              onChangeText={setNoKontak}
-              keyboardType="phone-pad"
-              icon={<Phone size={18} color={COLORS.textMuted} />}
-            />
+                <Input
+                  label="Nomor WhatsApp"
+                  placeholder="Contoh: 081234567890"
+                  value={noKontak}
+                  onChangeText={setNoKontak}
+                  keyboardType="phone-pad"
+                  icon={<Phone size={18} color={COLORS.textMuted} />}
+                />
 
-            <Input
-              label="Email Resmi Akun"
-              placeholder="Contoh: kontak@usahaanda.com"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              icon={<Mail size={18} color={COLORS.textMuted} />}
-            />
+                <Input
+                  label="Email Resmi Akun"
+                  placeholder="Contoh: kontak@usahaanda.com"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  icon={<Mail size={18} color={COLORS.textMuted} />}
+                />
 
-            <Input
-              label="Kata Sandi"
-              placeholder="Minimal 8 karakter"
-              value={password}
-              onChangeText={setPassword}
-              isPassword={true}
-              icon={<Lock size={18} color={COLORS.textMuted} />}
-            />
+                <Input
+                  label="Kata Sandi"
+                  placeholder="Minimal 8 karakter"
+                  value={password}
+                  onChangeText={setPassword}
+                  isPassword={true}
+                  icon={<Lock size={18} color={COLORS.textMuted} />}
+                />
+              </>
+            ) : (
+              <>
+                <Input
+                  label="Nama Lengkap Mahasiswa"
+                  placeholder="Contoh: Darell Radhitya"
+                  value={namaLengkap}
+                  onChangeText={setNamaLengkap}
+                  icon={<User size={18} color={COLORS.textMuted} />}
+                />
+
+                <Input
+                  label="NIM (Nomor Induk Mahasiswa)"
+                  placeholder="Contoh: 12201088"
+                  value={nim}
+                  onChangeText={setNim}
+                  keyboardType="numeric"
+                  icon={<GraduationCap size={18} color={COLORS.textMuted} />}
+                />
+
+                <Input
+                  label="Email Kampus Resmi"
+                  placeholder="Contoh: darell@ubsi.ac.id"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  helperText="Wajib berakhiran .ac.id atau .edu untuk verifikasi status mahasiswa"
+                  icon={<Mail size={18} color={COLORS.textMuted} />}
+                />
+
+                <Input
+                  label="Kata Sandi"
+                  placeholder="Minimal 8 karakter"
+                  value={password}
+                  onChangeText={setPassword}
+                  isPassword={true}
+                  icon={<Lock size={18} color={COLORS.textMuted} />}
+                />
+              </>
+            )}
 
             <Button
-              title="Buat Akun UMKM Baru"
+              title={
+                role === "UMKM"
+                  ? "Buat Akun UMKM Baru"
+                  : "Daftar Sebagai Mahasiswa"
+              }
               variant="brand"
               size="lg"
               onPress={handleRegister}

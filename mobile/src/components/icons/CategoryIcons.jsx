@@ -3,503 +3,226 @@ import Svg, {
   Path,
   Rect,
   Circle,
-  Defs,
-  LinearGradient,
-  Stop,
-  G,
+  Polyline,
+  Line,
+  Polygon,
 } from "react-native-svg";
 import { COLORS } from "../../theme/colors";
 
-// 1. UI/UX Design & Branding Vector Icon (Layered Canvas + Pen Tool + Sparkle)
-export function UiUxVectorIcon({ size = 26, color = "#4F46E5" }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="uiuxCanvasGrad" x1="4" y1="4" x2="32" y2="32">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.22" />
-          <Stop offset="100%" stopColor="#06B6D4" stopOpacity="0.06" />
-        </LinearGradient>
-        <LinearGradient id="uiuxAccentCard" x1="6" y1="6" x2="20" y2="20">
-          <Stop offset="0%" stopColor="#6366F1" />
-          <Stop offset="100%" stopColor="#8B5CF6" />
-        </LinearGradient>
-        <LinearGradient id="uiuxPenGrad" x1="16" y1="12" x2="30" y2="28">
-          <Stop offset="0%" stopColor="#06B6D4" />
-          <Stop offset="100%" stopColor="#3B82F6" />
-        </LinearGradient>
-      </Defs>
+/**
+ * High-End Monochrome Precision Line-Art Category Icons (Fiverr & iOS Standard)
+ * Clean, consistent stroke width (1.6px - 1.8px), zero cheap gradients or saturated colors.
+ */
 
-      {/* Main Artboard Canvas */}
+// 1. UI/UX Design & Branding (Precision Canvas & Pen Tool)
+export function UiUxVectorIcon({ size = 24, color = COLORS.textDark }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect
         x="3"
-        y="4"
-        width="26"
-        height="24"
-        rx="6"
-        fill="url(#uiuxCanvasGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-      />
-
-      {/* Floating UI Component Card */}
-      <Rect
-        x="6.5"
-        y="7.5"
-        width="11"
-        height="9"
+        y="3"
+        width="18"
+        height="18"
         rx="3"
-        fill="url(#uiuxAccentCard)"
+        stroke={color}
+        strokeWidth="1.6"
       />
-
-      {/* Color Palette Swatch Circle */}
-      <Circle cx="23.5" cy="11.5" r="3.5" fill="#06B6D4" />
-      <Circle cx="23.5" cy="11.5" r="1.5" fill="#FFFFFF" />
-
-      {/* Curving Bézier Vector Spline */}
+      <Circle cx="8.5" cy="8.5" r="1.5" fill={color} />
       <Path
-        d="M6.5 21C11.5 21 14 24.5 19 24.5"
-        stroke="#06B6D4"
-        strokeWidth="1.8"
+        d="M21 15l-5-5L5 21"
+        stroke={color}
+        strokeWidth="1.6"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
-
-      {/* Anchor Point Dots */}
-      <Circle
-        cx="6.5"
-        cy="21"
-        r="1.5"
-        fill="#4F46E5"
-        stroke="#FFFFFF"
-        strokeWidth="1"
-      />
-      <Circle
-        cx="19"
-        cy="24.5"
-        r="1.5"
-        fill="#4F46E5"
-        stroke="#FFFFFF"
-        strokeWidth="1"
-      />
-
-      {/* Stylized Digital Pen Tool Nib */}
-      <G transform="translate(18, 14)">
-        <Path
-          d="M3 13L11 5L13 7L5 15L2 15.5L3 13Z"
-          fill="url(#uiuxPenGrad)"
-          stroke="#06B6D4"
-          strokeWidth="1"
-          strokeLinejoin="round"
-        />
-        <Circle cx="12" cy="6" r="1.2" fill="#FBBF24" />
-      </G>
-
-      {/* Gold Sparkle Star */}
       <Path
-        d="M31 6L31.8 8.2L34 9L31.8 9.8L31 12L30.2 9.8L28 9L30.2 8.2L31 6Z"
-        fill="#FBBF24"
+        d="M14 14l2-2 4 4"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>
   );
 }
 
-// 2. Web & Coding Development Vector Icon (Terminal Window + Glow Brackets </>)
-export function WebCodingVectorIcon({ size = 26, color = "#0284C7" }) {
+// 2. Web & Coding Development (Clean Browser Monitor + Code Bracket </>)
+export function WebCodingVectorIcon({ size = 24, color = COLORS.textDark }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="webWinGrad" x1="3" y1="4" x2="33" y2="32">
-          <Stop offset="0%" stopColor="#0284C7" stopOpacity="0.2" />
-          <Stop offset="100%" stopColor="#4F46E5" stopOpacity="0.05" />
-        </LinearGradient>
-        <LinearGradient id="codeBrackGrad" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#06B6D4" />
-          <Stop offset="100%" stopColor="#38BDF8" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Browser / Terminal Window Frame */}
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect
-        x="3"
-        y="5"
-        width="30"
-        height="25"
-        rx="6"
-        fill="url(#webWinGrad)"
-        stroke="#0284C7"
-        strokeWidth="1.75"
+        x="2"
+        y="3"
+        width="20"
+        height="13"
+        rx="2"
+        stroke={color}
+        strokeWidth="1.6"
       />
-
-      {/* Window Top Bar Line */}
       <Path
-        d="M3 12.5H33"
-        stroke="#0284C7"
-        strokeWidth="1.2"
-        strokeOpacity="0.3"
-      />
-
-      {/* macOS Window Traffic Lights */}
-      <Circle cx="7.5" cy="8.8" r="1.6" fill="#EF4444" />
-      <Circle cx="12.5" cy="8.8" r="1.6" fill="#F59E0B" />
-      <Circle cx="17.5" cy="8.8" r="1.6" fill="#10B981" />
-
-      {/* Glowing Code Tag Brackets */}
-      {/* Left Bracket < */}
-      <Path
-        d="M12.5 17L8.5 21L12.5 25"
-        stroke="url(#codeBrackGrad)"
-        strokeWidth="2.2"
+        d="M7 21h10M12 16v5M8 9.5l-2 2 2 2M16 9.5l2 2-2 2M13 8.5l-2 6"
+        stroke={color}
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-
-      {/* Code Slash / */}
-      <Path
-        d="M19.5 16L16.5 26"
-        stroke="#6366F1"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-
-      {/* Right Bracket > */}
-      <Path
-        d="M23.5 17L27.5 21L23.5 25"
-        stroke="url(#codeBrackGrad)"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Micro Sparkle Accent */}
-      <Circle cx="29" cy="8.5" r="1" fill="#38BDF8" />
     </Svg>
   );
 }
 
-// 3. Mobile App Development Vector Icon (Curved Smartphone + UI Cards)
-export function MobileAppVectorIcon({ size = 26, color = "#4F46E5" }) {
+// 3. Mobile App Development (Minimalist Smartphone + Layout Cards)
+export function MobileAppVectorIcon({ size = 24, color = COLORS.textDark }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="mobiChassisGrad" x1="8" y1="3" x2="28" y2="33">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.22" />
-          <Stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.06" />
-        </LinearGradient>
-        <LinearGradient id="mobiCardGrad" x1="12" y1="10" x2="24" y2="18">
-          <Stop offset="0%" stopColor="#6366F1" />
-          <Stop offset="100%" stopColor="#4F46E5" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Smartphone Chassis */}
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect
-        x="8.5"
-        y="3.5"
-        width="19"
-        height="29"
-        rx="6"
-        fill="url(#mobiChassisGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-      />
-
-      {/* Dynamic Island Notch */}
-      <Rect x="14.5" y="6" width="7" height="2" rx="1" fill="#4F46E5" />
-
-      {/* Featured Header Card on Screen */}
-      <Rect
-        x="11.5"
-        y="10"
-        width="13"
-        height="8"
+        x="5"
+        y="2"
+        width="14"
+        height="20"
         rx="2.5"
-        fill="url(#mobiCardGrad)"
+        stroke={color}
+        strokeWidth="1.6"
       />
-
-      {/* Secondary App Skeleton Tiles in Brand Palette */}
-      <Rect
-        x="11.5"
-        y="20"
-        width="5.5"
-        height="4.5"
-        rx="1.5"
-        fill="#0EA5E9"
-        fillOpacity="0.6"
-      />
-      <Rect
-        x="19"
-        y="20"
-        width="5.5"
-        height="4.5"
-        rx="1.5"
-        fill="#4F46E5"
-        fillOpacity="0.45"
-      />
-
-      {/* Home Indicator Bar */}
-      <Rect x="15" y="28.5" width="6" height="1.4" rx="0.7" fill="#4F46E5" />
-
-      {/* Interactive Touch Pulse Dot */}
-      <Circle
-        cx="29"
-        cy="20"
-        r="3.5"
-        stroke="#0EA5E9"
-        strokeWidth="1"
-        strokeDasharray="2 2"
-      />
-      <Circle cx="29" cy="20" r="1.5" fill="#0EA5E9" />
-    </Svg>
-  );
-}
-
-// 4. Video Editing & Motion Vector Icon (Clapperboard + Play Triangle)
-export function VideoMotionVectorIcon({ size = 26, color = "#4F46E5" }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="vidBodyGrad" x1="4" y1="5" x2="32" y2="31">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.22" />
-          <Stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.06" />
-        </LinearGradient>
-        <LinearGradient id="playBtnGrad" x1="14" y1="16" x2="23" y2="24">
-          <Stop offset="0%" stopColor="#0EA5E9" />
-          <Stop offset="100%" stopColor="#4F46E5" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Main Clapperboard Body */}
-      <Rect
-        x="4"
-        y="6"
-        width="28"
-        height="24"
-        rx="6"
-        fill="url(#vidBodyGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-      />
-
-      {/* Clapper Hinge Top Strip */}
-      <Path d="M4 14H32" stroke="#4F46E5" strokeWidth="1.5" />
-
-      {/* Angled Production Stripes */}
       <Path
-        d="M10 6L7 14M17 6L14 14M24 6L21 14M31 6L28 14"
-        stroke="#4F46E5"
+        d="M9 6h6M8 10h8M9 14h4"
+        stroke={color}
         strokeWidth="1.6"
         strokeLinecap="round"
       />
-
-      {/* Radiant Cyan Play Badge */}
-      <Circle cx="18" cy="21.5" r="5.5" fill="rgba(14, 165, 233, 0.18)" />
-      <Path
-        d="M16.5 18.5L21.5 21.5L16.5 24.5V18.5Z"
-        fill="url(#playBtnGrad)"
-        stroke="#0EA5E9"
-        strokeWidth="1"
-        strokeLinejoin="round"
-      />
-
-      {/* Subtle Gold Sparkle */}
-      <Path
-        d="M32 4L32.6 5.4L34 6L32.6 6.6L32 8L31.4 6.6L30 6L31.4 5.4L32 4Z"
-        fill="#FBBF24"
-      />
+      <Circle cx="12" cy="18.5" r="0.8" fill={color} />
     </Svg>
   );
 }
 
-// 5. Digital Marketing & Analytics Vector Icon (Ascending Chart + Rocket Trend)
-export function MarketingVectorIcon({ size = 26, color = "#4F46E5" }) {
+// 4. Video Reels & Motion Graphics (Film Strip Player Clapper)
+export function VideoMotionVectorIcon({ size = 24, color = COLORS.textDark }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="mktCanvasGrad" x1="4" y1="5" x2="32" y2="31">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.2" />
-          <Stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.06" />
-        </LinearGradient>
-        <LinearGradient id="barHighGrad" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0%" stopColor="#0EA5E9" />
-          <Stop offset="100%" stopColor="#4F46E5" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Card Base */}
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect
-        x="4"
+        x="2"
         y="5"
-        width="28"
-        height="25"
-        rx="6"
-        fill="url(#mktCanvasGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
+        width="20"
+        height="14"
+        rx="2.5"
+        stroke={color}
+        strokeWidth="1.6"
       />
-
-      {/* Ascending Chart Bars in Brand Indigo Palette */}
-      <Rect
-        x="8.5"
-        y="21"
-        width="4"
-        height="5.5"
-        rx="1.5"
-        fill="#6366F1"
-        fillOpacity="0.45"
-      />
-      <Rect
-        x="14.5"
-        y="16.5"
-        width="4"
-        height="10"
-        rx="1.5"
-        fill="#4F46E5"
-        fillOpacity="0.65"
-      />
-      <Rect
-        x="20.5"
-        y="11.5"
-        width="4.5"
-        height="15"
-        rx="1.5"
-        fill="url(#barHighGrad)"
-      />
-
-      {/* Upward Growth Arrow Trendline in Electric Cyan */}
-      <Path
-        d="M8.5 16L14.5 11L20.5 14L27 7.5"
-        stroke="#0EA5E9"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      <Polygon
+        points="10 9 15 12 10 15 10 9"
+        fill={color}
       />
       <Path
-        d="M22.5 7.5H27V12"
-        stroke="#0EA5E9"
-        strokeWidth="2.2"
+        d="M6 5v3M18 5v3M6 16v3M18 16v3"
+        stroke={color}
+        strokeWidth="1.6"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
-
-      {/* Target Bullseye Ring */}
-      <Circle cx="28" cy="22" r="2.5" stroke="#0EA5E9" strokeWidth="1.2" />
-      <Circle cx="28" cy="22" r="1" fill="#0EA5E9" />
     </Svg>
   );
 }
 
-// 6. Content Writing & Campus Research Vector Icon (Document + Pen Nib)
-export function WritingVectorIcon({ size = 26, color = "#4F46E5" }) {
+// 5. Digital Marketing & Ads (Megaphone & Growth Arrow)
+export function MarketingVectorIcon({ size = 24, color = COLORS.textDark }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="wrtSheetGrad" x1="5" y1="4" x2="31" y2="32">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.22" />
-          <Stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.06" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Folded Document Sheet */}
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d="M7 7C7 4.8 8.8 3 11 3H21L29 11V27C29 29.2 27.2 31 25 31H11C8.8 31 7 29.2 7 27V7Z"
-        fill="url(#wrtSheetGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
-
-      {/* Folded Corner Flap */}
-      <Path
-        d="M21 3V11H29"
-        fill="rgba(79, 70, 229, 0.22)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
-
-      {/* Editorial Content Lines in Indigo & Cyan */}
-      <Path
-        d="M11.5 15.5H18M11.5 19.5H24.5M11.5 23.5H20.5"
-        stroke="#6366F1"
-        strokeWidth="1.8"
+        d="M3 11l15-6v14L3 13v-2zM18 9h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M6 13v6a2 2 0 0 0 2 2h1"
+        stroke={color}
+        strokeWidth="1.6"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
-
-      {/* Quill Pen Nib */}
-      <G transform="translate(20, 18)">
-        <Path
-          d="M6 3L11 8L8 11L3 6L6 3Z"
-          fill="#0EA5E9"
-          stroke="#4F46E5"
-          strokeWidth="1"
-        />
-        <Path d="M3 6L1 12L7 10" fill="#4F46E5" />
-        <Circle cx="7.5" cy="6.5" r="0.8" fill="#FFFFFF" />
-      </G>
     </Svg>
   );
 }
 
-// 7. General Project / Brief Vector Icon (Executive Portfolio)
-export function ProjectBriefVectorIcon({ size = 26, color = "#4F46E5" }) {
+// 6. Research & Copywriting (Document with Clean Editorial Lines)
+export function WritingVectorIcon({ size = 24, color = COLORS.textDark }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <Defs>
-        <LinearGradient id="briefCaseGrad" x1="4" y1="6" x2="32" y2="30">
-          <Stop offset="0%" stopColor="#4F46E5" stopOpacity="0.22" />
-          <Stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.08" />
-        </LinearGradient>
-      </Defs>
-
-      {/* Briefcase Body */}
-      <Rect
-        x="4"
-        y="8"
-        width="28"
-        height="22"
-        rx="5.5"
-        fill="url(#briefCaseGrad)"
-        stroke="#4F46E5"
-        strokeWidth="1.75"
-      />
-
-      {/* Solid Top Handle */}
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d="M13 8V5C13 4.2 13.7 3.5 14.5 3.5H21.5C22.3 3.5 23 4.2 23 5V8"
-        stroke="#4F46E5"
-        strokeWidth="1.8"
+        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Polyline
+        points="14 2 14 8 20 8"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Line
+        x1="16"
+        y1="13"
+        x2="8"
+        y2="13"
+        stroke={color}
+        strokeWidth="1.6"
         strokeLinecap="round"
       />
-
-      {/* Center Dividing Seam */}
-      <Path
-        d="M4 16H32"
-        stroke="#4F46E5"
-        strokeWidth="1.4"
-        strokeOpacity="0.4"
-      />
-
-      {/* Gold Latch Clasp */}
-      <Rect
-        x="15.5"
-        y="13.5"
-        width="5"
-        height="5"
-        rx="1.5"
-        fill="#FBBF24"
-        stroke="#D97706"
-        strokeWidth="1"
+      <Line
+        x1="16"
+        y1="17"
+        x2="8"
+        y2="17"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
       />
     </Svg>
   );
 }
 
-// Dynamic Icon Resolver with Unified Brand Indigo Palette
+// 7. General Project Brief / Contract (Clipboard Checklist)
+export function ProjectBriefVectorIcon({ size = 24, color = COLORS.textDark }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Rect
+        x="8"
+        y="2"
+        width="8"
+        height="4"
+        rx="1"
+        stroke={color}
+        strokeWidth="1.6"
+      />
+      <Path
+        d="M9 12l2 2 4-4"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M9 17h6"
+        stroke={color}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * Universal Category Icon Resolver
+ */
 export function renderProjectCategoryVectorIcon(
-  category,
+  category = "",
   title = "",
-  size = 24,
+  size = 22,
   overrideColor = null,
 ) {
+  const color = overrideColor || COLORS.textDark;
   const query = `${category || ""} ${title || ""}`.toUpperCase();
 
   if (
@@ -509,7 +232,7 @@ export function renderProjectCategoryVectorIcon(
     query.includes("LOGO") ||
     query.includes("FIGMA")
   ) {
-    return <UiUxVectorIcon size={size} color={overrideColor || "#4F46E5"} />;
+    return <UiUxVectorIcon size={size} color={color} />;
   }
 
   if (
@@ -519,9 +242,7 @@ export function renderProjectCategoryVectorIcon(
     query.includes("API") ||
     query.includes("PROGRAM")
   ) {
-    return (
-      <WebCodingVectorIcon size={size} color={overrideColor || "#4F46E5"} />
-    );
+    return <WebCodingVectorIcon size={size} color={color} />;
   }
 
   if (
@@ -531,9 +252,7 @@ export function renderProjectCategoryVectorIcon(
     query.includes("ANDROID") ||
     query.includes("IOS")
   ) {
-    return (
-      <MobileAppVectorIcon size={size} color={overrideColor || "#4F46E5"} />
-    );
+    return <MobileAppVectorIcon size={size} color={color} />;
   }
 
   if (
@@ -542,9 +261,7 @@ export function renderProjectCategoryVectorIcon(
     query.includes("MOTION") ||
     query.includes("EDIT")
   ) {
-    return (
-      <VideoMotionVectorIcon size={size} color={overrideColor || "#4F46E5"} />
-    );
+    return <VideoMotionVectorIcon size={size} color={color} />;
   }
 
   if (
@@ -554,9 +271,7 @@ export function renderProjectCategoryVectorIcon(
     query.includes("IKLAN") ||
     query.includes("PASAR")
   ) {
-    return (
-      <MarketingVectorIcon size={size} color={overrideColor || "#4F46E5"} />
-    );
+    return <MarketingVectorIcon size={size} color={color} />;
   }
 
   if (
@@ -564,15 +279,11 @@ export function renderProjectCategoryVectorIcon(
     query.includes("ARTIKEL") ||
     query.includes("WRITING") ||
     query.includes("COPY") ||
-    query.includes("KONTEN")
+    query.includes("KONTEN") ||
+    query.includes("RISET")
   ) {
-    return <WritingVectorIcon size={size} color={overrideColor || "#4F46E5"} />;
+    return <WritingVectorIcon size={size} color={color} />;
   }
 
-  return (
-    <ProjectBriefVectorIcon
-      size={size}
-      color={overrideColor || COLORS.brandIndigo || "#4F46E5"}
-    />
-  );
+  return <ProjectBriefVectorIcon size={size} color={color} />;
 }

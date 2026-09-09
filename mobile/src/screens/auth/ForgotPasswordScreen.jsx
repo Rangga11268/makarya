@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     gap: 8,
     backgroundColor: COLORS.brandIndigoLight,
     borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
+    borderColor: "#E2E8F0",
     padding: 12,
     borderRadius: 14,
     marginBottom: 4,
@@ -291,12 +291,12 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 12,
     fontFamily: FONTS.bodyRegular,
-    color: "#3730A3",
+    color: "#334155",
     flex: 1,
   },
   boldText: {
-    fontFamily: FONTS.bodyBold,
-    fontWeight: "700",
+    fontFamily: FONTS.bodyMedium,
+    fontWeight: "600",
   },
   submitBtn: {
     marginTop: 6,

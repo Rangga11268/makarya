@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   cardFeatured: {
     borderWidth: 1.5,
-    borderColor: "#C7D2FE",
+    borderColor: "#CBD5E1",
     backgroundColor: "#FFFFFF",
   },
   cardStandard: {
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   featuredBadgeText: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 9.5,
     color: "#92400E",
     letterSpacing: 0.5,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -217,9 +217,9 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     borderWidth: 1.5,
-    borderColor: "#E0E7FF",
+    borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     color: "#334155",
   },
   skillMorePill: {
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 7,
     paddingVertical: 4,
     borderRadius: 8,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   skillMoreText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10,
     color: COLORS.brandIndigo,
   },

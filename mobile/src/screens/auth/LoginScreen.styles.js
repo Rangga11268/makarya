@@ -125,22 +125,59 @@ export const styles = StyleSheet.create({
   },
   chipItemActiveMhs: {
     borderColor: COLORS.brandIndigo,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
   },
   chipItemActiveUmkm: {
-    borderColor: COLORS.success,
+    borderColor: "#059669",
     backgroundColor: "#ECFDF5",
   },
   chipText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
-    color: "#334155",
+    color: "#475569",
   },
   chipTextActiveMhs: {
     color: COLORS.brandIndigo,
+    fontFamily: FONTS.bodyBold,
   },
   chipTextActiveUmkm: {
     color: "#059669",
+    fontFamily: FONTS.bodyBold,
+  },
+  roleSelectorWrapper: {
+    flexDirection: "row",
+    backgroundColor: "#F1F5F9",
+    borderRadius: 14,
+    padding: 4,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  roleTabItem: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  roleTabItemActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  roleTabText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 13,
+    color: "#64748B",
+  },
+  roleTabTextActive: {
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
   },
   formArea: {
     marginBottom: 16,

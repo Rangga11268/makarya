@@ -136,16 +136,16 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   label: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    fontWeight: "700",
-    color: COLORS.textDark,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12.5,
+    fontWeight: "600",
+    color: "#1E293B",
     letterSpacing: 0.1,
   },
   requiredStar: {
     color: COLORS.danger,
     fontSize: 13,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   inputWrapper: {
     flexDirection: "row",
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     borderRightColor: COLORS.borderDark,
   },
   prefixText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.bodyMedium,
     fontSize: 12.5,
     color: COLORS.brandIndigo,
   },
@@ -185,17 +185,17 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
   },
   suffixText: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 12,
     color: COLORS.textMuted,
   },
   input: {
     flex: 1,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textDark,
     fontSize: 14,
     paddingVertical: 11,
-    fontWeight: "500",
+    fontWeight: "400",
   },
   multilineInput: {
     height: 90,
