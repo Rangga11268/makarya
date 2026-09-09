@@ -68,9 +68,7 @@ export function Badge({ label, variant = "neutral", style, textStyle }) {
         style,
       ]}
     >
-      <Text style={[styles.text, { color: c.text }, textStyle]}>
-        {label}
-      </Text>
+      <Text style={[styles.text, { color: c.text }, textStyle]}>{label}</Text>
     </View>
   );
 }

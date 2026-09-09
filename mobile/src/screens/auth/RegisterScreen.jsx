@@ -35,7 +35,7 @@ export function RegisterScreen({ navigation }) {
   const [role, setRole] = useState("UMKM"); // Default mobile = UMKM
   const [namaLengkap, setNamaLengkap] = useState("");
   const [nim, setNim] = useState("");
-  
+
   const [namaUsaha, setNamaUsaha] = useState("");
   const [bidangIndustri, setBidangIndustri] = useState("Kuliner & F&B");
   const [kota, setKota] = useState("");
@@ -55,8 +55,16 @@ export function RegisterScreen({ navigation }) {
         return;
       }
     } else {
-      if (!namaLengkap.trim() || !nim.trim() || !email.trim() || !password.trim()) {
-        showToast("Nama lengkap, NIM, email, dan password wajib diisi", "danger");
+      if (
+        !namaLengkap.trim() ||
+        !nim.trim() ||
+        !email.trim() ||
+        !password.trim()
+      ) {
+        showToast(
+          "Nama lengkap, NIM, email, dan password wajib diisi",
+          "danger",
+        );
         return;
       }
       const lowerEmail = email.trim().toLowerCase();
@@ -186,20 +194,14 @@ export function RegisterScreen({ navigation }) {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setRole("UMKM")}
-              style={[
-                s.roleTabItem,
-                role === "UMKM" && s.roleTabItemActive,
-              ]}
+              style={[s.roleTabItem, role === "UMKM" && s.roleTabItemActive]}
             >
               <Building2
                 size={16}
                 color={role === "UMKM" ? "#0F172A" : "#64748B"}
               />
               <Text
-                style={[
-                  s.roleTabText,
-                  role === "UMKM" && s.roleTabTextActive,
-                ]}
+                style={[s.roleTabText, role === "UMKM" && s.roleTabTextActive]}
               >
                 Pelaku UMKM
               </Text>

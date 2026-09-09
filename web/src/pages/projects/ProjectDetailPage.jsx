@@ -7,7 +7,7 @@ import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { formatDate, daysRemaining } from "../../utils/formatDate";
+import { formatDate, daysRemaining, isExpired } from "../../utils/formatDate";
 import { extractIdFromSlug, getProjectUrl } from "../../utils/slugify";
 import { formatStatus } from "../../utils/formatStatus";
 import {
@@ -145,7 +145,8 @@ export function ProjectDetailPage() {
     );
   }
 
-  const daysLeft = daysRemaining(project.deadline);
+  const daysLeft = daysRemaining(project?.deadline);
+  const expired = isExpired(project?.deadline) || project?.status === "CANCELLED";
   const isOwner = user?.id === project.umkm_id;
 
   return (
@@ -268,9 +269,13 @@ export function ProjectDetailPage() {
                   Tenggat Waktu:
                 </span>
                 <span
-                  className={`text-sm font-bold block mt-0.5 ${daysLeft <= 3 ? "text-rose-600" : "text-dark-900"}`}
+                  className={`text-sm font-bold block mt-0.5 ${expired ? "text-rose-600" : daysLeft <= 3 ? "text-amber-600" : "text-dark-900"}`}
                 >
-                  {daysLeft > 0 ? `${daysLeft} Hari Lagi` : "Hari Terakhir"}
+                  {expired
+                    ? `Kedaluwarsa (${formatDate(project.deadline)})`
+                    : daysLeft > 0
+                      ? `${daysLeft} Hari Lagi`
+                      : "Hari Terakhir"}
                 </span>
               </div>
 
@@ -306,7 +311,7 @@ export function ProjectDetailPage() {
               </div>
 
               {/* Realtime Chat Banner */}
-              <div className="p-4 bg-indigo-50/60 border border-indigo-200/70 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
                     <MessageSquare className="w-5 h-5" />
@@ -398,14 +403,14 @@ export function ProjectDetailPage() {
           </Card>
 
           {/* Card 3: Tips Sukses Melamar Bagi Mahasiswa */}
-          <Card className="p-6 space-y-3 bg-indigo-50/50 border border-indigo-100 rounded-3xl">
+          <Card className="p-6 space-y-3 bg-slate-50 border border-slate-200 rounded-3xl">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-brand-indigo" />
-              <h3 className="text-xs font-bold text-indigo-950 uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-slate-700" />
+              <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Panduan Melamar Efektif Bagi Mahasiswa
               </h3>
             </div>
-            <ul className="text-xs text-indigo-900 space-y-1.5 pl-4 list-disc leading-relaxed">
+            <ul className="text-xs text-slate-600 space-y-1.5 pl-4 list-disc leading-relaxed">
               <li>
                 Berikan penawaran harga yang wajar sesuai kompleksitas brief
                 UMKM.
@@ -476,12 +481,27 @@ export function ProjectDetailPage() {
                   </Button>
                 </Link>
               </div>
+            ) : expired ? (
+              <div className="space-y-2">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  disabled
+                  className="w-full text-xs sm:text-sm font-semibold py-3.5 opacity-60 cursor-not-allowed bg-slate-100 text-slate-500 border border-slate-200"
+                >
+                  <AlertCircle className="w-4 h-4 mr-2 text-rose-500" />
+                  Tenggat Waktu Berakhir
+                </Button>
+                <p className="text-[11px] text-center text-rose-600 font-medium">
+                  Penerimaan proposal untuk proyek ini telah ditutup karena melewati batas tenggat waktu.
+                </p>
+              </div>
             ) : (
               <Button
                 variant="brand"
                 size="lg"
                 onClick={handleApplyClick}
-                className="w-full text-xs sm:text-sm font-bold shadow-brand py-3.5"
+                className="w-full text-xs sm:text-sm font-bold shadow-xs py-3.5"
               >
                 <Send className="w-4 h-4 mr-2" />
                 {isAuthenticated

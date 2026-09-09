@@ -29,6 +29,16 @@ def submit_proposal(
     if project.status not in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Proyek tidak dapat dilamar karena statusnya {project.status.value} dan tidak menerima proposal")
 
+    # Validasi batas tenggat waktu (deadline) proyek
+    from datetime import date
+    if project.deadline and project.deadline < date.today():
+        project.status = ProjectStatus.CANCELLED
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tenggat waktu pengajuan proposal untuk proyek ini telah berakhir (kedaluwarsa)."
+        )
+
     # Validasi budget max (harga tawar tidak boleh melebihi budget UMKM)
     if proposal_request.harga_tawar > project.budget_max:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Harga tawar (Rp {proposal_request.harga_tawar}) melebihi budget proyek sebesar Rp {project.budget_max}")

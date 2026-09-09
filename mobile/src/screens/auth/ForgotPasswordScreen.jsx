@@ -48,7 +48,8 @@ export function ForgotPasswordScreen({ navigation }) {
       setStep(2);
     } catch (err) {
       showToast(
-        err.response?.data?.detail || "Akun dengan email tersebut tidak ditemukan",
+        err.response?.data?.detail ||
+          "Akun dengan email tersebut tidak ditemukan",
         "danger",
       );
     } finally {
@@ -79,7 +80,8 @@ export function ForgotPasswordScreen({ navigation }) {
       navigation.navigate("Login");
     } catch (err) {
       showToast(
-        err.response?.data?.detail || "Kode OTP tidak valid atau terjadi kesalahan",
+        err.response?.data?.detail ||
+          "Kode OTP tidak valid atau terjadi kesalahan",
         "danger",
       );
     } finally {
@@ -167,7 +169,8 @@ export function ForgotPasswordScreen({ navigation }) {
             <View style={styles.infoBox}>
               <Info size={15} color={COLORS.brandIndigo} />
               <Text style={styles.infoText}>
-                Kode demo dev: Gunakan <Text style={styles.boldText}>123456</Text> untuk reset instan.
+                Kode demo dev: Gunakan{" "}
+                <Text style={styles.boldText}>123456</Text> untuk reset instan.
               </Text>
             </View>
 

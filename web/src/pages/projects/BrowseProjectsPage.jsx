@@ -72,7 +72,11 @@ export function BrowseProjectsPage() {
         : Array.isArray(res)
           ? res
           : [];
-      setProjects(data);
+      // Saring proyek yang belum kedaluwarsa untuk katalog pendaftaran aktif
+      const activeProjects = data.filter(
+        (p) => p.status !== "CANCELLED" && daysRemaining(p.deadline) >= 0
+      );
+      setProjects(activeProjects);
       setCurrentPage(1); // Reset page on new search/filter
     } catch (err) {
       console.error("Gagal memuat proyek:", err);

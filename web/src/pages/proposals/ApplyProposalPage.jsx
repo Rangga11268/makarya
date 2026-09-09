@@ -360,16 +360,16 @@ export function ApplyProposalPage() {
                 </div>
 
                 {/* Net Income Calculation */}
-                <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div>
-                    <span className="font-bold text-indigo-950 block">
+                    <span className="font-semibold text-slate-900 block">
                       Honor Bersih Diterima Mahasiswa:
                     </span>
-                    <span className="text-[11px] text-indigo-800">
+                    <span className="text-[11px] text-slate-600">
                       Bebas potongan platform (0% Biaya Komisi Mahasiswa).
                     </span>
                   </div>
-                  <span className="text-lg font-black text-brand-indigo font-sans">
+                  <span className="text-lg font-bold text-slate-900 font-sans">
                     {formatCurrency(parsedNominal)}
                   </span>
                 </div>

@@ -87,7 +87,11 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
   return (
     <View style={[s.container, { backgroundColor: slide.bgColor }]}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
 
       {/* Swipeable Full-Screen Slides */}
       <ScrollView
@@ -105,25 +109,45 @@ export function OnboardingScreen({ navigation, onComplete }) {
             style={[s.slidePage, { backgroundColor: sl.bgColor }]}
           >
             {/* Background Illustration covering top 60% */}
-            <Image
-              source={sl.image}
-              style={s.bgImage}
-              resizeMode="cover"
-            />
+            <Image source={sl.image} style={s.bgImage} resizeMode="cover" />
 
             {/* Smooth SVG Multi-stop Gradient Blend from Image into Solid Canvas */}
             <View style={s.gradientOverlay} pointerEvents="none">
               <Svg height="100%" width="100%">
                 <Defs>
-                  <LinearGradient id={`grad-${sl.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <LinearGradient
+                    id={`grad-${sl.id}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <Stop offset="0%" stopColor={sl.bgColor} stopOpacity="0" />
-                    <Stop offset="30%" stopColor={sl.bgColor} stopOpacity="0.25" />
-                    <Stop offset="65%" stopColor={sl.bgColor} stopOpacity="0.8" />
+                    <Stop
+                      offset="30%"
+                      stopColor={sl.bgColor}
+                      stopOpacity="0.25"
+                    />
+                    <Stop
+                      offset="65%"
+                      stopColor={sl.bgColor}
+                      stopOpacity="0.8"
+                    />
                     <Stop offset="90%" stopColor={sl.bgColor} stopOpacity="1" />
-                    <Stop offset="100%" stopColor={sl.bgColor} stopOpacity="1" />
+                    <Stop
+                      offset="100%"
+                      stopColor={sl.bgColor}
+                      stopOpacity="1"
+                    />
                   </LinearGradient>
                 </Defs>
-                <Rect x="0" y="0" width="100%" height="100%" fill={`url(#grad-${sl.id})`} />
+                <Rect
+                  x="0"
+                  y="0"
+                  width="100%"
+                  height="100%"
+                  fill={`url(#grad-${sl.id})`}
+                />
               </Svg>
             </View>
 

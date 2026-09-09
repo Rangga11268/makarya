@@ -77,9 +77,13 @@ def browse_project(
     limit: int = Query(20, ge=1, le=100, description="Jumlah data yang diambil"),
     db: Session = Depends(get_db)
 ):
+    from datetime import date
+    today = date.today()
     query = db.query(Project)
     if status:
         query = query.filter(Project.status == status)
+        if status in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
+            query = query.filter(Project.deadline >= today)
     if kategori:
         query = query.filter(Project.kategori == kategori)
     if min_budget is not None:
@@ -162,6 +166,15 @@ def get_project_by_id(
     project = db.query(Project).filter(Project.id == id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
+
+    from datetime import date
+    if project.status in [ProjectStatus.OPEN, ProjectStatus.BIDDING] and project.deadline and project.deadline < date.today():
+        project.status = ProjectStatus.CANCELLED
+        for prop in project.proposals:
+            if prop.status == ProposalStatus.PENDING:
+                prop.status = ProposalStatus.REJECTED
+        db.commit()
+        db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
     umkm_summary = UmkmSummary.model_validate(profile) if profile else None

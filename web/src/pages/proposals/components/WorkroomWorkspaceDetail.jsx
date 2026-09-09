@@ -42,7 +42,7 @@ export function WorkroomWorkspaceDetail({
   if (!activeProjectId) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo mx-auto shadow-xs">
+        <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-indigo mx-auto shadow-xs">
           <Briefcase className="w-7 h-7" />
         </div>
         <h3 className="text-base font-bold text-dark-900">

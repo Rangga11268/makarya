@@ -179,16 +179,39 @@ export function PromoBanner({ onBannerPress }) {
             <View style={StyleSheet.absoluteFill}>
               <Svg width="100%" height="100%">
                 <Defs>
-                  <LinearGradient id={`grad-${item.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <LinearGradient
+                    id={`grad-${item.id}`}
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
                     <Stop offset="0%" stopColor={item.gradStart} />
                     <Stop offset="55%" stopColor={item.gradMid} />
                     <Stop offset="100%" stopColor={item.gradEnd} />
                   </LinearGradient>
                 </Defs>
-                <Rect width="100%" height="100%" rx={20} fill={`url(#grad-${item.id})`} />
+                <Rect
+                  width="100%"
+                  height="100%"
+                  rx={20}
+                  fill={`url(#grad-${item.id})`}
+                />
                 {/* Micro mesh circles */}
-                <Circle cx={BANNER_WIDTH - 20} cy={10} r={65} fill="#FFFFFF" fillOpacity="0.05" />
-                <Circle cx={BANNER_WIDTH - 50} cy={80} r={40} fill="#FFFFFF" fillOpacity="0.04" />
+                <Circle
+                  cx={BANNER_WIDTH - 20}
+                  cy={10}
+                  r={65}
+                  fill="#FFFFFF"
+                  fillOpacity="0.05"
+                />
+                <Circle
+                  cx={BANNER_WIDTH - 50}
+                  cy={80}
+                  r={40}
+                  fill="#FFFFFF"
+                  fillOpacity="0.04"
+                />
               </Svg>
             </View>
 
@@ -196,7 +219,12 @@ export function PromoBanner({ onBannerPress }) {
             <View style={styles.cardInner}>
               <View style={styles.textContent}>
                 {/* Pill Tag */}
-                <View style={[styles.tagPill, { borderColor: item.tagColor + "40" }]}>
+                <View
+                  style={[
+                    styles.tagPill,
+                    { borderColor: item.tagColor + "40" },
+                  ]}
+                >
                   <Sparkles size={10} color={item.tagColor} />
                   <Text style={[styles.tagText, { color: item.tagColor }]}>
                     {item.tag}
@@ -222,7 +250,10 @@ export function PromoBanner({ onBannerPress }) {
 
               {/* Right Decorative Graphic */}
               <View style={styles.graphicBox}>
-                <BannerGraphic type={item.type} accentColor={item.accentColor} />
+                <BannerGraphic
+                  type={item.type}
+                  accentColor={item.accentColor}
+                />
               </View>
             </View>
           </TouchableOpacity>

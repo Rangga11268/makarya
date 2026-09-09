@@ -142,9 +142,13 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
+  const isExpired = Boolean(
+    project?.deadline && new Date(project.deadline) < new Date().setHours(0, 0, 0, 0)
+  ) || project?.status === "CANCELLED";
   const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
   const isOpenForApply =
     project?.status === "OPEN" || project?.status === "BIDDING";
+    (project?.status === "OPEN" || project?.status === "BIDDING") && !isExpired;
   const canApply =
     isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
 
@@ -868,6 +872,11 @@ export function ProjectDetailScreen({ route, navigation }) {
                 Pelamar ({proposals.length})
               </Text>
             </TouchableOpacity>
+          ) : isExpired ? (
+            <View style={[styles.closedStatusPill, { backgroundColor: "#FEF2F2", borderColor: "#FECACA" }]}>
+              <Info size={14} color="#DC2626" />
+              <Text style={[styles.closedStatusText, { color: "#DC2626" }]}>Tenggat Berakhir</Text>
+            </View>
           ) : (
             <View style={styles.closedStatusPill}>
               <Info size={14} color={COLORS.textMuted} />

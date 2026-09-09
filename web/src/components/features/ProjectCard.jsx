@@ -4,15 +4,18 @@ import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { daysRemaining } from "../../utils/formatDate";
+import { daysRemaining, isExpired } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
 import { useAuthStore } from "../../store/authStore";
 import { Clock, Tag, Building2, ArrowRight } from "lucide-react";
+import { Clock, Tag, Building2, ArrowRight, AlertCircle } from "lucide-react";
 
 export function ProjectCard({ project }) {
   const { user } = useAuthStore();
   const [imgError, setImgError] = React.useState(false);
   const isMhs = user?.role === "MHS";
   const daysLeft = daysRemaining(project.deadline);
+  const expired = isExpired(project.deadline) || project.status === "CANCELLED";
 
   const categoryLabels = {
     DESIGN: "Desain Grafis",
@@ -33,6 +36,7 @@ export function ProjectCard({ project }) {
     <Card
       hover
       className="flex flex-col justify-between h-full group bg-surface border-border"
+      className={`flex flex-col justify-between h-full group bg-surface border-border ${expired ? "opacity-80" : ""}`}
     >
       <div>
         {/* Top Header: UMKM Client Info & Days Left */}
@@ -47,11 +51,13 @@ export function ProjectCard({ project }) {
               />
             ) : (
               <div className="w-8 h-8 rounded-full bg-brand-indigo-light text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
+              <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
                 <Building2 className="w-4 h-4" />
               </div>
             )}
             <div className="truncate">
               <h4 className="text-xs font-bold text-dark-900 truncate font-sans">
+              <h4 className="text-xs font-semibold text-dark-900 truncate font-sans">
                 {project.umkm_profile?.nama_usaha || "Klien UMKM"}
               </h4>
               <p className="text-[11px] text-muted truncate font-sans">
@@ -64,10 +70,22 @@ export function ProjectCard({ project }) {
             <Clock className="w-3 h-3 text-brand-indigo" />
             <span>{daysLeft} hari</span>
           </div>
+          {expired ? (
+            <div className="flex items-center gap-1 text-[11px] text-rose-700 font-medium shrink-0 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">
+              <AlertCircle className="w-3 h-3 text-rose-500" />
+              <span>Kedaluwarsa</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[11px] text-muted font-medium shrink-0 bg-canvas px-2.5 py-1 rounded-full border border-border">
+              <Clock className="w-3 h-3 text-slate-500" />
+              <span>{daysLeft === 0 ? "Hari Terakhir" : `${daysLeft} hari`}</span>
+            </div>
+          )}
         </div>
 
         {/* Project Title */}
         <h3 className="text-base font-bold text-dark-900 group-hover:text-brand-indigo transition-colors line-clamp-2 leading-snug mb-2 font-sans">
+        <h3 className="text-base font-semibold text-dark-900 group-hover:text-slate-900 transition-colors line-clamp-2 leading-snug mb-2 font-sans">
           {project.judul}
         </h3>
 
@@ -82,6 +100,8 @@ export function ProjectCard({ project }) {
         <div className="flex items-center justify-between gap-2">
           <Badge variant="brand" className="text-[11px] px-2.5 py-0.5">
             <Tag className="w-3 h-3 mr-1 text-brand-indigo" />
+          <Badge variant="neutral" className="text-[11px] px-2.5 py-0.5">
+            <Tag className="w-3 h-3 mr-1 text-slate-500" />
             {categoryLabels[project.kategori] || project.kategori}
           </Badge>
 
@@ -90,6 +110,7 @@ export function ProjectCard({ project }) {
               Maks Budget
             </span>
             <span className="text-sm font-extrabold text-dark-900 font-sans">
+            <span className="text-sm font-bold text-dark-900 font-sans">
               {formatCurrency(project.budget_max)}
             </span>
           </div>
@@ -98,8 +119,14 @@ export function ProjectCard({ project }) {
         <Link
           to={getProjectUrl(project)}
           className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold bg-dark-900 hover:bg-brand-indigo text-white transition-all gap-1.5 shadow-xs select-none"
+          className={`w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-semibold transition-all gap-1.5 shadow-xs select-none ${
+            expired
+              ? "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
+              : "bg-dark-900 hover:bg-dark-800 text-white"
+          }`}
         >
           <span>{isMhs ? "Rincian & Lamar" : "Lihat Rincian Proyek"}</span>
+          <span>{expired ? "Lihat Detail (Tenggat Berakhir)" : "Lihat Detail & Ajukan Proposal"}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

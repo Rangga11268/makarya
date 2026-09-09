@@ -17,7 +17,14 @@ import {
 } from "lucide-react-native";
 
 export function ProjectCard({ project, onPress }) {
+  const isExpired = Boolean(
+    project.deadline && new Date(project.deadline) < new Date().setHours(0, 0, 0, 0)
+  ) || project.status === "CANCELLED";
+
   const getStatusBadge = (status) => {
+    if (isExpired) {
+      return <Badge label="Tenggat Berakhir" variant="danger" />;
+    }
     switch (status) {
       case "OPEN":
       case "BIDDING":

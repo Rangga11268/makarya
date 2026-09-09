@@ -85,8 +85,8 @@ export function AlertModal() {
       buttonBg: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20",
     },
     confirm: {
-      bg: "bg-indigo-50/80",
-      border: "border-indigo-200",
+      bg: "bg-slate-100/80",
+      border: "border-slate-200",
       buttonBg: isDestructive 
         ? "bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20"
         : "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand",

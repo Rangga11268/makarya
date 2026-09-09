@@ -184,6 +184,8 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                 ) : myProjects.length > 0 ? (
                   <div className="p-4 bg-indigo-50/40 border border-indigo-100 rounded-2xl space-y-3">
                     <label className="text-xs font-bold text-indigo-950 block">
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                    <label className="text-xs font-bold text-dark-900 block">
                       Pilih Proyek Anda untuk Diskusi / Kolaborasi:
                     </label>
                     <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
@@ -201,6 +203,7 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                               isSelected
                                 ? "bg-white border-brand-indigo ring-1.5 ring-brand-indigo shadow-xs"
                                 : "bg-white/80 border-border hover:border-indigo-300"
+                                : "bg-white/80 border-border hover:border-slate-400"
                             }`}
                           >
                             <div className="min-w-0 flex-1">
@@ -296,8 +299,10 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
               </div>
             ) : (
               <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-2xl text-center space-y-2">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-2">
                 <ShieldCheck className="w-6 h-6 text-brand-indigo mx-auto" />
                 <p className="text-xs text-indigo-950 font-medium">
+                <p className="text-xs text-dark-800 font-medium">
                   Masuk sebagai <b>Klien UMKM</b> untuk langsung mengajak
                   talenta ini berkolaborasi dalam proyek Anda.
                 </p>

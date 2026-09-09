@@ -44,7 +44,7 @@ export function ProdiVectorIcon({ size = 18, className = "text-sky-500" }) {
  * Perguruan Tinggi / Campus Vector Icon for Web
  * Authentic collegiate classical portico pillars representation
  */
-export function CampusVectorIcon({ size = 18, className = "text-indigo-600" }) {
+export function CampusVectorIcon({ size = 18, className = "text-slate-700" }) {
   return (
     <svg
       width={size}

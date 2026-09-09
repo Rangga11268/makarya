@@ -14,12 +14,12 @@ export default {
         border: "#E2E8F0",
         "border-subtle": "#EDF2F7",
         brand: {
-          cyan: "#0EA5E9",
-          "cyan-light": "#E0F2FE",
-          indigo: "#4F46E5",
-          "indigo-light": "#EEF2FF",
-          "indigo-dark": "#4338CA",
-          gradient: "linear-gradient(135deg, #0EA5E9 0%, #4F46E5 100%)",
+          cyan: "#334155",
+          "cyan-light": "#F1F5F9",
+          indigo: "#0F172A",
+          "indigo-light": "#F1F5F9",
+          "indigo-dark": "#020617",
+          gradient: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
         },
         dark: {
           950: "#090D16",
@@ -37,10 +37,10 @@ export default {
         }
       },
       fontFamily: {
-        heading: ['"Geist Sans"', 'sans-serif'],
-        sans: ['"Inter"', 'sans-serif'],
-        serif: ['"Geist Sans"', 'sans-serif'], // Alias sementara agar class lama yang pakai font-serif otomatis terganti ke Geist
-        mono: ['"Inter"', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['"Plus Jakarta Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
       borderRadius: {
         card: "18px",
@@ -49,7 +49,7 @@ export default {
       boxShadow: {
         'card': '0 2px 12px -2px rgba(15, 23, 42, 0.04), 0 1px 3px -1px rgba(15, 23, 42, 0.02)',
         'float': '0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04)',
-        'brand': '0 4px 20px -2px rgba(79, 70, 229, 0.25)',
+        'brand': '0 4px 20px -2px rgba(15, 23, 42, 0.12)',
       }
     },
   },

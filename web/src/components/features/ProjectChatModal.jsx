@@ -260,6 +260,7 @@ export function ProjectChatModal({
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo mb-3 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-indigo mb-3 shadow-xs">
                 <Briefcase className="w-6 h-6" />
               </div>
               <h4 className="text-sm font-bold text-dark-900">
@@ -323,6 +324,7 @@ export function ProjectChatModal({
                           isMe
                             ? "bg-white/15 border-white/25 text-white hover:bg-white/20"
                             : "bg-canvas border-border text-brand-indigo hover:bg-indigo-50/50"
+                            : "bg-canvas border-border text-brand-indigo hover:bg-slate-100"
                         }`}
                       >
                         <div className="p-1 rounded-lg bg-white/20">
@@ -395,6 +397,7 @@ export function ProjectChatModal({
         {/* 3. Attachment Bar Toggle Panel */}
         {showAttachInput && (
           <div className="px-6 py-3 bg-indigo-50/60 border-t border-indigo-100 flex flex-col sm:flex-row items-center gap-2 animate-in slide-in-from-bottom-2">
+          <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-2 animate-in slide-in-from-bottom-2">
             <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"

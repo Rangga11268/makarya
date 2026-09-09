@@ -102,6 +102,8 @@ def run_project_deadline_check(db: Session):
         db.commit()
         if expired_projects:
             logger.info(f"Cronjob berhasil membatalkan {len(expired_projects)} proyek kadaluwarsa.")
+        return len(expired_projects)
     except Exception as e:
         db.rollback()
         logger.error(f"Gagal mengeksekusi cronjob deadline: {str(e)}")
+        return 0

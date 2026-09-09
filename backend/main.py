@@ -28,7 +28,16 @@ def daily_project_check():
 async def lifespan(app: FastAPI):
     # Dijalankan saat aplikasi startup
     # Eksekusi cron setiap hari pukul 00:00
+    # Dijalankan saat aplikasi startup:
+    # 1. Jalankan langsung pemeriksaan deadline saat server mulai
+    try:
+        daily_project_check()
+    except Exception as e:
+        print(f"[STARTUP] Gagal mengecek deadline awal: {e}")
+
+    # 2. Eksekusi cron setiap hari pukul 00:00 & setiap 1 jam untuk keakuratan berkala
     scheduler.add_job(daily_project_check, "cron", hour=0, minute=0)
+    scheduler.add_job(daily_project_check, "interval", hours=1)
     scheduler.start()
     
     yield

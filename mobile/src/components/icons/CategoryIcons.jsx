@@ -107,10 +107,7 @@ export function VideoMotionVectorIcon({ size = 24, color = COLORS.textDark }) {
         stroke={color}
         strokeWidth="1.6"
       />
-      <Polygon
-        points="10 9 15 12 10 15 10 9"
-        fill={color}
-      />
+      <Polygon points="10 9 15 12 10 15 10 9" fill={color} />
       <Path
         d="M6 5v3M18 5v3M6 16v3M18 16v3"
         stroke={color}

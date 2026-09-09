@@ -19,7 +19,7 @@ export function ProposalSidebarItem({
         onClick={onClick}
         className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-150 ${
           isSelected
-            ? "bg-indigo-50/40 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
+            ? "bg-slate-100/60 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
             : "bg-canvas border-border hover:bg-surface hover:border-dark-900/20"
         }`}
       >
@@ -85,7 +85,7 @@ export function ProposalSidebarItem({
       onClick={onClick}
       className={`p-3.5 rounded-2xl border cursor-pointer transition-all duration-150 ${
         isSelected
-          ? "bg-indigo-50/40 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
+          ? "bg-slate-100/60 border-brand-indigo/60 shadow-xs ring-1 ring-brand-indigo/30"
           : "bg-canvas border-border hover:bg-surface hover:border-dark-900/20"
       }`}
     >

@@ -88,7 +88,8 @@ export function VerificationScreen({ route, navigation }) {
       showToast("Akun Anda berhasil diverifikasi!", "success");
     } catch (err) {
       showToast(
-        err.response?.data?.detail || "Kode OTP tidak valid atau telah kedaluwarsa",
+        err.response?.data?.detail ||
+          "Kode OTP tidak valid atau telah kedaluwarsa",
         "danger",
       );
     } finally {
@@ -139,7 +140,8 @@ export function VerificationScreen({ route, navigation }) {
           </View>
           <Text style={styles.title}>Verifikasi Akun Anda</Text>
           <Text style={styles.subtitle}>
-            Masukkan 6 digit kode OTP yang telah kami kirimkan untuk mengaktifkan akun Anda.
+            Masukkan 6 digit kode OTP yang telah kami kirimkan untuk
+            mengaktifkan akun Anda.
           </Text>
 
           <View style={styles.targetBadge}>
@@ -154,10 +156,7 @@ export function VerificationScreen({ route, navigation }) {
             <TextInput
               key={idx}
               ref={(ref) => (inputRefs.current[idx] = ref)}
-              style={[
-                styles.otpBox,
-                digit ? styles.otpBoxFilled : null,
-              ]}
+              style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
               value={digit}
               onChangeText={(text) => handleOtpChange(text, idx)}
               onKeyPress={(e) => handleKeyPress(e, idx)}
@@ -173,7 +172,9 @@ export function VerificationScreen({ route, navigation }) {
         <View style={styles.infoCallout}>
           <Info size={16} color={COLORS.brandIndigo} style={styles.infoIcon} />
           <Text style={styles.infoText}>
-            Uji Coba Cepat: Gunakan kode verifikasi default <Text style={styles.boldText}>123456</Text> untuk langsung mengaktifkan akun.
+            Uji Coba Cepat: Gunakan kode verifikasi default{" "}
+            <Text style={styles.boldText}>123456</Text> untuk langsung
+            mengaktifkan akun.
           </Text>
         </View>
 
@@ -190,10 +191,14 @@ export function VerificationScreen({ route, navigation }) {
 
         {/* Resend Timer Controls */}
         <View style={styles.resendContainer}>
-          <Text style={styles.resendNotice}>Belum menerima kode verifikasi?</Text>
+          <Text style={styles.resendNotice}>
+            Belum menerima kode verifikasi?
+          </Text>
           {timer > 0 ? (
             <View style={styles.timerBadge}>
-              <Text style={styles.timerText}>Kirim ulang dalam {timer} detik</Text>
+              <Text style={styles.timerText}>
+                Kirim ulang dalam {timer} detik
+              </Text>
             </View>
           ) : (
             <Button

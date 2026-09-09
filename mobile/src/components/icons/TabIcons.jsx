@@ -61,7 +61,12 @@ export function ExploreTabIcon({ focused, size = 22 }) {
           d="M14.8 9.2L12.5 15L11 13L14.8 9.2Z"
           fill={focused ? activeColor : inactiveColor}
         />
-        <Circle cx="12" cy="12" r="1.5" fill={focused ? "#FFFFFF" : strokeColor} />
+        <Circle
+          cx="12"
+          cy="12"
+          r="1.5"
+          fill={focused ? "#FFFFFF" : strokeColor}
+        />
       </Svg>
       {focused && <View style={styles.activeDot} />}
     </View>
@@ -140,7 +145,12 @@ export function WalletTabIcon({ focused, size = 22 }) {
           stroke={strokeColor}
           strokeWidth={focused ? "1.8" : "1.5"}
         />
-        <Circle cx="16.5" cy="12" r="1.2" fill={focused ? "#FFFFFF" : strokeColor} />
+        <Circle
+          cx="16.5"
+          cy="12"
+          r="1.2"
+          fill={focused ? "#FFFFFF" : strokeColor}
+        />
       </Svg>
       {focused && <View style={styles.activeDot} />}
     </View>
@@ -190,4 +200,3 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
 });
-
