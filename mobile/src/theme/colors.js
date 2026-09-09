@@ -8,6 +8,8 @@ export const COLORS = {
   cardCream: "#F8FAFC",
   canvasSoft: "#F1F5F9",
   surfaceLight: "#FFFFFF",
+  surface: "#FFFFFF",
+  canvas: "#F8FAFC",
 
   // Brand Palette (High-End Deep Slate & Graphite - No cheap neon purple/blue)
   brandIndigo: "#0F172A", // Slate 900: Primary CTA & key interactive highlights

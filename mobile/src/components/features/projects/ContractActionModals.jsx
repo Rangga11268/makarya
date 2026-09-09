@@ -19,11 +19,13 @@ import {
   RotateCcw,
   AlertTriangle,
   ShieldCheck,
-  Calendar,
   XCircle,
   X,
 } from "lucide-react-native";
 
+/**
+ * Bottom Sheet Modal: Ganti Mahasiswa & Buka ke Eksplorasi (UMKM)
+ */
 export function ReopenProjectModal({
   visible,
   onClose,
@@ -52,47 +54,65 @@ export function ReopenProjectModal({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.modalOverlay}
       >
-        <View style={styles.modalBackdrop} />
-        <View style={styles.modalContainer}>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.backdropDismiss}
+          onPress={onClose}
+        />
+        <View style={styles.bottomSheet}>
+          <View style={styles.dragPill} />
+
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Buka Kembali Proyek</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <View>
+              <Text style={styles.modalTitle}>Buka Kembali Proyek</Text>
+              <Text style={styles.modalSub}>
+                Ganti mahasiswa dan buka kembali ke katalog eksplorasi
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeBtn}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <X size={20} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
           <ScrollView
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContent}
           >
+            {/* Warning Callout */}
             <View style={styles.alertBox}>
-              <AlertTriangle size={18} color="#D97706" />
+              <AlertTriangle size={18} color="#D97706" style={{ marginTop: 2 }} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.alertTitle}>
-                  Ganti Mahasiswa & Buka ke Eksplorasi
+                  Pembatalan Kontrak & Refund Escrow
                 </Text>
                 <Text style={styles.alertDesc}>
                   Penugasan mahasiswa saat ini akan dihentikan. Seluruh dana
                   escrow sebesar{" "}
-                  <Text style={{ fontWeight: "700" }}>
+                  <Text style={styles.boldHighlight}>
                     {formatCurrency(project.budget_max)}
                   </Text>{" "}
-                  akan langsung dikembalikan ke Saldo Aktif Anda.
+                  akan otomatis dikembalikan ke Saldo Aktif Anda.
                 </Text>
               </View>
             </View>
 
+            {/* Input Deadline Baru */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>
                 Tenggat Waktu Baru (YYYY-MM-DD){" "}
-                <Text style={{ color: "#EF4444" }}>*</Text>
+                <Text style={{ color: COLORS.danger }}>*</Text>
               </Text>
               <TextInput
                 style={styles.input}
@@ -106,13 +126,14 @@ export function ReopenProjectModal({
               </Text>
             </View>
 
+            {/* Input Alasan */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Alasan Pembatalan Kontrak</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={reason}
                 onChangeText={setReason}
-                placeholder="Contoh: Mahasiswa melewati batas waktu pengerjaan..."
+                placeholder="Contoh: Mahasiswa melewati batas waktu dan tidak ada respon..."
                 placeholderTextColor={COLORS.textDim}
                 multiline
                 numberOfLines={3}
@@ -145,6 +166,9 @@ export function ReopenProjectModal({
   );
 }
 
+/**
+ * Bottom Sheet Modal: Batalkan Proyek Permanen (UMKM)
+ */
 export function TerminateProjectModal({
   visible,
   onClose,
@@ -164,28 +188,44 @@ export function TerminateProjectModal({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.modalOverlay}
       >
-        <View style={styles.modalBackdrop} />
-        <View style={styles.modalContainer}>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.backdropDismiss}
+          onPress={onClose}
+        />
+        <View style={styles.bottomSheet}>
+          <View style={styles.dragPill} />
+
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Batalkan Proyek Permanen</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <View>
+              <Text style={styles.modalTitle}>Batalkan Proyek Permanen</Text>
+              <Text style={styles.modalSub}>
+                Tutup proyek dan kembalikan seluruh dana escrow
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeBtn}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <X size={20} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
           <ScrollView
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContent}
           >
             <View style={[styles.alertBox, styles.alertBoxDanger]}>
-              <XCircle size={18} color="#DC2626" />
+              <XCircle size={18} color="#DC2626" style={{ marginTop: 2 }} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.alertTitle, { color: "#991B1B" }]}>
                   Konfirmasi Pembatalan Proyek
@@ -198,7 +238,7 @@ export function TerminateProjectModal({
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Alasan Pembatalan</Text>
+              <Text style={styles.label}>Alasan Pembatalan (Opsional)</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
                 value={reason}
@@ -220,15 +260,11 @@ export function TerminateProjectModal({
                 style={{ flex: 1 }}
               />
               <Button
-                title="Ya, Batalkan"
+                title="Ya, Batalkan Proyek"
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{
-                  flex: 1.5,
-                  borderColor: "#FECACA",
-                  backgroundColor: "#FEF2F2",
-                }}
+                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
                 onPress={handleConfirm}
                 loading={loading}
               />
@@ -240,6 +276,9 @@ export function TerminateProjectModal({
   );
 }
 
+/**
+ * Bottom Sheet Modal: Pengunduran Diri Mahasiswa
+ */
 export function ResignProposalModal({
   visible,
   onClose,
@@ -265,43 +304,58 @@ export function ResignProposalModal({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.modalOverlay}
       >
-        <View style={styles.modalBackdrop} />
-        <View style={styles.modalContainer}>
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.backdropDismiss}
+          onPress={onClose}
+        />
+        <View style={styles.bottomSheet}>
+          <View style={styles.dragPill} />
+
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Pengunduran Diri</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <View>
+              <Text style={styles.modalTitle}>Pengunduran Diri Proyek</Text>
+              <Text style={styles.modalSub}>
+                Akhiri penugasan dan kembalikan escrow ke klien
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeBtn}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <X size={20} color={COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
           <ScrollView
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={styles.scrollContent}
           >
             <View style={[styles.alertBox, styles.alertBoxDanger]}>
-              <AlertTriangle size={18} color="#DC2626" />
+              <AlertTriangle size={18} color="#DC2626" style={{ marginTop: 2 }} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.alertTitle, { color: "#991B1B" }]}>
                   Perhatian Sebelum Mengundurkan Diri
                 </Text>
                 <Text style={[styles.alertDesc, { color: "#B91C1C" }]}>
-                  Penugasan Anda pada proyek ini akan berakhir. Dana escrow akan
-                  dikembalikan ke klien UMKM dan proyek dibuka kembali.
+                  Penugasan Anda pada proyek ini akan dihentikan. Dana escrow akan
+                  dikembalikan ke klien UMKM dan proyek dibuka kembali untuk mahasiswa lain.
                 </Text>
               </View>
             </View>
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>
-                Alasan Pengunduran Diri{" "}
-                <Text style={{ color: "#EF4444" }}>*</Text>
+                Alasan Pengunduran Diri <Text style={{ color: COLORS.danger }}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -310,13 +364,13 @@ export function ResignProposalModal({
                   setReason(t);
                   if (error) setError("");
                 }}
-                placeholder="Sebutkan kendala pengerjaan yang dihadapi secara jujur..."
+                placeholder="Jelaskan kendala pengerjaan yang dihadapi secara jujur..."
                 placeholderTextColor={COLORS.textDim}
                 multiline
                 numberOfLines={3}
               />
               {error ? (
-                <Text style={{ color: "#DC2626", fontSize: 11, marginTop: 4 }}>
+                <Text style={styles.errorText}>
                   {error}
                 </Text>
               ) : null}
@@ -332,15 +386,11 @@ export function ResignProposalModal({
                 style={{ flex: 1 }}
               />
               <Button
-                title="Konfirmasi"
+                title="Konfirmasi Resign"
                 variant="outline"
                 size="md"
                 textStyle={{ color: "#DC2626" }}
-                style={{
-                  flex: 1.5,
-                  borderColor: "#FECACA",
-                  backgroundColor: "#FEF2F2",
-                }}
+                style={{ flex: 1.5, borderColor: "#FECACA", backgroundColor: "#FEF2F2" }}
                 onPress={handleConfirm}
                 loading={loading}
               />
@@ -355,41 +405,55 @@ export function ResignProposalModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
+    justifyContent: "flex-end",
   },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  backdropDismiss: {
+    flex: 1,
   },
-  modalContainer: {
+  bottomSheet: {
     width: "100%",
-    maxWidth: 420,
-    backgroundColor: COLORS.surface,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: 20,
-    maxHeight: "85%",
+    backgroundColor: COLORS.bgSurface, // Solid White #FFFFFF (Never transparent!)
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === "ios" ? 36 : 24,
+    maxHeight: "88%",
     ...SHADOWS.card,
+  },
+  dragPill: {
+    width: 44,
+    height: 4.5,
+    borderRadius: 3,
+    backgroundColor: COLORS.borderDark,
+    alignSelf: "center",
+    marginBottom: 14,
   },
   modalHeader: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: COLORS.borderSubtle,
     paddingBottom: 14,
     marginBottom: 16,
   },
   modalTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 16,
     fontWeight: "700",
     color: COLORS.textDark,
+    marginBottom: 2,
+  },
+  modalSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: COLORS.textMuted,
   },
   closeBtn: {
     padding: 4,
+    borderRadius: 12,
   },
   scrollContent: {
     gap: 14,
@@ -397,31 +461,38 @@ const styles = StyleSheet.create({
   alertBox: {
     flexDirection: "row",
     gap: 10,
-    padding: 12,
-    borderRadius: 16,
-    backgroundColor: "#FEF3C7",
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: "#FFFBEB", // Amber 50
     borderWidth: 1,
     borderColor: "#FDE68A",
   },
   alertBoxDanger: {
-    backgroundColor: "#FEF2F2",
+    backgroundColor: "#FEF2F2", // Red 50
     borderColor: "#FECACA",
   },
   alertTitle: {
+    fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "700",
     color: "#92400E",
     marginBottom: 3,
   },
   alertDesc: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#B45309",
     lineHeight: 16,
+  },
+  boldHighlight: {
+    fontWeight: "700",
+    color: "#78350F",
   },
   formGroup: {
     gap: 6,
   },
   label: {
+    fontFamily: FONTS.displaySemiBold,
     fontSize: 12,
     fontWeight: "600",
     color: COLORS.textDark,
@@ -429,20 +500,27 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.canvas,
+    borderColor: COLORS.borderDark,
+    backgroundColor: COLORS.canvasSoft, // Solid light slate #F1F5F9 (Never transparent!)
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 11,
     fontSize: 13,
     color: COLORS.textDark,
   },
   textArea: {
-    minHeight: 70,
+    minHeight: 75,
     textAlignVertical: "top",
   },
   helperText: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
+  },
+  errorText: {
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.danger,
+    fontSize: 11,
+    marginTop: 4,
   },
   actionRow: {
     flexDirection: "row",
