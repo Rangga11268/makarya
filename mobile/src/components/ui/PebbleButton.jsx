@@ -10,89 +10,82 @@ import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 
 export const PEBBLE_VARIANTS = {
-  // Vibrant Royal Sapphire Pebble (Send button reference)
+  // Vibrant Royal Sapphire Pebble
   sapphire: {
+    baseColor: "#2563EB",
     gradTop: "#3B82F6",
     gradBottom: "#1D4ED8",
     textColor: "#FFFFFF",
     shadowColor: "#2563EB",
-    shadowOpacity: 0.38,
-    borderTopColor: "rgba(255, 255, 255, 0.45)",
-    borderBottomColor: "rgba(15, 23, 42, 0.35)",
-    borderSideColor: "rgba(255, 255, 255, 0.18)",
-    sheenOpacity: 0.28,
+    shadowOpacity: 0.22,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+    sheenOpacity: 0.22,
   },
-  // Dark Glass/Silicone Pebble (Receive button reference)
+  // Dark Glass/Silicone Pebble
   dark: {
+    baseColor: "#1E293B",
     gradTop: "#2E384D",
     gradBottom: "#131A29",
     textColor: "#FFFFFF",
-    shadowColor: "#0B0F19",
-    shadowOpacity: 0.35,
-    borderTopColor: "rgba(255, 255, 255, 0.3)",
-    borderBottomColor: "rgba(0, 0, 0, 0.5)",
-    borderSideColor: "rgba(255, 255, 255, 0.1)",
-    sheenOpacity: 0.2,
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.18,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    sheenOpacity: 0.18,
   },
   // Deep Slate / Midnight Makarya Signature
   midnight: {
+    baseColor: "#0F172A",
     gradTop: "#1E293B",
     gradBottom: "#0F172A",
     textColor: "#FFFFFF",
     shadowColor: "#0F172A",
-    shadowOpacity: 0.4,
-    borderTopColor: "rgba(255, 255, 255, 0.25)",
-    borderBottomColor: "rgba(0, 0, 0, 0.6)",
-    borderSideColor: "rgba(255, 255, 255, 0.08)",
-    sheenOpacity: 0.18,
+    shadowOpacity: 0.2,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    sheenOpacity: 0.15,
   },
   // Pearl White Pebble
   pearl: {
+    baseColor: "#FFFFFF",
     gradTop: "#FFFFFF",
     gradBottom: "#F1F5F9",
     textColor: "#0F172A",
     shadowColor: "#64748B",
-    shadowOpacity: 0.12,
-    borderTopColor: "#FFFFFF",
-    borderBottomColor: "#CBD5E1",
-    borderSideColor: "#E2E8F0",
-    sheenOpacity: 0.4,
+    shadowOpacity: 0.08,
+    borderColor: "#E2E8F0",
+    sheenOpacity: 0.35,
   },
-  // Luminous Ice-Blue Pebble (Clean light dashboard style with sapphire icon)
+  // Luminous Ice-Blue Pebble
   ice: {
+    baseColor: "#EFF6FF",
     gradTop: "#FFFFFF",
     gradBottom: "#EFF6FF",
     textColor: "#2563EB",
     shadowColor: "#2563EB",
-    shadowOpacity: 0.12,
-    borderTopColor: "#FFFFFF",
-    borderBottomColor: "#BFDBFE",
-    borderSideColor: "#DBEAFE",
-    sheenOpacity: 0.45,
+    shadowOpacity: 0.08,
+    borderColor: "#BFDBFE",
+    sheenOpacity: 0.35,
   },
   // Emerald / Success Pebble
   emerald: {
+    baseColor: "#059669",
     gradTop: "#10B981",
     gradBottom: "#047857",
     textColor: "#FFFFFF",
     shadowColor: "#059669",
-    shadowOpacity: 0.35,
-    borderTopColor: "rgba(255, 255, 255, 0.45)",
-    borderBottomColor: "rgba(6, 78, 59, 0.35)",
-    borderSideColor: "rgba(255, 255, 255, 0.18)",
-    sheenOpacity: 0.28,
+    shadowOpacity: 0.2,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    sheenOpacity: 0.22,
   },
-  // Ruby / Danger Pebble (Keluar dari Akun)
+  // Ruby / Danger Pebble
   ruby: {
+    baseColor: "#DC2626",
     gradTop: "#EF4444",
     gradBottom: "#B91C1C",
     textColor: "#FFFFFF",
     shadowColor: "#DC2626",
-    shadowOpacity: 0.38,
-    borderTopColor: "rgba(255, 255, 255, 0.45)",
-    borderBottomColor: "rgba(153, 27, 27, 0.35)",
-    borderSideColor: "rgba(255, 255, 255, 0.18)",
-    sheenOpacity: 0.28,
+    shadowOpacity: 0.22,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    sheenOpacity: 0.22,
   },
 };
 
@@ -151,52 +144,38 @@ export function PebbleButton({
       onPress={onPress}
       disabled={disabled || loading}
       style={[
-        styles.outerShadow,
+        styles.base,
         styles[size],
         {
+          backgroundColor: config.baseColor,
+          borderColor: config.borderColor,
           shadowColor: config.shadowColor,
           shadowOpacity: disabled ? 0 : config.shadowOpacity,
-          shadowRadius: config.shadowRadius,
         },
         width ? { width } : null,
         disabled && { opacity: 0.5 },
         style,
       ]}
     >
-      {/* Clipped Inner Container for 3D Shaders & Gloss */}
-      <View
-        style={[
-          StyleSheet.absoluteFillObject,
-          styles.innerClipped,
-          {
-            borderTopColor: config.borderTopColor,
-            borderBottomColor: config.borderBottomColor,
-            borderLeftColor: config.borderSideColor,
-            borderRightColor: config.borderSideColor,
-          },
-        ]}
-        pointerEvents="none"
-      >
-        {/* 1. Full-bleed Body Gradient and 2. Smooth Top Gloss Sheen */}
+      {/* Clipped Inner Container for Smooth Gradient & Sheen */}
+      <View style={styles.innerClipped} pointerEvents="none">
         <Svg style={StyleSheet.absoluteFillObject} width="100%" height="100%">
           <Defs>
-            <LinearGradient id={safeId + "_body"} x1="0" y1="0" x2="0" y2="1">
+            <LinearGradient id={bodyId} x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0%" stopColor={config.gradTop} />
               <Stop offset="100%" stopColor={config.gradBottom} />
             </LinearGradient>
-            <LinearGradient id={safeId + "_sheen"} x1="0" y1="0" x2="0" y2="1">
+            <LinearGradient id={sheenId} x1="0" y1="0" x2="0" y2="1">
               <Stop
                 offset="0%"
                 stopColor="#FFFFFF"
-                stopOpacity={config.sheenOpacity || 0.28}
+                stopOpacity={config.sheenOpacity || 0.25}
               />
               <Stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
             </LinearGradient>
           </Defs>
-          {/* Full body fill (no rx/ry, clipped by parent View borderRadius: 999) */}
-          <Rect width="100%" height="100%" fill={`url(#${safeId + "_body"})`} />
-          {/* Smooth upper-half gloss gradient with zero hard edges */}
-          <Rect width="100%" height="52%" fill={`url(#${safeId + "_sheen"})`} />
+          <Rect width="100%" height="100%" fill={`url(#${bodyId})`} />
+          <Rect width="100%" height="50%" fill={`url(#${sheenId})`} />
         </Svg>
       </View>
 
@@ -236,21 +215,19 @@ export function PebbleButton({
 }
 
 const styles = StyleSheet.create({
-  outerShadow: {
+  base: {
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-    backgroundColor: "transparent",
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    elevation: 2,
   },
   innerClipped: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: 999,
     overflow: "hidden",
-    borderTopWidth: 1.2,
-    borderBottomWidth: 1.2,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
   },
   content: {
     flexDirection: "row",
