@@ -643,13 +643,6 @@ export function ChatScreen({ route, navigation }) {
           </TouchableOpacity>
         </View>
       )}
-          {sending ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Send size={16} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
-      </View>
 
       {/* 4. Modal Lampiran Tautan Berkas */}
       <Modal visible={attachModal} transparent animationType="slide">

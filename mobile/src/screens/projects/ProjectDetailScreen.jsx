@@ -184,12 +184,12 @@ export function ProjectDetailScreen({ route, navigation }) {
   const acceptedProposal = proposals.find((p) => p.status === "ACCEPTED");
   const hasAcceptedStudent = Boolean(
     project?.accepted_mhs_nama ||
-      acceptedProposal ||
-      (isUmkmOwner &&
-        ["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(
-          project?.status,
-        )) ||
-      (!isUmkmOwner && isAcceptedProposal),
+    acceptedProposal ||
+    (isUmkmOwner &&
+      ["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(
+        project?.status,
+      )) ||
+    (!isUmkmOwner && isAcceptedProposal),
   );
 
   const activePartnerName = isUmkmOwner
@@ -793,7 +793,8 @@ export function ProjectDetailScreen({ route, navigation }) {
               )}
               <View style={{ flex: 1 }}>
                 <Text style={styles.openChatTitle}>
-                  Ruang Obrolan & Kolaborasi {activePartnerName ? `(${activePartnerName})` : ""}
+                  Ruang Obrolan & Kolaborasi{" "}
+                  {activePartnerName ? `(${activePartnerName})` : ""}
                 </Text>
                 <Text style={styles.openChatSub}>
                   Kirim pesan, revisi, dan tautan Figma secara realtime

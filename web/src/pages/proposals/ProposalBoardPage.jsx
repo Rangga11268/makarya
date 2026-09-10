@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useParams, useNavigate } from "react-router-dom";
 import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -15,17 +15,25 @@ import {
   TerminateProjectModal,
   ResignProposalModal,
 } from "./components/ContractActionModals";
-import { ProposalSidebarItem } from "./components/ProposalSidebarItem";
 import { WorkroomWorkspaceDetail } from "./components/WorkroomWorkspaceDetail";
+import { WorkspaceHubGrid } from "./components/WorkspaceHubGrid";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import {
   ArrowRight,
+  ArrowLeft,
   Search,
   Wallet as WalletIcon,
   Building2,
   GraduationCap,
+  Plus,
+  Briefcase,
+  Users,
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
 } from "lucide-react";
 
 function parseCoverLetter(rawText) {
@@ -60,6 +68,8 @@ export function ProposalBoardPage() {
   const { addToast } = useToastStore();
   const { showConfirm, showSuccess, showError } = useAlertStore();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { projectId: routeProjectId } = useParams();
+  const navigate = useNavigate();
   const isUmkm = user?.role === "UMKM";
 
   // Data states
@@ -93,6 +103,9 @@ export function ProposalBoardPage() {
   const [resignModalOpen, setResignModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Target project id from route param or query string
+  const targetProjectId = routeProjectId || searchParams.get("project");
+
   // 1. Initial Data Loading
   const loadData = async () => {
     try {
@@ -104,37 +117,39 @@ export function ProposalBoardPage() {
         .then((res) => setWallet(res.data))
         .catch(() => {});
 
-      const targetProjectId = searchParams.get("project");
-
       if (isUmkm) {
         const res = await projectApi.getMyProjects();
-        setMyProjects(res.data);
+        const projectList = Array.isArray(res.data) ? res.data : [];
+        setMyProjects(projectList);
 
-        if (res.data.length > 0) {
-          let chosen = res.data[0];
-          if (targetProjectId) {
-            const found = res.data.find((p) => p.id === targetProjectId);
-            if (found) chosen = found;
-          }
-          setSelectedProject(chosen);
-          const details = await loadProjectDetails(chosen.id);
-          const hasAccepted = details.proposals.some(
-            (p) => p.status === "ACCEPTED",
-          );
-          if (hasAccepted) {
-            setActiveStageTab("chat");
-          } else if (details.proposals.length > 0) {
-            setActiveStageTab("applicants");
+        if (targetProjectId) {
+          const found = projectList.find((p) => p.id === targetProjectId);
+          if (found) {
+            setSelectedProject(found);
+            const details = await loadProjectDetails(found.id);
+            const hasAccepted = details.proposals.some(
+              (p) => p.status === "ACCEPTED",
+            );
+            if (hasAccepted) {
+              setActiveStageTab("chat");
+            } else if (details.proposals.length > 0) {
+              setActiveStageTab("applicants");
+            } else {
+              setActiveStageTab("brief");
+            }
           } else {
-            setActiveStageTab("brief");
+            setSelectedProject(null);
           }
+        } else {
+          setSelectedProject(null);
         }
       } else {
         const res = await proposalApi.getMyProposals();
-        setMyProposals(res.data);
+        const propList = Array.isArray(res.data) ? res.data : [];
+        setMyProposals(propList);
 
         // Load submission for accepted proposals
-        const accepted = res.data.filter((p) => p.status === "ACCEPTED");
+        const accepted = propList.filter((p) => p.status === "ACCEPTED");
         const subMap = {};
         await Promise.all(
           accepted.map(async (p) => {
@@ -150,20 +165,23 @@ export function ProposalBoardPage() {
         );
         setMhsSubmissions(subMap);
 
-        if (res.data.length > 0) {
-          let chosen = res.data[0];
-          if (targetProjectId) {
-            const found = res.data.find(
-              (p) => p.project_id === targetProjectId,
-            );
-            if (found) chosen = found;
-          }
-          setSelectedProposal(chosen);
-          if (chosen.status === "ACCEPTED") {
-            setActiveStageTab("chat");
+        if (targetProjectId) {
+          const found = propList.find(
+            (p) =>
+              p.project_id === targetProjectId || p.id === targetProjectId,
+          );
+          if (found) {
+            setSelectedProposal(found);
+            if (found.status === "ACCEPTED") {
+              setActiveStageTab("chat");
+            } else {
+              setActiveStageTab("brief");
+            }
           } else {
-            setActiveStageTab("brief");
+            setSelectedProposal(null);
           }
+        } else {
+          setSelectedProposal(null);
         }
       }
     } catch (err) {
@@ -197,12 +215,13 @@ export function ProposalBoardPage() {
 
   useEffect(() => {
     loadData();
-  }, [isUmkm]);
+  }, [isUmkm, targetProjectId]);
 
-  // Handle UMKM selecting another project from left list
+  // Handle UMKM selecting a project to open dedicated workspace
   const handleSelectProject = async (project) => {
     setSelectedProject(project);
     setSearchParams({ project: project.id });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     const details = await loadProjectDetails(project.id);
     const hasAccepted = details.proposals.some(
       (p) => p.status === "ACCEPTED",
@@ -216,11 +235,25 @@ export function ProposalBoardPage() {
     }
   };
 
-  // Handle Mahasiswa selecting another proposal from left list
+  // Handle Mahasiswa selecting a proposal to open dedicated workspace
   const handleSelectProposal = (proposal) => {
     setSelectedProposal(proposal);
     setSearchParams({ project: proposal.project_id });
-    setActiveStageTab("chat");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (proposal.status === "ACCEPTED") {
+      setActiveStageTab("chat");
+    } else {
+      setActiveStageTab("brief");
+    }
+  };
+
+  // Return from dedicated workspace back to Hub
+  const handleBackToHub = () => {
+    setSelectedProject(null);
+    setSelectedProposal(null);
+    setSearchParams({});
+    navigate("/proposals");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // UMKM: Accept Proposal Action
@@ -509,139 +542,124 @@ export function ProposalBoardPage() {
         </div>
       </div>
 
-      {/* 2. Unified 2-Pane Workroom Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* ========================================================================= */}
-        {/* LEFT PANE: Project & Contract Navigator (4 cols on lg, hidden in focus mode) */}
-        {/* ========================================================================= */}
-        {!isFocusMode && (
-          <div className="lg:col-span-4 bg-surface rounded-3xl border border-border p-4 space-y-3.5 shadow-xs animate-in fade-in duration-200">
-            {/* Search Box */}
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder={
-                  isUmkm ? "Cari judul proyek..." : "Cari lamaran & proyek..."
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans"
-              />
+      {/* 2. Workspace View: Hub Grid (when no project selected) OR Dedicated Workspace (when project selected) */}
+      {(isUmkm ? !selectedProject : !selectedProposal) ? (
+        <WorkspaceHubGrid
+          isUmkm={isUmkm}
+          projects={myProjects}
+          proposals={proposals}
+          mhsSubmissions={mhsSubmissions}
+          loading={loading}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+          onSelectProject={handleSelectProject}
+          onSelectProposal={handleSelectProposal}
+        />
+      ) : (
+        <div className="space-y-4">
+          {/* Top Navigation & Quick Project Switcher Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-4 sm:p-5 rounded-3xl border border-border shadow-xs">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBackToHub}
+                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Semua Proyek</span>
+              </Button>
+              <div className="h-4 w-px bg-border hidden sm:block" />
+              <div className="hidden sm:flex items-center gap-2 text-xs text-muted">
+                <Briefcase className="w-3.5 h-3.5 text-brand-indigo" />
+                <span className="font-semibold text-dark-900 truncate max-w-sm">
+                  {activeProjectTitle}
+                </span>
+              </div>
             </div>
 
-            {/* Filter Pills */}
-            <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 text-[11px]">
-              {(isUmkm
-                ? [
-                    { key: "ALL", label: "Semua" },
-                    { key: "IN_PROGRESS", label: "Aktif" },
-                    { key: "OPEN", label: "Pelamar" },
-                    { key: "COMPLETED", label: "Selesai" },
-                  ]
-                : [
-                    { key: "ALL", label: "Semua" },
-                    { key: "IN_PROGRESS", label: "Dikerjakan" },
-                    { key: "PENDING", label: "Seleksi" },
-                    { key: "COMPLETED", label: "Selesai" },
-                  ]
-              ).map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveFilter(tab.key)}
-                  className={`py-1.5 px-2 rounded-xl font-bold transition-all text-center justify-center flex items-center ${
-                    activeFilter === tab.key
-                      ? "bg-dark-900 text-white shadow-xs"
-                      : "bg-canvas text-muted hover:text-dark-900 border border-border"
-                  }`}
+            {/* Quick Switcher Dropdown */}
+            {isUmkm && myProjects.length > 1 && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted text-[11px] font-bold uppercase tracking-wider hidden md:inline">
+                  Ganti Proyek:
+                </span>
+                <select
+                  value={selectedProject?.id || ""}
+                  onChange={(e) => {
+                    const found = myProjects.find((p) => p.id === e.target.value);
+                    if (found) handleSelectProject(found);
+                  }}
+                  className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
                 >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+                  {myProjects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.judul}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-            {/* Items List */}
-            <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
-              {loading ? (
-                <div className="p-8 text-center text-xs text-muted">
-                  <div className="w-5 h-5 border-2 border-brand-indigo border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                  Memuat daftar pengerjaan...
-                </div>
-              ) : isUmkm ? (
-                filteredProjects.length === 0 ? (
-                  <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
-                    Tidak ada proyek yang sesuai filter.
-                  </div>
-                ) : (
-                  filteredProjects.map((proj) => (
-                    <ProposalSidebarItem
-                      key={proj.id}
-                      isUmkm={true}
-                      item={proj}
-                      isSelected={selectedProject?.id === proj.id}
-                      onClick={() => handleSelectProject(proj)}
-                    />
-                  ))
-                )
-              ) : filteredProposals.length === 0 ? (
-                <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
-                  Belum ada lamaran proyek yang sesuai filter.
-                </div>
-              ) : (
-                filteredProposals.map((prop) => (
-                  <ProposalSidebarItem
-                    key={prop.id}
-                    isUmkm={false}
-                    item={prop}
-                    isSelected={selectedProposal?.id === prop.id}
-                    onClick={() => handleSelectProposal(prop)}
-                    mhsSubmissions={mhsSubmissions}
-                  />
-                ))
-              )}
-            </div>
+            {!isUmkm && proposals.length > 1 && (
+              <div className="flex items-center gap-2">
+                <span className="text-muted text-[11px] font-bold uppercase tracking-wider hidden md:inline">
+                  Ganti Proyek:
+                </span>
+                <select
+                  value={selectedProposal?.id || ""}
+                  onChange={(e) => {
+                    const found = proposals.find((p) => p.id === e.target.value);
+                    if (found) handleSelectProposal(found);
+                  }}
+                  className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
+                >
+                  {proposals.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.project_judul || "Proyek Kolaborasi"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* ========================================================================= */}
-        {/* RIGHT PANE: Unified Active Workroom Stage (12 cols in focus mode, 8 cols otherwise) */}
-        {/* ========================================================================= */}
-        <div
-          className={`${
-            isFocusMode ? "lg:col-span-12" : "lg:col-span-8"
-          } space-y-4 transition-all duration-300`}
-        >
-          <WorkroomWorkspaceDetail
-            activeProjectId={activeProjectId}
-            activeProjectTitle={activeProjectTitle}
-            activePartnerName={activePartnerName}
-            activePartnerRole={activePartnerRole}
-            activePartnerPhoto={activePartnerPhoto}
-            hasAcceptedApplicant={hasAcceptedApplicant}
-            isFocusMode={isFocusMode}
-            setIsFocusMode={setIsFocusMode}
-            allProjects={myProjects}
-            onSelectProject={handleSelectProject}
-            isUmkm={isUmkm}
-            selectedProject={selectedProject}
-            selectedProposal={selectedProposal}
-            activeStageTab={activeStageTab}
-            setActiveStageTab={setActiveStageTab}
-            activeDeliverable={activeDeliverable}
-            projectProposals={projectProposals}
-            handleOpenSubmission={handleOpenSubmission}
-            handleApproveWork={handleApproveWork}
-            setSelectedSubmissionForRevision={setSelectedSubmissionForRevision}
-            setRevisionModalOpen={setRevisionModalOpen}
-            handleRejectProposal={handleRejectProposal}
-            handleAcceptProposal={handleAcceptProposal}
-            parseCoverLetter={parseCoverLetter}
-            onOpenReopenModal={() => setReopenModalOpen(true)}
-            onOpenTerminateModal={() => setTerminateModalOpen(true)}
-            onOpenResignModal={() => setResignModalOpen(true)}
-          />
+          {/* Dedicated Full-Width Workspace Stage (100% width, no side columns eating space) */}
+          <div className="w-full space-y-4">
+            <WorkroomWorkspaceDetail
+              activeProjectId={activeProjectId}
+              activeProjectTitle={activeProjectTitle}
+              activePartnerName={activePartnerName}
+              activePartnerRole={activePartnerRole}
+              activePartnerPhoto={activePartnerPhoto}
+              hasAcceptedApplicant={hasAcceptedApplicant}
+              isFocusMode={true}
+              setIsFocusMode={setIsFocusMode}
+              allProjects={myProjects}
+              onSelectProject={handleSelectProject}
+              isUmkm={isUmkm}
+              selectedProject={selectedProject}
+              selectedProposal={selectedProposal}
+              activeStageTab={activeStageTab}
+              setActiveStageTab={setActiveStageTab}
+              activeDeliverable={activeDeliverable}
+              projectProposals={projectProposals}
+              handleOpenSubmission={handleOpenSubmission}
+              handleApproveWork={handleApproveWork}
+              setSelectedSubmissionForRevision={setSelectedSubmissionForRevision}
+              setRevisionModalOpen={setRevisionModalOpen}
+              handleRejectProposal={handleRejectProposal}
+              handleAcceptProposal={handleAcceptProposal}
+              parseCoverLetter={parseCoverLetter}
+              onOpenReopenModal={() => setReopenModalOpen(true)}
+              onOpenTerminateModal={() => setTerminateModalOpen(true)}
+              onOpenResignModal={() => setResignModalOpen(true)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modals for Deliverables & Reviews */}
       <SubmissionModal

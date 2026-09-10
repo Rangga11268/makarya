@@ -242,7 +242,9 @@ export function TrackerScreen({ navigation }) {
                 <View style={styles.emptyIconCircle}>
                   <Briefcase size={28} color={COLORS.brandIndigo} />
                 </View>
-                <Text style={styles.emptyTitle}>Tidak ada proyek di tab ini</Text>
+                <Text style={styles.emptyTitle}>
+                  Tidak ada proyek di tab ini
+                </Text>
                 <Text style={styles.emptyDesc}>
                   {isMahasiswa
                     ? "Jelajahi tawaran proyek UMKM terverifikasi dan ajukan proposal terbaik Anda."
@@ -306,7 +308,7 @@ export function TrackerScreen({ navigation }) {
             const isTeamProject = item.tipe_kolaborasi === "TIM";
             const slots = Array.isArray(item.slots) ? item.slots : [];
             const filledSlots = slots.filter(
-              (s) => s.status === "TAKEN" || s.accepted_mhs_id
+              (s) => s.status === "TAKEN" || s.accepted_mhs_id,
             );
 
             // Partner details for Mahasiswa (Client UMKM)
@@ -344,13 +346,11 @@ export function TrackerScreen({ navigation }) {
                         category,
                         projectTitle,
                         16,
-                        isAccepted ? COLORS.success : COLORS.brandIndigo
+                        isAccepted ? COLORS.success : COLORS.brandIndigo,
                       )}
                     </View>
                     <View>
-                      <Text style={styles.categoryLabelText}>
-                        {category}
-                      </Text>
+                      <Text style={styles.categoryLabelText}>{category}</Text>
                       <Text style={styles.cardDateText}>
                         {isMahasiswa ? "Dilamar " : "Dibuat "}
                         {formatDate(createdAt)}
@@ -425,7 +425,10 @@ export function TrackerScreen({ navigation }) {
                       </Text>
                     </View>
                     <Text style={styles.reasonCardText} numberOfLines={2}>
-                      "{item.cancel_reason || "Tenggat waktu pengerjaan telah berakhir."}"
+                      "
+                      {item.cancel_reason ||
+                        "Tenggat waktu pengerjaan telah berakhir."}
+                      "
                     </Text>
                   </View>
                 )}
@@ -438,8 +441,14 @@ export function TrackerScreen({ navigation }) {
                         Proposal Ditarik Mahasiswa:
                       </Text>
                     </View>
-                    <Text style={styles.reasonCardTextWithdrawn} numberOfLines={2}>
-                      "{item.withdraw_reason || "Mahasiswa menarik kembali proposal lamaran ini."}"
+                    <Text
+                      style={styles.reasonCardTextWithdrawn}
+                      numberOfLines={2}
+                    >
+                      "
+                      {item.withdraw_reason ||
+                        "Mahasiswa menarik kembali proposal lamaran ini."}
+                      "
                     </Text>
                   </View>
                 )}
@@ -458,11 +467,16 @@ export function TrackerScreen({ navigation }) {
                                 key={slot.id || sIdx}
                                 style={[
                                   styles.stackedAvatar,
-                                  { zIndex: 10 - sIdx, marginLeft: sIdx > 0 ? -8 : 0 },
+                                  {
+                                    zIndex: 10 - sIdx,
+                                    marginLeft: sIdx > 0 ? -8 : 0,
+                                  },
                                 ]}
                               >
                                 <Text style={styles.stackedAvatarText}>
-                                  {(slot.accepted_mhs_nama || "T").charAt(0).toUpperCase()}
+                                  {(slot.accepted_mhs_nama || "T")
+                                    .charAt(0)
+                                    .toUpperCase()}
                                 </Text>
                               </View>
                             ))
@@ -478,37 +492,35 @@ export function TrackerScreen({ navigation }) {
                             : `Proyek Tim (${slots.length || 2} Formasi)`}
                         </Text>
                       </View>
+                    ) : // Individual Project Student Avatar
+                    item.accepted_mhs_nama ? (
+                      <View style={styles.singleTalentRow}>
+                        {item.accepted_mhs_foto ? (
+                          <Image
+                            source={{ uri: item.accepted_mhs_foto }}
+                            style={styles.talentAvatarImg}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View style={styles.talentAvatarCircle}>
+                            <Text style={styles.talentAvatarText}>
+                              {item.accepted_mhs_nama.charAt(0).toUpperCase()}
+                            </Text>
+                          </View>
+                        )}
+                        <Text style={styles.talentNameText} numberOfLines={1}>
+                          {item.accepted_mhs_nama}
+                        </Text>
+                      </View>
                     ) : (
-                      // Individual Project Student Avatar
-                      item.accepted_mhs_nama ? (
-                        <View style={styles.singleTalentRow}>
-                          {item.accepted_mhs_foto ? (
-                            <Image
-                              source={{ uri: item.accepted_mhs_foto }}
-                              style={styles.talentAvatarImg}
-                              resizeMode="cover"
-                            />
-                          ) : (
-                            <View style={styles.talentAvatarCircle}>
-                              <Text style={styles.talentAvatarText}>
-                                {item.accepted_mhs_nama.charAt(0).toUpperCase()}
-                              </Text>
-                            </View>
-                          )}
-                          <Text style={styles.talentNameText} numberOfLines={1}>
-                            {item.accepted_mhs_nama}
-                          </Text>
-                        </View>
-                      ) : (
-                        <View style={styles.openApplicantStatus}>
-                          <Users size={12} color={COLORS.textMuted} />
-                          <Text style={styles.talentSubText}>
-                            {item.total_pelamar && item.total_pelamar > 0
-                              ? `${item.total_pelamar} proposal masuk`
-                              : "Belum ada pelamar masuk"}
-                          </Text>
-                        </View>
-                      )
+                      <View style={styles.openApplicantStatus}>
+                        <Users size={12} color={COLORS.textMuted} />
+                        <Text style={styles.talentSubText}>
+                          {item.total_pelamar && item.total_pelamar > 0
+                            ? `${item.total_pelamar} proposal masuk`
+                            : "Belum ada pelamar masuk"}
+                        </Text>
+                      </View>
                     )}
                   </View>
                 ) : (
@@ -540,7 +552,7 @@ export function TrackerScreen({ navigation }) {
                   <View style={styles.metaInfo}>
                     <Text style={styles.budgetHighlight}>
                       {formatCurrency(
-                        isMahasiswa ? item.harga_tawar : item.budget_max
+                        isMahasiswa ? item.harga_tawar : item.budget_max,
                       )}
                     </Text>
                     <Text style={styles.metaDivider}>•</Text>
@@ -571,8 +583,12 @@ export function TrackerScreen({ navigation }) {
                           navigation.navigate("Chat", {
                             projectId: projectId,
                             projectTitle: projectTitle,
-                            partnerPhoto: isMahasiswa ? clientPhoto : item.accepted_mhs_foto,
-                            partnerName: isMahasiswa ? clientName : item.accepted_mhs_nama || "Talenta Kampus",
+                            partnerPhoto: isMahasiswa
+                              ? clientPhoto
+                              : item.accepted_mhs_foto,
+                            partnerName: isMahasiswa
+                              ? clientName
+                              : item.accepted_mhs_nama || "Talenta Kampus",
                           });
                         }}
                         activeOpacity={0.8}

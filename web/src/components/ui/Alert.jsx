@@ -1,12 +1,12 @@
 import React from "react";
 import { cn } from "../../utils/cn";
-import { 
-  CheckCircle2, 
-  AlertCircle, 
-  AlertTriangle, 
-  Info, 
-  X, 
-  ShieldCheck 
+import {
+  CheckCircle2,
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  X,
+  ShieldCheck,
 } from "lucide-react";
 
 export function Alert({
@@ -48,13 +48,17 @@ export function Alert({
       className={cn(
         "p-4 rounded-2xl border flex items-start gap-3 text-xs leading-relaxed transition-all",
         variantStyles[variant] || variantStyles.info,
-        className
+        className,
       )}
     >
-      <IconComponent className={cn("w-4 h-4 shrink-0 mt-0.5", iconColors[variant])} />
-      
+      <IconComponent
+        className={cn("w-4 h-4 shrink-0 mt-0.5", iconColors[variant])}
+      />
+
       <div className="flex-1 space-y-0.5">
-        {title && <h5 className="font-bold text-dark-900 tracking-tight">{title}</h5>}
+        {title && (
+          <h5 className="font-bold text-dark-900 tracking-tight">{title}</h5>
+        )}
         <div className="font-medium opacity-90">{children}</div>
       </div>
 

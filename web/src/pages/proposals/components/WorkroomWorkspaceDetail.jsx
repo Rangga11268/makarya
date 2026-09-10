@@ -171,7 +171,9 @@ export function WorkroomWorkspaceDetail({
                   <select
                     value={activeProjectId}
                     onChange={(e) => {
-                      const proj = allProjects.find((p) => p.id === e.target.value);
+                      const proj = allProjects.find(
+                        (p) => p.id === e.target.value,
+                      );
                       if (proj && onSelectProject) onSelectProject(proj);
                     }}
                     className="text-[11px] font-bold py-1 px-2.5 rounded-lg bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
@@ -462,7 +464,9 @@ export function WorkroomWorkspaceDetail({
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs shrink-0">
-                    {activePartnerName ? activePartnerName.charAt(0).toUpperCase() : "M"}
+                    {activePartnerName
+                      ? activePartnerName.charAt(0).toUpperCase()
+                      : "M"}
                   </div>
                 )}
                 <div>

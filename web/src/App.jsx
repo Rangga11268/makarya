@@ -144,6 +144,10 @@ export default function App() {
             >
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/proposals" element={<ProposalBoardPage />} />
+              <Route
+                path="/proposals/:projectId"
+                element={<ProposalBoardPage />}
+              />
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/wallet" element={<WalletPage />} />
