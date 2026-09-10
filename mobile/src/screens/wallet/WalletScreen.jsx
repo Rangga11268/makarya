@@ -38,6 +38,8 @@ import {
   CreditCard,
   User,
   ArrowLeft,
+  Wallet,
+  AlertCircle,
 } from "lucide-react-native";
 
 export function WalletScreen({ navigation }) {
@@ -52,19 +54,19 @@ export function WalletScreen({ navigation }) {
   const [txLoading, setTxLoading] = useState(false);
   const [historyTab, setHistoryTab] = useState("ALL"); // 'ALL' | 'IN' | 'OUT'
 
-  // Rekening Bank Tujuan Pencairan (tersinkronisasi dari data profil)
-  const [destBank, setDestBank] = useState("Bank Central Asia (BCA)");
-  const [destAccount, setDestAccount] = useState("8270-3491-8821");
-  const [destOwner, setDestOwner] = useState("Darell Rangga Putra");
+  // Rekening Bank Tujuan Pencairan (tersinkronisasi dari database profil)
+  const [destBank, setDestBank] = useState(user?.nama_bank || "BCA");
+  const [destAccount, setDestAccount] = useState(user?.nomor_rekening || "");
+  const [destOwner, setDestOwner] = useState(
+    user?.nama_pemilik_rekening || user?.nama_lengkap || user?.nama_usaha || "",
+  );
 
   const { showToast } = useToastStore();
 
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
-    !user?.role ||
-    (user?.email && user.email.includes(".ac.id")) ||
-    user?.email === "darell@ubsi.ac.id";
+    (!user?.role && (user?.email?.includes(".ac.id") || user?.email === "darell@ubsi.ac.id"));
 
   useEffect(() => {
     if (user) {
@@ -114,14 +116,19 @@ export function WalletScreen({ navigation }) {
       return;
     }
 
+    if (txType === "WITHDRAW" && (!destAccount.trim() || !destOwner.trim())) {
+      showToast("Nomor rekening dan nama pemilik wajib diisi", "danger");
+      return;
+    }
+
     try {
       setTxLoading(true);
       if (txType === "WITHDRAW") {
         await walletApi.withdraw({
           nominal: num,
           nama_bank: destBank.trim() || "BCA",
-          nomor_rekening: destAccount.trim() || "827034918821",
-          nama_pemilik: destOwner.trim() || "Darell Rangga Putra",
+          nomor_rekening: destAccount.trim(),
+          nama_pemilik: destOwner.trim(),
         });
         showToast(
           `Pencairan honor Rp ${formatCurrency(num)} berhasil diajukan ke ${destBank} (${destAccount})!`,
@@ -153,110 +160,32 @@ export function WalletScreen({ navigation }) {
     return true;
   });
 
-  // Quick Top Up Presets (styled like the avatar characters in reference mockup)
-  const quickTopUpPresets = [
-    {
-      id: "p1",
-      name: "Warren",
-      amount: 50000,
-      badge: "50K",
-      label: "Rp 50rb",
-      bgColor: "#ECFDF5",
-      borderColor: "#A7F3D0",
-      textColor: "#065F46",
-    },
-    {
-      id: "p2",
-      name: "Edwards",
-      amount: 100000,
-      badge: "100K",
-      label: "Rp 100rb",
-      bgColor: "#EFF6FF",
-      borderColor: "#BFDBFE",
-      textColor: "#1E40AF",
-    },
-    {
-      id: "p3",
-      name: "Ingrid",
-      amount: 250000,
-      badge: "250K",
-      label: "Rp 250rb",
-      bgColor: "#FFFBEB",
-      borderColor: "#FDE68A",
-      textColor: "#92400E",
-    },
-    {
-      id: "p4",
-      name: "Sofia",
-      amount: 500000,
-      badge: "500K",
-      label: "Rp 500rb",
-      bgColor: "#FAF5FF",
-      borderColor: "#E9D5FF",
-      textColor: "#6B21A8",
-    },
-    {
-      id: "p5",
-      name: "Alex",
-      amount: 1000000,
-      badge: "1JT",
-      label: "Rp 1 Juta",
-      bgColor: "#F1F5F9",
-      borderColor: "#CBD5E1",
-      textColor: "#334155",
-    },
+  // Real Top Up Nominal Presets
+  const quickNominalOptions = [
+    { label: "50K", value: 50000, sub: "Rp 50rb" },
+    { label: "100K", value: 100000, sub: "Rp 100rb" },
+    { label: "250K", value: 250000, sub: "Rp 250rb" },
+    { label: "500K", value: 500000, sub: "Rp 500rb" },
+    { label: "1JT", value: 1000000, sub: "Rp 1 Juta" },
+    { label: "2.5JT", value: 2500000, sub: "Rp 2.5 Juta" },
   ];
 
-  // Quick Highlight Transactions for the 3 horizontal cards
-  const highlightTransactions = history.slice(0, 3).map((tx, idx) => {
-    const isIncome = tx.tipe === "TOPUP" || tx.tipe === "PAYOUT";
-    const sampleNames = ["Sofia", "Edwards", "Warren"];
-    const name = tx.keterangan
-      ? tx.keterangan.slice(0, 14)
-      : sampleNames[idx] || "Transaksi";
-    return {
-      id: tx.id,
-      name: name,
-      date: formatDate(tx.created_at),
-      amount: `${isIncome ? "+" : "-"}${formatCurrency(tx.nominal)}`,
-      isIncome: isIncome,
-      tx: tx,
-    };
-  });
+  // Dynamic Cardholder data from user session/database
+  const displayName =
+    user?.nama_lengkap ||
+    user?.nama_usaha ||
+    (user?.email ? user.email.split("@")[0] : "Pengguna Makarya");
 
-  // Default sample highlights if history is currently empty
-  const displayHighlights =
-    highlightTransactions.length > 0
-      ? highlightTransactions
-      : [
-          {
-            id: "s1",
-            name: "Sofia",
-            date: "April 10, 2025",
-            amount: "-Rp 36.950",
-            isIncome: false,
-          },
-          {
-            id: "s2",
-            name: "Edwards",
-            date: "April 05, 2025",
-            amount: "-Rp 50.000",
-            isIncome: false,
-          },
-          {
-            id: "s3",
-            name: "Warren",
-            date: "March 25, 2025",
-            amount: "+Rp 175.750",
-            isIncome: true,
-          },
-        ];
+  const displayUserRole = isMahasiswa ? "TALENTA MAHASISWA" : "KLIEN UMKM";
+  const memberSince = user?.created_at
+    ? `Sejak ${formatDate(user.created_at)}`
+    : "Akun Terverifikasi";
 
-  const cardHolderName =
-    user?.nama_lengkap || user?.nama_usaha || "Aditya Sheral";
-  const maskedCardNumber = `•••• •••• ${
-    user?.id ? String(user.id).slice(-4) : "5678"
-  }`;
+  const userCardId = user?.id
+    ? `•••• •••• ${String(user.id).slice(-4).padStart(4, "0")}`
+    : "•••• •••• 8821";
+
+  const hasBankAccount = Boolean(user?.nomor_rekening && user?.nama_bank);
 
   return (
     <View style={styles.container}>
@@ -274,26 +203,26 @@ export function WalletScreen({ navigation }) {
           activeOpacity={0.7}
         >
           {navigation?.canGoBack && navigation.canGoBack() ? (
-            <ArrowLeft size={18} color={COLORS.textDark} />
+            <ArrowLeft size={18} color="#0F172A" />
           ) : (
-            <SlidersHorizontal size={18} color={COLORS.textDark} />
+            <SlidersHorizontal size={18} color="#0F172A" />
           )}
         </TouchableOpacity>
 
         <View style={styles.headerCenter}>
-          <Text style={styles.headerMainTitle}>Wallet</Text>
-          <Text style={styles.headerSubTitle}>My Cards & Transaction</Text>
+          <Text style={styles.headerMainTitle}>Dompet Digital</Text>
+          <Text style={styles.headerSubTitle}>Kartu Escrow & Riwayat Mutasi</Text>
         </View>
 
         <TouchableOpacity
           onPress={() => {
-            setTxType("TOPUP");
+            setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
             setTxModal(true);
           }}
           style={styles.headerCircleBtn}
           activeOpacity={0.7}
         >
-          <Plus size={20} color={COLORS.textDark} strokeWidth={2.5} />
+          <Plus size={20} color="#0F172A" strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
 
@@ -305,43 +234,46 @@ export function WalletScreen({ navigation }) {
           <RefreshControl
             refreshing={loading}
             onRefresh={loadWallet}
-            tintColor="#7C3AED"
-            colors={["#7C3AED"]}
+            tintColor="#4F46E5"
+            colors={["#4F46E5"]}
           />
         }
       >
-        {/* 2. Hero Wallet Pocket Component */}
+        {/* 2. Sleek Cardholder Wallet Pocket Component */}
         <View style={styles.walletPocketContainer}>
-          {/* Peeking Credit Card (Layer 1 - Top) */}
+          {/* Peeking Card (Layer 1 - Top) */}
           <View style={styles.peekingCard}>
             <View style={styles.peekingCardTopRow}>
-              <View>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <Text style={styles.peekingCardRoleTag}>
+                  {displayUserRole}
+                </Text>
                 <Text style={styles.peekingCardUserName} numberOfLines={1}>
-                  {cardHolderName}
+                  {displayName}
                 </Text>
-                <Text style={styles.peekingCardNumber}>
-                  {maskedCardNumber}
-                </Text>
+                <Text style={styles.peekingCardNumber}>{userCardId}</Text>
               </View>
 
               <View style={styles.peekingCardBrandBox}>
-                <Text style={styles.peekingCardBrandVisa}>VISA</Text>
-                <Text style={styles.peekingCardValidText}>Valid: 05/29</Text>
+                <Text style={styles.peekingCardBrandText}>MAKARYA</Text>
+                <Text style={styles.peekingCardValidText}>{memberSince}</Text>
               </View>
             </View>
           </View>
 
-          {/* Front Leather Pocket (Layer 2 - Front Card Sleeve) */}
+          {/* Front Card Sleeve (Layer 2 - Deep Royal Indigo Leather Pocket) */}
           <View style={styles.frontPocket}>
-            {/* Top Pocket Stitched Lip Line */}
+            {/* Top Pocket Stitched Rim Detail */}
             <View style={styles.pocketStitchRim} />
 
             <View style={styles.pocketInnerContent}>
               <View style={styles.pocketHeaderRow}>
-                <Text style={styles.pocketBalanceLabel}>Total Balance</Text>
+                <Text style={styles.pocketBalanceLabel}>
+                  {isMahasiswa ? "Saldo Siap Ditarik" : "Saldo Aktif UMKM"}
+                </Text>
                 <View style={styles.escrowMiniBadge}>
                   <ShieldCheck size={11} color="#34D399" />
-                  <Text style={styles.escrowMiniBadgeText}>100% Escrow</Text>
+                  <Text style={styles.escrowMiniBadgeText}>Garansi Escrow 100%</Text>
                 </View>
               </View>
 
@@ -356,26 +288,28 @@ export function WalletScreen({ navigation }) {
 
               {/* Pocket Actions Row */}
               <View style={styles.pocketActionsRow}>
-                {/* + Add Balance Button */}
+                {/* Primary Action Button */}
                 <TouchableOpacity
                   style={styles.addBalancePillBtn}
                   onPress={() => {
-                    setTxType("TOPUP");
+                    setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
                     setTxModal(true);
                   }}
                   activeOpacity={0.85}
                 >
                   <Plus size={13} color="#FFFFFF" strokeWidth={2.5} />
-                  <Text style={styles.addBalancePillText}>+ Add Balance</Text>
+                  <Text style={styles.addBalancePillText}>
+                    {isMahasiswa ? "Tarik Honor" : "Tambah Saldo"}
+                  </Text>
                 </TouchableOpacity>
 
-                {/* Right Action Icons Group */}
+                {/* Right Action Icons */}
                 <View style={styles.pocketRightIconGroup}>
-                  {/* Tarik Saldo / Transfer Button */}
+                  {/* Secondary Action: TopUp for Mhs, Withdraw for UMKM */}
                   <TouchableOpacity
                     style={styles.pocketGlassIconBtn}
                     onPress={() => {
-                      setTxType("WITHDRAW");
+                      setTxType(isMahasiswa ? "TOPUP" : "WITHDRAW");
                       setTxModal(true);
                     }}
                     activeOpacity={0.8}
@@ -383,7 +317,7 @@ export function WalletScreen({ navigation }) {
                     <ArrowRightLeft size={15} color="#FFFFFF" />
                   </TouchableOpacity>
 
-                  {/* Eye Toggle Show/Hide Balance Button */}
+                  {/* Eye Toggle Show/Hide Balance */}
                   <TouchableOpacity
                     style={styles.pocketGlassIconBtn}
                     onPress={() => setShowBalance(!showBalance)}
@@ -401,11 +335,11 @@ export function WalletScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 3. Escrow Locked & Verified Bank Banner */}
+        {/* 3. Escrow Locked & Real Bank Account Strip */}
         <View style={styles.escrowBankStrip}>
           <View style={styles.escrowLockedCard}>
             <View style={styles.escrowLockIconBox}>
-              <Lock size={14} color="#6366F1" />
+              <Lock size={14} color="#4F46E5" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.escrowLockedLabel}>Escrow Terkunci</Text>
@@ -422,29 +356,42 @@ export function WalletScreen({ navigation }) {
               <Building2 size={14} color="#059669" />
             </View>
             <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <Text style={styles.bankNameShort}>BCA • 8821</Text>
-                <CheckCircle2 size={10} color="#059669" />
-              </View>
-              <Text style={styles.bankOwnerShort} numberOfLines={1}>
-                {destOwner}
-              </Text>
+              {hasBankAccount ? (
+                <>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <Text style={styles.bankNameShort}>
+                      {user.nama_bank} • {String(user.nomor_rekening).slice(-4)}
+                    </Text>
+                    <CheckCircle2 size={10} color="#059669" />
+                  </View>
+                  <Text style={styles.bankOwnerShort} numberOfLines={1}>
+                    {user.nama_pemilik_rekening || displayName}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.bankNameShort}>Rekening Belum Diatur</Text>
+                  <Text style={styles.bankOwnerShort}>Atur saat tarik saldo</Text>
+                </>
+              )}
             </View>
           </View>
         </View>
 
-        {/* 4. Quick Top-Up Section */}
+        {/* 4. Quick Top-Up / Deposit Section */}
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Quick Top-Up</Text>
+            <Text style={styles.sectionTitle}>
+              {isMahasiswa ? "Pilihan Cepat Tarik Saldo" : "Pilihan Cepat Deposit"}
+            </Text>
             <TouchableOpacity
               onPress={() => {
-                setTxType("TOPUP");
+                setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
                 setTxModal(true);
               }}
               activeOpacity={0.7}
             >
-              <Text style={styles.sectionSeeMoreText}>See more</Text>
+              <Text style={styles.sectionSeeMoreText}>Nominal Lain</Text>
             </TouchableOpacity>
           </View>
 
@@ -453,117 +400,106 @@ export function WalletScreen({ navigation }) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.quickTopUpScroll}
           >
-            {/* 1. Add Button with dashed circular border */}
+            {/* Custom Add Button with Dashed Border */}
             <TouchableOpacity
               style={styles.quickAddCol}
               onPress={() => {
-                setTxType("TOPUP");
+                setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
                 setTxModal(true);
               }}
               activeOpacity={0.8}
             >
               <View style={styles.dashedAddCircle}>
-                <Plus size={22} color="#7C3AED" strokeWidth={2.5} />
+                <Plus size={22} color="#4F46E5" strokeWidth={2.5} />
               </View>
-              <Text style={styles.quickAddLabel}>Add</Text>
+              <Text style={styles.quickAddLabel}>Kustom</Text>
             </TouchableOpacity>
 
-            {/* 2. Character Presets (Warren, Edwards, Ingrid, Sofia, Alex) */}
-            {quickTopUpPresets.map((p) => (
+            {/* Quick Preset Nominal Chips */}
+            {quickNominalOptions.map((item, idx) => (
               <TouchableOpacity
-                key={p.id}
+                key={idx}
                 style={styles.quickPresetCol}
                 onPress={() => {
-                  setNominal(String(p.amount));
-                  setTxType("TOPUP");
+                  setNominal(String(item.value));
+                  setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
                   setTxModal(true);
                 }}
                 activeOpacity={0.82}
               >
-                <View
-                  style={[
-                    styles.quickAvatarCircle,
-                    {
-                      backgroundColor: p.bgColor,
-                      borderColor: p.borderColor,
-                    },
-                  ]}
-                >
-                  <Text style={[styles.quickAvatarBadgeText, { color: p.textColor }]}>
-                    {p.badge}
-                  </Text>
+                <View style={styles.quickAvatarCircle}>
+                  <Text style={styles.quickAvatarBadgeText}>{item.label}</Text>
                 </View>
-                <Text style={styles.quickPresetName}>{p.name}</Text>
+                <Text style={styles.quickPresetName}>{item.sub}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        {/* 5. Latest Transactions Section */}
+        {/* 5. Latest Transactions Section (Real API Data) */}
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Latest Transactions</Text>
-            <TouchableOpacity
-              onPress={() => setHistoryTab("ALL")}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.sectionSeeMoreText}>See more</Text>
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Riwayat Mutasi Terkini</Text>
+            <Text style={styles.sectionSeeMoreText}>
+              {history.length} Transaksi
+            </Text>
           </View>
 
-          {/* Horizontal Highlight Cards (Mockup 3 Cards) */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.highlightCardsScroll}
-          >
-            {displayHighlights.map((item, idx) => {
-              const iconColors = [
-                { bg: "#FCE7F3", border: "#FBCFE8", text: "#BE185D" }, // Sofia
-                { bg: "#EFF6FF", border: "#BFDBFE", text: "#1D4ED8" }, // Edwards
-                { bg: "#ECFDF5", border: "#A7F3D0", text: "#047857" }, // Warren
-              ];
-              const c = iconColors[idx % iconColors.length];
+          {/* Horizontal Highlight Cards (Top 3 Real Transactions from Database) */}
+          {history.length > 0 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.highlightCardsScroll}
+            >
+              {history.slice(0, 4).map((item, idx) => {
+                const isIncome = item.tipe === "TOPUP" || item.tipe === "PAYOUT";
+                return (
+                  <View key={item.id || idx} style={styles.highlightCard}>
+                    <View
+                      style={[
+                        styles.highlightAvatarCircle,
+                        {
+                          backgroundColor: isIncome ? "#ECFDF5" : "#EFF6FF",
+                          borderColor: isIncome ? "#A7F3D0" : "#BFDBFE",
+                        },
+                      ]}
+                    >
+                      {isIncome ? (
+                        <ArrowDownLeft size={16} color="#059669" />
+                      ) : (
+                        <ArrowUpRight size={16} color="#4F46E5" />
+                      )}
+                    </View>
 
-              return (
-                <View key={item.id || idx} style={styles.highlightCard}>
-                  <View
-                    style={[
-                      styles.highlightAvatarCircle,
-                      { backgroundColor: c.bg, borderColor: c.border },
-                    ]}
-                  >
-                    <User size={18} color={c.text} />
+                    <Text style={styles.highlightNameText} numberOfLines={1}>
+                      {formatStatus(item.tipe)}
+                    </Text>
+                    <Text style={styles.highlightDateText} numberOfLines={1}>
+                      {formatDate(item.created_at)}
+                    </Text>
+
+                    <Text
+                      style={[
+                        styles.highlightAmountText,
+                        { color: isIncome ? "#059669" : "#0F172A" },
+                      ]}
+                    >
+                      {isIncome ? "+" : "-"} {formatCurrency(item.nominal)}
+                    </Text>
                   </View>
+                );
+              })}
+            </ScrollView>
+          )}
 
-                  <Text style={styles.highlightNameText} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.highlightDateText} numberOfLines={1}>
-                    {item.date}
-                  </Text>
-
-                  <Text
-                    style={[
-                      styles.highlightAmountText,
-                      { color: item.isIncome ? "#10B981" : "#EF4444" },
-                    ]}
-                  >
-                    {item.amount}
-                  </Text>
-                </View>
-              );
-            })}
-          </ScrollView>
-
-          {/* Transaction Ledger & Filter Pills */}
+          {/* Transaction Ledger Header & Segment Tabs */}
           <View style={styles.ledgerHeaderRow}>
-            <Text style={styles.ledgerTitle}>Daftar Semua Mutasi</Text>
             <View style={styles.historyTabsRow}>
               {[
                 { id: "ALL", label: "Semua" },
-                { id: "IN", label: "Masuk (+)" },
-                { id: "OUT", label: "Keluar (-)" },
+                { id: "IN", label: "Penerimaan (+)" },
+                { id: "OUT", label: "Pengeluaran (-)" },
               ].map((tab) => {
                 const isActive = historyTab === tab.id;
                 return (
@@ -593,13 +529,13 @@ export function WalletScreen({ navigation }) {
           {/* Transactions List */}
           {filteredHistory.length === 0 ? (
             <View style={styles.emptyHistoryBox}>
-              <History size={28} color={COLORS.textDim} />
+              <History size={26} color={COLORS.textDim} />
               <Text style={styles.emptyHistoryTitle}>
-                Belum Ada Mutasi Saldo
+                Belum Ada Mutasi Transaksi
               </Text>
               <Text style={styles.emptyHistorySub}>
-                Transaksi penerimaan honor & deposit escrow akan otomatis tercatat
-                di sini.
+                Penerimaan honor pengerjaan proyek dan deposit saldo escrow akan
+                tercatat otomatis di sini.
               </Text>
             </View>
           ) : (
@@ -617,7 +553,7 @@ export function WalletScreen({ navigation }) {
                       {isIncome ? (
                         <ArrowDownLeft size={16} color="#059669" />
                       ) : (
-                        <ArrowUpRight size={16} color="#DC2626" />
+                        <ArrowUpRight size={16} color="#4F46E5" />
                       )}
                     </View>
                     <View style={styles.txInfoGroup}>
@@ -639,7 +575,7 @@ export function WalletScreen({ navigation }) {
                         styles.txAmountText,
                         isIncome
                           ? { color: "#059669" }
-                          : { color: COLORS.textDark },
+                          : { color: "#0F172A" },
                       ]}
                     >
                       {isIncome ? "+" : "-"} {formatCurrency(tx.nominal)}
@@ -670,36 +606,20 @@ export function WalletScreen({ navigation }) {
             </Text>
             <Text style={styles.modalSub}>
               {txType === "WITHDRAW"
-                ? `Honor akan ditransfer ke rekening ${destBank} Anda`
-                : "Deposit akan disimpan aman di sistem rekening bersama escrow"}
+                ? `Dana akan ditransfer langsung ke rekening ${destBank || "bank"} Anda`
+                : "Deposit tersimpan aman di rekening bersama Makarya (Garansi 100% Escrow)"}
             </Text>
 
             {txType === "WITHDRAW" && (
-              <View
-                style={{
-                  marginBottom: 12,
-                  padding: 12,
-                  backgroundColor: COLORS.bgSurfaceSubtle,
-                  borderRadius: 14,
-                  borderWidth: 1,
-                  borderColor: COLORS.borderDark,
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: FONTS.bodyBold,
-                    fontSize: 11,
-                    color: COLORS.textDark,
-                    marginBottom: 8,
-                  }}
-                >
+              <View style={styles.withdrawBankBox}>
+                <Text style={styles.withdrawBankTitle}>
                   Rekening Tujuan Pencairan
                 </Text>
                 <Input
                   label="Nama Bank"
                   value={destBank}
                   onChangeText={setDestBank}
-                  placeholder="Contoh: BCA / Mandiri / BNI"
+                  placeholder="Contoh: BCA / Mandiri / BNI / BRI"
                 />
                 <Input
                   label="Nomor Rekening"
@@ -712,13 +632,13 @@ export function WalletScreen({ navigation }) {
                   label="Nama Pemilik Rekening"
                   value={destOwner}
                   onChangeText={setDestOwner}
-                  placeholder="Contoh: Darell Rangga Putra"
+                  placeholder="Nama sesuai buku tabungan"
                 />
               </View>
             )}
 
             <CurrencyInput
-              label={`Nominal ${txType === "TOPUP" ? "Top Up Saldo" : "Penarikan Dana"}`}
+              label={`Nominal ${txType === "TOPUP" ? "Deposit" : "Penarikan"}`}
               placeholder="100.000"
               value={nominal}
               onChangeValue={(val) => setNominal(String(val))}
@@ -768,13 +688,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: Platform.OS === "ios" ? 54 : 44,
-    paddingBottom: 12,
+    paddingBottom: 14,
     backgroundColor: "#F8FAFC",
   },
   headerCircleBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#E2E8F0",
@@ -783,7 +703,7 @@ const styles = StyleSheet.create({
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowRadius: 5,
     elevation: 2,
   },
   headerCenter: {
@@ -791,8 +711,8 @@ const styles = StyleSheet.create({
   },
   headerMainTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "800",
     color: "#0F172A",
     letterSpacing: -0.4,
   },
@@ -809,37 +729,45 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 10,
     paddingBottom: 40,
   },
 
-  // 2. Hero Wallet Pocket Component
+  // 2. Sleek Cardholder Wallet Pocket Component
   walletPocketContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 18,
     marginTop: 4,
   },
 
-  // Layer 1: Peeking Credit Card (Back/Top)
+  // Layer 1: Peeking Card (Back/Top)
   peekingCard: {
-    width: "88%",
-    height: 85,
-    backgroundColor: "#8B5CF6",
+    width: "90%",
+    height: 90,
+    backgroundColor: "#312E81", // Deep indigo
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
     paddingHorizontal: 18,
     paddingTop: 12,
-    marginBottom: -32,
+    marginBottom: -38,
     zIndex: 1,
     borderTopWidth: 1,
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.4)",
+    borderColor: "rgba(255, 255, 255, 0.25)",
   },
   peekingCardTopRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+  },
+  peekingCardRoleTag: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: "#A5B4FC",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    marginBottom: 2,
   },
   peekingCardUserName: {
     fontFamily: FONTS.displayBold,
@@ -851,52 +779,51 @@ const styles = StyleSheet.create({
   peekingCardNumber: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 10,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginTop: 3,
-    letterSpacing: 1,
+    color: "rgba(255, 255, 255, 0.7)",
+    marginTop: 2,
+    letterSpacing: 1.2,
   },
   peekingCardBrandBox: {
     alignItems: "flex-end",
   },
-  peekingCardBrandVisa: {
+  peekingCardBrandText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "800",
     color: "#FFFFFF",
-    letterSpacing: 0.5,
-    fontStyle: "italic",
+    letterSpacing: 1,
   },
   peekingCardValidText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 9,
-    color: "rgba(255, 255, 255, 0.8)",
+    color: "rgba(255, 255, 255, 0.7)",
     marginTop: 2,
   },
 
-  // Layer 2: Front Leather Wallet Pocket
+  // Layer 2: Front Pocket (Deep Midnight Slate/Indigo Leather)
   frontPocket: {
     width: "100%",
-    backgroundColor: "#4C1D95",
-    borderRadius: 28,
+    backgroundColor: "#0F172A", // Slate 900: Makarya signature brand
+    borderRadius: 26,
     paddingTop: 18,
     paddingBottom: 18,
     paddingHorizontal: 20,
     zIndex: 2,
-    shadowColor: "#4C1D95",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.35,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 18,
+    elevation: 10,
     borderWidth: 1,
-    borderColor: "rgba(139, 92, 246, 0.3)",
+    borderColor: "#1E293B",
   },
   pocketStitchRim: {
     position: "absolute",
     top: 0,
-    left: 28,
-    right: 28,
-    height: 3.5,
-    backgroundColor: "rgba(255, 255, 255, 0.22)",
+    left: 24,
+    right: 24,
+    height: 3,
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
     borderBottomLeftRadius: 3,
     borderBottomRightRadius: 3,
   },
@@ -912,17 +839,17 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     fontWeight: "600",
-    color: "rgba(255, 255, 255, 0.75)",
-    letterSpacing: 0.3,
+    color: "rgba(255, 255, 255, 0.7)",
+    letterSpacing: 0.4,
     textTransform: "uppercase",
   },
   escrowMiniBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(16, 185, 129, 0.2)",
+    backgroundColor: "rgba(16, 185, 129, 0.15)",
     borderWidth: 1,
-    borderColor: "rgba(16, 185, 129, 0.35)",
+    borderColor: "rgba(16, 185, 129, 0.3)",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 999,
@@ -940,7 +867,7 @@ const styles = StyleSheet.create({
   },
   pocketAmountText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 27,
+    fontSize: 26,
     fontWeight: "800",
     color: "#FFFFFF",
     letterSpacing: -0.6,
@@ -949,7 +876,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.displayBold,
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(255, 255, 255, 0.8)",
+    color: "rgba(255, 255, 255, 0.65)",
     marginLeft: 6,
     letterSpacing: 0.5,
   },
@@ -963,10 +890,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.18)",
+    backgroundColor: "rgba(255, 255, 255, 0.14)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    paddingVertical: 9,
+    borderColor: "rgba(255, 255, 255, 0.22)",
+    paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 999,
   },
@@ -982,21 +909,21 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   pocketGlassIconBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "rgba(255, 255, 255, 0.16)",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: "rgba(255, 255, 255, 0.18)",
     alignItems: "center",
     justifyContent: "center",
   },
 
-  // 3. Escrow & Bank Mini Info Strip
+  // 3. Escrow & Bank Mini Strip
   escrowBankStrip: {
     flexDirection: "row",
     gap: 10,
-    marginBottom: 24,
+    marginBottom: 22,
   },
   escrowLockedCard: {
     flex: 1,
@@ -1072,7 +999,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // 4. Section Blocks (Quick Top-Up & Latest Transactions)
+  // 4. Quick Top-Up / Deposit Section
   sectionBlock: {
     marginBottom: 24,
   },
@@ -1080,11 +1007,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
     color: "#0F172A",
     letterSpacing: -0.3,
@@ -1092,29 +1019,28 @@ const styles = StyleSheet.create({
   sectionSeeMoreText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    color: "#64748B",
+    color: "#4F46E5",
     fontWeight: "600",
   },
 
-  // Quick Top-Up Horizontal Scroll
   quickTopUpScroll: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: 12,
     paddingRight: 10,
   },
   quickAddCol: {
     alignItems: "center",
-    width: 58,
+    width: 56,
   },
   dashedAddCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     borderWidth: 1.5,
     borderStyle: "dashed",
-    borderColor: "#7C3AED",
-    backgroundColor: "#FAF5FF",
+    borderColor: "#4F46E5",
+    backgroundColor: "#EEF2FF",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
@@ -1127,97 +1053,91 @@ const styles = StyleSheet.create({
   },
   quickPresetCol: {
     alignItems: "center",
-    width: 58,
+    width: 56,
   },
   quickAvatarCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    borderWidth: 1.5,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.03,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   quickAvatarBadgeText: {
     fontFamily: FONTS.displayBold,
     fontSize: 12,
     fontWeight: "800",
+    color: "#0F172A",
   },
   quickPresetName: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: "#334155",
+    fontSize: 10,
+    color: "#64748B",
     fontWeight: "500",
   },
 
-  // 5. Latest Transactions Horizontal Cards (Sofia, Edwards, Warren)
+  // 5. Latest Transactions Horizontal Cards
   highlightCardsScroll: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 18,
+    gap: 10,
+    marginBottom: 16,
   },
   highlightCard: {
-    width: 122,
+    width: 124,
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 14,
+    borderRadius: 18,
+    padding: 12,
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#E2E8F0",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 5,
+    elevation: 1,
   },
   highlightAvatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   highlightNameText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "700",
     color: "#0F172A",
     textAlign: "center",
   },
   highlightDateText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
+    fontSize: 9,
     color: "#94A3B8",
     marginVertical: 2,
     textAlign: "center",
   },
   highlightAmountText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "800",
-    marginTop: 4,
+    marginTop: 2,
     textAlign: "center",
   },
 
-  // Ledger List Below
+  // Ledger Filter Pills
   ledgerHeaderRow: {
-    flexDirection: "column",
-    gap: 8,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  ledgerTitle: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    color: "#0F172A",
-    fontWeight: "700",
+    marginBottom: 10,
   },
   historyTabsRow: {
     flexDirection: "row",
@@ -1252,7 +1172,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#FFFFFF",
     padding: 12,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     marginBottom: 8,
@@ -1264,9 +1184,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   txIconBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+    width: 34,
+    height: 34,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1274,7 +1194,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ECFDF5",
   },
   txIconRed: {
-    backgroundColor: "#FEF2F2",
+    backgroundColor: "#EEF2FF",
   },
   txInfoGroup: {
     flex: 1,
@@ -1322,7 +1242,7 @@ const styles = StyleSheet.create({
 
   emptyHistoryBox: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     borderStyle: "dashed",
@@ -1369,11 +1289,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
     marginTop: 2,
-    marginBottom: 16,
+    marginBottom: 14,
+  },
+  withdrawBankBox: {
+    marginBottom: 12,
+    padding: 12,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  withdrawBankTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#0F172A",
+    marginBottom: 8,
   },
   modalActionsRow: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 18,
+    marginTop: 16,
   },
 });

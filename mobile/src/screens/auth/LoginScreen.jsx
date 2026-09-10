@@ -2,38 +2,37 @@ import React, { useState } from "react";
 import {
   View,
   Text,
+  StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  TextInput,
   StatusBar,
   Dimensions,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Button } from "../../components/ui/Button";
-import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { GoogleIcon } from "../../components/icons/GoogleIcon";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
 import {
-  UserCheck,
-  ShieldCheck,
   Mail,
   Lock,
-  GraduationCap,
-  Store,
-  ArrowRight,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  Check,
 } from "lucide-react-native";
-import { styles as s } from "./LoginScreen.styles";
-
-const { height } = Dimensions.get("window");
 
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
   const { login, loginWithGoogle } = useAuthStore();
   const { showToast } = useToastStore();
 
@@ -56,15 +55,13 @@ export function LoginScreen({ navigation }) {
       }
       showToast("Selamat datang kembali!", "success");
     } catch (err) {
-      console.warn("Login error:", err);
       const isNetworkError =
         !err.response ||
         err.message === "Network Error" ||
         err.code === "ERR_NETWORK";
       const errorMsg = isNetworkError
-        ? "Koneksi ke backend gagal. Pastikan uvicorn berjalan dengan --host 0.0.0.0"
-        : err.response?.data?.detail ||
-          "Gagal masuk. Periksa email/kata sandi.";
+        ? "Koneksi backend terputus. Pastikan server aktif."
+        : err.response?.data?.detail || "Email atau password tidak sesuai.";
       showToast(errorMsg, "danger");
     } finally {
       setLoading(false);
@@ -84,7 +81,6 @@ export function LoginScreen({ navigation }) {
       showToast("Berhasil masuk dengan Google!", "success");
     } catch (err) {
       if (err.message?.includes("dibatalkan")) return;
-      console.warn("Google sign-in error:", err);
       showToast(
         err.response?.data?.detail || "Gagal masuk dengan Google",
         "danger",
@@ -94,192 +90,398 @@ export function LoginScreen({ navigation }) {
     }
   };
 
-  const fillTestAccount = (testEmail, testPass = "password123") => {
-    setEmail(testEmail);
-    setPassword(testPass);
-  };
-
   return (
-    <View style={s.screen}>
+    <View style={styles.container}>
       <StatusBar
         translucent
         backgroundColor="transparent"
-        barStyle="light-content"
+        barStyle="dark-content"
       />
 
-      {/* 1. TOP HERO IMAGE & AMBIENT GLOW */}
-      <View style={[s.heroSection, { height: height * 0.38 }]}>
-        <Image
-          source={require("../../../assets/login_hero.jpg")}
-          style={s.heroImage}
-          resizeMode="cover"
-        />
-        <View style={s.heroOverlay} />
-
-        <View style={s.heroContent}>
-          <View style={s.heroBadge}>
-            <ShieldCheck size={11} color="#6EE7B7" />
-            <Text style={s.heroBadgeText}>
-              Platform Kolaborasi Terverifikasi
-            </Text>
-          </View>
-
-          <Text style={s.welcomeText}>Masuk ke Akun Anda</Text>
-          <Text style={s.subtitle}>
-            Akses dashboard proyek, proposal kerja, dan transaksi escrow aman.
-          </Text>
-        </View>
-      </View>
-
-      {/* 2. ELEVATED BOTTOM SHEET (Seamless Curve) */}
-      <View style={s.bottomSheet}>
-        <ScrollView
-          contentContainerStyle={s.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
         >
-          {/* Quick Fill Test Accounts Chips */}
-          <View style={s.quickFillHeader}>
-            <View style={s.quickFillTitleRow}>
-              <UserCheck size={12} color={COLORS.brandIndigo} />
-              <Text style={s.quickFillTitle}>Uji Coba Cepat</Text>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Top Bar with Logo & Optional Back */}
+            <View style={styles.topBar}>
+              <View style={styles.logoRow}>
+                <View style={styles.logoIcon}>
+                  <View style={styles.logoInnerDot} />
+                </View>
+                <Text style={styles.logoText}>Makarya</Text>
+              </View>
+
+              {navigation?.canGoBack && navigation.canGoBack() && (
+                <TouchableOpacity
+                  style={styles.backBtn}
+                  onPress={() => navigation.goBack()}
+                  activeOpacity={0.7}
+                >
+                  <ArrowLeft size={18} color="#0F172A" />
+                </TouchableOpacity>
+              )}
             </View>
-            <Text style={s.quickFillNotice}>Sandi: password123</Text>
-          </View>
 
-          <View style={s.chipContainer}>
-            <TouchableOpacity
-              style={[
-                s.chipItem,
-                email === "darell@ubsi.ac.id" && s.chipItemActiveMhs,
-              ]}
-              onPress={() => fillTestAccount("darell@ubsi.ac.id")}
-              activeOpacity={0.75}
-            >
-              <GraduationCap
-                size={14}
-                color={
-                  email === "darell@ubsi.ac.id"
-                    ? COLORS.brandIndigo
-                    : COLORS.textMuted
-                }
-              />
-              <Text
-                style={[
-                  s.chipText,
-                  email === "darell@ubsi.ac.id" && s.chipTextActiveMhs,
-                ]}
-              >
-                Mahasiswa
+            {/* Header Text matching mockup */}
+            <View style={styles.headerBlock}>
+              <Text style={styles.titleText}>Let's Sign in</Text>
+              <Text style={styles.subtitleText}>
+                Get started with a registered account
               </Text>
-            </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity
-              style={[
-                s.chipItem,
-                email === "kopi.nusantara@gmail.com" && s.chipItemActiveUmkm,
-              ]}
-              onPress={() => fillTestAccount("kopi.nusantara@gmail.com")}
-              activeOpacity={0.75}
-            >
-              <Store
-                size={14}
-                color={
-                  email === "kopi.nusantara@gmail.com"
-                    ? COLORS.success
-                    : COLORS.textMuted
-                }
-              />
-              <Text
-                style={[
-                  s.chipText,
-                  email === "kopi.nusantara@gmail.com" && s.chipTextActiveUmkm,
-                ]}
-              >
-                Klien UMKM
-              </Text>
-            </TouchableOpacity>
-          </View>
+            {/* Form Fields */}
+            <View style={styles.formBlock}>
+              {/* Email Field */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Email</Text>
+                <View style={styles.inputWrapper}>
+                  <Mail size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="glow@lumeburg.studio"
+                    placeholderTextColor="#94A3B8"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    style={styles.textInput}
+                  />
+                </View>
+              </View>
 
-          {/* Form Input Area */}
-          <View style={s.formArea}>
-            <Input
-              label="Email Akun / Kampus"
-              placeholder="Contoh: darell@ubsi.ac.id"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              icon={<Mail size={18} color={COLORS.textMuted} />}
-            />
+              {/* Password Field */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Password</Text>
+                <View style={styles.inputWrapper}>
+                  <Lock size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder="••••••••"
+                    placeholderTextColor="#94A3B8"
+                    secureTextEntry={!showPassword}
+                    style={styles.textInput}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeBtn}
+                    activeOpacity={0.7}
+                  >
+                    {showPassword ? (
+                      <Eye size={18} color="#64748B" />
+                    ) : (
+                      <EyeOff size={18} color="#94A3B8" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-            <Input
-              label="Kata Sandi"
-              placeholder="Masukkan kata sandi Anda"
-              value={password}
-              onChangeText={setPassword}
-              isPassword={true}
-              icon={<Lock size={18} color={COLORS.textMuted} />}
-            />
+              {/* Remember me & Forgot password row */}
+              <View style={styles.optionsRow}>
+                <TouchableOpacity
+                  style={styles.rememberMeRow}
+                  onPress={() => setRememberMe(!rememberMe)}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.checkbox,
+                      rememberMe && styles.checkboxActive,
+                    ]}
+                  >
+                    {rememberMe && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                  </View>
+                  <Text style={styles.rememberMeText}>Remember me</Text>
+                </TouchableOpacity>
 
-            <View style={s.forgotPasswordRow}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("ForgotPassword")}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Sign in Button (Vibrant Indigo/Purple) */}
               <TouchableOpacity
-                onPress={() => navigation.navigate("ForgotPassword")}
-                activeOpacity={0.7}
+                style={[styles.signInBtn, loading && { opacity: 0.7 }]}
+                onPress={handleLogin}
+                disabled={loading}
+                activeOpacity={0.88}
               >
-                <Text style={s.forgotPasswordLink}>Lupa Kata Sandi?</Text>
+                <Text style={styles.signInBtnText}>
+                  {loading ? "Memproses..." : "Sign in"}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>Or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Google Sign In Button */}
+              <TouchableOpacity
+                style={styles.googleBtn}
+                onPress={handleGoogleLogin}
+                disabled={googleLoading}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.googleBtnText}>
+                  {googleLoading ? "Menghubungkan..." : "Continue with Google"}
+                </Text>
               </TouchableOpacity>
             </View>
 
-            <Button
-              title="Masuk Sekarang"
-              variant="brand"
-              size="lg"
-              onPress={handleLogin}
-              loading={loading}
-              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
-              style={s.loginBtn}
-            />
-
-            {/* Divider */}
-            <View style={s.dividerRow}>
-              <View style={s.dividerLine} />
-              <Text style={s.dividerText}>atau</Text>
-              <View style={s.dividerLine} />
+            {/* Bottom Footer Link */}
+            <View style={styles.footerBlock}>
+              <Text style={styles.footerText}>
+                Don't have an account?{" "}
+                <Text
+                  style={styles.footerLink}
+                  onPress={() => navigation.navigate("RoleSelection")}
+                >
+                  Create account
+                </Text>
+              </Text>
             </View>
-
-            {/* Google Sign In */}
-            <Button
-              title="Masuk dengan Akun Google"
-              variant="google"
-              size="lg"
-              onPress={handleGoogleLogin}
-              loading={googleLoading}
-              disabled={loading}
-              icon={<GoogleIcon size={18} />}
-            />
-          </View>
-
-          {/* Register footer link */}
-          <View style={s.registerRow}>
-            <Text style={s.registerText}>Belum memiliki akun Makarya? </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Register")}
-              activeOpacity={0.7}
-            >
-              <Text style={s.registerLink}>Daftar Sekarang</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Security Trust Footnote */}
-          <View style={s.securityBadge}>
-            <ShieldCheck size={14} color={COLORS.brandIndigo} />
-            <Text style={s.securityText}>
-              Dilindungi Enkripsi & Garansi Rekening Bersama (Escrow)
-            </Text>
-          </View>
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FAFAFA",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 32,
+    flexGrow: 1,
+    justifyContent: "space-between",
+  },
+
+  // Top Bar
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 24,
+  },
+  logoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logoIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2.5,
+    borderColor: "#6366F1",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoInnerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#6366F1",
+  },
+  logoText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: -0.5,
+  },
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // Header Block
+  headerBlock: {
+    marginBottom: 24,
+  },
+  titleText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  subtitleText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    color: "#64748B",
+  },
+
+  // Form Fields
+  formBlock: {
+    gap: 16,
+  },
+  inputGroup: {
+    gap: 6,
+  },
+  inputLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#0F172A",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 14,
+    height: 52,
+  },
+  inputLeftIcon: {
+    marginRight: 10,
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 14,
+    color: "#0F172A",
+    height: "100%",
+  },
+  eyeBtn: {
+    padding: 6,
+  },
+
+  // Options (Remember me & Forgot password)
+  optionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 2,
+  },
+  rememberMeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: "#CBD5E1",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  checkboxActive: {
+    backgroundColor: "#6366F1",
+    borderColor: "#6366F1",
+  },
+  rememberMeText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: "#475569",
+  },
+  forgotPasswordText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#6366F1",
+  },
+
+  // Buttons
+  signInBtn: {
+    backgroundColor: "#6366F1",
+    height: 52,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 8,
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.28,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  signInBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+
+  // Divider
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginVertical: 4,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E2E8F0",
+  },
+  dividerText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#94A3B8",
+  },
+
+  // Google
+  googleBtn: {
+    backgroundColor: "#FFFFFF",
+    height: 52,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#0F172A",
+  },
+
+  // Footer
+  footerBlock: {
+    alignItems: "center",
+    marginTop: 24,
+  },
+  footerText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    color: "#64748B",
+  },
+  footerLink: {
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: "#6366F1",
+  },
+});

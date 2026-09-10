@@ -70,12 +70,12 @@ export function OnboardingScreen({ navigation, onComplete }) {
     if (current < slides.length - 1) {
       goToSlide(current + 1);
     } else {
-      onComplete ? onComplete() : navigation.navigate("Login");
+      onComplete ? onComplete() : navigation.navigate("AuthLanding");
     }
   };
 
   const goSkip = () => {
-    onComplete ? onComplete() : navigation.navigate("Login");
+    onComplete ? onComplete() : navigation.navigate("AuthLanding");
   };
 
   const handleScroll = (e) => {
