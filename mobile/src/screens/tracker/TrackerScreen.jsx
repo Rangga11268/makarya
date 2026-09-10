@@ -632,11 +632,13 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     flexDirection: "row",
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.85)",
     padding: 3,
     borderRadius: 14,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -645,6 +647,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
+    elevation: 1,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
   segmentedItem: {
@@ -660,6 +663,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   segmentedLabel: {
@@ -691,10 +695,11 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 100,
   },
 
   projectCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
@@ -703,6 +708,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     marginBottom: 10,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -711,6 +717,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   projectCardActive: {
@@ -1127,10 +1134,12 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     borderRadius: 22,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -1140,6 +1149,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   emptyIconCircle: {

@@ -867,7 +867,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 110,
   },
   profileCard: {
     backgroundColor:
@@ -885,6 +885,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   avatarCircle: {
@@ -1036,6 +1037,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   sectionHeaderRow: {

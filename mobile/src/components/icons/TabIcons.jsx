@@ -5,8 +5,8 @@ import { COLORS } from "../../theme/colors";
 
 // 1. Minimalist Architectural Home Icon
 export function HomeTabIcon({ focused, size = 22 }) {
-  const activeColor = COLORS.textDark; // Slate 900
-  const inactiveColor = COLORS.textDim; // Slate 400
+  const activeColor = "#2563EB"; // Makarya Royal Sapphire
+  const inactiveColor = "#94A3B8"; // Slate 400
   const strokeColor = focused ? activeColor : inactiveColor;
 
   return (
@@ -14,7 +14,7 @@ export function HomeTabIcon({ focused, size = 22 }) {
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <Path
           d="M3 10.5L11.2 3.6C11.66 3.22 12.34 3.22 12.8 3.6L21 10.5V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V10.5Z"
-          fill={focused ? "#F1F5F9" : "none"}
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
           stroke={strokeColor}
           strokeWidth={focused ? "2" : "1.6"}
           strokeLinecap="round"
@@ -36,8 +36,8 @@ export function HomeTabIcon({ focused, size = 22 }) {
 
 // 2. Precision Minimalist Navigation Compass (Explore)
 export function ExploreTabIcon({ focused, size = 22 }) {
-  const activeColor = COLORS.textDark;
-  const inactiveColor = COLORS.textDim;
+  const activeColor = "#2563EB";
+  const inactiveColor = "#94A3B8";
   const strokeColor = focused ? activeColor : inactiveColor;
 
   return (
@@ -47,7 +47,7 @@ export function ExploreTabIcon({ focused, size = 22 }) {
           cx="12"
           cy="12"
           r="9.25"
-          fill={focused ? "#F1F5F9" : "none"}
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
           stroke={strokeColor}
           strokeWidth={focused ? "2" : "1.6"}
         />
@@ -75,8 +75,8 @@ export function ExploreTabIcon({ focused, size = 22 }) {
 
 // 3. Layered Task / Project Desk Icon (Workspace)
 export function WorkspaceTabIcon({ focused, size = 22 }) {
-  const activeColor = COLORS.textDark;
-  const inactiveColor = COLORS.textDim;
+  const activeColor = "#2563EB";
+  const inactiveColor = "#94A3B8";
   const strokeColor = focused ? activeColor : inactiveColor;
 
   return (
@@ -88,7 +88,7 @@ export function WorkspaceTabIcon({ focused, size = 22 }) {
           width="18"
           height="16"
           rx="3"
-          fill={focused ? "#F1F5F9" : "none"}
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
           stroke={strokeColor}
           strokeWidth={focused ? "2" : "1.6"}
         />
@@ -112,7 +112,7 @@ export function WorkspaceTabIcon({ focused, size = 22 }) {
           width="4.5"
           height="3"
           rx="1"
-          fill={focused ? "#94A3B8" : "rgba(148, 163, 184, 0.5)"}
+          fill={focused ? "#93C5FD" : "rgba(148, 163, 184, 0.5)"}
         />
       </Svg>
       {focused && <View style={styles.activeDot} />}
@@ -122,8 +122,8 @@ export function WorkspaceTabIcon({ focused, size = 22 }) {
 
 // 4. Tactile Smart Wallet & Escrow Vault Icon (Wallet)
 export function WalletTabIcon({ focused, size = 22 }) {
-  const activeColor = COLORS.textDark;
-  const inactiveColor = COLORS.textDim;
+  const activeColor = "#2563EB";
+  const inactiveColor = "#94A3B8";
   const strokeColor = focused ? activeColor : inactiveColor;
 
   return (
@@ -135,7 +135,7 @@ export function WalletTabIcon({ focused, size = 22 }) {
           width="19"
           height="13"
           rx="3"
-          fill={focused ? "#F1F5F9" : "none"}
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
           stroke={strokeColor}
           strokeWidth={focused ? "2" : "1.6"}
         />
@@ -159,8 +159,8 @@ export function WalletTabIcon({ focused, size = 22 }) {
 
 // 5. Clean Profile Icon (Profile)
 export function ProfileTabIcon({ focused, size = 22 }) {
-  const activeColor = COLORS.textDark;
-  const inactiveColor = COLORS.textDim;
+  const activeColor = "#2563EB";
+  const inactiveColor = "#94A3B8";
   const strokeColor = focused ? activeColor : inactiveColor;
 
   return (
@@ -170,7 +170,7 @@ export function ProfileTabIcon({ focused, size = 22 }) {
           cx="12"
           cy="7.5"
           r="4"
-          fill={focused ? "#F1F5F9" : "none"}
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
           stroke={strokeColor}
           strokeWidth={focused ? "2" : "1.6"}
         />
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: COLORS.textDark,
+    backgroundColor: "#2563EB",
     marginTop: 3,
   },
 });

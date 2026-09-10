@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import {
   View,
   Text,
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   cardFeatured: {

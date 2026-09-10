@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   innerClipped: {

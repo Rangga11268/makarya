@@ -255,11 +255,13 @@ const styles = StyleSheet.create({
   glassBanner: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 14,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -270,6 +272,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   bannerIconCircle: {
@@ -308,12 +311,14 @@ const styles = StyleSheet.create({
   },
   contactCard: {
     flex: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 14,
     alignItems: "center",
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -322,6 +327,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   contactIconCircle: {
@@ -360,11 +366,13 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   faqCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -374,6 +382,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
+    elevation: 1,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
   faqCardExpanded: {

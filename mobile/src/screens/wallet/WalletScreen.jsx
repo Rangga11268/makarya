@@ -745,7 +745,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 40,
+    paddingBottom: 110,
   },
 
   // 2. Sleek Cardholder Wallet Pocket Component

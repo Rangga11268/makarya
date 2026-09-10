@@ -202,7 +202,13 @@ export function HomeScreen({ navigation }) {
           id: "pasang",
           label: "Pasang Proyek",
           icon: Plus,
-          onPress: () => navigation.navigate("ProjectsTab"),
+          onPress: () => {
+            try {
+              navigation.navigate("PostProject");
+            } catch (_) {
+              navigation.navigate("ProjectsTab");
+            }
+          },
         },
         {
           id: "topup",
@@ -217,10 +223,10 @@ export function HomeScreen({ navigation }) {
           onPress: () => navigation.navigate("ProjectsTab"),
         },
         {
-          id: "workspace",
-          label: "Workspace",
-          icon: Briefcase,
-          onPress: () => navigation.navigate("TrackerTab"),
+          id: "bantuan",
+          label: "Bantuan",
+          icon: CircleHelp,
+          onPress: () => navigation.navigate("Help"),
         },
       ];
 
@@ -815,15 +821,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.88)",
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor: "rgba(226, 232, 240, 0.9)",
     marginBottom: 12,
     shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -848,17 +860,22 @@ const styles = StyleSheet.create({
   appleGlassSearchPill: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.88)",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor: "rgba(226, 232, 240, 0.9)",
     marginBottom: 14,
     shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
     shadowRadius: 6,
     elevation: Platform.OS === "android" ? 0 : 2,
     gap: 10,
@@ -866,14 +883,20 @@ const styles = StyleSheet.create({
 
   // Apple Frosted Glass Wallet & Quick Actions Card
   appleGlassWalletModule: {
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 22,
     padding: 16,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor: "rgba(226, 232, 240, 0.9)",
     marginBottom: 14,
     shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    elevation: 3,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -918,12 +941,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.88)",
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 14,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -932,6 +957,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
+    elevation: 1,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
   categoryGlassPillActive: {
@@ -950,11 +976,13 @@ const styles = StyleSheet.create({
 
   // Apple Glass Ongoing Card
   appleGlassOngoingCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 18,
     padding: 12,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -963,6 +991,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
     gap: 8,
   },
@@ -1053,6 +1082,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    paddingBottom: 30,
     flexGrow: 1,
     paddingBottom: 130,
   },
@@ -1077,6 +1107,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
     gap: 10,
   },
@@ -1090,6 +1121,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 8,
+    backgroundColor: "#F1F5F9",
     backgroundColor: "rgba(15, 23, 42, 0.04)",
     alignItems: "center",
     justifyContent: "center",
@@ -1149,6 +1181,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 14,
+    elevation: 3,
     elevation: Platform.OS === "android" ? 0 : 3,
   },
   walletTopRow: {
@@ -1260,6 +1293,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 5,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
     marginBottom: 6,
   },
@@ -1289,6 +1323,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 5,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
     minHeight: 88,
   },
@@ -1380,6 +1415,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+    elevation: 3,
     elevation: Platform.OS === "android" ? 0 : 3,
   },
   ongoingTopMeta: {
@@ -1550,6 +1586,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   emptyOngoingIcon: {
@@ -1610,6 +1647,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
     shadowRadius: 4,
+    elevation: 1.5,
     elevation: Platform.OS === "android" ? 0 : 1.5,
     minHeight: 66,
   },
