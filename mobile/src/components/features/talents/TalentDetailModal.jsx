@@ -26,6 +26,7 @@ import {
   GlobeVectorIcon,
   LinkedinVectorIcon,
 } from "../../icons/ProfileVectorIcons";
+import { PebbleButton } from "../../ui/PebbleButton";
 
 export function TalentDetailModal({
   visible,
@@ -44,7 +45,15 @@ export function TalentDetailModal({
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <View style={styles.detailModalCard}>
+          {/* Apple BottomSheet Grabber Handle */}
+          <View style={styles.grabberHandle} />
+
           <View style={styles.detailModalHeader}>
             <Text style={styles.detailModalTitle}>Portofolio & Kredensial</Text>
             <TouchableOpacity
@@ -265,19 +274,17 @@ export function TalentDetailModal({
 
           {/* Modal Bottom CTA */}
           <View style={styles.detailModalFooter}>
-            <TouchableOpacity
-              style={styles.modalPrimaryActionBtn}
+            <PebbleButton
+              variant="sapphire"
+              size="lg"
+              label="Ajak Kolaborasi Proyek"
+              icon={MessageSquare}
               onPress={() => {
                 onClose();
                 if (talent && onInvite) onInvite(talent);
               }}
-              activeOpacity={0.85}
-            >
-              <MessageSquare size={16} color="#FFFFFF" />
-              <Text style={styles.modalPrimaryActionBtnText}>
-                Ajak Kolaborasi Proyek
-              </Text>
-            </TouchableOpacity>
+              style={{ width: "100%" }}
+            />
           </View>
         </View>
       </View>
@@ -288,37 +295,53 @@ export function TalentDetailModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
     justifyContent: "flex-end",
   },
   detailModalCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
     maxHeight: "88%",
-    paddingTop: 20,
-    paddingBottom: Platform.OS === "ios" ? 36 : 20,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === "ios" ? 34 : 20,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 24,
+  },
+  grabberHandle: {
+    width: 38,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: "#CBD5E1",
+    alignSelf: "center",
+    marginBottom: 14,
   },
   detailModalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    borderBottomColor: "rgba(226, 232, 240, 0.7)",
   },
   detailModalTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 17,
-    fontWeight: "700",
-    color: COLORS.textDark,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: -0.3,
   },
   closeCircleBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(241, 245, 249, 0.9)",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -515,21 +538,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
-  },
-  modalPrimaryActionBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: COLORS.brandIndigo,
-    paddingVertical: 13,
-    borderRadius: 14,
-  },
-  modalPrimaryActionBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
+    borderTopColor: "rgba(226, 232, 240, 0.7)",
   },
 });

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  ScrollView,
   Platform,
   ActivityIndicator,
 } from "react-native";
@@ -13,6 +14,7 @@ import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { formatStatus } from "../../../utils/formatStatus";
 import { formatCurrency } from "../../../utils/formatCurrency";
+import { PebbleButton } from "../../ui/PebbleButton";
 
 export function TalentInviteModal({
   visible,
@@ -33,7 +35,15 @@ export function TalentInviteModal({
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <View style={styles.inviteModalCard}>
+          {/* Apple BottomSheet Grabber Handle */}
+          <View style={styles.grabberHandle} />
+
           <View style={styles.detailModalHeader}>
             <Text style={styles.detailModalTitle}>Ajak Kolaborasi Proyek</Text>
             <TouchableOpacity
@@ -64,7 +74,13 @@ export function TalentInviteModal({
               </Text>
             </View>
           ) : myProjects.length > 0 ? (
-            <View style={styles.projectSelectList}>
+            <ScrollView
+              style={styles.projectScrollView}
+              contentContainerStyle={styles.projectScrollContent}
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+              bounces={true}
+            >
               {myProjects.map((p) => {
                 const isChecked = selectedProjectId === p.id;
                 return (
@@ -82,7 +98,7 @@ export function TalentInviteModal({
                         <Text
                           style={[
                             styles.projectOptionTitle,
-                            isChecked && { color: COLORS.brandIndigo },
+                            isChecked && { color: "#2563EB" },
                           ]}
                           numberOfLines={1}
                         >
@@ -133,7 +149,7 @@ export function TalentInviteModal({
                   </TouchableOpacity>
                 );
               })}
-            </View>
+            </ScrollView>
           ) : (
             <View style={styles.noProjectsNotice}>
               <Briefcase
@@ -153,29 +169,25 @@ export function TalentInviteModal({
 
           <View style={styles.contactActionButtons}>
             {myProjects.length > 0 ? (
-              <TouchableOpacity
-                style={styles.primaryInviteBtn}
+              <PebbleButton
+                variant="sapphire"
+                size="lg"
+                label="Buka Halaman Proyek & Hubungi"
                 onPress={onInvite}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.primaryInviteBtnText}>
-                  Buka Halaman Proyek & Hubungi
-                </Text>
-              </TouchableOpacity>
+                style={{ width: "100%" }}
+              />
             ) : (
-              <TouchableOpacity
-                style={styles.primaryInviteBtn}
+              <PebbleButton
+                variant="sapphire"
+                size="lg"
+                label="Pasang Kebutuhan Proyek Baru"
+                icon={Plus}
                 onPress={() => {
                   onClose();
                   navigation.navigate("PostProject");
                 }}
-                activeOpacity={0.85}
-              >
-                <Plus size={16} color="#FFFFFF" />
-                <Text style={styles.primaryInviteBtnText}>
-                  Pasang Kebutuhan Proyek Baru
-                </Text>
-              </TouchableOpacity>
+                style={{ width: "100%" }}
+              />
             )}
           </View>
         </View>
@@ -187,46 +199,63 @@ export function TalentInviteModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    backgroundColor: "rgba(15, 23, 42, 0.6)",
     justifyContent: "flex-end",
   },
   inviteModalCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    maxHeight: "82%",
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: Platform.OS === "ios" ? 36 : 24,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === "ios" ? 34 : 20,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 24,
+  },
+  grabberHandle: {
+    width: 38,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: "#CBD5E1",
+    alignSelf: "center",
+    marginBottom: 14,
   },
   detailModalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingBottom: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    borderBottomColor: "rgba(226, 232, 240, 0.7)",
   },
   detailModalTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 17,
-    fontWeight: "700",
-    color: COLORS.textDark,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: -0.3,
   },
   closeCircleBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(241, 245, 249, 0.9)",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
     alignItems: "center",
     justifyContent: "center",
   },
   inviteSubText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 12.5,
+    color: "#475569",
     lineHeight: 18,
     marginTop: 10,
-    marginBottom: 14,
+    marginBottom: 10,
   },
   loadingText: {
     fontFamily: FONTS.bodyRegular,
@@ -234,22 +263,30 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 8,
   },
-  projectSelectList: {
-    gap: 8,
-    maxHeight: 250,
+  projectScrollView: {
+    maxHeight: 330,
+  },
+  projectScrollContent: {
+    paddingVertical: 4,
+    gap: 10,
   },
   projectOptionRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
-    borderRadius: 14,
-    backgroundColor: COLORS.canvasSoft,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    padding: 13,
+    borderRadius: 16,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1.5,
+    borderColor: "#E2E8F0",
   },
   projectOptionRowActive: {
-    backgroundColor: COLORS.brandIndigoLight,
-    borderColor: COLORS.brandIndigo,
+    backgroundColor: "#EFF6FF",
+    borderColor: "#2563EB",
+    shadowColor: "#2563EB",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
   },
   projectOptionTopRow: {
     flexDirection: "row",
@@ -273,7 +310,7 @@ const styles = StyleSheet.create({
   projectOptionBudgetText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    color: COLORS.brandIndigo,
+    color: "#2563EB",
   },
   projectOptionDot: {
     color: COLORS.textMuted,
@@ -318,32 +355,32 @@ const styles = StyleSheet.create({
     color: "#475569",
   },
   radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: COLORS.textMuted,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.8,
+    borderColor: "#94A3B8",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft: 10,
+    marginLeft: 12,
   },
   radioCircleActive: {
-    borderColor: COLORS.brandIndigo,
+    borderColor: "#2563EB",
   },
   radioDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLORS.brandIndigo,
+    width: 11,
+    height: 11,
+    borderRadius: 5.5,
+    backgroundColor: "#2563EB",
   },
   noProjectsNotice: {
     alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 16,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "#F8FAFC",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "#E2E8F0",
     marginBottom: 12,
   },
   noProjectsNoticeTitle: {
@@ -361,21 +398,9 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   contactActionButtons: {
-    marginTop: 16,
-  },
-  primaryInviteBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: COLORS.brandIndigo,
-    paddingVertical: 13,
-    borderRadius: 14,
-  },
-  primaryInviteBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.7)",
+    marginTop: 6,
   },
 });
