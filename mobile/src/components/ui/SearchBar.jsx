@@ -6,7 +6,7 @@ import {
   Text,
   StyleSheet,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
+import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Search, X, SlidersHorizontal } from "lucide-react-native";
 
@@ -71,12 +71,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
     gap: 8,
   },
   input: {
@@ -91,11 +96,16 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
     position: "relative",
   },
   filterBtnActive: {

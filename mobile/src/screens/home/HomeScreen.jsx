@@ -194,7 +194,7 @@ export function HomeScreen({ navigation }) {
           id: "bantuan",
           label: "Bantuan",
           icon: CircleHelp,
-          onPress: () => setIsNotificationOpen(true),
+          onPress: () => navigation.navigate("Help"),
         },
       ]
     : [

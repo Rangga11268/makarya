@@ -18,6 +18,7 @@ import { FilterModal } from "../../components/features/FilterModal";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { CATEGORIES } from "../../constants/categories";
 import { Button } from "../../components/ui/Button";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
@@ -184,14 +185,13 @@ export function ProjectListScreen({ navigation, route }) {
         unreadCount={unreadNotifications}
         rightAction={
           !isMahasiswa ? (
-            <TouchableOpacity
+            <PebbleButton
+              variant="sapphire"
+              size="xs"
+              label="Post Job"
+              icon={Plus}
               onPress={() => navigation.navigate("PostProject")}
-              style={styles.postProjectBtn}
-              activeOpacity={0.85}
-            >
-              <Plus size={16} color="#FFFFFF" />
-              <Text style={styles.postProjectBtnText}>Post Job</Text>
-            </TouchableOpacity>
+            />
           ) : null
         }
       />
@@ -320,11 +320,11 @@ export function ProjectListScreen({ navigation, route }) {
                       : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
                 </Text>
                 {activeFilterCount > 0 && (
-                  <Button
-                    title="Reset Filters"
-                    variant="secondary"
+                  <PebbleButton
+                    variant="ice"
                     size="sm"
-                    icon={<RotateCcw size={14} color={COLORS.textDark} />}
+                    label="Reset Filters"
+                    icon={RotateCcw}
                     onPress={resetFilters}
                     style={styles.emptyBtn}
                   />
@@ -429,21 +429,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.danger,
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
-  },
-  postProjectBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    backgroundColor: COLORS.brandIndigo,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  postProjectBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#FFFFFF",
   },
 
   // 2. Search Section

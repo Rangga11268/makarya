@@ -592,11 +592,11 @@ export function TalentListScreen({ navigation }) {
                   : "Katalog mahasiswa terverifikasi akan segera ditampilkan di sini."}
               </Text>
               {activeFilterCount > 0 && (
-                <Button
-                  title="Reset Filter"
-                  variant="secondary"
+                <PebbleButton
+                  variant="ice"
                   size="sm"
-                  icon={<RotateCcw size={14} color={COLORS.textDark} />}
+                  label="Reset Filter"
+                  icon={RotateCcw}
                   onPress={resetAllFilters}
                   style={styles.emptyBtn}
                 />
@@ -868,7 +868,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(15, 23, 42, 0.03)",
     borderRadius: 14,
     paddingVertical: 9,
     paddingHorizontal: 12,
@@ -881,7 +881,7 @@ const styles = StyleSheet.create({
   specDivider: {
     width: 1,
     height: 20,
-    backgroundColor: COLORS.borderDark,
+    backgroundColor: "rgba(226, 232, 240, 0.8)",
   },
   specLabel: {
     fontFamily: FONTS.bodyBold,
@@ -916,7 +916,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   skillPill: {
-    backgroundColor: COLORS.brandIndigoLight,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     paddingHorizontal: 9,
     paddingVertical: 3.5,
     borderRadius: 8,

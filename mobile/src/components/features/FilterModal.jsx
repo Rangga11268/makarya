@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS, SHADOWS } from "../../theme/colors";
-import { Button } from "../ui/Button";
+import { PebbleButton } from "../ui/PebbleButton";
 import { X } from "lucide-react-native";
 
 export function FilterModal({
@@ -105,18 +105,18 @@ export function FilterModal({
           {/* Modal Action Buttons */}
           <View style={styles.modalActions}>
             <View style={{ flex: 1 }}>
-              <Button
-                title="Atur Ulang"
-                variant="outline"
+              <PebbleButton
+                variant="ice"
                 size="md"
+                label="Atur Ulang"
                 onPress={onReset}
               />
             </View>
             <View style={{ flex: 1.4 }}>
-              <Button
-                title="Terapkan Filter"
-                variant="brand"
+              <PebbleButton
+                variant="sapphire"
                 size="md"
+                label="Terapkan Filter"
                 onPress={() => {
                   if (onApply) onApply();
                   onClose();
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -190,9 +190,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(15, 23, 42, 0.06)",
   },
   modalOptionChipActive: {
     backgroundColor: COLORS.brandIndigo,

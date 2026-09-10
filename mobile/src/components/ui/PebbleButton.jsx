@@ -124,7 +124,9 @@ export function PebbleButton({
           ? 18
           : size === "sm"
             ? 14
-            : 16;
+            : size === "xs"
+              ? 11
+              : 16;
 
   const renderIcon = (iconProp) => {
     if (!iconProp) return null;
@@ -237,6 +239,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 2,
   },
+  xs: {
+    height: 30,
+    paddingHorizontal: 12,
+  },
   sm: {
     height: 38,
     paddingHorizontal: 16,
@@ -271,6 +277,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.displayBold,
     fontWeight: "700",
     letterSpacing: -0.2,
+  },
+  text_xs: {
+    fontSize: 11,
   },
   text_sm: {
     fontSize: 12,

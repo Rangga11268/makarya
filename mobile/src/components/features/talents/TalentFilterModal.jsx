@@ -11,6 +11,7 @@ import {
 import { X } from "lucide-react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
+import { PebbleButton } from "../../ui/PebbleButton";
 
 export function TalentFilterModal({
   visible,
@@ -145,21 +146,22 @@ export function TalentFilterModal({
           </ScrollView>
 
           <View style={styles.modalActionButtons}>
-            <TouchableOpacity
-              onPress={resetAllFilters}
-              style={styles.modalResetBtn}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.modalResetBtnText}>Reset</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={onClose}
-              style={styles.modalApplyBtn}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.modalApplyBtnText}>Terapkan Filter</Text>
-            </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+              <PebbleButton
+                variant="ice"
+                size="md"
+                label="Reset"
+                onPress={resetAllFilters}
+              />
+            </View>
+            <View style={{ flex: 1.4 }}>
+              <PebbleButton
+                variant="sapphire"
+                size="md"
+                label="Terapkan Filter"
+                onPress={onClose}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.canvasSoft,
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -227,15 +229,15 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   modalOptionChip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 13,
     paddingVertical: 7,
-    borderRadius: 10,
-    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 999,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(15, 23, 42, 0.06)",
   },
   modalOptionChipActive: {
-    backgroundColor: COLORS.brandIndigoLight,
+    backgroundColor: COLORS.brandIndigo,
     borderColor: COLORS.brandIndigo,
   },
   modalOptionChipText: {
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
   modalOptionChipTextActive: {
     fontFamily: FONTS.bodyBold,
     fontWeight: "700",
-    color: COLORS.brandIndigo,
+    color: "#FFFFFF",
   },
   modalActionButtons: {
     flexDirection: "row",
@@ -256,34 +258,5 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderSubtle,
-  },
-  modalResetBtn: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalResetBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-  },
-  modalApplyBtn: {
-    flex: 1,
-    backgroundColor: COLORS.brandIndigo,
-    paddingVertical: 12,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalApplyBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
   },
 });

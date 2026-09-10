@@ -785,7 +785,11 @@ export function ProfileScreen({ navigation }) {
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Pusat Bantuan & Layanan</Text>
 
-          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.menuRowItem}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("Help")}
+          >
             <View style={styles.menuIconWrap}>
               <Phone size={15} color={COLORS.brandIndigo} />
             </View>
@@ -795,7 +799,11 @@ export function ProfileScreen({ navigation }) {
             <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.menuRowItem}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("Help")}
+          >
             <View style={styles.menuIconWrap}>
               <FileText size={15} color={COLORS.brandIndigo} />
             </View>
@@ -803,7 +811,11 @@ export function ProfileScreen({ navigation }) {
             <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuRowItem} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.menuRowItem}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("Help")}
+          >
             <View style={styles.menuIconWrap}>
               <HelpCircle size={15} color={COLORS.brandIndigo} />
             </View>

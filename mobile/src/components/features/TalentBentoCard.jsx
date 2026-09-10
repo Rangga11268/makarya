@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Briefcase,
 } from "lucide-react-native";
+import { PebbleButton } from "../ui/PebbleButton";
 
 export function TalentBentoCard({
   talent = {},
@@ -128,10 +129,13 @@ export function TalentBentoCard({
           </View>
         </View>
 
-        <View style={styles.actionBtn}>
-          <Text style={styles.actionBtnText}>Portofolio</Text>
-          <ArrowUpRight size={13} color="#FFFFFF" strokeWidth={2.5} />
-        </View>
+        <PebbleButton
+          variant="sapphire"
+          size="xs"
+          label="Portofolio"
+          iconRight={ArrowUpRight}
+          onPress={onPress}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -331,24 +335,5 @@ const styles = StyleSheet.create({
   statItemNumber: {
     fontFamily: FONTS.bodyBold,
     color: COLORS.textDark,
-  },
-  actionBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: COLORS.brandIndigo,
-    paddingHorizontal: 12,
-    paddingVertical: 6.5,
-    borderRadius: 14,
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  actionBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11.5,
-    color: "#FFFFFF",
   },
 });

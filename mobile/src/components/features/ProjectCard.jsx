@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Badge } from "../ui/Badge";
+import { PebbleButton } from "../ui/PebbleButton";
 import { getCategorySkills } from "../../constants/categories";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
@@ -255,14 +256,13 @@ export function ProjectCard({ project, onPress }) {
             </Text>
           </View>
 
-          <View style={styles.detailCta}>
-            <Text style={styles.detailCtaText}>Detail</Text>
-            <ArrowRight
-              size={11}
-              color={COLORS.brandIndigo}
-              strokeWidth={2.5}
-            />
-          </View>
+          <PebbleButton
+            variant="sapphire"
+            size="xs"
+            label="Detail"
+            iconRight={ArrowRight}
+            onPress={onPress}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -330,10 +330,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3.5,
-    backgroundColor: "#F8FAFC",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    paddingHorizontal: 6,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
+    paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 8,
   },
@@ -394,7 +392,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 6,
     paddingHorizontal: 10,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "rgba(15, 23, 42, 0.03)",
     borderRadius: 12,
     marginBottom: 10,
     gap: 8,
@@ -403,7 +401,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.brandIndigoLight,
+    backgroundColor: "rgba(15, 23, 42, 0.06)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -435,16 +433,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3.5,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 6,
   },
   deadlinePillUrgent: {
     backgroundColor: "#FFF1F2",
-    borderColor: "#FECDD3",
   },
   deadlinePillText: {
     fontFamily: FONTS.bodyMedium,
@@ -462,7 +457,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   skillPill: {
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -529,30 +524,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 3.5,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     paddingHorizontal: 8,
-    paddingVertical: 4.5,
+    paddingVertical: 5,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
   },
   applicantText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 10.5,
     color: COLORS.textSecondary,
-  },
-  detailCta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4.5,
-    borderRadius: 8,
-  },
-  detailCtaText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    color: COLORS.brandIndigo,
   },
 });
