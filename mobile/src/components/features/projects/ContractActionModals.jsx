@@ -21,7 +21,10 @@ import {
   ShieldCheck,
   XCircle,
   X,
+  CheckCircle2,
+  Lock,
 } from "lucide-react-native";
+import { PebbleButton } from "../../ui/PebbleButton";
 
 /**
  * Bottom Sheet Modal: Ganti Mahasiswa & Buka ke Eksplorasi (UMKM)
@@ -431,6 +434,277 @@ export function ResignProposalModal({
   );
 }
 
+/**
+ * Bottom Sheet Modal: Terima Proposal & Kunci Escrow (UMKM)
+ */
+export function AcceptProposalModal({
+  visible,
+  onClose,
+  proposal,
+  project,
+  onConfirm,
+  loading = false,
+}) {
+  if (!proposal) return null;
+  const mhs = proposal.mhs_profile || proposal.mahasiswa || {};
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.modalOverlay}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.backdropDismiss}
+          onPress={onClose}
+        />
+        <View style={styles.bottomSheet}>
+          <View style={styles.dragPill} />
+
+          <View style={styles.modalHeader}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <View style={styles.badgeLabelRow}>
+                <ShieldCheck size={13} color="#059669" />
+                <Text style={styles.badgeLabelText}>GARANSI 100% ESCROW</Text>
+              </View>
+              <Text style={styles.modalTitle}>Terima & Kunci Escrow</Text>
+              <Text style={styles.modalSub}>
+                Persetujuan proposal dan komitmen pembayaran aman
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeCircleBtn}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <X size={18} color={COLORS.textDark} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Mahasiswa Summary Card */}
+            <View style={styles.mhsCard}>
+              <View style={styles.mhsAvatarCircle}>
+                <Text style={styles.mhsAvatarInitial}>
+                  {mhs.nama_lengkap
+                    ? mhs.nama_lengkap.charAt(0).toUpperCase()
+                    : "M"}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.mhsNameText} numberOfLines={1}>
+                  {mhs.nama_lengkap || "Mahasiswa Freelancer"}
+                </Text>
+                <Text style={styles.mhsMetaText} numberOfLines={1}>
+                  {mhs.prodi || "Talenta Terverifikasi"} •{" "}
+                  {proposal.estimasi_hari || 7} Hari Kerja
+                </Text>
+              </View>
+              <View style={styles.priceContainer}>
+                <Text style={styles.priceMetaLabel}>Nilai Penawaran</Text>
+                <Text style={styles.priceValueText}>
+                  {formatCurrency(proposal.harga_tawar)}
+                </Text>
+              </View>
+            </View>
+
+            {/* Escrow Callout */}
+            <View style={[styles.alertBox, styles.alertBoxSuccess]}>
+              <ShieldCheck
+                size={20}
+                color="#059669"
+                style={{ marginTop: 2 }}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.alertTitle, { color: "#065F46" }]}>
+                  Proteksi Rekening Bersama (Escrow)
+                </Text>
+                <Text style={[styles.alertDesc, { color: "#047857" }]}>
+                  Dana proyek sebesar{" "}
+                  <Text
+                    style={{ fontFamily: FONTS.displayBold, color: "#065F46" }}
+                  >
+                    {formatCurrency(proposal.harga_tawar)}
+                  </Text>{" "}
+                  akan dikunci di Escrow Makarya. Saldo TIDAK langsung dikirim ke
+                  mahasiswa, melainkan baru dicairkan setelah Anda puas dan
+                  menyetujui hasil deliverable pekerjaan.
+                </Text>
+              </View>
+            </View>
+
+            {/* What Happens Next Checklist */}
+            <View style={styles.checklistContainer}>
+              <View style={styles.checkItem}>
+                <CheckCircle2 size={15} color="#2563EB" />
+                <Text style={styles.checkItemText}>
+                  Status proyek resmi beralih ke Sedang Dikerjakan
+                </Text>
+              </View>
+              <View style={styles.checkItem}>
+                <CheckCircle2 size={15} color="#2563EB" />
+                <Text style={styles.checkItemText}>
+                  Ruang kerja, chat terenkripsi, & berkas deliverable aktif
+                </Text>
+              </View>
+              <View style={styles.checkItem}>
+                <CheckCircle2 size={15} color="#2563EB" />
+                <Text style={styles.checkItemText}>
+                  Garansi pengembalian dana 100% jika terjadi wanprestasi
+                </Text>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.actionRow}>
+              <PebbleButton
+                variant="pearl"
+                size="md"
+                label="Batal"
+                onPress={onClose}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+              <PebbleButton
+                variant="emerald"
+                size="md"
+                label="Ya, Setujui & Kunci"
+                icon={Lock}
+                onPress={onConfirm}
+                loading={loading}
+                style={{ flex: 1.8 }}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+/**
+ * Bottom Sheet Modal: Selesaikan Proyek & Lepas Escrow (UMKM)
+ */
+export function ApproveSubmissionModal({
+  visible,
+  onClose,
+  submission,
+  project,
+  onConfirm,
+  loading = false,
+}) {
+  if (!submission) return null;
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.modalOverlay}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.backdropDismiss}
+          onPress={onClose}
+        />
+        <View style={styles.bottomSheet}>
+          <View style={styles.dragPill} />
+
+          <View style={styles.modalHeader}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <View style={styles.badgeLabelRow}>
+                <CheckCircle2 size={13} color="#059669" />
+                <Text style={styles.badgeLabelText}>PENYELESAIAN PROYEK</Text>
+              </View>
+              <Text style={styles.modalTitle}>Setujui & Lepas Escrow</Text>
+              <Text style={styles.modalSub}>
+                Konfirmasi penerimaan deliverable dan pencairan honor
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.closeCircleBtn}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <X size={18} color={COLORS.textDark} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Success Callout */}
+            <View style={[styles.alertBox, styles.alertBoxSuccess]}>
+              <CheckCircle2
+                size={20}
+                color="#059669"
+                style={{ marginTop: 2 }}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.alertTitle, { color: "#065F46" }]}>
+                  Pencairan 100% Saldo Escrow
+                </Text>
+                <Text style={[styles.alertDesc, { color: "#047857" }]}>
+                  Dengan menyetujui hasil kerja ini, dana escrow proyek akan
+                  otomatis diteruskan 100% ke saldo honor dompet mahasiswa, dan
+                  status proyek beralih menjadi Selesai (COMPLETED).
+                </Text>
+              </View>
+            </View>
+
+            {/* Deliverable Notes */}
+            {submission.catatan ? (
+              <View style={styles.deliverableNoteBox}>
+                <Text style={styles.deliverableNoteLabel}>
+                  Catatan Pengiriman Mahasiswa:
+                </Text>
+                <Text style={styles.deliverableNoteText}>
+                  "{submission.catatan}"
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Action Buttons */}
+            <View style={styles.actionRow}>
+              <PebbleButton
+                variant="pearl"
+                size="md"
+                label="Periksa Lagi"
+                onPress={onClose}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+              <PebbleButton
+                variant="emerald"
+                size="md"
+                label="Setujui & Lepas Escrow"
+                icon={CheckCircle2}
+                onPress={onConfirm}
+                loading={loading}
+                style={{ flex: 1.8 }}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
@@ -555,5 +829,123 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     marginTop: 8,
+  },
+  badgeLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginBottom: 4,
+  },
+  badgeLabelText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#059669",
+    letterSpacing: 0.5,
+  },
+  closeCircleBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: "rgba(241, 245, 249, 0.9)",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mhsCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    borderRadius: 16,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 12,
+  },
+  mhsAvatarCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#2563EB",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mhsAvatarInitial: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 18,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  mhsNameText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  mhsMetaText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#64748B",
+    marginTop: 2,
+  },
+  priceContainer: {
+    alignItems: "flex-end",
+  },
+  priceMetaLabel: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 9.5,
+    color: "#64748B",
+  },
+  priceValueText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#059669",
+    marginTop: 1,
+  },
+  alertBoxSuccess: {
+    backgroundColor: "#ECFDF5",
+    borderColor: "#A7F3D0",
+  },
+  checklistContainer: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 16,
+    padding: 14,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  checkItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  checkItemText: {
+    flex: 1,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    color: "#334155",
+    lineHeight: 16,
+  },
+  deliverableNoteBox: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  deliverableNoteLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#64748B",
+    marginBottom: 4,
+  },
+  deliverableNoteText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: "#0F172A",
+    fontStyle: "italic",
+    lineHeight: 17,
   },
 });

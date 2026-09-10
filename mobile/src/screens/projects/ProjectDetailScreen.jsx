@@ -23,6 +23,8 @@ import {
   ReopenProjectModal,
   TerminateProjectModal,
   ResignProposalModal,
+  AcceptProposalModal,
+  ApproveSubmissionModal,
 } from "../../components/features/projects/ContractActionModals";
 import { InvoiceReceiptModal } from "../../components/features/projects/InvoiceReceiptModal";
 import { Badge } from "../../components/ui/Badge";
@@ -95,6 +97,10 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [terminateModal, setTerminateModal] = useState(false);
   const [resignModal, setResignModal] = useState(false);
   const [invoiceModal, setInvoiceModal] = useState(false);
+  const [acceptProposalModal, setAcceptProposalModal] = useState(false);
+  const [selectedProposalToAccept, setSelectedProposalToAccept] = useState(null);
+  const [approveSubmissionModal, setApproveSubmissionModal] = useState(false);
+  const [selectedSubmissionToApprove, setSelectedSubmissionToApprove] = useState(null);
 
   const { showToast } = useToastStore();
 
@@ -295,35 +301,31 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
-  const handleAcceptProposal = async (proposalId) => {
-    Alert.alert(
-      "Konfirmasi Penerimaan",
-      "Apakah Anda yakin menyetujui proposal ini? Dana proyek akan otomatis dikunci di rekening bersama (Escrow).",
-      [
-        { text: "Batal", style: "cancel" },
-        {
-          text: "Ya, Setujui & Kunci Escrow",
-          onPress: async () => {
-            try {
-              setActionLoading(true);
-              await proposalApi.accept(proposalId);
-              showToast(
-                "Proposal disetujui! Proyek kini sedang dikerjakan.",
-                "success",
-              );
-              loadDetail();
-            } catch (err) {
-              showToast(
-                err.response?.data?.detail || "Gagal menyetujui proposal",
-                "danger",
-              );
-            } finally {
-              setActionLoading(false);
-            }
-          },
-        },
-      ],
-    );
+  const handleOpenAcceptModal = (proposal) => {
+    setSelectedProposalToAccept(proposal);
+    setAcceptProposalModal(true);
+  };
+
+  const handleConfirmAcceptProposal = async () => {
+    if (!selectedProposalToAccept) return;
+    try {
+      setActionLoading(true);
+      await proposalApi.accept(selectedProposalToAccept.id);
+      setAcceptProposalModal(false);
+      setSelectedProposalToAccept(null);
+      showToast(
+        "Proposal disetujui! Dana berhasil dikunci di rekening Escrow.",
+        "success",
+      );
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal menyetujui proposal",
+        "danger",
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleRejectProposal = async (proposalId) => {
@@ -339,35 +341,31 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
-  const handleApproveSubmission = async (submissionId) => {
-    Alert.alert(
-      "Penyelesaian Proyek",
-      "Apakah Anda puas dengan hasil kerja ini? Dana escrow akan dicairkan 100% ke saldo honor mahasiswa.",
-      [
-        { text: "Batal", style: "cancel" },
-        {
-          text: "Setujui & Lepas Escrow",
-          onPress: async () => {
-            try {
-              setActionLoading(true);
-              await submissionApi.approve(submissionId);
-              showToast(
-                "Proyek selesai & dana escrow berhasil dicairkan!",
-                "success",
-              );
-              loadDetail();
-            } catch (err) {
-              showToast(
-                err.response?.data?.detail || "Gagal menyetujui hasil kerja",
-                "danger",
-              );
-            } finally {
-              setActionLoading(false);
-            }
-          },
-        },
-      ],
-    );
+  const handleOpenApproveModal = (submission) => {
+    setSelectedSubmissionToApprove(submission);
+    setApproveSubmissionModal(true);
+  };
+
+  const handleConfirmApproveSubmission = async () => {
+    if (!selectedSubmissionToApprove) return;
+    try {
+      setActionLoading(true);
+      await submissionApi.approve(selectedSubmissionToApprove.id);
+      setApproveSubmissionModal(false);
+      setSelectedSubmissionToApprove(null);
+      showToast(
+        "Proyek selesai & dana escrow berhasil dicairkan!",
+        "success",
+      );
+      loadDetail();
+    } catch (err) {
+      showToast(
+        err.response?.data?.detail || "Gagal menyetujui hasil kerja",
+        "danger",
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleReopenProject = async ({ new_deadline, reason }) => {
@@ -1068,9 +1066,12 @@ export function ProjectDetailScreen({ route, navigation }) {
                     <ProposalCard
                       key={prop.id}
                       proposal={prop}
-                      onAccept={() => handleAcceptProposal(prop.id)}
+                      onAccept={() => handleOpenAcceptModal(prop)}
                       onReject={() => handleRejectProposal(prop.id)}
-                      loadingAccept={actionLoading}
+                      loadingAccept={
+                        actionLoading &&
+                        selectedProposalToAccept?.id === prop.id
+                      }
                       loadingReject={actionLoading}
                     />
                   ))
@@ -1139,14 +1140,17 @@ export function ProjectDetailScreen({ route, navigation }) {
                         </Text>
                       </TouchableOpacity>
                       {renderSubmissionNote(sub.catatan_pengiriman)}
-                      <Button
-                        title="Setujui & Lepas Escrow"
-                        variant="brand"
+                      <PebbleButton
+                        variant="emerald"
                         size="md"
-                        icon={<CheckCircle2 size={16} color="#FFF" />}
-                        onPress={() => handleApproveSubmission(sub.id)}
-                        loading={actionLoading}
-                        style={{ marginTop: 12 }}
+                        label="Setujui & Lepas Escrow"
+                        icon={CheckCircle2}
+                        onPress={() => handleOpenApproveModal(sub)}
+                        loading={
+                          actionLoading &&
+                          selectedSubmissionToApprove?.id === sub.id
+                        }
+                        style={{ marginTop: 12, width: "100%" }}
                       />
                     </View>
                   ))
@@ -1485,6 +1489,32 @@ export function ProjectDetailScreen({ route, navigation }) {
             ? user?.nama || user?.nama_lengkap
             : (proposals && proposals[0]?.mhs_nama) || undefined
         }
+      />
+
+      {/* Modal 7: Custom Accept Proposal & Lock Escrow Modal */}
+      <AcceptProposalModal
+        visible={acceptProposalModal}
+        onClose={() => {
+          setAcceptProposalModal(false);
+          setSelectedProposalToAccept(null);
+        }}
+        proposal={selectedProposalToAccept}
+        project={project}
+        onConfirm={handleConfirmAcceptProposal}
+        loading={actionLoading}
+      />
+
+      {/* Modal 8: Custom Approve Submission & Release Escrow Modal */}
+      <ApproveSubmissionModal
+        visible={approveSubmissionModal}
+        onClose={() => {
+          setApproveSubmissionModal(false);
+          setSelectedSubmissionToApprove(null);
+        }}
+        submission={selectedSubmissionToApprove}
+        project={project}
+        onConfirm={handleConfirmApproveSubmission}
+        loading={actionLoading}
       />
     </View>
   );

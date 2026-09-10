@@ -4,8 +4,9 @@ import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
+import { PebbleButton } from "../ui/PebbleButton";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { Star, Clock } from "lucide-react-native";
+import { Star, Clock, ShieldCheck } from "lucide-react-native";
 
 export function ProposalCard({
   proposal,
@@ -80,23 +81,24 @@ export function ProposalCard({
       {proposal.status === "PENDING" && (
         <View style={styles.actionRow}>
           {onReject && (
-            <Button
-              title="Tolak"
-              variant="dark"
+            <PebbleButton
+              variant="pearl"
               size="sm"
+              label="Tolak"
               onPress={onReject}
               loading={loadingReject}
-              style={styles.rejectBtn}
+              style={{ flex: 1 }}
             />
           )}
           {onAccept && (
-            <Button
-              title="Terima & Kunci Escrow"
-              variant="lime"
+            <PebbleButton
+              variant="emerald"
               size="sm"
+              label="Terima & Kunci Escrow"
+              icon={ShieldCheck}
               onPress={onAccept}
               loading={loadingAccept}
-              style={styles.acceptBtn}
+              style={{ flex: 2 }}
             />
           )}
         </View>
