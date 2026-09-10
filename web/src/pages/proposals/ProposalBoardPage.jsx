@@ -74,7 +74,8 @@ export function ProposalBoardPage() {
   const [loading, setLoading] = useState(true);
 
   // Active Stage Sub-tab: 'chat' | 'deliverable' | 'brief' | 'applicants'
-  const [activeStageTab, setActiveStageTab] = useState("chat");
+  const [activeStageTab, setActiveStageTab] = useState("brief");
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,7 +117,17 @@ export function ProposalBoardPage() {
             if (found) chosen = found;
           }
           setSelectedProject(chosen);
-          await loadProjectDetails(chosen.id);
+          const details = await loadProjectDetails(chosen.id);
+          const hasAccepted = details.proposals.some(
+            (p) => p.status === "ACCEPTED",
+          );
+          if (hasAccepted) {
+            setActiveStageTab("chat");
+          } else if (details.proposals.length > 0) {
+            setActiveStageTab("applicants");
+          } else {
+            setActiveStageTab("brief");
+          }
         }
       } else {
         const res = await proposalApi.getMyProposals();
@@ -148,6 +159,11 @@ export function ProposalBoardPage() {
             if (found) chosen = found;
           }
           setSelectedProposal(chosen);
+          if (chosen.status === "ACCEPTED") {
+            setActiveStageTab("chat");
+          } else {
+            setActiveStageTab("brief");
+          }
         }
       }
     } catch (err) {
@@ -163,7 +179,8 @@ export function ProposalBoardPage() {
         proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
         submissionApi.getByProject(projectId).catch(() => ({ data: null })),
       ]);
-      setProjectProposals(propRes.data || []);
+      const props = Array.isArray(propRes.data) ? propRes.data : [];
+      setProjectProposals(props);
       const subs =
         subRes.data && subRes.data.id
           ? [subRes.data]
@@ -171,8 +188,10 @@ export function ProposalBoardPage() {
             ? subRes.data
             : [];
       setProjectSubmissions(subs);
+      return { proposals: props, submissions: subs };
     } catch (err) {
       console.warn("Gagal memuat rincian proyek:", err);
+      return { proposals: [], submissions: [] };
     }
   };
 
@@ -184,12 +203,16 @@ export function ProposalBoardPage() {
   const handleSelectProject = async (project) => {
     setSelectedProject(project);
     setSearchParams({ project: project.id });
-    await loadProjectDetails(project.id);
-    // Auto switch tab: if open/bidding with proposals, show applicants, else chat
-    if (project.status === "OPEN" || project.status === "BIDDING") {
+    const details = await loadProjectDetails(project.id);
+    const hasAccepted = details.proposals.some(
+      (p) => p.status === "ACCEPTED",
+    );
+    if (hasAccepted) {
+      setActiveStageTab("chat");
+    } else if (details.proposals.length > 0) {
       setActiveStageTab("applicants");
     } else {
-      setActiveStageTab("chat");
+      setActiveStageTab("brief");
     }
   };
 
@@ -398,14 +421,20 @@ export function ProposalBoardPage() {
     ? selectedProject?.judul
     : selectedProposal?.project_judul || "Proyek Kolaborasi";
 
+  const acceptedApplicant = isUmkm
+    ? projectProposals.find((p) => p.status === "ACCEPTED")
+    : selectedProposal?.status === "ACCEPTED"
+      ? selectedProposal
+      : null;
+
+  const hasAcceptedApplicant = Boolean(acceptedApplicant);
+
   const activePartnerName = isUmkm
-    ? projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
-        ?.nama_lengkap || "Mahasiswa Talenta"
+    ? acceptedApplicant?.mhs_profile?.nama_lengkap || null
     : selectedProposal?.project_umkm_nama || "Klien UMKM";
 
   const activePartnerPhoto = isUmkm
-    ? projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
-        ?.url_foto
+    ? acceptedApplicant?.mhs_profile?.url_foto || null
     : selectedProposal?.project_umkm_foto ||
       selectedProposal?.umkm_foto ||
       selectedProject?.umkm_profile?.url_foto_usaha;
@@ -483,105 +512,116 @@ export function ProposalBoardPage() {
       {/* 2. Unified 2-Pane Workroom Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* ========================================================================= */}
-        {/* LEFT PANE: Project & Contract Navigator (4 cols on lg) */}
+        {/* LEFT PANE: Project & Contract Navigator (4 cols on lg, hidden in focus mode) */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-4 bg-surface rounded-3xl border border-border p-4 space-y-3.5 shadow-xs">
-          {/* Search Box */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder={
-                isUmkm ? "Cari judul proyek..." : "Cari lamaran & proyek..."
-              }
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans"
-            />
-          </div>
+        {!isFocusMode && (
+          <div className="lg:col-span-4 bg-surface rounded-3xl border border-border p-4 space-y-3.5 shadow-xs animate-in fade-in duration-200">
+            {/* Search Box */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder={
+                  isUmkm ? "Cari judul proyek..." : "Cari lamaran & proyek..."
+                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans"
+              />
+            </div>
 
-          {/* Filter Pills */}
-          <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 text-[11px]">
-            {(isUmkm
-              ? [
-                  { key: "ALL", label: "Semua" },
-                  { key: "IN_PROGRESS", label: "Aktif" },
-                  { key: "OPEN", label: "Pelamar" },
-                  { key: "COMPLETED", label: "Selesai" },
-                ]
-              : [
-                  { key: "ALL", label: "Semua" },
-                  { key: "IN_PROGRESS", label: "Dikerjakan" },
-                  { key: "PENDING", label: "Seleksi" },
-                  { key: "COMPLETED", label: "Selesai" },
-                ]
-            ).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveFilter(tab.key)}
-                className={`py-1.5 px-2 rounded-xl font-bold transition-all text-center justify-center flex items-center ${
-                  activeFilter === tab.key
-                    ? "bg-dark-900 text-white shadow-xs"
-                    : "bg-canvas text-muted hover:text-dark-900 border border-border"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+            {/* Filter Pills */}
+            <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 text-[11px]">
+              {(isUmkm
+                ? [
+                    { key: "ALL", label: "Semua" },
+                    { key: "IN_PROGRESS", label: "Aktif" },
+                    { key: "OPEN", label: "Pelamar" },
+                    { key: "COMPLETED", label: "Selesai" },
+                  ]
+                : [
+                    { key: "ALL", label: "Semua" },
+                    { key: "IN_PROGRESS", label: "Dikerjakan" },
+                    { key: "PENDING", label: "Seleksi" },
+                    { key: "COMPLETED", label: "Selesai" },
+                  ]
+              ).map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveFilter(tab.key)}
+                  className={`py-1.5 px-2 rounded-xl font-bold transition-all text-center justify-center flex items-center ${
+                    activeFilter === tab.key
+                      ? "bg-dark-900 text-white shadow-xs"
+                      : "bg-canvas text-muted hover:text-dark-900 border border-border"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
-          {/* Items List */}
-          <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
-            {loading ? (
-              <div className="p-8 text-center text-xs text-muted">
-                <div className="w-5 h-5 border-2 border-brand-indigo border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                Memuat daftar pengerjaan...
-              </div>
-            ) : isUmkm ? (
-              filteredProjects.length === 0 ? (
+            {/* Items List */}
+            <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
+              {loading ? (
+                <div className="p-8 text-center text-xs text-muted">
+                  <div className="w-5 h-5 border-2 border-brand-indigo border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                  Memuat daftar pengerjaan...
+                </div>
+              ) : isUmkm ? (
+                filteredProjects.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
+                    Tidak ada proyek yang sesuai filter.
+                  </div>
+                ) : (
+                  filteredProjects.map((proj) => (
+                    <ProposalSidebarItem
+                      key={proj.id}
+                      isUmkm={true}
+                      item={proj}
+                      isSelected={selectedProject?.id === proj.id}
+                      onClick={() => handleSelectProject(proj)}
+                    />
+                  ))
+                )
+              ) : filteredProposals.length === 0 ? (
                 <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
-                  Tidak ada proyek yang sesuai filter.
+                  Belum ada lamaran proyek yang sesuai filter.
                 </div>
               ) : (
-                filteredProjects.map((proj) => (
+                filteredProposals.map((prop) => (
                   <ProposalSidebarItem
-                    key={proj.id}
-                    isUmkm={true}
-                    item={proj}
-                    isSelected={selectedProject?.id === proj.id}
-                    onClick={() => handleSelectProject(proj)}
+                    key={prop.id}
+                    isUmkm={false}
+                    item={prop}
+                    isSelected={selectedProposal?.id === prop.id}
+                    onClick={() => handleSelectProposal(prop)}
+                    mhsSubmissions={mhsSubmissions}
                   />
                 ))
-              )
-            ) : filteredProposals.length === 0 ? (
-              <div className="p-8 text-center text-xs text-muted border border-dashed border-border rounded-2xl">
-                Belum ada lamaran proyek yang sesuai filter.
-              </div>
-            ) : (
-              filteredProposals.map((prop) => (
-                <ProposalSidebarItem
-                  key={prop.id}
-                  isUmkm={false}
-                  item={prop}
-                  isSelected={selectedProposal?.id === prop.id}
-                  onClick={() => handleSelectProposal(prop)}
-                  mhsSubmissions={mhsSubmissions}
-                />
-              ))
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ========================================================================= */}
-        {/* RIGHT PANE: Unified Active Workroom Stage (8 cols on lg) */}
+        {/* RIGHT PANE: Unified Active Workroom Stage (12 cols in focus mode, 8 cols otherwise) */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-8 space-y-4">
+        <div
+          className={`${
+            isFocusMode ? "lg:col-span-12" : "lg:col-span-8"
+          } space-y-4 transition-all duration-300`}
+        >
           <WorkroomWorkspaceDetail
             activeProjectId={activeProjectId}
             activeProjectTitle={activeProjectTitle}
             activePartnerName={activePartnerName}
             activePartnerRole={activePartnerRole}
             activePartnerPhoto={activePartnerPhoto}
+            hasAcceptedApplicant={hasAcceptedApplicant}
+            isFocusMode={isFocusMode}
+            setIsFocusMode={setIsFocusMode}
+            allProjects={myProjects}
+            onSelectProject={handleSelectProject}
             isUmkm={isUmkm}
             selectedProject={selectedProject}
             selectedProposal={selectedProposal}

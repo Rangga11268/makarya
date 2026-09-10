@@ -181,6 +181,31 @@ export function ProjectDetailScreen({ route, navigation }) {
   const canApply =
     isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
 
+  const acceptedProposal = proposals.find((p) => p.status === "ACCEPTED");
+  const hasAcceptedStudent = Boolean(
+    project?.accepted_mhs_nama ||
+      acceptedProposal ||
+      (isUmkmOwner &&
+        ["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(
+          project?.status,
+        )) ||
+      (!isUmkmOwner && isAcceptedProposal),
+  );
+
+  const activePartnerName = isUmkmOwner
+    ? project?.accepted_mhs_nama ||
+      acceptedProposal?.mhs_profile?.nama_lengkap ||
+      acceptedProposal?.mahasiswa_nama ||
+      null
+    : clientDisplayName;
+
+  const activePartnerPhoto = isUmkmOwner
+    ? project?.accepted_mhs_foto ||
+      acceptedProposal?.mhs_profile?.url_foto ||
+      acceptedProposal?.mahasiswa_foto ||
+      null
+    : clientPhoto;
+
   useFocusEffect(
     useCallback(() => {
       if (route.params?.initialTab) {
@@ -502,22 +527,23 @@ export function ProjectDetailScreen({ route, navigation }) {
         subtitle={`Kategori: ${project.kategori || "UMKM Digital"}`}
         onBack={() => navigation.goBack()}
         rightAction={
-          <TouchableOpacity
-            style={styles.headerChatBtn}
-            onPress={() =>
-              navigation.navigate("Chat", {
-                projectId: project.id,
-                projectTitle: project.judul,
-                partnerName: isUmkmOwner
-                  ? "Mahasiswa Talenta"
-                  : clientDisplayName,
-                partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-              })
-            }
-            activeOpacity={0.7}
-          >
-            <MessageSquare size={18} color={COLORS.brandIndigo} />
-          </TouchableOpacity>
+          hasAcceptedStudent ? (
+            <TouchableOpacity
+              style={styles.headerChatBtn}
+              onPress={() =>
+                navigation.navigate("Chat", {
+                  projectId: project.id,
+                  projectTitle: project.judul,
+                  partnerName: activePartnerName,
+                  partnerPhoto: activePartnerPhoto,
+                  partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+                })
+              }
+              activeOpacity={0.7}
+            >
+              <MessageSquare size={18} color={COLORS.brandIndigo} />
+            </TouchableOpacity>
+          ) : null
         }
       />
 
@@ -738,36 +764,72 @@ export function ProjectDetailScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* 3B. Collaboration Chat Entry Point */}
-        <TouchableOpacity
-          style={styles.openChatBar}
-          onPress={() =>
-            navigation.navigate("Chat", {
-              projectId: project.id,
-              projectTitle: project.judul,
-              partnerName: isUmkmOwner
-                ? "Mahasiswa Talenta"
-                : clientDisplayName,
-              partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-            })
-          }
-          activeOpacity={0.85}
-        >
-          <View style={styles.openChatBarLeft}>
-            <View style={styles.chatIconBadge}>
-              <MessageSquare size={16} color="#FFFFFF" />
+        {/* 3B. Collaboration Chat Entry Point OR Recruitment Status Banner */}
+        {hasAcceptedStudent ? (
+          <TouchableOpacity
+            style={styles.openChatBar}
+            onPress={() =>
+              navigation.navigate("Chat", {
+                projectId: project.id,
+                projectTitle: project.judul,
+                partnerName: activePartnerName,
+                partnerPhoto: activePartnerPhoto,
+                partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+              })
+            }
+            activeOpacity={0.85}
+          >
+            <View style={styles.openChatBarLeft}>
+              {activePartnerPhoto ? (
+                <Image
+                  source={{ uri: activePartnerPhoto }}
+                  style={styles.chatPartnerAvatar}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.chatIconBadge}>
+                  <MessageSquare size={16} color="#FFFFFF" />
+                </View>
+              )}
+              <View style={{ flex: 1 }}>
+                <Text style={styles.openChatTitle}>
+                  Ruang Obrolan & Kolaborasi {activePartnerName ? `(${activePartnerName})` : ""}
+                </Text>
+                <Text style={styles.openChatSub}>
+                  Kirim pesan, revisi, dan tautan Figma secara realtime
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={16} color={COLORS.brandIndigo} />
+          </TouchableOpacity>
+        ) : isUmkmOwner ? (
+          <View style={styles.recruitmentStatusCard}>
+            <View style={styles.recruitmentIconCircle}>
+              <Users size={18} color={COLORS.brandIndigo} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.openChatTitle}>
-                Ruang Obrolan & Kolaborasi
+              <Text style={styles.recruitmentTitle}>
+                {proposals.length === 0
+                  ? "Menunggu Pelamar Pertama"
+                  : `${proposals.length} Proposal Masuk`}
               </Text>
-              <Text style={styles.openChatSub}>
-                Kirim pesan, revisi, dan tautan Figma secara realtime
+              <Text style={styles.recruitmentSub}>
+                {proposals.length === 0
+                  ? "Proyek ini sedang aktif di katalog eksplorasi. Ruang obrolan kerja otomatis aktif setelah Anda menerima proposal pelamar."
+                  : "Tinjau proposal mahasiswa di tab bawah dan setujui untuk membuka ruang obrolan kerja."}
               </Text>
             </View>
+            {proposals.length > 0 ? (
+              <TouchableOpacity
+                style={styles.reviewApplicantsBtn}
+                onPress={() => setActiveTab("proposals")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.reviewApplicantsBtnText}>Tinjau</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-          <ChevronRight size={16} color={COLORS.brandIndigo} />
-        </TouchableOpacity>
+        ) : null}
 
         {/* 4. Description & Scope */}
         <View style={styles.sectionBox}>
@@ -1185,23 +1247,24 @@ export function ProjectDetailScreen({ route, navigation }) {
           </Text>
         </View>
 
-        {/* Dedicated Sticky Chat Button */}
-        <TouchableOpacity
-          style={styles.stickyChatBtn}
-          onPress={() =>
-            navigation.navigate("Chat", {
-              projectId: project.id,
-              projectTitle: project.judul,
-              partnerName: isUmkmOwner
-                ? "Mahasiswa Talenta"
-                : clientDisplayName,
-              partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-            })
-          }
-          activeOpacity={0.8}
-        >
-          <MessageSquare size={18} color={COLORS.brandIndigo} />
-        </TouchableOpacity>
+        {/* Dedicated Sticky Chat Button (Only when there is an active collaboration partner) */}
+        {hasAcceptedStudent && (
+          <TouchableOpacity
+            style={styles.stickyChatBtn}
+            onPress={() =>
+              navigation.navigate("Chat", {
+                projectId: project.id,
+                projectTitle: project.judul,
+                partnerName: activePartnerName,
+                partnerPhoto: activePartnerPhoto,
+                partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+              })
+            }
+            activeOpacity={0.8}
+          >
+            <MessageSquare size={18} color={COLORS.brandIndigo} />
+          </TouchableOpacity>
+        )}
 
         <View style={styles.stickyActionCol}>
           {canApply ? (
@@ -1525,6 +1588,58 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.textMuted,
     marginTop: 1,
+  },
+  chatPartnerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.2)",
+  },
+  recruitmentStatusCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: COLORS.bgSurface,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+  },
+  recruitmentIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  recruitmentTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  recruitmentSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    marginTop: 1,
+    lineHeight: 15,
+  },
+  reviewApplicantsBtn: {
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  reviewApplicantsBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
   headerChatBtn: {
     width: 38,

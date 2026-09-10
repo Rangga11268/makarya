@@ -73,6 +73,11 @@ export function ChatScreen({ route, navigation }) {
     ? partnerMsg?.sender_name || partnerName || "Mitra Kolaborasi"
     : partnerName;
 
+  const isUnassignedTalent =
+    (resolvedPartnerName === "Mahasiswa Talenta" ||
+      resolvedPartnerName === "Mitra Kolaborasi") &&
+    messages.length === 0;
+
   const resolvedPartnerPhoto =
     partnerPhoto ||
     messages.find((m) => m.sender_id !== user?.id && m.sender_photo)
@@ -175,6 +180,14 @@ export function ChatScreen({ route, navigation }) {
 
   // 3. Kirim pesan (WebSocket langsung atau fallback REST)
   const handleSendMessage = async (customAttachment = null) => {
+    if (isUnassignedTalent) {
+      showToast(
+        "Pilih dan setujui pelamar terlebih dahulu untuk memulai obrolan",
+        "warning",
+      );
+      return;
+    }
+
     const textToSend = inputText.trim();
     if (!textToSend && !customAttachment) return;
 
@@ -474,16 +487,59 @@ export function ChatScreen({ route, navigation }) {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
           ListEmptyComponent={
-            <View style={styles.emptyWrap}>
-              <View style={styles.emptyIconBox}>
-                <Briefcase size={28} color={COLORS.brandIndigo} />
+            isUnassignedTalent ? (
+              <View style={styles.emptyWrap}>
+                <View
+                  style={[
+                    styles.emptyIconBox,
+                    { backgroundColor: "#F1F5F9" },
+                  ]}
+                >
+                  <Briefcase size={28} color={COLORS.textDim} />
+                </View>
+                <Text style={styles.emptyTitle}>
+                  Ruang Obrolan Belum Terbuka
+                </Text>
+                <Text style={styles.emptyDesc}>
+                  Belum ada mahasiswa yang disetujui untuk proyek ini. Ruang
+                  obrolan kerja dan koordinasi langsung akan otomatis dibuka
+                  setelah Anda menerima salah satu proposal pelamar.
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    marginTop: 16,
+                    backgroundColor: COLORS.brandIndigo,
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                  }}
+                  onPress={() => navigation.goBack()}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={{
+                      fontFamily: FONTS.bodyBold,
+                      fontSize: 12,
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                    }}
+                  >
+                    Kembali ke Rincian Proyek
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <Text style={styles.emptyTitle}>Ruang Kolaborasi Resmi</Text>
-              <Text style={styles.emptyDesc}>
-                Percakapan ini dilindungi sistem escrow Makarya. Kirim pesan
-                pertama untuk mulai mendiskusikan brief dan progres pengerjaan.
-              </Text>
-            </View>
+            ) : (
+              <View style={styles.emptyWrap}>
+                <View style={styles.emptyIconBox}>
+                  <Briefcase size={28} color={COLORS.brandIndigo} />
+                </View>
+                <Text style={styles.emptyTitle}>Ruang Kolaborasi Resmi</Text>
+                <Text style={styles.emptyDesc}>
+                  Percakapan ini dilindungi sistem escrow Makarya. Kirim pesan
+                  pertama untuk mulai mendiskusikan brief dan progres pengerjaan.
+                </Text>
+              </View>
+            )
           }
         />
       )}
@@ -529,37 +585,64 @@ export function ChatScreen({ route, navigation }) {
       })()}
 
       {/* 3. Bottom Input Bar */}
-      <View style={styles.inputContainer}>
-        {/* Tombol Lampiran */}
-        <TouchableOpacity
-          style={styles.attachBtn}
-          onPress={() => setAttachModal(true)}
-          activeOpacity={0.7}
-        >
-          <Plus size={20} color={COLORS.brandIndigo} />
-        </TouchableOpacity>
-
-        {/* Input Text */}
-        <TextInput
-          style={styles.inputField}
-          placeholder="Tulis pesan atau perkembangan proyek..."
-          placeholderTextColor={COLORS.textMuted}
-          value={inputText}
-          onChangeText={setInputText}
-          multiline
-          maxLength={1000}
-        />
-
-        {/* Tombol Kirim */}
-        <TouchableOpacity
+      {isUnassignedTalent ? (
+        <View
           style={[
-            styles.sendBtn,
-            inputText.trim() ? styles.sendBtnActive : styles.sendBtnDisabled,
+            styles.inputContainer,
+            { justifyContent: "center", paddingVertical: 14 },
           ]}
-          onPress={() => handleSendMessage()}
-          disabled={!inputText.trim() || sending}
-          activeOpacity={0.8}
         >
+          <Text
+            style={{
+              fontFamily: FONTS.bodyMedium,
+              fontSize: 12,
+              color: COLORS.textMuted,
+              textAlign: "center",
+            }}
+          >
+            Ruang obrolan terkunci hingga ada pelamar yang disetujui
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.inputContainer}>
+          {/* Tombol Lampiran */}
+          <TouchableOpacity
+            style={styles.attachBtn}
+            onPress={() => setAttachModal(true)}
+            activeOpacity={0.7}
+          >
+            <Plus size={20} color={COLORS.brandIndigo} />
+          </TouchableOpacity>
+
+          {/* Input Text */}
+          <TextInput
+            style={styles.inputField}
+            placeholder="Tulis pesan atau perkembangan proyek..."
+            placeholderTextColor={COLORS.textMuted}
+            value={inputText}
+            onChangeText={setInputText}
+            multiline
+            maxLength={1000}
+          />
+
+          {/* Tombol Kirim */}
+          <TouchableOpacity
+            style={[
+              styles.sendBtn,
+              inputText.trim() ? styles.sendBtnActive : styles.sendBtnDisabled,
+            ]}
+            onPress={() => handleSendMessage()}
+            disabled={!inputText.trim() || sending}
+            activeOpacity={0.8}
+          >
+            {sending ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Send size={16} color="#FFFFFF" />
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
           {sending ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (

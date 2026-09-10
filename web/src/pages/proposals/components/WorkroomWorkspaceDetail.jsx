@@ -19,6 +19,10 @@ import {
   AlertCircle,
   XCircle,
   ListChecks,
+  Lock,
+  MessageSquareOff,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 
 function RevisionChecklistInteractive({ items = [], isMhs = false }) {
@@ -109,6 +113,11 @@ export function WorkroomWorkspaceDetail({
   activePartnerName,
   activePartnerRole,
   activePartnerPhoto,
+  hasAcceptedApplicant = false,
+  isFocusMode = false,
+  setIsFocusMode,
+  allProjects = [],
+  onSelectProject,
   isUmkm,
   selectedProject,
   selectedProposal,
@@ -152,10 +161,30 @@ export function WorkroomWorkspaceDetail({
       {/* Stage Top Bar (Project Card Summary) */}
       <div className="bg-surface rounded-3xl border border-border p-5 sm:p-6 shadow-xs space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3.5">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-0.5">
-              Proyek Aktif
-            </span>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
+                {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
+              </span>
+              {isFocusMode && allProjects.length > 1 && (
+                <div className="relative inline-block">
+                  <select
+                    value={activeProjectId}
+                    onChange={(e) => {
+                      const proj = allProjects.find((p) => p.id === e.target.value);
+                      if (proj && onSelectProject) onSelectProject(proj);
+                    }}
+                    className="text-[11px] font-bold py-1 px-2.5 rounded-lg bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+                  >
+                    {allProjects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.judul}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
             <h2 className="text-base sm:text-lg font-bold text-dark-900 leading-snug">
               {activeProjectTitle}
             </h2>
@@ -175,6 +204,35 @@ export function WorkroomWorkspaceDetail({
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Garansi Escrow Aman</span>
             </div>
+
+            {setIsFocusMode && (
+              <button
+                type="button"
+                onClick={() => setIsFocusMode(!isFocusMode)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                  isFocusMode
+                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                    : "bg-canvas border-border text-dark-900 hover:bg-slate-100"
+                }`}
+                title={
+                  isFocusMode
+                    ? "Kembalikan Tampilan Split"
+                    : "Buka Mode Fokus Layar Penuh (12 Kolom)"
+                }
+              >
+                {isFocusMode ? (
+                  <>
+                    <Minimize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Keluar Fokus</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Mode Fokus</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
@@ -394,27 +452,49 @@ export function WorkroomWorkspaceDetail({
         {/* Partner Info & Quick Metas */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
           <div className="flex items-center gap-2.5">
-            {activePartnerPhoto ? (
-              <img
-                src={activePartnerPhoto}
-                alt={activePartnerName}
-                className="w-8 h-8 rounded-full object-cover border border-border shrink-0 shadow-xs"
-              />
+            {hasAcceptedApplicant ? (
+              <>
+                {activePartnerPhoto ? (
+                  <img
+                    src={activePartnerPhoto}
+                    alt={activePartnerName || "Mitra"}
+                    className="w-8 h-8 rounded-full object-cover border border-border shrink-0 shadow-xs"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs shrink-0">
+                    {activePartnerName ? activePartnerName.charAt(0).toUpperCase() : "M"}
+                  </div>
+                )}
+                <div>
+                  <span className="font-bold text-dark-900 block leading-tight">
+                    {activePartnerName}
+                  </span>
+                  <span className="text-[10px] text-muted">
+                    {activePartnerRole === "UMKM"
+                      ? "Klien Usaha UMKM"
+                      : "Mahasiswa Talenta (Terpilih)"}
+                  </span>
+                </div>
+              </>
             ) : (
-              <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs shrink-0">
-                {activePartnerName.charAt(0)}
+              <div className="flex items-center gap-2.5 py-0.5">
+                <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-muted shrink-0">
+                  <Users className="w-4 h-4 text-slate-500" />
+                </div>
+                <div>
+                  <span className="font-bold text-dark-900 block leading-tight">
+                    {projectProposals.length > 0
+                      ? `${projectProposals.length} Proposal Masuk`
+                      : "Menunggu Pelamar Pertama"}
+                  </span>
+                  <span className="text-[10px] text-muted">
+                    {projectProposals.length > 0
+                      ? "Silakan tinjau pelamar pada tab di bawah"
+                      : "Tayang di Katalog Eksplorasi Kampus"}
+                  </span>
+                </div>
               </div>
             )}
-            <div>
-              <span className="font-bold text-dark-900 block leading-tight">
-                {activePartnerName}
-              </span>
-              <span className="text-[10px] text-muted">
-                {activePartnerRole === "UMKM"
-                  ? "Klien Usaha UMKM"
-                  : "Mahasiswa Talenta"}
-              </span>
-            </div>
           </div>
 
           <div className="flex items-center justify-between sm:justify-end gap-4 text-muted text-[11px] pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60">
@@ -461,9 +541,19 @@ export function WorkroomWorkspaceDetail({
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
             }`}
           >
-            <MessageSquare className="w-3.5 h-3.5" />
+            {hasAcceptedApplicant ? (
+              <MessageSquare className="w-3.5 h-3.5" />
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-muted" />
+            )}
             <span>Obrolan</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            {hasAcceptedApplicant ? (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            ) : (
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-muted font-semibold border border-border">
+                Terkunci
+              </span>
+            )}
           </button>
 
           <button
@@ -511,16 +601,73 @@ export function WorkroomWorkspaceDetail({
         </div>
       </div>
 
-      {/* STAGE TAB 1: INTEGRATED REAL-TIME CHAT PANEL */}
+      {/* STAGE TAB 1: INTEGRATED REAL-TIME CHAT PANEL OR INFORMATIVE WAITING STATE */}
       {activeStageTab === "chat" && (
         <div className="animate-in fade-in duration-200">
-          <WorkroomChatPanel
-            projectId={activeProjectId}
-            projectTitle={activeProjectTitle}
-            partnerName={activePartnerName}
-            partnerRole={activePartnerRole}
-            partnerPhoto={activePartnerPhoto}
-          />
+          {hasAcceptedApplicant ? (
+            <WorkroomChatPanel
+              projectId={activeProjectId}
+              projectTitle={activeProjectTitle}
+              partnerName={activePartnerName}
+              partnerRole={activePartnerRole}
+              partnerPhoto={activePartnerPhoto}
+            />
+          ) : (
+            <div className="bg-surface rounded-3xl border border-border p-8 sm:p-12 text-center space-y-4 shadow-xs">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 mx-auto shadow-2xs">
+                <MessageSquareOff className="w-8 h-8 text-slate-400" />
+              </div>
+              <div className="max-w-md mx-auto space-y-1.5">
+                <h3 className="text-base sm:text-lg font-bold text-dark-900">
+                  Ruang Obrolan Belum Terbuka
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed">
+                  {projectProposals.length === 0
+                    ? "Proyek ini belum memiliki pelamar mahasiswa. Obrolan kerja langsung, koordinasi pengerjaan, dan pertukaran berkas deliverable akan otomatis aktif setelah Anda memilih dan menyetujui salah satu proposal mahasiswa."
+                    : `Ada ${projectProposals.length} mahasiswa yang telah mengajukan proposal untuk proyek ini. Silakan tinjau dan setujui salah satu proposal untuk membuka ruang obrolan kerja dan mengamankan garansi escrow.`}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                {projectProposals.length > 0 ? (
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={() => setActiveStageTab("applicants")}
+                    className="text-xs font-bold shadow-brand"
+                  >
+                    <Users className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Tinjau {projectProposals.length} Pelamar Masuk</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={() => setActiveStageTab("brief")}
+                    className="text-xs font-bold shadow-brand"
+                  >
+                    <FileText className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Lihat Spesifikasi & Brief Proyek</span>
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (navigator.clipboard) {
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/projects/${activeProjectId}`,
+                      );
+                    }
+                  }}
+                  className="text-xs font-bold border-border hover:bg-slate-50"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                  <span>Salin Tautan Proyek</span>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

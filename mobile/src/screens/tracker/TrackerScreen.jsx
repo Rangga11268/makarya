@@ -505,7 +505,7 @@ export function TrackerScreen({ navigation }) {
                           <Text style={styles.talentSubText}>
                             {item.total_pelamar && item.total_pelamar > 0
                               ? `${item.total_pelamar} proposal masuk`
-                              : "Mencari mahasiswa talenta"}
+                              : "Belum ada pelamar masuk"}
                           </Text>
                         </View>
                       )
