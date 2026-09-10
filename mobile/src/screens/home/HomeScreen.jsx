@@ -461,7 +461,7 @@ export function HomeScreen({ navigation }) {
                   <View key={action.id} style={styles.quickActionPillCol}>
                     <PebbleButton
                       size="circle"
-                      variant={isFirst ? "sapphire" : "dark"}
+                      variant={isFirst ? "sapphire" : "ice"}
                       icon={IconComp}
                       onPress={action.onPress}
                       style={{ marginBottom: 7 }}

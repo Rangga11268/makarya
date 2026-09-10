@@ -58,6 +58,18 @@ export const PEBBLE_VARIANTS = {
     borderSideColor: "#E2E8F0",
     sheenOpacity: 0.4,
   },
+  // Luminous Ice-Blue Pebble (Clean light dashboard style with sapphire icon)
+  ice: {
+    gradTop: "#FFFFFF",
+    gradBottom: "#EFF6FF",
+    textColor: "#2563EB",
+    shadowColor: "#2563EB",
+    shadowOpacity: 0.12,
+    borderTopColor: "#FFFFFF",
+    borderBottomColor: "#BFDBFE",
+    borderSideColor: "#DBEAFE",
+    sheenOpacity: 0.45,
+  },
   // Emerald / Success Pebble
   emerald: {
     gradTop: "#10B981",
@@ -100,24 +112,37 @@ export function PebbleButton({
 }) {
   const rawId = useId ? useId() : Math.random().toString();
   const safeId = "pb_" + String(rawId).replace(/[^a-zA-Z0-9]/g, "_");
+  const bodyId = safeId + "_b";
+  const sheenId = safeId + "_s";
 
   const config = PEBBLE_VARIANTS[variant] || PEBBLE_VARIANTS.sapphire;
   const buttonText = title ?? (typeof children === "string" ? children : null);
-  const iconSize = size === "lg" ? 18 : size === "sm" ? 14 : 16;
   const isCircle =
     size === "circle" || size === "circle-sm" || size === "circle-lg";
+
+  const iconSize =
+    size === "circle" || size === "circle-lg"
+      ? 20
+      : size === "circle-sm"
+        ? 17
+        : size === "lg"
+          ? 18
+          : size === "sm"
+            ? 14
+            : 16;
 
   const renderIcon = (iconProp) => {
     if (!iconProp) return null;
     if (React.isValidElement(iconProp)) return iconProp;
-    if (typeof iconProp === "function") {
+    try {
       return React.createElement(iconProp, {
         size: iconSize,
         color: config.textColor,
         strokeWidth: 2.2,
       });
+    } catch {
+      return null;
     }
-    return null;
   };
 
   return (
