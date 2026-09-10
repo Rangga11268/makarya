@@ -1,12 +1,13 @@
 import React from "react";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import { Star, Briefcase, ShieldCheck, CheckCircle2, Heart, MessageSquare } from "lucide-react-native";
+  Star,
+  Briefcase,
+  ShieldCheck,
+  CheckCircle2,
+  Heart,
+  MessageSquare,
+} from "lucide-react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { PebbleButton } from "../ui/PebbleButton";
@@ -56,105 +57,119 @@ export function TalentDeckCard({
   return (
     <View style={styles.deckContainer}>
       {/* 1. Perspective Background Deck Layers (The Signature FlyHire Stacked Aesthetic) */}
-      <View style={[styles.deckLayer, styles.deckLayer2]} pointerEvents="none" />
-      <View style={[styles.deckLayer, styles.deckLayer1]} pointerEvents="none" />
+      <View
+        style={[styles.deckLayer, styles.deckLayer2]}
+        pointerEvents="none"
+      />
+      <View
+        style={[styles.deckLayer, styles.deckLayer1]}
+        pointerEvents="none"
+      />
 
       {/* 2. Top Interactive Card */}
-      <TouchableOpacity
-        style={styles.mainCard}
-        onPress={onPress}
-        activeOpacity={0.92}
-      >
-        {/* Top Header Row */}
-        <View style={styles.topRow}>
-          <View style={styles.avatarGroup}>
-            {avatarUrl ? (
-              <Image source={{ uri: avatarUrl }} style={styles.avatarImg} />
-            ) : (
-              <View style={styles.avatarInitialWrap}>
-                <Text style={styles.avatarInitialText}>{initial}</Text>
+      <View style={styles.mainCard}>
+        {/* Top Clickable Area */}
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.85}
+          style={styles.cardHeaderPressable}
+        >
+          {/* Top Header Row */}
+          <View style={styles.topRow}>
+            <View style={styles.avatarGroup}>
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} style={styles.avatarImg} />
+              ) : (
+                <View style={styles.avatarInitialWrap}>
+                  <Text style={styles.avatarInitialText}>{initial}</Text>
+                </View>
+              )}
+              <View style={styles.verifiedDot}>
+                <CheckCircle2 size={13} color="#FFFFFF" fill="#059669" />
               </View>
-            )}
-            <View style={styles.verifiedDot}>
-              <CheckCircle2 size={13} color="#FFFFFF" fill="#059669" />
+            </View>
+
+            {/* Quick Action Pills on Top Right */}
+            <View style={styles.topActionsRow}>
+              {onChat && (
+                <TouchableOpacity
+                  style={styles.topIconCircle}
+                  onPress={onChat}
+                  activeOpacity={0.75}
+                >
+                  <MessageSquare size={15} color="#334155" />
+                </TouchableOpacity>
+              )}
+              {onBookmark && (
+                <TouchableOpacity
+                  style={[
+                    styles.topIconCircle,
+                    isBookmarked && {
+                      backgroundColor: "#FEE2E2",
+                      borderColor: "#FECACA",
+                    },
+                  ]}
+                  onPress={onBookmark}
+                  activeOpacity={0.75}
+                >
+                  <Heart
+                    size={15}
+                    color={isBookmarked ? "#EF4444" : "#334155"}
+                    fill={isBookmarked ? "#EF4444" : "none"}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
-          {/* Quick Action Pills on Top Right */}
-          <View style={styles.topActionsRow}>
-            {onChat && (
-              <TouchableOpacity
-                style={styles.topIconCircle}
-                onPress={onChat}
-                activeOpacity={0.75}
-              >
-                <MessageSquare size={15} color="#334155" />
-              </TouchableOpacity>
-            )}
-            {onBookmark && (
-              <TouchableOpacity
-                style={[
-                  styles.topIconCircle,
-                  isBookmarked && { backgroundColor: "#FEE2E2", borderColor: "#FECACA" },
-                ]}
-                onPress={onBookmark}
-                activeOpacity={0.75}
-              >
-                <Heart
-                  size={15}
-                  color={isBookmarked ? "#EF4444" : "#334155"}
-                  fill={isBookmarked ? "#EF4444" : "none"}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
-        {/* Talent Identity & Title */}
-        <View style={styles.nameBlock}>
-          <Text style={styles.talentName} numberOfLines={1}>
-            {displayName}
-          </Text>
-          <Text style={styles.talentUniversity} numberOfLines={1}>
-            {prodiText} • {university}
-          </Text>
-        </View>
-
-        {/* Ergonomic Pill Tags Row (FlyHire Metatags Concept) */}
-        <View style={styles.pillChipsRow}>
-          <View style={styles.pillChip}>
-            <Star size={12} color="#D97706" fill="#F59E0B" />
-            <Text style={styles.pillChipText}>{rating}</Text>
-          </View>
-
-          <View style={styles.pillChip}>
-            <Briefcase size={11} color="#475569" />
-            <Text style={styles.pillChipText}>
-              {completedProjects} Proyek Tuntas
+          {/* Talent Identity & Title */}
+          <View style={styles.nameBlock}>
+            <Text style={styles.talentName} numberOfLines={1}>
+              {displayName}
+            </Text>
+            <Text style={styles.talentUniversity} numberOfLines={1}>
+              {prodiText} • {university}
             </Text>
           </View>
 
-          <View style={styles.pillChip}>
-            <ShieldCheck size={12} color="#0284C7" />
-            <Text style={[styles.pillChipText, { color: "#0284C7" }]}>
-              Escrow Siap
-            </Text>
+          {/* Ergonomic Pill Tags Row (FlyHire Metatags Concept) */}
+          <View style={styles.pillChipsRow}>
+            <View style={styles.pillChip}>
+              <Star size={12} color="#D97706" fill="#F59E0B" />
+              <Text style={styles.pillChipText}>{rating}</Text>
+            </View>
+
+            <View style={styles.pillChip}>
+              <Briefcase size={11} color="#475569" />
+              <Text style={styles.pillChipText}>
+                {completedProjects} Proyek Tuntas
+              </Text>
+            </View>
+
+            <View style={styles.pillChip}>
+              <ShieldCheck size={12} color="#0284C7" />
+              <Text style={[styles.pillChipText, { color: "#0284C7" }]}>
+                Escrow Siap
+              </Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Divider */}
         <View style={styles.cardDivider} />
 
         {/* Bottom Section: Specialty, Status & Action Button */}
         <View style={styles.bottomSection}>
-          <View style={{ flex: 1, marginRight: 10 }}>
+          <TouchableOpacity
+            style={{ flex: 1, marginRight: 10 }}
+            onPress={onPress}
+            activeOpacity={0.8}
+          >
             <Text style={styles.specialtyLabel} numberOfLines={1}>
               {specialty}
             </Text>
-            <Text style={styles.statusSubtext}>
-              Siap Kolaborasi UMKM
-            </Text>
-          </View>
+            <Text style={styles.statusSubtext}>Siap Kolaborasi UMKM</Text>
+          </TouchableOpacity>
 
           <PebbleButton
             variant="sapphire"
@@ -163,7 +178,7 @@ export function TalentDeckCard({
             onPress={onPress}
           />
         </View>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -210,6 +225,9 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
     zIndex: 3,
+  },
+  cardHeaderPressable: {
+    width: "100%",
   },
   topRow: {
     flexDirection: "row",

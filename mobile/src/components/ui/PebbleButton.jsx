@@ -90,6 +90,7 @@ export const PEBBLE_VARIANTS = {
 };
 
 export function PebbleButton({
+  label,
   title,
   children,
   onPress,
@@ -109,7 +110,8 @@ export function PebbleButton({
   const sheenId = safeId + "_s";
 
   const config = PEBBLE_VARIANTS[variant] || PEBBLE_VARIANTS.sapphire;
-  const buttonText = title ?? (typeof children === "string" ? children : null);
+  const buttonText =
+    label ?? title ?? (typeof children === "string" ? children : null);
   const isCircle =
     size === "circle" || size === "circle-sm" || size === "circle-lg";
 
