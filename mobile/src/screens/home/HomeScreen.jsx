@@ -17,6 +17,8 @@ import Svg, { Path, Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { TalentBentoCard } from "../../components/features/TalentBentoCard";
+import { TalentDeckCard } from "../../components/features/TalentDeckCard";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { PromoBanner } from "../../components/features/PromoBanner";
@@ -85,7 +87,7 @@ export function HomeScreen({ navigation }) {
       setRefreshing(true);
       fetchNotifications().catch(() => {});
       if (isMahasiswa) {
-        const [walletRes, browseRes, propRes] = await Promise.all([
+        const [walletRes, browseRes, propRes, talentsRes] = await Promise.all([
           walletApi
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
@@ -93,6 +95,7 @@ export function HomeScreen({ navigation }) {
             .browse({ limit: 6, status: "OPEN" })
             .catch(() => ({ data: { items: [] } })),
           proposalApi.getMyProposals().catch(() => ({ data: [] })),
+          talentApi.getTalents({ limit: 4 }).catch(() => ({ data: [] })),
         ]);
         setWallet(walletRes.data);
         const pItems = Array.isArray(browseRes.data)
@@ -100,6 +103,10 @@ export function HomeScreen({ navigation }) {
           : browseRes.data?.items || [];
         setBrowseProjects(pItems);
         setMyProposals(Array.isArray(propRes.data) ? propRes.data : []);
+        const tItems = Array.isArray(talentsRes.data)
+          ? talentsRes.data
+          : talentsRes.data?.items || [];
+        setFeaturedTalents(tItems);
       } else {
         const [walletRes, myProjRes, talentsRes] = await Promise.all([
           walletApi
@@ -268,6 +275,7 @@ export function HomeScreen({ navigation }) {
         translucent
         backgroundColor="transparent"
       />
+      <OrganicRibbonBackground height={520} />
 
       <ScrollView
         style={styles.scrollArea}
@@ -911,9 +919,53 @@ export function HomeScreen({ navigation }) {
                   </TouchableOpacity>
                 </ScrollView>
               )}
+
+              {/* Mahasiswa View: Peer Collaboration / Top Talents Deck */}
+              {featuredTalents.length > 0 && (
+                <View style={[styles.sectionContainer, { marginTop: 24, marginHorizontal: -16 }]}>
+                  <View style={[styles.sectionHeaderRow, { paddingHorizontal: 16 }]}>
+                    <View style={styles.sectionHeaderTitleCol}>
+                      <Text style={styles.sectionMainTitle}>
+                        Rekan Kolaborasi Unggulan
+                      </Text>
+                      <Text style={styles.sectionSubTitle} numberOfLines={1}>
+                        Mahasiswa bertalenta siap diajak kolaborasi proyek tim
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("ProjectsTab")}
+                      style={styles.seeAllPill}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.seeAllPillText}>Semua</Text>
+                      <ArrowRight size={11} color={COLORS.brandIndigo} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.horizontalFeedList}
+                    snapToInterval={CARD_WIDTH + 14}
+                    decelerationRate="fast"
+                  >
+                    {featuredTalents.map((t, idx) => (
+                      <View
+                        key={t.id || idx}
+                        style={{ width: CARD_WIDTH, marginRight: 14 }}
+                      >
+                        <TalentDeckCard
+                          talent={t}
+                          onPress={() => navigation.navigate("ProjectsTab")}
+                        />
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
             </View>
           ) : (
-            /* UMKM View: Featured Student Talents */
+            /* UMKM View: Featured Student Talents in FlyHire Discovery Deck */
             <View style={styles.sectionContainer}>
               <View style={styles.sectionHeaderRow}>
                 <View style={styles.sectionHeaderTitleCol}>
@@ -935,14 +987,46 @@ export function HomeScreen({ navigation }) {
               </View>
 
               {featuredTalents.length > 0 ? (
-                featuredTalents.map((t, idx) => (
-                  <TalentBentoCard
-                    key={t.id || idx}
-                    talent={t}
-                    variant={idx === 0 ? "featured" : "standard"}
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.horizontalFeedList}
+                  snapToInterval={CARD_WIDTH + 14}
+                  decelerationRate="fast"
+                >
+                  {featuredTalents.map((t, idx) => (
+                    <View
+                      key={t.id || idx}
+                      style={{ width: CARD_WIDTH, marginRight: 14 }}
+                    >
+                      <TalentDeckCard
+                        talent={t}
+                        onPress={() => navigation.navigate("ProjectsTab")}
+                      />
+                    </View>
+                  ))}
+
+                  {/* Explore More Talents Cap */}
+                  <TouchableOpacity
+                    style={[styles.endCapCard, { width: CARD_WIDTH * 0.72 }]}
                     onPress={() => navigation.navigate("ProjectsTab")}
-                  />
-                ))
+                    activeOpacity={0.85}
+                  >
+                    <View style={styles.endCapIconBox}>
+                      <Users size={22} color={COLORS.brandIndigo} />
+                    </View>
+                    <Text style={styles.endCapMainText}>
+                      Direktori Talenta
+                    </Text>
+                    <Text style={styles.endCapSubText}>
+                      Filter talenta berdasarkan universitas & keahlian
+                    </Text>
+                    <View style={styles.endCapPillBtn}>
+                      <Text style={styles.endCapPillText}>Lihat Semua</Text>
+                      <ArrowRight size={12} color="#FFFFFF" />
+                    </View>
+                  </TouchableOpacity>
+                </ScrollView>
               ) : (
                 <View style={styles.emptyCardBox}>
                   <Users size={32} color={COLORS.textDim} />

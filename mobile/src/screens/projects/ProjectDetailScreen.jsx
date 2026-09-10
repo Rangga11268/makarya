@@ -26,6 +26,8 @@ import {
 } from "../../components/features/projects/ContractActionModals";
 import { InvoiceReceiptModal } from "../../components/features/projects/InvoiceReceiptModal";
 import { Badge } from "../../components/ui/Badge";
+import { PebbleButton } from "../../components/ui/PebbleButton";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
 import { projectApi, proposalApi, submissionApi } from "../../api";
@@ -547,36 +549,57 @@ export function ProjectDetailScreen({ route, navigation }) {
         }
       />
 
+      <OrganicRibbonBackground height={360} />
+
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Hero Summary Card */}
-        <View style={styles.heroCard}>
-          <View style={styles.badgeRow}>
-            <Badge label={formatStatus(project.status)} variant="brand" />
-            <Text style={styles.budgetText}>
+        {/* 1. FlyHire Inspired Dark Floating Island Hero Card */}
+        <View style={styles.floatingHeroCard}>
+          <View style={styles.floatingHeroGlow} />
+
+          {/* Top Row: Category Badge & Escrow Status Tag */}
+          <View style={styles.floatingHeroTopRow}>
+            <View style={styles.categoryBadgePill}>
+              <Text style={styles.categoryBadgePillText}>
+                {project.kategori ? project.kategori.toUpperCase() : "UMKM DIGITAL"}
+              </Text>
+            </View>
+
+            <View style={styles.floatingHeroEscrowTag}>
+              <ShieldCheck size={12} color="#38BDF8" />
+              <Text style={styles.floatingHeroEscrowTagText}>Escrow Guaranteed</Text>
+            </View>
+          </View>
+
+          {/* Big Prominent Budget Display */}
+          <View style={styles.floatingHeroBudgetSection}>
+            <Text style={styles.floatingHeroBudgetMicro}>PAGU MAKSIMAL ANGGARAN</Text>
+            <Text style={styles.floatingHeroBudgetValue}>
               {formatCurrency(project.budget_max)}
             </Text>
           </View>
 
-          <Text style={styles.projectTitle}>{project.judul}</Text>
+          {/* Project Title */}
+          <Text style={styles.floatingHeroTitle}>{project.judul}</Text>
 
-          <View style={styles.metaRow}>
-            <View style={styles.metaItem}>
-              <Calendar size={13} color={COLORS.textMuted} />
-              <Text style={styles.metaText}>
-                Deadline: {formatDate(project.deadline)}
+          {/* Meta Footer Row: Deadline & Invoice Trigger */}
+          <View style={styles.floatingHeroMetaRow}>
+            <View style={styles.floatingHeroMetaItem}>
+              <Calendar size={13} color="#94A3B8" />
+              <Text style={styles.floatingHeroMetaText}>
+                Tenggat: {formatDate(project.deadline)}
               </Text>
             </View>
 
             <TouchableOpacity
-              style={styles.escrowPill}
+              style={styles.floatingHeroInvoiceBtn}
               onPress={() => setInvoiceModal(true)}
               activeOpacity={0.8}
             >
-              <ShieldCheck size={13} color={COLORS.brandCyan} />
-              <Text style={styles.escrowPillText}>Faktur Escrow 100%</Text>
+              <FileCheck size={12} color="#38BDF8" />
+              <Text style={styles.floatingHeroInvoiceBtnText}>Faktur Escrow 100%</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -836,6 +859,45 @@ export function ProjectDetailScreen({ route, navigation }) {
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
           <Text style={styles.descriptionText}>{project.deskripsi_raw}</Text>
+        </View>
+
+        {/* 4B. Modular Deliverables Reel (FlyHire Inspiration) */}
+        <View style={styles.deliverablesContainer}>
+          <Text style={styles.deliverablesHeading}>Spesifikasi Deliverable Proyek</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.deliverablesScroll}
+          >
+            <View style={styles.deliverablePill}>
+              <Text style={styles.deliverableEmoji}>🎨</Text>
+              <View>
+                <Text style={styles.deliverableTitle}>Figma / Source Assets</Text>
+                <Text style={styles.deliverableSub}>Komponen & Style Guide</Text>
+              </View>
+            </View>
+            <View style={styles.deliverablePill}>
+              <Text style={styles.deliverableEmoji}>📱</Text>
+              <View>
+                <Text style={styles.deliverableTitle}>Hasil Kerja Digital</Text>
+                <Text style={styles.deliverableSub}>Sesuai Rincian Brief</Text>
+              </View>
+            </View>
+            <View style={styles.deliverablePill}>
+              <Text style={styles.deliverableEmoji}>🛡️</Text>
+              <View>
+                <Text style={styles.deliverableTitle}>Proteksi Escrow 100%</Text>
+                <Text style={styles.deliverableSub}>Dana Aman di Makarya</Text>
+              </View>
+            </View>
+            <View style={styles.deliverablePill}>
+              <Text style={styles.deliverableEmoji}>⚡</Text>
+              <View>
+                <Text style={styles.deliverableTitle}>Revisi Terstruktur</Text>
+                <Text style={styles.deliverableSub}>Ruang Obrolan Realtime</Text>
+              </View>
+            </View>
+          </ScrollView>
         </View>
 
         {/* 5. Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
@@ -1269,39 +1331,34 @@ export function ProjectDetailScreen({ route, navigation }) {
 
         <View style={styles.stickyActionCol}>
           {canApply ? (
-            <TouchableOpacity
-              style={styles.primaryApplyBtn}
+            <PebbleButton
+              variant="sapphire"
+              label="Ajukan Lamaran"
+              icon={Send}
               onPress={() => setProposalModal(true)}
-              activeOpacity={0.88}
-            >
-              <Send size={15} color="#FFFFFF" />
-              <Text style={styles.primaryApplyBtnText}>Ajukan Lamaran</Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           ) : isAcceptedProposal ? (
-            <TouchableOpacity
-              style={styles.primaryUploadBtn}
+            <PebbleButton
+              variant="sapphire"
+              label="Unggah Deliverable"
+              icon={UploadCloud}
               onPress={() => setSubmissionModal(true)}
-              activeOpacity={0.88}
-            >
-              <UploadCloud size={15} color="#FFFFFF" />
-              <Text style={styles.primaryApplyBtnText}>Unggah Deliverable</Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           ) : myExistingProposal ? (
             <View style={styles.alreadyAppliedPill}>
               <CheckCircle2 size={14} color={COLORS.success} />
               <Text style={styles.alreadyAppliedText}>Proposal Terkirim</Text>
             </View>
           ) : isUmkmOwner ? (
-            <TouchableOpacity
-              style={styles.umkmManageBtn}
+            <PebbleButton
+              variant="sapphire"
+              label={`Pelamar (${proposals.length})`}
+              icon={Layers}
               onPress={() => setActiveTab("proposals")}
-              activeOpacity={0.88}
-            >
-              <Layers size={15} color="#FFFFFF" />
-              <Text style={styles.primaryApplyBtnText}>
-                Pelamar ({proposals.length})
-              </Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           ) : isProjectExpired ? (
             <View
               style={[
@@ -1411,18 +1468,166 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 24,
   },
-  heroCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
-    padding: 16,
+  // FlyHire Floating Dark Island Card
+  floatingHeroCard: {
+    backgroundColor: "#0F172A",
+    borderRadius: 22,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.08)",
+    marginBottom: 16,
+    position: "relative",
+    overflow: "hidden",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  floatingHeroGlow: {
+    position: "absolute",
+    top: -40,
+    right: -40,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: "rgba(37, 99, 235, 0.15)",
+  },
+  floatingHeroTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  categoryBadgePill: {
+    backgroundColor: "rgba(37, 99, 235, 0.2)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.4)",
+  },
+  categoryBadgePillText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    color: "#93C5FD",
+    letterSpacing: 0.5,
+  },
+  floatingHeroEscrowTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(14, 165, 233, 0.25)",
+  },
+  floatingHeroEscrowTagText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#38BDF8",
+  },
+  floatingHeroBudgetSection: {
+    marginBottom: 10,
+  },
+  floatingHeroBudgetMicro: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    color: "#94A3B8",
+    letterSpacing: 0.6,
+    marginBottom: 2,
+  },
+  floatingHeroBudgetValue: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 24,
+    color: "#FFFFFF",
+    letterSpacing: -0.5,
+  },
+  floatingHeroTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 16.5,
+    color: "#F8FAFC",
+    lineHeight: 23,
+    marginBottom: 14,
+  },
+  floatingHeroMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255, 255, 255, 0.08)",
+  },
+  floatingHeroMetaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  floatingHeroMetaText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#94A3B8",
+  },
+  floatingHeroInvoiceBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(56, 189, 248, 0.1)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  floatingHeroInvoiceBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#38BDF8",
+  },
+
+  // Deliverables Reel
+  deliverablesContainer: {
+    marginBottom: 16,
+  },
+  deliverablesHeading: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    color: COLORS.textDark,
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  deliverablesScroll: {
+    gap: 10,
+    paddingRight: 16,
+  },
+  deliverablePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
-    marginBottom: 14,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  deliverableEmoji: {
+    fontSize: 16,
+  },
+  deliverableTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    color: COLORS.textDark,
+  },
+  deliverableSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 9.5,
+    color: COLORS.textMuted,
   },
   matchScoreCard: {
     backgroundColor: "#ECFDF5",
