@@ -729,12 +729,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -743,6 +745,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
     shadowRadius: 3,
+    elevation: 1,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
   activeFilterPillText: {
@@ -767,6 +770,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
+    paddingBottom: 100,
     paddingBottom: 110,
     gap: 10,
   },
@@ -784,11 +788,13 @@ const styles = StyleSheet.create({
   },
 
   talentCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 15,
     borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -797,6 +803,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   cardHeaderRow: {
