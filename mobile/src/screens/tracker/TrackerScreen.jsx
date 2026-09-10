@@ -632,23 +632,15 @@ const styles = StyleSheet.create({
   },
   segmentedContainer: {
     flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.85)",
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.85)",
+      Platform.OS === "android" ? "#F1F5F9" : "rgba(15, 23, 42, 0.05)",
     padding: 3,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
-        : "rgba(255, 255, 255, 0.95)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
-    elevation: Platform.OS === "android" ? 0 : 1,
+        : "rgba(15, 23, 42, 0.06)",
   },
   segmentedItem: {
     flex: 1,
@@ -660,10 +652,9 @@ const styles = StyleSheet.create({
   segmentedItemActive: {
     backgroundColor: "#FFFFFF",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1.5 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
-    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   segmentedLabel: {
@@ -673,7 +664,7 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
   segmentedLabelActive: {
-    color: COLORS.brandIndigo,
+    color: "#2563EB",
   },
 
   newProjectBtn: {
@@ -695,11 +686,10 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 100,
+    paddingBottom: 110,
   },
 
   projectCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
@@ -708,7 +698,6 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -717,7 +706,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   projectCardActive: {
