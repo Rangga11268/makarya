@@ -7,7 +7,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 export function OrganicRibbonBackground({ height = 480, style }) {
   return (
     <View
-      style={[StyleSheet.absoluteFillObject, { height, overflow: "hidden" }, style]}
+      style={[
+        StyleSheet.absoluteFillObject,
+        { height, overflow: "hidden" },
+        style,
+      ]}
       pointerEvents="none"
     >
       <Svg

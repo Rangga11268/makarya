@@ -20,6 +20,7 @@ import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
 import { Header } from "../../components/ui/Header";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
 import {
   Layers,
@@ -162,6 +163,7 @@ export function TrackerScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <OrganicRibbonBackground height={340} />
       {/* 1. Header */}
       <Header
         category="WORKSPACE"
@@ -623,28 +625,38 @@ const styles = StyleSheet.create({
 
   // 4-Column Balanced Segmented Bar
   segmentedWrapper: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "transparent",
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    paddingTop: 8,
+    paddingBottom: 6,
   },
   segmentedContainer: {
     flexDirection: "row",
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
     padding: 3,
-    borderRadius: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   segmentedItem: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
-    borderRadius: 9,
+    paddingVertical: 7,
+    borderRadius: 11,
   },
   segmentedItemActive: {
     backgroundColor: "#FFFFFF",
-    ...SHADOWS.sm,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   segmentedLabel: {
     fontFamily: FONTS.displayBold,
@@ -674,20 +686,24 @@ const styles = StyleSheet.create({
 
   listContent: {
     paddingHorizontal: 16,
-    paddingTop: 14,
+    paddingTop: 8,
     paddingBottom: 40,
   },
 
   projectCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    borderRadius: 20,
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 14,
-    marginBottom: 12,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.sm,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   projectCardActive: {
     borderColor: "rgba(79, 70, 229, 0.35)",
@@ -1103,12 +1119,16 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     marginTop: 20,
-    ...SHADOWS.sm,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   emptyIconCircle: {
     width: 54,

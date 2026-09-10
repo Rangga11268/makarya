@@ -31,6 +31,7 @@ import {
 } from "lucide-react-native";
 import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
@@ -168,6 +169,7 @@ export function ProjectListScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <OrganicRibbonBackground height={320} />
       {/* 1. Standardized Unified Header */}
       <Header
         category={isMahasiswa ? "KATALOG PROYEK KAMPUS" : "MANAJEMEN PROYEK"}
@@ -207,7 +209,7 @@ export function ProjectListScreen({ navigation, route }) {
         />
       </View>
 
-      {/* 3. Underline Segmented Navigation Tabs */}
+      {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -215,7 +217,10 @@ export function ProjectListScreen({ navigation, route }) {
             <TouchableOpacity
               key={tab.id}
               onPress={() => setActiveTab(tab.id)}
-              style={styles.segmentedTabItem}
+              style={[
+                styles.segmentedTabItem,
+                isActive && styles.segmentedTabItemActive,
+              ]}
               activeOpacity={0.7}
             >
               <Text
@@ -226,7 +231,6 @@ export function ProjectListScreen({ navigation, route }) {
               >
                 {tab.label}
               </Text>
-              {isActive && <View style={styles.activeUnderlineBar} />}
             </TouchableOpacity>
           );
         })}
@@ -445,44 +449,50 @@ const styles = StyleSheet.create({
   // 2. Search Section
   searchSection: {
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 8,
-    backgroundColor: COLORS.bgSurface,
+    paddingTop: 8,
+    paddingBottom: 6,
+    backgroundColor: "transparent",
   },
 
-  // 3. Segmented Navigation Tabs (Underline Style)
+  // 3. Apple Glass Capsule Segmented Navigation Tabs
   segmentedContainer: {
     flexDirection: "row",
-    backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    marginHorizontal: 20,
+    marginTop: 2,
+    marginBottom: 6,
+    borderRadius: 14,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   segmentedTabItem: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 7,
     alignItems: "center",
-    position: "relative",
+    borderRadius: 11,
+  },
+  segmentedTabItemActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: 12,
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displaySemiBold,
     color: COLORS.brandIndigo,
-    fontWeight: "700",
-  },
-  activeUnderlineBar: {
-    position: "absolute",
-    bottom: -1,
-    left: 12,
-    right: 12,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: COLORS.brandIndigo,
   },
 
   // 4. Active Filter Tag Bar
@@ -490,8 +500,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: COLORS.canvasSoft,
+    paddingVertical: 6,
+    backgroundColor: "transparent",
     gap: 8,
     flexWrap: "wrap",
   },
@@ -505,12 +515,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
-    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
   },
   activeFilterPillText: {
     fontFamily: FONTS.bodyBold,
@@ -531,11 +546,11 @@ const styles = StyleSheet.create({
   // 5. Feed List
   listContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 8,
     paddingBottom: 32,
   },
   projectCardWrapper: {
-    marginBottom: 14,
+    marginBottom: 10,
   },
 
   // Empty State
@@ -543,11 +558,16 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     marginTop: 20,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   emptyTitle: {
     fontFamily: FONTS.displayBold,

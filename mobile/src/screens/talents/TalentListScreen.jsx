@@ -22,6 +22,8 @@ import { TalentFilterModal } from "../../components/features/talents/TalentFilte
 import { TalentDetailModal } from "../../components/features/talents/TalentDetailModal";
 import { TalentInviteModal } from "../../components/features/talents/TalentInviteModal";
 import { Button } from "../../components/ui/Button";
+import { PebbleButton } from "../../components/ui/PebbleButton";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TalentCardSkeleton } from "../../components/ui/Skeleton";
 import { talentApi, projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
@@ -426,24 +428,23 @@ export function TalentListScreen({ navigation }) {
           </View>
         )}
 
-        {/* 5. Card Actions */}
+        {/* 5. Card Actions with PebbleButton */}
         <View style={styles.cardActionsRow}>
-          <TouchableOpacity
-            style={styles.detailBtn}
+          <PebbleButton
+            variant="ice"
+            size="sm"
+            label="Portofolio"
             onPress={() => handleOpenDetail(item)}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.detailBtnText}>Lihat Portofolio</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.contactBtn}
+            style={{ flex: 1, marginRight: 8 }}
+          />
+          <PebbleButton
+            variant="sapphire"
+            size="sm"
+            label="Ajak Kolaborasi"
+            icon={MessageSquare}
             onPress={() => handleOpenContact(item)}
-            activeOpacity={0.85}
-          >
-            <MessageSquare size={14} color="#FFFFFF" />
-            <Text style={styles.contactBtnText}>Ajak Kolaborasi</Text>
-          </TouchableOpacity>
+            style={{ flex: 1.2 }}
+          />
         </View>
       </View>
     );
@@ -451,6 +452,7 @@ export function TalentListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <OrganicRibbonBackground height={320} />
       {/* 1. Standardized Unified Header */}
       <Header
         category="DIREKTORI TALENTA KAMPUS"
@@ -474,7 +476,7 @@ export function TalentListScreen({ navigation }) {
         />
       </View>
 
-      {/* 3. Underline Segmented Navigation Tabs */}
+      {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -482,7 +484,10 @@ export function TalentListScreen({ navigation }) {
             <TouchableOpacity
               key={tab.id}
               onPress={() => setActiveTab(tab.id)}
-              style={styles.segmentedTabItem}
+              style={[
+                styles.segmentedTabItem,
+                isActive && styles.segmentedTabItemActive,
+              ]}
               activeOpacity={0.7}
             >
               <Text
@@ -493,7 +498,6 @@ export function TalentListScreen({ navigation }) {
               >
                 {tab.label}
               </Text>
-              {isActive && <View style={styles.activeUnderlineBar} />}
             </TouchableOpacity>
           );
         })}
@@ -659,44 +663,50 @@ const styles = StyleSheet.create({
   // Search Section
   searchSection: {
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 8,
-    backgroundColor: COLORS.bgSurface,
+    paddingTop: 8,
+    paddingBottom: 6,
+    backgroundColor: "transparent",
   },
 
-  // Segmented Tabs (Underline Style)
+  // Segmented Tabs (Apple Glass Capsule Style)
   segmentedContainer: {
     flexDirection: "row",
-    backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    marginHorizontal: 20,
+    marginTop: 2,
+    marginBottom: 6,
+    borderRadius: 14,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   segmentedTabItem: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 7,
     alignItems: "center",
-    position: "relative",
+    borderRadius: 11,
+  },
+  segmentedTabItemActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: 12,
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
-    fontFamily: FONTS.bodyBold,
-    fontWeight: "700",
+    fontFamily: FONTS.displaySemiBold,
     color: COLORS.brandIndigo,
-  },
-  activeUnderlineBar: {
-    position: "absolute",
-    bottom: 0,
-    left: 12,
-    right: 12,
-    height: 2.5,
-    backgroundColor: COLORS.brandIndigo,
-    borderRadius: 2,
   },
 
   // Active Filter Bar
@@ -704,10 +714,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: COLORS.canvasSoft,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    paddingVertical: 6,
+    backgroundColor: "transparent",
     gap: 8,
     flexWrap: "wrap",
   },
@@ -721,12 +729,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 9,
-    paddingVertical: 3,
-    borderRadius: 999,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
   },
   activeFilterPillText: {
     fontFamily: FONTS.bodyBold,
@@ -749,9 +762,9 @@ const styles = StyleSheet.create({
   // List & Cards
   listContent: {
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 8,
     paddingBottom: 24,
-    gap: 12,
+    gap: 10,
   },
   loadingCenter: {
     flex: 1,
@@ -767,12 +780,16 @@ const styles = StyleSheet.create({
   },
 
   talentCard: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
-    padding: 16,
+    padding: 15,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.sm,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   cardHeaderRow: {
     flexDirection: "row",

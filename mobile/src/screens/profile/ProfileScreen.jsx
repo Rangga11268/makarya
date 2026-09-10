@@ -19,6 +19,8 @@ import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Header } from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
+import { PebbleButton } from "../../components/ui/PebbleButton";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { Input } from "../../components/ui/Input";
 import { EditProfileModal } from "../../components/features/profile/EditProfileModal";
 import { AddSkillModal } from "../../components/features/profile/AddSkillModal";
@@ -310,6 +312,7 @@ export function ProfileScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <OrganicRibbonBackground height={360} />
       <Header
         category="PENGATURAN IDENTITAS"
         title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
@@ -431,16 +434,13 @@ export function ProfileScreen({ navigation }) {
           </View>
 
           {/* Edit Profile Action Button */}
-          <TouchableOpacity
-            style={styles.editProfileBtn}
+          <PebbleButton
+            variant="sapphire"
+            size="sm"
+            label="Edit Profil & Portofolio"
             onPress={handleOpenEditModal}
-            activeOpacity={0.85}
-          >
-            <EditPencilVectorIcon size={14} color="#FFFFFF" />
-            <Text style={styles.editProfileBtnText}>
-              Edit Profil & Portofolio
-            </Text>
-          </TouchableOpacity>
+            style={{ width: "100%", marginTop: 12 }}
+          />
         </View>
 
         {/* 2. Bio Singkat Card */}
@@ -813,13 +813,13 @@ export function ProfileScreen({ navigation }) {
         </View>
 
         {/* 9. Logout Button */}
-        <Button
-          title="Keluar dari Akun"
-          variant="danger"
-          size="lg"
-          icon={<LogOut size={18} color="#FFF" />}
+        <PebbleButton
+          variant="ruby"
+          size="md"
+          label="Keluar dari Akun"
+          icon={LogOut}
           onPress={handleLogout}
-          style={styles.logoutBtn}
+          style={{ width: "100%", marginTop: 8 }}
         />
 
         <View style={{ height: 30 }} />
@@ -858,17 +858,17 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   profileCard: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     borderRadius: 24,
-    padding: 22,
+    padding: 20,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
     elevation: 2,
   },
   avatarCircle: {
@@ -1006,17 +1006,17 @@ const styles = StyleSheet.create({
 
   // Section Box
   sectionBox: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.02,
-    shadowRadius: 3,
-    elevation: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    marginBottom: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   sectionHeaderRow: {
     flexDirection: "row",

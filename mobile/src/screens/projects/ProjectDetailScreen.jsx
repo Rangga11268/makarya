@@ -563,19 +563,25 @@ export function ProjectDetailScreen({ route, navigation }) {
           <View style={styles.floatingHeroTopRow}>
             <View style={styles.categoryBadgePill}>
               <Text style={styles.categoryBadgePillText}>
-                {project.kategori ? project.kategori.toUpperCase() : "UMKM DIGITAL"}
+                {project.kategori
+                  ? project.kategori.toUpperCase()
+                  : "UMKM DIGITAL"}
               </Text>
             </View>
 
             <View style={styles.floatingHeroEscrowTag}>
               <ShieldCheck size={12} color="#38BDF8" />
-              <Text style={styles.floatingHeroEscrowTagText}>Escrow Guaranteed</Text>
+              <Text style={styles.floatingHeroEscrowTagText}>
+                Escrow Guaranteed
+              </Text>
             </View>
           </View>
 
           {/* Big Prominent Budget Display */}
           <View style={styles.floatingHeroBudgetSection}>
-            <Text style={styles.floatingHeroBudgetMicro}>PAGU MAKSIMAL ANGGARAN</Text>
+            <Text style={styles.floatingHeroBudgetMicro}>
+              PAGU MAKSIMAL ANGGARAN
+            </Text>
             <Text style={styles.floatingHeroBudgetValue}>
               {formatCurrency(project.budget_max)}
             </Text>
@@ -599,7 +605,9 @@ export function ProjectDetailScreen({ route, navigation }) {
               activeOpacity={0.8}
             >
               <FileCheck size={12} color="#38BDF8" />
-              <Text style={styles.floatingHeroInvoiceBtnText}>Faktur Escrow 100%</Text>
+              <Text style={styles.floatingHeroInvoiceBtnText}>
+                Faktur Escrow 100%
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -863,7 +871,9 @@ export function ProjectDetailScreen({ route, navigation }) {
 
         {/* 4B. Modular Deliverables Reel (FlyHire Inspiration) */}
         <View style={styles.deliverablesContainer}>
-          <Text style={styles.deliverablesHeading}>Spesifikasi Deliverable Proyek</Text>
+          <Text style={styles.deliverablesHeading}>
+            Spesifikasi Deliverable Proyek
+          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -872,8 +882,12 @@ export function ProjectDetailScreen({ route, navigation }) {
             <View style={styles.deliverablePill}>
               <Text style={styles.deliverableEmoji}>🎨</Text>
               <View>
-                <Text style={styles.deliverableTitle}>Figma / Source Assets</Text>
-                <Text style={styles.deliverableSub}>Komponen & Style Guide</Text>
+                <Text style={styles.deliverableTitle}>
+                  Figma / Source Assets
+                </Text>
+                <Text style={styles.deliverableSub}>
+                  Komponen & Style Guide
+                </Text>
               </View>
             </View>
             <View style={styles.deliverablePill}>
@@ -886,7 +900,9 @@ export function ProjectDetailScreen({ route, navigation }) {
             <View style={styles.deliverablePill}>
               <Text style={styles.deliverableEmoji}>🛡️</Text>
               <View>
-                <Text style={styles.deliverableTitle}>Proteksi Escrow 100%</Text>
+                <Text style={styles.deliverableTitle}>
+                  Proteksi Escrow 100%
+                </Text>
                 <Text style={styles.deliverableSub}>Dana Aman di Makarya</Text>
               </View>
             </View>
@@ -894,7 +910,9 @@ export function ProjectDetailScreen({ route, navigation }) {
               <Text style={styles.deliverableEmoji}>⚡</Text>
               <View>
                 <Text style={styles.deliverableTitle}>Revisi Terstruktur</Text>
-                <Text style={styles.deliverableSub}>Ruang Obrolan Realtime</Text>
+                <Text style={styles.deliverableSub}>
+                  Ruang Obrolan Realtime
+                </Text>
               </View>
             </View>
           </ScrollView>
@@ -2172,18 +2190,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.94)",
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: Platform.OS === "ios" ? 34 : 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#000",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 10,
   },

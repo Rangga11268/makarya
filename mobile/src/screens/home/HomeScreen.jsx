@@ -329,9 +329,7 @@ export function HomeScreen({ navigation }) {
                 </Text>
                 <View style={styles.roleChipPill}>
                   <Text style={styles.roleChipPillText}>
-                    {isMahasiswa
-                      ? "Talenta Digital"
-                      : "Mitra UMKM"}
+                    {isMahasiswa ? "Talenta Digital" : "Mitra UMKM"}
                   </Text>
                 </View>
               </View>
@@ -372,9 +370,7 @@ export function HomeScreen({ navigation }) {
               <View style={styles.walletTopRow}>
                 <View style={styles.walletBalanceLabelGroup}>
                   <Text style={styles.walletBalanceTitle}>
-                    {isMahasiswa
-                      ? "Saldo Dompet Aktif"
-                      : "Saldo Escrow Bisnis"}
+                    {isMahasiswa ? "Saldo Dompet Aktif" : "Saldo Escrow Bisnis"}
                   </Text>
                   <Eye size={13} color="#64748B" />
                 </View>
@@ -432,7 +428,9 @@ export function HomeScreen({ navigation }) {
           {/* 4. Apple Glass Category Strip (Horizontal, Ultra Compact) */}
           <View style={[styles.sectionContainer, { marginBottom: 14 }]}>
             <View style={styles.sectionHeaderRowCompact}>
-              <Text style={styles.sectionMainTitleCompact}>Kategori Keahlian</Text>
+              <Text style={styles.sectionMainTitleCompact}>
+                Kategori Keahlian
+              </Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate("ProjectsTab")}
                 style={styles.seeAllPillCompact}
@@ -553,7 +551,10 @@ export function HomeScreen({ navigation }) {
                     : "#334155";
 
                 return (
-                  <View key={item.id || pId} style={styles.appleGlassOngoingCard}>
+                  <View
+                    key={item.id || pId}
+                    style={styles.appleGlassOngoingCard}
+                  >
                     <View style={styles.ongoingTopMeta}>
                       <View
                         style={[

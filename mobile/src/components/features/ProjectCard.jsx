@@ -271,13 +271,17 @@ export function ProjectCard({ project, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
-    padding: 15,
+    padding: 14,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(255, 255, 255, 0.95)",
     marginBottom: 12,
-    ...SHADOWS.sm,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
   },
   headerMetaRow: {
     flexDirection: "row",

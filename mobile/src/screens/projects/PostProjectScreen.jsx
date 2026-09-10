@@ -15,6 +15,7 @@ import { Input } from "../../components/ui/Input";
 import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { DatePickerInput } from "../../components/ui/DatePickerInput";
 import { Header } from "../../components/ui/Header";
+import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { PricingSuggester } from "../../components/features/PricingSuggester";
 import { CategoryChip } from "../../components/ui/CategoryChip";
 import { CATEGORIES } from "../../constants/categories";
@@ -247,6 +248,7 @@ export function PostProjectScreen({ navigation }) {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <OrganicRibbonBackground height={360} />
       <Header
         category="PASANG PROYEK"
         title="Pasang Proyek UMKM"
@@ -795,11 +797,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.88)",
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderDark,
+    paddingVertical: 10,
+    marginHorizontal: 16,
+    marginTop: 6,
+    marginBottom: 4,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
   },
   stepItem: {
     alignItems: "center",
@@ -846,11 +857,11 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 10,
-    color: COLORS.textMuted,
     fontWeight: "600",
+    color: COLORS.textMuted,
   },
   stepLabelActive: {
-    color: COLORS.textDark,
+    color: COLORS.brandIndigo,
     fontWeight: "700",
   },
   stepLabelCompleted: {
@@ -865,13 +876,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    borderRadius: 18,
     padding: 14,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    ...SHADOWS.sm,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   stepIntroTitle: {
     fontFamily: FONTS.displayBold,
@@ -1118,13 +1133,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   summarySpecCard: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
     borderRadius: 18,
     padding: 16,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 16,
-    ...SHADOWS.sm,
+    borderColor: "rgba(255, 255, 255, 0.95)",
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   summarySpecTitle: {
     fontFamily: FONTS.displayBold,
