@@ -97,11 +97,9 @@ export function Header({
           /* Standard Title + Subtitle Header */
           <View style={styles.titleContainer}>
             {category ? (
-              <View style={styles.categoryBadge}>
-                <Text style={styles.categoryText} numberOfLines={1}>
-                  {category}
-                </Text>
-              </View>
+              <Text style={styles.categoryText} numberOfLines={1}>
+                {category}
+              </Text>
             ) : null}
             <Text style={styles.title} numberOfLines={1}>
               {title}
@@ -178,17 +176,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 34,
-    paddingBottom: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(226, 232, 240, 0.65)",
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: Platform.OS === "android" ? 0 : 2,
+    paddingTop: Platform.OS === "ios" ? 52 : (Platform.OS === "android" ? 36 : 20),
+    paddingBottom: 10,
+    backgroundColor: "transparent",
+    borderBottomWidth: 0,
   },
   left: {
     flexDirection: "row",
@@ -221,57 +212,47 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor:
-      Platform.OS === "android" ? "#F8FAFC" : "rgba(241, 245, 249, 0.85)",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor: "rgba(226, 232, 240, 0.85)",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 0,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   titleContainer: {
     flex: 1,
   },
-  categoryBadge: {
-    alignSelf: "flex-start",
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 8,
-    paddingVertical: 2.5,
-    borderRadius: 6,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.15)",
-  },
   categoryText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9.5,
+    fontSize: 10.5,
     fontWeight: "700",
     color: "#2563EB",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
+    marginBottom: 2,
   },
   title: {
     fontFamily: FONTS.displayBold,
-    fontSize: 21,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    letterSpacing: -0.4,
-    lineHeight: 26,
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#0F172A",
+    letterSpacing: -0.5,
+    lineHeight: 28,
   },
   subtitle: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 12.5,
+    color: "#64748B",
     marginTop: 2,
-    lineHeight: 16,
+    lineHeight: 17,
   },
   userProfileSection: {
     flexDirection: "row",
@@ -364,26 +345,25 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   bellBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor:
-      Platform.OS === "android" ? "#F8FAFC" : "rgba(241, 245, 249, 0.85)",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.90)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor: "rgba(226, 232, 240, 0.85)",
     position: "relative",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 0,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   unreadDot: {
     position: "absolute",
-    top: 7,
-    right: 8,
+    top: 9,
+    right: 9,
     width: 8,
     height: 8,
     borderRadius: 4,

@@ -19,8 +19,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#FFFFFF",
     shadowColor: "#2563EB",
     shadowOpacity: 0.28,
-    borderColor: "rgba(255, 255, 255, 0.35)",
-    sheenOpacity: 0.28,
+    borderWidth: 0,
+    borderColor: "transparent",
+    sheenOpacity: 0.25,
   },
   // Dark Glass/Silicone Pebble
   dark: {
@@ -30,8 +31,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#FFFFFF",
     shadowColor: "#0F172A",
     shadowOpacity: 0.22,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    sheenOpacity: 0.22,
+    borderWidth: 0,
+    borderColor: "transparent",
+    sheenOpacity: 0.2,
   },
   // Deep Slate / Midnight Makarya Signature
   midnight: {
@@ -41,8 +43,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#FFFFFF",
     shadowColor: "#0F172A",
     shadowOpacity: 0.24,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    sheenOpacity: 0.2,
+    borderWidth: 0,
+    borderColor: "transparent",
+    sheenOpacity: 0.18,
   },
   // Pearl White Pebble
   pearl: {
@@ -51,9 +54,10 @@ export const PEBBLE_VARIANTS = {
     gradBottom: "#F1F5F9",
     textColor: "#0F172A",
     shadowColor: "#64748B",
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.1,
+    borderWidth: 1,
     borderColor: "#E2E8F0",
-    sheenOpacity: 0.4,
+    sheenOpacity: 0.35,
   },
   // Luminous Ice-Blue Pebble
   ice: {
@@ -63,8 +67,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#2563EB",
     shadowColor: "#2563EB",
     shadowOpacity: 0.1,
+    borderWidth: 1,
     borderColor: "#BFDBFE",
-    sheenOpacity: 0.4,
+    sheenOpacity: 0.35,
   },
   // Emerald / Success Pebble
   emerald: {
@@ -74,8 +79,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#FFFFFF",
     shadowColor: "#059669",
     shadowOpacity: 0.25,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    sheenOpacity: 0.26,
+    borderWidth: 0,
+    borderColor: "transparent",
+    sheenOpacity: 0.24,
   },
   // Ruby / Danger Pebble
   ruby: {
@@ -85,8 +91,9 @@ export const PEBBLE_VARIANTS = {
     textColor: "#FFFFFF",
     shadowColor: "#DC2626",
     shadowOpacity: 0.25,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    sheenOpacity: 0.26,
+    borderWidth: 0,
+    borderColor: "transparent",
+    sheenOpacity: 0.24,
   },
 };
 
@@ -163,7 +170,8 @@ export function PebbleButton({
         styles[size],
         {
           backgroundColor: config.baseColor,
-          borderColor: config.borderColor,
+          borderWidth: config.borderWidth ?? 0,
+          borderColor: config.borderColor ?? "transparent",
           shadowColor: config.shadowColor,
           shadowOpacity: disabled ? 0 : config.shadowOpacity,
         },
@@ -190,8 +198,9 @@ export function PebbleButton({
                 <Stop
                   offset="0%"
                   stopColor="#FFFFFF"
-                  stopOpacity={config.sheenOpacity || 0.28}
+                  stopOpacity={config.sheenOpacity || 0.25}
                 />
+                <Stop offset="60%" stopColor="#FFFFFF" stopOpacity={0.03} />
                 <Stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
               </LinearGradient>
             </Defs>
@@ -202,29 +211,11 @@ export function PebbleButton({
             />
             <Rect
               width={layout.width}
-              height={Math.round(layout.height * 0.52)}
+              height={layout.height}
               fill={`url(#${sheenId})`}
             />
           </Svg>
         )}
-
-        {/* 3D Apple Gloss Specular Dome Reflection */}
-        <View
-          style={[
-            styles.glossHighlight,
-            {
-              backgroundColor:
-                variant === "pearl" || variant === "ice"
-                  ? "rgba(255, 255, 255, 0.65)"
-                  : "rgba(255, 255, 255, 0.20)",
-              borderTopColor:
-                variant === "pearl" || variant === "ice"
-                  ? "rgba(255, 255, 255, 0.95)"
-                  : "rgba(255, 255, 255, 0.45)",
-            },
-          ]}
-          pointerEvents="none"
-        />
       </View>
 
       {/* Button Content Label & Icons */}
@@ -267,7 +258,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 6,
     elevation: 3,
@@ -276,15 +266,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderRadius: 999,
     overflow: "hidden",
-  },
-  glossHighlight: {
-    position: "absolute",
-    top: 1.5,
-    left: 4,
-    right: 4,
-    height: "46%",
-    borderRadius: 999,
-    borderTopWidth: 1,
   },
   content: {
     flexDirection: "row",
