@@ -8,6 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
+  Platform,
 } from "react-native";
 import Svg, {
   Defs,
@@ -19,10 +20,11 @@ import Svg, {
   Path,
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
-import { COLORS } from "../../theme/colors";
-import { Sparkles, ShieldCheck, ArrowRight } from "lucide-react-native";
+import { ShieldCheck } from "lucide-react-native";
 
 const { width, height } = Dimensions.get("window");
+const STATUSBAR_OFFSET =
+  Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 16 : 16;
 
 export function AuthLandingScreen({ navigation }) {
   return (
@@ -30,35 +32,35 @@ export function AuthLandingScreen({ navigation }) {
       <StatusBar
         translucent
         backgroundColor="transparent"
-        barStyle="dark-content"
+        barStyle="light-content"
       />
 
-      {/* Background Soft Subtle Ambient Glow */}
+      {/* Dark Ambient Glow matching Onboarding Background (#091424) */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
         <Svg width={width} height={height}>
           <Defs>
             <RadialGradient
-              id="makaryaGlow"
+              id="darkAmbientGlow"
               cx="50%"
               cy="36%"
-              rx="65%"
-              ry="45%"
+              rx="75%"
+              ry="50%"
               fx="50%"
               fy="36%"
             >
-              <Stop offset="0%" stopColor="#E0E7FF" stopOpacity="0.5" />
-              <Stop offset="45%" stopColor="#F1F5F9" stopOpacity="0.35" />
-              <Stop offset="85%" stopColor="#F8FAFC" stopOpacity="0.1" />
-              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
+              <Stop offset="0%" stopColor="#1E293B" stopOpacity="0.8" />
+              <Stop offset="40%" stopColor="#1E1B4B" stopOpacity="0.45" />
+              <Stop offset="80%" stopColor="#0F172A" stopOpacity="0.9" />
+              <Stop offset="100%" stopColor="#091424" stopOpacity="1" />
             </RadialGradient>
           </Defs>
-          <Rect x="0" y="0" width={width} height={height} fill="#F8FAFC" />
+          <Rect x="0" y="0" width={width} height={height} fill="#091424" />
           <Rect
             x="0"
             y="0"
             width={width}
             height={height}
-            fill="url(#makaryaGlow)"
+            fill="url(#darkAmbientGlow)"
           />
         </Svg>
       </View>
@@ -104,7 +106,7 @@ export function AuthLandingScreen({ navigation }) {
           {/* Main Headline & Subtitle */}
           <View style={styles.textBlock}>
             <View style={styles.badgeRow}>
-              <ShieldCheck size={13} color="#059669" />
+              <ShieldCheck size={13} color="#34D399" />
               <Text style={styles.badgeText}>Garansi Escrow 100% Aman</Text>
             </View>
 
@@ -119,7 +121,7 @@ export function AuthLandingScreen({ navigation }) {
 
           {/* Action Buttons */}
           <View style={styles.buttonBlock}>
-            {/* 1. Create account button (Makarya Signature Deep Slate 900) */}
+            {/* 1. Create account button (Crisp White with Dark Text) */}
             <TouchableOpacity
               style={styles.primaryBtn}
               onPress={() => navigation.navigate("RoleSelection")}
@@ -128,7 +130,7 @@ export function AuthLandingScreen({ navigation }) {
               <Text style={styles.primaryBtnText}>Buat Akun Baru</Text>
             </TouchableOpacity>
 
-            {/* 2. Sign in button (White with subtle border) */}
+            {/* 2. Sign in button (Frosted Glass Bordered Button) */}
             <TouchableOpacity
               style={styles.secondaryBtn}
               onPress={() => navigation.navigate("Login")}
@@ -153,16 +155,16 @@ export function AuthLandingScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#091424",
   },
   safeArea: {
     flex: 1,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingHorizontal: 26,
+    paddingTop: STATUSBAR_OFFSET,
+    paddingBottom: 28,
     justifyContent: "space-between",
   },
 
@@ -170,19 +172,19 @@ const styles = StyleSheet.create({
   logoRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    marginTop: 8,
+    gap: 10,
+    marginTop: 10,
   },
   logoImage: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: 8,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
     fontSize: 22,
     fontWeight: "800",
-    color: "#0F172A",
+    color: "#FFFFFF",
     letterSpacing: -0.5,
   },
 
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
   centerIllustrationWrap: {
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 8,
+    marginVertical: 12,
   },
 
   // Typography
@@ -201,26 +203,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#ECFDF5",
+    backgroundColor: "rgba(16, 185, 129, 0.16)",
     borderWidth: 1,
-    borderColor: "#A7F3D0",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderColor: "rgba(110, 231, 183, 0.35)",
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 999,
     alignSelf: "flex-start",
-    marginBottom: 12,
+    marginBottom: 14,
   },
   badgeText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#059669",
+    fontSize: 11,
+    color: "#6EE7B7",
     fontWeight: "700",
+    letterSpacing: 0.2,
   },
   titleText: {
     fontFamily: FONTS.displayBold,
     fontSize: 28,
     fontWeight: "800",
-    color: "#0F172A",
+    color: "#FFFFFF",
     letterSpacing: -0.6,
     lineHeight: 36,
     marginBottom: 8,
@@ -228,8 +231,8 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 13,
-    color: "#64748B",
-    lineHeight: 20,
+    color: "#94A3B8",
+    lineHeight: 21,
   },
 
   // Buttons
@@ -237,53 +240,48 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryBtn: {
-    backgroundColor: "#0F172A", // Signature Slate 900
+    backgroundColor: "#FFFFFF",
     height: 54,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#0F172A",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 10,
-    elevation: 3,
+    elevation: 4,
   },
   primaryBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#091424",
   },
   secondaryBtn: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     height: 54,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "rgba(255, 255, 255, 0.18)",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
   },
   secondaryBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
     fontWeight: "700",
-    color: "#0F172A",
+    color: "#F8FAFC",
   },
   termsText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: "#94A3B8",
+    fontSize: 11,
+    color: "#64748B",
     textAlign: "center",
     marginTop: 4,
-    lineHeight: 15,
+    lineHeight: 16,
   },
   termsLink: {
-    color: "#0F172A",
+    color: "#94A3B8",
     fontWeight: "600",
   },
 });

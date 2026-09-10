@@ -30,6 +30,9 @@ import {
   Store,
 } from "lucide-react-native";
 
+const STATUSBAR_OFFSET =
+  Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
+
 export function RegisterScreen({ route, navigation }) {
   // Role passed from RoleSelectionScreen or default to 'MAHASISWA'
   const initialRole = route.params?.role || "MAHASISWA";
@@ -187,59 +190,25 @@ export function RegisterScreen({ route, navigation }) {
 
             {/* Header Text matching mockup */}
             <View style={styles.headerBlock}>
+              <View style={styles.roleBadgeRow}>
+                <View style={styles.roleBadgePill}>
+                  {role === "UMKM" ? (
+                    <Store size={13} color="#0F172A" />
+                  ) : (
+                    <GraduationCap size={13} color="#0F172A" />
+                  )}
+                  <Text style={styles.roleBadgeText}>
+                    Pendaftaran: {role === "UMKM" ? "Klien UMKM" : "Mahasiswa"}
+                  </Text>
+                </View>
+              </View>
+
               <Text style={styles.titleText}>Create account</Text>
               <Text style={styles.subtitleText}>
                 {role === "UMKM"
-                  ? "Daftar sebagai Klien UMKM untuk pasang proyek"
+                  ? "Daftar sebagai Klien UMKM untuk pasang proyek bisnis"
                   : "Daftar sebagai Mahasiswa untuk raih honor proyek"}
               </Text>
-            </View>
-
-            {/* Role Switcher Pill */}
-            <View style={styles.roleSwitcherRow}>
-              <TouchableOpacity
-                style={[
-                  styles.roleSwitchBtn,
-                  role === "MAHASISWA" && styles.roleSwitchBtnActive,
-                ]}
-                onPress={() => setRole("MAHASISWA")}
-                activeOpacity={0.8}
-              >
-                <GraduationCap
-                  size={14}
-                  color={role === "MAHASISWA" ? "#FFFFFF" : "#64748B"}
-                />
-                <Text
-                  style={[
-                    styles.roleSwitchText,
-                    role === "MAHASISWA" && styles.roleSwitchTextActive,
-                  ]}
-                >
-                  Mahasiswa
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.roleSwitchBtn,
-                  role === "UMKM" && styles.roleSwitchBtnActive,
-                ]}
-                onPress={() => setRole("UMKM")}
-                activeOpacity={0.8}
-              >
-                <Store
-                  size={14}
-                  color={role === "UMKM" ? "#FFFFFF" : "#64748B"}
-                />
-                <Text
-                  style={[
-                    styles.roleSwitchText,
-                    role === "UMKM" && styles.roleSwitchTextActive,
-                  ]}
-                >
-                  Klien UMKM
-                </Text>
-              </TouchableOpacity>
             </View>
 
             {/* Form Fields matching mockup */}
@@ -267,7 +236,9 @@ export function RegisterScreen({ route, navigation }) {
                     value={role === "UMKM" ? namaUsaha : fullName}
                     onChangeText={role === "UMKM" ? setNamaUsaha : setFullName}
                     placeholder={
-                      role === "UMKM" ? "Contoh: Kopi Nusantara" : "Contoh: Budi Santoso"
+                      role === "UMKM"
+                        ? "Contoh: Kopi Nusantara"
+                        : "Contoh: Budi Santoso"
                     }
                     placeholderTextColor="#94A3B8"
                     style={styles.textInput}
@@ -449,7 +420,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 12,
+    paddingTop: STATUSBAR_OFFSET,
     paddingBottom: 36,
     flexGrow: 1,
   },
@@ -459,7 +430,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginTop: 8,
+    marginBottom: 24,
   },
   logoRow: {
     flexDirection: "row",
@@ -467,9 +439,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logoImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
+    width: 30,
+    height: 30,
+    borderRadius: 8,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
@@ -491,7 +463,28 @@ const styles = StyleSheet.create({
 
   // Header Block
   headerBlock: {
-    marginBottom: 16,
+    marginBottom: 20,
+  },
+  roleBadgeRow: {
+    marginBottom: 10,
+  },
+  roleBadgePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
+    alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  roleBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#0F172A",
+    fontWeight: "700",
   },
   titleText: {
     fontFamily: FONTS.displayBold,
@@ -505,42 +498,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 13,
     color: "#64748B",
-  },
-
-  // Role Switcher Pill
-  roleSwitcherRow: {
-    flexDirection: "row",
-    backgroundColor: "#F1F5F9",
-    borderRadius: 14,
-    padding: 3,
-    marginBottom: 20,
-    gap: 4,
-  },
-  roleSwitchBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 11,
-  },
-  roleSwitchBtnActive: {
-    backgroundColor: "#0F172A",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  roleSwitchText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    color: "#64748B",
-    fontWeight: "600",
-  },
-  roleSwitchTextActive: {
-    color: "#FFFFFF",
   },
 
   // Form Fields

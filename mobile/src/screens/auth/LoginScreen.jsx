@@ -19,6 +19,9 @@ import { useToastStore } from "../../store/toastStore";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Check } from "lucide-react-native";
 
+const STATUSBAR_OFFSET =
+  Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
+
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -277,7 +280,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 12,
+    paddingTop: STATUSBAR_OFFSET,
     paddingBottom: 32,
     flexGrow: 1,
     justifyContent: "space-between",
@@ -288,6 +291,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: 8,
     marginBottom: 24,
   },
   logoRow: {
@@ -296,9 +300,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logoImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
+    width: 30,
+    height: 30,
+    borderRadius: 8,
   },
   logoText: {
     fontFamily: FONTS.displayBold,

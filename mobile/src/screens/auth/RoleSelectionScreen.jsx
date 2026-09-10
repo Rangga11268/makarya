@@ -8,6 +8,7 @@ import {
   Dimensions,
   SafeAreaView,
   Image,
+  Platform,
 } from "react-native";
 import Svg, {
   Defs,
@@ -20,9 +21,17 @@ import Svg, {
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
-import { Briefcase, Building2, ArrowLeft, CheckCircle2, Users } from "lucide-react-native";
+import {
+  Briefcase,
+  Building2,
+  ArrowLeft,
+  CheckCircle2,
+  Users,
+} from "lucide-react-native";
 
 const { width, height } = Dimensions.get("window");
+const STATUSBAR_OFFSET =
+  Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
 export function RoleSelectionScreen({ navigation }) {
   // 'MAHASISWA' (Find a job) | 'UMKM' (Hire talent)
@@ -59,7 +68,13 @@ export function RoleSelectionScreen({ navigation }) {
             </RadialGradient>
           </Defs>
           <Rect x="0" y="0" width={width} height={height} fill="#F8FAFC" />
-          <Rect x="0" y="0" width={width} height={height} fill="url(#roleGlow)" />
+          <Rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            fill="url(#roleGlow)"
+          />
         </Svg>
       </View>
 
@@ -89,7 +104,13 @@ export function RoleSelectionScreen({ navigation }) {
           <View style={styles.centerGraphicWrap}>
             <Svg width={170} height={150} viewBox="0 0 200 200">
               <Defs>
-                <LinearGradient id="starGlowMakarya" x1="0%" y1="0%" x2="100%" y2="100%">
+                <LinearGradient
+                  id="starGlowMakarya"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
                   <Stop offset="0%" stopColor="#38BDF8" />
                   <Stop offset="50%" stopColor="#6366F1" />
                   <Stop offset="100%" stopColor="#0F172A" />
@@ -107,8 +128,8 @@ export function RoleSelectionScreen({ navigation }) {
           <View style={styles.headerTextBlock}>
             <Text style={styles.titleText}>Pilih Tujuan Anda</Text>
             <Text style={styles.subtitleText}>
-              Tentukan bagaimana Anda ingin berkolaborasi di ekosistem Makarya untuk
-              menampilkan peluang proyek yang paling relevan.
+              Tentukan bagaimana Anda ingin berkolaborasi di ekosistem Makarya
+              untuk menampilkan peluang proyek yang paling relevan.
             </Text>
           </View>
 
@@ -210,8 +231,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 24,
+    paddingTop: STATUSBAR_OFFSET,
+    paddingBottom: 28,
     justifyContent: "space-between",
   },
 
@@ -220,6 +241,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: 8,
+    marginBottom: 16,
   },
   backBtn: {
     width: 40,
@@ -242,9 +265,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   logoImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
+    width: 30,
+    height: 30,
+    borderRadius: 8,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
