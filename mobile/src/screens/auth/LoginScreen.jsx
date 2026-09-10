@@ -292,7 +292,9 @@ export function LoginScreen({ navigation }) {
               <PebbleButton
                 variant="pearl"
                 size="lg"
-                title={googleLoading ? "Menghubungkan..." : "Continue with Google"}
+                title={
+                  googleLoading ? "Menghubungkan..." : "Continue with Google"
+                }
                 onPress={handleGoogleLogin}
                 loading={googleLoading}
               />

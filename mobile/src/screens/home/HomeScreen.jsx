@@ -20,6 +20,7 @@ import { TalentBentoCard } from "../../components/features/TalentBentoCard";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { PromoBanner } from "../../components/features/PromoBanner";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 import {
   UiUxVectorIcon,
   WebCodingVectorIcon,
@@ -451,28 +452,24 @@ export function HomeScreen({ navigation }) {
               </TouchableOpacity>
             </View>
 
-            {/* B. 4 Circular Quick-Action Pills Row (Direct Fintech Reference) */}
+            {/* B. 4 Circular 3D Pebble Action Buttons (Apple VisionOS / Neu-skeuomorphic) */}
             <View style={styles.quickActionPillsRow}>
-              {actionItems.map((action) => {
+              {actionItems.map((action, idx) => {
                 const IconComp = action.icon;
+                const isFirst = idx === 0;
                 return (
-                  <TouchableOpacity
-                    key={action.id}
-                    style={styles.quickActionPillCol}
-                    onPress={action.onPress}
-                    activeOpacity={0.75}
-                  >
-                    <View style={styles.quickActionCircle}>
-                      <IconComp
-                        size={20}
-                        color={COLORS.brandIndigo}
-                        strokeWidth={2}
-                      />
-                    </View>
+                  <View key={action.id} style={styles.quickActionPillCol}>
+                    <PebbleButton
+                      size="circle"
+                      variant={isFirst ? "sapphire" : "dark"}
+                      icon={IconComp}
+                      onPress={action.onPress}
+                      style={{ marginBottom: 7 }}
+                    />
                     <Text style={styles.quickActionLabel} numberOfLines={1}>
                       {action.label}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>

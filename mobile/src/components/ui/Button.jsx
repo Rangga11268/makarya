@@ -25,12 +25,95 @@ export function Button({
   style,
   textStyle,
 }) {
-  if (variant === "pebble" || variant === "sapphire") {
+  // 3D Apple Neu-Skeuomorphic Pebble Routing
+  if (
+    variant === "pebble" ||
+    variant === "sapphire" ||
+    variant === "brand" ||
+    variant === "primary" ||
+    variant === "lime"
+  ) {
     return (
       <PebbleButton
         title={title}
         onPress={onPress}
         variant="sapphire"
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
+
+  if (variant === "dark" || variant === "midnight") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant={variant === "midnight" ? "midnight" : "dark"}
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
+
+  if (variant === "google" || variant === "white" || variant === "pearl") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant="pearl"
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
+
+  if (variant === "danger" || variant === "ruby") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant="ruby"
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
+
+  if (variant === "success" || variant === "emerald") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant="emerald"
         size={size}
         loading={loading}
         disabled={disabled}

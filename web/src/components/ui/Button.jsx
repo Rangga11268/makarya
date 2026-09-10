@@ -16,19 +16,21 @@ export function Button({
     "inline-flex items-center justify-center font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none rounded-full select-none";
 
   const variants = {
-    primary: "bg-dark-900 hover:bg-dark-800 text-white shadow-xs",
+    primary:
+      "bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 hover:from-slate-600 hover:to-slate-800 text-white shadow-md shadow-slate-900/25 border-t border-white/25 border-b border-slate-950/60 active:shadow-inner",
     brand:
-      "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand font-bold",
+      "bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 hover:from-blue-400 hover:to-blue-600 text-white shadow-lg shadow-blue-600/30 border-t border-white/35 border-b border-blue-900/60 font-bold active:shadow-inner",
     gradient:
-      "bg-brand-indigo hover:bg-brand-indigo-dark text-white shadow-brand font-bold",
-    cyan: "bg-brand-cyan hover:bg-sky-600 text-white shadow-xs font-bold",
+      "bg-gradient-to-b from-indigo-500 via-blue-600 to-indigo-700 hover:from-indigo-400 hover:to-indigo-600 text-white shadow-lg shadow-indigo-600/30 border-t border-white/35 border-b border-indigo-900/60 font-bold active:shadow-inner",
+    cyan: "bg-gradient-to-b from-sky-400 via-sky-500 to-sky-600 hover:from-sky-300 hover:to-sky-500 text-white shadow-md shadow-sky-500/25 border-t border-white/35 border-b border-sky-800/60 font-bold",
     secondary:
-      "bg-surface hover:bg-slate-100 text-dark-900 border border-border shadow-xs",
+      "bg-gradient-to-b from-white via-slate-50 to-slate-100 hover:from-white hover:to-slate-100 text-slate-800 border border-slate-200/90 border-t-white shadow-xs",
     outline:
       "bg-transparent hover:bg-slate-100 hover:text-dark-900 text-dark-900 border border-border",
     ghost:
       "bg-transparent hover:bg-slate-100 hover:text-dark-900 text-dark-900",
-    danger: "bg-rose-600 hover:bg-rose-700 text-white shadow-xs",
+    danger:
+      "bg-gradient-to-b from-rose-500 via-rose-600 to-rose-700 hover:from-rose-400 hover:to-rose-600 text-white shadow-lg shadow-rose-600/30 border-t border-white/35 border-b border-rose-900/60",
   };
 
   const sizes = {
