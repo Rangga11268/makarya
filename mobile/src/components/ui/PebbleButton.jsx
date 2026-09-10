@@ -21,7 +21,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.28,
     borderWidth: 0,
     borderColor: "transparent",
-    sheenOpacity: 0.25,
+    sheenOpacity: 0.42,
   },
   // Dark Glass/Silicone Pebble
   dark: {
@@ -33,7 +33,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.22,
     borderWidth: 0,
     borderColor: "transparent",
-    sheenOpacity: 0.2,
+    sheenOpacity: 0.35,
   },
   // Deep Slate / Midnight Makarya Signature
   midnight: {
@@ -45,7 +45,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.24,
     borderWidth: 0,
     borderColor: "transparent",
-    sheenOpacity: 0.18,
+    sheenOpacity: 0.32,
   },
   // Pearl White Pebble
   pearl: {
@@ -57,7 +57,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.1,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    sheenOpacity: 0.35,
+    sheenOpacity: 0.52,
   },
   // Luminous Ice-Blue Pebble
   ice: {
@@ -69,7 +69,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.1,
     borderWidth: 1,
     borderColor: "#BFDBFE",
-    sheenOpacity: 0.35,
+    sheenOpacity: 0.5,
   },
   // Emerald / Success Pebble
   emerald: {
@@ -81,7 +81,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.25,
     borderWidth: 0,
     borderColor: "transparent",
-    sheenOpacity: 0.24,
+    sheenOpacity: 0.4,
   },
   // Ruby / Danger Pebble
   ruby: {
@@ -93,7 +93,7 @@ export const PEBBLE_VARIANTS = {
     shadowOpacity: 0.25,
     borderWidth: 0,
     borderColor: "transparent",
-    sheenOpacity: 0.24,
+    sheenOpacity: 0.4,
   },
 };
 
@@ -198,9 +198,16 @@ export function PebbleButton({
                 <Stop
                   offset="0%"
                   stopColor="#FFFFFF"
-                  stopOpacity={config.sheenOpacity || 0.25}
+                  stopOpacity={config.sheenOpacity || 0.42}
                 />
-                <Stop offset="60%" stopColor="#FFFFFF" stopOpacity={0.03} />
+                <Stop
+                  offset="32%"
+                  stopColor="#FFFFFF"
+                  stopOpacity={
+                    Math.round((config.sheenOpacity || 0.42) * 0.45 * 100) / 100
+                  }
+                />
+                <Stop offset="70%" stopColor="#FFFFFF" stopOpacity={0.03} />
                 <Stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
               </LinearGradient>
             </Defs>
