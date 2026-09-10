@@ -1,20 +1,15 @@
-﻿import React from "react";
+import React from "react";
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-import { Star, MapPin, GraduationCap, CheckCircle2, Heart, MessageSquare } from "lucide-react-native";
+import { Star, Briefcase, ShieldCheck, CheckCircle2, Heart, MessageSquare } from "lucide-react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { PebbleButton } from "../ui/PebbleButton";
-import { formatCurrency } from "../../utils/formatCurrency";
-
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = Math.min(width - 40, 360);
 
 export function TalentDeckCard({
   talent,
@@ -22,18 +17,41 @@ export function TalentDeckCard({
   onChat,
   onBookmark,
   isBookmarked = false,
-  isPrimary = true,
 }) {
   if (!talent) return null;
 
-  const displayName = talent.user?.name || talent.name || "Talenta Digital";
-  const avatarUrl = talent.user?.url_foto || talent.url_foto;
-  const initial = displayName.charAt(0).toUpperCase();
-  const roleTitle = talent.keahlian_utama || talent.headline || "Digital Specialist";
-  const university = talent.universitas || "Perguruan Tinggi";
-  const city = talent.kota || "Indonesia";
-  const rating = talent.rating_rata_rata || talent.rating || 4.9;
-  const rateHourly = talent.tarif_per_jam || talent.rate || 150000;
+  const displayName =
+    talent.nama_lengkap ||
+    talent.nama ||
+    talent.name ||
+    talent.user?.name ||
+    "Mahasiswa Berprestasi";
+
+  const avatarUrl = talent.url_foto || talent.user?.url_foto;
+  const initial = displayName ? displayName.charAt(0).toUpperCase() : "M";
+
+  const prodiText = talent.prodi || "Sistem Informasi";
+  const university =
+    talent.universitas || "Universitas Bina Sarana Informatika";
+
+  const rating =
+    talent.rating_avg != null
+      ? Number(talent.rating_avg).toFixed(1)
+      : talent.rating != null
+        ? Number(talent.rating).toFixed(1)
+        : "5.0";
+
+  const completedProjects =
+    talent.total_proyek_selesai != null
+      ? talent.total_proyek_selesai
+      : talent.totalJobs || 0;
+
+  const skillsList =
+    Array.isArray(talent.skills) && talent.skills.length > 0
+      ? talent.skills
+      : ["UI/UX Design", "Mobile App", "Web Coding"];
+
+  const specialty = skillsList.slice(0, 2).join(" • ");
 
   return (
     <View style={styles.deckContainer}>
@@ -98,49 +116,50 @@ export function TalentDeckCard({
             {displayName}
           </Text>
           <Text style={styles.talentUniversity} numberOfLines={1}>
-            {university}
+            {prodiText} • {university}
           </Text>
         </View>
 
-        {/* Ergonomic Pill Tags Row (Direct FlyHire Metatags Concept) */}
+        {/* Ergonomic Pill Tags Row (FlyHire Metatags Concept) */}
         <View style={styles.pillChipsRow}>
           <View style={styles.pillChip}>
             <Star size={12} color="#D97706" fill="#F59E0B" />
-            <Text style={styles.pillChipText}>{Number(rating).toFixed(1)}</Text>
+            <Text style={styles.pillChipText}>{rating}</Text>
           </View>
 
           <View style={styles.pillChip}>
-            <MapPin size={12} color="#475569" />
-            <Text style={styles.pillChipText} numberOfLines={1}>{city}</Text>
+            <Briefcase size={11} color="#475569" />
+            <Text style={styles.pillChipText}>
+              {completedProjects} Proyek Tuntas
+            </Text>
           </View>
 
           <View style={styles.pillChip}>
-            <GraduationCap size={12} color="#475569" />
-            <Text style={styles.pillChipText}>Mahasiswa</Text>
+            <ShieldCheck size={12} color="#0284C7" />
+            <Text style={[styles.pillChipText, { color: "#0284C7" }]}>
+              Escrow Siap
+            </Text>
           </View>
         </View>
 
         {/* Divider */}
         <View style={styles.cardDivider} />
 
-        {/* Bottom Section: Specialty, Rate & Action Button */}
+        {/* Bottom Section: Specialty, Status & Action Button */}
         <View style={styles.bottomSection}>
-          <View style={{ flex: 1, marginRight: 12 }}>
+          <View style={{ flex: 1, marginRight: 10 }}>
             <Text style={styles.specialtyLabel} numberOfLines={1}>
-              {roleTitle}
+              {specialty}
             </Text>
-            <View style={styles.rateRow}>
-              <Text style={styles.rateAmount}>
-                {formatCurrency(rateHourly)}
-              </Text>
-              <Text style={styles.ratePeriod}>/ jam</Text>
-            </View>
+            <Text style={styles.statusSubtext}>
+              Siap Kolaborasi UMKM
+            </Text>
           </View>
 
           <PebbleButton
             variant="sapphire"
             size="sm"
-            title="Ajak Diskusi"
+            label="Lihat Profil"
             onPress={onPress}
           />
         </View>
@@ -151,9 +170,8 @@ export function TalentDeckCard({
 
 const styles = StyleSheet.create({
   deckContainer: {
-    width: CARD_WIDTH,
-    alignSelf: "center",
-    marginVertical: 10,
+    width: "100%",
+    marginVertical: 8,
     alignItems: "center",
     position: "relative",
   },
@@ -164,33 +182,33 @@ const styles = StyleSheet.create({
     borderColor: "rgba(226, 232, 240, 0.8)",
   },
   deckLayer2: {
-    width: CARD_WIDTH - 28,
-    height: 190,
-    bottom: -12,
+    width: "90%",
+    height: "100%",
+    bottom: -10,
     backgroundColor: "#E2E8F0",
-    opacity: 0.5,
+    opacity: 0.45,
     zIndex: 1,
   },
   deckLayer1: {
-    width: CARD_WIDTH - 14,
-    height: 196,
-    bottom: -6,
+    width: "95%",
+    height: "100%",
+    bottom: -5,
     backgroundColor: "#F1F5F9",
-    opacity: 0.8,
+    opacity: 0.75,
     zIndex: 2,
   },
   mainCard: {
-    width: CARD_WIDTH,
+    width: "100%",
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    padding: 20,
+    padding: 18,
     borderWidth: 1.2,
     borderColor: "rgba(226, 232, 240, 0.95)",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
     zIndex: 3,
   },
   topRow: {
@@ -300,21 +318,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#0F172A",
   },
-  rateRow: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    gap: 3,
-    marginTop: 2,
-  },
-  rateAmount: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#2563EB",
-  },
-  ratePeriod: {
+  statusSubtext: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#64748B",
+    marginTop: 2,
   },
 });
