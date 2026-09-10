@@ -12,7 +12,7 @@ import {
 import {
   User,
   GraduationCap,
-  Sparkles,
+  Layers,
   CheckCircle2,
   Check,
   Plus,
@@ -150,7 +150,7 @@ export function MahasiswaProfileForm({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
+                      <Layers className="w-3.5 h-3.5 text-brand-indigo" />
                       Keahlian & Tag Spesialisasi Digital
                     </label>
                     <p className="text-[11px] text-muted mt-0.5">

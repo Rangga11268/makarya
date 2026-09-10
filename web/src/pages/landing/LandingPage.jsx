@@ -656,7 +656,7 @@ export function LandingPage() {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Star className="w-4 h-4" />
+                <GraduationCap className="w-4 h-4" />
                 <span>Direktori Talenta ({talents.length})</span>
               </button>
             </div>

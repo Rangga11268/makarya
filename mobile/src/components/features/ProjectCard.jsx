@@ -13,7 +13,7 @@ import {
   User,
   ShieldCheck,
   Clock,
-  Sparkles,
+  Check,
   ArrowRight,
 } from "lucide-react-native";
 
@@ -139,7 +139,7 @@ export function ProjectCard({ project, onPress }) {
             />
           ) : project.match_score ? (
             <View style={styles.matchScorePill}>
-              <Sparkles size={10} color="#065F46" />
+              <Check size={10} color="#065F46" strokeWidth={2.5} />
               <Text style={styles.matchScorePillText}>
                 {project.match_score}%
               </Text>

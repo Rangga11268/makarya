@@ -18,7 +18,6 @@ import {
   ShieldCheck,
   Wallet,
   Briefcase,
-  Sparkles,
   FileCheck,
   AlertTriangle,
 } from "lucide-react-native";
@@ -56,7 +55,7 @@ export function NotificationModal({ visible, onClose }) {
         return <AlertTriangle size={18} color={COLORS.danger || "#EF4444"} />;
       case "INFO":
       default:
-        return <Sparkles size={18} color={COLORS.brandIndigo} />;
+        return <Bell size={18} color={COLORS.brandIndigo} />;
     }
   };
 

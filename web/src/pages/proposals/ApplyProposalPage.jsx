@@ -18,7 +18,7 @@ import {
   Briefcase,
   Clock,
   Send,
-  Sparkles,
+  DollarSign,
   Wrench,
   Link as LinkIcon,
   ShieldCheck,
@@ -396,7 +396,7 @@ export function ApplyProposalPage() {
               {/* Section 1: Financial & Duration */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-border pb-2.5">
-                  <Sparkles className="w-4 h-4 text-brand-indigo" />
+                  <DollarSign className="w-4 h-4 text-brand-indigo" />
                   <h3 className="text-sm font-bold text-dark-900 uppercase tracking-wider">
                     1. Penawaran Finansial & Durasi Pengerjaan
                   </h3>

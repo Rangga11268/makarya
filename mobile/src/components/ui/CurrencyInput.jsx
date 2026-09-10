@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { X, Sparkles } from "lucide-react-native";
+import { X, Coins } from "lucide-react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { terbilangRupiah, formatNumberDots } from "../../utils/terbilang";
@@ -107,7 +107,7 @@ export function CurrencyInput({
       {/* Terbilang Live Preview */}
       {terbilangText ? (
         <View style={styles.terbilangRow}>
-          <Sparkles
+          <Coins
             size={11}
             color={COLORS.brandIndigo}
             style={{ marginTop: 2 }}

@@ -6,8 +6,7 @@ import {
   AlertTriangle, 
   Info, 
   X, 
-  ShieldCheck, 
-  Sparkles 
+  ShieldCheck 
 } from "lucide-react";
 
 export function Alert({
@@ -28,7 +27,7 @@ export function Alert({
 
   const defaultIcons = {
     info: Info,
-    brand: Sparkles,
+    brand: ShieldCheck,
     success: CheckCircle2,
     warning: AlertTriangle,
     danger: AlertCircle,

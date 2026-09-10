@@ -13,7 +13,6 @@ import { SectionHeader } from "../../components/ui/SectionHeader";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
-  Sparkles,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
@@ -440,7 +439,7 @@ export function CreateProjectPage() {
                 Langkah 2
               </span>
               <span className="text-xs truncate block flex items-center gap-1">
-                AI Assistant <Sparkles className="w-3 h-3 text-brand-cyan" />
+                AI Assistant <Cpu className="w-3 h-3 text-brand-cyan" />
               </span>
             </div>
           </div>
@@ -605,7 +604,7 @@ export function CreateProjectPage() {
         <Card className="p-6 sm:p-8 space-y-6 animate-in fade-in">
           <div className="border-b border-border pb-4 space-y-1">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Cpu className="w-3.5 h-3.5" />
               AI Requirement Engineering
             </div>
             <h2 className="text-lg sm:text-xl font-extrabold text-dark-900 tracking-tight font-sans">

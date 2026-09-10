@@ -14,7 +14,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Sparkles,
   UserCheck,
   ArrowRight,
   GraduationCap,
@@ -188,7 +187,7 @@ export function LoginPage() {
           <div className="p-3.5 bg-canvas border border-border rounded-2xl space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-dark-900 flex items-center gap-1.5 font-sans">
-                <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
+                <UserCheck className="w-3.5 h-3.5 text-brand-indigo" />
                 Pilih Akun Uji Coba Cepat:
               </span>
               <span className="text-[10px] text-muted">

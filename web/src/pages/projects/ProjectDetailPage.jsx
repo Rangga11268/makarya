@@ -30,7 +30,6 @@ import {
   CheckCircle2,
   FileCheck2,
   HelpCircle,
-  Sparkles,
   ArrowUpRight,
   Lock,
   Layers,
@@ -553,7 +552,7 @@ export function ProjectDetailPage() {
           {/* Card 3: Tips Sukses Melamar Bagi Mahasiswa */}
           <Card className="p-6 space-y-3 bg-slate-50 border border-slate-200 rounded-3xl">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-slate-700" />
+              <FileText className="w-4 h-4 text-slate-700" />
               <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Panduan Melamar Efektif Bagi Mahasiswa
               </h3>

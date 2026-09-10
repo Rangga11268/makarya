@@ -53,7 +53,6 @@ import {
   Plus,
   Users,
   Eye,
-  Sparkles,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");

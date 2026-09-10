@@ -17,7 +17,7 @@ import { useToastStore } from "../../store/toastStore";
 import { GoogleIcon } from "../../components/icons/GoogleIcon";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
 import {
-  Sparkles,
+  UserCheck,
   ShieldCheck,
   Mail,
   Lock,
@@ -141,7 +141,7 @@ export function LoginScreen({ navigation }) {
           {/* Quick Fill Test Accounts Chips */}
           <View style={s.quickFillHeader}>
             <View style={s.quickFillTitleRow}>
-              <Sparkles size={12} color={COLORS.brandIndigo} />
+              <UserCheck size={12} color={COLORS.brandIndigo} />
               <Text style={s.quickFillTitle}>Uji Coba Cepat</Text>
             </View>
             <Text style={s.quickFillNotice}>Sandi: password123</Text>

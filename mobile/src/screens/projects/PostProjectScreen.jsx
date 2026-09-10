@@ -35,7 +35,7 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
+  FileText,
   Check,
   Eye,
   DollarSign,
@@ -332,7 +332,7 @@ export function PostProjectScreen({ navigation }) {
         {currentStep === 1 && (
           <View>
             <View style={styles.stepIntroCard}>
-              <Sparkles size={18} color={COLORS.brandIndigo} />
+              <FileText size={18} color={COLORS.brandIndigo} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.stepIntroTitle}>
                   Informasi & Brief Kebutuhan
@@ -671,7 +671,7 @@ export function PostProjectScreen({ navigation }) {
             {/* Live Project Card Preview */}
             <View style={styles.previewCardWrapper}>
               <View style={styles.previewLabelBadge}>
-                <Sparkles size={12} color="#FFFFFF" />
+                <Eye size={12} color="#FFFFFF" />
                 <Text style={styles.previewLabelText}>
                   TAMPILAN DI BERANDA MAHASISWA
                 </Text>

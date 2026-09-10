@@ -1,5 +1,5 @@
 import {
-  Sparkles,
+  Layers,
   Palette,
   Smartphone,
   Code2,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react-native";
 
 export const CATEGORIES = [
-  { id: "ALL", code: "ALL", label: "Semua", Icon: Sparkles },
+  { id: "ALL", code: "ALL", label: "Semua", Icon: Layers },
   { id: "DESIGN", code: "DESIGN", label: "Desain & Logo", Icon: Palette },
   { id: "UIUX", code: "UIUX", label: "UI/UX App", Icon: Smartphone },
   {

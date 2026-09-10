@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "../../utils/cn";
 import { terbilangRupiah, formatNumberDots } from "../../utils/terbilang";
-import { X, Sparkles } from "lucide-react";
+import { X } from "lucide-react";
 
 export function CurrencyInput({
   label,
@@ -91,7 +91,7 @@ export function CurrencyInput({
       {/* Terbilang Preview */}
       {terbilangText && (
         <div className="flex items-center gap-1.5 text-[11px] font-medium text-brand-indigo italic pl-1 animate-in fade-in duration-150">
-          <Sparkles className="w-3 h-3 shrink-0" />
+          <span className="text-muted">•</span>
           <span className="truncate">{terbilangText}</span>
         </div>
       )}

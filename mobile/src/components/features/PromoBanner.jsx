@@ -18,7 +18,7 @@ import Svg, {
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
-import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react-native";
+import { ArrowRight, ShieldCheck, Zap } from "lucide-react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const BANNER_WIDTH = SCREEN_WIDTH - 40;
@@ -225,7 +225,7 @@ export function PromoBanner({ onBannerPress }) {
                     { borderColor: item.tagColor + "40" },
                   ]}
                 >
-                  <Sparkles size={10} color={item.tagColor} />
+                  <ShieldCheck size={10} color={item.tagColor} />
                   <Text style={[styles.tagText, { color: item.tagColor }]}>
                     {item.tag}
                   </Text>
