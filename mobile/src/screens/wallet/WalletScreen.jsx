@@ -66,7 +66,8 @@ export function WalletScreen({ navigation }) {
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
-    (!user?.role && (user?.email?.includes(".ac.id") || user?.email === "darell@ubsi.ac.id"));
+    (!user?.role &&
+      (user?.email?.includes(".ac.id") || user?.email === "darell@ubsi.ac.id"));
 
   useEffect(() => {
     if (user) {
@@ -211,7 +212,9 @@ export function WalletScreen({ navigation }) {
 
         <View style={styles.headerCenter}>
           <Text style={styles.headerMainTitle}>Dompet Digital</Text>
-          <Text style={styles.headerSubTitle}>Kartu Escrow & Riwayat Mutasi</Text>
+          <Text style={styles.headerSubTitle}>
+            Kartu Escrow & Riwayat Mutasi
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -245,9 +248,7 @@ export function WalletScreen({ navigation }) {
           <View style={styles.peekingCard}>
             <View style={styles.peekingCardTopRow}>
               <View style={{ flex: 1, marginRight: 8 }}>
-                <Text style={styles.peekingCardRoleTag}>
-                  {displayUserRole}
-                </Text>
+                <Text style={styles.peekingCardRoleTag}>{displayUserRole}</Text>
                 <Text style={styles.peekingCardUserName} numberOfLines={1}>
                   {displayName}
                 </Text>
@@ -273,7 +274,9 @@ export function WalletScreen({ navigation }) {
                 </Text>
                 <View style={styles.escrowMiniBadge}>
                   <ShieldCheck size={11} color="#34D399" />
-                  <Text style={styles.escrowMiniBadgeText}>Garansi Escrow 100%</Text>
+                  <Text style={styles.escrowMiniBadgeText}>
+                    Garansi Escrow 100%
+                  </Text>
                 </View>
               </View>
 
@@ -358,7 +361,13 @@ export function WalletScreen({ navigation }) {
             <View style={{ flex: 1 }}>
               {hasBankAccount ? (
                 <>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                  >
                     <Text style={styles.bankNameShort}>
                       {user.nama_bank} • {String(user.nomor_rekening).slice(-4)}
                     </Text>
@@ -370,8 +379,12 @@ export function WalletScreen({ navigation }) {
                 </>
               ) : (
                 <>
-                  <Text style={styles.bankNameShort}>Rekening Belum Diatur</Text>
-                  <Text style={styles.bankOwnerShort}>Atur saat tarik saldo</Text>
+                  <Text style={styles.bankNameShort}>
+                    Rekening Belum Diatur
+                  </Text>
+                  <Text style={styles.bankOwnerShort}>
+                    Atur saat tarik saldo
+                  </Text>
                 </>
               )}
             </View>
@@ -382,7 +395,9 @@ export function WalletScreen({ navigation }) {
         <View style={styles.sectionBlock}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>
-              {isMahasiswa ? "Pilihan Cepat Tarik Saldo" : "Pilihan Cepat Deposit"}
+              {isMahasiswa
+                ? "Pilihan Cepat Tarik Saldo"
+                : "Pilihan Cepat Deposit"}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -453,7 +468,8 @@ export function WalletScreen({ navigation }) {
               contentContainerStyle={styles.highlightCardsScroll}
             >
               {history.slice(0, 4).map((item, idx) => {
-                const isIncome = item.tipe === "TOPUP" || item.tipe === "PAYOUT";
+                const isIncome =
+                  item.tipe === "TOPUP" || item.tipe === "PAYOUT";
                 return (
                   <View key={item.id || idx} style={styles.highlightCard}>
                     <View
@@ -573,9 +589,7 @@ export function WalletScreen({ navigation }) {
                     <Text
                       style={[
                         styles.txAmountText,
-                        isIncome
-                          ? { color: "#059669" }
-                          : { color: "#0F172A" },
+                        isIncome ? { color: "#059669" } : { color: "#0F172A" },
                       ]}
                     >
                       {isIncome ? "+" : "-"} {formatCurrency(tx.nominal)}

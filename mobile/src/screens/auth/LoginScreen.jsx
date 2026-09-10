@@ -11,19 +11,13 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-  Check,
-} from "lucide-react-native";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft, Check } from "lucide-react-native";
 
 export function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -111,9 +105,11 @@ export function LoginScreen({ navigation }) {
             {/* Top Bar with Logo & Optional Back */}
             <View style={styles.topBar}>
               <View style={styles.logoRow}>
-                <View style={styles.logoIcon}>
-                  <View style={styles.logoInnerDot} />
-                </View>
+                <Image
+                  source={require("../../../assets/logo-icon.webp")}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
                 <Text style={styles.logoText}>Makarya</Text>
               </View>
 
@@ -142,11 +138,15 @@ export function LoginScreen({ navigation }) {
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Email</Text>
                 <View style={styles.inputWrapper}>
-                  <Mail size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <Mail
+                    size={18}
+                    color="#94A3B8"
+                    style={styles.inputLeftIcon}
+                  />
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="glow@lumeburg.studio"
+                    placeholder="nama@email.com"
                     placeholderTextColor="#94A3B8"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -159,7 +159,11 @@ export function LoginScreen({ navigation }) {
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Password</Text>
                 <View style={styles.inputWrapper}>
-                  <Lock size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <Lock
+                    size={18}
+                    color="#94A3B8"
+                    style={styles.inputLeftIcon}
+                  />
                   <TextInput
                     value={password}
                     onChangeText={setPassword}
@@ -195,7 +199,9 @@ export function LoginScreen({ navigation }) {
                       rememberMe && styles.checkboxActive,
                     ]}
                   >
-                    {rememberMe && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                    {rememberMe && (
+                      <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                    )}
                   </View>
                   <Text style={styles.rememberMeText}>Remember me</Text>
                 </TouchableOpacity>
@@ -204,7 +210,9 @@ export function LoginScreen({ navigation }) {
                   onPress={() => navigation.navigate("ForgotPassword")}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                  <Text style={styles.forgotPasswordText}>
+                    Forgot password?
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -287,20 +295,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  logoIcon: {
+  logoImage: {
     width: 28,
     height: 28,
-    borderRadius: 14,
-    borderWidth: 2.5,
-    borderColor: "#6366F1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoInnerDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#6366F1",
+    borderRadius: 7,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
@@ -398,8 +396,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   checkboxActive: {
-    backgroundColor: "#6366F1",
-    borderColor: "#6366F1",
+    backgroundColor: "#0F172A",
+    borderColor: "#0F172A",
   },
   rememberMeText: {
     fontFamily: FONTS.bodyRegular,
@@ -410,21 +408,21 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "600",
-    color: "#6366F1",
+    color: "#0F172A",
   },
 
   // Buttons
   signInBtn: {
-    backgroundColor: "#6366F1",
+    backgroundColor: "#0F172A",
     height: 52,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
-    shadowColor: "#6366F1",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     elevation: 3,
   },
   signInBtnText: {
@@ -482,6 +480,6 @@ const styles = StyleSheet.create({
   footerLink: {
     fontFamily: FONTS.bodyBold,
     fontWeight: "700",
-    color: "#6366F1",
+    color: "#0F172A",
   },
 });

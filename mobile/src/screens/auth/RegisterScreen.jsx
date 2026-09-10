@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { useAuthStore } from "../../store/authStore";
@@ -97,7 +98,8 @@ export function RegisterScreen({ route, navigation }) {
         });
       } catch (err) {
         showToast(
-          err.response?.data?.detail || "Pendaftaran gagal. Periksa kembali data.",
+          err.response?.data?.detail ||
+            "Pendaftaran gagal. Periksa kembali data.",
           "danger",
         );
       } finally {
@@ -135,7 +137,8 @@ export function RegisterScreen({ route, navigation }) {
         });
       } catch (err) {
         showToast(
-          err.response?.data?.detail || "Pendaftaran gagal. Periksa kembali data.",
+          err.response?.data?.detail ||
+            "Pendaftaran gagal. Periksa kembali data.",
           "danger",
         );
       } finally {
@@ -165,9 +168,11 @@ export function RegisterScreen({ route, navigation }) {
             {/* Top Bar with Logo & Back */}
             <View style={styles.topBar}>
               <View style={styles.logoRow}>
-                <View style={styles.logoIcon}>
-                  <View style={styles.logoInnerDot} />
-                </View>
+                <Image
+                  source={require("../../../assets/logo-icon.webp")}
+                  style={styles.logoImage}
+                  resizeMode="contain"
+                />
                 <Text style={styles.logoText}>Makarya</Text>
               </View>
 
@@ -246,15 +251,23 @@ export function RegisterScreen({ route, navigation }) {
                 </Text>
                 <View style={styles.inputWrapper}>
                   {role === "UMKM" ? (
-                    <Building2 size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                    <Building2
+                      size={18}
+                      color="#94A3B8"
+                      style={styles.inputLeftIcon}
+                    />
                   ) : (
-                    <User size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                    <User
+                      size={18}
+                      color="#94A3B8"
+                      style={styles.inputLeftIcon}
+                    />
                   )}
                   <TextInput
                     value={role === "UMKM" ? namaUsaha : fullName}
                     onChangeText={role === "UMKM" ? setNamaUsaha : setFullName}
                     placeholder={
-                      role === "UMKM" ? "Contoh: Kopi Nusantara" : "Shirley Raj"
+                      role === "UMKM" ? "Contoh: Kopi Nusantara" : "Contoh: Budi Santoso"
                     }
                     placeholderTextColor="#94A3B8"
                     style={styles.textInput}
@@ -267,7 +280,11 @@ export function RegisterScreen({ route, navigation }) {
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>NIM Kampus *</Text>
                   <View style={styles.inputWrapper}>
-                    <GraduationCap size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                    <GraduationCap
+                      size={18}
+                      color="#94A3B8"
+                      style={styles.inputLeftIcon}
+                    />
                     <TextInput
                       value={nim}
                       onChangeText={setNim}
@@ -284,7 +301,11 @@ export function RegisterScreen({ route, navigation }) {
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Email *</Text>
                 <View style={styles.inputWrapper}>
-                  <Mail size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <Mail
+                    size={18}
+                    color="#94A3B8"
+                    style={styles.inputLeftIcon}
+                  />
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
@@ -310,7 +331,11 @@ export function RegisterScreen({ route, navigation }) {
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Password *</Text>
                 <View style={styles.inputWrapper}>
-                  <Lock size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <Lock
+                    size={18}
+                    color="#94A3B8"
+                    style={styles.inputLeftIcon}
+                  />
                   <TextInput
                     value={password}
                     onChangeText={setPassword}
@@ -337,7 +362,11 @@ export function RegisterScreen({ route, navigation }) {
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Confirm password *</Text>
                 <View style={styles.inputWrapper}>
-                  <Lock size={18} color="#94A3B8" style={styles.inputLeftIcon} />
+                  <Lock
+                    size={18}
+                    color="#94A3B8"
+                    style={styles.inputLeftIcon}
+                  />
                   <TextInput
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -367,12 +396,11 @@ export function RegisterScreen({ route, navigation }) {
                 activeOpacity={0.7}
               >
                 <View
-                  style={[
-                    styles.checkbox,
-                    agreeTerms && styles.checkboxActive,
-                  ]}
+                  style={[styles.checkbox, agreeTerms && styles.checkboxActive]}
                 >
-                  {agreeTerms && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                  {agreeTerms && (
+                    <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                  )}
                 </View>
                 <Text style={styles.termsLabelText}>
                   I agree with the terms and conditions
@@ -438,20 +466,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
   },
-  logoIcon: {
+  logoImage: {
     width: 28,
     height: 28,
-    borderRadius: 14,
-    borderWidth: 2.5,
-    borderColor: "#6366F1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoInnerDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#6366F1",
+    borderRadius: 7,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
@@ -508,8 +526,8 @@ const styles = StyleSheet.create({
     borderRadius: 11,
   },
   roleSwitchBtnActive: {
-    backgroundColor: "#6366F1",
-    shadowColor: "#6366F1",
+    backgroundColor: "#0F172A",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -561,7 +579,7 @@ const styles = StyleSheet.create({
   inputHelperText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: "#6366F1",
+    color: "#0F172A",
     marginTop: 2,
   },
   eyeBtn: {
@@ -586,8 +604,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   checkboxActive: {
-    backgroundColor: "#6366F1",
-    borderColor: "#6366F1",
+    backgroundColor: "#0F172A",
+    borderColor: "#0F172A",
   },
   termsLabelText: {
     fontFamily: FONTS.bodyRegular,
@@ -597,16 +615,16 @@ const styles = StyleSheet.create({
 
   // Button
   createBtn: {
-    backgroundColor: "#6366F1",
+    backgroundColor: "#0F172A",
     height: 52,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
-    shadowColor: "#6366F1",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.28,
-    shadowRadius: 10,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     elevation: 3,
   },
   createBtnText: {
@@ -629,6 +647,6 @@ const styles = StyleSheet.create({
   footerLink: {
     fontFamily: FONTS.bodyBold,
     fontWeight: "700",
-    color: "#6366F1",
+    color: "#0F172A",
   },
 });

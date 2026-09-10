@@ -7,18 +7,20 @@ import {
   StatusBar,
   Dimensions,
   SafeAreaView,
+  Image,
 } from "react-native";
 import Svg, {
   Defs,
-  LinearGradient,
   RadialGradient,
+  LinearGradient,
   Stop,
   Rect,
   Circle,
   Path,
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
-import { Briefcase, Users, ArrowLeft, CheckCircle2 } from "lucide-react-native";
+import { COLORS } from "../../theme/colors";
+import { Briefcase, Building2, ArrowLeft, CheckCircle2, Users } from "lucide-react-native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -38,12 +40,12 @@ export function RoleSelectionScreen({ navigation }) {
         barStyle="dark-content"
       />
 
-      {/* Background Soft Pastel Glow Graphic */}
+      {/* Background Soft Subtle Ambient Glow */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
         <Svg width={width} height={height}>
           <Defs>
             <RadialGradient
-              id="bgGlowRole"
+              id="roleGlow"
               cx="50%"
               cy="25%"
               rx="60%"
@@ -51,19 +53,19 @@ export function RoleSelectionScreen({ navigation }) {
               fx="50%"
               fy="25%"
             >
-              <Stop offset="0%" stopColor="#C4B5FD" stopOpacity="0.4" />
-              <Stop offset="50%" stopColor="#BAE6FD" stopOpacity="0.25" />
-              <Stop offset="100%" stopColor="#FAFAFA" stopOpacity="0" />
+              <Stop offset="0%" stopColor="#E0E7FF" stopOpacity="0.45" />
+              <Stop offset="50%" stopColor="#F1F5F9" stopOpacity="0.25" />
+              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          <Rect x="0" y="0" width={width} height={height} fill="#FAFAFA" />
-          <Rect x="0" y="0" width={width} height={height} fill="url(#bgGlowRole)" />
+          <Rect x="0" y="0" width={width} height={height} fill="#F8FAFC" />
+          <Rect x="0" y="0" width={width} height={height} fill="url(#roleGlow)" />
         </Svg>
       </View>
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
-          {/* Top Bar with Back & Logo */}
+          {/* Top Bar with Back Button & Official Logo */}
           <View style={styles.topBar}>
             <TouchableOpacity
               style={styles.backBtn}
@@ -74,40 +76,43 @@ export function RoleSelectionScreen({ navigation }) {
             </TouchableOpacity>
 
             <View style={styles.logoRow}>
-              <View style={styles.logoIcon}>
-                <View style={styles.logoInnerDot} />
-              </View>
+              <Image
+                source={require("../../../assets/logo-icon.webp")}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
               <Text style={styles.logoText}>Makarya</Text>
             </View>
           </View>
 
           {/* Center Graphic */}
           <View style={styles.centerGraphicWrap}>
-            <Svg width={180} height={160} viewBox="0 0 200 200">
+            <Svg width={170} height={150} viewBox="0 0 200 200">
               <Defs>
-                <LinearGradient id="starGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <LinearGradient id="starGlowMakarya" x1="0%" y1="0%" x2="100%" y2="100%">
                   <Stop offset="0%" stopColor="#38BDF8" />
-                  <Stop offset="50%" stopColor="#818CF8" />
-                  <Stop offset="100%" stopColor="#EC4899" />
+                  <Stop offset="50%" stopColor="#6366F1" />
+                  <Stop offset="100%" stopColor="#0F172A" />
                 </LinearGradient>
               </Defs>
               <Path
                 d="M 100,15 Q 100,100 185,100 Q 100,100 100,185 Q 100,100 15,100 Q 100,100 100,15 Z"
-                fill="url(#starGlow)"
-                opacity="0.85"
+                fill="url(#starGlowMakarya)"
+                opacity="0.88"
               />
             </Svg>
           </View>
 
           {/* Headline */}
           <View style={styles.headerTextBlock}>
-            <Text style={styles.titleText}>What's your goal?</Text>
+            <Text style={styles.titleText}>Pilih Tujuan Anda</Text>
             <Text style={styles.subtitleText}>
-              Choose your path so we can show you the most relevant opportunities.
+              Tentukan bagaimana Anda ingin berkolaborasi di ekosistem Makarya untuk
+              menampilkan peluang proyek yang paling relevan.
             </Text>
           </View>
 
-          {/* 2 Choice Cards (Side by Side / Two columns) */}
+          {/* 2 Choice Cards (Side by Side) */}
           <View style={styles.cardsRow}>
             {/* Card 1: Find a job (Mahasiswa) */}
             <TouchableOpacity
@@ -120,15 +125,23 @@ export function RoleSelectionScreen({ navigation }) {
             >
               {selectedRole === "MAHASISWA" && (
                 <View style={styles.activeCheckBadge}>
-                  <CheckCircle2 size={14} color="#6366F1" />
+                  <CheckCircle2 size={16} color="#0F172A" />
                 </View>
               )}
-              <View style={styles.cardIconBox}>
-                <Briefcase size={24} color="#6366F1" />
+              <View
+                style={[
+                  styles.cardIconBox,
+                  selectedRole === "MAHASISWA" && styles.cardIconBoxActive,
+                ]}
+              >
+                <Briefcase
+                  size={22}
+                  color={selectedRole === "MAHASISWA" ? "#0F172A" : "#64748B"}
+                />
               </View>
               <Text style={styles.cardTitle}>Find a job</Text>
               <Text style={styles.cardSub}>
-                Find your next opportunity & earn honors
+                Cari peluang pengerjaan proyek & raih honor
               </Text>
               <View style={styles.roleTagPill}>
                 <Text style={styles.roleTagText}>Mahasiswa</Text>
@@ -146,15 +159,23 @@ export function RoleSelectionScreen({ navigation }) {
             >
               {selectedRole === "UMKM" && (
                 <View style={styles.activeCheckBadge}>
-                  <CheckCircle2 size={14} color="#6366F1" />
+                  <CheckCircle2 size={16} color="#0F172A" />
                 </View>
               )}
-              <View style={styles.cardIconBox}>
-                <Users size={24} color="#6366F1" />
+              <View
+                style={[
+                  styles.cardIconBox,
+                  selectedRole === "UMKM" && styles.cardIconBoxActive,
+                ]}
+              >
+                <Users
+                  size={22}
+                  color={selectedRole === "UMKM" ? "#0F172A" : "#64748B"}
+                />
               </View>
               <Text style={styles.cardTitle}>Hire talent</Text>
               <Text style={styles.cardSub}>
-                Post an opening to find verified talent
+                Pasang proyek bisnis & rekrut talenta kampus
               </Text>
               <View style={styles.roleTagPill}>
                 <Text style={styles.roleTagText}>Klien UMKM</Text>
@@ -169,7 +190,7 @@ export function RoleSelectionScreen({ navigation }) {
               onPress={handleContinue}
               activeOpacity={0.88}
             >
-              <Text style={styles.continueBtnText}>Continue</Text>
+              <Text style={styles.continueBtnText}>Lanjutkan</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -181,7 +202,7 @@ export function RoleSelectionScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: "#F8FAFC",
   },
   safeArea: {
     flex: 1,
@@ -209,26 +230,21 @@ const styles = StyleSheet.create({
     borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   logoRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  logoIcon: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    borderWidth: 2,
-    borderColor: "#6366F1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoInnerDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: "#6366F1",
+  logoImage: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
@@ -284,11 +300,11 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   roleCardActive: {
-    borderColor: "#6366F1",
-    backgroundColor: "#F5F3FF", // Soft violet active tint
-    shadowColor: "#6366F1",
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    borderColor: "#0F172A",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   activeCheckBadge: {
     position: "absolute",
@@ -299,10 +315,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
+  },
+  cardIconBoxActive: {
+    backgroundColor: "#EEF2FF",
   },
   cardTitle: {
     fontFamily: FONTS.displayBold,
@@ -337,16 +356,16 @@ const styles = StyleSheet.create({
     marginTop: "auto",
   },
   continueBtn: {
-    backgroundColor: "#6366F1",
+    backgroundColor: "#0F172A", // Signature Slate 900
     height: 54,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6366F1",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 3,
   },
   continueBtnText: {
     fontFamily: FONTS.bodyBold,

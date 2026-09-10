@@ -7,18 +7,20 @@ import {
   StatusBar,
   Dimensions,
   SafeAreaView,
+  Image,
 } from "react-native";
 import Svg, {
   Defs,
-  LinearGradient,
   RadialGradient,
+  LinearGradient,
   Stop,
   Rect,
   Circle,
   Path,
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
-import { Sparkles, ArrowRight } from "lucide-react-native";
+import { COLORS } from "../../theme/colors";
+import { Sparkles, ShieldCheck, ArrowRight } from "lucide-react-native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -31,75 +33,93 @@ export function AuthLandingScreen({ navigation }) {
         barStyle="dark-content"
       />
 
-      {/* Background Soft Pastel Glow Graphic */}
+      {/* Background Soft Subtle Ambient Glow */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
         <Svg width={width} height={height}>
           <Defs>
             <RadialGradient
-              id="bgGlow"
+              id="makaryaGlow"
               cx="50%"
-              cy="42%"
-              rx="60%"
+              cy="36%"
+              rx="65%"
               ry="45%"
               fx="50%"
-              fy="42%"
+              fy="36%"
             >
-              <Stop offset="0%" stopColor="#C4B5FD" stopOpacity="0.45" />
-              <Stop offset="45%" stopColor="#FBCFE8" stopOpacity="0.3" />
-              <Stop offset="80%" stopColor="#EDE9FE" stopOpacity="0.15" />
-              <Stop offset="100%" stopColor="#FAFAFA" stopOpacity="0" />
+              <Stop offset="0%" stopColor="#E0E7FF" stopOpacity="0.5" />
+              <Stop offset="45%" stopColor="#F1F5F9" stopOpacity="0.35" />
+              <Stop offset="85%" stopColor="#F8FAFC" stopOpacity="0.1" />
+              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          <Rect x="0" y="0" width={width} height={height} fill="#FAFAFA" />
-          <Rect x="0" y="0" width={width} height={height} fill="url(#bgGlow)" />
+          <Rect x="0" y="0" width={width} height={height} fill="#F8FAFC" />
+          <Rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            fill="url(#makaryaGlow)"
+          />
         </Svg>
       </View>
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
-          {/* Top Logo */}
+          {/* Top Logo with Official Makarya Icon */}
           <View style={styles.logoRow}>
-            <View style={styles.logoIcon}>
-              <View style={styles.logoInnerDot} />
-            </View>
+            <Image
+              source={require("../../../assets/logo-icon.webp")}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
             <Text style={styles.logoText}>Makarya</Text>
           </View>
 
-          {/* Center Ambient 3D Star / Spark Graphic */}
+          {/* Center Graphic: Ambient 4-point Luminous Star (Makarya Blue/Indigo Tone) */}
           <View style={styles.centerIllustrationWrap}>
             <Svg width={220} height={220} viewBox="0 0 200 200">
               <Defs>
-                <LinearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <Stop offset="0%" stopColor="#F472B6" />
-                  <Stop offset="40%" stopColor="#A855F7" />
-                  <Stop offset="70%" stopColor="#6366F1" />
-                  <Stop offset="100%" stopColor="#38BDF8" />
+                <LinearGradient
+                  id="makaryaStarGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <Stop offset="0%" stopColor="#38BDF8" />
+                  <Stop offset="40%" stopColor="#6366F1" />
+                  <Stop offset="80%" stopColor="#0F172A" />
+                  <Stop offset="100%" stopColor="#4F46E5" />
                 </LinearGradient>
               </Defs>
-              {/* Four-pointed soft star shape */}
               <Path
-                d="M 100,10 Q 100,100 190,100 Q 100,100 100,190 Q 100,100 10,100 Q 100,100 100,10 Z"
-                fill="url(#starGrad)"
-                opacity="0.9"
+                d="M 100,12 Q 100,100 188,100 Q 100,100 100,188 Q 100,100 12,100 Q 100,100 100,12 Z"
+                fill="url(#makaryaStarGrad)"
+                opacity="0.92"
               />
-              <Circle cx="100" cy="100" r="18" fill="#FFFFFF" opacity="0.6" />
+              <Circle cx="100" cy="100" r="16" fill="#FFFFFF" opacity="0.65" />
             </Svg>
           </View>
 
           {/* Main Headline & Subtitle */}
           <View style={styles.textBlock}>
+            <View style={styles.badgeRow}>
+              <ShieldCheck size={13} color="#059669" />
+              <Text style={styles.badgeText}>Garansi Escrow 100% Aman</Text>
+            </View>
+
             <Text style={styles.titleText}>
-              Temukan Peluang{"\n"}Proyek Impianmu!
+              Kolaborasi Nyata{"\n"}Mahasiswa & UMKM
             </Text>
             <Text style={styles.subtitleText}>
-              Platform kolaborasi terpercaya antara mahasiswa bertalenta kampus
-              dan bisnis UMKM dengan garansi pembayaran escrow aman.
+              Temukan proyek digital berkualitas, bangun portofolio profesional,
+              dan raih honor pengerjaan dengan sistem rekening bersama aman.
             </Text>
           </View>
 
           {/* Action Buttons */}
           <View style={styles.buttonBlock}>
-            {/* 1. Create account button (Purple/Indigo) */}
+            {/* 1. Create account button (Makarya Signature Deep Slate 900) */}
             <TouchableOpacity
               style={styles.primaryBtn}
               onPress={() => navigation.navigate("RoleSelection")}
@@ -108,7 +128,7 @@ export function AuthLandingScreen({ navigation }) {
               <Text style={styles.primaryBtnText}>Buat Akun Baru</Text>
             </TouchableOpacity>
 
-            {/* 2. Sign in button (Clean White with border) */}
+            {/* 2. Sign in button (White with subtle border) */}
             <TouchableOpacity
               style={styles.secondaryBtn}
               onPress={() => navigation.navigate("Login")}
@@ -117,11 +137,11 @@ export function AuthLandingScreen({ navigation }) {
               <Text style={styles.secondaryBtnText}>Masuk ke Akun</Text>
             </TouchableOpacity>
 
-            {/* Terms & Privacy footer note */}
+            {/* Terms note */}
             <Text style={styles.termsText}>
               Dengan melanjutkan, Anda menyetujui{" "}
-              <Text style={styles.termsLink}>Ketentuan Layanan</Text> dan{" "}
-              <Text style={styles.termsLink}>Kebijakan Privasi</Text>.
+              <Text style={styles.termsLink}>Ketentuan Layanan</Text> &{" "}
+              <Text style={styles.termsLink}>Kebijakan Privasi</Text> Makarya.
             </Text>
           </View>
         </View>
@@ -133,7 +153,7 @@ export function AuthLandingScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: "#F8FAFC",
   },
   safeArea: {
     flex: 1,
@@ -153,20 +173,10 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 8,
   },
-  logoIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2.5,
-    borderColor: "#6366F1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  logoInnerDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#6366F1",
+  logoImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
   },
   logoText: {
     fontFamily: FONTS.displayBold,
@@ -180,12 +190,31 @@ const styles = StyleSheet.create({
   centerIllustrationWrap: {
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 10,
+    marginVertical: 8,
   },
 
   // Typography
   textBlock: {
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  badgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#ECFDF5",
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    alignSelf: "flex-start",
+    marginBottom: 12,
+  },
+  badgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: "#059669",
+    fontWeight: "700",
   },
   titleText: {
     fontFamily: FONTS.displayBold,
@@ -194,7 +223,7 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     letterSpacing: -0.6,
     lineHeight: 36,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   subtitleText: {
     fontFamily: FONTS.bodyRegular,
@@ -208,16 +237,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryBtn: {
-    backgroundColor: "#6366F1", // Vibrant purple/indigo matching mockup
+    backgroundColor: "#0F172A", // Signature Slate 900
     height: 54,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#6366F1",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 3,
   },
   primaryBtnText: {
     fontFamily: FONTS.bodyBold,
@@ -235,7 +264,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.03,
     shadowRadius: 4,
     elevation: 1,
   },
@@ -250,11 +279,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#94A3B8",
     textAlign: "center",
-    marginTop: 6,
+    marginTop: 4,
     lineHeight: 15,
   },
   termsLink: {
-    color: "#6366F1",
+    color: "#0F172A",
     fontWeight: "600",
   },
 });

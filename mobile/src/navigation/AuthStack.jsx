@@ -12,7 +12,10 @@ const Stack = createStackNavigator();
 
 export function AuthStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Onboarding"
+    >
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="AuthLanding" component={AuthLandingScreen} />
       <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
