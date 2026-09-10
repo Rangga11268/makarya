@@ -6,17 +6,34 @@ import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import { PebbleButton } from "../ui/PebbleButton";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { Star, Clock, ShieldCheck } from "lucide-react-native";
+import { Star, Clock, ShieldCheck, Users } from "lucide-react-native";
 
 export function ProposalCard({
   proposal,
+  projectSlots = [],
+  isMultiSlot = false,
   onAccept,
   onReject,
   loadingAccept,
   loadingReject,
 }) {
   const [imgError, setImgError] = useState(false);
-  const mhs = proposal.mhs_profile || {};
+  const mhs = proposal.mhs_profile || proposal.mahasiswa || {};
+
+  const matchedSlot = Array.isArray(projectSlots)
+    ? projectSlots.find(
+        (s) =>
+          String(s.id) === String(proposal.slot_id) ||
+          String(s.id) === String(proposal.slot?.id),
+      )
+    : null;
+
+  const roleName =
+    proposal.slot_nama_peran ||
+    proposal.slot?.nama_peran ||
+    matchedSlot?.nama_peran ||
+    proposal.nama_peran ||
+    null;
 
   return (
     <View style={styles.card}>
@@ -53,6 +70,24 @@ export function ProposalCard({
           </Text>
         </View>
       </View>
+
+      {/* Target Slot/Role Badge for Multi-Student Projects */}
+      {roleName ? (
+        <View style={styles.slotRoleRow}>
+          <View style={styles.slotRoleBadge}>
+            <Users size={12} color="#2563EB" strokeWidth={2.4} />
+            <Text style={styles.slotRoleLabel}>Posisi / Peran:</Text>
+            <Text style={styles.slotRoleValue} numberOfLines={1}>
+              {roleName}
+            </Text>
+          </View>
+          {matchedSlot?.alokasi_budget ? (
+            <Text style={styles.slotBudgetText}>
+              Pagu: {formatCurrency(matchedSlot.alokasi_budget)}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
 
       {/* Offer Price & Days */}
       <View style={styles.offerRow}>
@@ -288,5 +323,40 @@ const styles = StyleSheet.create({
     color: "#92400E",
     fontStyle: "italic",
     lineHeight: 16,
+  },
+  slotRoleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(37, 99, 235, 0.07)",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.16)",
+  },
+  slotRoleBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flex: 1,
+    paddingRight: 6,
+  },
+  slotRoleLabel: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: "#64748B",
+  },
+  slotRoleValue: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#2563EB",
+  },
+  slotBudgetText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#059669",
   },
 });

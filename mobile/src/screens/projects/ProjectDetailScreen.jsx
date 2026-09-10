@@ -98,9 +98,11 @@ export function ProjectDetailScreen({ route, navigation }) {
   const [resignModal, setResignModal] = useState(false);
   const [invoiceModal, setInvoiceModal] = useState(false);
   const [acceptProposalModal, setAcceptProposalModal] = useState(false);
-  const [selectedProposalToAccept, setSelectedProposalToAccept] = useState(null);
+  const [selectedProposalToAccept, setSelectedProposalToAccept] =
+    useState(null);
   const [approveSubmissionModal, setApproveSubmissionModal] = useState(false);
-  const [selectedSubmissionToApprove, setSelectedSubmissionToApprove] = useState(null);
+  const [selectedSubmissionToApprove, setSelectedSubmissionToApprove] =
+    useState(null);
 
   const { showToast } = useToastStore();
 
@@ -353,10 +355,7 @@ export function ProjectDetailScreen({ route, navigation }) {
       await submissionApi.approve(selectedSubmissionToApprove.id);
       setApproveSubmissionModal(false);
       setSelectedSubmissionToApprove(null);
-      showToast(
-        "Proyek selesai & dana escrow berhasil dicairkan!",
-        "success",
-      );
+      showToast("Proyek selesai & dana escrow berhasil dicairkan!", "success");
       loadDetail();
     } catch (err) {
       showToast(
@@ -1066,6 +1065,11 @@ export function ProjectDetailScreen({ route, navigation }) {
                     <ProposalCard
                       key={prop.id}
                       proposal={prop}
+                      projectSlots={project.slots}
+                      isMultiSlot={
+                        Boolean(project.slots && project.slots.length > 1) ||
+                        project.tipe_kolaborasi === "TIM"
+                      }
                       onAccept={() => handleOpenAcceptModal(prop)}
                       onReject={() => handleRejectProposal(prop.id)}
                       loadingAccept={

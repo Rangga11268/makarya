@@ -23,6 +23,7 @@ import {
   X,
   CheckCircle2,
   Lock,
+  Users,
 } from "lucide-react-native";
 import { PebbleButton } from "../../ui/PebbleButton";
 
@@ -448,6 +449,21 @@ export function AcceptProposalModal({
   if (!proposal) return null;
   const mhs = proposal.mhs_profile || proposal.mahasiswa || {};
 
+  const matchedSlot = Array.isArray(project?.slots)
+    ? project.slots.find(
+        (s) =>
+          String(s.id) === String(proposal.slot_id) ||
+          String(s.id) === String(proposal.slot?.id),
+      )
+    : null;
+
+  const roleName =
+    proposal.slot_nama_peran ||
+    proposal.slot?.nama_peran ||
+    matchedSlot?.nama_peran ||
+    proposal.nama_peran ||
+    null;
+
   return (
     <Modal
       visible={visible}
@@ -508,6 +524,14 @@ export function AcceptProposalModal({
                   {mhs.prodi || "Talenta Terverifikasi"} •{" "}
                   {proposal.estimasi_hari || 7} Hari Kerja
                 </Text>
+                {roleName ? (
+                  <View style={styles.modalRolePill}>
+                    <Users size={11} color="#2563EB" strokeWidth={2.4} />
+                    <Text style={styles.modalRoleText} numberOfLines={1}>
+                      Posisi: {roleName}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
               <View style={styles.priceContainer}>
                 <Text style={styles.priceMetaLabel}>Nilai Penawaran</Text>
@@ -519,11 +543,7 @@ export function AcceptProposalModal({
 
             {/* Escrow Callout */}
             <View style={[styles.alertBox, styles.alertBoxSuccess]}>
-              <ShieldCheck
-                size={20}
-                color="#059669"
-                style={{ marginTop: 2 }}
-              />
+              <ShieldCheck size={20} color="#059669" style={{ marginTop: 2 }} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.alertTitle, { color: "#065F46" }]}>
                   Proteksi Rekening Bersama (Escrow)
@@ -535,8 +555,8 @@ export function AcceptProposalModal({
                   >
                     {formatCurrency(proposal.harga_tawar)}
                   </Text>{" "}
-                  akan dikunci di Escrow Makarya. Saldo TIDAK langsung dikirim ke
-                  mahasiswa, melainkan baru dicairkan setelah Anda puas dan
+                  akan dikunci di Escrow Makarya. Saldo TIDAK langsung dikirim
+                  ke mahasiswa, melainkan baru dicairkan setelah Anda puas dan
                   menyetujui hasil deliverable pekerjaan.
                 </Text>
               </View>
@@ -888,6 +908,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#64748B",
     marginTop: 2,
+  },
+  modalRolePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    alignSelf: "flex-start",
+    marginTop: 4,
+  },
+  modalRoleText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#2563EB",
   },
   priceContainer: {
     alignItems: "flex-end",
