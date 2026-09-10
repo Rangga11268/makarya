@@ -71,20 +71,31 @@ export function ProposalCard({
         </View>
       </View>
 
-      {/* Target Slot/Role Badge for Multi-Student Projects */}
+      {/* Target Slot/Role Banner */}
       {roleName ? (
-        <View style={styles.slotRoleRow}>
-          <View style={styles.slotRoleBadge}>
-            <Users size={12} color="#2563EB" strokeWidth={2.4} />
-            <Text style={styles.slotRoleLabel}>Posisi / Peran:</Text>
-            <Text style={styles.slotRoleValue} numberOfLines={1}>
-              {roleName}
-            </Text>
+        <View style={styles.roleBanner}>
+          <View style={styles.roleBannerLeft}>
+            <View style={styles.roleIconCircle}>
+              <Users size={12} color="#2563EB" strokeWidth={2.4} />
+            </View>
+            <View style={styles.roleTextContainer}>
+              <Text style={styles.roleMicroLabel}>Posisi Dilamar</Text>
+              <Text
+                style={styles.roleTitle}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {roleName}
+              </Text>
+            </View>
           </View>
           {matchedSlot?.alokasi_budget ? (
-            <Text style={styles.slotBudgetText}>
-              Pagu: {formatCurrency(matchedSlot.alokasi_budget)}
-            </Text>
+            <View style={styles.roleBannerRight}>
+              <Text style={styles.roleMicroLabel}>Pagu Slot</Text>
+              <Text style={styles.slotPaguText}>
+                {formatCurrency(matchedSlot.alokasi_budget)}
+              </Text>
+            </View>
           ) : null}
         </View>
       ) : null}
@@ -324,39 +335,62 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     lineHeight: 16,
   },
-  slotRoleRow: {
+  roleBanner: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "rgba(37, 99, 235, 0.07)",
+    backgroundColor: "rgba(37, 99, 235, 0.06)",
     borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 7,
+    paddingVertical: 8,
     marginTop: 10,
+    marginBottom: 10,
     borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.16)",
+    borderColor: "rgba(37, 99, 235, 0.15)",
   },
-  slotRoleBadge: {
+  roleBannerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
     flex: 1,
-    paddingRight: 6,
+    flexShrink: 1,
+    marginRight: 10,
   },
-  slotRoleLabel: {
+  roleIconCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(37, 99, 235, 0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  roleTextContainer: {
+    flex: 1,
+    flexShrink: 1,
+  },
+  roleMicroLabel: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 9.5,
     color: "#64748B",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
-  slotRoleValue: {
+  roleTitle: {
     fontFamily: FONTS.displayBold,
+    fontSize: 12.5,
+    fontWeight: "700",
+    color: "#1D4ED8",
+    marginTop: 1,
+  },
+  roleBannerRight: {
+    alignItems: "flex-end",
+    flexShrink: 0,
+  },
+  slotPaguText: {
+    fontFamily: FONTS.bodyBold,
     fontSize: 12,
     fontWeight: "700",
-    color: "#2563EB",
-  },
-  slotBudgetText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
     color: "#059669",
+    marginTop: 1,
   },
 });

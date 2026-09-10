@@ -527,7 +527,11 @@ export function AcceptProposalModal({
                 {roleName ? (
                   <View style={styles.modalRolePill}>
                     <Users size={11} color="#2563EB" strokeWidth={2.4} />
-                    <Text style={styles.modalRoleText} numberOfLines={1}>
+                    <Text
+                      style={styles.modalRoleText}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
                       Posisi: {roleName}
                     </Text>
                   </View>
@@ -919,11 +923,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "flex-start",
     marginTop: 4,
+    maxWidth: "95%",
   },
   modalRoleText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
     color: "#2563EB",
+    flexShrink: 1,
   },
   priceContainer: {
     alignItems: "flex-end",
