@@ -29,7 +29,9 @@ import {
   Briefcase,
   Store,
 } from "lucide-react-native";
+import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 
+const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
@@ -158,6 +160,55 @@ export function RegisterScreen({ route, navigation }) {
         barStyle="dark-content"
       />
 
+      {/* Apple Soft Ambient Background (Fluentify / iOS style) */}
+      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <Svg width={width} height={height}>
+          <Defs>
+            <RadialGradient
+              id="registerAtmosphereTop"
+              cx="78%"
+              cy="8%"
+              rx="65%"
+              ry="35%"
+              fx="78%"
+              fy="8%"
+            >
+              <Stop offset="0%" stopColor="#DBEAFE" stopOpacity="0.75" />
+              <Stop offset="55%" stopColor="#E0E7FF" stopOpacity="0.4" />
+              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
+            </RadialGradient>
+            <RadialGradient
+              id="registerAtmosphereMid"
+              cx="15%"
+              cy="26%"
+              rx="55%"
+              ry="30%"
+              fx="15%"
+              fy="26%"
+            >
+              <Stop offset="0%" stopColor="#E0EAFF" stopOpacity="0.5" />
+              <Stop offset="60%" stopColor="#F1F5F9" stopOpacity="0.2" />
+              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
+            </RadialGradient>
+          </Defs>
+          <Rect x="0" y="0" width={width} height={height} fill="#F8FAFC" />
+          <Rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            fill="url(#registerAtmosphereTop)"
+          />
+          <Rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            fill="url(#registerAtmosphereMid)"
+          />
+        </Svg>
+      </View>
+
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -193,9 +244,9 @@ export function RegisterScreen({ route, navigation }) {
               <View style={styles.roleBadgeRow}>
                 <View style={styles.roleBadgePill}>
                   {role === "UMKM" ? (
-                    <Store size={13} color="#0F172A" />
+                    <Store size={13} color="#1D4ED8" />
                   ) : (
-                    <GraduationCap size={13} color="#0F172A" />
+                    <GraduationCap size={13} color="#1D4ED8" />
                   )}
                   <Text style={styles.roleBadgeText}>
                     Pendaftaran: {role === "UMKM" ? "Klien UMKM" : "Mahasiswa"}
@@ -451,14 +502,19 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#FFFFFF",
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
 
   // Header Block
@@ -472,18 +528,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F1F5F9",
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderRadius: 999,
     alignSelf: "flex-start",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderWidth: 1.2,
+    borderColor: "#BFDBFE",
   },
   roleBadgeText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
-    color: "#0F172A",
+    color: "#1D4ED8",
     fontWeight: "700",
   },
   titleText: {
@@ -517,11 +573,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: 22,
+    borderWidth: 1.2,
     borderColor: "#E2E8F0",
-    paddingHorizontal: 14,
-    height: 52,
+    paddingHorizontal: 16,
+    height: 54,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
   },
   inputLeftIcon: {
     marginRight: 10,
@@ -570,25 +630,26 @@ const styles = StyleSheet.create({
     color: "#475569",
   },
 
-  // Button
+  // Button (Apple Pill Style)
   createBtn: {
     backgroundColor: "#0F172A",
-    height: 52,
-    borderRadius: 16,
+    height: 54,
+    borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 4,
   },
   createBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
     fontWeight: "700",
     color: "#FFFFFF",
+    letterSpacing: -0.2,
   },
 
   // Footer

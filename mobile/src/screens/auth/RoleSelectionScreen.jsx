@@ -49,21 +49,34 @@ export function RoleSelectionScreen({ navigation }) {
         barStyle="dark-content"
       />
 
-      {/* Background Soft Subtle Ambient Glow */}
+      {/* Apple Soft Ambient Background (Fluentify / iOS style) */}
       <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
         <Svg width={width} height={height}>
           <Defs>
             <RadialGradient
-              id="roleGlow"
-              cx="50%"
-              cy="25%"
-              rx="60%"
-              ry="40%"
-              fx="50%"
-              fy="25%"
+              id="roleAtmosphereTop"
+              cx="78%"
+              cy="8%"
+              rx="65%"
+              ry="35%"
+              fx="78%"
+              fy="8%"
             >
-              <Stop offset="0%" stopColor="#E0E7FF" stopOpacity="0.45" />
-              <Stop offset="50%" stopColor="#F1F5F9" stopOpacity="0.25" />
+              <Stop offset="0%" stopColor="#DBEAFE" stopOpacity="0.75" />
+              <Stop offset="55%" stopColor="#E0E7FF" stopOpacity="0.4" />
+              <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
+            </RadialGradient>
+            <RadialGradient
+              id="roleAtmosphereMid"
+              cx="15%"
+              cy="28%"
+              rx="55%"
+              ry="32%"
+              fx="15%"
+              fy="28%"
+            >
+              <Stop offset="0%" stopColor="#E0EAFF" stopOpacity="0.5" />
+              <Stop offset="60%" stopColor="#F1F5F9" stopOpacity="0.2" />
               <Stop offset="100%" stopColor="#F8FAFC" stopOpacity="0" />
             </RadialGradient>
           </Defs>
@@ -73,7 +86,14 @@ export function RoleSelectionScreen({ navigation }) {
             y="0"
             width={width}
             height={height}
-            fill="url(#roleGlow)"
+            fill="url(#roleAtmosphereTop)"
+          />
+          <Rect
+            x="0"
+            y="0"
+            width={width}
+            height={height}
+            fill="url(#roleAtmosphereMid)"
           />
         </Svg>
       </View>
@@ -311,23 +331,24 @@ const styles = StyleSheet.create({
   roleCard: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    borderRadius: 22,
+    borderRadius: 24,
     padding: 16,
-    borderWidth: 1.5,
+    borderWidth: 1.2,
     borderColor: "#E2E8F0",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowRadius: 10,
     elevation: 2,
     position: "relative",
   },
   roleCardActive: {
     borderColor: "#0F172A",
+    borderWidth: 2,
     backgroundColor: "#FFFFFF",
     shadowColor: "#0F172A",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
   },
   activeCheckBadge: {
     position: "absolute",
@@ -363,37 +384,40 @@ const styles = StyleSheet.create({
   roleTagPill: {
     alignSelf: "flex-start",
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
   roleTagText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9,
+    fontSize: 10,
     color: "#475569",
     fontWeight: "600",
   },
 
-  // Bottom Continue
+  // Bottom Continue (Apple Pill Style)
   bottomBar: {
     marginTop: "auto",
   },
   continueBtn: {
     backgroundColor: "#0F172A", // Signature Slate 900
     height: 54,
-    borderRadius: 18,
+    borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.22,
     shadowRadius: 10,
-    elevation: 3,
+    elevation: 4,
   },
   continueBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
     fontWeight: "700",
     color: "#FFFFFF",
+    letterSpacing: -0.2,
   },
 });

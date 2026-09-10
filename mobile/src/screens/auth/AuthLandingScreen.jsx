@@ -235,14 +235,14 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
 
-  // Buttons
+  // Buttons (Apple Pill Style)
   buttonBlock: {
     gap: 12,
   },
   primaryBtn: {
     backgroundColor: "#FFFFFF",
     height: 54,
-    borderRadius: 18,
+    borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000000",
@@ -256,11 +256,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#091424",
+    letterSpacing: -0.2,
   },
   secondaryBtn: {
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     height: 54,
-    borderRadius: 18,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.18)",
     alignItems: "center",
@@ -271,6 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#F8FAFC",
+    letterSpacing: -0.2,
   },
   termsText: {
     fontFamily: FONTS.bodyRegular,
