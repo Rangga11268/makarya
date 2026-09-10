@@ -19,6 +19,7 @@ import { useToastStore } from "../../store/toastStore";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Check } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -270,17 +271,15 @@ export function LoginScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
 
-              {/* Sign in Button (Vibrant Indigo/Purple) */}
-              <TouchableOpacity
-                style={[styles.signInBtn, loading && { opacity: 0.7 }]}
+              {/* Sign in Button (3D Glossy Pebble) */}
+              <PebbleButton
+                variant="midnight"
+                size="lg"
+                title={loading ? "Memproses..." : "Sign in"}
                 onPress={handleLogin}
-                disabled={loading}
-                activeOpacity={0.88}
-              >
-                <Text style={styles.signInBtnText}>
-                  {loading ? "Memproses..." : "Sign in"}
-                </Text>
-              </TouchableOpacity>
+                loading={loading}
+                style={{ marginTop: 8 }}
+              />
 
               {/* Divider */}
               <View style={styles.dividerRow}>
@@ -289,17 +288,14 @@ export function LoginScreen({ navigation }) {
                 <View style={styles.dividerLine} />
               </View>
 
-              {/* Google Sign In Button */}
-              <TouchableOpacity
-                style={styles.googleBtn}
+              {/* Google Sign In Button (Pearl Glossy Pebble) */}
+              <PebbleButton
+                variant="pearl"
+                size="lg"
+                title={googleLoading ? "Menghubungkan..." : "Continue with Google"}
                 onPress={handleGoogleLogin}
-                disabled={googleLoading}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.googleBtnText}>
-                  {googleLoading ? "Menghubungkan..." : "Continue with Google"}
-                </Text>
-              </TouchableOpacity>
+                loading={googleLoading}
+              />
             </View>
 
             {/* Bottom Footer Link */}

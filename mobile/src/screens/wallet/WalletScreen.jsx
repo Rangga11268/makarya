@@ -12,6 +12,7 @@ import {
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 import { Input } from "../../components/ui/Input";
 import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { walletApi } from "../../api";
@@ -289,49 +290,40 @@ export function WalletScreen({ navigation }) {
                 <Text style={styles.pocketCurrencyText}>IDR</Text>
               </View>
 
-              {/* Pocket Actions Row */}
+              {/* Pocket Actions Row (Matching 3D Glossy Pebble Reference) */}
               <View style={styles.pocketActionsRow}>
-                {/* Primary Action Button */}
-                <TouchableOpacity
-                  style={styles.addBalancePillBtn}
+                {/* Primary Action Button (Vibrant Sapphire Pebble) */}
+                <PebbleButton
+                  variant="sapphire"
+                  size="sm"
+                  title={isMahasiswa ? "Tarik Honor" : "Tambah Saldo"}
+                  icon={isMahasiswa ? ArrowUpRight : Plus}
                   onPress={() => {
                     setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
                     setTxModal(true);
                   }}
-                  activeOpacity={0.85}
-                >
-                  <Plus size={13} color="#FFFFFF" strokeWidth={2.5} />
-                  <Text style={styles.addBalancePillText}>
-                    {isMahasiswa ? "Tarik Honor" : "Tambah Saldo"}
-                  </Text>
-                </TouchableOpacity>
+                />
 
-                {/* Right Action Icons */}
+                {/* Right Action Icons (Dark Pebble Circles like reference image) */}
                 <View style={styles.pocketRightIconGroup}>
                   {/* Secondary Action: TopUp for Mhs, Withdraw for UMKM */}
-                  <TouchableOpacity
-                    style={styles.pocketGlassIconBtn}
+                  <PebbleButton
+                    variant="dark"
+                    size="circle-sm"
+                    icon={ArrowRightLeft}
                     onPress={() => {
                       setTxType(isMahasiswa ? "TOPUP" : "WITHDRAW");
                       setTxModal(true);
                     }}
-                    activeOpacity={0.8}
-                  >
-                    <ArrowRightLeft size={15} color="#FFFFFF" />
-                  </TouchableOpacity>
+                  />
 
                   {/* Eye Toggle Show/Hide Balance */}
-                  <TouchableOpacity
-                    style={styles.pocketGlassIconBtn}
+                  <PebbleButton
+                    variant="dark"
+                    size="circle-sm"
+                    icon={showBalance ? Eye : EyeOff}
                     onPress={() => setShowBalance(!showBalance)}
-                    activeOpacity={0.8}
-                  >
-                    {showBalance ? (
-                      <Eye size={15} color="#FFFFFF" />
-                    ) : (
-                      <EyeOff size={15} color="#FFFFFF" />
-                    )}
-                  </TouchableOpacity>
+                  />
                 </View>
               </View>
             </View>

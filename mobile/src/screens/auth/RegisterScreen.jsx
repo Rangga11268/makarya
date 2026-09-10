@@ -30,6 +30,7 @@ import {
   Store,
 } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -429,17 +430,15 @@ export function RegisterScreen({ route, navigation }) {
                 </Text>
               </TouchableOpacity>
 
-              {/* Create account button */}
-              <TouchableOpacity
-                style={[styles.createBtn, loading && { opacity: 0.7 }]}
+              {/* Create account button (3D Glossy Pebble) */}
+              <PebbleButton
+                variant="midnight"
+                size="lg"
+                title={loading ? "Mendaftarkan..." : "Create account"}
                 onPress={handleRegister}
-                disabled={loading}
-                activeOpacity={0.88}
-              >
-                <Text style={styles.createBtnText}>
-                  {loading ? "Mendaftarkan..." : "Create account"}
-                </Text>
-              </TouchableOpacity>
+                loading={loading}
+                style={{ marginTop: 8 }}
+              />
             </View>
 
             {/* Bottom Footer Link */}

@@ -21,6 +21,7 @@ import Svg, {
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 import { ShieldCheck } from "lucide-react-native";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -119,25 +120,23 @@ export function AuthLandingScreen({ navigation }) {
             </Text>
           </View>
 
-          {/* Action Buttons */}
+          {/* Action Buttons (3D Glossy Pebble) */}
           <View style={styles.buttonBlock}>
-            {/* 1. Create account button (Crisp White with Dark Text) */}
-            <TouchableOpacity
-              style={styles.primaryBtn}
+            {/* 1. Create account button (3D Pearl White Pebble) */}
+            <PebbleButton
+              variant="pearl"
+              size="lg"
+              title="Buat Akun Baru"
               onPress={() => navigation.navigate("RoleSelection")}
-              activeOpacity={0.88}
-            >
-              <Text style={styles.primaryBtnText}>Buat Akun Baru</Text>
-            </TouchableOpacity>
+            />
 
-            {/* 2. Sign in button (Frosted Glass Bordered Button) */}
-            <TouchableOpacity
-              style={styles.secondaryBtn}
+            {/* 2. Sign in button (3D Neu-skeuomorphic Dark Pebble like 'Receive ↓') */}
+            <PebbleButton
+              variant="dark"
+              size="lg"
+              title="Masuk ke Akun"
               onPress={() => navigation.navigate("Login")}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.secondaryBtnText}>Masuk ke Akun</Text>
-            </TouchableOpacity>
+            />
 
             {/* Terms note */}
             <Text style={styles.termsText}>

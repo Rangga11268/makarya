@@ -8,6 +8,9 @@ import {
 } from "react-native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
+import { PebbleButton } from "./PebbleButton";
+
+export { PebbleButton };
 
 export function Button({
   title,
@@ -22,6 +25,24 @@ export function Button({
   style,
   textStyle,
 }) {
+  if (variant === "pebble" || variant === "sapphire") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant="sapphire"
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
   const isBrand =
     variant === "brand" || variant === "lime" || variant === "primary";
   const isSecondary = variant === "secondary" || variant === "dark";

@@ -28,6 +28,7 @@ import {
   CheckCircle2,
   Users,
 } from "lucide-react-native";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -224,15 +225,14 @@ export function RoleSelectionScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          {/* Continue Button */}
+          {/* Continue Button (3D Glossy Pebble) */}
           <View style={styles.bottomBar}>
-            <TouchableOpacity
-              style={styles.continueBtn}
+            <PebbleButton
+              variant="midnight"
+              size="lg"
+              title="Lanjutkan"
               onPress={handleContinue}
-              activeOpacity={0.88}
-            >
-              <Text style={styles.continueBtnText}>Lanjutkan</Text>
-            </TouchableOpacity>
+            />
           </View>
         </View>
       </SafeAreaView>
