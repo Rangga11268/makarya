@@ -216,6 +216,10 @@ def browse_project(
         query = query.filter(Project.status == status)
         if status in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
             query = query.filter(Project.deadline >= today)
+    else:
+        # Default browse: tampilkan proyek OPEN/BIDDING yang belum kedaluwarsa
+        query = query.filter(Project.status.in_([ProjectStatus.OPEN, ProjectStatus.BIDDING]), Project.deadline >= today)
+
     if kategori:
         query = query.filter(Project.kategori == kategori)
     if min_budget is not None:
@@ -226,6 +230,7 @@ def browse_project(
         search = f"%{keyword}%"
         query = query.filter(or_(Project.judul.ilike(search), Project.deskripsi_raw.ilike(search)))
 
+    query = query.order_by(Project.created_at.desc())
     projects = query.offset(skip).limit(limit).all()
 
     mhs_profile = None
@@ -498,4 +503,4 @@ def terminate_and_cancel_project(
     db.refresh(project)
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
-    return _build_project_response(project, db, umkm_profile=profile)
+    return _build_project_response(project, db, umkm_profile=profile)

@@ -143,7 +143,8 @@ export function ReopenProjectModal({
                 numberOfLines={3}
               />
               <Text style={styles.helperText}>
-                Alasan ini akan dicatat dalam riwayat proyek dan dapat dibaca oleh mahasiswa terkait.
+                Alasan ini akan dicatat dalam riwayat proyek dan dapat dibaca
+                oleh mahasiswa terkait.
               </Text>
             </View>
 
@@ -246,7 +247,8 @@ export function TerminateProjectModal({
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>
-                Alasan Pembatalan Proyek <Text style={{ color: COLORS.danger }}>*</Text>
+                Alasan Pembatalan Proyek{" "}
+                <Text style={{ color: COLORS.danger }}>*</Text>
               </Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -258,7 +260,8 @@ export function TerminateProjectModal({
                 numberOfLines={3}
               />
               <Text style={styles.helperText}>
-                Alasan ini akan dicatat dalam audit pembatalan proyek dan dapat dilihat oleh mahasiswa pelamar/publik.
+                Alasan ini akan dicatat dalam audit pembatalan proyek dan dapat
+                dilihat oleh mahasiswa pelamar/publik.
               </Text>
             </View>
 
@@ -392,7 +395,8 @@ export function ResignProposalModal({
                 numberOfLines={3}
               />
               <Text style={styles.helperText}>
-                Alasan pengunduran diri akan dicatat dan dapat dilihat oleh pihak klien UMKM.
+                Alasan pengunduran diri akan dicatat dan dapat dilihat oleh
+                pihak klien UMKM.
               </Text>
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>

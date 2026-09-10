@@ -365,10 +365,10 @@ export function ProjectDetailPage() {
                       {project.cancelled_by_role === "UMKM"
                         ? "Klien UMKM"
                         : project.cancelled_by_role === "MAHASISWA"
-                        ? "Mahasiswa Terpilih"
-                        : project.cancelled_by_role === "SYSTEM_EXPIRED"
-                        ? "Sistem (Kedaluwarsa)"
-                        : "Pihak Terkait"}
+                          ? "Mahasiswa Terpilih"
+                          : project.cancelled_by_role === "SYSTEM_EXPIRED"
+                            ? "Sistem (Kedaluwarsa)"
+                            : "Pihak Terkait"}
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
@@ -396,7 +396,8 @@ export function ProjectDetailPage() {
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-brand-indigo shrink-0" />
                     <h3 className="font-bold text-xs text-dark-900 uppercase tracking-wider">
-                      Formasi Slot Tim Proyek ({project.slots.length} Peran Dibuka)
+                      Formasi Slot Tim Proyek ({project.slots.length} Peran
+                      Dibuka)
                     </h3>
                   </div>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
@@ -407,7 +408,8 @@ export function ProjectDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                   {project.slots.map((slot) => {
                     const isFilled =
-                      slot.status === "IN_PROGRESS" || slot.status === "COMPLETED";
+                      slot.status === "IN_PROGRESS" ||
+                      slot.status === "COMPLETED";
                     return (
                       <div
                         key={slot.id}

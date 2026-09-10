@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   StatusBar,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import Svg, { Path, Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -89,7 +90,7 @@ export function HomeScreen({ navigation }) {
             .getMe()
             .catch(() => ({ data: { saldo_aktif: 0, saldo_escrow: 0 } })),
           projectApi
-            .browse({ limit: 6 })
+            .browse({ limit: 6, status: "OPEN" })
             .catch(() => ({ data: { items: [] } })),
           proposalApi.getMyProposals().catch(() => ({ data: [] })),
         ]);
@@ -119,9 +120,11 @@ export function HomeScreen({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, [user?.role]);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [user?.role]),
+  );
 
   // 6 Bespoke Vector Categories Unified in Makarya Brand Indigo Palette
   const categoryTiles = [

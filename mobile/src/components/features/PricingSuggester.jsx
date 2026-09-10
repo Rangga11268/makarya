@@ -26,10 +26,17 @@ export function PricingSuggester({ category, budget }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Estimasi Budget Wajar ({currentEst.label})</Text>
-        <Text style={styles.range}>
-          {formatCurrency(currentEst.min)} - {formatCurrency(currentEst.max)}
-        </Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.headerMicroLabel}>PANDUAN ESTIMASI PASAR</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {currentEst.label}
+          </Text>
+        </View>
+        <View style={styles.rangePill}>
+          <Text style={styles.range}>
+            {formatCurrency(currentEst.min)} - {formatCurrency(currentEst.max)}
+          </Text>
+        </View>
       </View>
 
       {isTooLow && (
@@ -75,16 +82,38 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  titleWrap: {
+    flex: 1,
+    minWidth: 130,
+  },
+  headerMicroLabel: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginBottom: 2,
   },
   title: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 12,
+    color: COLORS.textDark,
     fontWeight: "600",
+  },
+  rangePill: {
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    alignSelf: "flex-start",
   },
   range: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     color: COLORS.brandIndigo,
   },

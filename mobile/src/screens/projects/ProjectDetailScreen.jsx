@@ -149,8 +149,14 @@ export function ProjectDetailScreen({ route, navigation }) {
       }
       setMyExistingProposal(foundProp || null);
 
-      if (pRes.data?.tipe_kolaborasi === "TIM" && Array.isArray(pRes.data?.slots) && pRes.data.slots.length > 0) {
-        const firstOpenSlot = pRes.data.slots.find((s) => s.status === "OPEN") || pRes.data.slots[0];
+      if (
+        pRes.data?.tipe_kolaborasi === "TIM" &&
+        Array.isArray(pRes.data?.slots) &&
+        pRes.data.slots.length > 0
+      ) {
+        const firstOpenSlot =
+          pRes.data.slots.find((s) => s.status === "OPEN") ||
+          pRes.data.slots[0];
         setSelectedSlot(firstOpenSlot);
         if (firstOpenSlot?.alokasi_budget) {
           setHargaTawar(String(firstOpenSlot.alokasi_budget));
@@ -190,13 +196,19 @@ export function ProjectDetailScreen({ route, navigation }) {
       return;
     }
 
-    if (project?.tipe_kolaborasi === "TIM" && project.slots?.length > 0 && !selectedSlot) {
+    if (
+      project?.tipe_kolaborasi === "TIM" &&
+      project.slots?.length > 0 &&
+      !selectedSlot
+    ) {
       showToast("Pilih salah satu peran tim yang ingin Anda lamar", "danger");
       return;
     }
 
     const harga = parseInt(hargaTawar, 10);
-    const maxBudget = selectedSlot ? selectedSlot.alokasi_budget : (project?.budget_max || 0);
+    const maxBudget = selectedSlot
+      ? selectedSlot.alokasi_budget
+      : project?.budget_max || 0;
     if (harga > maxBudget) {
       showToast(
         `Harga tawar tidak boleh melebihi pagu peran (${formatCurrency(maxBudget)})`,
@@ -605,91 +617,99 @@ export function ProjectDetailScreen({ route, navigation }) {
             </View>
 
             <View style={styles.cancellationReasonBox}>
-              <Text style={styles.cancellationReasonLabel}>Alasan Pembatalan Resmi:</Text>
+              <Text style={styles.cancellationReasonLabel}>
+                Alasan Pembatalan Resmi:
+              </Text>
               <Text style={styles.cancellationReasonQuote}>
-                "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
+                "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}
+                "
               </Text>
             </View>
           </View>
         )}
 
         {/* Team Collaboration Slots Card */}
-        {project.tipe_kolaborasi === "TIM" && Array.isArray(project.slots) && project.slots.length > 0 && (
-          <View style={styles.teamSlotsCard}>
-            <View style={styles.teamSlotsCardHeader}>
-              <View style={styles.teamSlotsIconBox}>
-                <Users size={16} color={COLORS.brandIndigo} />
+        {project.tipe_kolaborasi === "TIM" &&
+          Array.isArray(project.slots) &&
+          project.slots.length > 0 && (
+            <View style={styles.teamSlotsCard}>
+              <View style={styles.teamSlotsCardHeader}>
+                <View style={styles.teamSlotsIconBox}>
+                  <Users size={16} color={COLORS.brandIndigo} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.teamSlotsCardTitle}>
+                    Formasi Tim Proyek ({project.slots.length} Talenta)
+                  </Text>
+                  <Text style={styles.teamSlotsCardSub}>
+                    Proyek kolaborasi multi-peran dengan alokasi escrow
+                    independen tiap posisi.
+                  </Text>
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.teamSlotsCardTitle}>
-                  Formasi Tim Proyek ({project.slots.length} Talenta)
-                </Text>
-                <Text style={styles.teamSlotsCardSub}>
-                  Proyek kolaborasi multi-peran dengan alokasi escrow independen tiap posisi.
-                </Text>
-              </View>
-            </View>
 
-            <View style={styles.teamSlotsList}>
-              {project.slots.map((s, idx) => {
-                const isSlotOpen = s.status === "OPEN";
-                const isSlotDone = s.status === "COMPLETED";
-                return (
-                  <View key={s.id || idx} style={styles.teamSlotItem}>
-                    <View style={styles.teamSlotItemTop}>
-                      <View style={{ flex: 1, marginRight: 8 }}>
-                        <Text style={styles.teamSlotItemRole}>{s.nama_peran}</Text>
-                        <Text style={styles.teamSlotItemBudget}>
-                          Pagu: {formatCurrency(s.alokasi_budget)}
-                        </Text>
-                      </View>
-                      <View
-                        style={[
-                          styles.teamSlotStatusTag,
-                          isSlotOpen
-                            ? styles.teamSlotStatusTagOpen
-                            : isSlotDone
-                              ? styles.teamSlotStatusTagDone
-                              : styles.teamSlotStatusTagActive,
-                        ]}
-                      >
-                        <Text
+              <View style={styles.teamSlotsList}>
+                {project.slots.map((s, idx) => {
+                  const isSlotOpen = s.status === "OPEN";
+                  const isSlotDone = s.status === "COMPLETED";
+                  return (
+                    <View key={s.id || idx} style={styles.teamSlotItem}>
+                      <View style={styles.teamSlotItemTop}>
+                        <View style={{ flex: 1, marginRight: 8 }}>
+                          <Text style={styles.teamSlotItemRole}>
+                            {s.nama_peran}
+                          </Text>
+                          <Text style={styles.teamSlotItemBudget}>
+                            Pagu: {formatCurrency(s.alokasi_budget)}
+                          </Text>
+                        </View>
+                        <View
                           style={[
-                            styles.teamSlotStatusText,
+                            styles.teamSlotStatusTag,
                             isSlotOpen
-                              ? styles.teamSlotStatusTextOpen
+                              ? styles.teamSlotStatusTagOpen
                               : isSlotDone
-                                ? styles.teamSlotStatusTextDone
-                                : styles.teamSlotStatusTextActive,
+                                ? styles.teamSlotStatusTagDone
+                                : styles.teamSlotStatusTagActive,
                           ]}
                         >
-                          {isSlotOpen
-                            ? "Mencari Talenta"
-                            : isSlotDone
-                              ? "Selesai"
-                              : "Sedang Dikerjakan"}
-                        </Text>
+                          <Text
+                            style={[
+                              styles.teamSlotStatusText,
+                              isSlotOpen
+                                ? styles.teamSlotStatusTextOpen
+                                : isSlotDone
+                                  ? styles.teamSlotStatusTextDone
+                                  : styles.teamSlotStatusTextActive,
+                            ]}
+                          >
+                            {isSlotOpen
+                              ? "Mencari Talenta"
+                              : isSlotDone
+                                ? "Selesai"
+                                : "Sedang Dikerjakan"}
+                          </Text>
+                        </View>
                       </View>
+                      {s.deskripsi_tugas ? (
+                        <Text style={styles.teamSlotItemDesc}>
+                          {s.deskripsi_tugas}
+                        </Text>
+                      ) : null}
+                      {s.mahasiswa_nama ? (
+                        <View style={styles.assignedMhsRow}>
+                          <CheckCircle2 size={12} color="#059669" />
+                          <Text style={styles.assignedMhsText}>
+                            Talenta: {s.mahasiswa_nama}
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
-                    {s.deskripsi_tugas ? (
-                      <Text style={styles.teamSlotItemDesc}>
-                        {s.deskripsi_tugas}
-                      </Text>
-                    ) : null}
-                    {s.mahasiswa_nama ? (
-                      <View style={styles.assignedMhsRow}>
-                        <CheckCircle2 size={12} color="#059669" />
-                        <Text style={styles.assignedMhsText}>
-                          Talenta: {s.mahasiswa_nama}
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View>
-                );
-              })}
+                  );
+                })}
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
         {/* 3. Client UMKM Profile Info */}
         <View style={styles.clientBox}>
@@ -1136,16 +1156,17 @@ export function ProjectDetailScreen({ route, navigation }) {
                       }
                     />
                   </View>
-                  {myExistingProposal.status === "WITHDRAWN" && myExistingProposal.withdraw_reason && (
-                    <View style={styles.withdrawnDetailBox}>
-                      <Text style={styles.withdrawnDetailLabel}>
-                        Alasan Pengunduran Diri:
-                      </Text>
-                      <Text style={styles.withdrawnDetailText}>
-                        "{myExistingProposal.withdraw_reason}"
-                      </Text>
-                    </View>
-                  )}
+                  {myExistingProposal.status === "WITHDRAWN" &&
+                    myExistingProposal.withdraw_reason && (
+                      <View style={styles.withdrawnDetailBox}>
+                        <Text style={styles.withdrawnDetailLabel}>
+                          Alasan Pengunduran Diri:
+                        </Text>
+                        <Text style={styles.withdrawnDetailText}>
+                          "{myExistingProposal.withdraw_reason}"
+                        </Text>
+                      </View>
+                    )}
                 </View>
               )}
             </View>
@@ -1248,7 +1269,9 @@ export function ProjectDetailScreen({ route, navigation }) {
         setEstimasiHari={setEstimasiHari}
         coverLetter={coverLetter}
         setCoverLetter={setCoverLetter}
-        budgetMax={selectedSlot ? selectedSlot.alokasi_budget : project.budget_max}
+        budgetMax={
+          selectedSlot ? selectedSlot.alokasi_budget : project.budget_max
+        }
         onSubmit={handleSubmitProposal}
         loading={submitLoading}
         slots={project.tipe_kolaborasi === "TIM" ? project.slots : []}

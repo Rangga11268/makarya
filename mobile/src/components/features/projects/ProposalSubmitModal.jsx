@@ -65,11 +65,13 @@ export function ProposalSubmitModal({
                 <View style={styles.slotHeaderRow}>
                   <Users size={15} color={COLORS.brandIndigo} />
                   <Text style={styles.slotSectionTitle}>
-                    Pilih Peran Tim yang Dilamar <Text style={{ color: COLORS.danger }}>*</Text>
+                    Pilih Peran Tim yang Dilamar{" "}
+                    <Text style={{ color: COLORS.danger }}>*</Text>
                   </Text>
                 </View>
                 <Text style={styles.slotSectionSub}>
-                  Proyek ini membutuhkan formasi tim. Pilih salah satu peran yang sesuai keahlian Anda:
+                  Proyek ini membutuhkan formasi tim. Pilih salah satu peran
+                  yang sesuai keahlian Anda:
                 </Text>
 
                 <View style={styles.slotList}>
@@ -99,12 +101,17 @@ export function ProposalSubmitModal({
                             {s.nama_peran}
                           </Text>
                           {isSelected ? (
-                            <CheckCircle2 size={16} color={COLORS.brandIndigo} />
+                            <CheckCircle2
+                              size={16}
+                              color={COLORS.brandIndigo}
+                            />
                           ) : (
                             <View
                               style={[
                                 styles.slotStatusTag,
-                                isTaken ? styles.slotStatusTagTaken : styles.slotStatusTagOpen,
+                                isTaken
+                                  ? styles.slotStatusTagTaken
+                                  : styles.slotStatusTagOpen,
                               ]}
                             >
                               <Text

@@ -312,7 +312,9 @@ export function CreateProjectPage() {
           return;
         }
         if (!s.alokasi_budget || parseFloat(s.alokasi_budget) <= 0) {
-          setErrorMessage(`Alokasi budget untuk Slot #${i + 1} harus lebih dari Rp 0.`);
+          setErrorMessage(
+            `Alokasi budget untuk Slot #${i + 1} harus lebih dari Rp 0.`,
+          );
           return;
         }
       }
@@ -835,7 +837,8 @@ export function CreateProjectPage() {
                     </div>
                   </div>
                   <p className="text-[11px] text-muted leading-relaxed">
-                    Satu mahasiswa terpilih akan bertanggung jawab menyelesaikan seluruh rincian kebutuhan proyek.
+                    Satu mahasiswa terpilih akan bertanggung jawab menyelesaikan
+                    seluruh rincian kebutuhan proyek.
                   </p>
                 </button>
 
@@ -868,7 +871,8 @@ export function CreateProjectPage() {
                     </div>
                   </div>
                   <p className="text-[11px] text-muted leading-relaxed">
-                    Buka beberapa slot peran terpisah (misal: Desainer + Developer) dengan alokasi budget mandiri.
+                    Buka beberapa slot peran terpisah (misal: Desainer +
+                    Developer) dengan alokasi budget mandiri.
                   </p>
                 </button>
               </div>
@@ -879,10 +883,12 @@ export function CreateProjectPage() {
                   <div className="flex items-center justify-between gap-2 border-b border-slate-200/80 pb-2.5">
                     <div>
                       <h4 className="font-bold text-xs text-dark-900">
-                        Atur Formasi Slot Peran Tim ({formData.slots.length} Peran)
+                        Atur Formasi Slot Peran Tim ({formData.slots.length}{" "}
+                        Peran)
                       </h4>
                       <p className="text-[11px] text-muted">
-                        Tentukan peran keahlian dan alokasi budget untuk masing-masing mahasiswa pelamar.
+                        Tentukan peran keahlian dan alokasi budget untuk
+                        masing-masing mahasiswa pelamar.
                       </p>
                     </div>
                     <Button
@@ -928,7 +934,11 @@ export function CreateProjectPage() {
                               type="text"
                               value={slot.nama_peran}
                               onChange={(e) =>
-                                handleSlotChange(sIdx, "nama_peran", e.target.value)
+                                handleSlotChange(
+                                  sIdx,
+                                  "nama_peran",
+                                  e.target.value,
+                                )
                               }
                               placeholder="Contoh: Graphic Designer / Copywriter"
                               className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
@@ -947,7 +957,7 @@ export function CreateProjectPage() {
                                 handleSlotChange(
                                   sIdx,
                                   "alokasi_budget",
-                                  parseFloat(e.target.value) || 0
+                                  parseFloat(e.target.value) || 0,
                                 )
                               }
                               min="50000"
@@ -967,7 +977,11 @@ export function CreateProjectPage() {
                             type="text"
                             value={slot.deskripsi_tugas}
                             onChange={(e) =>
-                              handleSlotChange(sIdx, "deskripsi_tugas", e.target.value)
+                              handleSlotChange(
+                                sIdx,
+                                "deskripsi_tugas",
+                                e.target.value,
+                              )
                             }
                             placeholder="Contoh: Merancang wireframe dan prototipe di Figma"
                             className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
@@ -983,8 +997,8 @@ export function CreateProjectPage() {
                       {formatCurrency(
                         formData.slots.reduce(
                           (acc, s) => acc + (parseFloat(s.alokasi_budget) || 0),
-                          0
-                        )
+                          0,
+                        ),
                       )}
                     </span>
                   </div>
@@ -1090,42 +1104,45 @@ export function CreateProjectPage() {
             </div>
 
             {/* Team Slots Summary (If TIM) */}
-            {formData.tipe_kolaborasi === "TIM" && formData.slots?.length > 0 && (
-              <div className="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-200/80 space-y-3 text-left">
-                <div className="flex items-center justify-between gap-2 border-b border-indigo-200/60 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-brand-indigo shrink-0" />
-                    <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-                      Formasi Slot Tim Proyek ({formData.slots.length} Peran):
-                    </h4>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
-                    Mode Tim Multi-Talenta
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {formData.slots.map((s, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-xl bg-white border border-indigo-100 text-xs space-y-1 shadow-2xs"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-bold text-dark-900">{s.nama_peran}</span>
-                        <span className="font-extrabold text-brand-indigo">
-                          {formatCurrency(s.alokasi_budget)}
-                        </span>
-                      </div>
-                      {s.deskripsi_tugas && (
-                        <p className="text-[11px] text-muted line-clamp-2">
-                          {s.deskripsi_tugas}
-                        </p>
-                      )}
+            {formData.tipe_kolaborasi === "TIM" &&
+              formData.slots?.length > 0 && (
+                <div className="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-200/80 space-y-3 text-left">
+                  <div className="flex items-center justify-between gap-2 border-b border-indigo-200/60 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-brand-indigo shrink-0" />
+                      <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
+                        Formasi Slot Tim Proyek ({formData.slots.length} Peran):
+                      </h4>
                     </div>
-                  ))}
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                      Mode Tim Multi-Talenta
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {formData.slots.map((s, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl bg-white border border-indigo-100 text-xs space-y-1 shadow-2xs"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-bold text-dark-900">
+                            {s.nama_peran}
+                          </span>
+                          <span className="font-extrabold text-brand-indigo">
+                            {formatCurrency(s.alokasi_budget)}
+                          </span>
+                        </div>
+                        {s.deskripsi_tugas && (
+                          <p className="text-[11px] text-muted line-clamp-2">
+                            {s.deskripsi_tugas}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Escrow Guarantee Commitment */}
             <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start gap-3">
