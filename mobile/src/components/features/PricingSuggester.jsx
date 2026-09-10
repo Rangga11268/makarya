@@ -43,7 +43,8 @@ export function PricingSuggester({ category, budget }) {
         <View style={[styles.banner, styles.bannerWarn]}>
           <AlertCircle size={14} color={COLORS.warning} />
           <Text style={styles.bannerTextWarn}>
-            Budget di bawah estimasi wajar. Mahasiswa mungkin kurang berminat melamar.
+            Budget di bawah estimasi wajar. Mahasiswa mungkin kurang berminat
+            melamar.
           </Text>
         </View>
       )}
