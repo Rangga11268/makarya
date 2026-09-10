@@ -51,6 +51,25 @@ export function Button({
     );
   }
 
+  if (variant === "secondary" || variant === "ice") {
+    return (
+      <PebbleButton
+        title={title}
+        onPress={onPress}
+        variant="ice"
+        size={size}
+        loading={loading}
+        disabled={disabled}
+        icon={Icon}
+        iconRight={IconRight}
+        style={style}
+        textStyle={textStyle}
+      >
+        {children}
+      </PebbleButton>
+    );
+  }
+
   if (variant === "dark" || variant === "midnight") {
     return (
       <PebbleButton

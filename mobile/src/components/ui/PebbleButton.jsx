@@ -162,27 +162,29 @@ export function PebbleButton({
         style,
       ]}
     >
-      {/* Clipped Inner Container for Smooth Gradient & Sheen */}
-      <View style={styles.innerClipped} pointerEvents="none">
-        <Svg style={StyleSheet.absoluteFillObject} width="100%" height="100%">
-          <Defs>
-            <LinearGradient id={bodyId} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor={config.gradTop} />
-              <Stop offset="100%" stopColor={config.gradBottom} />
-            </LinearGradient>
-            <LinearGradient id={sheenId} x1="0" y1="0" x2="0" y2="1">
-              <Stop
-                offset="0%"
-                stopColor="#FFFFFF"
-                stopOpacity={config.sheenOpacity || 0.25}
-              />
-              <Stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
-            </LinearGradient>
-          </Defs>
-          <Rect width="100%" height="100%" fill={`url(#${bodyId})`} />
-          <Rect width="100%" height="50%" fill={`url(#${sheenId})`} />
-        </Svg>
-      </View>
+      {/* Clipped Inner Container for Smooth Gradient & Sheen (iOS/Web only, Android uses native solid pill to avoid SVG flex width clipping) */}
+      {Platform.OS !== "android" && (
+        <View style={styles.innerClipped} pointerEvents="none">
+          <Svg style={StyleSheet.absoluteFillObject} width="100%" height="100%">
+            <Defs>
+              <LinearGradient id={bodyId} x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor={config.gradTop} />
+                <Stop offset="100%" stopColor={config.gradBottom} />
+              </LinearGradient>
+              <LinearGradient id={sheenId} x1="0" y1="0" x2="0" y2="1">
+                <Stop
+                  offset="0%"
+                  stopColor="#FFFFFF"
+                  stopOpacity={config.sheenOpacity || 0.25}
+                />
+                <Stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+            <Rect width="100%" height="100%" fill={`url(#${bodyId})`} />
+            <Rect width="100%" height="50%" fill={`url(#${sheenId})`} />
+          </Svg>
+        </View>
+      )}
 
       {/* Button Content Label & Icons */}
       {loading ? (
