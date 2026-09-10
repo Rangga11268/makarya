@@ -180,12 +180,13 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(226, 232, 240, 0.7)",
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   left: {
     flexDirection: "row",
@@ -221,7 +222,8 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
+    backgroundColor:
+      Platform.OS === "android" ? "#F1F5F9" : "rgba(241, 245, 249, 0.85)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -231,6 +233,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
+    elevation: 0,
   },
   titleContainer: {
     flex: 1,
@@ -353,7 +356,8 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
+    backgroundColor:
+      Platform.OS === "android" ? "#F1F5F9" : "rgba(241, 245, 249, 0.85)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -363,6 +367,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
+    elevation: 0,
   },
   unreadDot: {
     position: "absolute",

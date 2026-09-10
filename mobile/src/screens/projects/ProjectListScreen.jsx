@@ -442,19 +442,23 @@ const styles = StyleSheet.create({
   // 3. Apple Glass Capsule Segmented Navigation Tabs
   segmentedContainer: {
     flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.85)",
     marginHorizontal: 20,
     marginTop: 2,
     marginBottom: 6,
     borderRadius: 14,
     padding: 3,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 1,
+    elevation: Platform.OS === "android" ? 0 : 1,
   },
   segmentedTabItem: {
     flex: 1,
@@ -468,7 +472,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
@@ -500,17 +504,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: Platform.OS === "android" ? 0 : 1,
   },
   activeFilterPillText: {
     fontFamily: FONTS.bodyBold,
@@ -543,16 +551,20 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginTop: 20,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   emptyTitle: {
     fontFamily: FONTS.displayBold,

@@ -870,18 +870,22 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   profileCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 24,
     padding: 20,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 14,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   avatarCircle: {
     width: 76,
@@ -1018,17 +1022,21 @@ const styles = StyleSheet.create({
 
   // Section Box
   sectionBox: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   sectionHeaderRow: {
     flexDirection: "row",

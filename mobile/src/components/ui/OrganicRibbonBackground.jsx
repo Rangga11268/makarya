@@ -9,12 +9,13 @@ export function OrganicRibbonBackground({ height = 480, style }) {
     <View
       style={[
         StyleSheet.absoluteFillObject,
-        { height, overflow: "hidden" },
+        { height, overflow: "hidden", zIndex: -1, elevation: 0 },
         style,
       ]}
       pointerEvents="none"
     >
       <Svg
+        pointerEvents="none"
         width={SCREEN_WIDTH}
         height={height}
         viewBox="0 0 390 480"

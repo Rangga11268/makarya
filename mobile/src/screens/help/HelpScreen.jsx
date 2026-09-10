@@ -65,7 +65,8 @@ const FAQ_ITEMS = [
     icon: AlertCircle,
     iconColor: "#DC2626",
     iconBg: "#FEF2F2",
-    question: "Apa yang harus dilakukan jika klien meminta revisi di luar kesepakatan awal?",
+    question:
+      "Apa yang harus dilakukan jika klien meminta revisi di luar kesepakatan awal?",
     answer:
       "Revisi yang dilayani adalah revisi minor yang tercantum dalam brief proyek. Jika klien meminta fitur atau pekerjaan baru di luar kesepakatan, gunakan fitur 'Ajukan Penyesuaian Anggaran' atau laporkan ke tim mediasi Makarya via WhatsApp Dukungan.",
   },
@@ -128,8 +129,9 @@ export function HelpScreen({ navigation }) {
           <View style={{ flex: 1 }}>
             <Text style={styles.bannerTitle}>Garansi 100% Escrow Makarya</Text>
             <Text style={styles.bannerText}>
-              Setiap transaksi proyek mahasiswa dilindungi rekening bersama resmi.
-              Jangan pernah bertransaksi di luar aplikasi demi keamanan dana Anda.
+              Setiap transaksi proyek mahasiswa dilindungi rekening bersama
+              resmi. Jangan pernah bertransaksi di luar aplikasi demi keamanan
+              dana Anda.
             </Text>
           </View>
         </View>
@@ -138,11 +140,15 @@ export function HelpScreen({ navigation }) {
         <Text style={styles.sectionHeading}>Saluran Bantuan Langsung</Text>
         <View style={styles.contactRow}>
           <View style={styles.contactCard}>
-            <View style={[styles.contactIconCircle, { backgroundColor: "#ECFDF5" }]}>
+            <View
+              style={[styles.contactIconCircle, { backgroundColor: "#ECFDF5" }]}
+            >
               <MessageCircle size={20} color="#059669" />
             </View>
             <Text style={styles.contactTitle}>WhatsApp CS</Text>
-            <Text style={styles.contactSubtitle}>Respon cepat (08.00 - 21.00)</Text>
+            <Text style={styles.contactSubtitle}>
+              Respon cepat (08.00 - 21.00)
+            </Text>
             <PebbleButton
               variant="emerald"
               size="xs"
@@ -153,11 +159,15 @@ export function HelpScreen({ navigation }) {
           </View>
 
           <View style={styles.contactCard}>
-            <View style={[styles.contactIconCircle, { backgroundColor: "#EFF6FF" }]}>
+            <View
+              style={[styles.contactIconCircle, { backgroundColor: "#EFF6FF" }]}
+            >
               <Mail size={20} color="#2563EB" />
             </View>
             <Text style={styles.contactTitle}>Email Support</Text>
-            <Text style={styles.contactSubtitle}>Untuk kendala teknis & akun</Text>
+            <Text style={styles.contactSubtitle}>
+              Untuk kendala teknis & akun
+            </Text>
             <PebbleButton
               variant="sapphire"
               size="xs"
@@ -171,7 +181,9 @@ export function HelpScreen({ navigation }) {
         {/* 4. Frequently Asked Questions (FAQ) */}
         <View style={styles.faqSectionHeader}>
           <HelpCircle size={16} color={COLORS.brandIndigo} />
-          <Text style={styles.sectionHeadingFaq}>Pertanyaan yang Sering Diajukan</Text>
+          <Text style={styles.sectionHeadingFaq}>
+            Pertanyaan yang Sering Diajukan
+          </Text>
         </View>
 
         {FAQ_ITEMS.map((item) => {
@@ -181,21 +193,19 @@ export function HelpScreen({ navigation }) {
           return (
             <TouchableOpacity
               key={item.id}
-              style={[
-                styles.faqCard,
-                isExpanded && styles.faqCardExpanded,
-              ]}
+              style={[styles.faqCard, isExpanded && styles.faqCardExpanded]}
               onPress={() => toggleAccordion(item.id)}
               activeOpacity={0.88}
             >
               <View style={styles.faqHeaderRow}>
                 <View
-                  style={[
-                    styles.faqIconBox,
-                    { backgroundColor: item.iconBg },
-                  ]}
+                  style={[styles.faqIconBox, { backgroundColor: item.iconBg }]}
                 >
-                  <IconComp size={16} color={item.iconColor} strokeWidth={2.2} />
+                  <IconComp
+                    size={16}
+                    color={item.iconColor}
+                    strokeWidth={2.2}
+                  />
                 </View>
 
                 <View style={{ flex: 1, paddingRight: 8 }}>
@@ -245,18 +255,22 @@ const styles = StyleSheet.create({
   glassBanner: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 16,
     gap: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   bannerIconCircle: {
     width: 42,
@@ -294,17 +308,21 @@ const styles = StyleSheet.create({
   },
   contactCard: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 20,
     padding: 14,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   contactIconCircle: {
     width: 42,
@@ -342,17 +360,21 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   faqCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 18,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 10,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 1,
+    elevation: Platform.OS === "android" ? 0 : 1,
   },
   faqCardExpanded: {
     borderColor: "rgba(37, 99, 235, 0.2)",

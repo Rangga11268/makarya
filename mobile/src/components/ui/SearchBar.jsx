@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -71,17 +72,21 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 1,
+    elevation: Platform.OS === "android" ? 0 : 1,
     gap: 8,
   },
   input: {
@@ -91,21 +96,26 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     paddingVertical: 2,
     fontWeight: "500",
+    backgroundColor: "transparent",
   },
   filterBtn: {
     width: 44,
     height: 44,
     borderRadius: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 1,
+    elevation: Platform.OS === "android" ? 0 : 1,
     position: "relative",
   },
   filterBtnActive: {

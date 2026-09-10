@@ -47,7 +47,11 @@ export function AppNavigator() {
   };
 
   // Hanya tampilkan SplashScreen SATU KALI saat cold-start pertama
-  if (!hasShownSplash && !isWebSessionSplashShown() && (showSplash || loading)) {
+  if (
+    !hasShownSplash &&
+    !isWebSessionSplashShown() &&
+    (showSplash || loading)
+  ) {
     return <SplashScreen onFinish={handleFinishSplash} />;
   }
 
