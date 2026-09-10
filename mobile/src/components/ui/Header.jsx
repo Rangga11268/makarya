@@ -97,9 +97,11 @@ export function Header({
           /* Standard Title + Subtitle Header */
           <View style={styles.titleContainer}>
             {category ? (
-              <Text style={styles.categoryText} numberOfLines={1}>
-                {category}
-              </Text>
+              <View style={styles.categoryBadge}>
+                <Text style={styles.categoryText} numberOfLines={1}>
+                  {category}
+                </Text>
+              </View>
             ) : null}
             <Text style={styles.title} numberOfLines={1}>
               {title}
@@ -177,17 +179,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: Platform.OS === "ios" ? 54 : 34,
-    paddingBottom: 12,
+    paddingBottom: 13,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(226, 232, 240, 0.7)",
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
+    borderBottomColor: "rgba(226, 232, 240, 0.65)",
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   left: {
@@ -206,32 +206,31 @@ const styles = StyleSheet.create({
     height: 30,
   },
   brandBadge: {
-    backgroundColor: COLORS.brandIndigoLight,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
+    borderColor: "rgba(37, 99, 235, 0.2)",
   },
   brandBadgeText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 9,
     fontWeight: "700",
-    color: COLORS.brandIndigo,
+    color: "#2563EB",
     letterSpacing: 0.5,
   },
   backButton: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
     backgroundColor:
-      Platform.OS === "android" ? "#F1F5F9" : "rgba(241, 245, 249, 0.85)",
+      Platform.OS === "android" ? "#F8FAFC" : "rgba(241, 245, 249, 0.85)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor: "rgba(226, 232, 240, 0.9)",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -241,21 +240,31 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
   },
+  categoryBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    marginBottom: 4,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.15)",
+  },
   categoryText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: "700",
-    color: COLORS.brandIndigo,
+    color: "#2563EB",
     textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 2,
+    letterSpacing: 0.5,
   },
   title: {
     fontFamily: FONTS.displayBold,
-    fontSize: 20,
+    fontSize: 21,
     fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.4,
+    lineHeight: 26,
   },
   subtitle: {
     fontFamily: FONTS.bodyRegular,
@@ -263,7 +272,6 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     marginTop: 2,
     lineHeight: 16,
-    fontWeight: "400",
   },
   userProfileSection: {
     flexDirection: "row",
@@ -287,10 +295,10 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   avatarMhs: {
-    backgroundColor: COLORS.brandIndigo,
+    backgroundColor: "#2563EB",
   },
   avatarUmkm: {
-    backgroundColor: COLORS.brandCyan,
+    backgroundColor: "#0284C7",
   },
   avatarText: {
     fontFamily: FONTS.displayBold,
@@ -359,13 +367,12 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
     backgroundColor:
-      Platform.OS === "android" ? "#F1F5F9" : "rgba(241, 245, 249, 0.85)",
+      Platform.OS === "android" ? "#F8FAFC" : "rgba(241, 245, 249, 0.85)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
+    borderColor: "rgba(226, 232, 240, 0.9)",
     position: "relative",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1 },
@@ -375,12 +382,12 @@ const styles = StyleSheet.create({
   },
   unreadDot: {
     position: "absolute",
-    top: 8,
-    right: 9,
+    top: 7,
+    right: 8,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#F43F5E",
+    backgroundColor: "#EF4444",
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
