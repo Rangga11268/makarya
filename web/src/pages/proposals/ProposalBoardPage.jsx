@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useSearchParams, useParams, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useSearchParams,
+  useParams,
+  useNavigate,
+} from "react-router-dom";
 import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -167,8 +172,7 @@ export function ProposalBoardPage() {
 
         if (targetProjectId) {
           const found = propList.find(
-            (p) =>
-              p.project_id === targetProjectId || p.id === targetProjectId,
+            (p) => p.project_id === targetProjectId || p.id === targetProjectId,
           );
           if (found) {
             setSelectedProposal(found);
@@ -223,9 +227,7 @@ export function ProposalBoardPage() {
     setSearchParams({ project: project.id });
     window.scrollTo({ top: 0, behavior: "smooth" });
     const details = await loadProjectDetails(project.id);
-    const hasAccepted = details.proposals.some(
-      (p) => p.status === "ACCEPTED",
-    );
+    const hasAccepted = details.proposals.some((p) => p.status === "ACCEPTED");
     if (hasAccepted) {
       setActiveStageTab("chat");
     } else if (details.proposals.length > 0) {
@@ -589,7 +591,9 @@ export function ProposalBoardPage() {
                 <select
                   value={selectedProject?.id || ""}
                   onChange={(e) => {
-                    const found = myProjects.find((p) => p.id === e.target.value);
+                    const found = myProjects.find(
+                      (p) => p.id === e.target.value,
+                    );
                     if (found) handleSelectProject(found);
                   }}
                   className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
@@ -611,7 +615,9 @@ export function ProposalBoardPage() {
                 <select
                   value={selectedProposal?.id || ""}
                   onChange={(e) => {
-                    const found = proposals.find((p) => p.id === e.target.value);
+                    const found = proposals.find(
+                      (p) => p.id === e.target.value,
+                    );
                     if (found) handleSelectProposal(found);
                   }}
                   className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
@@ -648,7 +654,9 @@ export function ProposalBoardPage() {
               projectProposals={projectProposals}
               handleOpenSubmission={handleOpenSubmission}
               handleApproveWork={handleApproveWork}
-              setSelectedSubmissionForRevision={setSelectedSubmissionForRevision}
+              setSelectedSubmissionForRevision={
+                setSelectedSubmissionForRevision
+              }
               setRevisionModalOpen={setRevisionModalOpen}
               handleRejectProposal={handleRejectProposal}
               handleAcceptProposal={handleAcceptProposal}

@@ -490,10 +490,7 @@ export function ChatScreen({ route, navigation }) {
             isUnassignedTalent ? (
               <View style={styles.emptyWrap}>
                 <View
-                  style={[
-                    styles.emptyIconBox,
-                    { backgroundColor: "#F1F5F9" },
-                  ]}
+                  style={[styles.emptyIconBox, { backgroundColor: "#F1F5F9" }]}
                 >
                   <Briefcase size={28} color={COLORS.textDim} />
                 </View>
@@ -536,7 +533,8 @@ export function ChatScreen({ route, navigation }) {
                 <Text style={styles.emptyTitle}>Ruang Kolaborasi Resmi</Text>
                 <Text style={styles.emptyDesc}>
                   Percakapan ini dilindungi sistem escrow Makarya. Kirim pesan
-                  pertama untuk mulai mendiskusikan brief dan progres pengerjaan.
+                  pertama untuk mulai mendiskusikan brief dan progres
+                  pengerjaan.
                 </Text>
               </View>
             )
