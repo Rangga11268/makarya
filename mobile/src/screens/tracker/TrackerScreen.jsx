@@ -33,6 +33,8 @@ import {
   Briefcase,
   FileText,
   AlertCircle,
+  User,
+  CheckCircle2,
 } from "lucide-react-native";
 
 export function TrackerScreen({ navigation }) {
@@ -117,19 +119,19 @@ export function TrackerScreen({ navigation }) {
         ["DONE", "CANCELLED", "COMPLETED", "SELESAI"].includes(i.status),
       ).length;
 
-  // Role-tailored tabs in clean Bahasa Indonesia
+  // Single-row 4-column Segmented Control (Non-sliding, non-stacking)
   const segmentedTabs = isMahasiswa
     ? [
         { id: "ALL", label: "Semua", count: items.length },
-        { id: "ACTIVE", label: "Dikerjakan", count: activeJobsCount },
-        { id: "PENDING", label: "Dalam Seleksi", count: pendingJobsCount },
-        { id: "DONE", label: "Riwayat", count: doneJobsCount },
+        { id: "ACTIVE", label: "Aktif", count: activeJobsCount },
+        { id: "PENDING", label: "Seleksi", count: pendingJobsCount },
+        { id: "DONE", label: "Selesai", count: doneJobsCount },
       ]
     : [
         { id: "ALL", label: "Semua", count: items.length },
-        { id: "ACTIVE", label: "Sedang Berjalan", count: activeJobsCount },
-        { id: "PENDING", label: "Seleksi Pelamar", count: pendingJobsCount },
-        { id: "DONE", label: "Selesai & Batal", count: doneJobsCount },
+        { id: "ACTIVE", label: "Aktif", count: activeJobsCount },
+        { id: "PENDING", label: "Pelamar", count: pendingJobsCount },
+        { id: "DONE", label: "Selesai", count: doneJobsCount },
       ];
 
   const filteredItems = items.filter((item) => {
@@ -160,7 +162,7 @@ export function TrackerScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* 1. Standardized Unified Header */}
+      {/* 1. Header */}
       <Header
         category="WORKSPACE"
         title="Ruang Kerja & Proyek"
@@ -179,49 +181,38 @@ export function TrackerScreen({ navigation }) {
         }
       />
 
-      {/* 2. Responsive Horizontal Pill Tabs (Never Offside/Clipped) */}
-      <View style={styles.tabBarWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tabBarScroll}
-        >
+      {/* 2. Unified 4-Column Segmented Tab (Fits 100% Screen Width without Sliding/Stacking) */}
+      <View style={styles.segmentedWrapper}>
+        <View style={styles.segmentedContainer}>
           {segmentedTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.tabPill, isActive && styles.tabPillActive]}
+                style={[
+                  styles.segmentedItem,
+                  isActive && styles.segmentedItemActive,
+                ]}
                 activeOpacity={0.75}
               >
                 <Text
-                  style={[styles.tabLabel, isActive && styles.tabLabelActive]}
+                  style={[
+                    styles.segmentedLabel,
+                    isActive && styles.segmentedLabelActive,
+                  ]}
                   numberOfLines={1}
                 >
                   {tab.label}
+                  {tab.count > 0 ? ` (${tab.count})` : ""}
                 </Text>
-                {tab.count > 0 && (
-                  <View
-                    style={[styles.tabBadge, isActive && styles.tabBadgeActive]}
-                  >
-                    <Text
-                      style={[
-                        styles.tabBadgeText,
-                        isActive && styles.tabBadgeTextActive,
-                      ]}
-                    >
-                      {tab.count}
-                    </Text>
-                  </View>
-                )}
               </TouchableOpacity>
             );
           })}
-        </ScrollView>
+        </View>
       </View>
 
-      {/* 3. Breathable Project Feed */}
+      {/* 3. Feed List */}
       {loading && items.length === 0 ? (
         <ScrollView
           contentContainerStyle={styles.listContent}
@@ -282,25 +273,14 @@ export function TrackerScreen({ navigation }) {
             )
           }
           renderItem={({ item }) => {
-            // Determine roles & properties
             const projectId = isMahasiswa ? item.project_id : item.id;
             const projectTitle = isMahasiswa ? item.project_judul : item.judul;
-            const partnerName = isMahasiswa
-              ? item.project_umkm_nama || "Mitra UMKM Kampus"
-              : item.accepted_mhs_nama || "Daftar Proyek Anda";
-            const partnerPhoto = isMahasiswa
-              ? item.project_umkm_foto ||
-                item.umkm_foto ||
-                item.project?.umkm_profile?.url_foto_usaha
-              : item.accepted_mhs_foto ||
-                item.mhs_profile?.url_foto ||
-                item.mhs_foto;
             const category = isMahasiswa
               ? item.project_kategori || item.kategori || "UMKM"
               : item.kategori || "UMKM";
             const createdAt = item.created_at;
 
-            // Status & Chat Logic
+            // Status Logic
             const isDone = isMahasiswa
               ? item.project_status === "DONE" ||
                 item.project_status === "COMPLETED" ||
@@ -316,13 +296,26 @@ export function TrackerScreen({ navigation }) {
               : item.status === "OPEN" || item.status === "BIDDING";
 
             const isReview = !isMahasiswa && item.status === "REVIEW";
-
             const isWithdrawn = item.status === "WITHDRAWN";
             const isCancelled = item.status === "CANCELLED";
             const isRejected = item.status === "REJECTED";
 
-            // Chat is relevant when work is active or in review!
             const canChat = isAccepted || isReview;
+
+            // Team or Individual Avatars
+            const isTeamProject = item.tipe_kolaborasi === "TIM";
+            const slots = Array.isArray(item.slots) ? item.slots : [];
+            const filledSlots = slots.filter(
+              (s) => s.status === "TAKEN" || s.accepted_mhs_id
+            );
+
+            // Partner details for Mahasiswa (Client UMKM)
+            const clientName = isMahasiswa
+              ? item.project_umkm_nama || item.umkm_nama || "Klien UMKM"
+              : null;
+            const clientPhoto = isMahasiswa
+              ? item.project_umkm_foto || item.umkm_foto
+              : null;
 
             return (
               <TouchableOpacity
@@ -338,42 +331,34 @@ export function TrackerScreen({ navigation }) {
                   isAccepted && styles.projectCardActive,
                 ]}
               >
-                {/* Card Header: Category Icon + Partner Info + Status Badge */}
+                {/* 1. Card Top: Category Icon + Category Label + Status Pill */}
                 <View style={styles.cardHeader}>
-                  <View style={styles.partnerRow}>
-                    {partnerPhoto ? (
-                      <Image
-                        source={{ uri: partnerPhoto }}
-                        style={styles.partnerAvatarImage}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View
-                        style={[
-                          styles.categoryBox,
-                          isAccepted && styles.categoryBoxActive,
-                        ]}
-                      >
-                        {renderProjectCategoryVectorIcon(
-                          category,
-                          projectTitle,
-                          18,
-                          isAccepted ? COLORS.success : COLORS.brandIndigo,
-                        )}
-                      </View>
-                    )}
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.partnerName} numberOfLines={1}>
-                        {partnerName}
+                  <View style={styles.categoryBadgeRow}>
+                    <View
+                      style={[
+                        styles.categoryIconBox,
+                        isAccepted && styles.categoryIconBoxActive,
+                      ]}
+                    >
+                      {renderProjectCategoryVectorIcon(
+                        category,
+                        projectTitle,
+                        16,
+                        isAccepted ? COLORS.success : COLORS.brandIndigo
+                      )}
+                    </View>
+                    <View>
+                      <Text style={styles.categoryLabelText}>
+                        {category}
                       </Text>
-                      <Text style={styles.postDate}>
+                      <Text style={styles.cardDateText}>
                         {isMahasiswa ? "Dilamar " : "Dibuat "}
                         {formatDate(createdAt)}
                       </Text>
                     </View>
                   </View>
 
-                  {/* Clean Status Pill (Indonesian, Accurate) */}
+                  {/* Clean Accurate Status Pill */}
                   {isAccepted ? (
                     <View style={styles.statusPillActive}>
                       <View style={styles.pulseDotGreen} />
@@ -421,12 +406,12 @@ export function TrackerScreen({ navigation }) {
                   )}
                 </View>
 
-                {/* Project Title */}
+                {/* 2. Main Title: Project Assignment */}
                 <Text style={styles.cardTitle} numberOfLines={2}>
                   {projectTitle || "Penugasan Proyek"}
                 </Text>
 
-                {/* Detailed Cancellation / Withdrawal Reason Box */}
+                {/* 3. Reason Banner if Cancelled or Withdrawn */}
                 {isCancelled && (
                   <View style={styles.reasonCardBox}>
                     <View style={styles.reasonHeaderRow}>
@@ -459,13 +444,103 @@ export function TrackerScreen({ navigation }) {
                   </View>
                 )}
 
-                {/* Bottom Row: Metadata & Quick Actions */}
+                {/* 4. Student or Team Avatar Section */}
+                {!isMahasiswa ? (
+                  // UMKM View: Show assigned student avatar(s) or team avatar cluster
+                  <View style={styles.talentAvatarRow}>
+                    {isTeamProject ? (
+                      // Team Collaboration Avatar Stack
+                      <View style={styles.teamCluster}>
+                        <View style={styles.avatarStack}>
+                          {filledSlots.length > 0 ? (
+                            filledSlots.slice(0, 3).map((slot, sIdx) => (
+                              <View
+                                key={slot.id || sIdx}
+                                style={[
+                                  styles.stackedAvatar,
+                                  { zIndex: 10 - sIdx, marginLeft: sIdx > 0 ? -8 : 0 },
+                                ]}
+                              >
+                                <Text style={styles.stackedAvatarText}>
+                                  {(slot.accepted_mhs_nama || "T").charAt(0).toUpperCase()}
+                                </Text>
+                              </View>
+                            ))
+                          ) : (
+                            <View style={styles.emptySlotPlaceholder}>
+                              <Users size={12} color={COLORS.brandIndigo} />
+                            </View>
+                          )}
+                        </View>
+                        <Text style={styles.talentSubText}>
+                          {filledSlots.length > 0
+                            ? `Tim: ${filledSlots.length}/${slots.length || 2} Peran Terisi`
+                            : `Proyek Tim (${slots.length || 2} Formasi)`}
+                        </Text>
+                      </View>
+                    ) : (
+                      // Individual Project Student Avatar
+                      item.accepted_mhs_nama ? (
+                        <View style={styles.singleTalentRow}>
+                          {item.accepted_mhs_foto ? (
+                            <Image
+                              source={{ uri: item.accepted_mhs_foto }}
+                              style={styles.talentAvatarImg}
+                              resizeMode="cover"
+                            />
+                          ) : (
+                            <View style={styles.talentAvatarCircle}>
+                              <Text style={styles.talentAvatarText}>
+                                {item.accepted_mhs_nama.charAt(0).toUpperCase()}
+                              </Text>
+                            </View>
+                          )}
+                          <Text style={styles.talentNameText} numberOfLines={1}>
+                            {item.accepted_mhs_nama}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View style={styles.openApplicantStatus}>
+                          <Users size={12} color={COLORS.textMuted} />
+                          <Text style={styles.talentSubText}>
+                            {item.total_pelamar && item.total_pelamar > 0
+                              ? `${item.total_pelamar} proposal masuk`
+                              : "Mencari mahasiswa talenta"}
+                          </Text>
+                        </View>
+                      )
+                    )}
+                  </View>
+                ) : (
+                  // Mahasiswa View: Show Client UMKM Avatar & Name
+                  <View style={styles.talentAvatarRow}>
+                    <View style={styles.singleTalentRow}>
+                      {clientPhoto ? (
+                        <Image
+                          source={{ uri: clientPhoto }}
+                          style={styles.talentAvatarImg}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View style={styles.clientAvatarCircle}>
+                          <Text style={styles.clientAvatarText}>
+                            {(clientName || "K").charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                      )}
+                      <Text style={styles.talentNameText} numberOfLines={1}>
+                        {clientName}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* 5. Bottom Row: Metadata (Budget, Timeline, Escrow) & Chat Action */}
                 <View style={styles.cardBottomRow}>
-                  {/* Meta info: Budget, Timeline, Escrow */}
                   <View style={styles.metaInfo}>
                     <Text style={styles.budgetHighlight}>
                       {formatCurrency(
-                        isMahasiswa ? item.harga_tawar : item.budget_max,
+                        isMahasiswa ? item.harga_tawar : item.budget_max
                       )}
                     </Text>
                     <Text style={styles.metaDivider}>•</Text>
@@ -474,7 +549,9 @@ export function TrackerScreen({ navigation }) {
                       <Text style={styles.metaLabel}>
                         {isMahasiswa
                           ? `${item.estimasi_hari || 5} hari`
-                          : `${item.total_pelamar || 0} pelamar`}
+                          : isTeamProject
+                            ? `${slots.length} posisi`
+                            : `${item.total_pelamar || 0} pelamar`}
                       </Text>
                     </View>
                     <Text style={styles.metaDivider}>•</Text>
@@ -484,7 +561,7 @@ export function TrackerScreen({ navigation }) {
                     </View>
                   </View>
 
-                  {/* Quick Action: Direct Chat & View */}
+                  {/* Quick Action: Direct Chat & Chevron */}
                   <View style={styles.actionGroup}>
                     {canChat && (
                       <TouchableOpacity
@@ -494,28 +571,8 @@ export function TrackerScreen({ navigation }) {
                           navigation.navigate("Chat", {
                             projectId: projectId,
                             projectTitle: projectTitle,
-                            partnerPhoto: partnerPhoto,
-                            partnerName: isMahasiswa
-                              ? (item.project_umkm_nama &&
-                                item.project_umkm_nama.toLowerCase() !==
-                                  "string"
-                                  ? item.project_umkm_nama
-                                  : null) ||
-                                (item.umkm_nama &&
-                                item.umkm_nama.toLowerCase() !== "string"
-                                  ? item.umkm_nama
-                                  : null) ||
-                                "Mitra UMKM"
-                              : (item.mahasiswa_nama &&
-                                item.mahasiswa_nama.toLowerCase() !== "string"
-                                  ? item.mahasiswa_nama
-                                  : null) ||
-                                (item.accepted_mhs_nama &&
-                                item.accepted_mhs_nama.toLowerCase() !==
-                                  "string"
-                                  ? item.accepted_mhs_nama
-                                  : null) ||
-                                "Talenta Kampus",
+                            partnerPhoto: isMahasiswa ? clientPhoto : item.accepted_mhs_foto,
+                            partnerName: isMahasiswa ? clientName : item.accepted_mhs_nama || "Talenta Kampus",
                           });
                         }}
                         activeOpacity={0.8}
@@ -548,63 +605,39 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
   },
 
-  tabBarWrapper: {
+  // 4-Column Balanced Segmented Bar
+  segmentedWrapper: {
     backgroundColor: COLORS.bgSurface,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
   },
-  tabBarScroll: {
-    paddingHorizontal: 16,
+  segmentedContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  tabPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
     backgroundColor: "#F1F5F9",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    gap: 6,
+    padding: 3,
+    borderRadius: 12,
   },
-  tabPillActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-    ...SHADOWS.sm,
-  },
-  tabLabel: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 12,
-    fontWeight: "700",
-    color: COLORS.textMuted,
-  },
-  tabLabelActive: {
-    color: "#FFFFFF",
-  },
-  tabBadge: {
-    backgroundColor: "rgba(15, 23, 42, 0.08)",
-    paddingHorizontal: 6,
-    paddingVertical: 1.5,
-    borderRadius: 999,
-    minWidth: 18,
+  segmentedItem: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 8,
+    borderRadius: 9,
   },
-  tabBadgeActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
+  segmentedItemActive: {
+    backgroundColor: "#FFFFFF",
+    ...SHADOWS.sm,
   },
-  tabBadgeText: {
+  segmentedLabel: {
     fontFamily: FONTS.displayBold,
     fontSize: 11,
-    color: COLORS.textMuted,
     fontWeight: "700",
+    color: COLORS.textMuted,
   },
-  tabBadgeTextActive: {
-    color: "#FFFFFF",
+  segmentedLabelActive: {
+    color: COLORS.brandIndigo,
   },
 
   newProjectBtn: {
@@ -623,21 +656,19 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-  // Feed List
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 40,
   },
 
-  // Streamlined Card
   projectCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 14,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     ...SHADOWS.sm,
@@ -645,47 +676,39 @@ const styles = StyleSheet.create({
   projectCardActive: {
     borderColor: "rgba(79, 70, 229, 0.35)",
   },
+
   cardHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  partnerRow: {
+  categoryBadgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 9,
+    gap: 8,
     flex: 1,
-    marginRight: 8,
   },
-  partnerAvatarImage: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-  },
-  categoryBox: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: COLORS.bgDark,
+  categoryIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 9,
+    backgroundColor: "#EEF2FF",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
   },
-  categoryBoxActive: {
-    backgroundColor: "rgba(16, 185, 129, 0.1)",
-    borderColor: "rgba(16, 185, 129, 0.3)",
+  categoryIconBoxActive: {
+    backgroundColor: "rgba(16, 185, 129, 0.12)",
   },
-  partnerName: {
+  categoryLabelText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: "700",
     color: COLORS.textDark,
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
-  postDate: {
+  cardDateText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: COLORS.textMuted,
@@ -831,14 +854,23 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
 
-  // Reason Callout Boxes
+  // Title
+  cardTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    lineHeight: 20,
+    marginBottom: 6,
+  },
+
+  // Reason Callouts
   reasonCardBox: {
     backgroundColor: "#FEF2F2",
     padding: 9,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#FECACA",
-    marginTop: 4,
     marginBottom: 8,
   },
   reasonHeaderRow: {
@@ -867,7 +899,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#FDE68A",
-    marginTop: 4,
     marginBottom: 8,
   },
   reasonCardTitleWithdrawn: {
@@ -884,17 +915,104 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  // Title
-  cardTitle: {
+  // Student / Team Avatar Row
+  talentAvatarRow: {
+    marginVertical: 4,
+  },
+  singleTalentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  talentAvatarImg: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  talentAvatarCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: COLORS.brandIndigo,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  talentAvatarText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 14,
+    fontSize: 10,
+    color: "#FFFFFF",
     fontWeight: "700",
+  },
+  clientAvatarCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#FEF3C7",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clientAvatarText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    color: "#92400E",
+    fontWeight: "700",
+  },
+  talentNameText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
     color: COLORS.textDark,
-    lineHeight: 20,
-    marginBottom: 4,
+    fontWeight: "600",
+  },
+  openApplicantStatus: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  talentSubText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  teamCluster: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  avatarStack: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  stackedAvatar: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: COLORS.brandIndigo,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+  stackedAvatarText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 9,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  emptySlotPlaceholder: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#EEF2FF",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: COLORS.brandIndigo,
   },
 
-  // Bottom Row
+  // Bottom Metadata
   cardBottomRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -902,7 +1020,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderSubtle,
-    marginTop: 4,
+    marginTop: 6,
   },
   metaInfo: {
     flexDirection: "row",
@@ -938,7 +1056,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // Action Buttons
   actionGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -966,7 +1083,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  // Empty State
   emptyBox: {
     padding: 32,
     alignItems: "center",

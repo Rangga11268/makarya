@@ -118,7 +118,10 @@ export function ProposalCard({
             style={{ alignSelf: "flex-start", marginBottom: 6 }}
           />
           <Text style={styles.withdrawnReasonText}>
-            Alasan: "{proposal.withdraw_reason || "Mahasiswa menarik kembali proposal lamaran ini."}"
+            Alasan: "
+            {proposal.withdraw_reason ||
+              "Mahasiswa menarik kembali proposal lamaran ini."}
+            "
           </Text>
         </View>
       )}

@@ -881,7 +881,10 @@ export function WorkroomWorkspaceDetail({
                           <span>Proposal Ditarik Mahasiswa:</span>
                         </div>
                         <p className="italic text-[11px] text-amber-950 leading-relaxed font-medium">
-                          "{prop.withdraw_reason || "Mahasiswa membatalkan pengajuan proposal ini."}"
+                          "
+                          {prop.withdraw_reason ||
+                            "Mahasiswa membatalkan pengajuan proposal ini."}
+                          "
                         </p>
                       </div>
                     )}

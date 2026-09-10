@@ -33,6 +33,37 @@ export function Button({
 
   const buttonText = title ?? (typeof children === "string" ? children : null);
 
+  const iconColor =
+    isOutline || isGhost || isSoft || isSecondary || isGoogle
+      ? COLORS.brandIndigo
+      : isBrand
+        ? "#FFFFFF"
+        : COLORS.textDark;
+  const iconSize = size === "lg" ? 18 : size === "sm" ? 14 : 16;
+
+  const renderIcon = (iconProp, isLeft = true) => {
+    if (!iconProp) return null;
+    if (React.isValidElement(iconProp)) {
+      return (
+        <View style={isLeft ? styles.iconLeft : styles.iconRight}>
+          {iconProp}
+        </View>
+      );
+    }
+    if (
+      typeof iconProp === "function" ||
+      (typeof iconProp === "object" && iconProp !== null)
+    ) {
+      const IconComponent = iconProp;
+      return (
+        <View style={isLeft ? styles.iconLeft : styles.iconRight}>
+          <IconComponent size={iconSize} color={iconColor} />
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.82}
@@ -63,7 +94,7 @@ export function Button({
         />
       ) : (
         <View style={styles.content}>
-          {Icon && <View style={styles.iconLeft}>{Icon}</View>}
+          {renderIcon(Icon, true)}
           {buttonText ? (
             <Text
               style={[
@@ -84,7 +115,7 @@ export function Button({
           ) : (
             children
           )}
-          {IconRight && <View style={styles.iconRight}>{IconRight}</View>}
+          {renderIcon(IconRight, false)}
         </View>
       )}
     </TouchableOpacity>
