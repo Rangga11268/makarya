@@ -58,6 +58,8 @@ import {
   RotateCcw,
   XCircle,
   Users,
+  Palette,
+  Smartphone,
 } from "lucide-react-native";
 
 export function ProjectDetailScreen({ route, navigation }) {
@@ -555,10 +557,8 @@ export function ProjectDetailScreen({ route, navigation }) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. FlyHire Inspired Dark Floating Island Hero Card */}
+        {/* 1. Apple Glossy Hero Card */}
         <View style={styles.floatingHeroCard}>
-          <View style={styles.floatingHeroGlow} />
-
           {/* Top Row: Category Badge & Escrow Status Tag */}
           <View style={styles.floatingHeroTopRow}>
             <View style={styles.categoryBadgePill}>
@@ -570,9 +570,9 @@ export function ProjectDetailScreen({ route, navigation }) {
             </View>
 
             <View style={styles.floatingHeroEscrowTag}>
-              <ShieldCheck size={12} color="#38BDF8" />
+              <ShieldCheck size={12} color="#059669" />
               <Text style={styles.floatingHeroEscrowTagText}>
-                Escrow Guaranteed
+                Escrow Terjamin
               </Text>
             </View>
           </View>
@@ -593,7 +593,7 @@ export function ProjectDetailScreen({ route, navigation }) {
           {/* Meta Footer Row: Deadline & Invoice Trigger */}
           <View style={styles.floatingHeroMetaRow}>
             <View style={styles.floatingHeroMetaItem}>
-              <Calendar size={13} color="#94A3B8" />
+              <Calendar size={13} color={COLORS.textMuted} />
               <Text style={styles.floatingHeroMetaText}>
                 Tenggat: {formatDate(project.deadline)}
               </Text>
@@ -604,7 +604,7 @@ export function ProjectDetailScreen({ route, navigation }) {
               onPress={() => setInvoiceModal(true)}
               activeOpacity={0.8}
             >
-              <FileCheck size={12} color="#38BDF8" />
+              <FileCheck size={12} color="#2563EB" />
               <Text style={styles.floatingHeroInvoiceBtnText}>
                 Faktur Escrow 100%
               </Text>
@@ -869,7 +869,7 @@ export function ProjectDetailScreen({ route, navigation }) {
           <Text style={styles.descriptionText}>{project.deskripsi_raw}</Text>
         </View>
 
-        {/* 4B. Modular Deliverables Reel (FlyHire Inspiration) */}
+        {/* 4B. Modular Deliverables Reel */}
         <View style={styles.deliverablesContainer}>
           <Text style={styles.deliverablesHeading}>
             Spesifikasi Deliverable Proyek
@@ -880,10 +880,12 @@ export function ProjectDetailScreen({ route, navigation }) {
             contentContainerStyle={styles.deliverablesScroll}
           >
             <View style={styles.deliverablePill}>
-              <Text style={styles.deliverableEmoji}>🎨</Text>
+              <View style={styles.deliverableIconBox}>
+                <Palette size={14} color="#2563EB" />
+              </View>
               <View>
                 <Text style={styles.deliverableTitle}>
-                  Figma / Source Assets
+                  Figma & Asset Desain
                 </Text>
                 <Text style={styles.deliverableSub}>
                   Komponen & Style Guide
@@ -891,14 +893,23 @@ export function ProjectDetailScreen({ route, navigation }) {
               </View>
             </View>
             <View style={styles.deliverablePill}>
-              <Text style={styles.deliverableEmoji}>📱</Text>
+              <View style={styles.deliverableIconBox}>
+                <Smartphone size={14} color="#2563EB" />
+              </View>
               <View>
                 <Text style={styles.deliverableTitle}>Hasil Kerja Digital</Text>
                 <Text style={styles.deliverableSub}>Sesuai Rincian Brief</Text>
               </View>
             </View>
             <View style={styles.deliverablePill}>
-              <Text style={styles.deliverableEmoji}>🛡️</Text>
+              <View
+                style={[
+                  styles.deliverableIconBox,
+                  { backgroundColor: "#ECFDF5" },
+                ]}
+              >
+                <ShieldCheck size={14} color="#059669" />
+              </View>
               <View>
                 <Text style={styles.deliverableTitle}>
                   Proteksi Escrow 100%
@@ -907,7 +918,9 @@ export function ProjectDetailScreen({ route, navigation }) {
               </View>
             </View>
             <View style={styles.deliverablePill}>
-              <Text style={styles.deliverableEmoji}>⚡</Text>
+              <View style={styles.deliverableIconBox}>
+                <MessageSquare size={14} color="#2563EB" />
+              </View>
               <View>
                 <Text style={styles.deliverableTitle}>Revisi Terstruktur</Text>
                 <Text style={styles.deliverableSub}>
@@ -1484,32 +1497,25 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 24,
+    paddingBottom: 100,
   },
-  // FlyHire Floating Dark Island Card
+  // Apple Glossy Hero Card
   floatingHeroCard: {
-    backgroundColor: "#0F172A",
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
     borderRadius: 22,
     padding: 18,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.08)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 16,
-    position: "relative",
-    overflow: "hidden",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  floatingHeroGlow: {
-    position: "absolute",
-    top: -40,
-    right: -40,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: "rgba(37, 99, 235, 0.15)",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: Platform.OS === "android" ? 0 : 2,
   },
   floatingHeroTopRow: {
     flexDirection: "row",
@@ -1518,56 +1524,56 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   categoryBadgePill: {
-    backgroundColor: "rgba(37, 99, 235, 0.2)",
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.4)",
+    borderColor: "rgba(37, 99, 235, 0.2)",
   },
   categoryBadgePillText: {
     fontFamily: FONTS.displayBold,
     fontSize: 10,
-    color: "#93C5FD",
+    color: "#2563EB",
     letterSpacing: 0.5,
   },
   floatingHeroEscrowTag: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(14, 165, 233, 0.12)",
+    backgroundColor: "#ECFDF5",
     paddingHorizontal: 9,
     paddingVertical: 3.5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "rgba(14, 165, 233, 0.25)",
+    borderColor: "#A7F3D0",
   },
   floatingHeroEscrowTagText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
-    color: "#38BDF8",
+    color: "#059669",
   },
   floatingHeroBudgetSection: {
     marginBottom: 10,
   },
   floatingHeroBudgetMicro: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyBold,
     fontSize: 10,
-    color: "#94A3B8",
+    color: COLORS.textMuted,
     letterSpacing: 0.6,
     marginBottom: 2,
   },
   floatingHeroBudgetValue: {
     fontFamily: FONTS.displayBold,
     fontSize: 24,
-    color: "#FFFFFF",
+    color: "#2563EB",
     letterSpacing: -0.5,
   },
   floatingHeroTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 16.5,
-    color: "#F8FAFC",
-    lineHeight: 23,
+    fontSize: 17,
+    color: COLORS.textDark,
+    lineHeight: 24,
     marginBottom: 14,
   },
   floatingHeroMetaRow: {
@@ -1576,7 +1582,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.08)",
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
   },
   floatingHeroMetaItem: {
     flexDirection: "row",
@@ -1586,21 +1592,23 @@ const styles = StyleSheet.create({
   floatingHeroMetaText: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
-    color: "#94A3B8",
+    color: COLORS.textMuted,
   },
   floatingHeroInvoiceBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(56, 189, 248, 0.1)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.15)",
   },
   floatingHeroInvoiceBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
-    color: "#38BDF8",
+    color: "#2563EB",
   },
 
   // Deliverables Reel
@@ -1634,8 +1642,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1,
   },
-  deliverableEmoji: {
-    fontSize: 16,
+  deliverableIconBox: {
+    width: 26,
+    height: 26,
+    borderRadius: 7,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   deliverableTitle: {
     fontFamily: FONTS.displayBold,
