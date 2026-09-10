@@ -391,7 +391,7 @@ export function PostProjectScreen({ navigation }) {
               title="Lanjut ke Anggaran & Tim"
               variant="brand"
               size="lg"
-              iconRight={ArrowRight}
+              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
               onPress={handleStep1Next}
               style={styles.stepNextBtn}
             />
@@ -619,7 +619,7 @@ export function PostProjectScreen({ navigation }) {
                 title="Kembali"
                 variant="secondary"
                 size="lg"
-                icon={ArrowLeft}
+                icon={<ArrowLeft size={18} color={COLORS.textDark} />}
                 onPress={() => goToStep(1)}
                 style={styles.backBtn}
               />
@@ -627,7 +627,7 @@ export function PostProjectScreen({ navigation }) {
                 title="Lanjut ke Pratinjau"
                 variant="brand"
                 size="lg"
-                iconRight={ArrowRight}
+                iconRight={<ArrowRight size={18} color="#FFFFFF" />}
                 onPress={handleStep2Next}
                 disabled={
                   tipeKolaborasi === "TIM" && totalSlotBudget > numBudget
@@ -741,7 +741,7 @@ export function PostProjectScreen({ navigation }) {
                 title="Ubah Detail"
                 variant="secondary"
                 size="lg"
-                icon={ArrowLeft}
+                icon={<ArrowLeft size={18} color={COLORS.textDark} />}
                 onPress={() => goToStep(2)}
                 style={styles.backBtn}
               />
@@ -749,7 +749,7 @@ export function PostProjectScreen({ navigation }) {
                 title="Terbitkan Sekarang"
                 variant="brand"
                 size="lg"
-                iconRight={CheckCircle2}
+                iconRight={<CheckCircle2 size={18} color="#FFFFFF" />}
                 onPress={handlePost}
                 loading={loading}
                 style={styles.forwardBtn}

@@ -64,7 +64,7 @@ export function ProjectCard({ project, onPress }) {
   const isExpired =
     Boolean(
       project.deadline &&
-        new Date(project.deadline) < new Date().setHours(0, 0, 0, 0),
+      new Date(project.deadline) < new Date().setHours(0, 0, 0, 0),
     ) || project.status === "CANCELLED";
 
   const isTeam =
@@ -133,9 +133,7 @@ export function ProjectCard({ project, onPress }) {
 
           {isExpired ? (
             <Badge
-              label={
-                project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"
-              }
+              label={project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
               variant="danger"
             />
           ) : project.match_score ? (

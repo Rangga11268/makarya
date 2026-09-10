@@ -243,6 +243,13 @@ export function SidebarLayout() {
     if (itemPath === "/dashboard" || itemPath === "/admin") {
       return location.pathname === itemPath;
     }
+    if (itemPath === "/projects") {
+      return (
+        location.pathname === "/projects" ||
+        (location.pathname.startsWith("/projects/") &&
+          !location.pathname.startsWith("/projects/new"))
+      );
+    }
     return location.pathname.startsWith(itemPath);
   };
 

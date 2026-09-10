@@ -52,12 +52,13 @@ export function Button({
     }
     if (
       typeof iconProp === "function" ||
-      (typeof iconProp === "object" && iconProp !== null)
+      (typeof iconProp === "object" &&
+        iconProp !== null &&
+        ("$$typeof" in iconProp || "render" in iconProp))
     ) {
-      const IconComponent = iconProp;
       return (
         <View style={isLeft ? styles.iconLeft : styles.iconRight}>
-          <IconComponent size={iconSize} color={iconColor} />
+          {React.createElement(iconProp, { size: iconSize, color: iconColor })}
         </View>
       );
     }
@@ -112,9 +113,11 @@ export function Button({
             >
               {buttonText}
             </Text>
-          ) : (
+          ) : React.isValidElement(children) ? (
             children
-          )}
+          ) : typeof children === "function" ? (
+            React.createElement(children)
+          ) : null}
           {renderIcon(IconRight, false)}
         </View>
       )}
