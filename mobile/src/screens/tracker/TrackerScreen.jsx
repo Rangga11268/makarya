@@ -17,6 +17,7 @@ import { projectApi, proposalApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { formatStatus } from "../../utils/formatStatus";
 import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
 import { Header } from "../../components/ui/Header";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
@@ -30,6 +31,8 @@ import {
   Users,
   Plus,
   Briefcase,
+  FileText,
+  AlertCircle,
 } from "lucide-react-native";
 
 export function TrackerScreen({ navigation }) {
@@ -114,16 +117,20 @@ export function TrackerScreen({ navigation }) {
         ["DONE", "CANCELLED", "COMPLETED", "SELESAI"].includes(i.status),
       ).length;
 
-  const segmentedTabs = [
-    { id: "ALL", label: "All", count: items.length },
-    { id: "ACTIVE", label: "Active", count: activeJobsCount },
-    {
-      id: "PENDING",
-      label: isMahasiswa ? "In Review" : "Proposals",
-      count: pendingJobsCount,
-    },
-    { id: "DONE", label: "Completed", count: doneJobsCount },
-  ];
+  // Role-tailored tabs in clean Bahasa Indonesia
+  const segmentedTabs = isMahasiswa
+    ? [
+        { id: "ALL", label: "Semua", count: items.length },
+        { id: "ACTIVE", label: "Dikerjakan", count: activeJobsCount },
+        { id: "PENDING", label: "Dalam Seleksi", count: pendingJobsCount },
+        { id: "DONE", label: "Riwayat", count: doneJobsCount },
+      ]
+    : [
+        { id: "ALL", label: "Semua", count: items.length },
+        { id: "ACTIVE", label: "Sedang Berjalan", count: activeJobsCount },
+        { id: "PENDING", label: "Seleksi Pelamar", count: pendingJobsCount },
+        { id: "DONE", label: "Selesai & Batal", count: doneJobsCount },
+      ];
 
   const filteredItems = items.filter((item) => {
     if (activeTab === "ALL") return true;
@@ -172,16 +179,20 @@ export function TrackerScreen({ navigation }) {
         }
       />
 
-      {/* 2. Clean Segmented Pill Tabs */}
+      {/* 2. Responsive Horizontal Pill Tabs (Never Offside/Clipped) */}
       <View style={styles.tabBarWrapper}>
-        <View style={styles.tabBar}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tabBarScroll}
+        >
           {segmentedTabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
-                style={[styles.tabItem, isActive && styles.tabItemActive]}
+                style={[styles.tabPill, isActive && styles.tabPillActive]}
                 activeOpacity={0.75}
               >
                 <Text
@@ -207,7 +218,7 @@ export function TrackerScreen({ navigation }) {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
 
       {/* 3. Breathable Project Feed */}
@@ -240,11 +251,11 @@ export function TrackerScreen({ navigation }) {
                 <View style={styles.emptyIconCircle}>
                   <Briefcase size={28} color={COLORS.brandIndigo} />
                 </View>
-                <Text style={styles.emptyTitle}>No projects in this tab</Text>
+                <Text style={styles.emptyTitle}>Tidak ada proyek di tab ini</Text>
                 <Text style={styles.emptyDesc}>
                   {isMahasiswa
-                    ? "Explore verified micro-gigs and submit your offer to get started."
-                    : "Post your first project listing to connect with top campus talents."}
+                    ? "Jelajahi tawaran proyek UMKM terverifikasi dan ajukan proposal terbaik Anda."
+                    : "Pasang proyek pertama Anda untuk terhubung dengan mahasiswa bertalenta kampus."}
                 </Text>
                 {isMahasiswa ? (
                   <TouchableOpacity
@@ -252,7 +263,7 @@ export function TrackerScreen({ navigation }) {
                     onPress={() => navigation.navigate("ProjectsTab")}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.emptyCtaBtnText}>Explore Projects</Text>
+                    <Text style={styles.emptyCtaBtnText}>Jelajahi Proyek</Text>
                     <ArrowRight size={14} color="#FFFFFF" />
                   </TouchableOpacity>
                 ) : (
@@ -262,7 +273,7 @@ export function TrackerScreen({ navigation }) {
                     activeOpacity={0.85}
                   >
                     <Text style={styles.emptyCtaBtnText}>
-                      + Post New Project
+                      + Pasang Proyek Baru
                     </Text>
                     <ArrowRight size={14} color="#FFFFFF" />
                   </TouchableOpacity>
@@ -306,9 +317,9 @@ export function TrackerScreen({ navigation }) {
 
             const isReview = !isMahasiswa && item.status === "REVIEW";
 
-            const isDeclined = ["REJECTED", "WITHDRAWN", "CANCELLED"].includes(
-              item.status,
-            );
+            const isWithdrawn = item.status === "WITHDRAWN";
+            const isCancelled = item.status === "CANCELLED";
+            const isRejected = item.status === "REJECTED";
 
             // Chat is relevant when work is active or in review!
             const canChat = isAccepted || isReview;
@@ -356,39 +367,55 @@ export function TrackerScreen({ navigation }) {
                         {partnerName}
                       </Text>
                       <Text style={styles.postDate}>
-                        {isMahasiswa ? "Applied " : "Posted "}
+                        {isMahasiswa ? "Dilamar " : "Dibuat "}
                         {formatDate(createdAt)}
                       </Text>
                     </View>
                   </View>
 
-                  {/* Clean Status Pill */}
+                  {/* Clean Status Pill (Indonesian, Accurate) */}
                   {isAccepted ? (
                     <View style={styles.statusPillActive}>
                       <View style={styles.pulseDotGreen} />
-                      <Text style={styles.statusTextActive}>In Progress</Text>
+                      <Text style={styles.statusTextActive}>Dikerjakan</Text>
                     </View>
                   ) : isReview ? (
                     <View style={styles.statusPillReview}>
                       <View style={styles.pulseDotPurple} />
-                      <Text style={styles.statusTextReview}>Delivered</Text>
+                      <Text style={styles.statusTextReview}>Pemeriksaan</Text>
                     </View>
                   ) : isPending ? (
                     <View style={styles.statusPillPending}>
                       <Text style={styles.statusTextPending}>
                         {isMahasiswa
-                          ? "Under Review"
-                          : `${item.total_pelamar || 0} Proposals`}
+                          ? "Dalam Seleksi"
+                          : `${item.total_pelamar || 0} Pelamar`}
                       </Text>
                     </View>
                   ) : isDone ? (
                     <View style={styles.statusPillDone}>
-                      <Text style={styles.statusTextDone}>Completed</Text>
+                      <Text style={styles.statusTextDone}>Selesai</Text>
+                    </View>
+                  ) : isWithdrawn ? (
+                    <View style={styles.statusPillWithdrawn}>
+                      <Text style={styles.statusTextWithdrawn}>Ditarik</Text>
+                    </View>
+                  ) : isCancelled ? (
+                    <View style={styles.statusPillCancelled}>
+                      <Text style={styles.statusTextCancelled}>
+                        {item.cancelled_by_role === "SYSTEM_EXPIRED"
+                          ? "Kedaluwarsa"
+                          : "Dibatalkan"}
+                      </Text>
+                    </View>
+                  ) : isRejected ? (
+                    <View style={styles.statusPillRejected}>
+                      <Text style={styles.statusTextRejected}>Ditolak</Text>
                     </View>
                   ) : (
-                    <View style={styles.statusPillDeclined}>
-                      <Text style={styles.statusTextDeclined}>
-                        {isDeclined ? "Declined" : item.status}
+                    <View style={styles.statusPillDefault}>
+                      <Text style={styles.statusTextDefault}>
+                        {formatStatus(item.status)}
                       </Text>
                     </View>
                   )}
@@ -396,8 +423,41 @@ export function TrackerScreen({ navigation }) {
 
                 {/* Project Title */}
                 <Text style={styles.cardTitle} numberOfLines={2}>
-                  {projectTitle || "Project Assignment"}
+                  {projectTitle || "Penugasan Proyek"}
                 </Text>
+
+                {/* Detailed Cancellation / Withdrawal Reason Box */}
+                {isCancelled && (
+                  <View style={styles.reasonCardBox}>
+                    <View style={styles.reasonHeaderRow}>
+                      <AlertCircle size={12} color="#B91C1C" />
+                      <Text style={styles.reasonCardTitle}>
+                        {item.cancelled_by_role === "SYSTEM_EXPIRED"
+                          ? "Kedaluwarsa Otomatis:"
+                          : item.cancelled_by_role === "MAHASISWA"
+                            ? "Dibatalkan oleh Mahasiswa:"
+                            : "Dibatalkan oleh Klien:"}
+                      </Text>
+                    </View>
+                    <Text style={styles.reasonCardText} numberOfLines={2}>
+                      "{item.cancel_reason || "Tenggat waktu pengerjaan telah berakhir."}"
+                    </Text>
+                  </View>
+                )}
+
+                {isWithdrawn && (
+                  <View style={styles.reasonCardBoxWithdrawn}>
+                    <View style={styles.reasonHeaderRow}>
+                      <FileText size={12} color="#92400E" />
+                      <Text style={styles.reasonCardTitleWithdrawn}>
+                        Proposal Ditarik Mahasiswa:
+                      </Text>
+                    </View>
+                    <Text style={styles.reasonCardTextWithdrawn} numberOfLines={2}>
+                      "{item.withdraw_reason || "Mahasiswa menarik kembali proposal lamaran ini."}"
+                    </Text>
+                  </View>
+                )}
 
                 {/* Bottom Row: Metadata & Quick Actions */}
                 <View style={styles.cardBottomRow}>
@@ -413,8 +473,8 @@ export function TrackerScreen({ navigation }) {
                       <Clock size={11} color={COLORS.textMuted} />
                       <Text style={styles.metaLabel}>
                         {isMahasiswa
-                          ? `${item.estimasi_hari || 5}d`
-                          : `${item.total_pelamar || 0} bids`}
+                          ? `${item.estimasi_hari || 5} hari`
+                          : `${item.total_pelamar || 0} pelamar`}
                       </Text>
                     </View>
                     <Text style={styles.metaDivider}>•</Text>
@@ -449,19 +509,27 @@ export function TrackerScreen({ navigation }) {
                               : (item.mahasiswa_nama &&
                                 item.mahasiswa_nama.toLowerCase() !== "string"
                                   ? item.mahasiswa_nama
-                                  : null) || "Talenta Mahasiswa",
-                            partnerRole: isMahasiswa ? "UMKM" : "MHS",
+                                  : null) ||
+                                (item.accepted_mhs_nama &&
+                                item.accepted_mhs_nama.toLowerCase() !==
+                                  "string"
+                                  ? item.accepted_mhs_nama
+                                  : null) ||
+                                "Talenta Kampus",
                           });
                         }}
                         activeOpacity={0.8}
                       >
-                        <MessageSquare size={12} color={COLORS.brandIndigo} />
+                        <MessageSquare
+                          size={12}
+                          color={COLORS.brandIndigo}
+                          strokeWidth={2.5}
+                        />
                         <Text style={styles.quickChatBtnText}>Chat</Text>
                       </TouchableOpacity>
                     )}
-
                     <View style={styles.chevronBox}>
-                      <ChevronRight size={14} color={COLORS.textMuted} />
+                      <ChevronRight size={16} color={COLORS.textMuted} />
                     </View>
                   </View>
                 </View>
@@ -477,16 +545,68 @@ export function TrackerScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC", // Clean, bright backdrop
+    backgroundColor: "#F8FAFC",
   },
 
   tabBarWrapper: {
     backgroundColor: COLORS.bgSurface,
-    paddingHorizontal: 20,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.borderDark,
   },
+  tabBarScroll: {
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  tabPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 6,
+  },
+  tabPillActive: {
+    backgroundColor: COLORS.brandIndigo,
+    borderColor: COLORS.brandIndigo,
+    ...SHADOWS.sm,
+  },
+  tabLabel: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+  },
+  tabLabelActive: {
+    color: "#FFFFFF",
+  },
+  tabBadge: {
+    backgroundColor: "rgba(15, 23, 42, 0.08)",
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 999,
+    minWidth: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabBadgeActive: {
+    backgroundColor: "rgba(255, 255, 255, 0.25)",
+  },
+  tabBadgeText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+  },
+  tabBadgeTextActive: {
+    color: "#FFFFFF",
+  },
+
   newProjectBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -503,67 +623,14 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
-  // 2. Segmented Pill Tabs
-  tabBar: {
-    flexDirection: "row",
-    backgroundColor: "#F1F5F9",
-    padding: 3,
-    borderRadius: 12,
-  },
-  tabItem: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 7,
-    borderRadius: 9,
-    gap: 4,
-  },
-  tabItemActive: {
-    backgroundColor: "#FFFFFF",
-    ...SHADOWS.sm,
-  },
-  tabLabel: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 12,
-    fontWeight: "500",
-    color: COLORS.textMuted,
-  },
-  tabLabelActive: {
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.brandIndigo,
-    fontWeight: "700",
-  },
-  tabBadge: {
-    backgroundColor: "rgba(15, 23, 42, 0.08)",
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    borderRadius: 999,
-    minWidth: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tabBadgeActive: {
-    backgroundColor: COLORS.brandIndigoLight,
-  },
-  tabBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: COLORS.textMuted,
-    fontWeight: "700",
-  },
-  tabBadgeTextActive: {
-    color: COLORS.brandIndigo,
-  },
-
-  // 3. Feed List
+  // Feed List
   listContent: {
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 40,
   },
 
-  // 4. Streamlined Card
+  // Streamlined Card
   projectCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
@@ -591,26 +658,29 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
+  partnerAvatarImage: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
   categoryBox: {
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: COLORS.brandIndigoLight,
+    backgroundColor: COLORS.bgDark,
     alignItems: "center",
     justifyContent: "center",
-  },
-  partnerAvatarImage: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
   categoryBoxActive: {
-    backgroundColor: COLORS.successBg,
+    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    borderColor: "rgba(16, 185, 129, 0.3)",
   },
   partnerName: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 13,
     fontWeight: "700",
     color: COLORS.textDark,
@@ -622,84 +692,196 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // Status Badges
+  // Status Pills
   statusPillActive: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: COLORS.successBg,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
   pulseDotGreen: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.success,
+    backgroundColor: "#059669",
   },
   statusTextActive: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 10,
     fontWeight: "700",
-    color: COLORS.success,
+    color: "#059669",
   },
+
   statusPillReview: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "#F3E8FF",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#F5F3FF",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#DDD6FE",
   },
   pulseDotPurple: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#9333EA",
+    backgroundColor: COLORS.brandIndigo,
   },
   statusTextReview: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 10,
     fontWeight: "700",
-    color: "#9333EA",
+    color: COLORS.brandIndigo,
   },
+
   statusPillPending: {
-    backgroundColor: COLORS.warningBg,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
   },
   statusTextPending: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 10,
     fontWeight: "700",
-    color: COLORS.warning,
+    color: "#D97706",
   },
+
   statusPillDone: {
-    backgroundColor: COLORS.canvasSoft,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   statusTextDone: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 10,
     fontWeight: "700",
     color: COLORS.textSecondary,
   },
-  statusPillDeclined: {
-    backgroundColor: COLORS.dangerBg,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+
+  statusPillWithdrawn: {
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
   },
-  statusTextDeclined: {
-    fontFamily: FONTS.bodyBold,
+  statusTextWithdrawn: {
+    fontFamily: FONTS.displayBold,
     fontSize: 10,
     fontWeight: "700",
-    color: COLORS.danger,
+    color: "#92400E",
+  },
+
+  statusPillCancelled: {
+    backgroundColor: "#FEE2E2",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#FECACA",
+  },
+  statusTextCancelled: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#DC2626",
+  },
+
+  statusPillRejected: {
+    backgroundColor: "#FEE2E2",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#FECACA",
+  },
+  statusTextRejected: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#DC2626",
+  },
+
+  statusPillDefault: {
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+  },
+  statusTextDefault: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+  },
+
+  // Reason Callout Boxes
+  reasonCardBox: {
+    backgroundColor: "#FEF2F2",
+    padding: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  reasonHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 2,
+  },
+  reasonCardTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    color: "#B91C1C",
+    fontWeight: "700",
+  },
+  reasonCardText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#991B1B",
+    fontStyle: "italic",
+    lineHeight: 15,
+  },
+
+  reasonCardBoxWithdrawn: {
+    backgroundColor: "#FEF3C7",
+    padding: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  reasonCardTitleWithdrawn: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    color: "#92400E",
+    fontWeight: "700",
+  },
+  reasonCardTextWithdrawn: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#78350F",
+    fontStyle: "italic",
+    lineHeight: 15,
   },
 
   // Title
@@ -709,7 +891,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.textDark,
     lineHeight: 20,
-    marginBottom: 10,
+    marginBottom: 4,
   },
 
   // Bottom Row
@@ -720,6 +902,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: COLORS.borderSubtle,
+    marginTop: 4,
   },
   metaInfo: {
     flexDirection: "row",

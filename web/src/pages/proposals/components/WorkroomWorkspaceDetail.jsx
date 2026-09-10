@@ -762,6 +762,7 @@ export function WorkroomWorkspaceDetail({
               {projectProposals.map((prop) => {
                 const isAccepted = prop.status === "ACCEPTED";
                 const isRejected = prop.status === "REJECTED";
+                const isWithdrawn = prop.status === "WITHDRAWN";
 
                 return (
                   <div
@@ -769,8 +770,8 @@ export function WorkroomWorkspaceDetail({
                     className={`p-4 rounded-2xl border transition-all ${
                       isAccepted
                         ? "bg-emerald-50/20 border-emerald-200 shadow-xs"
-                        : isRejected
-                          ? "bg-canvas border-border opacity-70"
+                        : isRejected || isWithdrawn
+                          ? "bg-canvas border-border opacity-80"
                           : "bg-canvas border-border hover:border-dark-900/30"
                     }`}
                   >
@@ -800,14 +801,18 @@ export function WorkroomWorkspaceDetail({
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : isRejected
                                   ? "bg-rose-50 text-rose-800 border-rose-200"
-                                  : "bg-surface text-muted border-border"
+                                  : isWithdrawn
+                                    ? "bg-amber-50 text-amber-800 border-amber-200"
+                                    : "bg-surface text-muted border-border"
                             }`}
                           >
                             {isAccepted
                               ? "Disetujui"
                               : isRejected
                                 ? "Ditolak"
-                                : "Menunggu Seleksi"}
+                                : isWithdrawn
+                                  ? "Proposal Ditarik"
+                                  : "Menunggu Seleksi"}
                           </span>
                         </div>
                         <p className="text-[11px] text-muted mt-0.5">
@@ -867,6 +872,19 @@ export function WorkroomWorkspaceDetail({
                         </div>
                       );
                     })()}
+
+                    {/* Withdrawn Notice & Reason */}
+                    {isWithdrawn && (
+                      <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80 text-xs text-amber-900 mb-3 space-y-1">
+                        <div className="flex items-center gap-1.5 font-bold text-amber-800 text-[11px]">
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Proposal Ditarik Mahasiswa:</span>
+                        </div>
+                        <p className="italic text-[11px] text-amber-950 leading-relaxed font-medium">
+                          "{prop.withdraw_reason || "Mahasiswa membatalkan pengajuan proposal ini."}"
+                        </p>
+                      </div>
+                    )}
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center justify-end gap-2 pt-1 border-t border-border/60">

@@ -379,9 +379,9 @@ export function ProposalBoardPage() {
       } else if (activeFilter === "IN_PROGRESS") {
         matchFilter = p.status === "ACCEPTED" && !isApproved;
       } else if (activeFilter === "COMPLETED") {
-        matchFilter = isApproved;
+        matchFilter = isApproved || p.status === "WITHDRAWN" || p.status === "REJECTED";
       } else if (activeFilter === "REJECTED") {
-        matchFilter = p.status === "REJECTED";
+        matchFilter = p.status === "REJECTED" || p.status === "WITHDRAWN";
       }
 
       return matchSearch && matchFilter;

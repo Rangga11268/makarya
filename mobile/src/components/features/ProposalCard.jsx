@@ -109,6 +109,27 @@ export function ProposalCard({
           style={{ alignSelf: "center", marginTop: 8 }}
         />
       )}
+
+      {proposal.status === "WITHDRAWN" && (
+        <View style={styles.withdrawnBox}>
+          <Badge
+            label="Proposal Ditarik Mahasiswa"
+            variant="warning"
+            style={{ alignSelf: "flex-start", marginBottom: 6 }}
+          />
+          <Text style={styles.withdrawnReasonText}>
+            Alasan: "{proposal.withdraw_reason || "Mahasiswa menarik kembali proposal lamaran ini."}"
+          </Text>
+        </View>
+      )}
+
+      {proposal.status === "REJECTED" && (
+        <Badge
+          label="Proposal Ditolak"
+          variant="danger"
+          style={{ alignSelf: "center", marginTop: 8 }}
+        />
+      )}
     </View>
   );
 }
@@ -247,5 +268,20 @@ const styles = StyleSheet.create({
   },
   acceptBtn: {
     flex: 2,
+  },
+  withdrawnBox: {
+    backgroundColor: "#FEF3C7",
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+    marginTop: 8,
+  },
+  withdrawnReasonText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#92400E",
+    fontStyle: "italic",
+    lineHeight: 16,
   },
 });

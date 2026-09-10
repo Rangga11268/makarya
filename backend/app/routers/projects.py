@@ -51,7 +51,10 @@ def _build_project_response(
         umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
     umkm_summary = UmkmSummary.model_validate(umkm_profile) if umkm_profile else None
 
-    total_pelamar = db.query(Proposal).filter(Proposal.project_id == proj.id).count()
+    total_pelamar = db.query(Proposal).filter(
+        Proposal.project_id == proj.id,
+        Proposal.status != ProposalStatus.WITHDRAWN
+    ).count()
     acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
     match_score, match_reasons = _calculate_match_score(proj, mhs_profile)
 
