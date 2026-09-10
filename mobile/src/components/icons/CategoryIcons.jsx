@@ -215,11 +215,30 @@ export function ProjectBriefVectorIcon({ size = 24, color = COLORS.textDark }) {
  */
 export function renderProjectCategoryVectorIcon(
   category = "",
-  title = "",
-  size = 22,
+  titleOrSize = "",
+  sizeOrColor = 22,
   overrideColor = null,
 ) {
-  const color = overrideColor || COLORS.textDark;
+  let title = "";
+  let size = 22;
+  let color = null;
+
+  if (typeof titleOrSize === "number") {
+    // Caller used shorthand: (category, size, color)
+    size = titleOrSize;
+    color = typeof sizeOrColor === "string" ? sizeOrColor : null;
+    title = "";
+  } else {
+    // Caller used full signature: (category, title, size, color)
+    title = typeof titleOrSize === "string" ? titleOrSize : "";
+    size = typeof sizeOrColor === "number" ? sizeOrColor : 22;
+    color = overrideColor;
+  }
+
+  if (typeof size !== "number" || isNaN(size)) {
+    size = 22;
+  }
+  color = color || COLORS.textDark;
   const query = `${category || ""} ${title || ""}`.toUpperCase();
 
   if (

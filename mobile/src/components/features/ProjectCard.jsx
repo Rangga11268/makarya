@@ -108,6 +108,7 @@ export function ProjectCard({ project, onPress }) {
         <View style={styles.categoryPill}>
           {renderProjectCategoryVectorIcon(
             project.kategori,
+            project.judul,
             12,
             COLORS.brandIndigo,
           )}

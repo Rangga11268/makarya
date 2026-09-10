@@ -62,7 +62,7 @@ export function PostProjectScreen({ navigation }) {
   const [deskripsi, setDeskripsi] = useState("");
   const [budgetMax, setBudgetMax] = useState("300000");
   const [deadline, setDeadline] = useState(
-    new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0]
+    new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
   );
 
   // Model Kolaborasi: INDIVIDU vs TIM
@@ -103,13 +103,13 @@ export function PostProjectScreen({ navigation }) {
 
   const handleUpdateSlot = (index, field, value) => {
     setSlots((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
+      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
     );
   };
 
   const totalSlotBudget = slots.reduce(
     (acc, s) => acc + (parseInt(s.alokasi_budget, 10) || 0),
-    0
+    0,
   );
 
   const numBudget = parseInt(budgetMax, 10) || 0;
@@ -172,7 +172,7 @@ export function PostProjectScreen({ navigation }) {
         if (b <= 0) {
           showToast(
             `Alokasi honor pada Posisi #${i + 1} harus lebih dari 0`,
-            "danger"
+            "danger",
           );
           return;
         }
@@ -180,9 +180,9 @@ export function PostProjectScreen({ navigation }) {
       if (totalSlotBudget > numBudget) {
         showToast(
           `Total alokasi peran (${formatCurrency(
-            totalSlotBudget
+            totalSlotBudget,
           )}) melebihi pagu proyek (${formatCurrency(numBudget)})`,
-          "danger"
+          "danger",
         );
         return;
       }
@@ -216,7 +216,7 @@ export function PostProjectScreen({ navigation }) {
     } catch (err) {
       showToast(
         err.response?.data?.detail || "Gagal menerbitkan proyek",
-        "danger"
+        "danger",
       );
     } finally {
       setLoading(false);
@@ -236,13 +236,9 @@ export function PostProjectScreen({ navigation }) {
     filled_slots: 0,
     status: "OPEN",
     umkm_nama:
-      user?.umkm_profile?.nama_usaha ||
-      user?.nama_lengkap ||
-      "Usaha Anda",
+      user?.umkm_profile?.nama_usaha || user?.nama_lengkap || "Usaha Anda",
     client_name:
-      user?.umkm_profile?.nama_usaha ||
-      user?.nama_lengkap ||
-      "Usaha Anda",
+      user?.umkm_profile?.nama_usaha || user?.nama_lengkap || "Usaha Anda",
     created_at: new Date().toISOString(),
   };
 
@@ -338,9 +334,12 @@ export function PostProjectScreen({ navigation }) {
             <View style={styles.stepIntroCard}>
               <Sparkles size={18} color={COLORS.brandIndigo} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.stepIntroTitle}>Informasi & Brief Kebutuhan</Text>
+                <Text style={styles.stepIntroTitle}>
+                  Informasi & Brief Kebutuhan
+                </Text>
                 <Text style={styles.stepIntroSub}>
-                  Pilih bidang keahlian yang dibutuhkan serta jelaskan ekspektasi hasil kerja.
+                  Pilih bidang keahlian yang dibutuhkan serta jelaskan
+                  ekspektasi hasil kerja.
                 </Text>
               </View>
             </View>
@@ -404,9 +403,12 @@ export function PostProjectScreen({ navigation }) {
             <View style={styles.stepIntroCard}>
               <DollarSign size={18} color={COLORS.brandIndigo} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.stepIntroTitle}>Alokasi Anggaran & Formasi Tim</Text>
+                <Text style={styles.stepIntroTitle}>
+                  Alokasi Anggaran & Formasi Tim
+                </Text>
                 <Text style={styles.stepIntroSub}>
-                  Tentukan pagu honor dan sesuaikan apakah proyek ini untuk 1 orang atau tim multi-talenta.
+                  Tentukan pagu honor dan sesuaikan apakah proyek ini untuk 1
+                  orang atau tim multi-talenta.
                 </Text>
               </View>
             </View>
@@ -427,12 +429,15 @@ export function PostProjectScreen({ navigation }) {
 
             {/* Mode Kolaborasi: Individu vs Tim Multi-Talenta */}
             <View style={styles.formSection}>
-              <Text style={styles.sectionLabel}>Model Penugasan & Kolaborasi</Text>
+              <Text style={styles.sectionLabel}>
+                Model Penugasan & Kolaborasi
+              </Text>
               <View style={styles.collabToggleContainer}>
                 <TouchableOpacity
                   style={[
                     styles.collabToggleBtn,
-                    tipeKolaborasi === "INDIVIDU" && styles.collabToggleBtnActive,
+                    tipeKolaborasi === "INDIVIDU" &&
+                      styles.collabToggleBtnActive,
                   ]}
                   onPress={() => setTipeKolaborasi("INDIVIDU")}
                   activeOpacity={0.85}
@@ -440,7 +445,9 @@ export function PostProjectScreen({ navigation }) {
                   <User
                     size={16}
                     color={
-                      tipeKolaborasi === "INDIVIDU" ? "#FFFFFF" : COLORS.textMuted
+                      tipeKolaborasi === "INDIVIDU"
+                        ? "#FFFFFF"
+                        : COLORS.textMuted
                     }
                   />
                   <Text
@@ -492,7 +499,8 @@ export function PostProjectScreen({ navigation }) {
                       Formasi Peran & Pembagian Tugas
                     </Text>
                     <Text style={styles.teamSectionSub}>
-                      Tentukan posisi keahlian dan alokasi honor untuk tiap talenta
+                      Tentukan posisi keahlian dan alokasi honor untuk tiap
+                      talenta
                     </Text>
                   </View>
                 </View>
@@ -501,7 +509,9 @@ export function PostProjectScreen({ navigation }) {
                 {slots.map((s, idx) => (
                   <View key={idx} style={styles.slotItemCard}>
                     <View style={styles.slotItemHeader}>
-                      <Text style={styles.slotItemNumber}>Posisi #{idx + 1}</Text>
+                      <Text style={styles.slotItemNumber}>
+                        Posisi #{idx + 1}
+                      </Text>
                       {slots.length > 1 && (
                         <TouchableOpacity
                           onPress={() => handleRemoveSlot(idx)}
@@ -509,7 +519,9 @@ export function PostProjectScreen({ navigation }) {
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         >
                           <Trash2 size={13} color="#DC2626" />
-                          <Text style={styles.slotRemoveText}>Hapus Posisi</Text>
+                          <Text style={styles.slotRemoveText}>
+                            Hapus Posisi
+                          </Text>
                         </TouchableOpacity>
                       )}
                     </View>
@@ -567,11 +579,14 @@ export function PostProjectScreen({ navigation }) {
                   ]}
                 >
                   <View style={styles.slotSummaryRow}>
-                    <Text style={styles.slotSummaryLabel}>Total Alokasi Tim:</Text>
+                    <Text style={styles.slotSummaryLabel}>
+                      Total Alokasi Tim:
+                    </Text>
                     <Text
                       style={[
                         styles.slotSummaryValue,
-                        totalSlotBudget > numBudget && styles.slotSummaryValueError,
+                        totalSlotBudget > numBudget &&
+                          styles.slotSummaryValueError,
                       ]}
                     >
                       {formatCurrency(totalSlotBudget)}
@@ -644,7 +659,9 @@ export function PostProjectScreen({ navigation }) {
             <View style={styles.stepIntroCard}>
               <Eye size={18} color={COLORS.brandIndigo} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.stepIntroTitle}>Pratinjau & Konfirmasi Publikasi</Text>
+                <Text style={styles.stepIntroTitle}>
+                  Pratinjau & Konfirmasi Publikasi
+                </Text>
                 <Text style={styles.stepIntroSub}>
                   Periksa tampilan proyek sebelum dipublikasikan ke mahasiswa.
                 </Text>
@@ -659,15 +676,14 @@ export function PostProjectScreen({ navigation }) {
                   TAMPILAN DI BERANDA MAHASISWA
                 </Text>
               </View>
-              <ProjectCard
-                project={previewProject}
-                onPress={() => {}}
-              />
+              <ProjectCard project={previewProject} onPress={() => {}} />
             </View>
 
             {/* Summary Details Spec Box */}
             <View style={styles.summarySpecCard}>
-              <Text style={styles.summarySpecTitle}>Ringkasan Spesifikasi Proyek</Text>
+              <Text style={styles.summarySpecTitle}>
+                Ringkasan Spesifikasi Proyek
+              </Text>
 
               <View style={styles.summarySpecRow}>
                 <Text style={styles.summarySpecKey}>Model Kolaborasi:</Text>
@@ -702,7 +718,9 @@ export function PostProjectScreen({ navigation }) {
               {/* If Team, list roles */}
               {tipeKolaborasi === "TIM" && (
                 <View style={styles.summaryRolesBox}>
-                  <Text style={styles.summaryRolesTitle}>Formasi Peran Tim:</Text>
+                  <Text style={styles.summaryRolesTitle}>
+                    Formasi Peran Tim:
+                  </Text>
                   {slots.map((s, i) => (
                     <View key={i} style={styles.summaryRoleItem}>
                       <View style={styles.summaryRoleLeft}>
@@ -710,7 +728,10 @@ export function PostProjectScreen({ navigation }) {
                           #{i + 1} {s.nama_peran || "Posisi " + (i + 1)}
                         </Text>
                         {Boolean(s.deskripsi_tugas) && (
-                          <Text style={styles.summaryRoleDesc} numberOfLines={1}>
+                          <Text
+                            style={styles.summaryRoleDesc}
+                            numberOfLines={1}
+                          >
                             {s.deskripsi_tugas}
                           </Text>
                         )}
@@ -728,9 +749,12 @@ export function PostProjectScreen({ navigation }) {
             <View style={styles.guaranteeBox}>
               <ShieldCheck size={20} color={COLORS.brandCyan} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.guaranteeTitle}>Garansi Rekening Escrow</Text>
+                <Text style={styles.guaranteeTitle}>
+                  Garansi Rekening Escrow
+                </Text>
                 <Text style={styles.guaranteeText}>
-                  Dana proyek aman di rekening bersama Makarya dan baru akan dikunci saat Anda menyetujui proposal mahasiswa terpilih.
+                  Dana proyek aman di rekening bersama Makarya dan baru akan
+                  dikunci saat Anda menyetujui proposal mahasiswa terpilih.
                 </Text>
               </View>
             </View>
