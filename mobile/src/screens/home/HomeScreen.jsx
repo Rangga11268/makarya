@@ -876,7 +876,7 @@ export function HomeScreen({ navigation }) {
                   snapToInterval={CARD_WIDTH + 14}
                   decelerationRate="fast"
                 >
-                  {browseProjects.slice(0, 5).map((p) => (
+                  {browseProjects.slice(0, 6).map((p) => (
                     <View
                       key={p.id}
                       style={{ width: CARD_WIDTH, marginRight: 14 }}
@@ -1705,7 +1705,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 180,
+    minHeight: 230,
   },
   endCapIconBox: {
     width: 44,
