@@ -11,8 +11,8 @@ export default {
         border: "#E2E8F0",
         "border-subtle": "#EDF2F7",
         brand: {
-          cyan: "#334155",
-          "cyan-light": "#F1F5F9",
+          cyan: "#38BDF8",
+          "cyan-light": "#F0F9FF",
           indigo: "#0F172A",
           "indigo-light": "#F1F5F9",
           "indigo-dark": "#020617",

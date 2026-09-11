@@ -978,18 +978,18 @@ export function LandingPage() {
 
       {/* 8. PRE-FOOTER DUAL ACTION BENTO GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {/* UMKM Card */}
-          <div className="bg-brand-indigo text-white p-8 sm:p-12 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-8 shadow-brand">
+          <div className="bg-gradient-to-br from-white via-slate-50/70 to-emerald-50/30 border border-slate-200/90 rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all group relative overflow-hidden">
             <div className="space-y-4 relative z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white text-xs font-bold uppercase tracking-wider">
-                <Building2 className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                <Building2 className="w-3.5 h-3.5 text-emerald-600" />
                 Untuk Pemilik Usaha / UMKM
               </span>
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-snug">
                 Tingkatkan Citra Bisnis Anda Tanpa Beban Biaya Agency.
               </h3>
-              <p className="text-xs sm:text-sm text-indigo-100 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Dapatkan logo profesional, kemasan produk menawan, website
                 responsif, atau konten video reels dari talenta muda kreatif
                 dengan jaminan perlindungan dana 100%.
@@ -997,29 +997,28 @@ export function LandingPage() {
             </div>
             <div className="relative z-10 pt-2">
               <Link to="/login" className="inline-block w-full sm:w-auto">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-white hover:bg-slate-100 text-slate-900 border-0 shadow-lg justify-center rounded-xl"
+                <button
+                  type="button"
+                  className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-slate-900 hover:bg-slate-800 text-white shadow-xs justify-center rounded-xl px-6 py-3.5 transition-all inline-flex items-center gap-2 group-hover:gap-3 cursor-pointer"
                 >
                   <span>Pasang Kebutuhan Proyek</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
               </Link>
             </div>
           </div>
 
           {/* Mahasiswa Card */}
-          <div className="bg-[#0b1324] text-white p-8 sm:p-12 rounded-3xl relative overflow-hidden flex flex-col justify-between space-y-8 border border-slate-800 shadow-sm">
+          <div className="bg-gradient-to-br from-white via-slate-50/70 to-blue-50/30 border border-slate-200/90 rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all group relative overflow-hidden">
             <div className="space-y-4 relative z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold uppercase tracking-wider border border-white/10">
-                <GraduationCap className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-bold uppercase tracking-wider">
+                <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
                 Untuk Mahasiswa Bertalenta
               </span>
-              <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
+              <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-snug">
                 Ubah Kemampuan Kampus Menjadi Penghasilan & Portofolio Nyata.
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
                 Bantu UMKM lokal berkembang, dapatkan penghasilan utuh tanpa
                 potongan komisi, dan otomatis miliki portofolio terverifikasi
                 untuk melamar karir profesional.
@@ -1027,14 +1026,13 @@ export function LandingPage() {
             </div>
             <div className="relative z-10 pt-2">
               <Link to="/register" className="inline-block w-full sm:w-auto">
-                <Button
-                  variant="brand"
-                  size="lg"
-                  className="w-full sm:w-auto font-bold text-xs sm:text-sm shadow-brand justify-center rounded-xl"
+                <button
+                  type="button"
+                  className="w-full sm:w-auto font-bold text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-xs justify-center rounded-xl px-6 py-3.5 transition-all inline-flex items-center gap-2 group-hover:gap-3 cursor-pointer"
                 >
                   <span>Daftar Sebagai Freelancer</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
-                </Button>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
               </Link>
             </div>
           </div>

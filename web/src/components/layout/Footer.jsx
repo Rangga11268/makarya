@@ -30,24 +30,19 @@ export function Footer() {
 
   return (
     <footer className="relative bg-surface border-t border-border mt-20 overflow-hidden font-sans">
-      {/* Large faint background watermark */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-4 select-none pointer-events-none opacity-[0.03] text-dark-900 font-sans font-black text-8xl sm:text-[180px] tracking-tight whitespace-nowrap z-0">
-        Makarya Platform
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-14 pb-10">
         {/* Top Pre-Footer Banner for Non-Logged In or Dashboard CTA */}
         {!isAuthenticated && (
-          <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-dark-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
+          <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
             <div className="space-y-2 max-w-xl text-center md:text-left">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-semibold">
-                <GraduationCap className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-semibold">
+                <GraduationCap className="w-3.5 h-3.5 text-sky-400" />
                 Mulai Karir Freelance Kampus
               </span>
               <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
                 Dapatkan Proyek yang Cocok Hanya dalam Hitungan Menit.
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Daftar dengan email kampus Anda dan segera ajukan penawaran
                 proposal ke berbagai UMKM lokal.
               </p>
@@ -55,7 +50,7 @@ export function Footer() {
             <div className="flex items-center gap-3 shrink-0">
               <Link
                 to="/register"
-                className="px-6 py-3 rounded-full text-xs sm:text-sm font-bold bg-brand-indigo hover:bg-brand-indigo/90 text-white transition-all shadow-brand inline-flex items-center gap-2"
+                className="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white hover:bg-slate-100 text-slate-900 transition-all shadow-sm inline-flex items-center gap-2"
               >
                 <span>Daftar Mahasiswa</span>
                 <ArrowUpRight className="w-4 h-4" />

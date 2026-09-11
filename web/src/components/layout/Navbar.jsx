@@ -223,9 +223,9 @@ export function Navbar() {
   };
 
   return (
-    <div className="sticky top-0 z-50 px-3 sm:px-6 pt-3 pb-2 transition-all">
-      <header className="max-w-6xl mx-auto rounded-full bg-white/90 backdrop-blur-2xl border border-slate-200/90 shadow-lg shadow-slate-900/4 hover:border-slate-300 transition-all">
-        <div className="h-14 sm:h-15 px-4 sm:px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-2xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="h-16 flex items-center justify-between">
           {/* 1. Left Section: Logo & Campus Badge */}
           <div className="flex items-center gap-6">
             <Link
@@ -235,7 +235,7 @@ export function Navbar() {
               <img
                 src="/logo.webp"
                 alt="Makarya Logo"
-                className="h-7 sm:h-8 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-6 sm:h-6.5 w-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
 
@@ -607,7 +607,7 @@ export function Navbar() {
 
         {/* 3. Mobile Navigation Sheet Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-100 px-4 py-3.5 space-y-3 bg-white/95 backdrop-blur-2xl rounded-b-3xl">
+          <div className="lg:hidden border-t border-slate-200/80 px-4 py-4 space-y-3 bg-white/98 backdrop-blur-xl shadow-lg rounded-b-2xl">
             {!isAuthenticated ? (
               <div className="space-y-1">
                 <Link
@@ -700,7 +700,7 @@ export function Navbar() {
             )}
           </div>
         )}
-      </header>
-    </div>
+      </div>
+    </header>
   );
 }
