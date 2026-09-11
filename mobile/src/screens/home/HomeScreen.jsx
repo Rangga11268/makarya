@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  Modal,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
@@ -62,7 +63,9 @@ import {
   Plus,
   Users,
   Eye,
+  EyeOff,
   UserCheck,
+  LayoutGrid,
   X,
 } from "lucide-react-native";
 
@@ -81,7 +84,9 @@ export function HomeScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [dismissProfileBanner, setDismissProfileBanner] = useState(false);
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
 
   const { getUnreadCount, fetchNotifications } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
@@ -178,43 +183,84 @@ export function HomeScreen({ navigation }) {
     }, [user?.role]),
   );
 
-  // 6 Bespoke Vector Categories Unified in Makarya Brand Indigo Palette
-  const categoryTiles = [
+  // All 6 Categories for the Full Sheet Modal
+  const allCategories = [
     {
       id: "DESAIN",
       title: "Desain UI/UX",
-      sub: "Figma & Branding",
+      sub: "Figma, Branding, Visual & Logo",
       iconComponent: UiUxVectorIcon,
     },
     {
       id: "WEB",
       title: "Web & Coding",
-      sub: "React, Vue & API",
+      sub: "React, Vue, Node.js & REST API",
       iconComponent: WebCodingVectorIcon,
     },
     {
       id: "MOBILE",
       title: "App Mobile",
-      sub: "Flutter & React Native",
+      sub: "React Native, Flutter, iOS & Android",
       iconComponent: MobileAppVectorIcon,
     },
     {
       id: "VIDEO",
       title: "Video & Reels",
-      sub: "Motion & Editing",
+      sub: "Motion Graphic, Reels & Editing",
       iconComponent: VideoMotionVectorIcon,
     },
     {
       id: "MARKETING",
       title: "Pemasaran & Ads",
-      sub: "SEO & Sosmed",
+      sub: "SEO, Meta Ads & Social Media",
       iconComponent: MarketingVectorIcon,
     },
     {
       id: "WRITING",
       title: "Riset & Penulisan",
-      sub: "Copywriting & Artikel",
+      sub: "Copywriting, Content & Artikel",
       iconComponent: WritingVectorIcon,
+    },
+  ];
+
+  // 4 Featured Service Categories (Executive Services Row)
+  const serviceCategories = [
+    {
+      id: "DESAIN",
+      title: "Desain",
+      iconComponent: UiUxVectorIcon,
+      onPress: () => {
+        setSelectedCategory("DESAIN");
+        navigation.navigate("ProjectsTab", { category: "DESAIN" });
+      },
+    },
+    {
+      id: "WEB",
+      title: "Website",
+      iconComponent: WebCodingVectorIcon,
+      onPress: () => {
+        setSelectedCategory("WEB");
+        navigation.navigate("ProjectsTab", { category: "WEB" });
+      },
+    },
+    {
+      id: "MOBILE",
+      title: "App Mobile",
+      iconComponent: MobileAppVectorIcon,
+      onPress: () => {
+        setSelectedCategory("MOBILE");
+        navigation.navigate("ProjectsTab", { category: "MOBILE" });
+      },
+    },
+    {
+      id: "MORE",
+      title: "Lainnya",
+      iconComponent: ({ size, color }) => (
+        <LayoutGrid size={size || 19} color={color || COLORS.brandIndigo} />
+      ),
+      onPress: () => {
+        setIsCategoryModalOpen(true);
+      },
     },
   ];
 
@@ -349,59 +395,139 @@ export function HomeScreen({ navigation }) {
         }
       >
         <View style={styles.content}>
-          {/* 1. Apple Glossy Executive Header Island */}
-          <View style={styles.appleGlassHeader}>
-            <TouchableOpacity
-              style={styles.profileUserGroup}
-              onPress={() => navigation.navigate("ProfileTab")}
-              activeOpacity={0.85}
-            >
-              <View style={styles.avatarWrapper}>
-                {user?.url_foto ? (
-                  <Image
-                    source={{ uri: user.url_foto }}
-                    style={styles.userAvatarImage}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View
-                    style={[
-                      styles.userAvatarCircle,
-                      isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-                    ]}
-                  >
-                    <Text style={styles.avatarInitial}>{initialLetter}</Text>
+          {/* 1. Apple Frosted Executive Unified Hero Card (Identity + Finance Island) */}
+          <View style={styles.appleGlassHeroCard}>
+            {/* Top Identity & Notification Row */}
+            <View style={styles.heroCardHeaderRow}>
+              <TouchableOpacity
+                style={styles.profileUserGroup}
+                onPress={() => navigation.navigate("ProfileTab")}
+                activeOpacity={0.85}
+              >
+                <View style={styles.avatarWrapper}>
+                  {user?.url_foto ? (
+                    <Image
+                      source={{ uri: user.url_foto }}
+                      style={styles.userAvatarImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.userAvatarCircle,
+                        isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
+                      ]}
+                    >
+                      <Text style={styles.avatarInitial}>{initialLetter}</Text>
+                    </View>
+                  )}
+                  <View style={styles.verifiedTickBadge}>
+                    <CheckCircle2
+                      size={11}
+                      color="#FFFFFF"
+                      fill={COLORS.success}
+                    />
                   </View>
-                )}
-                <View style={styles.verifiedTickBadge}>
-                  <CheckCircle2
-                    size={11}
-                    color="#FFFFFF"
-                    fill={COLORS.success}
-                  />
                 </View>
-              </View>
 
-              <View style={styles.profileTextInfo}>
-                <Text style={styles.profileGreetingText} numberOfLines={1}>
-                  Halo, {displayName}
-                </Text>
-                <View style={styles.roleChipPill}>
-                  <Text style={styles.roleChipPillText}>
-                    {isMahasiswa ? "Talenta Digital" : "Mitra UMKM"}
+                <View style={styles.profileTextInfo}>
+                  <Text style={styles.profileGreetingText} numberOfLines={1}>
+                    Halo, {displayName}
+                  </Text>
+                  <View style={styles.roleChipPill}>
+                    <Text style={styles.roleChipPillText}>
+                      {isMahasiswa ? "Talenta Digital" : "Mitra UMKM"}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.bellButton}
+                onPress={() => setIsNotificationOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Bell size={18} color="#0F172A" />
+                {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
+              </TouchableOpacity>
+            </View>
+
+            {/* Subtle Internal Divider */}
+            <View style={styles.heroCardDivider} />
+
+            {/* Middle Balance & Protection Row */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("WalletTab")}
+              activeOpacity={0.9}
+            >
+              <View style={styles.walletTopRow}>
+                <TouchableOpacity
+                  style={styles.walletBalanceLabelGroup}
+                  onPress={() => setIsBalanceHidden((prev) => !prev)}
+                  activeOpacity={0.7}
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                >
+                  <Text style={styles.walletBalanceTitle}>
+                    {isMahasiswa ? "Saldo Dompet Aktif" : "Saldo Escrow Bisnis"}
+                  </Text>
+                  {isBalanceHidden ? (
+                    <EyeOff size={13} color="#64748B" />
+                  ) : (
+                    <Eye size={13} color="#64748B" />
+                  )}
+                </TouchableOpacity>
+
+                <View style={styles.walletEscrowChip}>
+                  <ShieldCheck size={11} color="#0284C7" />
+                  <Text style={styles.walletEscrowChipText}>
+                    Escrow Protected
                   </Text>
                 </View>
               </View>
+
+              {/* Amount Display */}
+              <View style={styles.walletAmountRow}>
+                <Text style={styles.walletCurrencyPrefix}>Rp</Text>
+                <Text style={styles.walletAmountNumber}>
+                  {isBalanceHidden
+                    ? "••••••••"
+                    : new Intl.NumberFormat("id-ID").format(
+                        wallet?.saldo_aktif || 0,
+                      )}
+                </Text>
+              </View>
+
+              <Text style={styles.walletAvailableSub} numberOfLines={1}>
+                {wallet?.saldo_escrow > 0
+                  ? `${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
+                  : "Tersedia untuk dicairkan • Dilindungi Rekening Bersama"}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.bellButton}
-              onPress={() => setIsNotificationOpen(true)}
-              activeOpacity={0.8}
-            >
-              <Bell size={18} color="#0F172A" />
-              {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
-            </TouchableOpacity>
+            {/* Apple Glass Divider */}
+            <View style={styles.glassDivider} />
+
+            {/* 4 Quick Action PebbleButtons */}
+            <View style={styles.quickActionPillsRow}>
+              {actionItems.map((action, idx) => {
+                const IconComp = action.icon;
+                const isFirst = idx === 0;
+                return (
+                  <View key={action.id} style={styles.quickActionPillCol}>
+                    <PebbleButton
+                      size="circle-sm"
+                      variant={isFirst ? "sapphire" : "ice"}
+                      icon={IconComp}
+                      onPress={action.onPress}
+                      style={{ marginBottom: 4 }}
+                    />
+                    <Text style={styles.quickActionLabel} numberOfLines={1}>
+                      {action.label}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
           </View>
 
           {/* 2. Apple Glossy Quick Search Bar */}
@@ -477,136 +603,48 @@ export function HomeScreen({ navigation }) {
                 </Text>
                 <PebbleButton
                   variant="sapphire"
-                  label="Lengkapi Sekarang"
                   size="xs"
                   label="Lengkapi"
                   icon={ArrowRight}
                   onPress={() => navigation.navigate("ProfileTab")}
-                  style={styles.completionPebbleBtn}
                 />
               </View>
             </View>
           )}
 
-          {/* 3. Apple Frosted Glass Wallet & Quick Actions Card */}
-          <View style={styles.appleGlassWalletModule}>
-            {/* Top Balance Row */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate("WalletTab")}
-              activeOpacity={0.9}
-            >
-              <View style={styles.walletTopRow}>
-                <View style={styles.walletBalanceLabelGroup}>
-                  <Text style={styles.walletBalanceTitle}>
-                    {isMahasiswa ? "Saldo Dompet Aktif" : "Saldo Escrow Bisnis"}
-                  </Text>
-                  <Eye size={13} color="#64748B" />
-                </View>
-                <View style={styles.walletEscrowChip}>
-                  <ShieldCheck size={11} color="#0284C7" />
-                  <Text style={styles.walletEscrowChipText}>
-                    Escrow Protected
-                  </Text>
-                </View>
-              </View>
-
-              {/* Amount Display */}
-              <View style={styles.walletAmountRow}>
-                <Text style={styles.walletCurrencyPrefix}>Rp</Text>
-                <Text style={styles.walletAmountNumber}>
-                  {new Intl.NumberFormat("id-ID").format(
-                    wallet?.saldo_aktif || 0,
-                  )}
-                </Text>
-              </View>
-
-              <Text style={styles.walletAvailableSub} numberOfLines={1}>
-                {wallet?.saldo_escrow > 0
-                  ? `${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
-                  : "Tersedia untuk dicairkan • Dilindungi Rekening Bersama"}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Apple Glass Divider */}
-            <View style={styles.glassDivider} />
-
-            {/* 4 Quick Action PebbleButtons */}
-            <View style={styles.quickActionPillsRow}>
-              {actionItems.map((action, idx) => {
-                const IconComp = action.icon;
-                const isFirst = idx === 0;
-                return (
-                  <View key={action.id} style={styles.quickActionPillCol}>
-                    <PebbleButton
-                      size="circle-sm"
-                      variant={isFirst ? "sapphire" : "ice"}
-                      icon={IconComp}
-                      onPress={action.onPress}
-                      style={{ marginBottom: 4 }}
-                    />
-                    <Text style={styles.quickActionLabel} numberOfLines={1}>
-                      {action.label}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* 4. Apple Glass Category Strip (Horizontal, Ultra Compact) */}
-          <View style={[styles.sectionContainer, { marginBottom: 14 }]}>
-            <View style={styles.sectionHeaderRowCompact}>
-              <Text style={styles.sectionMainTitleCompact}>
-                Kategori Keahlian
-              </Text>
+          {/* 4. Apple Glass Services / Category Card (4-Column Circular Layout) */}
+          <View style={styles.appleGlassServicesCard}>
+            <View style={styles.servicesHeaderRow}>
+              <Text style={styles.servicesTitle}>Kategori Layanan</Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("ProjectsTab")}
-                style={styles.seeAllPillCompact}
+                onPress={() => setIsCategoryModalOpen(true)}
+                style={styles.servicesSeeAllBtn}
                 activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Text style={styles.seeAllPillText}>Semua</Text>
-                <ArrowRight size={10} color={COLORS.brandIndigo} />
+                <Text style={styles.servicesSeeAllText}>Lihat Semua</Text>
+                <ArrowRight size={11} color={COLORS.brandIndigo} />
               </TouchableOpacity>
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              nestedScrollEnabled={true}
-              contentContainerStyle={styles.categoryGlassStrip}
-            >
-              {categoryTiles.map((cat) => {
+            <View style={styles.servicesGridRow}>
+              {serviceCategories.map((cat) => {
                 const IconComp = cat.iconComponent;
-                const isSelected = selectedCategory === cat.id;
                 return (
                   <TouchableOpacity
                     key={cat.id}
-                    style={[
-                      styles.categoryGlassPill,
-                      isSelected && styles.categoryGlassPillActive,
-                    ]}
-                    onPress={() => {
-                      setSelectedCategory(isSelected ? "ALL" : cat.id);
-                      navigation.navigate("ProjectsTab", { category: cat.id });
-                    }}
+                    style={styles.serviceItemCol}
+                    onPress={cat.onPress}
                     activeOpacity={0.8}
                   >
-                    <IconComp
-                      size={16}
-                      color={isSelected ? "#FFFFFF" : COLORS.brandIndigo}
-                    />
-                    <Text
-                      style={[
-                        styles.categoryGlassPillText,
-                        isSelected && styles.categoryGlassPillTextActive,
-                      ]}
-                    >
-                      {cat.title}
-                    </Text>
+                    <View style={styles.serviceIconCircle}>
+                      <IconComp size={20} color={COLORS.brandIndigo} />
+                    </View>
+                    <Text style={styles.serviceItemLabel}>{cat.title}</Text>
                   </TouchableOpacity>
                 );
               })}
-            </ScrollView>
+            </View>
           </View>
 
           {/* 5. Ongoing Projects (Compact Apple Glass Card, if any) */}
@@ -915,8 +953,6 @@ export function HomeScreen({ navigation }) {
             </View>
           )}
         </View>
-
-        <View style={{ height: 30 }} />
       </ScrollView>
 
       {/* Notification Modal */}
@@ -924,6 +960,97 @@ export function HomeScreen({ navigation }) {
         visible={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
       />
+
+      {/* Apple Glass All Categories Bottom Sheet Modal */}
+      <Modal
+        visible={isCategoryModalOpen}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setIsCategoryModalOpen(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <TouchableOpacity
+            style={styles.modalBackdropDismiss}
+            activeOpacity={1}
+            onPress={() => setIsCategoryModalOpen(false)}
+          />
+
+          <View style={styles.categoryBottomSheetCard}>
+            {/* iOS Handle Pill */}
+            <View style={styles.sheetHandleBar} />
+
+            {/* Header */}
+            <View style={styles.categoryModalHeader}>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Text style={styles.categoryModalTitle}>Semua Kategori</Text>
+                <Text style={styles.categoryModalSubtitle}>
+                  Pilih spesialisasi keahlian untuk menemukan proyek & talenta
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setIsCategoryModalOpen(false)}
+                style={styles.categoryModalCloseBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <X size={16} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+              contentContainerStyle={{ paddingBottom: 10 }}
+            >
+              {/* 6 Category Items in a 2-Column Grid */}
+              <View style={styles.allCategoriesGrid}>
+                {allCategories.map((cat) => {
+                  const IconComp = cat.iconComponent;
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={styles.categoryGridCard}
+                      activeOpacity={0.75}
+                      onPress={() => {
+                        setIsCategoryModalOpen(false);
+                        setSelectedCategory(cat.id);
+                        navigation.navigate("ProjectsTab", {
+                          category: cat.id,
+                        });
+                      }}
+                    >
+                      <View style={styles.categoryGridIconCircle}>
+                        <IconComp size={22} color={COLORS.brandIndigo} />
+                      </View>
+                      <View style={styles.categoryGridTextWrap}>
+                        <Text style={styles.categoryGridTitle}>
+                          {cat.title}
+                        </Text>
+                        <Text style={styles.categoryGridSub}>{cat.sub}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* View All Without Filter Option */}
+              <TouchableOpacity
+                style={styles.viewAllWithoutFilterBtn}
+                activeOpacity={0.8}
+                onPress={() => {
+                  setIsCategoryModalOpen(false);
+                  setSelectedCategory("ALL");
+                  navigation.navigate("ProjectsTab");
+                }}
+              >
+                <Text style={styles.viewAllWithoutFilterText}>
+                  Eksplor Semua Kategori di Proyek
+                </Text>
+                <ArrowRight size={14} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -934,30 +1061,34 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
 
-  // Apple Glossy Executive Header Island
-  appleGlassHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(255, 255, 255, 0.88)",
+  // Apple Frosted Executive Unified Hero Card (Identity + Finance Island)
+  appleGlassHeroCard: {
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.88)",
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
+    borderRadius: 22,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.95)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: Platform.OS === "android" ? 0 : 2,
+    shadowRadius: 12,
+    elevation: Platform.OS === "android" ? 0 : 3,
+  },
+  heroCardHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  heroCardDivider: {
+    height: 1,
+    backgroundColor: "rgba(226, 232, 240, 0.65)",
+    marginBottom: 12,
   },
   roleChipPill: {
     alignSelf: "flex-start",
@@ -985,48 +1116,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    borderColor: "rgba(226, 232, 240, 0.9)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
         : "rgba(255, 255, 255, 0.95)",
-    marginBottom: 14,
+    marginBottom: 12,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 3 },
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
     shadowRadius: 6,
     elevation: Platform.OS === "android" ? 0 : 2,
     gap: 10,
-  },
-
-  // Apple Frosted Glass Wallet & Quick Actions Card
-  appleGlassWalletModule: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
-    borderRadius: 22,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    borderColor: "rgba(226, 232, 240, 0.9)",
-    borderColor:
-      Platform.OS === "android"
-        ? "rgba(226, 232, 240, 0.9)"
-        : "rgba(255, 255, 255, 0.95)",
-    marginBottom: 14,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    elevation: 3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: Platform.OS === "android" ? 0 : 3,
   },
   glassDivider: {
     height: 1,
@@ -1057,47 +1157,85 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(79, 70, 229, 0.06)",
   },
 
-  // Apple Glass Category Strip
-  categoryGlassStrip: {
-    flexDirection: "row",
-    gap: 8,
-    paddingRight: 8,
-  },
-  categoryGlassPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.88)",
+  // Apple Glass Services Card (4-Column Circular Layout)
+  appleGlassServicesCard: {
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.88)",
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 14,
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 14,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
-        ? "rgba(226, 232, 240, 0.9)"
+        ? "rgba(226, 232, 240, 0.95)"
         : "rgba(255, 255, 255, 0.95)",
+    marginBottom: 14,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: Platform.OS === "android" ? 0 : 2,
+  },
+  servicesHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  servicesTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14.5,
+    fontWeight: "700",
+    color: "#0F172A",
+    letterSpacing: -0.2,
+    includeFontPadding: false,
+  },
+  servicesSeeAllBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  servicesSeeAllText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
+    includeFontPadding: false,
+  },
+  servicesGridRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  serviceItemCol: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  serviceIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 6,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1.5 },
     shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
+    shadowRadius: 3,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
-  categoryGlassPillActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-  },
-  categoryGlassPillText: {
+  serviceItemLabel: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 12,
-    color: COLORS.textDark,
-  },
-  categoryGlassPillTextActive: {
-    color: "#FFFFFF",
-    fontFamily: FONTS.displaySemiBold,
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: "#0F172A",
+    textAlign: "center",
+    includeFontPadding: false,
   },
 
   // Apple Glass Ongoing Card
@@ -1134,20 +1272,20 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   bellButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.bgSurfaceSubtle,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
   },
   bellRedDot: {
     position: "absolute",
-    top: 8,
-    right: 9,
+    top: 7,
+    right: 8,
     width: 8,
     height: 8,
     borderRadius: 4,
@@ -1208,14 +1346,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 30,
     flexGrow: 1,
-    paddingBottom: 130,
+    paddingBottom: 88,
   },
   content: {
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 24,
+    paddingBottom: 8,
   },
 
   // Quick Interactive Search Affordance
@@ -1889,28 +2026,20 @@ const styles = StyleSheet.create({
   // Apple Frosted Profile Completion Banner Styles
   profileCompletionCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 15,
-    marginBottom: 14,
     borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 14,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
     borderColor: "rgba(226, 232, 240, 0.85)",
     ...Platform.select({
       ios: {
         shadowColor: "#0F172A",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.04,
         shadowRadius: 8,
       },
       android: {
-        elevation: 2,
         elevation: 1.5,
       },
     }),
@@ -1919,20 +2048,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: 8,
     marginBottom: 6,
   },
   completionBadgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
     gap: 9,
     flex: 1,
   },
   userIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
     width: 30,
     height: 30,
     borderRadius: 9,
@@ -1940,71 +2064,56 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.15)",
     borderColor: "rgba(37, 99, 235, 0.12)",
   },
   completionTitleCol: {
     flex: 1,
-    gap: 2,
     gap: 1.5,
   },
   completionTitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
     gap: 6,
   },
   completionTitle: {
     fontFamily: FONTS.semiBold,
-    fontSize: 13.5,
     fontSize: 12.5,
     color: "#0F172A",
     letterSpacing: -0.2,
   },
   completionPercentPill: {
     backgroundColor: "#EFF6FF",
-    paddingHorizontal: 7,
-    paddingVertical: 1.5,
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 9999,
   },
   completionPercentText: {
     fontFamily: FONTS.bold,
-    fontSize: 10.5,
     fontSize: 10,
     color: "#2563EB",
   },
   completionMissingFieldsText: {
     fontFamily: FONTS.medium,
-    fontSize: 11,
     fontSize: 10.5,
     color: "#64748B",
   },
   completionCloseBtn: {
-    padding: 4,
     padding: 3,
     marginTop: -2,
     marginRight: -2,
   },
   completionDesc: {
     fontFamily: FONTS.regular,
-    fontSize: 11.5,
-    color: "#475569",
-    lineHeight: 16.5,
-    marginBottom: 10,
     fontSize: 11,
     color: "#64748B",
     lineHeight: 15,
     marginBottom: 8,
   },
   completionProgressBarTrack: {
-    height: 4.5,
     height: 3.5,
     backgroundColor: "#F1F5F9",
     borderRadius: 9999,
     overflow: "hidden",
-    marginBottom: 12,
     marginBottom: 10,
   },
   completionProgressBarFill: {
@@ -2020,7 +2129,6 @@ const styles = StyleSheet.create({
   },
   completionHintText: {
     fontFamily: FONTS.medium,
-    fontSize: 11,
     fontSize: 10.5,
     color: "#94A3B8",
   },
@@ -2028,5 +2136,130 @@ const styles = StyleSheet.create({
     minHeight: 34,
     paddingVertical: 5,
     paddingHorizontal: 12,
+  },
+
+  // All Categories Apple Glass Bottom Sheet Modal Styles
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    justifyContent: "flex-end",
+  },
+  modalBackdropDismiss: {
+    flex: 1,
+  },
+  categoryBottomSheetCard: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 26,
+    borderTopRightRadius: 26,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === "ios" ? 36 : 24,
+    maxHeight: "88%",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  sheetHandleBar: {
+    width: 38,
+    height: 4.5,
+    borderRadius: 2.5,
+    backgroundColor: "#CBD5E1",
+    alignSelf: "center",
+    marginBottom: 16,
+  },
+  categoryModalHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  categoryModalTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#0F172A",
+    letterSpacing: -0.3,
+    includeFontPadding: false,
+  },
+  categoryModalSubtitle: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: "#64748B",
+    marginTop: 2,
+    lineHeight: 16,
+    includeFontPadding: false,
+  },
+  categoryModalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  allCategoriesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: 10,
+    marginBottom: 16,
+  },
+  categoryGridCard: {
+    width: "48.5%",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  categoryGridIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  categoryGridTextWrap: {
+    width: "100%",
+  },
+  categoryGridTitle: {
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#0F172A",
+    letterSpacing: -0.2,
+    marginBottom: 2,
+    includeFontPadding: false,
+  },
+  categoryGridSub: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10.5,
+    color: "#64748B",
+    lineHeight: 14,
+    includeFontPadding: false,
+  },
+  viewAllWithoutFilterBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    borderRadius: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.15)",
+  },
+  viewAllWithoutFilterText: {
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 12.5,
+    color: COLORS.brandIndigo,
   },
 });
