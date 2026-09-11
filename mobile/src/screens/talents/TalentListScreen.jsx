@@ -328,8 +328,8 @@ export function TalentListScreen({ navigation }) {
     const initial = item.nama_lengkap
       ? item.nama_lengkap.charAt(0).toUpperCase()
       : "M";
-    const ratingScore =
-      item.rating_avg != null ? Number(item.rating_avg).toFixed(1) : "-";
+    const hasRating = Number(item.rating_avg) > 0;
+    const ratingScore = hasRating ? Number(item.rating_avg).toFixed(1) : "-";
     const completedCount = item.total_proyek_selesai ?? 0;
     const skillsList = Array.isArray(item.skills)
       ? item.skills.slice(0, 4)
@@ -362,14 +362,16 @@ export function TalentListScreen({ navigation }) {
             <View style={styles.prodiRow}>
               <ProdiVectorIcon size={12} color={COLORS.brandCyan} />
               <Text style={styles.prodiText} numberOfLines={1}>
-                {item.prodi || "Sistem Informasi"}
+                {item.prodi || "Program Studi Belum Diatur"}
                 {item.semester ? ` • Smt ${item.semester}` : ""}
               </Text>
             </View>
           </View>
 
           <View style={styles.statusBadgePill}>
-            <Text style={styles.statusBadgeText}>Terverifikasi</Text>
+            <Text style={styles.statusBadgeText}>
+              {item.status_badge || "Terverifikasi"}
+            </Text>
           </View>
         </View>
 
@@ -385,7 +387,7 @@ export function TalentListScreen({ navigation }) {
           <View style={styles.specItem}>
             <Text style={styles.specLabel}>Reputasi Skor</Text>
             <View style={styles.specMetricRow}>
-              <Star size={13} color="#F59E0B" fill="#F59E0B" />
+              <Star size={13} color={hasRating ? "#F59E0B" : "#94A3B8"} fill={hasRating ? "#F59E0B" : "transparent"} />
               <Text style={styles.specMetricValue}>{ratingScore}</Text>
               {item.reviews_count ? (
                 <Text style={styles.specMetricSub}>({item.reviews_count})</Text>
@@ -409,9 +411,9 @@ export function TalentListScreen({ navigation }) {
           <View style={styles.specItem}>
             <Text style={styles.specLabel}>Sukses Escrow</Text>
             <View style={styles.specMetricRow}>
-              <ShieldCheck size={13} color={COLORS.success} />
-              <Text style={[styles.specMetricValue, { color: COLORS.success }]}>
-                {item.escrow_success_rate || "100%"}
+              <ShieldCheck size={13} color={completedCount > 0 ? COLORS.success : "#94A3B8"} />
+              <Text style={[styles.specMetricValue, { color: completedCount > 0 ? COLORS.success : "#64748B" }]}>
+                {completedCount > 0 ? (item.escrow_success_rate || "100%") : "-"}
               </Text>
             </View>
           </View>

@@ -126,7 +126,7 @@ export function Toast() {
           }).start();
         }
       },
-    })
+    }),
   ).current;
 
   if (!activeToast) return null;
@@ -179,8 +179,8 @@ export function Toast() {
     insets.top > 0
       ? insets.top + (Platform.OS === "ios" ? 4 : 8)
       : Platform.OS === "ios"
-      ? 48
-      : 36;
+        ? 48
+        : 36;
 
   return (
     <Animated.View

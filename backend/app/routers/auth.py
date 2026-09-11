@@ -1,4 +1,5 @@
 import json
+import re
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -303,30 +304,32 @@ def get_my_profile(
             else:
                 escrow_success_rate = "-"
 
+            status_badge = "Mahasiswa Berprestasi" if total_selesai >= 3 and (final_rating or 0) >= 4.5 else ("Talenta Terverifikasi" if total_selesai >= 1 else "Mahasiswa Terdaftar")
+
             profile_data.update({
                 "nama_lengkap": mhs.nama_lengkap,
-                "nim": mhs.nim or "12210001",
+                "nim": mhs.nim or "",
                 "prodi_id": mhs.prodi_id,
                 "prodi": prodi_name,
                 "universitas": "Universitas Bina Sarana Informatika" if "ubsi" in (current_user.email or "").lower() else "Perguruan Tinggi Terakreditasi",
                 "semester": 6,
-                "bio": mhs.bio or "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
+                "bio": mhs.bio or "",
                 "url_foto": mhs.url_foto or None,
                 "url_portofolio": mhs.url_portofolio,
                 "github_url": portfolio_links.get("github") or "",
                 "figma_url": portfolio_links.get("figma") or "",
                 "website_url": portfolio_links.get("website") or "",
                 "linkedin_url": portfolio_links.get("linkedin") or "",
-                "nama_bank": portfolio_links.get("nama_bank") or "Bank Central Asia (BCA)",
-                "nomor_rekening": portfolio_links.get("nomor_rekening") or "8270-3491-8821",
+                "nama_bank": portfolio_links.get("nama_bank") or "",
+                "nomor_rekening": portfolio_links.get("nomor_rekening") or "",
                 "nama_pemilik_rekening": portfolio_links.get("nama_pemilik_rekening") or mhs.nama_lengkap,
                 "skills": skills_list,
                 "rating_avg": final_rating,
                 "total_ulasan": total_ratings,
                 "total_proyek_selesai": total_selesai,
                 "escrow_success_rate": escrow_success_rate,
-                "status_badge": "Mahasiswa Berprestasi & Terverifikasi",
-                "profil_subtitle": "Profil talenta muda dengan rekam jejak deliverable memuaskan",
+                "status_badge": status_badge,
+                "profil_subtitle": "Profil talenta muda dengan rekam jejak deliverable terverifikasi",
             })
     elif current_user.role == UserRole.UMKM:
         umkm = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
@@ -356,11 +359,11 @@ def get_my_profile(
                 "nama_usaha": umkm.nama_usaha,
                 "bidang_industri": umkm.bidang_industri,
                 "alamat": umkm.alamat or "",
-                "kota": umkm.kota or "Jakarta Selatan",
+                "kota": umkm.kota or "",
                 "no_kontak": umkm.no_kontak or "",
                 "url_foto": umkm.url_foto_usaha or None,
-                "nama_bank": "Bank Central Asia (BCA)",
-                "nomor_rekening": "8270-3491-8821",
+                "nama_bank": "",
+                "nomor_rekening": "",
                 "nama_pemilik_rekening": umkm.nama_usaha,
                 "total_proyek_diterbitkan": total_published,
                 "total_proyek_selesai": total_completed,
@@ -587,19 +590,25 @@ def google_auth(body: GoogleAuthRequest, db: Session = Depends(get_db)):
         db.add(user)
         db.flush()
 
+        raw_name = body.name or body.email.split("@")[0]
+        # Bersihkan akhiran seperti (Google), [Google], dsb.
+        clean_name = re.sub(r"\s*[\(\[]google[\)\]]", "", raw_name, flags=re.IGNORECASE).strip()
+        if not clean_name:
+            clean_name = body.email.split("@")[0].replace(".", " ").replace("_", " ").title()
+
         if target_role == UserRole.UMKM:
             profile_u = ProfileUmkm(
                 user_id=user.id,
-                nama_usaha=body.name or body.email.split("@")[0],
-                bidang_industri="F&B / Kuliner",
-                kota="Jakarta",
+                nama_usaha=clean_name,
+                bidang_industri="Bisnis & Usaha",
+                kota=None,
                 url_foto_usaha=body.photo_url,
             )
             db.add(profile_u)
         else:
             profile_m = ProfileMhs(
                 user_id=user.id,
-                nama_lengkap=body.name or body.email.split("@")[0],
+                nama_lengkap=clean_name,
                 url_foto=body.photo_url,
             )
             db.add(profile_m)

@@ -52,7 +52,7 @@ def _infer_skills(mhs: ProfileMhs) -> List[str]:
         return ["Landing Page", "Next.js", "REST API", "Database"]
     elif "komunikasi" in prodi_name:
         return ["Copywriting", "Social Media", "Content Plan", "Storytelling"]
-    return ["Digital Marketing", "Content Creation", "Office & Excel"]
+    return []
 
 
 def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
@@ -105,7 +105,7 @@ def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
         or portfolio_links.get("github")
         or portfolio_links.get("figma")
         or portfolio_links.get("linkedin")
-        or "https://github.com/makarya-talent"
+        or (mhs.url_portofolio if mhs.url_portofolio else "")
     )
 
     email_str = mhs.user.email if mhs.user else ""
@@ -115,25 +115,32 @@ def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
         else "Perguruan Tinggi Terakreditasi"
     )
 
+    status_badge = (
+        "Mahasiswa Berprestasi"
+        if total_selesai >= 3 and calc_rating >= 4.5
+        else ("Talenta Terverifikasi" if total_selesai >= 1 else "Mahasiswa Terdaftar")
+    )
+    escrow_rate = "100%" if total_selesai > 0 else "-"
+
     return TalentResponse(
         id=mhs.user_id,
         nama_lengkap=mhs.nama_lengkap,
         email=email_str,
-        nim=mhs.nim or "12210001",
-        prodi=mhs.prodi.nama_prodi if mhs.prodi else "Sistem Informasi",
+        nim=mhs.nim or None,
+        prodi=mhs.prodi.nama_prodi if mhs.prodi else None,
         universitas=universitas_str,
         semester=6,
         url_foto=mhs.url_foto,
-        url_portofolio=display_url,
+        url_portofolio=display_url or None,
         github_url=portfolio_links.get("github") or "",
         figma_url=portfolio_links.get("figma") or "",
         website_url=portfolio_links.get("website") or "",
         linkedin_url=portfolio_links.get("linkedin") or "",
-        bio=mhs.bio or "Mahasiswa aktif berfokus pada pengembangan produk digital & desain UI/UX solutif untuk UMKM.",
+        bio=mhs.bio or "",
         rating_avg=calc_rating,
         total_proyek_selesai=total_selesai,
-        escrow_success_rate="100%",
-        status_badge="Mahasiswa Berprestasi & Terverifikasi",
+        escrow_success_rate=escrow_rate,
+        status_badge=status_badge,
         skills=_infer_skills(mhs),
         reviews_count=len(ratings),
         recent_reviews=recent_reviews,

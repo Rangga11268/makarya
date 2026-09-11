@@ -1,11 +1,6 @@
 import React from "react";
 import { StarRating } from "../ui/StarRating";
-import {
-  ShieldCheck,
-  GraduationCap,
-  CheckCircle2,
-  Lock,
-} from "lucide-react";
+import { ShieldCheck, GraduationCap, CheckCircle2, Lock } from "lucide-react";
 
 export function AuthArtwork({
   headline = "Wujudkan Pengalaman Kerja Nyata Sebelum Lulus Kuliah.",
