@@ -7,16 +7,13 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { useDialogStore } from "../../store/dialogStore";
 import {
   CheckCircle2,
   AlertTriangle,
-  XCircle,
   Info,
-  HelpCircle,
-  ShieldAlert,
+  ShieldCheck,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -30,6 +27,8 @@ export function CustomDialog() {
     confirmText,
     cancelText,
     showCancel,
+    isDestructive,
+    icon: customIcon,
     onConfirm,
     onCancel,
     closeDialog,
@@ -49,93 +48,143 @@ export function CustomDialog() {
 
   const getThemeConfig = () => {
     switch (type) {
-      case "success":
-        return {
-          icon: <CheckCircle2 size={32} color="#10B981" strokeWidth={2.5} />,
-          bgIcon: "#ECFDF5",
-          btnColor: COLORS.brandIndigo,
-          badgeColor: "#10B981",
-        };
       case "danger":
       case "error":
         return {
-          icon: <XCircle size={32} color="#EF4444" strokeWidth={2.5} />,
-          bgIcon: "#FEF2F2",
-          btnColor: "#EF4444",
-          badgeColor: "#EF4444",
+          icon: <AlertTriangle size={20} color="#DC2626" strokeWidth={2.2} />,
+          bgIcon: "rgba(220, 38, 38, 0.08)",
+          actionColor: "#DC2626",
+        };
+      case "success":
+        return {
+          icon: <CheckCircle2 size={20} color="#059669" strokeWidth={2.2} />,
+          bgIcon: "rgba(5, 150, 105, 0.08)",
+          actionColor: "#059669",
         };
       case "warning":
         return {
-          icon: <AlertTriangle size={32} color="#F59E0B" strokeWidth={2.5} />,
-          bgIcon: "#FFFBEB",
-          btnColor: COLORS.brandIndigo,
-          badgeColor: "#F59E0B",
+          icon: <AlertTriangle size={20} color="#D97706" strokeWidth={2.2} />,
+          bgIcon: "rgba(217, 119, 6, 0.08)",
+          actionColor: isDestructive ? "#DC2626" : "#2563EB",
         };
       case "confirm":
         return {
-          icon: (
-            <HelpCircle
-              size={32}
-              color={COLORS.brandIndigo}
-              strokeWidth={2.5}
-            />
-          ),
-          bgIcon: COLORS.brandIndigoLight,
-          btnColor: COLORS.brandIndigo,
-          badgeColor: COLORS.brandIndigo,
+          icon: <ShieldCheck size={20} color="#2563EB" strokeWidth={2.2} />,
+          bgIcon: "rgba(37, 99, 235, 0.08)",
+          actionColor: isDestructive ? "#DC2626" : "#2563EB",
         };
       case "info":
       default:
         return {
-          icon: <Info size={32} color={COLORS.brandIndigo} strokeWidth={2.5} />,
-          bgIcon: COLORS.brandIndigoLight,
-          btnColor: COLORS.brandIndigo,
-          badgeColor: COLORS.brandIndigo,
+          icon: <Info size={20} color="#2563EB" strokeWidth={2.2} />,
+          bgIcon: "rgba(37, 99, 235, 0.08)",
+          actionColor: "#2563EB",
         };
     }
   };
 
   const theme = getThemeConfig();
+  const displayIcon = customIcon || theme.icon;
+
+  // iOS layout adapts to stacked action buttons if button labels are long
+  const isStacked =
+    Boolean(showCancel) &&
+    ((cancelText && cancelText.length > 11) ||
+      (confirmText && confirmText.length > 13));
 
   return (
-    <Modal visible={isOpen} transparent animationType="fade">
+    <Modal
+      visible={isOpen}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={handleCancel}
+    >
       <View style={styles.overlay}>
         <View style={styles.dialogCard}>
-          {/* Top Floating SVG Icon Circle */}
-          <View style={[styles.iconCircle, { backgroundColor: theme.bgIcon }]}>
-            {theme.icon}
+          {/* Content Area */}
+          <View style={styles.contentContainer}>
+            {displayIcon ? (
+              <View
+                style={[styles.iconContainer, { backgroundColor: theme.bgIcon }]}
+              >
+                {displayIcon}
+              </View>
+            ) : null}
+
+            <Text style={styles.title}>{title}</Text>
+            {message ? <Text style={styles.message}>{message}</Text> : null}
           </View>
 
-          {/* Dialog Title & Message */}
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
-
-          {/* Action Buttons */}
-          <View style={styles.btnRow}>
-            {showCancel && (
+          {/* iOS Hairline Action Bar */}
+          {showCancel ? (
+            isStacked ? (
+              <View style={styles.actionColumn}>
+                <TouchableOpacity
+                  style={[styles.actionBtn, styles.borderBottomHairline]}
+                  onPress={handleConfirm}
+                  activeOpacity={0.65}
+                >
+                  <Text
+                    style={[
+                      styles.confirmText,
+                      { color: isDestructive ? "#DC2626" : theme.actionColor },
+                    ]}
+                  >
+                    {confirmText || "Lanjutkan"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionBtn}
+                  onPress={handleCancel}
+                  activeOpacity={0.65}
+                >
+                  <Text style={styles.cancelText}>{cancelText || "Batal"}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.actionRow}>
+                <TouchableOpacity
+                  style={[styles.actionBtn, styles.borderRightHairline]}
+                  onPress={handleCancel}
+                  activeOpacity={0.65}
+                >
+                  <Text style={styles.cancelText}>{cancelText || "Batal"}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.actionBtn}
+                  onPress={handleConfirm}
+                  activeOpacity={0.65}
+                >
+                  <Text
+                    style={[
+                      styles.confirmText,
+                      { color: isDestructive ? "#DC2626" : theme.actionColor },
+                    ]}
+                  >
+                    {confirmText || "Oke"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          ) : (
+            <View style={styles.actionRow}>
               <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={handleCancel}
-                activeOpacity={0.75}
+                style={styles.actionBtn}
+                onPress={handleConfirm}
+                activeOpacity={0.65}
               >
-                <Text style={styles.cancelBtnText}>
-                  {cancelText || "Batal"}
+                <Text
+                  style={[
+                    styles.confirmText,
+                    { color: isDestructive ? "#DC2626" : theme.actionColor },
+                  ]}
+                >
+                  {confirmText || "Mengerti"}
                 </Text>
               </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={[
-                styles.confirmBtn,
-                { backgroundColor: theme.btnColor },
-                !showCancel && { flex: 1 },
-              ]}
-              onPress={handleConfirm}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.confirmBtnText}>{confirmText || "Oke"}</Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -145,82 +194,95 @@ export function CustomDialog() {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.68)",
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
   },
   dialogCard: {
-    width: Math.min(width - 48, 380),
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 22,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    ...SHADOWS.lg,
+    width: Math.min(width - 56, 290),
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(15, 23, 42, 0.1)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.16,
+    shadowRadius: 24,
+    elevation: 10,
   },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  contentContainer: {
+    paddingTop: 22,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    alignItems: "center",
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 12,
   },
   title: {
     fontFamily: FONTS.displayBold,
-    fontSize: 18,
+    fontSize: 16.5,
     fontWeight: "700",
-    color: COLORS.textDark,
+    color: "#0F172A",
     textAlign: "center",
     letterSpacing: -0.3,
-    marginBottom: 8,
+    lineHeight: 22,
   },
   message: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: "#475569",
     textAlign: "center",
-    lineHeight: 20,
-    marginBottom: 24,
-    paddingHorizontal: 6,
+    lineHeight: 18.5,
+    marginTop: 6,
+    paddingHorizontal: 2,
   },
-  btnRow: {
+  actionRow: {
     flexDirection: "row",
-    gap: 10,
-    width: "100%",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(15, 23, 42, 0.12)",
+    height: 46,
+    backgroundColor: "#FFFFFF",
   },
-  cancelBtn: {
+  actionColumn: {
+    flexDirection: "column",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(15, 23, 42, 0.12)",
+    backgroundColor: "#FFFFFF",
+  },
+  actionBtn: {
     flex: 1,
-    backgroundColor: COLORS.canvasSoft,
-    paddingVertical: 13,
-    borderRadius: 14,
+    height: 46,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    backgroundColor: "transparent",
   },
-  cancelBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
+  borderRightHairline: {
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: "rgba(15, 23, 42, 0.12)",
+  },
+  borderBottomHairline: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(15, 23, 42, 0.12)",
+  },
+  cancelText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#64748B",
+    textAlign: "center",
+  },
+  confirmText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15,
     fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  confirmBtn: {
-    flex: 1.2,
-    paddingVertical: 13,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    ...SHADOWS.sm,
-  },
-  confirmBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
+    textAlign: "center",
   },
 });

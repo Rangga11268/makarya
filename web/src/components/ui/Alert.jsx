@@ -18,11 +18,11 @@ export function Alert({
   icon: CustomIcon,
 }) {
   const variantStyles = {
-    info: "bg-canvas border-border text-dark-900",
-    brand: "bg-brand-indigo-light/50 border-brand-indigo/20 text-brand-indigo",
-    success: "bg-emerald-50 border-emerald-200 text-emerald-900",
-    warning: "bg-amber-50 border-amber-200 text-amber-900",
-    danger: "bg-rose-50 border-rose-200 text-rose-900",
+    info: "bg-slate-50/80 border-slate-200/80 text-slate-800",
+    brand: "bg-blue-50/60 border-blue-200/70 text-blue-900",
+    success: "bg-emerald-50/70 border-emerald-200/80 text-emerald-950",
+    warning: "bg-amber-50/70 border-amber-200/80 text-amber-950",
+    danger: "bg-rose-50/70 border-rose-200/80 text-rose-950",
   };
 
   const defaultIcons = {

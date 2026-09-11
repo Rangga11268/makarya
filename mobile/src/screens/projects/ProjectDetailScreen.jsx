@@ -35,6 +35,7 @@ import { ProposalCard } from "../../components/features/ProposalCard";
 import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { showConfirm } from "../../store/dialogStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -308,39 +309,63 @@ export function ProjectDetailScreen({ route, navigation }) {
     setAcceptProposalModal(true);
   };
 
-  const handleConfirmAcceptProposal = async () => {
+  const handleConfirmAcceptProposal = () => {
     if (!selectedProposalToAccept) return;
-    try {
-      setActionLoading(true);
-      await proposalApi.accept(selectedProposalToAccept.id);
-      setAcceptProposalModal(false);
-      setSelectedProposalToAccept(null);
-      showToast(
-        "Proposal disetujui! Dana berhasil dikunci di rekening Escrow.",
-        "success",
-      );
-      loadDetail();
-    } catch (err) {
-      showToast(
-        err.response?.data?.detail || "Gagal menyetujui proposal",
-        "danger",
-      );
-    } finally {
-      setActionLoading(false);
-    }
+    const targetProp = selectedProposalToAccept;
+    setAcceptProposalModal(false);
+    showConfirm({
+      title: "Kunci Rekening Escrow?",
+      message: `Kunci dana penawaran sebesar ${formatCurrency(targetProp.harga_tawar)} di rekening escrow Makarya untuk mengamankan pengerjaan?`,
+      type: "confirm",
+      confirmText: "Kunci & Mulai",
+      cancelText: "Batal",
+      onConfirm: async () => {
+        try {
+          setActionLoading(true);
+          await proposalApi.accept(targetProp.id);
+          setSelectedProposalToAccept(null);
+          showToast(
+            "Proposal disetujui! Dana berhasil dikunci di rekening Escrow.",
+            "success",
+          );
+          loadDetail();
+        } catch (err) {
+          showToast(
+            err.response?.data?.detail || "Gagal menyetujui proposal",
+            "danger",
+          );
+        } finally {
+          setActionLoading(false);
+        }
+      },
+      onCancel: () => {
+        setSelectedProposalToAccept(null);
+      },
+    });
   };
 
-  const handleRejectProposal = async (proposalId) => {
-    try {
-      setActionLoading(true);
-      await proposalApi.reject(proposalId);
-      showToast("Proposal ditolak", "info");
-      loadDetail();
-    } catch (err) {
-      showToast("Gagal menolak proposal", "danger");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleRejectProposal = (proposalId) => {
+    showConfirm({
+      title: "Tolak Proposal?",
+      message:
+        "Proposal mahasiswa ini akan ditolak. Tindakan ini tidak dapat dibatalkan.",
+      type: "danger",
+      isDestructive: true,
+      confirmText: "Tolak",
+      cancelText: "Batal",
+      onConfirm: async () => {
+        try {
+          setActionLoading(true);
+          await proposalApi.reject(proposalId);
+          showToast("Proposal ditolak", "info");
+          loadDetail();
+        } catch (err) {
+          showToast("Gagal menolak proposal", "danger");
+        } finally {
+          setActionLoading(false);
+        }
+      },
+    });
   };
 
   const handleOpenApproveModal = (submission) => {
@@ -348,23 +373,40 @@ export function ProjectDetailScreen({ route, navigation }) {
     setApproveSubmissionModal(true);
   };
 
-  const handleConfirmApproveSubmission = async () => {
+  const handleConfirmApproveSubmission = () => {
     if (!selectedSubmissionToApprove) return;
-    try {
-      setActionLoading(true);
-      await submissionApi.approve(selectedSubmissionToApprove.id);
-      setApproveSubmissionModal(false);
-      setSelectedSubmissionToApprove(null);
-      showToast("Proyek selesai & dana escrow berhasil dicairkan!", "success");
-      loadDetail();
-    } catch (err) {
-      showToast(
-        err.response?.data?.detail || "Gagal menyetujui hasil kerja",
-        "danger",
-      );
-    } finally {
-      setActionLoading(false);
-    }
+    const targetSub = selectedSubmissionToApprove;
+    setApproveSubmissionModal(false);
+    showConfirm({
+      title: "Cairkan Dana Escrow?",
+      message:
+        "Hasil pekerjaan resmi disetujui dan dana escrow akan dicairkan ke saldo mahasiswa.",
+      type: "success",
+      confirmText: "Cairkan Dana",
+      cancelText: "Batal",
+      onConfirm: async () => {
+        try {
+          setActionLoading(true);
+          await submissionApi.approve(targetSub.id);
+          setSelectedSubmissionToApprove(null);
+          showToast(
+            "Proyek selesai & dana escrow berhasil dicairkan!",
+            "success",
+          );
+          loadDetail();
+        } catch (err) {
+          showToast(
+            err.response?.data?.detail || "Gagal menyetujui hasil kerja",
+            "danger",
+          );
+        } finally {
+          setActionLoading(false);
+        }
+      },
+      onCancel: () => {
+        setSelectedSubmissionToApprove(null);
+      },
+    });
   };
 
   const handleReopenProject = async ({ new_deadline, reason }) => {

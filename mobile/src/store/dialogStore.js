@@ -16,6 +16,8 @@ export const useDialogStore = create((set) => ({
     message = "",
     type = "info",
     confirmText = "Mengerti",
+    isDestructive = false,
+    icon = null,
     onConfirm = null,
   }) => {
     set({
@@ -26,6 +28,8 @@ export const useDialogStore = create((set) => ({
       confirmText,
       cancelText: "",
       showCancel: false,
+      isDestructive: Boolean(isDestructive || type === "danger" || type === "error"),
+      icon,
       onConfirm,
       onCancel: null,
     });
@@ -37,6 +41,8 @@ export const useDialogStore = create((set) => ({
     type = "warning",
     confirmText = "Lanjutkan",
     cancelText = "Batal",
+    isDestructive = false,
+    icon = null,
     onConfirm = null,
     onCancel = null,
   }) => {
@@ -48,6 +54,8 @@ export const useDialogStore = create((set) => ({
       confirmText,
       cancelText,
       showCancel: true,
+      isDestructive: Boolean(isDestructive || type === "danger" || type === "error"),
+      icon,
       onConfirm,
       onCancel,
     });
@@ -59,6 +67,8 @@ export const useDialogStore = create((set) => ({
       title: "",
       message: "",
       type: "info",
+      isDestructive: false,
+      icon: null,
       onConfirm: null,
       onCancel: null,
     });

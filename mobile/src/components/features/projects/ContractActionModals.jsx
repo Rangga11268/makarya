@@ -788,32 +788,32 @@ const styles = StyleSheet.create({
   alertBox: {
     flexDirection: "row",
     gap: 10,
-    padding: 14,
-    borderRadius: 18,
-    backgroundColor: "#FFFBEB", // Amber 50
+    padding: 13,
+    borderRadius: 14,
+    backgroundColor: "rgba(245, 158, 11, 0.08)",
     borderWidth: 1,
-    borderColor: "#FDE68A",
+    borderColor: "rgba(245, 158, 11, 0.18)",
   },
   alertBoxDanger: {
-    backgroundColor: "#FEF2F2", // Red 50
-    borderColor: "#FECACA",
+    backgroundColor: "rgba(239, 68, 68, 0.08)",
+    borderColor: "rgba(239, 68, 68, 0.18)",
   },
   alertTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: "700",
-    color: "#92400E",
-    marginBottom: 3,
+    color: "#0F172A",
+    marginBottom: 2,
   },
   alertDesc: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: "#B45309",
-    lineHeight: 16,
+    fontSize: 11.5,
+    color: "#475569",
+    lineHeight: 16.5,
   },
   boldHighlight: {
     fontWeight: "700",
-    color: "#78350F",
+    color: "#0F172A",
   },
   formGroup: {
     gap: 6,
@@ -947,8 +947,8 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   alertBoxSuccess: {
-    backgroundColor: "#ECFDF5",
-    borderColor: "#A7F3D0",
+    backgroundColor: "rgba(5, 150, 105, 0.08)",
+    borderColor: "rgba(5, 150, 105, 0.18)",
   },
   checklistContainer: {
     backgroundColor: "#F8FAFC",
