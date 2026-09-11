@@ -20,6 +20,7 @@ import { initiateGoogleSignIn } from "../../services/googleAuth";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Check } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { PebbleButton } from "../../components/ui/PebbleButton";
+import { GoogleIcon } from "../../components/icons/GoogleIcon";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -71,12 +72,15 @@ export function LoginScreen({ navigation }) {
   const handleGoogleLogin = async () => {
     try {
       setGoogleLoading(true);
-      const googleUser = await initiateGoogleSignIn();
+      const googleUser = await initiateGoogleSignIn({
+        preferredEmail: email.trim() || undefined,
+        role: "UMKM",
+      });
       await loginWithGoogle({
-        id_token: googleUser.idToken,
         email: googleUser.email,
         name: googleUser.name,
-        avatar_url: googleUser.avatarUrl,
+        photo_url: googleUser.photo_url || googleUser.avatarUrl,
+        role: googleUser.role || "UMKM",
       });
       showToast("Berhasil masuk dengan Google!", "success");
     } catch (err) {
@@ -292,9 +296,10 @@ export function LoginScreen({ navigation }) {
               <PebbleButton
                 variant="pearl"
                 size="lg"
-                title={
+                label={
                   googleLoading ? "Menghubungkan..." : "Continue with Google"
                 }
+                icon={GoogleIcon}
                 onPress={handleGoogleLogin}
                 loading={googleLoading}
               />

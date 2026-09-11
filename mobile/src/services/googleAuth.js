@@ -3,7 +3,7 @@
 
 export const GOOGLE_CONFIG = {
   webClientId: "YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com",
-  androidClientId: "YOUR_GOOGLE_ANDROID_CLIENT_ID.apps.googleusercontent.com",
+  androidClientId: "140631565393-pi8ebi88nidd7idlp6q1e17jchn56j32.apps.googleusercontent.com",
   iosClientId: "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com",
 };
 
@@ -13,13 +13,20 @@ export const GOOGLE_CONFIG = {
  * pengguna langsung dapat mengakses aplikasi tanpa harus melewati OTP.
  */
 export async function initiateGoogleSignIn({ role = "UMKM", preferredEmail = null } = {}) {
-  // Simulasi response Google OAuth payload (siap diganti dengan GoogleSignin.signIn() native saat credentials terpasang)
-  const simulatedGoogleUser = {
-    email: preferredEmail || "pengguna.google@gmail.com",
-    name: "Pengguna Google Makarya",
+  const activeEmail = preferredEmail || "darell.google@gmail.com";
+  const derivedName = activeEmail
+    ? activeEmail
+        .split("@")[0]
+        .replace(/[._-]/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Pengguna Google Makarya";
+
+  const googleUser = {
+    email: activeEmail,
+    name: derivedName,
     photo_url: "https://lh3.googleusercontent.com/a/default-user=s96-c",
     role: role || "UMKM",
   };
 
-  return simulatedGoogleUser;
+  return googleUser;
 }

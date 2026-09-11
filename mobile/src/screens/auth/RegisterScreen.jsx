@@ -31,6 +31,8 @@ import {
 } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { PebbleButton } from "../../components/ui/PebbleButton";
+import { GoogleIcon } from "../../components/icons/GoogleIcon";
+import { initiateGoogleSignIn } from "../../services/googleAuth";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
@@ -53,9 +55,36 @@ export function RegisterScreen({ route, navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { registerUmkm, registerMhs } = useAuthStore();
+  const { registerUmkm, registerMhs, loginWithGoogle } = useAuthStore();
   const { showToast } = useToastStore();
+
+  const handleGoogleRegister = async () => {
+    try {
+      setGoogleLoading(true);
+      const targetRole = role === "MAHASISWA" ? "MHS" : "UMKM";
+      const googleUser = await initiateGoogleSignIn({
+        preferredEmail: email.trim() || undefined,
+        role: targetRole,
+      });
+      await loginWithGoogle({
+        email: googleUser.email,
+        name: fullName.trim() || namaUsaha.trim() || googleUser.name,
+        photo_url: googleUser.photo_url || googleUser.avatarUrl,
+        role: targetRole,
+      });
+      showToast("Berhasil mendaftar dengan Google!", "success");
+    } catch (err) {
+      if (err.message?.includes("dibatalkan")) return;
+      showToast(
+        err.response?.data?.detail || "Gagal mendaftar dengan Google",
+        "danger",
+      );
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (route.params?.role) {
@@ -439,6 +468,25 @@ export function RegisterScreen({ route, navigation }) {
                 loading={loading}
                 style={{ marginTop: 8 }}
               />
+
+              {/* Divider */}
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>Or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Google Sign Up Button (Pearl Glossy Pebble) */}
+              <PebbleButton
+                variant="pearl"
+                size="lg"
+                label={
+                  googleLoading ? "Menghubungkan..." : "Daftar dengan Google"
+                }
+                icon={GoogleIcon}
+                onPress={handleGoogleRegister}
+                loading={googleLoading}
+              />
             </View>
 
             {/* Bottom Footer Link */}
@@ -649,6 +697,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FFFFFF",
     letterSpacing: -0.2,
+  },
+
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginVertical: 10,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E2E8F0",
+  },
+  dividerText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#94A3B8",
   },
 
   // Footer
