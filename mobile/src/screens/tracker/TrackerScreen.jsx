@@ -22,6 +22,7 @@ import { renderProjectCategoryVectorIcon } from "../../components/icons/Category
 import { Header } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
+import { PebbleButton } from "../../components/ui/PebbleButton";
 import {
   Layers,
   ArrowRight,
@@ -171,14 +172,13 @@ export function TrackerScreen({ navigation }) {
         subtitle={`${activeJobsCount} sedang berjalan • ${items.length} total proyek`}
         rightAction={
           !isMahasiswa ? (
-            <TouchableOpacity
-              style={styles.newProjectBtn}
+            <PebbleButton
+              variant="sapphire"
+              size="xs"
+              label="Proyek Baru"
+              icon={Plus}
               onPress={() => navigation.navigate("PostProject")}
-              activeOpacity={0.85}
-            >
-              <Plus size={14} color="#FFFFFF" strokeWidth={2.5} />
-              <Text style={styles.newProjectBtnText}>Proyek Baru</Text>
-            </TouchableOpacity>
+            />
           ) : null
         }
       />
@@ -253,25 +253,23 @@ export function TrackerScreen({ navigation }) {
                     : "Pasang proyek pertama Anda untuk terhubung dengan mahasiswa bertalenta kampus."}
                 </Text>
                 {isMahasiswa ? (
-                  <TouchableOpacity
-                    style={styles.emptyCtaBtn}
+                  <PebbleButton
+                    variant="pearl"
+                    size="sm"
+                    label="Jelajahi Proyek"
+                    icon={ArrowRight}
                     onPress={() => navigation.navigate("ProjectsTab")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.emptyCtaBtnText}>Jelajahi Proyek</Text>
-                    <ArrowRight size={14} color="#FFFFFF" />
-                  </TouchableOpacity>
+                    style={{ marginTop: 16 }}
+                  />
                 ) : (
-                  <TouchableOpacity
-                    style={styles.emptyCtaBtn}
+                  <PebbleButton
+                    variant="sapphire"
+                    size="sm"
+                    label="Pasang Proyek Baru"
+                    icon={Plus}
                     onPress={() => navigation.navigate("PostProject")}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.emptyCtaBtnText}>
-                      + Pasang Proyek Baru
-                    </Text>
-                    <ArrowRight size={14} color="#FFFFFF" />
-                  </TouchableOpacity>
+                    style={{ marginTop: 16 }}
+                  />
                 )}
               </View>
             )

@@ -188,7 +188,7 @@ export function ProjectListScreen({ navigation, route }) {
             <PebbleButton
               variant="sapphire"
               size="xs"
-              label="Post Job"
+              label="Proyek Baru"
               icon={Plus}
               onPress={() => navigation.navigate("PostProject")}
             />
