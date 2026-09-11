@@ -106,7 +106,10 @@ export function CustomDialog() {
           <View style={styles.contentContainer}>
             {displayIcon ? (
               <View
-                style={[styles.iconContainer, { backgroundColor: theme.bgIcon }]}
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: theme.bgIcon },
+                ]}
               >
                 {displayIcon}
               </View>

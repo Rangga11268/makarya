@@ -244,29 +244,51 @@ export function TalentDetailModal({
                     Ulasan Kepuasan Klien ({talent.recent_reviews.length})
                   </Text>
                   <View style={styles.reviewsListWrap}>
-                    {talent.recent_reviews.map((rev, idx) => (
-                      <View key={idx} style={styles.reviewItemCard}>
-                        <View style={styles.reviewTopRow}>
-                          <Text style={styles.reviewClientName}>
-                            {rev.reviewer_name || "Klien UMKM Terverifikasi"}
-                          </Text>
-                          <View style={styles.reviewStarRow}>
-                            <Star size={12} color="#F59E0B" fill="#F59E0B" />
-                            <Text style={styles.reviewScoreText}>
-                              {rev.rating || 5}.0
+                    {talent.recent_reviews.map((rev, idx) => {
+                      const clientName =
+                        rev.client_name ||
+                        rev.reviewer_name ||
+                        "Klien UMKM Terverifikasi";
+                      const scoreVal = Number(
+                        rev.skor || rev.rating || 5,
+                      ).toFixed(1);
+                      const reviewText =
+                        rev.ulasan ||
+                        rev.komentar ||
+                        rev.catatan ||
+                        "Pengerjaan proyek sangat memuaskan, komunikatif, dan diselesaikan sesuai kebutuhan.";
+                      const projTitle = rev.project_title || rev.project_name;
+
+                      return (
+                        <View key={rev.id || idx} style={styles.reviewItemCard}>
+                          <View style={styles.reviewTopRow}>
+                            <Text
+                              style={styles.reviewClientName}
+                              numberOfLines={1}
+                            >
+                              {clientName}
                             </Text>
+                            <View style={styles.reviewStarRow}>
+                              <Star size={12} color="#F59E0B" fill="#F59E0B" />
+                              <Text style={styles.reviewScoreText}>
+                                {scoreVal}
+                              </Text>
+                            </View>
                           </View>
-                        </View>
-                        {rev.project_title && (
-                          <Text style={styles.reviewProjectTitle}>
-                            Proyek: {rev.project_title}
+                          {projTitle ? (
+                            <Text
+                              style={styles.reviewProjectTitle}
+                              numberOfLines={1}
+                            >
+                              Proyek: {projTitle}
+                            </Text>
+                          ) : null}
+                          <Text style={styles.reviewCommentText}>
+                            "{reviewText}"
                           </Text>
-                        )}
-                        <Text style={styles.reviewCommentText}>
-                          "{rev.komentar}"
-                        </Text>
-                      </View>
-                    ))}
+                        </View>
+                      );
+                    })}
                   </View>
                 </View>
               )}

@@ -28,7 +28,9 @@ export const useDialogStore = create((set) => ({
       confirmText,
       cancelText: "",
       showCancel: false,
-      isDestructive: Boolean(isDestructive || type === "danger" || type === "error"),
+      isDestructive: Boolean(
+        isDestructive || type === "danger" || type === "error",
+      ),
       icon,
       onConfirm,
       onCancel: null,
@@ -54,7 +56,9 @@ export const useDialogStore = create((set) => ({
       confirmText,
       cancelText,
       showCancel: true,
-      isDestructive: Boolean(isDestructive || type === "danger" || type === "error"),
+      isDestructive: Boolean(
+        isDestructive || type === "danger" || type === "error",
+      ),
       icon,
       onConfirm,
       onCancel,

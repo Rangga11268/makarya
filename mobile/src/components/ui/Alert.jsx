@@ -9,7 +9,11 @@ import {
   ShieldCheck,
 } from "lucide-react-native";
 import { CustomDialog } from "./CustomDialog";
-import { showAlert, showConfirm, useDialogStore } from "../../store/dialogStore";
+import {
+  showAlert,
+  showConfirm,
+  useDialogStore,
+} from "../../store/dialogStore";
 
 /**
  * Inline Apple/iOS-style Callout Banner
