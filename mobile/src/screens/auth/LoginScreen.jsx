@@ -76,11 +76,17 @@ export function LoginScreen({ navigation }) {
         preferredEmail: email.trim() || undefined,
         role: "UMKM",
       });
+
+      const cleanEmail = (googleUser.email || "").trim().toLowerCase();
+      const isCampusEmail =
+        cleanEmail.endsWith(".ac.id") || cleanEmail.endsWith(".edu");
+      const targetRole = isCampusEmail ? "MHS" : "UMKM";
+
       await loginWithGoogle({
         email: googleUser.email,
         name: googleUser.name,
         photo_url: googleUser.photo_url || googleUser.avatarUrl,
-        role: googleUser.role || "UMKM",
+        role: targetRole,
       });
       showToast("Berhasil masuk dengan Google!", "success");
     } catch (err) {

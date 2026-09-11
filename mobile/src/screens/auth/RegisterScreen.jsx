@@ -68,6 +68,18 @@ export function RegisterScreen({ route, navigation }) {
         preferredEmail: email.trim() || undefined,
         role: targetRole,
       });
+
+      if (targetRole === "MHS") {
+        const cleanEmail = (googleUser.email || "").trim().toLowerCase();
+        if (!cleanEmail.endsWith(".ac.id") && !cleanEmail.endsWith(".edu")) {
+          showToast(
+            `Pendaftaran Mahasiswa wajib menggunakan email kampus (.ac.id / .edu). Akun yang dipilih (${googleUser.email}) bukan email kampus.`,
+            "danger",
+          );
+          return;
+        }
+      }
+
       await loginWithGoogle({
         email: googleUser.email,
         name: fullName.trim() || namaUsaha.trim() || googleUser.name,

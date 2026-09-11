@@ -8,6 +8,7 @@ import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { AuthArtwork } from "../../components/features/AuthArtwork";
 import { GoogleVectorIcon } from "../../components/icons/ProfileVectorIcons";
+import { initiateGoogleWebSignIn } from "../../services/googleAuth";
 import {
   ShieldCheck,
   Mail,
@@ -72,20 +73,41 @@ export function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-      const googleMock = {
-        email: "darell.google@ubsi.ac.id",
-        name: "Darell Rangga (Google)",
-        role: "MHS",
-      };
-      const res = await authApi.googleAuth(googleMock);
+      setError(null);
+
+      const googleUser = await initiateGoogleWebSignIn({ role: "UMKM" });
+
+      const isCampusEmail =
+        googleUser.email.endsWith(".ac.id") ||
+        googleUser.email.endsWith(".edu");
+      const targetRole = isCampusEmail ? "MHS" : "UMKM";
+
+      const res = await authApi.googleAuth({
+        email: googleUser.email,
+        name: googleUser.name,
+        photo_url: googleUser.photo_url,
+        role: targetRole,
+        google_id: googleUser.google_id,
+      });
+
       setAuth(res.data);
       addToast("Berhasil masuk melalui Akun Google!", "success");
-      navigate("/dashboard");
+
+      if (res.data.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
-      addToast(
-        err.response?.data?.detail || "Gagal masuk dengan Google",
-        "danger",
-      );
+      if (err.message && err.message.includes("dibatalkan")) {
+        return;
+      }
+      const msg =
+        err.response?.data?.detail ||
+        err.message ||
+        "Gagal masuk dengan Google";
+      setError(msg);
+      addToast(msg, "danger");
     } finally {
       setLoading(false);
     }
@@ -228,10 +250,12 @@ export function LoginPage() {
               type="button"
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4"
+              className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <GoogleVectorIcon size={18} />
-              <span>Masuk dengan Google (Tanpa Verifikasi OTP)</span>
+              <span>
+                {loading ? "Menghubungkan..." : "Masuk dengan Google"}
+              </span>
             </button>
 
             <div className="relative my-4">

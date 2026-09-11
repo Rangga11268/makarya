@@ -570,6 +570,13 @@ def google_auth(body: GoogleAuthRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == body.email).first()
     if not user:
         target_role = body.role or UserRole.UMKM
+        if target_role == UserRole.MHS:
+            clean_email = (body.email or "").strip().lower()
+            if not (clean_email.endswith(".ac.id") or clean_email.endswith(".edu")):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Pendaftaran Mahasiswa wajib menggunakan email kampus resmi (.ac.id atau .edu).",
+                )
         user = User(
             email=body.email,
             password_hash=hash_password("google_oauth_authorized_secret"),

@@ -7,7 +7,7 @@ import { Platform } from "react-native";
 WebBrowser.maybeCompleteAuthSession();
 
 export const GOOGLE_CONFIG = {
-  // Client ID untuk Web / Expo AuthSession
+  // Client ID untuk Web / Expo AuthSession (Client ID Mobile Expo)
   webClientId:
     "140631565393-r5718g9pdbi2dfdo6uoubd3uuge4dfph.apps.googleusercontent.com",
   // Client ID Android dari Google Cloud Console

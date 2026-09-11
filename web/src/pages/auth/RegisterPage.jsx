@@ -7,6 +7,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { AuthArtwork } from "../../components/features/AuthArtwork";
 import { GoogleVectorIcon } from "../../components/icons/ProfileVectorIcons";
+import { initiateGoogleWebSignIn } from "../../services/googleAuth";
 import {
   User,
   Mail,
@@ -208,23 +209,43 @@ export function RegisterPage() {
   const handleGoogleSignup = async () => {
     try {
       setLoading(true);
-      const googleMock = {
-        email:
-          role === "MHS"
-            ? "mahasiswa.google@ubsi.ac.id"
-            : "umkm.google@gmail.com",
-        name: role === "MHS" ? "Mahasiswa Google" : "UMKM Google Store",
+      setError(null);
+
+      const googleUser = await initiateGoogleWebSignIn({ role });
+
+      // Validasi ketat domain kampus untuk Mahasiswa (.ac.id atau .edu)
+      const isCampusEmail =
+        googleUser.email.endsWith(".ac.id") ||
+        googleUser.email.endsWith(".edu");
+
+      if (role === "MHS" && !isCampusEmail) {
+        const errMsg = `Pendaftaran Mahasiswa wajib menggunakan email kampus resmi (.ac.id atau .edu). Akun Google yang Anda pilih (${googleUser.email}) bukan email kampus.`;
+        setError(errMsg);
+        addToast(errMsg, "danger");
+        return;
+      }
+
+      const res = await authApi.googleAuth({
+        email: googleUser.email,
+        name: googleUser.name,
+        photo_url: googleUser.photo_url,
         role: role,
-      };
-      const res = await authApi.googleAuth(googleMock);
+        google_id: googleUser.google_id,
+      });
+
       setAuth(res.data);
       addToast("Pendaftaran Google berhasil tanpa verifikasi OTP!", "success");
       navigate("/dashboard");
     } catch (err) {
-      addToast(
-        err.response?.data?.detail || "Gagal mendaftar dengan Google",
-        "danger",
-      );
+      if (err.message && err.message.includes("dibatalkan")) {
+        return;
+      }
+      const msg =
+        err.response?.data?.detail ||
+        err.message ||
+        "Gagal mendaftar dengan Google";
+      setError(msg);
+      addToast(msg, "danger");
     } finally {
       setLoading(false);
     }
@@ -404,10 +425,14 @@ export function RegisterPage() {
                   type="button"
                   onClick={handleGoogleSignup}
                   disabled={loading}
-                  className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4"
+                  className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <GoogleVectorIcon size={18} />
-                  <span>Daftar Cepat dengan Google (Bypass OTP)</span>
+                  <span>
+                    {loading
+                      ? "Menghubungkan..."
+                      : `Daftar sebagai ${role === "MHS" ? "Mahasiswa" : "UMKM"} dengan Google`}
+                  </span>
                 </button>
 
                 <div className="relative my-4">
