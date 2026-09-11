@@ -1416,7 +1416,23 @@ export function ProjectDetailScreen({ route, navigation }) {
               variant="sapphire"
               label="Ajukan Lamaran"
               icon={Send}
-              onPress={() => setProposalModal(true)}
+              onPress={() => {
+                if (
+                  isMahasiswa &&
+                  (!user?.nim || (!user?.prodi_id && !user?.prodi))
+                ) {
+                  showConfirm({
+                    title: "Lengkapi Profil Anda",
+                    message:
+                      "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau keabsahan dan keahlian Anda.",
+                    confirmText: "Lengkapi Sekarang",
+                    cancelText: "Nanti Saja",
+                    onConfirm: () => navigation.navigate("ProfileTab"),
+                  });
+                  return;
+                }
+                setProposalModal(true);
+              }}
               style={{ flex: 1 }}
             />
           ) : isAcceptedProposal ? (

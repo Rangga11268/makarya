@@ -23,6 +23,7 @@ import { ProjectCard } from "../../components/features/ProjectCard";
 import { projectApi } from "../../api";
 import { useToastStore } from "../../store/toastStore";
 import { useAuthStore } from "../../store/authStore";
+import { showConfirm } from "../../store/dialogStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import {
@@ -193,6 +194,18 @@ export function PostProjectScreen({ navigation }) {
   };
 
   const handlePost = async () => {
+    if (!user?.no_kontak) {
+      showConfirm({
+        title: "Lengkapi Kontak Bisnis",
+        message:
+          "Tambahkan nomor WhatsApp bisnis Anda di menu Profil terlebih dahulu agar mahasiswa dapat berkoordinasi saat proyek berjalan.",
+        confirmText: "Lengkapi Sekarang",
+        cancelText: "Nanti Saja",
+        onConfirm: () => navigation.navigate("ProfileTab"),
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       await projectApi.create({

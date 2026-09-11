@@ -76,9 +76,17 @@ export function RegisterScreen({ route, navigation }) {
       });
       showToast("Berhasil mendaftar dengan Google!", "success");
     } catch (err) {
-      if (err.message?.includes("dibatalkan")) return;
+      if (
+        err.message?.includes("dibatalkan") ||
+        err.message?.includes("cancel") ||
+        err.message?.includes("dismiss")
+      ) {
+        return;
+      }
       showToast(
-        err.response?.data?.detail || "Gagal mendaftar dengan Google",
+        err.response?.data?.detail ||
+          err.message ||
+          "Gagal mendaftar dengan Google",
         "danger",
       );
     } finally {

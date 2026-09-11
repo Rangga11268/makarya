@@ -84,9 +84,17 @@ export function LoginScreen({ navigation }) {
       });
       showToast("Berhasil masuk dengan Google!", "success");
     } catch (err) {
-      if (err.message?.includes("dibatalkan")) return;
+      if (
+        err.message?.includes("dibatalkan") ||
+        err.message?.includes("cancel") ||
+        err.message?.includes("dismiss")
+      ) {
+        return;
+      }
       showToast(
-        err.response?.data?.detail || "Gagal masuk dengan Google",
+        err.response?.data?.detail ||
+          err.message ||
+          "Gagal masuk dengan Google",
         "danger",
       );
     } finally {

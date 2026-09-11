@@ -34,7 +34,13 @@ import {
 } from "../../components/icons/CategoryIcons";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import { projectApi, walletApi, proposalApi, talentApi } from "../../api";
+import {
+  projectApi,
+  walletApi,
+  proposalApi,
+  talentApi,
+  authApi,
+} from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
   ShieldCheck,
@@ -56,6 +62,8 @@ import {
   Plus,
   Users,
   Eye,
+  UserCheck,
+  X,
 } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
@@ -64,7 +72,7 @@ const TALENT_DECK_WIDTH = Math.min(width * 0.82, 320);
 
 export function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [wallet, setWallet] = useState(null);
   const [myProjects, setMyProjects] = useState([]);
   const [browseProjects, setBrowseProjects] = useState([]);
@@ -73,6 +81,7 @@ export function HomeScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [refreshing, setRefreshing] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [dismissProfileBanner, setDismissProfileBanner] = useState(false);
 
   const { getUnreadCount, fetchNotifications } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
@@ -83,10 +92,50 @@ export function HomeScreen({ navigation }) {
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
+  // Evaluasi kelengkapan profil untuk akun yang mendaftar via Google / cepat
+  const profileCompleteness = (() => {
+    if (!user) return { percent: 100, isComplete: true, missing: [] };
+    const missing = [];
+    if (isMahasiswa) {
+      if (!user?.nim) missing.push("NIM");
+      if (!user?.prodi && !user?.prodi_id) missing.push("Program Studi");
+      if (!user?.bio) missing.push("Bio Profil");
+      const totalFields = 3;
+      const filledFields = totalFields - missing.length;
+      const percent = Math.round(35 + (filledFields / totalFields) * 65);
+      return {
+        percent: missing.length === 0 ? 100 : Math.min(percent, 85),
+        isComplete: missing.length === 0,
+        missing,
+      };
+    } else {
+      if (!user?.no_kontak) missing.push("No. WhatsApp");
+      if (!user?.bidang_industri || user?.bidang_industri === "F&B / Kuliner")
+        missing.push("Bidang Industri");
+      if (!user?.kota) missing.push("Kota");
+      const totalFields = 3;
+      const filledFields = totalFields - missing.length;
+      const percent = Math.round(35 + (filledFields / totalFields) * 65);
+      return {
+        percent: missing.length === 0 ? 100 : Math.min(percent, 85),
+        isComplete: missing.length === 0,
+        missing,
+      };
+    }
+  })();
+
   const loadData = async () => {
     try {
       setRefreshing(true);
       fetchNotifications().catch(() => {});
+      authApi
+        .getMe()
+        .then((meRes) => {
+          if (meRes?.data) {
+            updateUser(meRes.data);
+          }
+        })
+        .catch(() => {});
       if (isMahasiswa) {
         const [walletRes, browseRes, propRes] = await Promise.all([
           walletApi
@@ -369,6 +418,75 @@ export function HomeScreen({ navigation }) {
               <SlidersHorizontal size={12} color={COLORS.brandIndigo} />
             </View>
           </TouchableOpacity>
+
+          {/* 2b. Apple Frosted Profile Completion Banner */}
+          {!profileCompleteness.isComplete && !dismissProfileBanner && (
+            <View style={styles.profileCompletionCard}>
+              <View style={styles.completionCardHeader}>
+                <View style={styles.completionBadgeRow}>
+                  <View style={styles.userIconCircle}>
+                    <UserCheck size={16} color="#2563EB" strokeWidth={2.2} />
+                  </View>
+                  <View style={styles.completionTitleCol}>
+                    <View style={styles.completionTitleRow}>
+                      <Text style={styles.completionTitle}>
+                        Lengkapi Profil Anda
+                      </Text>
+                      <View style={styles.completionPercentPill}>
+                        <Text style={styles.completionPercentText}>
+                          {profileCompleteness.percent}% Selesai
+                        </Text>
+                      </View>
+                    </View>
+                    <Text
+                      style={styles.completionMissingFieldsText}
+                      numberOfLines={1}
+                    >
+                      Belum diisi: {profileCompleteness.missing.join(" • ")}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setDismissProfileBanner(true)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  style={styles.completionCloseBtn}
+                >
+                  <X size={14} color="#94A3B8" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.completionDesc}>
+                {isMahasiswa
+                  ? "Tambahkan NIM & Program Studi agar profil Anda terverifikasi dan meyakinkan klien UMKM."
+                  : "Lengkapi No. WhatsApp bisnis & bidang industri agar talenta mahasiswa dapat berkoordinasi langsung."}
+              </Text>
+
+              {/* iOS Thin Progress Bar Track */}
+              <View style={styles.completionProgressBarTrack}>
+                <View
+                  style={[
+                    styles.completionProgressBarFill,
+                    { width: `${profileCompleteness.percent}%` },
+                  ]}
+                />
+              </View>
+
+              <View style={styles.completionFooterRow}>
+                <Text style={styles.completionHintText}>
+                  Tinggal {profileCompleteness.missing.length} langkah lagi
+                </Text>
+                <PebbleButton
+                  variant="sapphire"
+                  label="Lengkapi Sekarang"
+                  size="xs"
+                  label="Lengkapi"
+                  icon={ArrowRight}
+                  onPress={() => navigation.navigate("ProfileTab")}
+                  style={styles.completionPebbleBtn}
+                />
+              </View>
+            </View>
+          )}
 
           {/* 3. Apple Frosted Glass Wallet & Quick Actions Card */}
           <View style={styles.appleGlassWalletModule}>
@@ -1767,5 +1885,148 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textAlign: "center",
     marginTop: 3,
+  },
+  // Apple Frosted Profile Completion Banner Styles
+  profileCompletionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 15,
+    marginBottom: 14,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor: "rgba(226, 232, 240, 0.85)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#0F172A",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.04,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 2,
+        elevation: 1.5,
+      },
+    }),
+  },
+  completionCardHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    marginBottom: 6,
+  },
+  completionBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    gap: 9,
+    flex: 1,
+  },
+  userIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.15)",
+    borderColor: "rgba(37, 99, 235, 0.12)",
+  },
+  completionTitleCol: {
+    flex: 1,
+    gap: 2,
+    gap: 1.5,
+  },
+  completionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    gap: 6,
+  },
+  completionTitle: {
+    fontFamily: FONTS.semiBold,
+    fontSize: 13.5,
+    fontSize: 12.5,
+    color: "#0F172A",
+    letterSpacing: -0.2,
+  },
+  completionPercentPill: {
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 7,
+    paddingVertical: 1.5,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 9999,
+  },
+  completionPercentText: {
+    fontFamily: FONTS.bold,
+    fontSize: 10.5,
+    fontSize: 10,
+    color: "#2563EB",
+  },
+  completionMissingFieldsText: {
+    fontFamily: FONTS.medium,
+    fontSize: 11,
+    fontSize: 10.5,
+    color: "#64748B",
+  },
+  completionCloseBtn: {
+    padding: 4,
+    padding: 3,
+    marginTop: -2,
+    marginRight: -2,
+  },
+  completionDesc: {
+    fontFamily: FONTS.regular,
+    fontSize: 11.5,
+    color: "#475569",
+    lineHeight: 16.5,
+    marginBottom: 10,
+    fontSize: 11,
+    color: "#64748B",
+    lineHeight: 15,
+    marginBottom: 8,
+  },
+  completionProgressBarTrack: {
+    height: 4.5,
+    height: 3.5,
+    backgroundColor: "#F1F5F9",
+    borderRadius: 9999,
+    overflow: "hidden",
+    marginBottom: 12,
+    marginBottom: 10,
+  },
+  completionProgressBarFill: {
+    height: "100%",
+    backgroundColor: "#2563EB",
+    borderRadius: 9999,
+  },
+  completionFooterRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  completionHintText: {
+    fontFamily: FONTS.medium,
+    fontSize: 11,
+    fontSize: 10.5,
+    color: "#94A3B8",
+  },
+  completionPebbleBtn: {
+    minHeight: 34,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
   },
 });

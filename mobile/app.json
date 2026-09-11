@@ -2,6 +2,7 @@
   "expo": {
     "name": "Makarya Mobile",
     "slug": "makarya-mobile",
+    "scheme": "makarya",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -12,8 +13,6 @@
     "android": {
       "package": "com.makarya.mobile"
     },
-    "plugins": [
-      "expo-asset"
-    ]
+    "plugins": ["expo-asset"]
   }
 }
