@@ -5,9 +5,6 @@ import {
   GraduationCap,
   CheckCircle2,
   Lock,
-  Briefcase,
-  ArrowUpRight,
-  Award,
 } from "lucide-react";
 
 export function AuthArtwork({
