@@ -14,44 +14,44 @@ import { ShieldCheck } from "lucide-react-native";
 
 export function SplashScreen({ onFinish }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.92)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
   const exitFadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // 1. Staggered Spring Entry
+    // 1. Smooth Apple Spring & Fade Entry
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500,
+        duration: 700,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }),
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 8,
-        tension: 36,
+        friction: 7,
+        tension: 30,
         useNativeDriver: true,
       }),
       Animated.timing(progressAnim, {
         toValue: 1,
-        duration: 1150,
-        easing: Easing.bezier(0.16, 1, 0.3, 1),
+        duration: 1850,
+        easing: Easing.bezier(0.2, 0.8, 0.2, 1),
         useNativeDriver: false,
       }),
     ]).start();
 
-    // 2. Smooth Exit Fade-Out Transition
+    // 2. Elegant Exit Transition after user comfortably sees the branding
     const exitTimer = setTimeout(() => {
       Animated.timing(exitFadeAnim, {
         toValue: 0,
-        duration: 220,
+        duration: 320,
         easing: Easing.in(Easing.ease),
         useNativeDriver: true,
       }).start(() => {
         if (onFinish) onFinish();
       });
-    }, 1450);
+    }, 2350);
 
     return () => clearTimeout(exitTimer);
   }, []);
@@ -76,7 +76,7 @@ export function SplashScreen({ onFinish }) {
             },
           ]}
         >
-          {/* Apple Squircle Emblem Frame */}
+          {/* Apple Squircle Elevated Emblem */}
           <View style={styles.squircleContainer}>
             <Image
               source={require("../../../assets/logo-icon.webp")}
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC", // Apple Slate-50 Canvas
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: Platform.OS === "ios" ? 54 : 36,
+    paddingVertical: Platform.OS === "ios" ? 58 : 40,
   },
   centerBox: {
     flex: 1,
@@ -128,55 +128,55 @@ const styles = StyleSheet.create({
   },
   // Apple Squircle Elevated Emblem
   squircleContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 24,
+    width: 96,
+    height: 96,
+    borderRadius: 26,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor: "rgba(226, 232, 240, 0.95)",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.06,
+    shadowRadius: 20,
     elevation: 3,
   },
   logoIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 14,
+    width: 66,
+    height: 66,
+    borderRadius: 16,
   },
   brandTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "800",
     color: "#0F172A",
     letterSpacing: -0.6,
-    marginTop: 18,
+    marginTop: 20,
   },
   tagline: {
     fontFamily: FONTS.displaySemiBold,
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: "600",
     color: "#64748B",
-    marginTop: 4,
-    letterSpacing: 0.6,
+    marginTop: 5,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
-  // Hairline 2px Progress Capsule
+  // Hairline Progress Capsule
   progressTrack: {
-    width: 46,
-    height: 2.5,
-    borderRadius: 1.5,
-    backgroundColor: "rgba(15, 23, 42, 0.07)",
-    marginTop: 22,
+    width: 68,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: "rgba(15, 23, 42, 0.08)",
+    marginTop: 24,
     overflow: "hidden",
   },
   progressBar: {
     height: "100%",
     backgroundColor: "#0F172A",
-    borderRadius: 1.5,
+    borderRadius: 2,
   },
   footer: {
     alignItems: "center",
@@ -184,15 +184,15 @@ const styles = StyleSheet.create({
   trustBadgeRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 12,
-    backgroundColor: "rgba(15, 23, 42, 0.03)",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
   },
   trustText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: "500",
     color: "#64748B",
     letterSpacing: 0.1,
