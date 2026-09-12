@@ -65,7 +65,9 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const refreshToken = await AsyncStorage.getItem("makarya_refresh_token");
+        const refreshToken = await AsyncStorage.getItem(
+          "makarya_refresh_token",
+        );
         if (refreshToken) {
           const res = await axios.post(
             `${DEFAULT_BASE_URL}/auth/refresh`,

@@ -114,9 +114,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     user?.email === "darell@ubsi.ac.id";
 
   const isUmkmOwner = Boolean(
-    user?.id &&
-    project?.umkm_id &&
-    String(user.id) === String(project.umkm_id),
+    user?.id && project?.umkm_id && String(user.id) === String(project.umkm_id),
   );
 
   const loadDetail = async () => {
@@ -158,9 +156,7 @@ export function ProjectDetailScreen({ route, navigation }) {
 
       // Mahasiswa melihat proposal milik diri sendiri
       if (isMahasiswa) {
-        promises.push(
-          proposalApi.getMyProposals().catch(() => ({ data: [] })),
-        );
+        promises.push(proposalApi.getMyProposals().catch(() => ({ data: [] })));
       } else {
         promises.push(Promise.resolve({ data: [] }));
       }
@@ -207,7 +203,10 @@ export function ProjectDetailScreen({ route, navigation }) {
         setHargaTawar(String(pRes.data.budget_max));
       }
     } catch (err) {
-      console.warn("Gagal memuat detail proyek:", err?.response?.data || err?.message);
+      console.warn(
+        "Gagal memuat detail proyek:",
+        err?.response?.data || err?.message,
+      );
       showToast("Gagal memuat rincian proyek", "danger");
     } finally {
       setLoading(false);
@@ -602,7 +601,9 @@ export function ProjectDetailScreen({ route, navigation }) {
     <View style={styles.container}>
       <Header
         title="Detail Proyek"
-        subtitle={project.kategori ? `Kategori: ${project.kategori}` : undefined}
+        subtitle={
+          project.kategori ? `Kategori: ${project.kategori}` : undefined
+        }
         onBack={() => {
           if (navigation?.canGoBack && navigation.canGoBack()) {
             navigation.goBack();

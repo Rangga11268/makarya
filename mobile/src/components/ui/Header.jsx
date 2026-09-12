@@ -26,7 +26,8 @@ export function Header({
   showBrandLogo = false,
 }) {
   const insets = useSafeAreaInsets();
-  const topPadding = Math.max(insets.top, Platform.OS === "android" ? 12 : 8) + 6;
+  const topPadding =
+    Math.max(insets.top, Platform.OS === "android" ? 12 : 8) + 6;
 
   return (
     <View style={[styles.header, { paddingTop: topPadding }]}>
