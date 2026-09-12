@@ -13,6 +13,8 @@ export const authApi = {
   googleAuth: (data) => api.post("/auth/google", data),
   getMe: () => api.get("/auth/me"),
   updateProfile: (data) => api.patch("/auth/profile", data),
+  refreshToken: (refreshToken) =>
+    api.post("/auth/refresh", { refresh_token: refreshToken }),
 };
 
 export const projectApi = {

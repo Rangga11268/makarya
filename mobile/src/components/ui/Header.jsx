@@ -7,9 +7,10 @@ import {
   Image,
   Platform,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { ArrowLeft, Bell, CheckCircle2 } from "lucide-react-native";
+import { ChevronLeft, Bell, CheckCircle2 } from "lucide-react-native";
 
 export function Header({
   category,
@@ -24,17 +25,21 @@ export function Header({
   onProfilePress,
   showBrandLogo = false,
 }) {
+  const insets = useSafeAreaInsets();
+  const topPadding = Math.max(insets.top, Platform.OS === "android" ? 12 : 8) + 6;
+
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: topPadding }]}>
       {/* 1. Left Section */}
       <View style={styles.left}>
         {onBack && (
           <TouchableOpacity
             onPress={onBack}
             style={styles.backButton}
-            activeOpacity={0.7}
+            activeOpacity={0.65}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <ArrowLeft size={18} color={COLORS.textDark} />
+            <ChevronLeft size={22} color={COLORS.textDark} strokeWidth={2.4} />
           </TouchableOpacity>
         )}
 
@@ -94,7 +99,7 @@ export function Header({
             </View>
           </TouchableOpacity>
         ) : (
-          /* Standard Title + Subtitle Header */
+          /* Standard Apple-Clean Title + Subtitle */
           <View style={styles.titleContainer}>
             {category ? (
               <Text style={styles.categoryText} numberOfLines={1}>
@@ -104,11 +109,11 @@ export function Header({
             <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
-            {subtitle && (
+            {subtitle ? (
               <Text style={styles.subtitle} numberOfLines={1}>
                 {subtitle}
               </Text>
-            )}
+            ) : null}
           </View>
         )}
       </View>
@@ -155,9 +160,10 @@ export function Header({
           <TouchableOpacity
             onPress={onBellPress}
             style={styles.bellBtn}
-            activeOpacity={0.75}
+            activeOpacity={0.65}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Bell size={19} color={COLORS.textDark} />
+            <Bell size={18} color={COLORS.textDark} strokeWidth={2} />
             {unreadCount > 0 && <View style={styles.unreadDot} />}
           </TouchableOpacity>
         )}
@@ -175,12 +181,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop:
-      Platform.OS === "ios" ? 52 : Platform.OS === "android" ? 36 : 20,
+    paddingHorizontal: 16,
     paddingBottom: 10,
-    backgroundColor: "transparent",
-    borderBottomWidth: 0,
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(0, 0, 0, 0.06)",
+    zIndex: 20,
   },
   left: {
     flexDirection: "row",
@@ -191,107 +198,86 @@ const styles = StyleSheet.create({
   brandGroup: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
   },
   brandLogo: {
-    width: 110,
-    height: 30,
-  },
-  brandBadge: {
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.2)",
-  },
-  brandBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 9,
-    fontWeight: "700",
-    color: "#2563EB",
-    letterSpacing: 0.5,
+    width: 96,
+    height: 26,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    marginRight: 10,
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.85)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
+    borderColor: "rgba(0, 0, 0, 0.04)",
   },
   titleContainer: {
     flex: 1,
   },
   categoryText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    fontWeight: "700",
-    color: "#2563EB",
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 10,
+    fontWeight: "600",
+    color: COLORS.textMuted,
     textTransform: "uppercase",
-    letterSpacing: 0.8,
-    marginBottom: 2,
+    letterSpacing: 0.6,
+    marginBottom: 1,
   },
   title: {
     fontFamily: FONTS.displayBold,
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#0F172A",
-    letterSpacing: -0.5,
-    lineHeight: 28,
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    letterSpacing: -0.3,
+    lineHeight: 23,
   },
   subtitle: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12.5,
-    color: "#64748B",
-    marginTop: 2,
-    lineHeight: 17,
+    fontSize: 11.5,
+    color: COLORS.textMuted,
+    marginTop: 1,
+    lineHeight: 16,
   },
   userProfileSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
     flex: 1,
   },
   avatarWrapper: {
     position: "relative",
   },
   avatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
   },
   avatarMhs: {
     backgroundColor: "#2563EB",
   },
   avatarUmkm: {
-    backgroundColor: "#0284C7",
+    backgroundColor: "#0F172A",
   },
   avatarText: {
     fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "700",
   },
   verifiedCheckBadge: {
     position: "absolute",
-    bottom: -2,
-    right: -2,
+    bottom: -1,
+    right: -1,
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
   },
@@ -300,7 +286,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontFamily: FONTS.displayBold,
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: "700",
     color: COLORS.textDark,
     letterSpacing: -0.2,
@@ -309,7 +295,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
-    marginTop: 2,
+    marginTop: 1,
     fontWeight: "500",
   },
   right: {
@@ -321,21 +307,21 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   miniAvatarCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
   },
   miniAvatarImage: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
   },
   miniAvatarText: {
     fontFamily: FONTS.displayBold,
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
   },
   miniVerifiedBadge: {
@@ -346,33 +332,28 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   bellBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.85)",
+    borderColor: "rgba(0, 0, 0, 0.04)",
     position: "relative",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
   },
   unreadDot: {
     position: "absolute",
-    top: 9,
-    right: 9,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    top: 8,
+    right: 8,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
     backgroundColor: "#EF4444",
     borderWidth: 1.5,
     borderColor: "#FFFFFF",
   },
   rightActionWrapper: {
-    marginLeft: 4,
+    marginLeft: 2,
   },
 });

@@ -387,7 +387,11 @@ export function TalentListScreen({ navigation }) {
           <View style={styles.specItem}>
             <Text style={styles.specLabel}>Reputasi Skor</Text>
             <View style={styles.specMetricRow}>
-              <Star size={13} color={hasRating ? "#F59E0B" : "#94A3B8"} fill={hasRating ? "#F59E0B" : "transparent"} />
+              <Star
+                size={13}
+                color={hasRating ? "#F59E0B" : "#94A3B8"}
+                fill={hasRating ? "#F59E0B" : "transparent"}
+              />
               <Text style={styles.specMetricValue}>{ratingScore}</Text>
               {item.reviews_count ? (
                 <Text style={styles.specMetricSub}>({item.reviews_count})</Text>
@@ -411,9 +415,17 @@ export function TalentListScreen({ navigation }) {
           <View style={styles.specItem}>
             <Text style={styles.specLabel}>Sukses Escrow</Text>
             <View style={styles.specMetricRow}>
-              <ShieldCheck size={13} color={completedCount > 0 ? COLORS.success : "#94A3B8"} />
-              <Text style={[styles.specMetricValue, { color: completedCount > 0 ? COLORS.success : "#64748B" }]}>
-                {completedCount > 0 ? (item.escrow_success_rate || "100%") : "-"}
+              <ShieldCheck
+                size={13}
+                color={completedCount > 0 ? COLORS.success : "#94A3B8"}
+              />
+              <Text
+                style={[
+                  styles.specMetricValue,
+                  { color: completedCount > 0 ? COLORS.success : "#64748B" },
+                ]}
+              >
+                {completedCount > 0 ? item.escrow_success_rate || "100%" : "-"}
               </Text>
             </View>
           </View>

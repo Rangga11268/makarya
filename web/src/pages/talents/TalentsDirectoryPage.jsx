@@ -121,11 +121,19 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
           <div className="grid grid-cols-3 gap-3 sm:gap-4">
             <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
               <div className="flex items-center justify-center gap-1 text-amber-500 font-bold text-lg sm:text-xl font-serif">
-                <Star className={`w-4 h-4 ${Number(talent.rating_avg) > 0 ? "fill-amber-400 text-amber-500" : "text-slate-300"}`} />
-                <span>{Number(talent.rating_avg) > 0 ? Number(talent.rating_avg).toFixed(1) : "-"}</span>
+                <Star
+                  className={`w-4 h-4 ${Number(talent.rating_avg) > 0 ? "fill-amber-400 text-amber-500" : "text-slate-300"}`}
+                />
+                <span>
+                  {Number(talent.rating_avg) > 0
+                    ? Number(talent.rating_avg).toFixed(1)
+                    : "-"}
+                </span>
               </div>
               <span className="text-[11px] text-muted block mt-0.5 font-medium">
-                {Number(talent.rating_avg) > 0 ? "Reputasi Skor" : "Belum Ada Skor"}
+                {Number(talent.rating_avg) > 0
+                  ? "Reputasi Skor"
+                  : "Belum Ada Skor"}
               </span>
             </div>
 
@@ -140,7 +148,9 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
 
             <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
               <span className="text-lg sm:text-xl font-bold text-emerald-700 font-serif block">
-                {talent.total_proyek_selesai > 0 ? (talent.escrow_success_rate || "100%") : "-"}
+                {talent.total_proyek_selesai > 0
+                  ? talent.escrow_success_rate || "100%"
+                  : "-"}
               </span>
               <span className="text-[11px] text-muted block mt-0.5 font-medium">
                 Sukses Escrow
@@ -679,7 +689,9 @@ export function TalentsDirectoryPage() {
               ? talent.nama_lengkap.charAt(0).toUpperCase()
               : "M";
             const hasRating = Number(talent.rating_avg) > 0;
-            const ratingScore = hasRating ? Number(talent.rating_avg).toFixed(1) : "-";
+            const ratingScore = hasRating
+              ? Number(talent.rating_avg).toFixed(1)
+              : "-";
             const completedProjects = talent.total_proyek_selesai ?? 0;
 
             return (
@@ -723,7 +735,9 @@ export function TalentsDirectoryPage() {
                             size={14}
                             className="text-brand-indigo shrink-0"
                           />
-                          <span className="truncate">{talent.prodi || "Program Studi Belum Diatur"}</span>
+                          <span className="truncate">
+                            {talent.prodi || "Program Studi Belum Diatur"}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -746,7 +760,9 @@ export function TalentsDirectoryPage() {
                   <div className="grid grid-cols-3 gap-2 py-2.5 px-3 bg-canvas rounded-2xl border border-border mb-4 text-center">
                     <div>
                       <div className="flex items-center justify-center gap-1 text-xs font-bold text-dark-900">
-                        <Star className={`w-3 h-3 ${hasRating ? "fill-amber-400 text-amber-500" : "text-slate-300"}`} />
+                        <Star
+                          className={`w-3 h-3 ${hasRating ? "fill-amber-400 text-amber-500" : "text-slate-300"}`}
+                        />
                         <span>{ratingScore}</span>
                       </div>
                       <span className="text-[10px] text-muted block mt-0.5 font-medium">
@@ -765,7 +781,9 @@ export function TalentsDirectoryPage() {
 
                     <div>
                       <span className="text-xs font-bold text-emerald-700 block">
-                        {completedProjects > 0 ? (talent.escrow_success_rate || "100%") : "-"}
+                        {completedProjects > 0
+                          ? talent.escrow_success_rate || "100%"
+                          : "-"}
                       </span>
                       <span className="text-[10px] text-muted block mt-0.5 font-medium">
                         Escrow

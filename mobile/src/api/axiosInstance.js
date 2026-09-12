@@ -57,13 +57,42 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
       try {
-        await AsyncStorage.removeItem("makarya_access_token");
-        await AsyncStorage.removeItem("makarya_user");
-        const { useAuthStore } = require("../store/authStore");
-        useAuthStore.getState().logout(true);
-      } catch (_) {}
+        const refreshToken = await AsyncStorage.getItem("makarya_refresh_token");
+        if (refreshToken) {
+          const res = await axios.post(
+            `${DEFAULT_BASE_URL}/auth/refresh`,
+            { refresh_token: refreshToken },
+            { timeout: 10000 },
+          );
+          const newAccessToken = res.data?.access_token;
+          if (newAccessToken) {
+            await AsyncStorage.setItem("makarya_access_token", newAccessToken);
+            try {
+              const { useAuthStore } = require("../store/authStore");
+              useAuthStore.getState().updateToken(newAccessToken);
+            } catch (_) {}
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return api(originalRequest);
+          }
+        }
+      } catch (refreshErr) {
+        // Refresh token truly invalid/expired, proceed to safe session cleanup
+        try {
+          await AsyncStorage.removeItem("makarya_access_token");
+          await AsyncStorage.removeItem("makarya_refresh_token");
+          await AsyncStorage.removeItem("makarya_user");
+          const { useAuthStore } = require("../store/authStore");
+          useAuthStore.getState().logout(true);
+        } catch (_) {}
+      }
     }
     return Promise.reject(error);
   },

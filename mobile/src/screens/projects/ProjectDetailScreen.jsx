@@ -113,31 +113,60 @@ export function ProjectDetailScreen({ route, navigation }) {
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
-  const isUmkmOwner =
-    user?.role === "UMKM" ||
-    (project?.umkm_id && user?.id && project.umkm_id === user.id);
+  const isUmkmOwner = Boolean(
+    user?.id &&
+    project?.umkm_id &&
+    String(user.id) === String(project.umkm_id),
+  );
 
   const loadDetail = async () => {
     if (!projectId) return;
     try {
       setLoading(true);
-      const promises = [
-        projectApi.getDetail(projectId),
-        proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
-        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
-      ];
 
-      if (isMahasiswa) {
-        promises.push(proposalApi.getMyProposals().catch(() => ({ data: [] })));
+      // 1. Ambil detail proyek terlebih dahulu (terbuka untuk publik/semua user terautentikasi)
+      const pRes = await projectApi.getDetail(projectId);
+      if (!pRes?.data) {
+        showToast("Proyek tidak ditemukan", "danger");
+        setLoading(false);
+        return;
+      }
+      setProject(pRes.data);
+
+      const isProjectOwner = Boolean(
+        user?.id &&
+        pRes.data?.umkm_id &&
+        String(user.id) === String(pRes.data.umkm_id),
+      );
+
+      // 2. Fetch proposal & submission secara terkontrol sesuai role & izin
+      const promises = [];
+
+      // Hanya pemilik proyek yang boleh melihat seluruh daftar proposal masuk
+      if (isProjectOwner) {
+        promises.push(
+          proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
+        );
+      } else {
+        promises.push(Promise.resolve({ data: [] }));
       }
 
-      const results = await Promise.all(promises);
-      const pRes = results[0];
-      const propRes = results[1];
-      const subRes = results[2];
-      const myPropsRes = isMahasiswa ? results[3] : null;
+      // Submission hasil kerja
+      promises.push(
+        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
+      );
 
-      setProject(pRes.data);
+      // Mahasiswa melihat proposal milik diri sendiri
+      if (isMahasiswa) {
+        promises.push(
+          proposalApi.getMyProposals().catch(() => ({ data: [] })),
+        );
+      } else {
+        promises.push(Promise.resolve({ data: [] }));
+      }
+
+      const [propRes, subRes, myPropsRes] = await Promise.all(promises);
+
       setProposals(Array.isArray(propRes.data) ? propRes.data : []);
       setSubmissions(
         Array.isArray(subRes.data)
@@ -178,6 +207,7 @@ export function ProjectDetailScreen({ route, navigation }) {
         setHargaTawar(String(pRes.data.budget_max));
       }
     } catch (err) {
+      console.warn("Gagal memuat detail proyek:", err?.response?.data || err?.message);
       showToast("Gagal memuat rincian proyek", "danger");
     } finally {
       setLoading(false);
@@ -474,9 +504,15 @@ export function ProjectDetailScreen({ route, navigation }) {
     return (
       <View style={styles.container}>
         <Header
-          category="DETAIL SPESIFIKASI PROYEK"
           title="Detail Proyek"
-          onBack={() => navigation.goBack()}
+          subtitle="Memuat spesifikasi proyek..."
+          onBack={() => {
+            if (navigation?.canGoBack && navigation.canGoBack()) {
+              navigation.goBack();
+            } else {
+              navigation.navigate("Main");
+            }
+          }}
         />
         <ScrollView
           contentContainerStyle={{ paddingBottom: 40 }}
@@ -565,10 +601,15 @@ export function ProjectDetailScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Header
-        category="DETAIL SPESIFIKASI PROYEK"
         title="Detail Proyek"
-        subtitle={`Kategori: ${project.kategori || "UMKM Digital"}`}
-        onBack={() => navigation.goBack()}
+        subtitle={project.kategori ? `Kategori: ${project.kategori}` : undefined}
+        onBack={() => {
+          if (navigation?.canGoBack && navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.navigate("Main");
+          }
+        }}
         rightAction={
           hasAcceptedStudent ? (
             <TouchableOpacity
@@ -1427,7 +1468,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                       "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau keabsahan dan keahlian Anda.",
                     confirmText: "Lengkapi Sekarang",
                     cancelText: "Nanti Saja",
-                    onConfirm: () => navigation.navigate("ProfileTab"),
+                    onConfirm: () =>
+                      navigation.navigate("Main", { screen: "ProfileTab" }),
                   });
                   return;
                 }
