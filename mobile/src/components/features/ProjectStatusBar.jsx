@@ -4,7 +4,7 @@ import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { Check, ShieldCheck } from "lucide-react-native";
 
-export function ProjectStatusBar({ currentStatus }) {
+export function ProjectStatusBar({ currentStatus, flat = false }) {
   const steps = [
     { key: "BIDDING", label: "Proposals", sub: "Reviewing" },
     { key: "IN_PROGRESS", label: "In Progress", sub: "Escrow Active" },
@@ -44,7 +44,7 @@ export function ProjectStatusBar({ currentStatus }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, flat && styles.containerFlat]}>
       {/* Header Info */}
       <View style={styles.headerRow}>
         <View style={styles.headerLeft}>
@@ -133,6 +133,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.02,
     shadowRadius: 3,
     elevation: 1,
+  },
+  containerFlat: {
+    backgroundColor: "transparent",
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: "transparent",
+    paddingVertical: 4,
+    paddingHorizontal: 0,
+    marginBottom: 0,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   headerRow: {
     flexDirection: "row",

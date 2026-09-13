@@ -21,11 +21,7 @@ import { PebbleButton } from "../../components/ui/PebbleButton";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import {
-  Compass,
-  RotateCcw,
-  X,
-} from "lucide-react-native";
+import { Compass, RotateCcw, X } from "lucide-react-native";
 import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";

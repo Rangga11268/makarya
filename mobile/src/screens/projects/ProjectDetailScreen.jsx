@@ -704,75 +704,132 @@ export function ProjectDetailScreen({ route, navigation }) {
       ) : (
         <>
           <ScrollView
+            style={styles.docScrollView}
             contentContainerStyle={[
-              styles.content,
-              isCompact && { paddingHorizontal: 12 },
-              isLandscape && { paddingVertical: 10 },
+              styles.docScrollContent,
+              isCompact && { paddingHorizontal: 16 },
+              isLandscape && { paddingVertical: 12 },
             ]}
             showsVerticalScrollIndicator={false}
           >
             <View style={responsiveContainerStyle}>
-              {/* 1. Integrated Hero Context Header (No floating box in box) */}
-              <View style={styles.editorialHeader}>
-                {/* Meta Tags Row */}
-                <View style={styles.editorialMetaTagsRow}>
-                  <View style={styles.editorialCategoryChip}>
-                    <Text style={styles.editorialCategoryChipText}>
-                      {project.kategori ? project.kategori.toUpperCase() : "UMKM DIGITAL"}
+              {/* 1. Header Metadata, Title, and Client Byline (Pure Flat Editorial) */}
+              <View style={styles.docHeaderSection}>
+                {/* Category & Status Inline */}
+                <View style={styles.docMetaTagsRow}>
+                  <View style={styles.docCategoryChip}>
+                    <Text style={styles.docCategoryChipText}>
+                      {project.kategori
+                        ? project.kategori.toUpperCase()
+                        : "UMKM DIGITAL"}
                     </Text>
                   </View>
-                  <View style={styles.editorialStatusChip}>
-                    <Text style={styles.editorialStatusChipText}>
+                  <View style={styles.docStatusChip}>
+                    <View
+                      style={[
+                        styles.docStatusDot,
+                        {
+                          backgroundColor:
+                            project.status === "OPEN" || project.status === "BIDDING"
+                              ? "#059669"
+                              : project.status === "IN_PROGRESS"
+                                ? "#2563EB"
+                                : "#64748B",
+                        },
+                      ]}
+                    />
+                    <Text style={styles.docStatusChipText}>
                       {formatStatus(project.status || "OPEN")}
                     </Text>
                   </View>
-                  <View style={styles.editorialEscrowTag}>
-                    <ShieldCheck size={11} color="#059669" />
-                    <Text style={styles.editorialEscrowTagText}>Garansi Escrow 100%</Text>
-                  </View>
                 </View>
 
-                {/* Project Title */}
-                <Text style={styles.editorialTitle}>{project.judul}</Text>
+                {/* Project Headline */}
+                <Text style={styles.docMainTitle}>{project.judul}</Text>
 
-                {/* Key Metrics Bar: Budget & Deadline in Clean Contrast Strip */}
-                <View style={styles.keyMetricsBar}>
-                  <View style={styles.metricItem}>
-                    <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
-                    <Text style={styles.metricValuePrimary}>
-                      {formatCurrency(project.budget_max)}
+                {/* Client Byline: Directly below title, seamlessly integrated */}
+                <View style={styles.docBylineRow}>
+                  {clientPhoto ? (
+                    <Image
+                      source={{ uri: clientPhoto }}
+                      style={styles.docClientAvatar}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={styles.docClientAvatarPlaceholder}>
+                      <Building2 size={18} color={COLORS.brandIndigo} />
+                    </View>
+                  )}
+                  <View style={{ flex: 1 }}>
+                    <View style={styles.docClientNameRow}>
+                      <Text style={styles.docClientName}>{clientDisplayName}</Text>
+                      <View style={styles.docVerifiedTag}>
+                        <Check size={9} color="#059669" strokeWidth={3} />
+                        <Text style={styles.docVerifiedTagText}>Mitra Terverifikasi</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.docClientMeta}>
+                      {project.lokasi || "Indonesia"} • Klien Mitra UMKM
                     </Text>
                   </View>
-                  <View style={styles.metricDivider} />
-                  <View style={styles.metricItem}>
-                    <Text style={styles.metricLabel}>BATAS WAKTU</Text>
-                    <View style={styles.metricValueRow}>
-                      <Calendar size={13} color={COLORS.textDark} />
-                      <Text style={styles.metricValueSecondary}>
-                        {formatDate(project.deadline)}
-                      </Text>
-                    </View>
+                  <TouchableOpacity
+                    style={styles.docInvoiceBtn}
+                    onPress={() => setInvoiceModal(true)}
+                    activeOpacity={0.75}
+                  >
+                    <FileCheck size={13} color="#2563EB" />
+                    <Text style={styles.docInvoiceBtnText}>Faktur</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Subtle Hairline Divider */}
+              <View style={styles.docDivider} />
+
+              {/* 2. Key Metrics & Financial Overview (Flat Two-Column, No Card Border) */}
+              <View style={styles.docKeyMetricsRow}>
+                <View style={styles.docMetricCol}>
+                  <Text style={styles.docMetricLabel}>PAGU MAKSIMAL</Text>
+                  <Text style={styles.docMetricValuePrimary}>
+                    {formatCurrency(project.budget_max)}
+                  </Text>
+                </View>
+                <View style={styles.docMetricDivider} />
+                <View style={styles.docMetricCol}>
+                  <Text style={styles.docMetricLabel}>BATAS WAKTU</Text>
+                  <View style={styles.docMetricValueRow}>
+                    <Calendar size={13} color={COLORS.textDark} />
+                    <Text style={styles.docMetricValueSecondary}>
+                      {formatDate(project.deadline)}
+                    </Text>
                   </View>
                 </View>
               </View>
 
-              {/* Match Score Strip (If available for Mahasiswa) */}
+              {/* Escrow Guarantee & Match Inline Notice */}
+              <View style={styles.docEscrowTrustRow}>
+                <ShieldCheck size={14} color="#059669" />
+                <Text style={styles.docEscrowTrustText}>
+                  Garansi Escrow 100% • Honor aman di rekening bersama Makarya
+                </Text>
+              </View>
+
               {project.match_score && isMahasiswa ? (
-                <View style={styles.matchScoreInline}>
-                  <View style={styles.matchScoreBadgeLarge}>
-                    <Check size={12} color="#065F46" strokeWidth={3} />
-                    <Text style={styles.matchScoreBadgeLargeText}>
-                      {project.match_score}% Cocok
-                    </Text>
-                  </View>
-                  <Text style={styles.matchScoreCardSub}>
-                    Keahlian profil Anda sesuai dengan kualifikasi proyek ini
+                <View style={styles.docMatchRow}>
+                  <Check size={12} color="#059669" strokeWidth={3} />
+                  <Text style={styles.docMatchText}>
+                    <Text style={styles.docMatchBold}>{project.match_score}% Cocok</Text> dengan profil keahlian Anda
                   </Text>
                 </View>
               ) : null}
 
-              {/* 2. Interactive Escrow Progress Stepper */}
-              <ProjectStatusBar currentStatus={project.status} />
+              {/* Hairline Divider */}
+              <View style={styles.docDivider} />
+
+              {/* 3. Escrow Stepper (Rendered 100% Flat) */}
+              <View style={styles.docStepperSection}>
+                <ProjectStatusBar currentStatus={project.status} flat />
+              </View>
 
               {/* Cancellation / Expiry Notice */}
               {project.status === "CANCELLED" && (
@@ -805,7 +862,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                     ) : null}
                   </View>
                   <View style={styles.cancellationReasonBox}>
-                    <Text style={styles.cancellationReasonLabel}>Alasan Pembatalan:</Text>
+                    <Text style={styles.cancellationReasonLabel}>
+                      Alasan Pembatalan:
+                    </Text>
                     <Text style={styles.cancellationReasonQuote}>
                       "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
                     </Text>
@@ -817,29 +876,27 @@ export function ProjectDetailScreen({ route, navigation }) {
               {project.tipe_kolaborasi === "TIM" &&
                 Array.isArray(project.slots) &&
                 project.slots.length > 0 && (
-                  <View style={styles.teamSlotsCard}>
-                    <View style={styles.teamSlotsCardHeader}>
-                      <View style={styles.teamSlotsIconBox}>
-                        <Users size={16} color={COLORS.brandIndigo} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.teamSlotsCardTitle}>
-                          Formasi Tim Proyek ({project.slots.length} Talenta)
-                        </Text>
-                        <Text style={styles.teamSlotsCardSub}>
-                          Alokasi peran & anggaran independen tiap posisi.
-                        </Text>
-                      </View>
+                  <View style={styles.docSubSection}>
+                    <View style={styles.docSectionHeaderWithIcon}>
+                      <Users size={16} color={COLORS.brandIndigo} />
+                      <Text style={styles.docSectionTitle}>
+                        Formasi Tim Proyek ({project.slots.length} Talenta)
+                      </Text>
                     </View>
-                    <View style={styles.teamSlotsList}>
+                    <Text style={styles.docSubSectionDesc}>
+                      Alokasi peran & anggaran independen tiap posisi.
+                    </Text>
+                    <View style={styles.docTeamSlotsList}>
                       {project.slots.map((s, idx) => {
                         const isSlotOpen = s.status === "OPEN";
                         const isSlotDone = s.status === "COMPLETED";
                         return (
-                          <View key={s.id || idx} style={styles.teamSlotItem}>
+                          <View key={s.id || idx} style={styles.docTeamSlotItem}>
                             <View style={styles.teamSlotItemTop}>
                               <View style={{ flex: 1, marginRight: 8 }}>
-                                <Text style={styles.teamSlotItemRole}>{s.nama_peran}</Text>
+                                <Text style={styles.teamSlotItemRole}>
+                                  {s.nama_peran}
+                                </Text>
                                 <Text style={styles.teamSlotItemBudget}>
                                   Pagu: {formatCurrency(s.alokasi_budget)}
                                 </Text>
@@ -864,12 +921,18 @@ export function ProjectDetailScreen({ route, navigation }) {
                                         : styles.teamSlotStatusTextActive,
                                   ]}
                                 >
-                                  {isSlotOpen ? "Mencari Talenta" : isSlotDone ? "Selesai" : "Dikerjakan"}
+                                  {isSlotOpen
+                                    ? "Mencari Talenta"
+                                    : isSlotDone
+                                      ? "Selesai"
+                                      : "Dikerjakan"}
                                 </Text>
                               </View>
                             </View>
                             {s.deskripsi_tugas ? (
-                              <Text style={styles.teamSlotItemDesc}>{s.deskripsi_tugas}</Text>
+                              <Text style={styles.teamSlotItemDesc}>
+                                {s.deskripsi_tugas}
+                              </Text>
                             ) : null}
                             {s.mahasiswa_nama ? (
                               <View style={styles.assignedMhsRow}>
@@ -883,91 +946,64 @@ export function ProjectDetailScreen({ route, navigation }) {
                         );
                       })}
                     </View>
+                    <View style={styles.docDivider} />
                   </View>
                 )}
 
-              {/* 3. Client UMKM Profile Strip (Clean borderless integration) */}
-              <View style={styles.clientProfileStrip}>
-                {clientPhoto ? (
-                  <Image
-                    source={{ uri: clientPhoto }}
-                    style={styles.clientAvatarImage}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={styles.clientAvatarBox}>
-                    <Building2 size={18} color={COLORS.brandIndigo} />
-                  </View>
-                )}
-                <View style={{ flex: 1 }}>
-                  <View style={styles.clientNameRow}>
-                    <Text style={styles.clientTitle}>{clientDisplayName}</Text>
-                    <View style={styles.verifiedTag}>
-                      <Check size={9} color={COLORS.success} strokeWidth={3} />
-                      <Text style={styles.verifiedTagText}>Mitra Terverifikasi</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.clientMeta}>
-                    {project.lokasi || "Indonesia"} • Klien Terpercaya
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.invoiceSmallBtn}
-                  onPress={() => setInvoiceModal(true)}
-                  activeOpacity={0.75}
-                >
-                  <FileCheck size={13} color="#2563EB" />
-                  <Text style={styles.invoiceSmallBtnText}>Faktur</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Active Chat Entry Point */}
+              {/* Active Chat Entry Point (Clean flat action row) */}
               {hasAcceptedStudent && (
-                <TouchableOpacity
-                  style={styles.openChatBar}
-                  onPress={() =>
-                    navigation.navigate("Chat", {
-                      projectId: project.id,
-                      projectTitle: project.judul,
-                      partnerName: activePartnerName,
-                      partnerPhoto: activePartnerPhoto,
-                      partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-                    })
-                  }
-                  activeOpacity={0.85}
-                >
-                  <View style={styles.openChatBarLeft}>
-                    {activePartnerPhoto ? (
-                      <Image
-                        source={{ uri: activePartnerPhoto }}
-                        style={styles.chatPartnerAvatar}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <View style={styles.chatIconBadge}>
-                        <MessageSquare size={15} color="#FFFFFF" />
+                <View style={{ marginBottom: 16 }}>
+                  <TouchableOpacity
+                    style={styles.openChatBar}
+                    onPress={() =>
+                      navigation.navigate("Chat", {
+                        projectId: project.id,
+                        projectTitle: project.judul,
+                        partnerName: activePartnerName,
+                        partnerPhoto: activePartnerPhoto,
+                        partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+                      })
+                    }
+                    activeOpacity={0.85}
+                  >
+                    <View style={styles.openChatBarLeft}>
+                      {activePartnerPhoto ? (
+                        <Image
+                          source={{ uri: activePartnerPhoto }}
+                          style={styles.chatPartnerAvatar}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View style={styles.chatIconBadge}>
+                          <MessageSquare size={15} color="#FFFFFF" />
+                        </View>
+                      )}
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.openChatTitle}>
+                          Ruang Diskusi & Kerja{" "}
+                          {activePartnerName ? `(${activePartnerName})` : ""}
+                        </Text>
+                        <Text style={styles.openChatSub}>
+                          Kirim pesan, feedback, dan koordinasi secara langsung
+                        </Text>
                       </View>
-                    )}
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.openChatTitle}>
-                        Ruang Diskusi & Kerja {activePartnerName ? `(${activePartnerName})` : ""}
-                      </Text>
-                      <Text style={styles.openChatSub}>
-                        Kirim pesan, feedback, dan koordinasi secara langsung
-                      </Text>
                     </View>
-                  </View>
-                  <ChevronRight size={16} color={COLORS.brandIndigo} />
-                </TouchableOpacity>
+                    <ChevronRight size={16} color={COLORS.brandIndigo} />
+                  </TouchableOpacity>
+                  <View style={styles.docDivider} />
+                </View>
               )}
 
-              {/* 4. Rincian Brief Kebutuhan (Clean Content Card) */}
-              <View style={styles.briefContentSection}>
-                <Text style={styles.briefSectionHeading}>RINCIAN KEBUTUHAN PROYEK</Text>
+              {/* 4. Rincian Brief Kebutuhan Proyek (Pure Editorial Flow) */}
+              <View style={styles.docArticleSection}>
+                <Text style={styles.docSectionTitle}>
+                  Rincian Kebutuhan Proyek
+                </Text>
                 <Text
-                  style={styles.briefParagraph}
+                  style={styles.docArticleParagraph}
                   numberOfLines={
-                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
+                    !isBriefExpanded &&
+                    (project.deskripsi_raw?.length || 0) > 280
                       ? 6
                       : undefined
                   }
@@ -976,12 +1012,14 @@ export function ProjectDetailScreen({ route, navigation }) {
                 </Text>
                 {(project.deskripsi_raw?.length || 0) > 280 ? (
                   <TouchableOpacity
-                    style={styles.expandBriefBtn}
+                    style={styles.docExpandBriefBtn}
                     onPress={() => setIsBriefExpanded(!isBriefExpanded)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.expandBriefBtnText}>
-                      {isBriefExpanded ? "Sembunyikan Sebagian" : "Baca Selengkapnya"}
+                    <Text style={styles.docExpandBriefBtnText}>
+                      {isBriefExpanded
+                        ? "Sembunyikan Sebagian"
+                        : "Baca Selengkapnya"}
                     </Text>
                     {isBriefExpanded ? (
                       <ChevronUp size={14} color={COLORS.brandIndigo} />
@@ -993,27 +1031,36 @@ export function ProjectDetailScreen({ route, navigation }) {
               </View>
 
               {/* 4B. Scope & Deliverable Tags */}
-              <View style={styles.deliverablePillsStrip}>
-                <Text style={styles.deliverablesSmallHeading}>STANDAR DELIVERABLE:</Text>
-                <View style={styles.deliverablePillsRow}>
-                  <View style={styles.specChip}>
+              <View style={styles.docDeliverableSection}>
+                <Text style={styles.docDeliverablesSmallHeading}>
+                  STANDAR DELIVERABLE:
+                </Text>
+                <View style={styles.docDeliverablePillsRow}>
+                  <View style={styles.docSpecChip}>
                     <Palette size={12} color="#2563EB" />
-                    <Text style={styles.specChipText}>Aset / Berkas Sumber</Text>
+                    <Text style={styles.docSpecChipText}>
+                      Aset / Berkas Sumber
+                    </Text>
                   </View>
-                  <View style={styles.specChip}>
+                  <View style={styles.docSpecChip}>
                     <Smartphone size={12} color="#2563EB" />
-                    <Text style={styles.specChipText}>Deliverable Siap Pakai</Text>
+                    <Text style={styles.docSpecChipText}>
+                      Deliverable Siap Pakai
+                    </Text>
                   </View>
-                  <View style={styles.specChip}>
+                  <View style={styles.docSpecChip}>
                     <MessageSquare size={12} color="#2563EB" />
-                    <Text style={styles.specChipText}>Revisi Terstruktur</Text>
+                    <Text style={styles.docSpecChipText}>Revisi Terstruktur</Text>
                   </View>
                 </View>
               </View>
 
+              {/* Hairline Divider */}
+              <View style={styles.docDivider} />
+
               {/* 5. Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
               {isMahasiswa && isAcceptedProposal && (
-                <View style={styles.submissionSectionBox}>
+                <View style={styles.docSubSection}>
                   <View style={styles.submissionHeader}>
                     <View style={styles.submissionIconBox}>
                       <UploadCloud size={20} color={COLORS.brandIndigo} />
@@ -1078,17 +1125,18 @@ export function ProjectDetailScreen({ route, navigation }) {
                       </Text>
                     </TouchableOpacity>
                   )}
+                  <View style={styles.docDivider} />
                 </View>
               )}
 
-              {/* 6. Escrow Protection Assurance Banner */}
-              <View style={styles.guaranteeBox}>
-                <ShieldCheck size={20} color={COLORS.success} />
-                <View style={styles.guaranteeContent}>
-                  <Text style={styles.guaranteeTitle}>
+              {/* 6. Escrow Protection Summary Note (Integrated, Flat Footer) */}
+              <View style={styles.docEscrowFooter}>
+                <ShieldCheck size={16} color="#059669" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.docEscrowFooterTitle}>
                     Proteksi Rekening Bersama (Escrow)
                   </Text>
-                  <Text style={styles.guaranteeDesc}>
+                  <Text style={styles.docEscrowFooterDesc}>
                     {isMahasiswa
                       ? "Honor Anda dijamin 100% aman tersimpan di platform dan cair otomatis setelah deliverable disetujui."
                       : "Dana Anda baru cair ke mahasiswa setelah hasil pengerjaan proyek disetujui."}
@@ -1697,226 +1745,315 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  // Clean Integrated Editorial Header
-  editorialHeader: {
+  // Clean Integrated Editorial Document Layout (Truly Cardless)
+  docScrollView: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
-    marginBottom: 14,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
   },
-  editorialMetaTagsRow: {
+  docScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 110,
+    backgroundColor: "#FFFFFF",
+  },
+  docHeaderSection: {
+    marginBottom: 4,
+  },
+  docMetaTagsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    flexWrap: "wrap",
-    marginBottom: 10,
+    gap: 8,
+    marginBottom: 8,
   },
-  editorialCategoryChip: {
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
+  docCategoryChip: {
+    backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
-  editorialCategoryChipText: {
+  docCategoryChipText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 9.5,
+    fontSize: 10,
     color: "#2563EB",
     letterSpacing: 0.3,
   },
-  editorialStatusChip: {
-    backgroundColor: "rgba(15, 23, 42, 0.06)",
+  docStatusChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "#F8FAFC",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
-  editorialStatusChipText: {
+  docStatusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  docStatusChipText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9.5,
+    fontSize: 10,
     color: COLORS.textDark,
   },
-  editorialEscrowTag: {
+  docMainTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#0F172A",
+    lineHeight: 28,
+    letterSpacing: -0.3,
+    marginBottom: 14,
+  },
+  docBylineRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  docClientAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#F1F5F9",
+  },
+  docClientAvatarPlaceholder: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#EEF2FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  docClientNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  docClientName: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  docVerifiedTag: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 999,
   },
-  editorialEscrowTagText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 9.5,
-    color: "#059669",
-  },
-  editorialTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 17,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    lineHeight: 24,
-    marginBottom: 14,
-  },
-  keyMetricsBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F8FAFC",
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.8)",
-  },
-  metricItem: {
-    flex: 1,
-  },
-  metricDivider: {
-    width: 1,
-    height: 28,
-    backgroundColor: "rgba(203, 213, 225, 0.7)",
-    marginHorizontal: 10,
-  },
-  metricLabel: {
+  docVerifiedTagText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 9,
-    color: COLORS.textMuted,
-    letterSpacing: 0.5,
-    marginBottom: 2,
-  },
-  metricValuePrimary: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 16,
-    color: "#2563EB",
+    color: "#059669",
     fontWeight: "700",
   },
-  metricValueSecondary: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    color: COLORS.textDark,
+  docClientMeta: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#64748B",
+    marginTop: 2,
   },
-  metricValueRow: {
+  docInvoiceBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  docInvoiceBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#2563EB",
+  },
+  docDivider: {
+    height: 1,
+    backgroundColor: "#F1F5F9",
+    marginVertical: 14,
+  },
+  docKeyMetricsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 2,
+  },
+  docMetricCol: {
+    flex: 1,
+  },
+  docMetricDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: "#E2E8F0",
+    marginHorizontal: 14,
+  },
+  docMetricLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+    color: "#64748B",
+    letterSpacing: 0.5,
+    marginBottom: 3,
+  },
+  docMetricValuePrimary: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 18,
+    color: "#2563EB",
+    fontWeight: "800",
+    letterSpacing: -0.3,
+  },
+  docMetricValueSecondary: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12.5,
+    color: "#0F172A",
+  },
+  docMetricValueRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-
-  // Match score inline
-  matchScoreInline: {
+  docEscrowTrustRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    backgroundColor: "#ECFDF5",
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
+    gap: 6,
+    marginTop: 10,
   },
-
-  // Client Profile Strip
-  clientProfileStrip: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-  invoiceSmallBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 8,
-  },
-  invoiceSmallBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    color: "#2563EB",
-  },
-
-  // Brief Content Section
-  briefContentSection: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    marginBottom: 12,
-  },
-  briefSectionHeading: {
-    fontFamily: FONTS.displayBold,
+  docEscrowTrustText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 11,
+    color: "#059669",
+    flex: 1,
+  },
+  docMatchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 8,
+  },
+  docMatchText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#065F46",
+    flex: 1,
+  },
+  docMatchBold: {
     fontWeight: "700",
-    color: COLORS.textMuted,
-    letterSpacing: 0.5,
+    color: "#047857",
+  },
+  docStepperSection: {
+    marginVertical: 2,
+  },
+  docArticleSection: {
+    marginBottom: 10,
+  },
+  docSectionTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#0F172A",
     marginBottom: 8,
   },
-  briefParagraph: {
+  docArticleParagraph: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 13,
-    color: COLORS.textDark,
-    lineHeight: 21,
+    fontSize: 13.5,
+    color: "#334155",
+    lineHeight: 22,
   },
-  expandBriefBtn: {
+  docExpandBriefBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     marginTop: 8,
     alignSelf: "flex-start",
-    paddingVertical: 4,
+    paddingVertical: 2,
   },
-  expandBriefBtnText: {
+  docExpandBriefBtnText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11.5,
     fontWeight: "600",
     color: COLORS.brandIndigo,
   },
-
-  // Deliverable Pills Strip
-  deliverablePillsStrip: {
-    marginBottom: 14,
-    paddingHorizontal: 2,
+  docDeliverableSection: {
+    marginTop: 6,
   },
-  deliverablesSmallHeading: {
+  docDeliverablesSmallHeading: {
     fontFamily: FONTS.displayBold,
-    fontSize: 10.5,
-    color: COLORS.textMuted,
+    fontSize: 10,
+    color: "#64748B",
     letterSpacing: 0.5,
     marginBottom: 6,
   },
-  deliverablePillsRow: {
+  docDeliverablePillsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 6,
   },
-  specChip: {
+  docSpecChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "#F8FAFC",
     paddingHorizontal: 9,
     paddingVertical: 5,
-    borderRadius: 8,
+    borderRadius: 7,
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.8)",
+    borderColor: "#E2E8F0",
   },
-  specChipText: {
+  docSpecChipText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    color: COLORS.textDark,
+    color: "#334155",
+  },
+  docSubSection: {
+    marginBottom: 10,
+  },
+  docSectionHeaderWithIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 4,
+  },
+  docSubSectionDesc: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: "#64748B",
+    marginBottom: 10,
+  },
+  docTeamSlotsList: {
+    gap: 8,
+  },
+  docTeamSlotItem: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  docEscrowFooter: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    backgroundColor: "#F0FDF4",
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#BBF7D0",
+    marginBottom: 14,
+  },
+  docEscrowFooterTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#065F46",
+    marginBottom: 2,
+  },
+  docEscrowFooterDesc: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: "#047857",
+    lineHeight: 16,
   },
   deliverablesScroll: {
     gap: 10,
