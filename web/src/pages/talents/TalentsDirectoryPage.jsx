@@ -50,63 +50,63 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
   const ratingScore = Number(talent.rating_avg) || 5.0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden font-sans flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden font-sans flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
         {/* Top Header Banner */}
-        <div className="relative p-6 sm:p-8 bg-slate-900 text-white border-b border-slate-800">
+        <div className="relative p-5 sm:p-8 bg-slate-900 text-white border-b border-slate-800">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             title="Tutup"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
             {talent.url_foto ? (
               <img
                 src={talent.url_foto}
                 alt={talent.nama_lengkap}
-                className="w-20 h-20 rounded-2xl object-cover shrink-0 shadow-sm border border-white/20 select-none"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0 shadow-sm border border-white/20 select-none"
               />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-brand-indigo text-white font-serif text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-brand-indigo text-white font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
                 {initial}
               </div>
             )}
 
-            <div className="text-center sm:text-left space-y-1.5 flex-1">
+            <div className="text-center sm:text-left space-y-1.5 flex-1 min-w-0">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <h2 className="text-xl sm:text-2xl font-bold font-sans">
+                <h2 className="text-lg sm:text-2xl font-bold font-sans truncate">
                   {talent.nama_lengkap}
                 </h2>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi Resmi
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi
                 </span>
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-300 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <span className="flex items-center gap-1">
-                  <ProdiVectorIcon size={14} className="text-sky-400" />
+              <p className="text-xs sm:text-sm text-slate-300 flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
+                <span className="flex items-center gap-1 truncate">
+                  <ProdiVectorIcon size={14} className="text-sky-400 shrink-0" />
                   {talent.prodi || "Belum Memilih Prodi"}
                 </span>
                 <span>•</span>
-                <span className="flex items-center gap-1">
-                  <CampusVectorIcon size={14} className="text-amber-400" />
+                <span className="flex items-center gap-1 truncate">
+                  <CampusVectorIcon size={14} className="text-amber-400 shrink-0" />
                   {talent.universitas || "Universitas Bina Sarana Informatika"}
                 </span>
               </p>
 
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 pt-1">
                 {talent.nim && (
-                  <span className="text-[11px] font-mono text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
                     NIM: {talent.nim}
                   </span>
                 )}
-                <span className="text-[11px] font-semibold text-brand-cyan bg-brand-cyan/20 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-brand-cyan bg-brand-cyan/20 px-2 py-0.5 rounded-md">
                   Semester {talent.semester || 6}
                 </span>
-                <span className="text-[11px] font-semibold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-md flex items-center gap-1">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-md flex items-center gap-1">
                   <Award className="w-3 h-3" />{" "}
                   {talent.status_badge || "Talenta Terverifikasi"}
                 </span>
@@ -116,9 +116,9 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto flex-1">
           {/* Quick Metrics */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
               <div className="flex items-center justify-center gap-1 text-amber-500 font-bold text-lg sm:text-xl font-serif">
                 <Star
@@ -324,12 +324,12 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
         </div>
 
         {/* Modal Bottom CTA */}
-        <div className="p-4 sm:p-6 border-t border-border bg-canvas flex items-center justify-end gap-3">
+        <div className="p-4 sm:p-6 border-t border-border bg-canvas flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
           <Button
             variant="outline"
             size="sm"
             onClick={onClose}
-            className="font-semibold text-xs"
+            className="font-semibold text-xs py-2.5 min-h-[44px] justify-center"
           >
             Tutup
           </Button>
@@ -340,7 +340,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
               onClose();
               if (onContact) onContact(talent);
             }}
-            className="font-bold text-xs shadow-brand flex items-center gap-1.5"
+            className="font-bold text-xs shadow-brand flex items-center justify-center gap-1.5 py-2.5 min-h-[44px]"
           >
             <MessageSquare className="w-3.5 h-3.5" />
             Ajak Chat & Kolaborasi
@@ -437,19 +437,19 @@ export function TalentsDirectoryPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 space-y-6 sm:space-y-8 font-sans">
       {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta */}
       <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
         <Link
           to="/projects"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors shrink-0"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors shrink-0"
         >
           <Briefcase className="w-4 h-4" />
           <span>Katalog Proyek UMKM</span>
         </Link>
         <Link
           to="/talents"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs shrink-0"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs shrink-0"
         >
           <GraduationCap className="w-4 h-4" />
           <span>Direktori Mahasiswa Berprestasi</span>
@@ -457,14 +457,14 @@ export function TalentsDirectoryPage() {
       </div>
 
       {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
-      <div className="bg-surface border border-border rounded-3xl p-6 sm:p-10 shadow-xs space-y-6">
+      <div className="bg-surface border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-xs space-y-5 sm:space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold uppercase tracking-wider border border-brand-indigo/15">
               <Award className="w-3.5 h-3.5" />
               <span>Direktori Talenta Terkurasi</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight">
               Mahasiswa Berprestasi & Terverifikasi
             </h1>
             <p className="text-xs sm:text-sm text-muted max-w-2xl font-sans">
@@ -483,43 +483,43 @@ export function TalentsDirectoryPage() {
         </div>
 
         {/* 4 Trust Highlights Strip - Clean surface without emoji or glowing gradients */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
-            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
-              <CampusVectorIcon size={15} className="text-brand-indigo" />
-              <span>Kampus Resmi</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-1">
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
+              <CampusVectorIcon size={15} className="text-brand-indigo shrink-0" />
+              <span className="truncate">Kampus Resmi</span>
             </div>
-            <span className="text-[11px] text-muted block mt-0.5">
-              Terakreditasi (UBSI & Mitra)
+            <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
+              UBSI & Mitra Terakreditasi
             </span>
           </div>
 
-          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
-            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
-              <span>Skor 5.0 Rata-rata</span>
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500 shrink-0" />
+              <span className="truncate">Skor 5.0 Rata-rata</span>
             </div>
-            <span className="text-[11px] text-muted block mt-0.5">
+            <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
               Ulasan Klien UMKM Riil
             </span>
           </div>
 
-          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
-            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold">
-              <Briefcase className="w-3.5 h-3.5 text-slate-700" />
-              <span>Deliverable Tuntas</span>
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
+              <Briefcase className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <span className="truncate">Deliverable Tuntas</span>
             </div>
-            <span className="text-[11px] text-muted block mt-0.5">
+            <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
               Rekam Jejak Terverifikasi
             </span>
           </div>
 
-          <div className="bg-canvas border border-border rounded-2xl p-3.5 text-left">
-            <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>100% Proteksi Escrow</span>
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+            <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold truncate">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span className="truncate">100% Escrow</span>
             </div>
-            <span className="text-[11px] text-muted block mt-0.5">
+            <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
               Dana Aman di Platform
             </span>
           </div>
@@ -527,7 +527,7 @@ export function TalentsDirectoryPage() {
       </div>
 
       {/* 2. Interactive Search & Filters Section */}
-      <div className="bg-surface rounded-3xl border border-border p-5 sm:p-6 space-y-5 shadow-xs">
+      <div className="bg-surface rounded-2xl sm:rounded-3xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-xs">
         {/* Search Bar & Sort Row */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
@@ -549,16 +549,16 @@ export function TalentsDirectoryPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1.5 bg-canvas px-3 py-1.5 rounded-2xl border border-border">
-              <ArrowUpDown className="w-3.5 h-3.5 text-muted" />
+          <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto shrink-0">
+            <div className="flex items-center gap-1.5 bg-canvas px-3 py-1.5 rounded-2xl border border-border flex-1 sm:flex-initial">
+              <ArrowUpDown className="w-3.5 h-3.5 text-muted shrink-0" />
               <span className="text-xs text-muted font-medium hidden sm:inline">
                 Urutkan:
               </span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="text-xs bg-transparent text-dark-900 font-semibold focus:outline-none cursor-pointer py-1"
+                className="text-xs bg-transparent text-dark-900 font-semibold focus:outline-none cursor-pointer py-1 w-full sm:w-auto"
               >
                 <option value="rating">Rating Tertinggi</option>
                 <option value="projects">Proyek Terbanyak</option>
@@ -576,7 +576,7 @@ export function TalentsDirectoryPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleResetFilter}
-                className="text-xs font-bold text-muted hover:text-dark-900 rounded-2xl py-2 px-3"
+                className="text-xs font-bold text-muted hover:text-dark-900 rounded-2xl py-2 px-3 shrink-0"
               >
                 <RotateCcw className="w-3 h-3 mr-1" />
                 Reset
@@ -590,14 +590,14 @@ export function TalentsDirectoryPage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Pilihan Program Studi & Spesialisasi
           </span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar sm:flex-wrap pb-1">
             {categoryPills.map((pill) => {
               const active = selectedProdi === pill.key;
               return (
                 <button
                   key={pill.key}
                   onClick={() => setSelectedProdi(pill.key)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 shrink-0 ${
                     active
                       ? "bg-brand-indigo text-white shadow-xs"
                       : "bg-canvas text-slate-700 hover:bg-slate-200/60 border border-border"
@@ -610,11 +610,11 @@ export function TalentsDirectoryPage() {
           </div>
         </div>
 
-        {/* Rating & Proyek Status Filter Row - Antislop: Clean labels without literal emoji */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/60">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted font-medium mr-1">
-              Filter Rating:
+        {/* Rating & Proyek Status Filter Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pt-3 border-t border-border/60">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1 sm:pb-0">
+            <span className="text-xs text-muted font-medium mr-1 shrink-0">
+              Filter:
             </span>
             {[
               { val: 0, label: "Semua Rating" },
@@ -624,7 +624,7 @@ export function TalentsDirectoryPage() {
               <button
                 key={r.val}
                 onClick={() => setMinRating(r.val)}
-                className={`text-xs px-2.5 py-1 rounded-lg font-medium cursor-pointer transition-colors ${
+                className={`text-xs px-2.5 py-1 rounded-lg font-medium cursor-pointer transition-colors shrink-0 ${
                   minRating === r.val
                     ? "bg-amber-100 text-amber-900 border border-amber-300 font-bold"
                     : "bg-canvas text-slate-600 hover:bg-slate-200/50 border border-border"
@@ -635,20 +635,19 @@ export function TalentsDirectoryPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs w-full sm:w-auto">
             <label className="inline-flex items-center gap-2 text-dark-900 font-semibold cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={onlyCompleted}
                 onChange={(e) => setOnlyCompleted(e.target.checked)}
-                className="rounded text-brand-indigo focus:ring-brand-indigo w-4 h-4 cursor-pointer"
+                className="rounded text-brand-indigo focus:ring-brand-indigo w-4 h-4 cursor-pointer shrink-0"
               />
-              <span>Hanya yang telah menyelesaikan proyek</span>
+              <span className="text-xs">Hanya yang selesai proyek</span>
             </label>
 
-            <span className="text-muted text-[11px] font-medium bg-canvas px-2.5 py-1 rounded-full border border-border">
-              Ditemukan: <b className="text-dark-900">{talents.length}</b>{" "}
-              talenta
+            <span className="text-muted text-[11px] font-medium bg-canvas px-2.5 py-1 rounded-full border border-border w-fit">
+              Ditemukan: <b className="text-dark-900">{talents.length}</b> talenta
             </span>
           </div>
         </div>
@@ -697,7 +696,7 @@ export function TalentsDirectoryPage() {
             return (
               <div
                 key={talent.id}
-                className="bg-surface rounded-3xl border border-border p-6 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
+                className="bg-surface rounded-2xl sm:rounded-3xl border border-border p-5 sm:p-6 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
               >
                 <div>
                   {/* Top Profile Header */}
@@ -908,9 +907,9 @@ export function TalentsDirectoryPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleOpenDetail(talent)}
-                    className="font-semibold text-xs rounded-xl py-2 px-3 border-border hover:bg-canvas cursor-pointer"
+                    className="font-semibold text-xs rounded-xl py-2.5 px-3 min-h-[44px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center"
                   >
-                    <Eye className="w-3.5 h-3.5 mr-1.5 text-muted" />
+                    <Eye className="w-3.5 h-3.5 mr-1.5 text-muted shrink-0" />
                     Detail
                   </Button>
 
@@ -918,9 +917,9 @@ export function TalentsDirectoryPage() {
                     variant="brand"
                     size="sm"
                     onClick={() => handleOpenContact(talent)}
-                    className="flex-1 font-bold text-xs shadow-brand rounded-xl py-2 cursor-pointer"
+                    className="flex-1 font-bold text-xs shadow-brand rounded-xl py-2.5 min-h-[44px] cursor-pointer flex items-center justify-center"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+                    <MessageSquare className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                     Ajak Chat / Rekrut
                   </Button>
                 </div>

@@ -76,7 +76,7 @@ export function DashboardPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 font-sans">
         <div className="h-10 w-64 bg-slate-200 rounded-xl animate-pulse" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
@@ -171,48 +171,54 @@ export function DashboardPage() {
       {/* 4-METRICS STATS ROW */}
       {/* ========================================================================= */}
       {isUmkm ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Total Proyek Anda
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate">
               {myProjects.length}
             </div>
-            <span className="text-[11px] text-muted block">
+            <span className="text-[11px] text-muted block truncate">
               Dipasang di platform
             </span>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Sedang Dikerjakan
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-brand-indigo font-sans">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-brand-indigo font-sans tracking-tight truncate">
               {myProjects.filter((p) => p.status === "IN_PROGRESS").length}
             </div>
-            <span className="text-[11px] text-muted block">
+            <span className="text-[11px] text-muted block truncate">
               Oleh talenta mahasiswa
             </span>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Dana Escrow Terkunci
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans">
+            <div
+              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              title={formatCurrency(wallet?.saldo_escrow || 0)}
+            >
               {formatCurrency(wallet?.saldo_escrow || 0)}
             </div>
-            <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" /> Dijamin Sistem
+            <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1 truncate">
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Dijamin Sistem
             </span>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Saldo Aktif Dompet
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans">
+            <div
+              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              title={formatCurrency(wallet?.saldo_aktif || 0)}
+            >
               {formatCurrency(wallet?.saldo_aktif || 0)}
             </div>
             <Link
@@ -224,36 +230,39 @@ export function DashboardPage() {
           </Card>
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Proyek Aktif
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-brand-indigo font-sans">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-brand-indigo font-sans tracking-tight truncate">
               {myProposals.filter((p) => p.status === "ACCEPTED").length}
             </div>
-            <span className="text-[11px] text-muted block">
+            <span className="text-[11px] text-muted block truncate">
               Sedang Anda kerjakan
             </span>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Lamaran Terkirim
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate">
               {myProposals.length}
             </div>
-            <span className="text-[11px] text-muted block">
+            <span className="text-[11px] text-muted block truncate">
               Total penawaran diajukan
             </span>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Saldo Honor Anda
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans">
+            <div
+              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              title={formatCurrency(wallet?.saldo_aktif || 0)}
+            >
               {formatCurrency(wallet?.saldo_aktif || 0)}
             </div>
             <Link
@@ -264,14 +273,14 @@ export function DashboardPage() {
             </Link>
           </Card>
 
-          <Card className="p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1">
-            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
+          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+            <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Proyek Selesai
             </span>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-600 font-sans">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-emerald-600 font-sans tracking-tight truncate">
               {myProposals.filter((p) => p.status === "COMPLETED").length}
             </div>
-            <span className="text-[11px] text-muted block">
+            <span className="text-[11px] text-muted block truncate">
               Portofolio terverifikasi
             </span>
           </Card>

@@ -300,7 +300,7 @@ export function WalletPage() {
               <span className="text-xs font-semibold text-muted uppercase tracking-wider block">
                 Saldo Aktif Dapat Digunakan
               </span>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-dark-900 font-sans tracking-tight">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-dark-900 font-sans tracking-tight truncate">
                 {loading ? (
                   <div className="h-9 w-44 bg-gray-200 animate-pulse rounded-lg mt-1" />
                 ) : (
@@ -308,7 +308,7 @@ export function WalletPage() {
                 )}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-brand-indigo-light/50 border border-brand-indigo/20 flex items-center justify-center text-brand-indigo">
+            <div className="w-12 h-12 rounded-2xl bg-brand-indigo-light/50 border border-brand-indigo/20 flex items-center justify-center text-brand-indigo shrink-0">
               <WalletIcon className="w-6 h-6" />
             </div>
           </div>
@@ -356,16 +356,16 @@ export function WalletPage() {
         </Card>
 
         {/* Card 2: Saldo Terkunci di Escrow Holding */}
-        <Card className="p-6 sm:p-8 bg-surface border-border relative overflow-hidden flex flex-col justify-between space-y-6 rounded-3xl shadow-xs">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
+        <Card className="p-6 sm:p-8 bg-surface border-border relative overflow-hidden flex flex-col justify-between space-y-6 rounded-3xl shadow-xs min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-muted uppercase tracking-wider block">
+                <span className="text-xs font-semibold text-muted uppercase tracking-wider block truncate">
                   Saldo Terkunci di Rekening Bersama (Escrow)
                 </span>
-                <ShieldCheck className="w-4 h-4 text-brand-cyan" />
+                <ShieldCheck className="w-4 h-4 text-brand-cyan shrink-0" />
               </div>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-brand-indigo font-sans tracking-tight">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-indigo font-sans tracking-tight truncate">
                 {loading ? (
                   <div className="h-9 w-44 bg-gray-200 animate-pulse rounded-lg mt-1" />
                 ) : (
@@ -373,7 +373,7 @@ export function WalletPage() {
                 )}
               </h3>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
               <Lock className="w-6 h-6" />
             </div>
           </div>
