@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FONTS } from "../../theme/fonts";
+import { useToastStore } from "../../store/toastStore";
 import { useToastStore, formatToastMessage } from "../../store/toastStore";
 import {
   CheckCircle2,
@@ -213,6 +214,7 @@ export function Toast() {
             {badge.label}
           </Text>
           <Text style={styles.message} numberOfLines={2}>
+            {activeToast.message}
             {formatToastMessage(activeToast.message)}
           </Text>
         </View>
