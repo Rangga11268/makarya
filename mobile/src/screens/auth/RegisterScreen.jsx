@@ -16,6 +16,7 @@ import {
 import { FONTS } from "../../theme/fonts";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { initiateGoogleSignIn } from "../../services/googleAuth";
 import {
   Mail,
   Lock,

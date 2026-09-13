@@ -1899,7 +1899,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   categoryBentoTile: {
-    width: (width - 40 - 10) / 2,
+    width: "48.5%",
     padding: 12,
     borderRadius: 18,
     backgroundColor: COLORS.bgSurface,
