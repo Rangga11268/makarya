@@ -55,3 +55,56 @@ def test_team_project_and_slots_creation():
         db.commit()
     finally:
         db.close()
+
+
+def test_team_project_browse_with_partial_slots(client):
+    db = SessionLocal()
+    try:
+        from app.models.user import User, UserRole
+        umkm = db.query(User).filter(User.role == UserRole.UMKM).first()
+        if not umkm:
+            pytest.skip('No UMKM user found in test DB')
+
+        future_date = date.today() + timedelta(days=10)
+        proj = Project(
+            umkm_id=umkm.id,
+            judul='Test Proyek Tim Partial Slot Browse',
+            deskripsi_raw='Proyek dengan 2 slot di mana 1 slot diambil',
+            kategori=ProjectCategory.PEMROGRAMAN,
+            budget_max=Decimal('1000000'),
+            deadline=future_date,
+            status=ProjectStatus.OPEN,
+            tipe_kolaborasi='TIM'
+        )
+        db.add(proj)
+        db.flush()
+
+        slot1 = ProjectSlot(
+            project_id=proj.id,
+            nama_peran='Role A',
+            deskripsi_tugas='Task A',
+            alokasi_budget=Decimal('500000'),
+            status='IN_PROGRESS'  # 1 slot filled
+        )
+        slot2 = ProjectSlot(
+            project_id=proj.id,
+            nama_peran='Role B',
+            deskripsi_tugas='Task B',
+            alokasi_budget=Decimal('500000'),
+            status='OPEN'  # 1 slot still open
+        )
+        db.add_all([slot1, slot2])
+        db.commit()
+
+        # Harus tetap muncul dalam browse_project dengan status OPEN
+        res = client.get("/v1/projects?status=OPEN&limit=50")
+        assert res.status_code == 200
+        data = res.json()
+        found_ids = [p["id"] for p in data]
+        assert str(proj.id) in found_ids
+
+        db.delete(proj)
+        db.commit()
+    finally:
+        db.close()
+

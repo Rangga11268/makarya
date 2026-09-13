@@ -93,25 +93,41 @@ export function TeamWorkspaceMatrix({
 
   const getRoleBadgeStyle = (roleName = "") => {
     const lower = roleName.toLowerCase();
-    if (lower.includes("ui") || lower.includes("ux") || lower.includes("desain")) {
+    if (
+      lower.includes("ui") ||
+      lower.includes("ux") ||
+      lower.includes("desain")
+    ) {
       return {
         bg: "bg-purple-50 text-purple-700 border-purple-200",
         dot: "bg-purple-500",
       };
     }
-    if (lower.includes("front") || lower.includes("web") || lower.includes("mobile")) {
+    if (
+      lower.includes("front") ||
+      lower.includes("web") ||
+      lower.includes("mobile")
+    ) {
       return {
         bg: "bg-blue-50 text-blue-700 border-blue-200",
         dot: "bg-blue-500",
       };
     }
-    if (lower.includes("back") || lower.includes("api") || lower.includes("data")) {
+    if (
+      lower.includes("back") ||
+      lower.includes("api") ||
+      lower.includes("data")
+    ) {
       return {
         bg: "bg-indigo-50 text-indigo-700 border-indigo-200",
         dot: "bg-indigo-500",
       };
     }
-    if (lower.includes("copy") || lower.includes("konten") || lower.includes("content")) {
+    if (
+      lower.includes("copy") ||
+      lower.includes("konten") ||
+      lower.includes("content")
+    ) {
       return {
         bg: "bg-emerald-50 text-emerald-700 border-emerald-200",
         dot: "bg-emerald-500",
@@ -303,7 +319,8 @@ export function TeamWorkspaceMatrix({
                 Papan Estafet Aset & Berkas Kerja Tim (Shared Resources)
               </h4>
               <p className="text-xs text-slate-500">
-                Ruang pertukaran aset internal antar-mahasiswa (Token desain, API doc, materi teks)
+                Ruang pertukaran aset internal antar-mahasiswa (Token desain,
+                API doc, materi teks)
               </p>
             </div>
           </div>

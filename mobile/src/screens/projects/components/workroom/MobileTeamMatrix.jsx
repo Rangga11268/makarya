@@ -61,10 +61,18 @@ export function MobileTeamMatrix({
 
   const getRoleColors = (roleName = "") => {
     const lower = roleName.toLowerCase();
-    if (lower.includes("ui") || lower.includes("ux") || lower.includes("desain")) {
+    if (
+      lower.includes("ui") ||
+      lower.includes("ux") ||
+      lower.includes("desain")
+    ) {
       return { bg: "#F3E8FF", border: "#D8B4FE", text: "#6B21A8" };
     }
-    if (lower.includes("front") || lower.includes("web") || lower.includes("mobile")) {
+    if (
+      lower.includes("front") ||
+      lower.includes("web") ||
+      lower.includes("mobile")
+    ) {
       return { bg: "#EFF6FF", border: "#BFDBFE", text: "#1D4ED8" };
     }
     if (lower.includes("back") || lower.includes("api")) {
@@ -82,7 +90,9 @@ export function MobileTeamMatrix({
             <Users size={18} color="#4F46E5" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.barometerSubtitle}>FORMASI TIM MULTI-TALENTA</Text>
+            <Text style={styles.barometerSubtitle}>
+              FORMASI TIM MULTI-TALENTA
+            </Text>
             <Text style={styles.barometerTitle}>
               {totalSlots} Peran Kolaborasi Mahasiswa
             </Text>
@@ -135,7 +145,9 @@ export function MobileTeamMatrix({
                   },
                 ]}
               >
-                <Text style={[styles.roleBadgeText, { color: roleColors.text }]}>
+                <Text
+                  style={[styles.roleBadgeText, { color: roleColors.text }]}
+                >
                   {slot.nama_peran}
                 </Text>
               </View>

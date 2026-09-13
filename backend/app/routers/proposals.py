@@ -70,7 +70,11 @@ def submit_proposal(
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
-    if project.status not in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
+    is_team_with_open_slots = (
+        project.tipe_kolaborasi == "TIM" and
+        db.query(ProjectSlot).filter(ProjectSlot.project_id == project.id, ProjectSlot.status == "OPEN").count() > 0
+    )
+    if project.status not in [ProjectStatus.OPEN, ProjectStatus.BIDDING] and not is_team_with_open_slots:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Proyek tidak dapat dilamar karena statusnya {project.status.value} dan tidak menerima proposal")
 
     # Validasi batas tenggat waktu (deadline) proyek
@@ -227,6 +231,19 @@ def accept_proposal(
             Proposal.id != proposal.id,
             Proposal.status == ProposalStatus.PENDING,
         ).update({Proposal.status: ProposalStatus.REJECTED})
+
+        # Cek apakah masih ada slot formasi lain yang masih OPEN
+        has_open_slots = db.query(ProjectSlot).filter(
+            ProjectSlot.project_id == project.id,
+            ProjectSlot.status == "OPEN"
+        ).count() > 0
+
+        if has_open_slots:
+            # Masih ada formasi peran yang terbuka; biarkan proyek OPEN agar dapat dilamar mahasiswa lain di Explore
+            project.status = ProjectStatus.OPEN
+        else:
+            # Semua slot formasi tim telah terisi penuh; alihkan status proyek ke IN_PROGRESS
+            project.status = ProjectStatus.IN_PROGRESS
     else:
         # Tolak otomatis proposal lain yang masih PENDING untuk proyek reguler
         db.query(Proposal).filter(
@@ -235,8 +252,8 @@ def accept_proposal(
             Proposal.status == ProposalStatus.PENDING,
         ).update({Proposal.status: ProposalStatus.REJECTED})
 
-    # Update status project menjadi IN_PROGRESS
-    project.status = ProjectStatus.IN_PROGRESS
+        # Update status project menjadi IN_PROGRESS
+        project.status = ProjectStatus.IN_PROGRESS
     db.commit()
     db.refresh(proposal)
 

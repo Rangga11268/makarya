@@ -4,7 +4,7 @@ from uuid import UUID
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role, get_optional_current_user
 from app.models.user import User, UserRole
@@ -226,12 +226,33 @@ def browse_project(
     today = date.today()
     query = db.query(Project)
     if status:
-        query = query.filter(Project.status == status)
-        if status in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
-            query = query.filter(Project.deadline >= today)
+        if status == ProjectStatus.OPEN:
+            query = query.filter(
+                or_(
+                    Project.status.in_([ProjectStatus.OPEN, ProjectStatus.BIDDING]),
+                    and_(
+                        Project.tipe_kolaborasi == "TIM",
+                        Project.slots.any(ProjectSlot.status == "OPEN")
+                    )
+                ),
+                Project.deadline >= today
+            )
+        else:
+            query = query.filter(Project.status == status)
+            if status in [ProjectStatus.OPEN, ProjectStatus.BIDDING]:
+                query = query.filter(Project.deadline >= today)
     else:
-        # Default browse: tampilkan proyek OPEN/BIDDING yang belum kedaluwarsa
-        query = query.filter(Project.status.in_([ProjectStatus.OPEN, ProjectStatus.BIDDING]), Project.deadline >= today)
+        # Default browse: tampilkan proyek OPEN/BIDDING yang belum kedaluwarsa atau proyek TIM dengan slot OPEN
+        query = query.filter(
+            or_(
+                Project.status.in_([ProjectStatus.OPEN, ProjectStatus.BIDDING]),
+                and_(
+                    Project.tipe_kolaborasi == "TIM",
+                    Project.slots.any(ProjectSlot.status == "OPEN")
+                )
+            ),
+            Project.deadline >= today
+        )
 
     if kategori:
         query = query.filter(Project.kategori == kategori)

@@ -13,6 +13,7 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
+  Users,
 } from "lucide-react";
 
 export function ProjectCard({ project }) {
@@ -102,6 +103,18 @@ export function ProjectCard({ project }) {
               <Tag className="w-3 h-3 mr-1 text-slate-500" />
               {categoryLabels[project.kategori] || project.kategori}
             </Badge>
+
+            {project.tipe_kolaborasi === "TIM" && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
+                <Users className="w-3 h-3 text-indigo-600" />
+                <span>
+                  Tim{" "}
+                  {project.slots
+                    ? `(${project.slots.filter((s) => s.status === "OPEN").length} Buka)`
+                    : ""}
+                </span>
+              </span>
+            )}
 
             {project.match_score && isMhs ? (
               <span

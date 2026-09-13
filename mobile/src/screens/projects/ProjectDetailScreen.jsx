@@ -227,8 +227,12 @@ export function ProjectDetailScreen({ route, navigation }) {
     Boolean(project?.deadline && isExpired(project.deadline)) ||
     project?.status === "CANCELLED";
   const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
+  const hasOpenSlots =
+    project?.tipe_kolaborasi === "TIM" &&
+    Array.isArray(project?.slots) &&
+    project.slots.some((s) => s.status === "OPEN");
   const isOpenForApply =
-    (project?.status === "OPEN" || project?.status === "BIDDING") &&
+    (project?.status === "OPEN" || project?.status === "BIDDING" || hasOpenSlots) &&
     !isProjectExpired;
   const canApply =
     isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
@@ -290,15 +294,16 @@ export function ProjectDetailScreen({ route, navigation }) {
       null
     : clientPhoto;
 
-  // 1. Mode Ruang Kerja Terdedikasi: Kontrak sedang berjalan untuk pihak terlibat (Mahasiswa / UMKM pemilik)
+  // 1. Mode Ruang Kerja Terdedikasi: Kontrak sedang berjalan untuk pihak terlibat (Mahasiswa diterima / UMKM pemilik saat IN_PROGRESS)
   const isDedicatedWorkroom = Boolean(
-    ["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(project?.status) &&
-    (isUmkmOwner || isAcceptedProposal),
+    isAcceptedProposal ||
+    (["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(project?.status) &&
+      (isUmkmOwner || isAcceptedProposal)),
   );
 
-  // 2. Mode Board Seleksi Pelamar: Khusus Klien UMKM pada proyek tahap OPEN/BIDDING
+  // 2. Mode Board Seleksi Pelamar: Khusus Klien UMKM pada proyek tahap OPEN/BIDDING (atau proyek tim dengan slot tersisa)
   const isApplicantBoardMode = Boolean(
-    (project?.status === "OPEN" || project?.status === "BIDDING") &&
+    (project?.status === "OPEN" || project?.status === "BIDDING" || hasOpenSlots) &&
     isUmkmOwner,
   );
 
