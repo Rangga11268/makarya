@@ -712,96 +712,69 @@ export function ProjectDetailScreen({ route, navigation }) {
             showsVerticalScrollIndicator={false}
           >
             <View style={responsiveContainerStyle}>
-              {/* 1. Apple Glossy Hero Card */}
-              <View style={styles.floatingHeroCard}>
-                {/* Top Row: Category Badge & Escrow Status Tag */}
-                <View style={styles.floatingHeroTopRow}>
-                  <View style={styles.categoryBadgePill}>
-                    <Text style={styles.categoryBadgePillText}>
-                      {project.kategori
-                        ? project.kategori.toUpperCase()
-                        : "UMKM DIGITAL"}
+              {/* 1. Integrated Hero Context Header (No floating box in box) */}
+              <View style={styles.editorialHeader}>
+                {/* Meta Tags Row */}
+                <View style={styles.editorialMetaTagsRow}>
+                  <View style={styles.editorialCategoryChip}>
+                    <Text style={styles.editorialCategoryChipText}>
+                      {project.kategori ? project.kategori.toUpperCase() : "UMKM DIGITAL"}
                     </Text>
                   </View>
-
-                  <View style={styles.floatingHeroEscrowTag}>
-                    <ShieldCheck size={12} color="#059669" />
-                    <Text style={styles.floatingHeroEscrowTagText}>
-                      Escrow Terjamin
+                  <View style={styles.editorialStatusChip}>
+                    <Text style={styles.editorialStatusChipText}>
+                      {formatStatus(project.status || "OPEN")}
                     </Text>
                   </View>
-                </View>
-
-                {/* Big Prominent Budget Display */}
-                <View style={styles.floatingHeroBudgetSection}>
-                  <Text style={styles.floatingHeroBudgetMicro}>
-                    PAGU MAKSIMAL ANGGARAN
-                  </Text>
-                  <Text
-                    style={styles.floatingHeroBudgetValue}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                  >
-                    {formatCurrency(project.budget_max)}
-                  </Text>
+                  <View style={styles.editorialEscrowTag}>
+                    <ShieldCheck size={11} color="#059669" />
+                    <Text style={styles.editorialEscrowTagText}>Garansi Escrow 100%</Text>
+                  </View>
                 </View>
 
                 {/* Project Title */}
-                <Text style={styles.floatingHeroTitle}>{project.judul}</Text>
+                <Text style={styles.editorialTitle}>{project.judul}</Text>
 
-                {/* Meta Footer Row: Deadline & Invoice Trigger */}
-                <View style={styles.floatingHeroMetaRow}>
-                  <View style={styles.floatingHeroMetaItem}>
-                    <Calendar size={13} color={COLORS.textMuted} />
-                    <Text style={styles.floatingHeroMetaText}>
-                      Tenggat: {formatDate(project.deadline)}
+                {/* Key Metrics Bar: Budget & Deadline in Clean Contrast Strip */}
+                <View style={styles.keyMetricsBar}>
+                  <View style={styles.metricItem}>
+                    <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
+                    <Text style={styles.metricValuePrimary}>
+                      {formatCurrency(project.budget_max)}
                     </Text>
                   </View>
-
-                  <TouchableOpacity
-                    style={styles.floatingHeroInvoiceBtn}
-                    onPress={() => setInvoiceModal(true)}
-                    activeOpacity={0.8}
-                  >
-                    <FileCheck size={12} color="#2563EB" />
-                    <Text style={styles.floatingHeroInvoiceBtnText}>
-                      Faktur Escrow 100%
-                    </Text>
-                  </TouchableOpacity>
+                  <View style={styles.metricDivider} />
+                  <View style={styles.metricItem}>
+                    <Text style={styles.metricLabel}>BATAS WAKTU</Text>
+                    <View style={styles.metricValueRow}>
+                      <Calendar size={13} color={COLORS.textDark} />
+                      <Text style={styles.metricValueSecondary}>
+                        {formatDate(project.deadline)}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
 
-              {/* Match Score Card for Mahasiswa */}
+              {/* Match Score Strip (If available for Mahasiswa) */}
               {project.match_score && isMahasiswa ? (
-                <View style={styles.matchScoreCard}>
-                  <View style={styles.matchScoreCardHeader}>
-                    <View style={styles.matchScoreBadgeLarge}>
-                      <Check size={12} color="#065F46" strokeWidth={3} />
-                      <Text style={styles.matchScoreBadgeLargeText}>
-                        {project.match_score}% Cocok
-                      </Text>
-                    </View>
-                    <Text style={styles.matchScoreCardSub}>
-                      Profil & keahlian Anda sesuai dengan proyek ini
+                <View style={styles.matchScoreInline}>
+                  <View style={styles.matchScoreBadgeLarge}>
+                    <Check size={12} color="#065F46" strokeWidth={3} />
+                    <Text style={styles.matchScoreBadgeLargeText}>
+                      {project.match_score}% Cocok
                     </Text>
                   </View>
-                  {project.match_reasons && project.match_reasons.length > 0 ? (
-                    <View style={styles.matchReasonsWrap}>
-                      {project.match_reasons.map((reason, idx) => (
-                        <View key={idx} style={styles.matchReasonPill}>
-                          <Check size={9} color="#065F46" strokeWidth={2.5} />
-                          <Text style={styles.matchReasonText}>{reason}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  ) : null}
+                  <Text style={styles.matchScoreCardSub}>
+                    Keahlian profil Anda sesuai dengan kualifikasi proyek ini
+                  </Text>
                 </View>
               ) : null}
 
               {/* 2. Interactive Escrow Progress Stepper */}
               <ProjectStatusBar currentStatus={project.status} />
 
-              {/* Cancellation / Expiry Audit Trail Card */}
+              {/* Cancellation / Expiry Notice */}
               {project.status === "CANCELLED" && (
                 <View style={styles.cancellationAuditCard}>
                   <View style={styles.cancellationAuditHeader}>
@@ -814,7 +787,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                             : project.cancelled_by_role === "UMKM"
                               ? "Dibatalkan Klien UMKM"
                               : project.cancelled_by_role === "SYSTEM_EXPIRED"
-                                ? "Kedaluwarsa Otomatis (Tenggat)"
+                                ? "Kedaluwarsa Otomatis"
                                 : "Proyek Dibatalkan"}
                         </Text>
                       </View>
@@ -831,22 +804,16 @@ export function ProjectDetailScreen({ route, navigation }) {
                       </Text>
                     ) : null}
                   </View>
-
                   <View style={styles.cancellationReasonBox}>
-                    <Text style={styles.cancellationReasonLabel}>
-                      Alasan Pembatalan Resmi:
-                    </Text>
+                    <Text style={styles.cancellationReasonLabel}>Alasan Pembatalan:</Text>
                     <Text style={styles.cancellationReasonQuote}>
-                      "
-                      {project.cancel_reason ||
-                        "Tidak ada catatan alasan tertulis."}
-                      "
+                      "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
                     </Text>
                   </View>
                 </View>
               )}
 
-              {/* Team Collaboration Slots Card */}
+              {/* Team Collaboration Slots (If multi-role team) */}
               {project.tipe_kolaborasi === "TIM" &&
                 Array.isArray(project.slots) &&
                 project.slots.length > 0 && (
@@ -860,12 +827,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                           Formasi Tim Proyek ({project.slots.length} Talenta)
                         </Text>
                         <Text style={styles.teamSlotsCardSub}>
-                          Proyek kolaborasi multi-peran dengan alokasi escrow
-                          independen tiap posisi.
+                          Alokasi peran & anggaran independen tiap posisi.
                         </Text>
                       </View>
                     </View>
-
                     <View style={styles.teamSlotsList}>
                       {project.slots.map((s, idx) => {
                         const isSlotOpen = s.status === "OPEN";
@@ -874,9 +839,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                           <View key={s.id || idx} style={styles.teamSlotItem}>
                             <View style={styles.teamSlotItemTop}>
                               <View style={{ flex: 1, marginRight: 8 }}>
-                                <Text style={styles.teamSlotItemRole}>
-                                  {s.nama_peran}
-                                </Text>
+                                <Text style={styles.teamSlotItemRole}>{s.nama_peran}</Text>
                                 <Text style={styles.teamSlotItemBudget}>
                                   Pagu: {formatCurrency(s.alokasi_budget)}
                                 </Text>
@@ -901,18 +864,12 @@ export function ProjectDetailScreen({ route, navigation }) {
                                         : styles.teamSlotStatusTextActive,
                                   ]}
                                 >
-                                  {isSlotOpen
-                                    ? "Mencari Talenta"
-                                    : isSlotDone
-                                      ? "Selesai"
-                                      : "Sedang Dikerjakan"}
+                                  {isSlotOpen ? "Mencari Talenta" : isSlotDone ? "Selesai" : "Dikerjakan"}
                                 </Text>
                               </View>
                             </View>
                             {s.deskripsi_tugas ? (
-                              <Text style={styles.teamSlotItemDesc}>
-                                {s.deskripsi_tugas}
-                              </Text>
+                              <Text style={styles.teamSlotItemDesc}>{s.deskripsi_tugas}</Text>
                             ) : null}
                             {s.mahasiswa_nama ? (
                               <View style={styles.assignedMhsRow}>
@@ -929,8 +886,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                   </View>
                 )}
 
-              {/* 3. Client UMKM Profile Info */}
-              <View style={styles.clientBox}>
+              {/* 3. Client UMKM Profile Strip (Clean borderless integration) */}
+              <View style={styles.clientProfileStrip}>
                 {clientPhoto ? (
                   <Image
                     source={{ uri: clientPhoto }}
@@ -939,26 +896,33 @@ export function ProjectDetailScreen({ route, navigation }) {
                   />
                 ) : (
                   <View style={styles.clientAvatarBox}>
-                    <Building2 size={20} color={COLORS.brandIndigo} />
+                    <Building2 size={18} color={COLORS.brandIndigo} />
                   </View>
                 )}
                 <View style={{ flex: 1 }}>
                   <View style={styles.clientNameRow}>
                     <Text style={styles.clientTitle}>{clientDisplayName}</Text>
                     <View style={styles.verifiedTag}>
-                      <Check size={10} color={COLORS.success} strokeWidth={3} />
-                      <Text style={styles.verifiedTagText}>Mitra Kampus</Text>
+                      <Check size={9} color={COLORS.success} strokeWidth={3} />
+                      <Text style={styles.verifiedTagText}>Mitra Terverifikasi</Text>
                     </View>
                   </View>
                   <Text style={styles.clientMeta}>
-                    {project.lokasi || "Jakarta Selatan"} • Pembayaran Escrow
-                    Terjamin
+                    {project.lokasi || "Indonesia"} • Klien Terpercaya
                   </Text>
                 </View>
+                <TouchableOpacity
+                  style={styles.invoiceSmallBtn}
+                  onPress={() => setInvoiceModal(true)}
+                  activeOpacity={0.75}
+                >
+                  <FileCheck size={13} color="#2563EB" />
+                  <Text style={styles.invoiceSmallBtnText}>Faktur</Text>
+                </TouchableOpacity>
               </View>
 
-              {/* 3B. Collaboration Chat Entry Point OR Recruitment Status Banner */}
-              {hasAcceptedStudent ? (
+              {/* Active Chat Entry Point */}
+              {hasAcceptedStudent && (
                 <TouchableOpacity
                   style={styles.openChatBar}
                   onPress={() =>
@@ -981,58 +945,29 @@ export function ProjectDetailScreen({ route, navigation }) {
                       />
                     ) : (
                       <View style={styles.chatIconBadge}>
-                        <MessageSquare size={16} color="#FFFFFF" />
+                        <MessageSquare size={15} color="#FFFFFF" />
                       </View>
                     )}
                     <View style={{ flex: 1 }}>
                       <Text style={styles.openChatTitle}>
-                        Ruang Obrolan & Kolaborasi{" "}
-                        {activePartnerName ? `(${activePartnerName})` : ""}
+                        Ruang Diskusi & Kerja {activePartnerName ? `(${activePartnerName})` : ""}
                       </Text>
                       <Text style={styles.openChatSub}>
-                        Kirim pesan, revisi, dan tautan Figma secara realtime
+                        Kirim pesan, feedback, dan koordinasi secara langsung
                       </Text>
                     </View>
                   </View>
                   <ChevronRight size={16} color={COLORS.brandIndigo} />
                 </TouchableOpacity>
-              ) : isUmkmOwner ? (
-                <View style={styles.recruitmentStatusCard}>
-                  <View style={styles.recruitmentIconCircle}>
-                    <Users size={18} color={COLORS.brandIndigo} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.recruitmentTitle}>
-                      {proposals.length === 0
-                        ? "Menunggu Pelamar Pertama"
-                        : `${proposals.length} Proposal Masuk`}
-                    </Text>
-                    <Text style={styles.recruitmentSub}>
-                      {proposals.length === 0
-                        ? "Proyek ini sedang aktif di katalog eksplorasi. Ruang obrolan kerja otomatis aktif setelah Anda menerima proposal pelamar."
-                        : "Tinjau proposal mahasiswa di tab bawah dan setujui untuk membuka ruang obrolan kerja."}
-                    </Text>
-                  </View>
-                  {proposals.length > 0 ? (
-                    <TouchableOpacity
-                      style={styles.reviewApplicantsBtn}
-                      onPress={() => setActiveTab("proposals")}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={styles.reviewApplicantsBtnText}>Tinjau</Text>
-                    </TouchableOpacity>
-                  ) : null}
-                </View>
-              ) : null}
+              )}
 
-              {/* 4. Description & Scope */}
-              <View style={styles.sectionBox}>
-                <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
+              {/* 4. Rincian Brief Kebutuhan (Clean Content Card) */}
+              <View style={styles.briefContentSection}>
+                <Text style={styles.briefSectionHeading}>RINCIAN KEBUTUHAN PROYEK</Text>
                 <Text
-                  style={styles.descriptionText}
+                  style={styles.briefParagraph}
                   numberOfLines={
-                    !isBriefExpanded &&
-                    (project.deskripsi_raw?.length || 0) > 280
+                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
                       ? 6
                       : undefined
                   }
@@ -1041,28 +976,12 @@ export function ProjectDetailScreen({ route, navigation }) {
                 </Text>
                 {(project.deskripsi_raw?.length || 0) > 280 ? (
                   <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 4,
-                      marginTop: 8,
-                      alignSelf: "flex-start",
-                      paddingVertical: 4,
-                    }}
+                    style={styles.expandBriefBtn}
                     onPress={() => setIsBriefExpanded(!isBriefExpanded)}
                     activeOpacity={0.7}
                   >
-                    <Text
-                      style={{
-                        fontFamily: FONTS.bodyMedium,
-                        fontSize: 12,
-                        fontWeight: "600",
-                        color: COLORS.brandIndigo,
-                      }}
-                    >
-                      {isBriefExpanded
-                        ? "Sembunyikan Sebagian"
-                        : "Baca Selengkapnya"}
+                    <Text style={styles.expandBriefBtnText}>
+                      {isBriefExpanded ? "Sembunyikan Sebagian" : "Baca Selengkapnya"}
                     </Text>
                     {isBriefExpanded ? (
                       <ChevronUp size={14} color={COLORS.brandIndigo} />
@@ -1073,74 +992,23 @@ export function ProjectDetailScreen({ route, navigation }) {
                 ) : null}
               </View>
 
-              {/* 4B. Modular Deliverables Reel */}
-              <View style={styles.deliverablesContainer}>
-                <Text style={styles.deliverablesHeading}>
-                  Spesifikasi Deliverable Proyek
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.deliverablesScroll}
-                >
-                  <View style={styles.deliverablePill}>
-                    <View style={styles.deliverableIconBox}>
-                      <Palette size={14} color="#2563EB" />
-                    </View>
-                    <View>
-                      <Text style={styles.deliverableTitle}>
-                        Figma & Asset Desain
-                      </Text>
-                      <Text style={styles.deliverableSub}>
-                        Komponen & Style Guide
-                      </Text>
-                    </View>
+              {/* 4B. Scope & Deliverable Tags */}
+              <View style={styles.deliverablePillsStrip}>
+                <Text style={styles.deliverablesSmallHeading}>STANDAR DELIVERABLE:</Text>
+                <View style={styles.deliverablePillsRow}>
+                  <View style={styles.specChip}>
+                    <Palette size={12} color="#2563EB" />
+                    <Text style={styles.specChipText}>Aset / Berkas Sumber</Text>
                   </View>
-                  <View style={styles.deliverablePill}>
-                    <View style={styles.deliverableIconBox}>
-                      <Smartphone size={14} color="#2563EB" />
-                    </View>
-                    <View>
-                      <Text style={styles.deliverableTitle}>
-                        Hasil Kerja Digital
-                      </Text>
-                      <Text style={styles.deliverableSub}>
-                        Sesuai Rincian Brief
-                      </Text>
-                    </View>
+                  <View style={styles.specChip}>
+                    <Smartphone size={12} color="#2563EB" />
+                    <Text style={styles.specChipText}>Deliverable Siap Pakai</Text>
                   </View>
-                  <View style={styles.deliverablePill}>
-                    <View
-                      style={[
-                        styles.deliverableIconBox,
-                        { backgroundColor: "#ECFDF5" },
-                      ]}
-                    >
-                      <ShieldCheck size={14} color="#059669" />
-                    </View>
-                    <View>
-                      <Text style={styles.deliverableTitle}>
-                        Proteksi Escrow 100%
-                      </Text>
-                      <Text style={styles.deliverableSub}>
-                        Dana Aman di Makarya
-                      </Text>
-                    </View>
+                  <View style={styles.specChip}>
+                    <MessageSquare size={12} color="#2563EB" />
+                    <Text style={styles.specChipText}>Revisi Terstruktur</Text>
                   </View>
-                  <View style={styles.deliverablePill}>
-                    <View style={styles.deliverableIconBox}>
-                      <MessageSquare size={14} color="#2563EB" />
-                    </View>
-                    <View>
-                      <Text style={styles.deliverableTitle}>
-                        Revisi Terstruktur
-                      </Text>
-                      <Text style={styles.deliverableSub}>
-                        Ruang Obrolan Realtime
-                      </Text>
-                    </View>
-                  </View>
-                </ScrollView>
+                </View>
               </View>
 
               {/* 5. Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
@@ -1829,104 +1697,226 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  categoryBadgePill: {
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+  // Clean Integrated Editorial Header
+  editorialHeader: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.2)",
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
   },
-  categoryBadgePillText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 10,
-    color: "#2563EB",
-    letterSpacing: 0.5,
-  },
-  floatingHeroEscrowTag: {
+  editorialMetaTagsRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  floatingHeroEscrowTagText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    color: "#059669",
-  },
-  floatingHeroBudgetSection: {
+    gap: 6,
+    flexWrap: "wrap",
     marginBottom: 10,
   },
-  floatingHeroBudgetMicro: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: COLORS.textMuted,
-    letterSpacing: 0.6,
-    marginBottom: 2,
+  editorialCategoryChip: {
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
-  floatingHeroBudgetValue: {
+  editorialCategoryChipText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 24,
+    fontSize: 9.5,
     color: "#2563EB",
-    letterSpacing: -0.5,
+    letterSpacing: 0.3,
   },
-  floatingHeroTitle: {
+  editorialStatusChip: {
+    backgroundColor: "rgba(15, 23, 42, 0.06)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  editorialStatusChipText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+    color: COLORS.textDark,
+  },
+  editorialEscrowTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  editorialEscrowTagText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+    color: "#059669",
+  },
+  editorialTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 17,
+    fontWeight: "700",
     color: COLORS.textDark,
     lineHeight: 24,
     marginBottom: 14,
   },
-  floatingHeroMetaRow: {
+  keyMetricsBar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.8)",
   },
-  floatingHeroMetaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+  metricItem: {
+    flex: 1,
   },
-  floatingHeroMetaText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+  metricDivider: {
+    width: 1,
+    height: 28,
+    backgroundColor: "rgba(203, 213, 225, 0.7)",
+    marginHorizontal: 10,
+  },
+  metricLabel: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
     color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
-  floatingHeroInvoiceBtn: {
+  metricValuePrimary: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 16,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+  metricValueSecondary: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: COLORS.textDark,
+  },
+  metricValueRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 9,
-    paddingVertical: 4.5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.15)",
   },
-  floatingHeroInvoiceBtnText: {
+
+  // Match score inline
+  matchScoreInline: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#ECFDF5",
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+
+  // Client Profile Strip
+  clientProfileStrip: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+  invoiceSmallBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  invoiceSmallBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
     color: "#2563EB",
   },
 
-  // Deliverables Reel
-  deliverablesContainer: {
-    marginBottom: 16,
+  // Brief Content Section
+  briefContentSection: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 12,
   },
-  deliverablesHeading: {
+  briefSectionHeading: {
     fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  briefParagraph: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 13,
     color: COLORS.textDark,
-    marginBottom: 8,
-    marginLeft: 2,
+    lineHeight: 21,
+  },
+  expandBriefBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 8,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+  },
+  expandBriefBtnText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
+  },
+
+  // Deliverable Pills Strip
+  deliverablePillsStrip: {
+    marginBottom: 14,
+    paddingHorizontal: 2,
+  },
+  deliverablesSmallHeading: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10.5,
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  deliverablePillsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  specChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.8)",
+  },
+  specChipText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: COLORS.textDark,
   },
   deliverablesScroll: {
     gap: 10,
