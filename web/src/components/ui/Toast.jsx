@@ -1,5 +1,5 @@
 import React from "react";
-import { useToastStore } from "../../store/toastStore";
+import { useToastStore, formatToastMessage } from "../../store/toastStore";
 import { 
   AlertSuccessSvg, 
   AlertErrorSvg, 
@@ -51,7 +51,7 @@ export function ToastContainer() {
               {toast.type === "success" ? "Berhasil" : toast.type === "error" ? "Peringatan" : toast.type === "warning" ? "Perhatian" : "Informasi"}
             </span>
             <div className="text-xs font-semibold leading-relaxed text-dark-900 mt-0.5">
-              {toast.message}
+              {formatToastMessage(toast.message)}
             </div>
           </div>
 

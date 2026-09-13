@@ -232,7 +232,9 @@ export function ProjectDetailScreen({ route, navigation }) {
     Array.isArray(project?.slots) &&
     project.slots.some((s) => s.status === "OPEN");
   const isOpenForApply =
-    (project?.status === "OPEN" || project?.status === "BIDDING" || hasOpenSlots) &&
+    (project?.status === "OPEN" ||
+      project?.status === "BIDDING" ||
+      hasOpenSlots) &&
     !isProjectExpired;
   const canApply =
     isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
@@ -303,7 +305,9 @@ export function ProjectDetailScreen({ route, navigation }) {
 
   // 2. Mode Board Seleksi Pelamar: Khusus Klien UMKM pada proyek tahap OPEN/BIDDING (atau proyek tim dengan slot tersisa)
   const isApplicantBoardMode = Boolean(
-    (project?.status === "OPEN" || project?.status === "BIDDING" || hasOpenSlots) &&
+    (project?.status === "OPEN" ||
+      project?.status === "BIDDING" ||
+      hasOpenSlots) &&
     isUmkmOwner,
   );
 
@@ -319,6 +323,14 @@ export function ProjectDetailScreen({ route, navigation }) {
   const handleSubmitProposal = async () => {
     if (!hargaTawar || !coverLetter.trim()) {
       showToast("Harga tawar dan cover letter wajib diisi", "danger");
+      return;
+    }
+
+    if (coverLetter.trim().length < 20) {
+      showToast(
+        "Cover letter minimal 20 karakter. Jelaskan rencana kerja atau keahlian Anda.",
+        "warning",
+      );
       return;
     }
 

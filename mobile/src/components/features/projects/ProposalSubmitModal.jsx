@@ -172,6 +172,7 @@ export function ProposalSubmitModal({
               onChangeText={setCoverLetter}
               multiline
               numberOfLines={4}
+              helperText={`Minimal 20 karakter (${coverLetter?.trim().length || 0}/20)`}
               required
             />
 
