@@ -30,18 +30,10 @@ import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import {
   ArrowRight,
-  ArrowLeft,
   Search,
   Wallet as WalletIcon,
   Building2,
   GraduationCap,
-  Plus,
-  Briefcase,
-  Users,
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
 } from "lucide-react";
 
 function parseCoverLetter(rawText) {

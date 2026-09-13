@@ -222,10 +222,6 @@ export function WorkroomWorkspaceDetail({
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               {isProjectCompleted ? (
-                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />
-                  <span>Proyek Selesai (Lunas)</span>
-                </div>
                 <>
                   <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
                     <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />
@@ -244,10 +240,6 @@ export function WorkroomWorkspaceDetail({
                   )}
                 </>
               ) : (
-                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>Garansi Escrow Aman</span>
-                </div>
                 <>
                   <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />

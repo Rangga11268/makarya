@@ -90,13 +90,11 @@ export function HelpScreen({ navigation }) {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const handleOpenWhatsApp = () => {
   const handleOpenWhatsApp = async () => {
     const phone = "6281234567890";
     const text = encodeURIComponent(
       "Halo Tim Bantuan Makarya, saya butuh bantuan terkait penggunaan aplikasi freelance kampus.",
     );
-    Linking.openURL(`https://wa.me/${phone}?text=${text}`);
     const url = `https://wa.me/${phone}?text=${text}`;
     try {
       const supported = await Linking.canOpenURL(url);

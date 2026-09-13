@@ -134,9 +134,7 @@ export function ProjectCard({ project }) {
               : "bg-dark-900 hover:bg-dark-800 text-white"
           }`}
         >
-          <span>
-            {expired ? "Lihat Detail" : "Ajukan Proposal"}
-          </span>
+          <span>{expired ? "Lihat Detail" : "Ajukan Proposal"}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

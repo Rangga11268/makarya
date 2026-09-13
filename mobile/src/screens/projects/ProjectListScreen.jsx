@@ -9,7 +9,7 @@ import {
   RefreshControl,
   Platform,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
+import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { ProjectCardSkeleton } from "../../components/ui/Skeleton";
@@ -17,18 +17,14 @@ import { SearchBar } from "../../components/ui/SearchBar";
 import { FilterModal } from "../../components/features/FilterModal";
 import { NotificationModal } from "../../components/features/NotificationModal";
 import { CATEGORIES } from "../../constants/categories";
-import { Button } from "../../components/ui/Button";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
 import {
-  Plus,
   Compass,
-  Bell,
   RotateCcw,
   X,
-  SlidersHorizontal,
 } from "lucide-react-native";
 import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
@@ -148,11 +144,13 @@ export function ProjectListScreen({ navigation, route }) {
       if (selectedBudgetRange === "UNDER_300K") matchesBudget = budget < 300000;
       else if (selectedBudgetRange === "300K_1M")
         matchesBudget = budget >= 300000 && budget <= 1000000;
-      else if (selectedBudgetRange === "ABOVE_1M") matchesBudget = budget > 1000000;
+      else if (selectedBudgetRange === "ABOVE_1M")
+        matchesBudget = budget > 1000000;
       return matchesCategory && matchesSearch && matchesStatus && matchesBudget;
     })
     .sort((a, b) => {
-      if (activeTab === "MATCH") return (b.match_score || 0) - (a.match_score || 0);
+      if (activeTab === "MATCH")
+        return (b.match_score || 0) - (a.match_score || 0);
       if (activeTab === "NEW") return (b.budget_max || 0) - (a.budget_max || 0);
       if (activeTab === "RECENT")
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
@@ -306,7 +304,8 @@ export function ProjectListScreen({ navigation, route }) {
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
           ]}
           ListEmptyComponent={
-            !loading && !error && (
+            !loading &&
+            !error && (
               <View style={styles.emptyState}>
                 <Compass size={40} color={COLORS.brandIndigo} />
                 <Text style={styles.emptyTitle}>

@@ -167,14 +167,30 @@ export function BrowseProjectsPage() {
 
   // Pagination page numbers with ellipsis (max 5 visible)
   const paginationPages = useMemo(() => {
-    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (totalPages <= 5)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
     const pages = [];
     if (currentPage <= 3) {
       pages.push(1, 2, 3, 4, "...", totalPages);
     } else if (currentPage >= totalPages - 2) {
-      pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      pages.push(
+        1,
+        "...",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      );
     } else {
-      pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+      pages.push(
+        1,
+        "...",
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        "...",
+        totalPages,
+      );
     }
     return pages;
   }, [currentPage, totalPages]);
@@ -258,7 +274,11 @@ export function BrowseProjectsPage() {
             </div>
           </div>
           <Link to="/talents" className="shrink-0">
-            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand">
+            <Button
+              variant="brand"
+              size="sm"
+              className="text-xs font-bold shadow-brand"
+            >
               Buka Direktori Mahasiswa
             </Button>
           </Link>
@@ -396,7 +416,8 @@ export function BrowseProjectsPage() {
                           )}`
                         : "0"}
                     </b>{" "}
-                    dari <b className="text-dark-900">{sortedProjects.length}</b>{" "}
+                    dari{" "}
+                    <b className="text-dark-900">{sortedProjects.length}</b>{" "}
                     Proyek Terbuka
                   </>
                 )}
