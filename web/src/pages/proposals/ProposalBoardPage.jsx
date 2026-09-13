@@ -22,6 +22,8 @@ import {
 } from "./components/ContractActionModals";
 import { WorkroomWorkspaceDetail } from "./components/WorkroomWorkspaceDetail";
 import { WorkspaceHubGrid } from "./components/WorkspaceHubGrid";
+import { ApplicantReviewBoard } from "./components/ApplicantReviewBoard";
+import { PendingProposalView } from "./components/PendingProposalView";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -480,193 +482,171 @@ export function ProposalBoardPage() {
     ? projectSubmissions[0]
     : mhsSubmissions[selectedProposal?.project_id];
 
+  // Determine role & lifecycle mode:
+  const isSelectingProject = Boolean(
+    isUmkm ? selectedProject : selectedProposal,
+  );
+
+  const isApplicantReviewBoardMode = Boolean(
+    isUmkm &&
+    selectedProject &&
+    (selectedProject.status === "OPEN" || selectedProject.status === "BIDDING"),
+  );
+
+  const isPendingProposalMode = Boolean(
+    !isUmkm &&
+    selectedProposal &&
+    (selectedProposal.status === "PENDING" ||
+      selectedProposal.status === "REJECTED" ||
+      selectedProposal.status === "WITHDRAWN"),
+  );
+
+  const isDedicatedWorkroomMode = Boolean(
+    isSelectingProject && !isApplicantReviewBoardMode && !isPendingProposalMode,
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 font-sans">
-      {/* 1. Header Bar: Workspace Title & Wallet Summary */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 sm:p-8 rounded-3xl border border-border shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans flex items-center gap-1.5">
-              {isUmkm ? (
-                <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
-              ) : (
-                <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
-              )}
-              <span>
-                {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
-              </span>
-            </span>
-            <span className="text-muted/60 text-xs">•</span>
-            <span className="text-xs text-muted font-sans font-normal">
-              Pusat Kolaborasi Real-Time & Garansi Escrow
-            </span>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm
-              ? "Kelola Proyek & Ruang Diskusi Terpadu"
-              : "Papan Proyek, Obrolan & Deliverable"}
-          </h1>
-          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
-            {isUmkm
-              ? "Bahas brief secara langsung, evaluasi tawaran pelamar, dan rilis honor saat pekerjaan tuntas."
-              : "Berdiskusi langsung dengan klien, bagikan tautan Figma/Drive, dan serahkan hasil deliverable."}
-          </p>
-        </div>
-
-        {/* Quick Balance Chip */}
-        <div className="flex items-center gap-3 bg-canvas p-3 rounded-2xl border border-border shrink-0 self-start md:self-auto">
-          <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900">
-            <WalletIcon className="w-4 h-4" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-muted uppercase block">
-              {isUmkm ? "Dana Escrow Aktif" : "Saldo Dompet Anda"}
-            </span>
-            <span className="text-xs sm:text-sm font-black text-dark-900">
-              {wallet
-                ? formatCurrency(
-                    isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif,
-                  )
-                : "Rp 0"}
-            </span>
-          </div>
-          <Link to="/wallet">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-1 px-2.5 py-1"
-            >
-              <span>Dompet</span>
-              <ArrowRight className="w-3 h-3 ml-1" />
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* 2. Workspace View: Hub Grid (when no project selected) OR Dedicated Workspace (when project selected) */}
-      {(isUmkm ? !selectedProject : !selectedProposal) ? (
-        <WorkspaceHubGrid
-          isUmkm={isUmkm}
-          projects={myProjects}
-          proposals={proposals}
-          mhsSubmissions={mhsSubmissions}
-          loading={loading}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
-          onSelectProject={handleSelectProject}
-          onSelectProposal={handleSelectProposal}
-        />
-      ) : (
-        <div className="space-y-4">
-          {/* Top Navigation & Quick Project Switcher Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-4 sm:p-5 rounded-3xl border border-border shadow-xs">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleBackToHub}
-                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Semua Proyek</span>
-              </Button>
-              <div className="h-4 w-px bg-border hidden sm:block" />
-              <div className="hidden sm:flex items-center gap-2 text-xs text-muted">
-                <Briefcase className="w-3.5 h-3.5 text-brand-indigo" />
-                <span className="font-semibold text-dark-900 truncate max-w-sm">
-                  {activeProjectTitle}
+      {/* 1. Hub View: Header Bar & Catalog Grid (Only shown when browsing projects) */}
+      {!isSelectingProject && (
+        <>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 sm:p-8 rounded-3xl border border-border shadow-xs">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans flex items-center gap-1.5">
+                  {isUmkm ? (
+                    <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
+                  ) : (
+                    <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
+                  )}
+                  <span>
+                    {isUmkm
+                      ? "Ruang Kerja Klien UMKM"
+                      : "Ruang Kerja Mahasiswa"}
+                  </span>
+                </span>
+                <span className="text-muted/60 text-xs">•</span>
+                <span className="text-xs text-muted font-sans font-normal">
+                  Pusat Kolaborasi Real-Time & Garansi Escrow
                 </span>
               </div>
+
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+                {isUmkm
+                  ? "Kelola Proyek & Ruang Diskusi Terpadu"
+                  : "Papan Proyek, Obrolan & Deliverable"}
+              </h1>
+              <p className="text-xs sm:text-sm text-muted font-sans mt-1">
+                {isUmkm
+                  ? "Bahas brief secara langsung, evaluasi tawaran pelamar, dan rilis honor saat pekerjaan tuntas."
+                  : "Berdiskusi langsung dengan klien, bagikan tautan Figma/Drive, dan serahkan hasil deliverable."}
+              </p>
             </div>
 
-            {/* Quick Switcher Dropdown */}
-            {isUmkm && myProjects.length > 1 && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted text-[11px] font-bold uppercase tracking-wider hidden md:inline">
-                  Ganti Proyek:
-                </span>
-                <select
-                  value={selectedProject?.id || ""}
-                  onChange={(e) => {
-                    const found = myProjects.find(
-                      (p) => p.id === e.target.value,
-                    );
-                    if (found) handleSelectProject(found);
-                  }}
-                  className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
-                >
-                  {myProjects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.judul}
-                    </option>
-                  ))}
-                </select>
+            {/* Quick Balance Chip */}
+            <div className="flex items-center gap-3 bg-canvas p-3 rounded-2xl border border-border shrink-0 self-start md:self-auto">
+              <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900">
+                <WalletIcon className="w-4 h-4" />
               </div>
-            )}
-
-            {!isUmkm && proposals.length > 1 && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted text-[11px] font-bold uppercase tracking-wider hidden md:inline">
-                  Ganti Proyek:
+              <div>
+                <span className="text-[10px] font-bold text-muted uppercase block">
+                  {isUmkm ? "Dana Escrow Aktif" : "Saldo Dompet Anda"}
                 </span>
-                <select
-                  value={selectedProposal?.id || ""}
-                  onChange={(e) => {
-                    const found = proposals.find(
-                      (p) => p.id === e.target.value,
-                    );
-                    if (found) handleSelectProposal(found);
-                  }}
-                  className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
-                >
-                  {proposals.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.project_judul || "Proyek Kolaborasi"}
-                    </option>
-                  ))}
-                </select>
+                <span className="text-xs sm:text-sm font-black text-dark-900">
+                  {wallet
+                    ? formatCurrency(
+                        isUmkm ? wallet.saldo_escrow : wallet.saldo_aktif,
+                      )
+                    : "Rp 0"}
+                </span>
               </div>
-            )}
+              <Link to="/wallet">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs font-bold border-border text-dark-900 hover:bg-surface ml-1 px-2.5 py-1"
+                >
+                  <span>Dompet</span>
+                  <ArrowRight className="w-3 h-3 ml-1" />
+                </Button>
+              </Link>
+            </div>
           </div>
 
-          {/* Dedicated Full-Width Workspace Stage (100% width, no side columns eating space) */}
-          <div className="w-full space-y-4">
-            <WorkroomWorkspaceDetail
-              activeProjectId={activeProjectId}
-              activeProjectTitle={activeProjectTitle}
-              activePartnerName={activePartnerName}
-              activePartnerRole={activePartnerRole}
-              activePartnerPhoto={activePartnerPhoto}
-              hasAcceptedApplicant={hasAcceptedApplicant}
-              isFocusMode={true}
-              setIsFocusMode={setIsFocusMode}
-              allProjects={myProjects}
-              onSelectProject={handleSelectProject}
-              isUmkm={isUmkm}
-              selectedProject={selectedProject}
-              selectedProposal={selectedProposal}
-              activeStageTab={activeStageTab}
-              setActiveStageTab={setActiveStageTab}
-              activeDeliverable={activeDeliverable}
-              projectProposals={projectProposals}
-              handleOpenSubmission={handleOpenSubmission}
-              handleApproveWork={handleApproveWork}
-              setSelectedSubmissionForRevision={
-                setSelectedSubmissionForRevision
-              }
-              setRevisionModalOpen={setRevisionModalOpen}
-              handleRejectProposal={handleRejectProposal}
-              handleAcceptProposal={handleAcceptProposal}
-              parseCoverLetter={parseCoverLetter}
-              onOpenReopenModal={() => setReopenModalOpen(true)}
-              onOpenTerminateModal={() => setTerminateModalOpen(true)}
-              onOpenResignModal={() => setResignModalOpen(true)}
-            />
-          </div>
-        </div>
+          <WorkspaceHubGrid
+            isUmkm={isUmkm}
+            projects={myProjects}
+            proposals={proposals}
+            mhsSubmissions={mhsSubmissions}
+            loading={loading}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+            onSelectProject={handleSelectProject}
+            onSelectProposal={handleSelectProposal}
+          />
+        </>
+      )}
+
+      {/* 2. UMKM Applicant Review Board (Dedicated for OPEN/BIDDING projects) */}
+      {isApplicantReviewBoardMode && (
+        <ApplicantReviewBoard
+          project={selectedProject}
+          proposals={projectProposals}
+          onBack={handleBackToHub}
+          onAcceptProposal={handleAcceptProposal}
+          onRejectProposal={handleRejectProposal}
+          parseCoverLetter={parseCoverLetter}
+          allProjects={myProjects}
+          onSelectProject={handleSelectProject}
+        />
+      )}
+
+      {/* 3. Mahasiswa Pending / Under Review Application View */}
+      {isPendingProposalMode && (
+        <PendingProposalView
+          proposal={selectedProposal}
+          onBack={handleBackToHub}
+          onOpenResignModal={() => setResignModalOpen(true)}
+          parseCoverLetter={parseCoverLetter}
+          allProposals={proposals}
+          onSelectProposal={handleSelectProposal}
+        />
+      )}
+
+      {/* 4. Dedicated Active Workroom Workspace (IN_PROGRESS, REVIEW, DONE, COMPLETED) */}
+      {isDedicatedWorkroomMode && (
+        <WorkroomWorkspaceDetail
+          onBack={handleBackToHub}
+          activeProjectId={activeProjectId}
+          activeProjectTitle={activeProjectTitle}
+          activePartnerName={activePartnerName}
+          activePartnerRole={activePartnerRole}
+          activePartnerPhoto={activePartnerPhoto}
+          hasAcceptedApplicant={hasAcceptedApplicant}
+          isFocusMode={true}
+          setIsFocusMode={setIsFocusMode}
+          allProjects={isUmkm ? myProjects : proposals}
+          onSelectProject={isUmkm ? handleSelectProject : handleSelectProposal}
+          isUmkm={isUmkm}
+          selectedProject={selectedProject}
+          selectedProposal={selectedProposal}
+          activeStageTab={activeStageTab}
+          setActiveStageTab={setActiveStageTab}
+          activeDeliverable={activeDeliverable}
+          projectProposals={projectProposals}
+          handleOpenSubmission={handleOpenSubmission}
+          handleApproveWork={handleApproveWork}
+          setSelectedSubmissionForRevision={setSelectedSubmissionForRevision}
+          setRevisionModalOpen={setRevisionModalOpen}
+          handleRejectProposal={handleRejectProposal}
+          handleAcceptProposal={handleAcceptProposal}
+          parseCoverLetter={parseCoverLetter}
+          onOpenReopenModal={() => setReopenModalOpen(true)}
+          onOpenTerminateModal={() => setTerminateModalOpen(true)}
+          onOpenResignModal={() => setResignModalOpen(true)}
+        />
       )}
 
       {/* Modals for Deliverables & Reviews */}

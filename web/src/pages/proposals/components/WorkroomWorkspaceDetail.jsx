@@ -23,6 +23,7 @@ import {
   MessageSquareOff,
   Maximize2,
   Minimize2,
+  ArrowLeft,
 } from "lucide-react";
 
 function RevisionChecklistInteractive({ items = [], isMhs = false }) {
@@ -108,6 +109,7 @@ function RevisionChecklistInteractive({ items = [], isMhs = false }) {
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
 
 export function WorkroomWorkspaceDetail({
+  onBack,
   activeProjectId,
   activeProjectTitle,
   activePartnerName,
@@ -161,35 +163,49 @@ export function WorkroomWorkspaceDetail({
       {/* Stage Top Bar (Project Card Summary) */}
       <div className="bg-surface rounded-3xl border border-border p-5 sm:p-6 shadow-xs space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3.5">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
-                {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
-              </span>
-              {isFocusMode && allProjects.length > 1 && (
-                <div className="relative inline-block">
-                  <select
-                    value={activeProjectId}
-                    onChange={(e) => {
-                      const proj = allProjects.find(
-                        (p) => p.id === e.target.value,
-                      );
-                      if (proj && onSelectProject) onSelectProject(proj);
-                    }}
-                    className="text-[11px] font-bold py-1 px-2.5 rounded-lg bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
-                  >
-                    {allProjects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.judul}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onBack}
+                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Semua Proyek</span>
+              </Button>
+            )}
+            {onBack && <div className="h-4 w-px bg-border hidden sm:block" />}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
+                  {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
+                </span>
+                {allProjects.length > 1 && (
+                  <div className="relative inline-block">
+                    <select
+                      value={activeProjectId}
+                      onChange={(e) => {
+                        const proj = allProjects.find(
+                          (p) => p.id === e.target.value,
+                        );
+                        if (proj && onSelectProject) onSelectProject(proj);
+                      }}
+                      className="text-[11px] font-bold py-1 px-2.5 rounded-lg bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+                    >
+                      {allProjects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.judul || p.project_judul}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+              <h2 className="text-base sm:text-lg font-bold text-dark-900 leading-snug">
+                {activeProjectTitle}
+              </h2>
             </div>
-            <h2 className="text-base sm:text-lg font-bold text-dark-900 leading-snug">
-              {activeProjectTitle}
-            </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">

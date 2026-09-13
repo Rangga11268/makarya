@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
@@ -80,9 +80,11 @@ export function WorkspaceHubGrid({
       return {
         all: projects.length,
         inProgress: projects.filter((p) => p.status === "IN_PROGRESS").length,
-        open: projects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length,
+        open: projects.filter(
+          (p) => p.status === "OPEN" || p.status === "BIDDING",
+        ).length,
         completed: projects.filter(
-          (p) => p.status === "DONE" || p.status === "COMPLETED"
+          (p) => p.status === "DONE" || p.status === "COMPLETED",
         ).length,
       };
     } else {
@@ -91,13 +93,13 @@ export function WorkspaceHubGrid({
         inProgress: proposals.filter(
           (p) =>
             p.status === "ACCEPTED" &&
-            mhsSubmissions[p.project_id]?.status !== "APPROVED"
+            mhsSubmissions[p.project_id]?.status !== "APPROVED",
         ).length,
         pending: proposals.filter((p) => p.status === "PENDING").length,
         completed: proposals.filter(
           (p) =>
             p.status === "COMPLETED" ||
-            mhsSubmissions[p.project_id]?.status === "APPROVED"
+            mhsSubmissions[p.project_id]?.status === "APPROVED",
         ).length,
       };
     }
@@ -106,13 +108,21 @@ export function WorkspaceHubGrid({
   const tabs = isUmkm
     ? [
         { key: "ALL", label: "Semua Proyek", count: counts.all },
-        { key: "IN_PROGRESS", label: "Sedang Berjalan", count: counts.inProgress },
+        {
+          key: "IN_PROGRESS",
+          label: "Sedang Berjalan",
+          count: counts.inProgress,
+        },
         { key: "OPEN", label: "Seleksi Pelamar", count: counts.open },
         { key: "COMPLETED", label: "Selesai", count: counts.completed },
       ]
     : [
         { key: "ALL", label: "Semua Lamaran", count: counts.all },
-        { key: "IN_PROGRESS", label: "Sedang Dikerjakan", count: counts.inProgress },
+        {
+          key: "IN_PROGRESS",
+          label: "Sedang Dikerjakan",
+          count: counts.inProgress,
+        },
         { key: "PENDING", label: "Menunggu Seleksi", count: counts.pending },
         { key: "COMPLETED", label: "Selesai", count: counts.completed },
       ];
@@ -257,7 +267,8 @@ export function WorkspaceHubGrid({
 // Card for UMKM Project in the Catalog Grid
 function UmkmProjectGridCard({ project, onOpen }) {
   const isDone = project.status === "DONE" || project.status === "COMPLETED";
-  const overdue = project.status === "IN_PROGRESS" && isExpired(project.deadline);
+  const overdue =
+    project.status === "IN_PROGRESS" && isExpired(project.deadline);
   const isInProgress = project.status === "IN_PROGRESS";
 
   return (
@@ -273,17 +284,17 @@ function UmkmProjectGridCard({ project, onOpen }) {
               isDone
                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                 : overdue
-                ? "bg-rose-50 text-rose-700 border-rose-200"
-                : isInProgress
-                ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
-                : "bg-amber-50 text-amber-800 border-amber-200"
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : isInProgress
+                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                    : "bg-amber-50 text-amber-800 border-amber-200"
             }`}
           >
             {isDone
               ? "Selesai"
               : overdue
-              ? "Lewat Tenggat"
-              : formatStatus(project.status)}
+                ? "Lewat Tenggat"
+                : formatStatus(project.status)}
           </span>
         </div>
 
@@ -367,9 +378,26 @@ function UmkmProjectGridCard({ project, onOpen }) {
         <Button
           onClick={onOpen}
           variant="outline"
-          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-center gap-2 shadow-2xs"
+          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs group-hover:border-dark-900"
         >
-          <span>Buka Ruang Kerja</span>
+          {project.status === "OPEN" || project.status === "BIDDING" ? (
+            <span className="flex items-center gap-1.5 text-brand-indigo group-hover:text-white">
+              <Users className="w-3.5 h-3.5" />
+              <span>Seleksi Pelamar ({project.total_pelamar || 0})</span>
+            </span>
+          ) : isInProgress ? (
+            <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Masuk Ruang Kerja</span>
+            </span>
+          ) : isDone ? (
+            <span className="flex items-center gap-1.5 text-slate-700 group-hover:text-white">
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Arsip & Faktur Escrow</span>
+            </span>
+          ) : (
+            <span>Buka Detail Proyek</span>
+          )}
           <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </Button>
       </div>
@@ -398,23 +426,23 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
               isDone
                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                 : overdue
-                ? "bg-rose-50 text-rose-700 border-rose-200"
-                : isAccepted
-                ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
-                : proposal.status === "REJECTED"
-                ? "bg-rose-50 text-rose-800 border-rose-200"
-                : "bg-amber-50 text-amber-800 border-amber-200"
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : isAccepted
+                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                    : proposal.status === "REJECTED"
+                      ? "bg-rose-50 text-rose-800 border-rose-200"
+                      : "bg-amber-50 text-amber-800 border-amber-200"
             }`}
           >
             {isDone
               ? "Selesai"
               : overdue
-              ? "Lewat Tenggat"
-              : isAccepted
-              ? "Dikerjakan"
-              : proposal.status === "REJECTED"
-              ? "Ditolak"
-              : "Menunggu Seleksi"}
+                ? "Lewat Tenggat"
+                : isAccepted
+                  ? "Dikerjakan"
+                  : proposal.status === "REJECTED"
+                    ? "Ditolak"
+                    : "Menunggu Seleksi"}
           </span>
         </div>
 
@@ -478,9 +506,26 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
         <Button
           onClick={onOpen}
           variant="outline"
-          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-center gap-2 shadow-2xs"
+          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs group-hover:border-dark-900"
         >
-          <span>Buka Ruang Kerja</span>
+          {isAccepted ? (
+            <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Masuk Ruang Kerja</span>
+            </span>
+          ) : isDone ? (
+            <span className="flex items-center gap-1.5 text-slate-700 group-hover:text-white">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Arsip & Portofolio</span>
+            </span>
+          ) : proposal.status === "PENDING" ? (
+            <span className="flex items-center gap-1.5 text-amber-800 group-hover:text-white">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Lihat Status Lamaran</span>
+            </span>
+          ) : (
+            <span>Rincian Lamaran</span>
+          )}
           <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </Button>
       </div>

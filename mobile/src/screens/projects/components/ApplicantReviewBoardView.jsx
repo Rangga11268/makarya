@@ -75,7 +75,9 @@ export function ApplicantReviewBoardView({
         >
           <FileText size={14} color="#2563EB" />
           <Text style={styles.briefToggleText}>
-            {isBriefExpanded ? "Sembunyikan Rincian Brief" : "Lihat Rincian Brief Proyek"}
+            {isBriefExpanded
+              ? "Sembunyikan Rincian Brief"
+              : "Lihat Rincian Brief Proyek"}
           </Text>
           {isBriefExpanded ? (
             <ChevronUp size={16} color="#2563EB" />
@@ -114,7 +116,8 @@ export function ApplicantReviewBoardView({
             {proposals.length} Proposal Mahasiswa Masuk
           </Text>
           <Text style={styles.applicantCountSub}>
-            Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk memulai kontrak kerja.
+            Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk
+            memulai kontrak kerja.
           </Text>
         </View>
       </View>
@@ -126,7 +129,9 @@ export function ApplicantReviewBoardView({
             <Users size={36} color="#94A3B8" />
             <Text style={styles.emptyTitle}>Belum Ada Proposal Masuk</Text>
             <Text style={styles.emptySub}>
-              Proyek Anda sedang aktif ditayangkan di katalog eksplorasi mahasiswa. Begitu mahasiswa mengajukan penawaran, daftar kandidat akan muncul di sini.
+              Proyek Anda sedang aktif ditayangkan di katalog eksplorasi
+              mahasiswa. Begitu mahasiswa mengajukan penawaran, daftar kandidat
+              akan muncul di sini.
             </Text>
           </View>
         ) : (

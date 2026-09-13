@@ -135,7 +135,9 @@ export function WorkroomActiveView({
           </View>
 
           <View style={{ flex: 1, marginLeft: 12 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            >
               <Text style={styles.partnerRoleLabel}>
                 {isUmkmOwner ? "Mahasiswa Pelaksana" : "Klien Pemilik Proyek"}
               </Text>
@@ -286,7 +288,8 @@ export function WorkroomActiveView({
                 <View style={styles.overdueCallout}>
                   <AlertTriangle size={14} color="#DC2626" />
                   <Text style={styles.overdueCalloutText}>
-                    Tenggat waktu pengerjaan telah lewat. Anda dapat berkoordinasi via ruang chat.
+                    Tenggat waktu pengerjaan telah lewat. Anda dapat
+                    berkoordinasi via ruang chat.
                   </Text>
                 </View>
               )}
