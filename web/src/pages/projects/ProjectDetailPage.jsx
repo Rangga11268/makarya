@@ -41,6 +41,8 @@ import {
   PlusCircle,
   XCircle,
   FileText,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { ProjectChatModal } from "../../components/features/ProjectChatModal";
 
@@ -52,6 +54,7 @@ export function ProjectDetailPage() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [isBriefExpanded, setIsBriefExpanded] = useState(false);
 
   const getCategorySvg = (catCode) => {
     switch (catCode) {
@@ -93,7 +96,21 @@ export function ProjectDetailPage() {
     navigate(`/projects/${id}/apply`);
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: project?.judul || "Peluang Proyek Makarya",
+          text: `Cek peluang proyek "${project?.judul}" di Makarya:`,
+          url: window.location.href,
+        });
+        return;
+      } catch (err) {
+        if (err.name === "AbortError") {
+          return;
+        }
+      }
+    }
     navigator.clipboard.writeText(window.location.href);
     addToast("Tautan proyek disalin ke clipboard!", "success");
   };
@@ -152,7 +169,7 @@ export function ProjectDetailPage() {
   const isOwner = user?.id === project.umkm_id;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-28 sm:pb-32 lg:pb-10 space-y-8 font-sans">
       {/* 1. Breadcrumbs & Top Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-muted">
@@ -295,22 +312,22 @@ export function ProjectDetailPage() {
             </div>
 
             {/* 4-Stat Metrics Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border">
-              <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-4 border-t border-border">
+              <div className="p-2.5 sm:p-3 bg-canvas rounded-2xl border border-border/80 min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-muted block truncate">
                   Batas Anggaran:
                 </span>
-                <span className="text-sm font-black text-dark-900 block mt-0.5">
+                <span className="text-xs sm:text-sm font-black text-dark-900 block mt-0.5 tabular-nums truncate">
                   {formatCurrency(project.budget_max)}
                 </span>
               </div>
 
-              <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">
+              <div className="p-2.5 sm:p-3 bg-canvas rounded-2xl border border-border/80 min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-muted block truncate">
                   Tenggat Waktu:
                 </span>
                 <span
-                  className={`text-sm font-bold block mt-0.5 ${expired ? "text-rose-600" : daysLeft <= 3 ? "text-amber-600" : "text-dark-900"}`}
+                  className={`text-xs sm:text-sm font-bold block mt-0.5 truncate ${expired ? "text-rose-600" : daysLeft <= 3 ? "text-amber-600" : "text-dark-900"}`}
                 >
                   {expired
                     ? `Kedaluwarsa (${formatDate(project.deadline)})`
@@ -320,21 +337,21 @@ export function ProjectDetailPage() {
                 </span>
               </div>
 
-              <div className="p-3 bg-canvas rounded-2xl border border-border/80">
-                <span className="text-[11px] font-semibold text-muted block">
+              <div className="p-2.5 sm:p-3 bg-canvas rounded-2xl border border-border/80 min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-muted block truncate">
                   Total Pelamar:
                 </span>
-                <span className="text-sm font-bold text-dark-900 block mt-0.5">
+                <span className="text-xs sm:text-sm font-bold text-dark-900 block mt-0.5 truncate">
                   {project.total_pelamar || 0} Mahasiswa
                 </span>
               </div>
 
-              <div className="p-3 bg-emerald-50/60 rounded-2xl border border-emerald-200/80">
-                <span className="text-[11px] font-semibold text-emerald-800 block">
+              <div className="p-2.5 sm:p-3 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-800 block truncate">
                   Proteksi Escrow:
                 </span>
-                <span className="text-sm font-bold text-emerald-900 block mt-0.5 flex items-center gap-1">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs sm:text-sm font-bold text-emerald-900 block mt-0.5 flex items-center gap-1 truncate">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   100% Aman
                 </span>
               </div>
@@ -453,9 +470,43 @@ export function ProjectDetailPage() {
                 Rincian Kebutuhan & Deskripsi Brief UMKM
               </h3>
 
-              <div className="p-5 bg-canvas rounded-2xl border border-border text-xs text-slate-800 leading-relaxed font-normal whitespace-pre-line">
-                {project.deskripsi_raw}
+              <div className="relative">
+                <div
+                  className={`p-5 bg-canvas rounded-2xl border border-border text-xs text-slate-800 leading-relaxed font-normal whitespace-pre-line transition-all duration-300 ${
+                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 380
+                      ? "max-h-52 overflow-hidden"
+                      : "max-h-none"
+                  }`}
+                >
+                  {project.deskripsi_raw}
+                </div>
+
+                {!isBriefExpanded && (project.deskripsi_raw?.length || 0) > 380 && (
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-canvas via-canvas/80 to-transparent pointer-events-none rounded-b-2xl" />
+                )}
               </div>
+
+              {(project.deskripsi_raw?.length || 0) > 380 && (
+                <div className="flex justify-start">
+                  <button
+                    type="button"
+                    onClick={() => setIsBriefExpanded(!isBriefExpanded)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-xs font-bold text-brand-indigo hover:bg-brand-indigo/5 transition-colors"
+                  >
+                    {isBriefExpanded ? (
+                      <>
+                        <span>Sembunyikan Sebagian</span>
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </>
+                    ) : (
+                      <>
+                        <span>Baca Selengkapnya</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
 
               {/* Realtime Chat Banner */}
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
@@ -769,6 +820,87 @@ export function ProjectDetailPage() {
               3. Resolusi sengketa diawasi langsung oleh sistem audit Makarya.
             </p>
           </Card>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* MOBILE PERSISTENT STICKY ACTION DOCK (Antislop & UI Pro Max compliant) */}
+      {/* ========================================================================= */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-t border-border shadow-lg px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-all">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider block truncate">
+              Pagu Anggaran
+            </span>
+            <div className="text-base sm:text-lg font-black text-dark-900 tracking-tight truncate tabular-nums">
+              {formatCurrency(project.budget_max)}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Quick Chat / Discussion on mobile */}
+            <button
+              type="button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  addToast(
+                    "Silakan masuk terlebih dahulu untuk membuka ruang obrolan.",
+                    "info",
+                  );
+                  navigate("/login");
+                  return;
+                }
+                setChatModalOpen(true);
+              }}
+              className="p-2.5 rounded-2xl border border-border bg-canvas text-dark-900 hover:bg-surface transition-colors flex items-center justify-center shadow-2xs"
+              aria-label="Buka Ruang Obrolan Realtime"
+              title="Buka Ruang Obrolan Realtime"
+            >
+              <MessageSquare className="w-4 h-4 text-brand-indigo" />
+            </button>
+
+            {isOwner ? (
+              <Link to="/proposals">
+                <Button
+                  variant="brand"
+                  size="md"
+                  className="text-xs font-bold shadow-brand py-2.5 px-4"
+                >
+                  Kelola Pelamar
+                </Button>
+              </Link>
+            ) : user?.role === "UMKM" ? (
+              <Link to="/projects/new">
+                <Button
+                  variant="outline"
+                  size="md"
+                  className="text-xs font-bold border-border text-dark-900 py-2.5 px-3"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                  Pasang Proyek
+                </Button>
+              </Link>
+            ) : expired ? (
+              <Button
+                variant="secondary"
+                size="md"
+                disabled
+                className="text-xs font-semibold py-2.5 px-3 opacity-60 bg-slate-100 text-slate-500 border border-slate-200"
+              >
+                Ditutup
+              </Button>
+            ) : (
+              <Button
+                variant="brand"
+                size="md"
+                onClick={handleApplyClick}
+                className="text-xs font-bold shadow-brand py-2.5 px-4"
+              >
+                <Send className="w-3.5 h-3.5 mr-1.5" />
+                {isAuthenticated ? "Lamar Proyek" : "Masuk & Lamar"}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

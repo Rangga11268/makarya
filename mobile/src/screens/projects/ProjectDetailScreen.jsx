@@ -58,6 +58,8 @@ import {
   Link2,
   FileText,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Check,
   MessageSquare,
   AlertTriangle,
@@ -81,6 +83,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     route.params?.initialTab || "proposals",
   );
   const [actionLoading, setActionLoading] = useState(false);
+  const [isBriefExpanded, setIsBriefExpanded] = useState(false);
 
   // Proposal modal for Mahasiswa
   const [proposalModal, setProposalModal] = useState(false);
@@ -734,7 +737,11 @@ export function ProjectDetailScreen({ route, navigation }) {
                   <Text style={styles.floatingHeroBudgetMicro}>
                     PAGU MAKSIMAL ANGGARAN
                   </Text>
-                  <Text style={styles.floatingHeroBudgetValue}>
+                  <Text
+                    style={styles.floatingHeroBudgetValue}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {formatCurrency(project.budget_max)}
                   </Text>
                 </View>
@@ -1021,9 +1028,48 @@ export function ProjectDetailScreen({ route, navigation }) {
               {/* 4. Description & Scope */}
               <View style={styles.sectionBox}>
                 <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
-                <Text style={styles.descriptionText}>
+                <Text
+                  style={styles.descriptionText}
+                  numberOfLines={
+                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
+                      ? 6
+                      : undefined
+                  }
+                >
                   {project.deskripsi_raw}
                 </Text>
+                {(project.deskripsi_raw?.length || 0) > 280 ? (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                      marginTop: 8,
+                      alignSelf: "flex-start",
+                      paddingVertical: 4,
+                    }}
+                    onPress={() => setIsBriefExpanded(!isBriefExpanded)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: FONTS.bodyMedium,
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: COLORS.brandIndigo,
+                      }}
+                    >
+                      {isBriefExpanded
+                        ? "Sembunyikan Sebagian"
+                        : "Baca Selengkapnya"}
+                    </Text>
+                    {isBriefExpanded ? (
+                      <ChevronUp size={14} color={COLORS.brandIndigo} />
+                    ) : (
+                      <ChevronDown size={14} color={COLORS.brandIndigo} />
+                    )}
+                  </TouchableOpacity>
+                ) : null}
               </View>
 
               {/* 4B. Modular Deliverables Reel */}
