@@ -109,6 +109,10 @@ function RevisionChecklistInteractive({ items = [], isMhs = false }) {
 }
 
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
+import { WorkspaceProjectHUD } from "./workspace/WorkspaceProjectHUD";
+import { SmartDeliverableCard } from "./workspace/SmartDeliverableCard";
+import { AssetHandoffModal } from "./workspace/AssetHandoffModal";
+import { WorkspaceActivityTimeline } from "./workspace/WorkspaceActivityTimeline";
 
 export function WorkroomWorkspaceDetail({
   onBack,
@@ -129,6 +133,7 @@ export function WorkroomWorkspaceDetail({
   activeStageTab,
   setActiveStageTab,
   activeDeliverable,
+  projectSubmissions = [],
   projectProposals = [],
   handleOpenSubmission,
   handleApproveWork,
@@ -144,6 +149,19 @@ export function WorkroomWorkspaceDetail({
   onOpenFileDisputeModal,
 }) {
   const [invoiceModalOpen, setInvoiceModalOpen] = React.useState(false);
+  const [handoffModalOpen, setHandoffModalOpen] = React.useState(false);
+  const [pendingSubmissionId, setPendingSubmissionId] = React.useState(null);
+  const [approvalLoading, setApprovalLoading] = React.useState(false);
+
+  const effectiveSubmissions = React.useMemo(() => {
+    if (projectSubmissions && projectSubmissions.length > 0) {
+      return projectSubmissions;
+    }
+    if (activeDeliverable) {
+      return [activeDeliverable];
+    }
+    return [];
+  }, [projectSubmissions, activeDeliverable]);
 
   const isProjectCompleted = Boolean(
     selectedProject?.status === "DONE" ||
@@ -175,6 +193,15 @@ export function WorkroomWorkspaceDetail({
 
   return (
     <div className="space-y-4">
+      {/* 1. Real-time Project Health & Pipeline HUD */}
+      <WorkspaceProjectHUD
+        project={selectedProject || selectedProposal}
+        activeDeliverable={activeDeliverable}
+        isUmkm={isUmkm}
+        onPingProgress={() => setActiveStageTab("chat")}
+        isProjectCompleted={isProjectCompleted}
+      />
+
       {/* Stage Top Bar (Project Card Summary) */}
       <div className="bg-surface rounded-3xl border border-border p-4 sm:p-6 shadow-xs space-y-3.5">
         {/* Unified Responsive Stage Top Bar */}
@@ -688,6 +715,19 @@ export function WorkroomWorkspaceDetail({
             <FileText className="w-3.5 h-3.5" />
             <span>Brief & Kontrak</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveStageTab("timeline")}
+            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              activeStageTab === "timeline"
+                ? "bg-dark-900 text-white shadow-xs"
+                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Linimasa Audit</span>
+          </button>
         </div>
       </div>
 
@@ -774,162 +814,42 @@ export function WorkroomWorkspaceDetail({
             </span>
           </div>
 
-          {activeDeliverable ? (
+          {effectiveSubmissions.length > 0 ? (
             <div className="space-y-4">
-              <div className="p-4 bg-canvas rounded-2xl border border-border space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-dark-900">
-                    Tautan Berkas Hasil Pekerjaan:
-                  </span>
-                  <a
-                    href={activeDeliverable.url_berkas}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-dark-900 text-white text-xs font-bold hover:bg-dark-800 transition-colors shadow-xs"
+              {effectiveSubmissions.map((sub, idx) => (
+                <SmartDeliverableCard
+                  key={sub.id || idx}
+                  submission={sub}
+                  isLatest={idx === 0}
+                  index={idx}
+                  totalSubmissions={effectiveSubmissions.length}
+                  isUmkm={isUmkm}
+                  isProjectCompleted={isProjectCompleted}
+                  onRequestRevision={(item) => {
+                    setSelectedSubmissionForRevision(item || activeDeliverable);
+                    setRevisionModalOpen(true);
+                  }}
+                  onApprove={(item) => {
+                    setPendingSubmissionId(item?.id || activeDeliverable?.id);
+                    setHandoffModalOpen(true);
+                  }}
+                />
+              ))}
+
+              {/* Mahasiswa Update Deliverable Action Button */}
+              {!isUmkm && !isProjectCompleted && (
+                <div className="pt-2 flex justify-end">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={() =>
+                      handleOpenSubmission(selectedProposal.project_id)
+                    }
+                    className="text-xs font-bold shadow-brand"
                   >
-                    <span>Buka / Unduh Berkas Deliverable</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                {activeDeliverable.catatan_pengiriman &&
-                  (() => {
-                    const note = activeDeliverable.catatan_pengiriman;
-                    const isRevision =
-                      note.includes("[Revisi #") ||
-                      activeDeliverable.status === "REVISION_REQUESTED";
-
-                    const lines = note.split("\n");
-                    const checklistItems = lines
-                      .filter(
-                        (l) =>
-                          l.trim().startsWith("- [ ]") ||
-                          l.trim().startsWith("- [x]"),
-                      )
-                      .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
-
-                    const generalNote = lines
-                      .filter(
-                        (l) =>
-                          !l.trim().startsWith("- [ ]") &&
-                          !l.trim().startsWith("- [x]") &&
-                          !l
-                            .trim()
-                            .toLowerCase()
-                            .startsWith("daftar poin perbaikan"),
-                      )
-                      .join("\n")
-                      .trim();
-
-                    return (
-                      <div className="space-y-2.5">
-                        <div className="text-xs text-dark-900/90 bg-surface p-3.5 rounded-xl border border-border">
-                          <span className="font-bold text-dark-900 block mb-0.5">
-                            {isRevision
-                              ? "Catatan Permintaan Revisi Klien:"
-                              : "Catatan Pengiriman Mahasiswa:"}
-                          </span>
-                          <p className="whitespace-pre-line leading-relaxed">
-                            {generalNote || note}
-                          </p>
-                        </div>
-
-                        {checklistItems.length > 0 && (
-                          <RevisionChecklistInteractive
-                            items={checklistItems}
-                            isMhs={!isUmkm}
-                          />
-                        )}
-                      </div>
-                    );
-                  })()}
-
-                <div className="flex items-center justify-between pt-1 text-[11px] text-muted">
-                  <span>
-                    Jumlah Revisi:{" "}
-                    <b>{activeDeliverable.jumlah_revisi || 0} dari 2 kali</b>
-                  </span>
-                  <span>
-                    Diserahkan:{" "}
-                    {formatDate(
-                      activeDeliverable.submitted_at ||
-                        activeDeliverable.created_at,
-                    )}
-                  </span>
-                </div>
-              </div>
-
-              {/* UMKM Action Bar */}
-              {isUmkm &&
-                activeDeliverable.status !== "APPROVED" &&
-                activeDeliverable.status !== "COMPLETED" && (
-                  <div className="pt-2 flex flex-col sm:flex-row justify-end gap-2.5">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSubmissionForRevision(activeDeliverable);
-                        setRevisionModalOpen(true);
-                      }}
-                      disabled={activeDeliverable.jumlah_revisi >= 2}
-                      className="text-xs font-bold border-border text-dark-900 hover:bg-canvas"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                      {activeDeliverable.jumlah_revisi >= 2
-                        ? "Batas Revisi Habis (2/2)"
-                        : "Minta Revisi"}
-                    </Button>
-
-                    <Button
-                      variant="brand"
-                      size="sm"
-                      onClick={() => handleApproveWork(activeDeliverable.id)}
-                      className="text-xs font-bold shadow-brand"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                      Setujui & Cairkan Honor Escrow
-                    </Button>
-                  </div>
-                )}
-
-              {/* Mahasiswa Update Deliverable Action */}
-              {!isUmkm &&
-                activeDeliverable.status !== "APPROVED" &&
-                activeDeliverable.status !== "COMPLETED" && (
-                  <div className="pt-2 flex justify-end">
-                    <Button
-                      variant="brand"
-                      size="sm"
-                      onClick={() =>
-                        handleOpenSubmission(selectedProposal.project_id)
-                      }
-                      className="text-xs font-bold shadow-brand"
-                    >
-                      <UploadCloud className="w-3.5 h-3.5 mr-1" />
-                      Perbarui Berkas Deliverable
-                    </Button>
-                  </div>
-                )}
-
-              {/* Approved Completed Success Banner */}
-              {(activeDeliverable.status === "APPROVED" ||
-                activeDeliverable.status === "COMPLETED") && (
-                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center justify-between gap-3 text-xs text-emerald-950">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <div>
-                      <span className="font-bold block">
-                        Deliverable Disetujui & Proyek Selesai!
-                      </span>
-                      <span className="text-[11px] text-emerald-800">
-                        Dana honor escrow telah 100% diteruskan ke dompet
-                        mahasiswa.
-                      </span>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-600 text-white font-extrabold text-[10px] uppercase">
-                    Lunas & Tuntas
-                  </span>
+                    <UploadCloud className="w-3.5 h-3.5 mr-1" />
+                    Perbarui Berkas Deliverable
+                  </Button>
                 </div>
               )}
             </div>
@@ -1385,6 +1305,18 @@ export function WorkroomWorkspaceDetail({
         </div>
       )}
 
+      {/* STAGE TAB 5: AUDIT ACTIVITY TIMELINE */}
+      {activeStageTab === "timeline" && (
+        <div className="animate-in fade-in duration-200">
+          <WorkspaceActivityTimeline
+            project={selectedProject || selectedProposal}
+            submissions={effectiveSubmissions}
+            selectedProposal={selectedProposal}
+            isUmkm={isUmkm}
+          />
+        </div>
+      )}
+
       {/* Official Escrow Invoice Receipt Modal */}
       <InvoiceReceiptModal
         isOpen={invoiceModalOpen}
@@ -1393,6 +1325,28 @@ export function WorkroomWorkspaceDetail({
         proposal={selectedProposal}
         umkmName={isUmkm ? undefined : activePartnerName}
         mhsName={isUmkm ? activePartnerName : undefined}
+      />
+
+      {/* Official Asset Handoff Protocol Modal (Before Escrow Payout) */}
+      <AssetHandoffModal
+        isOpen={handoffModalOpen}
+        onClose={() => setHandoffModalOpen(false)}
+        onConfirm={async () => {
+          try {
+            setApprovalLoading(true);
+            if (handleApproveWork && pendingSubmissionId) {
+              await handleApproveWork(pendingSubmissionId);
+            }
+            setHandoffModalOpen(false);
+          } finally {
+            setApprovalLoading(false);
+          }
+        }}
+        projectTitle={activeProjectTitle}
+        budgetAmount={
+          isUmkm ? selectedProject?.budget_max : selectedProposal?.harga_tawar
+        }
+        loading={approvalLoading}
       />
     </div>
   );

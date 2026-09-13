@@ -688,6 +688,13 @@ export function ProposalBoardPage() {
           activeStageTab={activeStageTab}
           setActiveStageTab={setActiveStageTab}
           activeDeliverable={activeDeliverable}
+          projectSubmissions={
+            isUmkm
+              ? projectSubmissions
+              : activeDeliverable
+                ? [activeDeliverable]
+                : []
+          }
           projectProposals={projectProposals}
           handleOpenSubmission={handleOpenSubmission}
           handleApproveWork={handleApproveWork}

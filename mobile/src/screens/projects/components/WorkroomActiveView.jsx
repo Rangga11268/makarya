@@ -36,6 +36,10 @@ import {
   Users,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../../hooks/useResponsiveLayout";
+import { WorkroomProjectHUD } from "./workroom/WorkroomProjectHUD";
+import { MobileSmartDeliverableCard } from "./workroom/MobileSmartDeliverableCard";
+import { MobileAssetHandoffModal } from "./workroom/MobileAssetHandoffModal";
+import { MobileActivityTimeline } from "./workroom/MobileActivityTimeline";
 
 export function WorkroomActiveView({
   project,
@@ -56,9 +60,23 @@ export function WorkroomActiveView({
   actionLoading = false,
   selectedSubmissionToApprove,
 }) {
-  const [activeTab, setActiveTab] = useState("deliverable"); // 'deliverable' | 'brief' | 'escrow'
+  const [activeTab, setActiveTab] = useState("deliverable"); // 'deliverable' | 'timeline' | 'brief' | 'escrow'
+  const [handoffModalVisible, setHandoffModalVisible] = useState(false);
+  const [handoffSub, setHandoffSub] = useState(null);
   const { isLandscape, isCompact, responsiveContainerStyle } =
     useResponsiveLayout();
+
+  const handleTriggerApproveHandoff = (sub) => {
+    setHandoffSub(sub);
+    setHandoffModalVisible(true);
+  };
+
+  const handleConfirmHandoff = () => {
+    setHandoffModalVisible(false);
+    if (onOpenApproveModal && handoffSub) {
+      onOpenApproveModal(handoffSub);
+    }
+  };
 
   const isProjectExpired =
     Boolean(project?.deadline && isExpired(project.deadline)) ||
@@ -143,6 +161,23 @@ export function WorkroomActiveView({
       showsVerticalScrollIndicator={false}
     >
       <View style={responsiveContainerStyle}>
+        {/* Project Health & Pipeline HUD */}
+        <WorkroomProjectHUD
+          project={project}
+          activeDeliverable={submissions[0]}
+          isUmkmOwner={isUmkmOwner}
+          onPingProgress={() => {
+            navigation.navigate("Chat", {
+              projectId: project.id,
+              projectTitle: project.judul,
+              partnerName: resolvedPartnerName,
+              partnerPhoto: activePartnerPhoto,
+              partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+            });
+          }}
+          isProjectCompleted={isProjectCompleted}
+        />
+
         {/* 1. Unified Partner & Project Hero Card (Flat, zero card-ception) */}
         <View style={styles.heroCard}>
           {/* Top: Partner Profile & Clean Chat Shortcut */}
@@ -266,6 +301,28 @@ export function WorkroomActiveView({
               ]}
             >
               Deliverable ({submissions.length})
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.segmentedTab,
+              activeTab === "timeline" && styles.segmentedTabActive,
+            ]}
+            onPress={() => setActiveTab("timeline")}
+            activeOpacity={0.75}
+          >
+            <Clock
+              size={13}
+              color={activeTab === "timeline" ? "#0F172A" : "#64748B"}
+            />
+            <Text
+              style={[
+                styles.segmentedTabText,
+                activeTab === "timeline" && styles.segmentedTabTextActive,
+              ]}
+            >
+              Linimasa
             </Text>
           </TouchableOpacity>
 
@@ -400,77 +457,39 @@ export function WorkroomActiveView({
                 )}
               </View>
             ) : (
-              submissions.map((sub) => (
-                <View key={sub.id} style={styles.deliverableCard}>
-                  {/* Header: Title, Date, and Status */}
-                  <View style={styles.deliverableHeaderRow}>
-                    <View style={styles.deliverableIconCircle}>
-                      <FileCheck size={18} color="#2563EB" />
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 10 }}>
-                      <Text style={styles.deliverableCardTitle}>
-                        Berkas Deliverable Terkirim
-                      </Text>
-                      <Text style={styles.deliverableCardDate}>
-                        Dikirim pada{" "}
-                        {formatDate(
-                          sub.submitted_at || sub.created_at || new Date(),
-                        )}
-                      </Text>
-                    </View>
-                    <View style={styles.submittedPill}>
-                      <Text style={styles.submittedPillText}>Terkirim</Text>
-                    </View>
-                  </View>
-
-                  {/* Direct Link Row */}
-                  <TouchableOpacity
-                    style={styles.fileLinkRow}
-                    onPress={() => {
-                      if (sub.url_berkas) {
-                        Linking.openURL(sub.url_berkas).catch(() => {});
-                      }
+              <View style={{ gap: 4 }}>
+                {submissions.map((sub, idx) => (
+                  <MobileSmartDeliverableCard
+                    key={sub.id || idx}
+                    submission={{
+                      ...sub,
+                      file_url: sub.url_berkas || sub.file_url,
+                      catatan: sub.catatan_pengiriman || sub.catatan,
                     }}
-                    activeOpacity={0.7}
-                  >
-                    <Link2 size={15} color="#2563EB" />
-                    <Text style={styles.fileLinkText} numberOfLines={1}>
-                      {sub.url_berkas}
-                    </Text>
-                    <ExternalLink size={13} color="#64748B" />
-                  </TouchableOpacity>
+                    isLatest={idx === 0}
+                    index={idx}
+                    totalSubmissions={submissions.length}
+                    isUmkmOwner={isUmkmOwner}
+                    isProjectCompleted={isProjectCompleted}
+                    onRequestRevision={(item) =>
+                      onOpenRevisionModal && onOpenRevisionModal(item)
+                    }
+                    onApprove={handleTriggerApproveHandoff}
+                  />
+                ))}
 
-                  {/* Clean Note Content */}
-                  {renderSubmissionNote(sub.catatan_pengiriman)}
-
-                  {/* Action Buttons */}
-                  {isUmkmOwner ? (
-                    <View style={styles.actionRow}>
-                      <PebbleButton
-                        variant="emerald"
-                        size="md"
-                        label="Setujui & Lepas Escrow"
-                        icon={CheckCircle2}
-                        onPress={() => onOpenApproveModal(sub)}
-                        loading={
-                          actionLoading &&
-                          selectedSubmissionToApprove?.id === sub.id
-                        }
-                      />
-                    </View>
-                  ) : (
-                    <View style={styles.actionRow}>
-                      <PebbleButton
-                        variant="sapphire"
-                        size="md"
-                        label="Perbarui Tautan Deliverable"
-                        icon={UploadCloud}
-                        onPress={onOpenSubmissionModal}
-                      />
-                    </View>
-                  )}
-                </View>
-              ))
+                {!isUmkmOwner && !isProjectCompleted && (
+                  <View style={{ marginTop: 8 }}>
+                    <PebbleButton
+                      variant="sapphire"
+                      size="md"
+                      label="Perbarui Tautan Deliverable"
+                      icon={UploadCloud}
+                      onPress={onOpenSubmissionModal}
+                    />
+                  </View>
+                )}
+              </View>
             )}
           </View>
         )}
@@ -583,7 +602,29 @@ export function WorkroomActiveView({
             </TouchableOpacity>
           </View>
         )}
+
+        {/* TAB 4: LINIMASA AUDIT AKTIVITAS */}
+        {activeTab === "timeline" && (
+          <View style={styles.tabContentWrap}>
+            <MobileActivityTimeline
+              project={project}
+              submissions={submissions}
+              myExistingProposal={myExistingProposal}
+              isUmkmOwner={isUmkmOwner}
+            />
+          </View>
+        )}
       </View>
+
+      {/* Asset Handoff Protocol Modal (Before Escrow Payout) */}
+      <MobileAssetHandoffModal
+        visible={handoffModalVisible}
+        onClose={() => setHandoffModalVisible(false)}
+        onConfirm={handleConfirmHandoff}
+        projectTitle={project?.judul}
+        budgetAmount={project?.budget_max}
+        loading={actionLoading}
+      />
     </ScrollView>
   );
 }
