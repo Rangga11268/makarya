@@ -32,6 +32,8 @@ import { PebbleButton } from "../../components/ui/PebbleButton";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { ProjectStatusBar } from "../../components/features/ProjectStatusBar";
 import { ProposalCard } from "../../components/features/ProposalCard";
+import { WorkroomActiveView } from "./components/WorkroomActiveView";
+import { ApplicantReviewBoardView } from "./components/ApplicantReviewBoardView";
 import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -247,6 +249,18 @@ export function ProjectDetailScreen({ route, navigation }) {
       acceptedProposal?.mahasiswa_foto ||
       null
     : clientPhoto;
+
+  // 1. Mode Ruang Kerja Terdedikasi: Kontrak sedang berjalan untuk pihak terlibat (Mahasiswa / UMKM pemilik)
+  const isDedicatedWorkroom = Boolean(
+    ["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(project?.status) &&
+    (isUmkmOwner || isAcceptedProposal)
+  );
+
+  // 2. Mode Board Seleksi Pelamar: Khusus Klien UMKM pada proyek tahap OPEN/BIDDING
+  const isApplicantBoardMode = Boolean(
+    (project?.status === "OPEN" || project?.status === "BIDDING") &&
+    isUmkmOwner
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -600,9 +614,19 @@ export function ProjectDetailScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Header
-        title="Detail Proyek"
+        title={
+          isDedicatedWorkroom
+            ? "Ruang Kerja Proyek"
+            : isApplicantBoardMode
+              ? "Seleksi Pelamar"
+              : "Detail Proyek"
+        }
         subtitle={
-          project.kategori ? `Kategori: ${project.kategori}` : undefined
+          isDedicatedWorkroom || isApplicantBoardMode
+            ? project.judul
+            : project.kategori
+              ? `Kategori: ${project.kategori}`
+              : undefined
         }
         onBack={() => {
           if (navigation?.canGoBack && navigation.canGoBack()) {
@@ -612,7 +636,7 @@ export function ProjectDetailScreen({ route, navigation }) {
           }
         }}
         rightAction={
-          hasAcceptedStudent ? (
+          hasAcceptedStudent && !isDedicatedWorkroom ? (
             <TouchableOpacity
               style={styles.headerChatBtn}
               onPress={() =>
@@ -634,10 +658,40 @@ export function ProjectDetailScreen({ route, navigation }) {
 
       <OrganicRibbonBackground height={360} />
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      {isDedicatedWorkroom ? (
+        <WorkroomActiveView
+          project={project}
+          isUmkmOwner={isUmkmOwner}
+          isMahasiswa={isMahasiswa}
+          submissions={submissions}
+          myExistingProposal={myExistingProposal}
+          activePartnerName={activePartnerName}
+          activePartnerPhoto={activePartnerPhoto}
+          navigation={navigation}
+          onOpenSubmissionModal={() => setSubmissionModal(true)}
+          onOpenApproveModal={handleOpenApproveModal}
+          onOpenInvoiceModal={() => setInvoiceModal(true)}
+          onOpenReopenModal={() => setReopenModal(true)}
+          onOpenTerminateModal={() => setTerminateModal(true)}
+          onOpenResignModal={() => setResignModal(true)}
+          actionLoading={actionLoading}
+          selectedSubmissionToApprove={selectedSubmissionToApprove}
+        />
+      ) : isApplicantBoardMode ? (
+        <ApplicantReviewBoardView
+          project={project}
+          proposals={proposals}
+          onAcceptProposal={handleOpenAcceptModal}
+          onRejectProposal={handleRejectProposal}
+          actionLoading={actionLoading}
+          selectedProposalToAccept={selectedProposalToAccept}
+        />
+      ) : (
+        <>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
         {/* 1. Apple Glossy Hero Card */}
         <View style={styles.floatingHeroCard}>
           {/* Top Row: Category Badge & Escrow Status Tag */}
@@ -1519,6 +1573,8 @@ export function ProjectDetailScreen({ route, navigation }) {
           )}
         </View>
       </View>
+    </>
+  )}
 
       {/* Modal 1: Proposal Lamaran Sheet */}
       <ProposalSubmitModal

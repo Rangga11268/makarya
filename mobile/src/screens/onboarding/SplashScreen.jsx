@@ -63,7 +63,11 @@ export function SplashScreen({ onFinish }) {
 
   return (
     <Animated.View style={[styles.container, { opacity: exitFadeAnim }]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" translucent />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#F8FAFC"
+        translucent
+      />
 
       {/* 1. Center Identity Monolith */}
       <View style={styles.centerBox}>
