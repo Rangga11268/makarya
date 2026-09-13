@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi } from "../../api";
@@ -24,8 +24,6 @@ import {
 export function BrowseProjectsPage() {
   const { user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialCategory = searchParams.get("category") || "";
-  const initialKeyword = searchParams.get("keyword") || "";
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +31,12 @@ export function BrowseProjectsPage() {
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [maxBudget, setMaxBudget] = useState(2000000);
-  const [sortBy, setSortBy] = useState("newest"); // newest | budget_desc | budget_asc | deadline_soon
+  const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  // Debounce ref for keyword search
+  const keywordDebounceRef = useRef(null);
 
   const categories = [
     { key: "", label: "Semua Kategori" },
@@ -47,7 +48,7 @@ export function BrowseProjectsPage() {
     { key: "ADMIN_DATA", label: "Admin & Data Excel" },
   ];
 
-  // Sinkronkan perubahan URL query params ke state
+  // Sync URL → state
   useEffect(() => {
     const urlCategory = searchParams.get("category") || "";
     const urlKeyword = searchParams.get("keyword") || "";
@@ -59,10 +60,7 @@ export function BrowseProjectsPage() {
     try {
       setLoading(true);
       setError(null);
-      const params = {
-        status: "OPEN",
-        max_budget: maxBudget,
-      };
+      const params = { status: "OPEN", max_budget: maxBudget };
       if (category) params.kategori = category;
       if (keyword.trim()) params.keyword = keyword.trim();
 
@@ -72,12 +70,11 @@ export function BrowseProjectsPage() {
         : Array.isArray(res)
           ? res
           : [];
-      // Saring proyek yang belum kedaluwarsa untuk katalog pendaftaran aktif
       const activeProjects = data.filter(
         (p) => p.status !== "CANCELLED" && daysRemaining(p.deadline) >= 0,
       );
       setProjects(activeProjects);
-      setCurrentPage(1); // Reset page on new search/filter
+      setCurrentPage(1);
     } catch (err) {
       console.error("Gagal memuat proyek:", err);
       setError("Gagal terhubung ke katalog proyek. Silakan coba muat ulang.");
@@ -86,6 +83,7 @@ export function BrowseProjectsPage() {
     }
   };
 
+  // Auto-fetch on category or budget change
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchProjects();
@@ -93,8 +91,22 @@ export function BrowseProjectsPage() {
     return () => clearTimeout(timeout);
   }, [category, maxBudget]);
 
+  // Debounced keyword auto-search (400ms)
+  const handleKeywordChange = (val) => {
+    setKeyword(val);
+    if (keywordDebounceRef.current) clearTimeout(keywordDebounceRef.current);
+    keywordDebounceRef.current = setTimeout(() => {
+      const nextParams = {};
+      if (category) nextParams.category = category;
+      if (val.trim()) nextParams.keyword = val.trim();
+      setSearchParams(nextParams);
+      fetchProjects();
+    }, 400);
+  };
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    if (keywordDebounceRef.current) clearTimeout(keywordDebounceRef.current);
     const nextParams = {};
     if (category) nextParams.category = category;
     if (keyword.trim()) nextParams.keyword = keyword.trim();
@@ -122,44 +134,54 @@ export function BrowseProjectsPage() {
   // Sorted Projects
   const sortedProjects = useMemo(() => {
     const list = [...projects];
-    if (sortBy === "newest") {
+    if (sortBy === "newest")
       return list.sort(
         (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0),
       );
-    }
-    if (sortBy === "budget_desc") {
+    if (sortBy === "budget_desc")
       return list.sort(
         (a, b) => Number(b.budget_max || 0) - Number(a.budget_max || 0),
       );
-    }
-    if (sortBy === "budget_asc") {
+    if (sortBy === "budget_asc")
       return list.sort(
         (a, b) => Number(a.budget_max || 0) - Number(b.budget_max || 0),
       );
-    }
-    if (sortBy === "deadline_soon") {
+    if (sortBy === "deadline_soon")
       return list.sort(
         (a, b) => daysRemaining(a.deadline) - daysRemaining(b.deadline),
       );
-    }
     return list;
   }, [projects, sortBy]);
 
-  // Pagination Slice
+  // Pagination
   const totalPages = Math.ceil(sortedProjects.length / itemsPerPage) || 1;
   const paginatedProjects = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return sortedProjects.slice(start, start + itemsPerPage);
-  }, [sortedProjects, currentPage, itemsPerPage]);
+  }, [sortedProjects, currentPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 80, behavior: "smooth" });
   };
 
+  // Pagination page numbers with ellipsis (max 5 visible)
+  const paginationPages = useMemo(() => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages = [];
+    if (currentPage <= 3) {
+      pages.push(1, 2, 3, 4, "...", totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+    }
+    return pages;
+  }, [currentPage, totalPages]);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 font-sans">
-      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 font-sans">
+      {/* Explore Hub Switcher */}
       <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
         <Link
           to="/projects"
@@ -181,7 +203,7 @@ export function BrowseProjectsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            Katalog Peluang & Spesialisasi
+            Katalog Peluang &amp; Spesialisasi
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             Jelajah Proyek UMKM Aktif
@@ -218,6 +240,7 @@ export function BrowseProjectsPage() {
         </div>
       </div>
 
+      {/* UMKM Banner */}
       {user?.role === "UMKM" && (
         <div className="bg-brand-indigo/5 border border-brand-indigo/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 text-center sm:text-left">
@@ -235,20 +258,35 @@ export function BrowseProjectsPage() {
             </div>
           </div>
           <Link to="/talents" className="shrink-0">
-            <Button
-              variant="brand"
-              size="sm"
-              className="text-xs font-bold shadow-brand"
-            >
+            <Button variant="brand" size="sm" className="text-xs font-bold shadow-brand">
               Buka Direktori Mahasiswa
             </Button>
           </Link>
         </div>
       )}
 
+      {/* Mobile-only: Category Chip Bar (replaces hidden sidebar on mobile) */}
+      <div className="lg:hidden -mx-1">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
+          {categories.map((c) => (
+            <button
+              key={c.key}
+              onClick={() => handleCategorySelect(c.key)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                category === c.key
+                  ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                  : "bg-surface text-muted border-border hover:border-dark-900/30 hover:text-dark-900"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        {/* Sidebar Filters */}
-        <div className="lg:col-span-1 space-y-6">
+        {/* Sidebar Filters — desktop only */}
+        <div className="hidden lg:block lg:col-span-1 space-y-6">
           <Card className="p-5 space-y-6">
             <div>
               <h3 className="text-xs font-bold text-dark-900 uppercase tracking-wider mb-3">
@@ -260,7 +298,7 @@ export function BrowseProjectsPage() {
                   type="text"
                   placeholder="Ketik kata kunci..."
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
+                  onChange={(e) => handleKeywordChange(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo"
                 />
               </form>
@@ -325,23 +363,43 @@ export function BrowseProjectsPage() {
         </div>
 
         {/* Project Content Area */}
-        <div className="lg:col-span-3 space-y-5">
-          {/* Top Control Bar: Total Count & Sort By Dropdown */}
+        <div className="lg:col-span-3 col-span-1 space-y-5">
+          {/* Mobile search bar */}
+          <div className="lg:hidden">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari kata kunci proyek..."
+                value={keyword}
+                onChange={(e) => handleKeywordChange(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo"
+              />
+            </form>
+          </div>
+
+          {/* Top Control Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-surface border border-border rounded-2xl shadow-xs">
             <div className="flex items-center gap-2 text-xs text-muted font-medium">
               <Layers className="w-4 h-4 text-dark-900" />
               <span>
-                Menampilkan{" "}
-                <b className="text-dark-900">
-                  {sortedProjects.length > 0
-                    ? `${(currentPage - 1) * itemsPerPage + 1} - ${Math.min(
-                        currentPage * itemsPerPage,
-                        sortedProjects.length,
-                      )}`
-                    : "0"}
-                </b>{" "}
-                dari <b className="text-dark-900">{sortedProjects.length}</b>{" "}
-                Proyek Terbuka
+                {loading ? (
+                  "Memuat proyek..."
+                ) : (
+                  <>
+                    Menampilkan{" "}
+                    <b className="text-dark-900">
+                      {sortedProjects.length > 0
+                        ? `${(currentPage - 1) * itemsPerPage + 1}–${Math.min(
+                            currentPage * itemsPerPage,
+                            sortedProjects.length,
+                          )}`
+                        : "0"}
+                    </b>{" "}
+                    dari <b className="text-dark-900">{sortedProjects.length}</b>{" "}
+                    Proyek Terbuka
+                  </>
+                )}
               </span>
             </div>
 
@@ -362,8 +420,8 @@ export function BrowseProjectsPage() {
                 }}
                 className="text-xs font-bold bg-canvas border border-border rounded-xl px-3 py-1.5 text-dark-900 focus:outline-none focus:border-brand-indigo cursor-pointer shadow-xs"
               >
-                <option value="newest">Terbaru Ditambahkan</option>
-                <option value="deadline_soon">Tenggat Waktu Terdekat</option>
+                <option value="newest">Terbaru</option>
+                <option value="deadline_soon">Tenggat Terdekat</option>
                 <option value="budget_desc">Budget Tertinggi</option>
                 <option value="budget_asc">Budget Terendah</option>
               </select>
@@ -374,9 +432,6 @@ export function BrowseProjectsPage() {
           {error && paginatedProjects.length === 0 ? (
             <div className="p-8 bg-surface rounded-3xl border border-rose-200 text-center space-y-3 shadow-xs">
               <p className="text-sm font-bold text-rose-700">{error}</p>
-              <p className="text-xs text-muted">
-                Pastikan server backend aktif di http://127.0.0.1:8000
-              </p>
               <Button
                 variant="brand"
                 size="sm"
@@ -388,11 +443,15 @@ export function BrowseProjectsPage() {
               </Button>
             </div>
           ) : loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              aria-busy="true"
+              aria-label="Memuat daftar proyek"
+            >
               {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="h-60 bg-surface rounded-3xl border border-border animate-pulse"
+                  className="h-52 bg-surface rounded-3xl border border-border animate-pulse"
                 />
               ))}
             </div>
@@ -418,7 +477,7 @@ export function BrowseProjectsPage() {
             </div>
           )}
 
-          {/* Pagination Controls Bar */}
+          {/* Pagination Controls */}
           {!loading && totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-border">
               <span className="text-xs text-muted font-medium order-2 sm:order-1">
@@ -438,18 +497,25 @@ export function BrowseProjectsPage() {
                   Sebelumnya
                 </Button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNum) => (
+                {paginationPages.map((p, idx) =>
+                  p === "..." ? (
+                    <span
+                      key={`ellipsis-${idx}`}
+                      className="w-8 text-center text-xs text-muted select-none"
+                    >
+                      …
+                    </span>
+                  ) : (
                     <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
+                      key={p}
+                      onClick={() => handlePageChange(p)}
                       className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
-                        currentPage === pageNum
+                        currentPage === p
                           ? "bg-dark-900 text-white shadow-xs"
                           : "bg-surface hover:bg-canvas text-dark-900 border border-border"
                       }`}
                     >
-                      {pageNum}
+                      {p}
                     </button>
                   ),
                 )}

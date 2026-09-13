@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -38,20 +38,18 @@ import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
   const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
+
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
-  if (!isMahasiswa) {
-    return <TalentListScreen navigation={navigation} route={route} />;
-  }
-
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("MATCH"); // 'MATCH' | 'RECENT' | 'NEW'
+  const [activeTab, setActiveTab] = useState("MATCH");
   const [categoryFilter, setCategoryFilter] = useState(
     route?.params?.category || "ALL",
   );
@@ -61,6 +59,9 @@ export function ProjectListScreen({ navigation, route }) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("OPEN");
   const [selectedBudgetRange, setSelectedBudgetRange] = useState("ALL");
+
+  // Debounce ref for search
+  const searchDebounceRef = useRef(null);
 
   const { getUnreadCount } = useNotificationStore();
   const unreadNotifications = getUnreadCount(user?.role);
@@ -74,13 +75,10 @@ export function ProjectListScreen({ navigation, route }) {
   const loadProjects = async () => {
     try {
       setLoading(true);
+      setError(null);
       if (isMahasiswa) {
-        const params = {
-          keyword: searchQuery.trim() || undefined,
-        };
-        if (selectedStatus !== "ALL") {
-          params.status = selectedStatus;
-        }
+        const params = { keyword: searchQuery.trim() || undefined };
+        if (selectedStatus !== "ALL") params.status = selectedStatus;
         const res = await projectApi.browse(params);
         const items = Array.isArray(res.data)
           ? res.data
@@ -91,20 +89,32 @@ export function ProjectListScreen({ navigation, route }) {
         setProjects(Array.isArray(res.data) ? res.data : []);
       }
     } catch (e) {
+      console.error("Gagal memuat proyek:", e);
+      setError("Gagal memuat proyek. Periksa koneksi dan coba lagi.");
       setProjects([]);
     } finally {
       setLoading(false);
     }
   };
 
+  // Debounce search → API (400ms)
   useEffect(() => {
-    loadProjects();
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      loadProjects();
+    }, 400);
+    return () => clearTimeout(searchDebounceRef.current);
   }, [searchQuery, user?.role, selectedStatus]);
 
+  // UMKM redirect — AFTER all hooks
+  if (!isMahasiswa) {
+    return <TalentListScreen navigation={navigation} route={route} />;
+  }
+
   const segmentedTabs = [
-    { id: "MATCH", label: "Best Match" },
-    { id: "RECENT", label: "Recent" },
-    { id: "NEW", label: "New Gigs" },
+    { id: "MATCH", label: "Terbaik" },
+    { id: "RECENT", label: "Terbaru" },
+    { id: "NEW", label: "Baru" },
   ];
 
   const activeFilterCount =
@@ -120,48 +130,32 @@ export function ProjectListScreen({ navigation, route }) {
 
   const filteredProjects = projects
     .filter((p) => {
-      // Category Filter
       const matchesCategory =
         categoryFilter === "ALL" || p.kategori === categoryFilter;
-
-      // Search Query
       const matchesSearch =
         !searchQuery.trim() ||
         p.judul?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.deskripsi_raw?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.kategori?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.umkm_nama?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Status Filter
       const matchesStatus =
         selectedStatus === "ALL" ||
         p.status === selectedStatus ||
         (selectedStatus === "OPEN" && p.status === "BIDDING") ||
         (selectedStatus === "DONE" && p.status === "COMPLETED");
-
-      // Budget Range Filter
       let matchesBudget = true;
       const budget = p.budget_max || 0;
-      if (selectedBudgetRange === "UNDER_300K") {
-        matchesBudget = budget < 300000;
-      } else if (selectedBudgetRange === "300K_1M") {
+      if (selectedBudgetRange === "UNDER_300K") matchesBudget = budget < 300000;
+      else if (selectedBudgetRange === "300K_1M")
         matchesBudget = budget >= 300000 && budget <= 1000000;
-      } else if (selectedBudgetRange === "ABOVE_1M") {
-        matchesBudget = budget > 1000000;
-      }
-
+      else if (selectedBudgetRange === "ABOVE_1M") matchesBudget = budget > 1000000;
       return matchesCategory && matchesSearch && matchesStatus && matchesBudget;
     })
     .sort((a, b) => {
-      if (activeTab === "MATCH") {
-        return (b.match_score || 0) - (a.match_score || 0);
-      }
-      if (activeTab === "NEW") {
-        return (b.budget_max || 0) - (a.budget_max || 0);
-      }
-      if (activeTab === "RECENT") {
+      if (activeTab === "MATCH") return (b.match_score || 0) - (a.match_score || 0);
+      if (activeTab === "NEW") return (b.budget_max || 0) - (a.budget_max || 0);
+      if (activeTab === "RECENT")
         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-      }
       return 0;
     });
 
@@ -173,45 +167,30 @@ export function ProjectListScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <OrganicRibbonBackground height={320} />
-      {/* 1. Standardized Unified Header */}
+      {/* Header */}
       <Header
-        category={isMahasiswa ? "KATALOG PROYEK KAMPUS" : "MANAJEMEN PROYEK"}
-        title={isMahasiswa ? "Jelajah Proyek UMKM" : "Kelola Proyek"}
-        subtitle={
-          isMahasiswa
-            ? "Temukan peluang kerja freelance dan ajukan penawaran terbaik"
-            : "Pantau daftar proyek & rekrut talenta mahasiswa"
-        }
-        showBell={isMahasiswa}
+        category="KATALOG PROYEK KAMPUS"
+        title="Jelajah Proyek UMKM"
+        subtitle="Temukan peluang kerja freelance dan ajukan penawaran terbaik"
+        showBell={true}
         onBellPress={() => setIsNotificationOpen(true)}
         unreadCount={unreadNotifications}
-        rightAction={
-          !isMahasiswa ? (
-            <PebbleButton
-              variant="sapphire"
-              size="xs"
-              label="Proyek Baru"
-              icon={Plus}
-              onPress={() => navigation.navigate("PostProject")}
-            />
-          ) : null
-        }
       />
 
-      {/* 2. Search Bar with Filter Tuning Button */}
+      {/* Search Bar */}
       <View style={[styles.searchSection, responsiveContainerStyle]}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery("")}
-          placeholder="Search projects or skills..."
+          placeholder="Cari proyek atau keahlian..."
           showFilterBtn={true}
           onFilterPress={() => setIsFilterModalOpen(true)}
           activeFilterCount={activeFilterCount}
         />
       </View>
 
-      {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
+      {/* Segmented Tabs */}
       <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -238,7 +217,7 @@ export function ProjectListScreen({ navigation, route }) {
         })}
       </View>
 
-      {/* 4. Active Filter Tag Bar (Shown ONLY when a filter is active) */}
+      {/* Active Filter Tag Bar */}
       {activeFilterCount > 0 && (
         <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
           <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
@@ -282,7 +261,22 @@ export function ProjectListScreen({ navigation, route }) {
         </View>
       )}
 
-      {/* 5. Projects Feed List */}
+      {/* Error state */}
+      {error && !loading && (
+        <View style={[styles.errorCard, responsiveContainerStyle]}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            onPress={loadProjects}
+            style={styles.retryBtn}
+            activeOpacity={0.7}
+          >
+            <RotateCcw size={14} color="#FFFFFF" />
+            <Text style={styles.retryBtnText}>Coba Lagi</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Projects Feed */}
       {loading && projects.length === 0 ? (
         <ScrollView
           contentContainerStyle={[
@@ -312,26 +306,24 @@ export function ProjectListScreen({ navigation, route }) {
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
           ]}
           ListEmptyComponent={
-            !loading && (
+            !loading && !error && (
               <View style={styles.emptyState}>
                 <Compass size={40} color={COLORS.brandIndigo} />
                 <Text style={styles.emptyTitle}>
                   {searchQuery || activeFilterCount > 0
-                    ? "No Projects Found"
-                    : "No Projects Available"}
+                    ? "Tidak Ada Proyek Ditemukan"
+                    : "Belum Ada Proyek"}
                 </Text>
                 <Text style={styles.emptyDesc}>
                   {searchQuery || activeFilterCount > 0
                     ? "Coba ubah kata kunci atau atur ulang filter pencarian Anda."
-                    : isMahasiswa
-                      ? "Proyek UMKM baru akan segera muncul di sini."
-                      : "Mulai pasang proyek pertama Anda untuk mendapatkan proposal talenta."}
+                    : "Proyek UMKM baru akan segera muncul di sini."}
                 </Text>
                 {activeFilterCount > 0 && (
                   <PebbleButton
                     variant="ice"
                     size="sm"
-                    label="Reset Filters"
+                    label="Reset Filter"
                     icon={RotateCcw}
                     onPress={resetFilters}
                     style={styles.emptyBtn}
@@ -385,61 +377,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bgDark,
   },
 
-  // 1. Header (Mockup Screen 3 Style)
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 44,
-    paddingBottom: 12,
-    backgroundColor: COLORS.bgSurface,
-  },
-  headerTitleGroup: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 22,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 2,
-  },
-  headerRightGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  bellBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: COLORS.canvasSoft,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  bellRedDot: {
-    position: "absolute",
-    top: 9,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: COLORS.danger,
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
-  },
-
-  // 2. Search Section
+  // Search Section
   searchSection: {
     paddingHorizontal: 20,
     paddingTop: 8,
@@ -447,7 +385,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  // 3. Apple Glass Capsule Segmented Navigation Tabs
+  // Segmented Tabs
   segmentedContainer: {
     flexDirection: "row",
     backgroundColor:
@@ -488,7 +426,7 @@ const styles = StyleSheet.create({
     color: "#2563EB",
   },
 
-  // 4. Active Filter Tag Bar
+  // Active Filter Tag Bar
   activeFilterBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -508,14 +446,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -524,7 +460,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.03,
     shadowRadius: 3,
-    elevation: 1,
     elevation: Platform.OS === "android" ? 0 : 1,
   },
   activeFilterPillText: {
@@ -543,7 +478,42 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // 5. Feed List
+  // Error Card
+  errorCard: {
+    marginHorizontal: 20,
+    marginTop: 8,
+    padding: 16,
+    backgroundColor:
+      Platform.OS === "android" ? "#FFF1F2" : "rgba(255, 241, 242, 0.95)",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(254, 202, 202, 0.8)",
+    alignItems: "center",
+    gap: 10,
+  },
+  errorText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 13,
+    color: "#BE123C",
+    textAlign: "center",
+  },
+  retryBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  retryBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+
+  // Feed List
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
@@ -558,12 +528,10 @@ const styles = StyleSheet.create({
     padding: 32,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.90)",
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.9)"
@@ -573,7 +541,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 2,
     elevation: Platform.OS === "android" ? 0 : 2,
   },
   emptyTitle: {

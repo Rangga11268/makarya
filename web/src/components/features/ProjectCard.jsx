@@ -135,9 +135,7 @@ export function ProjectCard({ project }) {
           }`}
         >
           <span>
-            {expired
-              ? "Lihat Detail (Tenggat Berakhir)"
-              : "Lihat Detail & Ajukan Proposal"}
+            {expired ? "Lihat Detail" : "Ajukan Proposal"}
           </span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
