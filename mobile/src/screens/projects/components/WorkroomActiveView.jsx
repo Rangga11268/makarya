@@ -62,6 +62,15 @@ export function WorkroomActiveView({
     Boolean(project?.deadline && isExpired(project.deadline)) ||
     project?.status === "CANCELLED";
 
+  const isProjectCompleted = Boolean(
+    project?.status === "DONE" ||
+    project?.status === "COMPLETED" ||
+    myExistingProposal?.status === "COMPLETED" ||
+    submissions.some(
+      (s) => s.status === "APPROVED" || s.status === "COMPLETED",
+    ),
+  );
+
   const renderSubmissionNote = (note) => {
     if (!note) return null;
     const lines = note.split("\n");
@@ -193,10 +202,24 @@ export function WorkroomActiveView({
 
             <View style={styles.metaRow}>
               {/* Active Status Badge */}
-              <View style={styles.activePill}>
-                <View style={styles.pulseDot} />
-                <Text style={styles.activePillText}>Kontrak Berjalan</Text>
-              </View>
+              {isProjectCompleted ? (
+                <View
+                  style={[
+                    styles.activePill,
+                    { backgroundColor: "#ECFDF5", borderColor: "#A7F3D0" },
+                  ]}
+                >
+                  <CheckCircle2 size={11} color="#059669" />
+                  <Text style={[styles.activePillText, { color: "#065F46" }]}>
+                    Proyek Selesai
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.activePill}>
+                  <View style={styles.pulseDot} />
+                  <Text style={styles.activePillText}>Kontrak Berjalan</Text>
+                </View>
+              )}
 
               <View style={styles.metaBadge}>
                 <Text style={styles.metaBadgeText}>
@@ -296,67 +319,82 @@ export function WorkroomActiveView({
           <View style={styles.tabContentWrap}>
             {submissions.length === 0 ? (
               <View style={styles.emptySubmissionCard}>
-                <Clock size={30} color="#94A3B8" />
-                <Text style={styles.emptyTitle}>
-                  {isMahasiswa
-                    ? "Belum Mengunggah Hasil Kerja"
-                    : "Menunggu Pengiriman Deliverable"}
-                </Text>
-                <Text style={styles.emptySub}>
-                  {isMahasiswa
-                    ? "Unggah tautan berkas pengerjaan (Google Drive, Figma, atau repositori GitHub) agar klien UMKM dapat meninjau hasil kerja Anda."
-                    : "Mahasiswa sedang menyelesaikan tugas. Berkas hasil kerja akan muncul otomatis di sini begitu dikirimkan."}
-                </Text>
-
-                {isProjectExpired && (
-                  <View style={styles.overdueCallout}>
-                    <AlertTriangle size={14} color="#DC2626" />
-                    <Text style={styles.overdueCalloutText}>
-                      Tenggat waktu pengerjaan telah lewat. Anda dapat
-                      berkoordinasi via ruang chat.
+                {isProjectCompleted ? (
+                  <>
+                    <CheckCircle2 size={32} color="#059669" />
+                    <Text style={[styles.emptyTitle, { color: "#065F46" }]}>
+                      Proyek Telah Selesai
                     </Text>
-                  </View>
-                )}
-
-                {isMahasiswa ? (
-                  <View style={{ marginTop: 16, width: "100%", gap: 8 }}>
-                    <PebbleButton
-                      variant="sapphire"
-                      label="Unggah Deliverable Sekarang"
-                      icon={UploadCloud}
-                      onPress={onOpenSubmissionModal}
-                    />
-                    <Button
-                      title="Ajukan Pengunduran Diri"
-                      variant="outline"
-                      size="sm"
-                      icon={<XCircle size={14} color="#BE123C" />}
-                      textStyle={{ color: "#BE123C" }}
-                      style={{ borderColor: "#FECACA" }}
-                      onPress={onOpenResignModal}
-                    />
-                  </View>
+                    <Text style={styles.emptySub}>
+                      Semua pekerjaan telah disetujui dan pembayaran honor 100%
+                      telah cair ke dompet mahasiswa.
+                    </Text>
+                  </>
                 ) : (
-                  isProjectExpired && (
-                    <View style={{ marginTop: 14, width: "100%", gap: 8 }}>
-                      <Button
-                        title="Ganti Mahasiswa & Buka ke Eksplorasi"
-                        variant="brand"
-                        size="sm"
-                        icon={<RotateCcw size={14} color="#FFF" />}
-                        onPress={onOpenReopenModal}
-                      />
-                      <Button
-                        title="Batalkan Proyek (Refund Escrow)"
-                        variant="outline"
-                        size="sm"
-                        icon={<XCircle size={14} color="#BE123C" />}
-                        textStyle={{ color: "#BE123C" }}
-                        style={{ borderColor: "#FECACA" }}
-                        onPress={onOpenTerminateModal}
-                      />
-                    </View>
-                  )
+                  <>
+                    <Clock size={30} color="#94A3B8" />
+                    <Text style={styles.emptyTitle}>
+                      {isMahasiswa
+                        ? "Belum Mengunggah Hasil Kerja"
+                        : "Menunggu Pengiriman Deliverable"}
+                    </Text>
+                    <Text style={styles.emptySub}>
+                      {isMahasiswa
+                        ? "Unggah tautan berkas pengerjaan (Google Drive, Figma, atau repositori GitHub) agar klien UMKM dapat meninjau hasil kerja Anda."
+                        : "Mahasiswa sedang menyelesaikan tugas. Berkas hasil kerja akan muncul otomatis di sini begitu dikirimkan."}
+                    </Text>
+
+                    {isProjectExpired && (
+                      <View style={styles.overdueCallout}>
+                        <AlertTriangle size={14} color="#DC2626" />
+                        <Text style={styles.overdueCalloutText}>
+                          Tenggat waktu pengerjaan telah lewat. Anda dapat
+                          berkoordinasi via ruang chat.
+                        </Text>
+                      </View>
+                    )}
+
+                    {isMahasiswa ? (
+                      <View style={{ marginTop: 16, width: "100%", gap: 8 }}>
+                        <PebbleButton
+                          variant="sapphire"
+                          label="Unggah Deliverable Sekarang"
+                          icon={UploadCloud}
+                          onPress={onOpenSubmissionModal}
+                        />
+                        <Button
+                          title="Ajukan Pengunduran Diri"
+                          variant="outline"
+                          size="sm"
+                          icon={<XCircle size={14} color="#BE123C" />}
+                          textStyle={{ color: "#BE123C" }}
+                          style={{ borderColor: "#FECACA" }}
+                          onPress={onOpenResignModal}
+                        />
+                      </View>
+                    ) : (
+                      isProjectExpired && (
+                        <View style={{ marginTop: 14, width: "100%", gap: 8 }}>
+                          <Button
+                            title="Ganti Mahasiswa & Buka ke Eksplorasi"
+                            variant="brand"
+                            size="sm"
+                            icon={<RotateCcw size={14} color="#FFF" />}
+                            onPress={onOpenReopenModal}
+                          />
+                          <Button
+                            title="Batalkan Proyek (Refund Escrow)"
+                            variant="outline"
+                            size="sm"
+                            icon={<XCircle size={14} color="#BE123C" />}
+                            textStyle={{ color: "#BE123C" }}
+                            style={{ borderColor: "#FECACA" }}
+                            onPress={onOpenTerminateModal}
+                          />
+                        </View>
+                      )
+                    )}
+                  </>
                 )}
               </View>
             ) : (

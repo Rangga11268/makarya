@@ -473,7 +473,8 @@ export function ProjectDetailPage() {
               <div className="relative">
                 <div
                   className={`p-5 bg-canvas rounded-2xl border border-border text-xs text-slate-800 leading-relaxed font-normal whitespace-pre-line transition-all duration-300 ${
-                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 380
+                    !isBriefExpanded &&
+                    (project.deskripsi_raw?.length || 0) > 380
                       ? "max-h-52 overflow-hidden"
                       : "max-h-none"
                   }`}
@@ -481,9 +482,10 @@ export function ProjectDetailPage() {
                   {project.deskripsi_raw}
                 </div>
 
-                {!isBriefExpanded && (project.deskripsi_raw?.length || 0) > 380 && (
-                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-canvas via-canvas/80 to-transparent pointer-events-none rounded-b-2xl" />
-                )}
+                {!isBriefExpanded &&
+                  (project.deskripsi_raw?.length || 0) > 380 && (
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-canvas via-canvas/80 to-transparent pointer-events-none rounded-b-2xl" />
+                  )}
               </div>
 
               {(project.deskripsi_raw?.length || 0) > 380 && (

@@ -137,7 +137,6 @@ export function ProjectDetailScreen({ route, navigation }) {
         setLoading(false);
         return;
       }
-      setProject(pRes.data);
 
       const isProjectOwner = Boolean(
         user?.id &&
@@ -171,6 +170,7 @@ export function ProjectDetailScreen({ route, navigation }) {
 
       const [propRes, subRes, myPropsRes] = await Promise.all(promises);
 
+      setProject(pRes.data);
       setProposals(Array.isArray(propRes.data) ? propRes.data : []);
       setSubmissions(
         Array.isArray(subRes.data)
@@ -551,7 +551,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     }
   };
 
-  if (!project) {
+  if (loading || !project) {
     return (
       <View style={styles.container}>
         <Header
@@ -1031,7 +1031,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                 <Text
                   style={styles.descriptionText}
                   numberOfLines={
-                    !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
+                    !isBriefExpanded &&
+                    (project.deskripsi_raw?.length || 0) > 280
                       ? 6
                       : undefined
                   }

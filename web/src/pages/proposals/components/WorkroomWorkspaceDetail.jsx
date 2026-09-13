@@ -123,6 +123,7 @@ export function WorkroomWorkspaceDetail({
   isUmkm,
   selectedProject,
   selectedProposal,
+  detailsLoading = false,
   activeStageTab,
   setActiveStageTab,
   activeDeliverable,
@@ -139,6 +140,16 @@ export function WorkroomWorkspaceDetail({
   onOpenResignModal,
 }) {
   const [invoiceModalOpen, setInvoiceModalOpen] = React.useState(false);
+
+  const isProjectCompleted = Boolean(
+    selectedProject?.status === "DONE" ||
+    selectedProject?.status === "COMPLETED" ||
+    selectedProposal?.status === "COMPLETED" ||
+    selectedProposal?.project_status === "DONE" ||
+    selectedProposal?.project_status === "COMPLETED" ||
+    activeDeliverable?.status === "APPROVED" ||
+    activeDeliverable?.status === "COMPLETED",
+  );
 
   if (!activeProjectId) {
     return (
@@ -206,12 +217,20 @@ export function WorkroomWorkspaceDetail({
             </div>
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
-              <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Garansi Escrow Aman</span>
-              </div>
+              {isProjectCompleted ? (
+                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />
+                  <span>Proyek Selesai (Lunas)</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Garansi Escrow Aman</span>
+                </div>
+              )}
 
-              {selectedProject?.deadline &&
+              {!isProjectCompleted &&
+                selectedProject?.deadline &&
                 isExpired(selectedProject.deadline) && (
                   <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
                     <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
@@ -263,9 +282,11 @@ export function WorkroomWorkspaceDetail({
           </div>
         </div>
 
-        {/* Overdue Warning Callout */}
-        {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
-          <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex flex-col gap-2 text-rose-900">
+        {/* Overdue Warning Callout (Only if NOT completed) */}
+        {!isProjectCompleted &&
+          selectedProject?.deadline &&
+          isExpired(selectedProject.deadline) && (
+            <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex flex-col gap-2 text-rose-900">
             <div className="flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
               <div className="flex-1 space-y-0.5">
@@ -881,6 +902,25 @@ export function WorkroomWorkspaceDetail({
                   </span>
                 </div>
               )}
+            </div>
+          ) : detailsLoading ? (
+            <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-3 animate-pulse">
+              <div className="w-12 h-12 rounded-2xl bg-slate-200 mx-auto" />
+              <div className="h-4 bg-slate-200 rounded w-48 mx-auto" />
+              <div className="h-3 bg-slate-200 rounded w-64 mx-auto" />
+            </div>
+          ) : isProjectCompleted ? (
+            <div className="p-8 text-center bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2.5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 mx-auto shadow-xs">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h4 className="text-sm font-bold text-emerald-950">
+                Deliverable Telah Disetujui & Proyek Selesai!
+              </h4>
+              <p className="text-xs text-emerald-800 max-w-sm mx-auto leading-relaxed">
+                Pekerjaan pada proyek ini telah selesai dan honor 100% telah
+                dicairkan ke dompet mahasiswa.
+              </p>
             </div>
           ) : (
             <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-3">

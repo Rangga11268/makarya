@@ -89,6 +89,7 @@ export function ProposalBoardPage() {
   const [mhsSubmissions, setMhsSubmissions] = useState({});
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [detailsLoading, setDetailsLoading] = useState(false);
 
   // Active Stage Sub-tab: 'chat' | 'deliverable' | 'brief' | 'applicants'
   const [activeStageTab, setActiveStageTab] = useState("brief");
@@ -133,11 +134,20 @@ export function ProposalBoardPage() {
           const found = projectList.find((p) => p.id === targetProjectId);
           if (found) {
             setSelectedProject(found);
+            const isCompleted =
+              found.status === "DONE" || found.status === "COMPLETED";
+            if (isCompleted) {
+              setActiveStageTab("deliverable");
+            }
+            setDetailsLoading(true);
             const details = await loadProjectDetails(found.id);
+            setDetailsLoading(false);
             const hasAccepted = details.proposals.some(
               (p) => p.status === "ACCEPTED",
             );
-            if (hasAccepted) {
+            if (isCompleted) {
+              setActiveStageTab("deliverable");
+            } else if (hasAccepted) {
               setActiveStageTab("chat");
             } else if (details.proposals.length > 0) {
               setActiveStageTab("applicants");
@@ -178,7 +188,14 @@ export function ProposalBoardPage() {
           );
           if (found) {
             setSelectedProposal(found);
-            if (found.status === "ACCEPTED") {
+            const isCompleted =
+              found.status === "COMPLETED" ||
+              subMap[found.project_id]?.status === "APPROVED" ||
+              found.project_status === "DONE" ||
+              found.project_status === "COMPLETED";
+            if (isCompleted) {
+              setActiveStageTab("deliverable");
+            } else if (found.status === "ACCEPTED") {
               setActiveStageTab("chat");
             } else {
               setActiveStageTab("brief");
@@ -228,9 +245,21 @@ export function ProposalBoardPage() {
     setSelectedProject(project);
     setSearchParams({ project: project.id });
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    const isCompleted =
+      project.status === "DONE" || project.status === "COMPLETED";
+    if (isCompleted) {
+      setActiveStageTab("deliverable");
+    }
+
+    setDetailsLoading(true);
     const details = await loadProjectDetails(project.id);
+    setDetailsLoading(false);
+
     const hasAccepted = details.proposals.some((p) => p.status === "ACCEPTED");
-    if (hasAccepted) {
+    if (isCompleted) {
+      setActiveStageTab("deliverable");
+    } else if (hasAccepted) {
       setActiveStageTab("chat");
     } else if (details.proposals.length > 0) {
       setActiveStageTab("applicants");
@@ -244,7 +273,16 @@ export function ProposalBoardPage() {
     setSelectedProposal(proposal);
     setSearchParams({ project: proposal.project_id });
     window.scrollTo({ top: 0, behavior: "smooth" });
-    if (proposal.status === "ACCEPTED") {
+
+    const isCompleted =
+      proposal.status === "COMPLETED" ||
+      mhsSubmissions[proposal.project_id]?.status === "APPROVED" ||
+      proposal.project_status === "DONE" ||
+      proposal.project_status === "COMPLETED";
+
+    if (isCompleted) {
+      setActiveStageTab("deliverable");
+    } else if (proposal.status === "ACCEPTED") {
       setActiveStageTab("chat");
     } else {
       setActiveStageTab("brief");
@@ -652,6 +690,7 @@ export function ProposalBoardPage() {
           isUmkm={isUmkm}
           selectedProject={selectedProject}
           selectedProposal={selectedProposal}
+          detailsLoading={detailsLoading}
           activeStageTab={activeStageTab}
           setActiveStageTab={setActiveStageTab}
           activeDeliverable={activeDeliverable}
