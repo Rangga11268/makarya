@@ -106,20 +106,18 @@ export function ApplicantReviewBoardView({
         )}
       </View>
 
-      {/* 2. Applicant Counter Banner */}
-      <View style={styles.applicantBannerRow}>
-        <View style={styles.applicantIconWrap}>
-          <Users size={16} color="#2563EB" />
-        </View>
-        <View style={{ flex: 1, marginLeft: 8 }}>
+      {/* 2. Applicant Section Header (Flat, no card-ception) */}
+      <View style={styles.applicantHeaderRow}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <Users size={15} color="#2563EB" />
           <Text style={styles.applicantCountTitle}>
             {proposals.length} Proposal Mahasiswa Masuk
           </Text>
-          <Text style={styles.applicantCountSub}>
-            Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk
-            memulai kontrak kerja.
-          </Text>
         </View>
+        <Text style={styles.applicantCountSub}>
+          Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk
+          memulai kontrak kerja.
+        </Text>
       </View>
 
       {/* 3. Candidate Stack (Daftar Proposal) */}
@@ -296,28 +294,14 @@ const styles = StyleSheet.create({
     color: "#64748B",
     marginLeft: 4,
   },
-  // Applicant Banner
-  applicantBannerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    padding: 12,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.8)",
-    marginBottom: 12,
-  },
-  applicantIconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    alignItems: "center",
-    justifyContent: "center",
+  applicantHeaderRow: {
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    marginBottom: 6,
   },
   applicantCountTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "700",
     color: "#0F172A",
   },
@@ -325,7 +309,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: "#64748B",
-    marginTop: 1,
+    marginTop: 2,
     lineHeight: 15,
   },
   proposalListWrap: {

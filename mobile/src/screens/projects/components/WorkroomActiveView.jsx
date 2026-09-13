@@ -31,8 +31,7 @@ import {
   Check,
   ExternalLink,
   ChevronRight,
-  Layers,
-  Award,
+  Users,
 } from "lucide-react-native";
 
 export function WorkroomActiveView({
@@ -81,8 +80,9 @@ export function WorkroomActiveView({
     return (
       <View style={{ marginTop: 8, gap: 6 }}>
         {generalNote ? (
-          <View style={styles.noteCallout}>
-            <Text style={styles.fileNotesText}>"{generalNote}"</Text>
+          <View style={styles.noteContainer}>
+            <Text style={styles.noteLabel}>Catatan:</Text>
+            <Text style={styles.noteBody}>"{generalNote}"</Text>
           </View>
         ) : null}
         {checklistItems.length > 0 ? (
@@ -112,8 +112,9 @@ export function WorkroomActiveView({
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      {/* 1. Apple Active Workroom Partner & Status Card */}
-      <View style={styles.workroomHeroCard}>
+      {/* 1. Unified Partner & Project Hero Card (Flat, zero card-ception) */}
+      <View style={styles.heroCard}>
+        {/* Top: Partner Profile & Clean Chat Shortcut */}
         <View style={styles.partnerHeaderRow}>
           <View style={styles.partnerAvatarWrap}>
             {activePartnerPhoto ? (
@@ -134,24 +135,16 @@ export function WorkroomActiveView({
             </View>
           </View>
 
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-            >
-              <Text style={styles.partnerRoleLabel}>
-                {isUmkmOwner ? "Mahasiswa Pelaksana" : "Klien Pemilik Proyek"}
-              </Text>
-              <View style={styles.activePill}>
-                <View style={styles.pulseDot} />
-                <Text style={styles.activePillText}>Kontrak Berjalan</Text>
-              </View>
-            </View>
+          <View style={styles.partnerInfoCol}>
+            <Text style={styles.partnerRoleLabel} numberOfLines={1}>
+              {isUmkmOwner ? "Mahasiswa Pelaksana" : "Klien Pemilik Proyek"}
+            </Text>
             <Text style={styles.partnerName} numberOfLines={1}>
               {activePartnerName || (isUmkmOwner ? "Mahasiswa" : "Klien UMKM")}
             </Text>
           </View>
 
-          {/* Quick Chat Shortcut */}
+          {/* Quick Chat Shortcut (isolated on the right, no overlapping badges) */}
           <TouchableOpacity
             style={styles.heroChatBtn}
             onPress={() =>
@@ -165,30 +158,39 @@ export function WorkroomActiveView({
             }
             activeOpacity={0.8}
           >
-            <MessageSquare size={16} color="#2563EB" />
+            <MessageSquare size={14} color="#2563EB" />
             <Text style={styles.heroChatBtnText}>Chat</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Project Snapshot Banner */}
+        {/* Project Title & Metadata Row (with Kontrak Berjalan badge placed safely here) */}
         <View style={styles.projectSnapshotBox}>
           <Text style={styles.projectTitleText} numberOfLines={2}>
             {project.judul}
           </Text>
+
           <View style={styles.metaRow}>
+            {/* Active Status Badge */}
+            <View style={styles.activePill}>
+              <View style={styles.pulseDot} />
+              <Text style={styles.activePillText}>Kontrak Berjalan</Text>
+            </View>
+
             <View style={styles.metaBadge}>
               <Text style={styles.metaBadgeText}>
-                {project.kategori || "UMKM Digital"}
+                {project.kategori || "UMKM DIGITAL"}
               </Text>
             </View>
+
             <View style={styles.metaDivider} />
+
             <View style={styles.metaItem}>
-              <Calendar size={12} color="#64748B" />
+              <Calendar size={11} color="#64748B" />
               <Text style={styles.metaItemText}>
                 Tenggat: {formatDate(project.deadline)}
               </Text>
             </View>
-            <View style={styles.metaDivider} />
+
             <Text style={styles.metaBudgetText}>
               {formatCurrency(project.budget_max)}
             </Text>
@@ -196,7 +198,7 @@ export function WorkroomActiveView({
         </View>
       </View>
 
-      {/* 2. Apple Segmented Workroom Navigation */}
+      {/* 2. Apple Segmented Workroom Navigation Switcher */}
       <View style={styles.segmentedTabsContainer}>
         <TouchableOpacity
           style={[
@@ -207,7 +209,7 @@ export function WorkroomActiveView({
           activeOpacity={0.75}
         >
           <FileCheck
-            size={14}
+            size={13}
             color={activeTab === "deliverable" ? "#0F172A" : "#64748B"}
           />
           <Text
@@ -229,7 +231,7 @@ export function WorkroomActiveView({
           activeOpacity={0.75}
         >
           <FileText
-            size={14}
+            size={13}
             color={activeTab === "brief" ? "#0F172A" : "#64748B"}
           />
           <Text
@@ -251,7 +253,7 @@ export function WorkroomActiveView({
           activeOpacity={0.75}
         >
           <ShieldCheck
-            size={14}
+            size={13}
             color={activeTab === "escrow" ? "#0F172A" : "#64748B"}
           />
           <Text
@@ -265,14 +267,14 @@ export function WorkroomActiveView({
         </TouchableOpacity>
       </View>
 
-      {/* 3. TAB CONTENT */}
+      {/* 3. TAB CONTENT (Direct Flat Layout - No Inner Nesting Cards) */}
 
-      {/* TAB 1: DELIVERABLE & REVISI (Fokus Utama Pengerjaan) */}
+      {/* TAB 1: DELIVERABLE & REVISI */}
       {activeTab === "deliverable" && (
-        <View style={styles.tabCard}>
+        <View style={styles.tabContentWrap}>
           {submissions.length === 0 ? (
-            <View style={styles.emptySubmissionBox}>
-              <Clock size={32} color="#94A3B8" />
+            <View style={styles.emptySubmissionCard}>
+              <Clock size={30} color="#94A3B8" />
               <Text style={styles.emptyTitle}>
                 {isMahasiswa
                   ? "Belum Mengunggah Hasil Kerja"
@@ -337,8 +339,9 @@ export function WorkroomActiveView({
             </View>
           ) : (
             submissions.map((sub) => (
-              <View key={sub.id} style={styles.deliverableItemCard}>
-                <View style={styles.deliverableItemHeader}>
+              <View key={sub.id} style={styles.deliverableCard}>
+                {/* Header: Title, Date, and Status */}
+                <View style={styles.deliverableHeaderRow}>
                   <View style={styles.deliverableIconCircle}>
                     <FileCheck size={18} color="#2563EB" />
                   </View>
@@ -347,7 +350,10 @@ export function WorkroomActiveView({
                       Berkas Deliverable Terkirim
                     </Text>
                     <Text style={styles.deliverableCardDate}>
-                      Dikirim pada {formatDate(sub.created_at)}
+                      Dikirim pada{" "}
+                      {formatDate(
+                        sub.submitted_at || sub.created_at || new Date(),
+                      )}
                     </Text>
                   </View>
                   <View style={styles.submittedPill}>
@@ -355,9 +361,9 @@ export function WorkroomActiveView({
                   </View>
                 </View>
 
-                {/* Tautan Berkas */}
+                {/* Direct Link Row */}
                 <TouchableOpacity
-                  style={styles.fileLinkBox}
+                  style={styles.fileLinkRow}
                   onPress={() => {
                     if (sub.url_berkas) {
                       Linking.openURL(sub.url_berkas).catch(() => {});
@@ -365,41 +371,38 @@ export function WorkroomActiveView({
                   }}
                   activeOpacity={0.7}
                 >
-                  <Link2 size={16} color="#2563EB" />
+                  <Link2 size={15} color="#2563EB" />
                   <Text style={styles.fileLinkText} numberOfLines={1}>
                     {sub.url_berkas}
                   </Text>
                   <ExternalLink size={13} color="#64748B" />
                 </TouchableOpacity>
 
-                {/* Catatan Pengiriman / Revisi */}
+                {/* Clean Note Content */}
                 {renderSubmissionNote(sub.catatan_pengiriman)}
 
-                {/* Action Buttons for UMKM */}
+                {/* Action Buttons */}
                 {isUmkmOwner ? (
-                  <View style={styles.umkmActionRow}>
-                    <View style={{ flex: 1 }}>
-                      <PebbleButton
-                        variant="emerald"
-                        size="md"
-                        label="Setujui & Lepas Escrow"
-                        icon={CheckCircle2}
-                        onPress={() => onOpenApproveModal(sub)}
-                        loading={
-                          actionLoading &&
-                          selectedSubmissionToApprove?.id === sub.id
-                        }
-                      />
-                    </View>
+                  <View style={styles.actionRow}>
+                    <PebbleButton
+                      variant="emerald"
+                      size="md"
+                      label="Setujui & Lepas Escrow"
+                      icon={CheckCircle2}
+                      onPress={() => onOpenApproveModal(sub)}
+                      loading={
+                        actionLoading &&
+                        selectedSubmissionToApprove?.id === sub.id
+                      }
+                    />
                   </View>
                 ) : (
-                  /* Action Buttons for Mahasiswa */
-                  <View style={{ marginTop: 12, gap: 8 }}>
-                    <Button
-                      title="Perbarui Tautan Deliverable"
-                      variant="outline"
-                      size="sm"
-                      icon={<UploadCloud size={14} color="#2563EB" />}
+                  <View style={styles.actionRow}>
+                    <PebbleButton
+                      variant="sapphire"
+                      size="md"
+                      label="Perbarui Tautan Deliverable"
+                      icon={UploadCloud}
                       onPress={onOpenSubmissionModal}
                     />
                   </View>
@@ -412,20 +415,20 @@ export function WorkroomActiveView({
 
       {/* TAB 2: INSTRUKSI BRIEF & SPESIFIKASI */}
       {activeTab === "brief" && (
-        <View style={styles.tabCard}>
+        <View style={styles.cleanSectionCard}>
           <Text style={styles.sectionHeaderTitle}>Rincian Kebutuhan Brief</Text>
           <Text style={styles.descriptionBody}>{project.deskripsi_raw}</Text>
 
           {/* Rincian Deliverable Luaran */}
           {Array.isArray(project.deliverables) &&
             project.deliverables.length > 0 && (
-              <View style={{ marginTop: 16 }}>
+              <View style={{ marginTop: 14 }}>
                 <Text style={styles.subSectionTitle}>
                   Luaran Deliverable Wajib
                 </Text>
                 {project.deliverables.map((item, idx) => (
                   <View key={idx} style={styles.checkItemRow}>
-                    <CheckCircle2 size={14} color="#10B981" />
+                    <CheckCircle2 size={13} color="#10B981" />
                     <Text style={styles.checkItemText}>{item}</Text>
                   </View>
                 ))}
@@ -436,10 +439,10 @@ export function WorkroomActiveView({
           {project.tipe_kolaborasi === "TIM" &&
             Array.isArray(project.slots) &&
             project.slots.length > 0 && (
-              <View style={{ marginTop: 16 }}>
+              <View style={{ marginTop: 14 }}>
                 <Text style={styles.subSectionTitle}>Peran Tim Proyek</Text>
                 {project.slots.map((slot) => (
-                  <View key={slot.id} style={styles.slotCard}>
+                  <View key={slot.id} style={styles.slotRow}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.slotRoleName}>{slot.nama_peran}</Text>
                       <Text style={styles.slotBudget}>
@@ -465,12 +468,12 @@ export function WorkroomActiveView({
 
       {/* TAB 3: KONTRAK & ESCROW */}
       {activeTab === "escrow" && (
-        <View style={styles.tabCard}>
-          <View style={styles.escrowBannerBox}>
+        <View style={styles.cleanSectionCard}>
+          <View style={styles.escrowBannerRow}>
             <View style={styles.escrowShieldCircle}>
-              <ShieldCheck size={24} color="#059669" />
+              <ShieldCheck size={22} color="#059669" />
             </View>
-            <View style={{ flex: 1, marginLeft: 12 }}>
+            <View style={{ flex: 1, marginLeft: 10 }}>
               <Text style={styles.escrowShieldTitle}>
                 Dana Tersimpan di Rekening Bersama
               </Text>
@@ -481,6 +484,8 @@ export function WorkroomActiveView({
               </Text>
             </View>
           </View>
+
+          <View style={styles.escrowDivider} />
 
           <View style={styles.escrowDetailGrid}>
             <View style={styles.escrowMetricBox}>
@@ -502,11 +507,11 @@ export function WorkroomActiveView({
             onPress={onOpenInvoiceModal}
             activeOpacity={0.8}
           >
-            <FileCheck size={16} color="#2563EB" />
+            <FileCheck size={15} color="#2563EB" />
             <Text style={styles.invoiceTriggerText}>
               Buka Faktur Resmi Escrow
             </Text>
-            <ChevronRight size={16} color="#64748B" />
+            <ChevronRight size={15} color="#64748B" />
           </TouchableOpacity>
         </View>
       )}
@@ -519,19 +524,19 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40,
   },
-  // Apple Frosted Hero Card
-  workroomHeroCard: {
+  // 1. Unified Hero Surface (Clean, no nested boxes)
+  heroCard: {
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
-    borderRadius: 22,
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.95)",
+    borderRadius: 20,
     padding: 16,
     borderWidth: 1,
     borderColor: "rgba(226, 232, 240, 0.9)",
-    marginBottom: 14,
+    marginBottom: 12,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
-    shadowRadius: 10,
+    shadowRadius: 8,
     elevation: 2,
   },
   partnerHeaderRow: {
@@ -542,21 +547,21 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   partnerAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
   },
   partnerAvatarPlaceholder: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: "#2563EB",
     alignItems: "center",
     justifyContent: "center",
   },
   partnerAvatarText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 18,
+    fontSize: 17,
     color: "#FFFFFF",
   },
   onlineBadge: {
@@ -566,12 +571,62 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 6,
   },
+  partnerInfoCol: {
+    flex: 1,
+    marginLeft: 11,
+    justifyContent: "center",
+  },
   partnerRoleLabel: {
     fontFamily: FONTS.displaySemiBold,
-    fontSize: 10.5,
+    fontSize: 10,
     color: "#64748B",
     textTransform: "uppercase",
     letterSpacing: 0.4,
+  },
+  partnerName: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#0F172A",
+    marginTop: 1,
+  },
+  heroChatBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 11,
+    paddingVertical: 7,
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.2)",
+    marginLeft: 8,
+  },
+  heroChatBtnText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11.5,
+    fontWeight: "700",
+    color: "#2563EB",
+  },
+  projectSnapshotBox: {
+    marginTop: 12,
+    paddingTop: 11,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(0,0,0,0.06)",
+  },
+  projectTitleText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14.5,
+    fontWeight: "700",
+    color: "#0F172A",
+    lineHeight: 20,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    flexWrap: "wrap",
+    gap: 7,
   },
   activePill: {
     flexDirection: "row",
@@ -579,7 +634,7 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: "rgba(16, 185, 129, 0.08)",
     paddingHorizontal: 6,
-    paddingVertical: 1.5,
+    paddingVertical: 2,
     borderRadius: 6,
   },
   pulseDot: {
@@ -594,59 +649,15 @@ const styles = StyleSheet.create({
     color: "#059669",
     fontWeight: "700",
   },
-  partnerName: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#0F172A",
-    marginTop: 2,
-  },
-  heroChatBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.2)",
-  },
-  heroChatBtnText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#2563EB",
-  },
-  projectSnapshotBox: {
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(0,0,0,0.06)",
-  },
-  projectTitleText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#0F172A",
-    lineHeight: 20,
-  },
-  metaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-    flexWrap: "wrap",
-    gap: 8,
-  },
   metaBadge: {
     backgroundColor: "rgba(15, 23, 42, 0.04)",
-    paddingHorizontal: 7,
+    paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
   },
   metaBadgeText: {
     fontFamily: FONTS.displaySemiBold,
-    fontSize: 10,
+    fontSize: 9.5,
     color: "#475569",
     fontWeight: "600",
   },
@@ -659,7 +670,7 @@ const styles = StyleSheet.create({
   metaItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 3.5,
   },
   metaItemText: {
     fontFamily: FONTS.bodyRegular,
@@ -673,29 +684,30 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     marginLeft: "auto",
   },
-  // Segmented Tabs
+
+  // 2. Segmented Tabs
   segmentedTabsContainer: {
     flexDirection: "row",
     backgroundColor: "rgba(15, 23, 42, 0.05)",
     padding: 3,
-    borderRadius: 14,
-    marginBottom: 14,
+    borderRadius: 13,
+    marginBottom: 12,
   },
   segmentedTab: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    paddingVertical: 8,
-    borderRadius: 11,
+    gap: 5,
+    paddingVertical: 7.5,
+    borderRadius: 10,
   },
   segmentedTabActive: {
     backgroundColor: "#FFFFFF",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
     elevation: 2,
   },
   segmentedTabText: {
@@ -708,26 +720,25 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     fontWeight: "700",
   },
-  // Tab Card Body
-  tabCard: {
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
+
+  // 3. Tab Content - Direct Single Layer Cards
+  tabContentWrap: {
+    gap: 10,
+  },
+  emptySubmissionCard: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
-    padding: 16,
+    padding: 20,
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "rgba(226, 232, 240, 0.9)",
   },
-  emptySubmissionBox: {
-    alignItems: "center",
-    paddingVertical: 24,
-    paddingHorizontal: 12,
-  },
   emptyTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 15,
+    fontSize: 14.5,
     fontWeight: "700",
     color: "#0F172A",
-    marginTop: 10,
+    marginTop: 8,
     textAlign: "center",
   },
   emptySub: {
@@ -735,7 +746,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
     textAlign: "center",
-    marginTop: 6,
+    marginTop: 5,
     lineHeight: 18,
   },
   overdueCallout: {
@@ -756,29 +767,35 @@ const styles = StyleSheet.create({
     color: "#BE123C",
     lineHeight: 15,
   },
-  deliverableItemCard: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 16,
-    padding: 14,
+
+  // Clean Deliverable Card (Only 1 outer border, clean flat interior)
+  deliverableCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    marginBottom: 10,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
-  deliverableItemHeader: {
+  deliverableHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   deliverableIconCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: "rgba(37, 99, 235, 0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
   deliverableCardTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "700",
     color: "#0F172A",
   },
@@ -791,7 +808,7 @@ const styles = StyleSheet.create({
   submittedPill: {
     backgroundColor: "rgba(16, 185, 129, 0.1)",
     paddingHorizontal: 7,
-    paddingVertical: 2,
+    paddingVertical: 2.5,
     borderRadius: 6,
   },
   submittedPillText: {
@@ -800,16 +817,17 @@ const styles = StyleSheet.create({
     color: "#059669",
     fontWeight: "700",
   },
-  fileLinkBox: {
+  fileLinkRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#FFFFFF",
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    marginTop: 10,
+    marginTop: 12,
   },
   fileLinkText: {
     flex: 1,
@@ -817,17 +835,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#2563EB",
   },
-  noteCallout: {
-    backgroundColor: "#FFFFFF",
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+  noteContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+    marginTop: 8,
+    paddingHorizontal: 2,
   },
-  fileNotesText: {
+  noteLabel: {
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 11,
+    color: "#64748B",
+    fontWeight: "600",
+  },
+  noteBody: {
+    flex: 1,
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: "#475569",
+    fontSize: 11.5,
+    color: "#334155",
     fontStyle: "italic",
     lineHeight: 16,
   },
@@ -837,13 +862,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#A7F3D0",
+    marginTop: 4,
   },
   checklistTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 11,
     color: "#065F46",
     fontWeight: "700",
-    marginBottom: 4,
+    marginBottom: 3,
   },
   checklistItemRow: {
     flexDirection: "row",
@@ -858,16 +884,29 @@ const styles = StyleSheet.create({
     color: "#047857",
     lineHeight: 15,
   },
-  umkmActionRow: {
-    marginTop: 12,
+  actionRow: {
+    marginTop: 14,
   },
-  // Brief section
+
+  // 4. Clean Section Card (for Brief and Escrow)
+  cleanSectionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
+  },
   sectionHeaderTitle: {
     fontFamily: FONTS.displayBold,
     fontSize: 14,
     fontWeight: "700",
     color: "#0F172A",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   descriptionBody: {
     fontFamily: FONTS.bodyRegular,
@@ -893,19 +932,19 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: "#475569",
   },
-  slotCard: {
+  slotRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     backgroundColor: "#F8FAFC",
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
     marginBottom: 6,
   },
   slotRoleName: {
     fontFamily: FONTS.displayBold,
     fontSize: 12,
+    fontWeight: "700",
     color: "#0F172A",
   },
   slotBudget: {
@@ -915,71 +954,71 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   slotBadge: {
-    backgroundColor: "rgba(15, 23, 42, 0.05)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "rgba(37, 99, 235, 0.08)",
+    paddingHorizontal: 7,
+    paddingVertical: 2,
     borderRadius: 6,
   },
   slotBadgeTaken: {
     backgroundColor: "rgba(16, 185, 129, 0.1)",
   },
   slotBadgeText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displaySemiBold,
     fontSize: 10,
-    color: "#475569",
+    color: "#2563EB",
+    fontWeight: "600",
   },
-  // Escrow Tab
-  escrowBannerBox: {
+
+  // Escrow Details
+  escrowBannerRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "#ECFDF5",
-    padding: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
   },
   escrowShieldCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ECFDF5",
     alignItems: "center",
     justifyContent: "center",
   },
   escrowShieldTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "700",
     color: "#065F46",
   },
   escrowShieldSub: {
     fontFamily: FONTS.bodyRegular,
     fontSize: 11.5,
-    color: "#047857",
-    marginTop: 4,
+    color: "#475569",
+    marginTop: 3,
     lineHeight: 16,
+  },
+  escrowDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#E2E8F0",
+    marginVertical: 14,
   },
   escrowDetailGrid: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 12,
+    marginBottom: 14,
   },
   escrowMetricBox: {
     flex: 1,
     backgroundColor: "#F8FAFC",
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    padding: 10,
+    borderRadius: 10,
   },
   escrowMetricLabel: {
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10.5,
     color: "#64748B",
   },
   escrowMetricValue: {
     fontFamily: FONTS.displayBold,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
     color: "#0F172A",
     marginTop: 2,
@@ -987,17 +1026,19 @@ const styles = StyleSheet.create({
   invoiceTriggerBtn: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "#F8FAFC",
-    padding: 12,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 11,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    marginTop: 12,
   },
   invoiceTriggerText: {
     flex: 1,
-    fontFamily: FONTS.displayBold,
-    fontSize: 12,
+    fontFamily: FONTS.displaySemiBold,
+    fontSize: 11.5,
+    fontWeight: "600",
     color: "#0F172A",
     marginLeft: 8,
   },
