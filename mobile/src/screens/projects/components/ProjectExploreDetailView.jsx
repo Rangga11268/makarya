@@ -194,7 +194,14 @@ export function ProjectExploreDetailView({
             {/* Key Metrics: Budget & Deadline in 2-Column Apple Stat Display */}
             <View style={styles.keyMetricsGrid}>
               <View style={styles.metricColumn}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 5,
+                    marginBottom: 3,
+                  }}
+                >
                   <AppleWalletPayIcon size={14} />
                   <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
                 </View>
@@ -204,7 +211,14 @@ export function ProjectExploreDetailView({
               </View>
               <View style={styles.metricDividerVertical} />
               <View style={styles.metricColumn}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 5,
+                    marginBottom: 3,
+                  }}
+                >
                   <AppleCalendarDeadlineIcon size={14} />
                   <Text style={styles.metricLabel}>BATAS WAKTU</Text>
                 </View>

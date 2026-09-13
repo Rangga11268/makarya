@@ -193,12 +193,25 @@ export function AppleShieldVerifiedIcon({ size = 20 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Defs>
-        <LinearGradient id="appleShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <LinearGradient
+          id="appleShieldGrad"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="100%"
+        >
           <Stop offset="0%" stopColor="#10B981" />
           <Stop offset="100%" stopColor="#047857" />
         </LinearGradient>
       </Defs>
-      <Rect x="2" y="2" width="20" height="20" rx="6" fill="url(#appleShieldGrad)" />
+      <Rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
+        rx="6"
+        fill="url(#appleShieldGrad)"
+      />
       {/* Shield Vector */}
       <Path
         d="M12 6L7 8V12.5C7 15.8 9.1 18.8 12 19.5C14.9 18.8 17 15.8 17 12.5V8L12 6Z"
@@ -229,7 +242,14 @@ export function AppleEscrowLockIcon({ size = 20 }) {
           <Stop offset="100%" stopColor="#D97706" />
         </LinearGradient>
       </Defs>
-      <Rect x="2" y="2" width="20" height="20" rx="6" fill="url(#appleLockGrad)" />
+      <Rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
+        rx="6"
+        fill="url(#appleLockGrad)"
+      />
       {/* Padlock Shackle */}
       <Path
         d="M9 11V9C9 7.34 10.34 6 12 6C13.66 6 15 7.34 15 9V11"
@@ -251,12 +271,25 @@ export function AppleWalletPayIcon({ size = 20 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Defs>
-        <LinearGradient id="appleWalletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <LinearGradient
+          id="appleWalletGrad"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="100%"
+        >
           <Stop offset="0%" stopColor="#3B82F6" />
           <Stop offset="100%" stopColor="#1D4ED8" />
         </LinearGradient>
       </Defs>
-      <Rect x="2" y="2" width="20" height="20" rx="6" fill="url(#appleWalletGrad)" />
+      <Rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
+        rx="6"
+        fill="url(#appleWalletGrad)"
+      />
       {/* Wallet Card Vector */}
       <Rect x="6" y="8" width="12" height="9" rx="2" fill="#FFFFFF" />
       <Path d="M6 10H18" stroke="#1D4ED8" strokeWidth="1.2" />
@@ -277,7 +310,14 @@ export function AppleCalendarDeadlineIcon({ size = 20 }) {
           <Stop offset="100%" stopColor="#DC2626" />
         </LinearGradient>
       </Defs>
-      <Rect x="2" y="2" width="20" height="20" rx="6" fill="url(#appleCalGrad)" />
+      <Rect
+        x="2"
+        y="2"
+        width="20"
+        height="20"
+        rx="6"
+        fill="url(#appleCalGrad)"
+      />
       {/* Calendar Vector */}
       <Rect x="6" y="7" width="12" height="11" rx="2" fill="#FFFFFF" />
       <Path d="M6 10.5H18" stroke="#DC2626" strokeWidth="1.2" />
