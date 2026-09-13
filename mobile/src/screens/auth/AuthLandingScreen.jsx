@@ -23,7 +23,6 @@ import { FONTS } from "../../theme/fonts";
 import { ShieldCheck } from "lucide-react-native";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 
-const { width, height } = Dimensions.get("window");
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 const STATUSBAR_OFFSET =
@@ -70,7 +69,6 @@ export function AuthLandingScreen({ navigation }) {
       </View>
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
         <View style={[styles.content, authContainerStyle]}>
           {/* Top Logo with Official Makarya Icon */}
           <View style={styles.logoRow}>

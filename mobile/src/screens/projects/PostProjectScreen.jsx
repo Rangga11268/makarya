@@ -279,7 +279,6 @@ export function PostProjectScreen({ navigation }) {
       />
 
       {/* Step Tracker Indicator */}
-      <View style={styles.stepTrackerContainer}>
       <View
         style={[
           styles.stepTrackerContainer,
@@ -347,7 +346,6 @@ export function PostProjectScreen({ navigation }) {
 
       <ScrollView
         ref={scrollViewRef}
-        contentContainerStyle={styles.content}
         contentContainerStyle={[styles.content, responsiveContainerStyle]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"

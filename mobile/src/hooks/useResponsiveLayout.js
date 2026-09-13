@@ -18,12 +18,14 @@ export function useResponsiveLayout() {
   const isLandscapePhone = isLandscape && height < 500;
 
   // Max width constraint so wide tablet screens don't look awkwardly overstretched
-  const contentMaxWidth = isTablet ? 720 : "100%";
-  const contentMaxWidth = isTablet ? 720 : isLandscape ? Math.min(width * 0.9, 800) : "100%";
+  const contentMaxWidth = isTablet
+    ? 720
+    : isLandscape
+      ? Math.min(width * 0.9, 800)
+      : "100%";
   const authMaxWidth = 480;
 
   const horizontalPadding = isCompact ? 12 : isTablet ? 24 : 16;
-  const verticalPadding = isLandscape ? 10 : 16;
   const verticalPadding = isLandscapePhone ? 8 : 16;
 
   return {

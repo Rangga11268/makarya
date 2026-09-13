@@ -199,7 +199,6 @@ export function ProjectListScreen({ navigation, route }) {
       />
 
       {/* 2. Search Bar with Filter Tuning Button */}
-      <View style={styles.searchSection}>
       <View style={[styles.searchSection, responsiveContainerStyle]}>
         <SearchBar
           value={searchQuery}
@@ -213,7 +212,6 @@ export function ProjectListScreen({ navigation, route }) {
       </View>
 
       {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
-      <View style={styles.segmentedContainer}>
       <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -242,7 +240,6 @@ export function ProjectListScreen({ navigation, route }) {
 
       {/* 4. Active Filter Tag Bar (Shown ONLY when a filter is active) */}
       {activeFilterCount > 0 && (
-        <View style={styles.activeFilterBar}>
         <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
           <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
           {categoryFilter !== "ALL" && (
@@ -288,7 +285,6 @@ export function ProjectListScreen({ navigation, route }) {
       {/* 5. Projects Feed List */}
       {loading && projects.length === 0 ? (
         <ScrollView
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
@@ -311,7 +307,6 @@ export function ProjectListScreen({ navigation, route }) {
               colors={[COLORS.brandIndigo]}
             />
           }
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },

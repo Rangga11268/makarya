@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
   Image,
   ScrollView,
   StatusBar,
@@ -13,8 +12,6 @@ import { Button } from "../../components/ui/Button";
 import { ArrowRight } from "lucide-react-native";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { styles as s } from "./OnboardingScreen.styles";
-
-const { width } = Dimensions.get("window");
 
 const slides = [
   {
@@ -108,7 +105,6 @@ export function OnboardingScreen({ navigation, onComplete }) {
         {slides.map((sl) => (
           <View
             key={sl.id}
-            style={[s.slidePage, { backgroundColor: sl.bgColor }]}
             style={[s.slidePage, { width, backgroundColor: sl.bgColor }]}
           >
             {/* Background Illustration covering top 60% */}
@@ -155,11 +151,14 @@ export function OnboardingScreen({ navigation, onComplete }) {
             </View>
 
             {/* Content Section - Flowing naturally over the blend */}
-            <View style={s.contentArea}>
             <View
               style={[
                 s.contentArea,
-                isTablet && { maxWidth: 580, alignSelf: "center", width: "100%" },
+                isTablet && {
+                  maxWidth: 580,
+                  alignSelf: "center",
+                  width: "100%",
+                },
               ]}
             >
               <View
@@ -195,7 +194,6 @@ export function OnboardingScreen({ navigation, onComplete }) {
       )}
 
       {/* Bottom Controls */}
-      <View style={s.bottomBar}>
       <View
         style={[
           s.bottomBar,

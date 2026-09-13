@@ -70,10 +70,6 @@ import {
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = Math.min(width * 0.84, 340);
-const TALENT_DECK_WIDTH = Math.min(width * 0.82, 320);
-
 export function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { user, updateUser } = useAuthStore();
@@ -400,7 +396,6 @@ export function HomeScreen({ navigation }) {
           />
         }
       >
-        <View style={styles.content}>
         <View style={[styles.content, responsiveContainerStyle]}>
           {/* 1. Apple Frosted Executive Unified Hero Card (Identity + Finance Island) */}
           <View style={styles.appleGlassHeroCard}>

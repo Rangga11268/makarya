@@ -30,7 +30,6 @@ import {
 } from "lucide-react-native";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 
-const { width, height } = Dimensions.get("window");
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 const STATUSBAR_OFFSET =
@@ -103,7 +102,6 @@ export function RoleSelectionScreen({ navigation }) {
       </View>
 
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
         <View style={[styles.content, authContainerStyle]}>
           {/* Top Bar with Back Button & Official Logo */}
           <View style={styles.topBar}>

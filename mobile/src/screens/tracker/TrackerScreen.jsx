@@ -186,7 +186,6 @@ export function TrackerScreen({ navigation }) {
       />
 
       {/* 2. Unified 4-Column Segmented Tab (Fits 100% Screen Width without Sliding/Stacking) */}
-      <View style={styles.segmentedWrapper}>
       <View style={[styles.segmentedWrapper, responsiveContainerStyle]}>
         <View style={styles.segmentedContainer}>
           {segmentedTabs.map((tab) => {
@@ -220,7 +219,6 @@ export function TrackerScreen({ navigation }) {
       {/* 3. Feed List */}
       {loading && items.length === 0 ? (
         <ScrollView
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
@@ -243,7 +241,6 @@ export function TrackerScreen({ navigation }) {
               colors={[COLORS.brandIndigo]}
             />
           }
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
@@ -324,12 +321,15 @@ export function TrackerScreen({ navigation }) {
 
             // Partner details for Mahasiswa (Client UMKM)
             const clientName = isMahasiswa
-              ? item.project_umkm_nama || item.umkm_nama || "Klien UMKM"
-              ? item.project_umkm_nama || item.umkm_nama || item.umkm_profile?.nama_usaha || "Klien Mitra UMKM"
+              ? item.project_umkm_nama ||
+                item.umkm_nama ||
+                item.umkm_profile?.nama_usaha ||
+                "Klien Mitra UMKM"
               : null;
             const clientPhoto = isMahasiswa
-              ? item.project_umkm_foto || item.umkm_foto
-              ? item.project_umkm_foto || item.umkm_foto || item.umkm_profile?.url_foto_usaha
+              ? item.project_umkm_foto ||
+                item.umkm_foto ||
+                item.umkm_profile?.url_foto_usaha
               : null;
 
             return (

@@ -22,7 +22,6 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { GoogleIcon } from "../../components/icons/GoogleIcon";
 
-const { width, height } = Dimensions.get("window");
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 const STATUSBAR_OFFSET =
@@ -174,7 +173,6 @@ export function LoginScreen({ navigation }) {
           style={{ flex: 1 }}
         >
           <ScrollView
-            contentContainerStyle={styles.scrollContent}
             contentContainerStyle={[styles.scrollContent, authContainerStyle]}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"

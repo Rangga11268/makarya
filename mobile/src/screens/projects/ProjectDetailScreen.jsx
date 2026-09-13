@@ -258,7 +258,6 @@ export function ProjectDetailScreen({ route, navigation }) {
     (project?.nama_usaha && project.nama_usaha.toLowerCase() !== "string"
       ? project.nama_usaha
       : null) ||
-    "Klien Usaha UMKM";
     "Klien Mitra UMKM";
 
   const clientPhoto =
@@ -579,7 +578,6 @@ export function ProjectDetailScreen({ route, navigation }) {
     projectStatusUpper === "BIDDING" ||
     projectStatusUpper === "TERBUKA";
 
-
   const renderSubmissionNote = (note) => {
     if (!note) return null;
     const lines = note.split("\n");
@@ -703,7 +701,6 @@ export function ProjectDetailScreen({ route, navigation }) {
       ) : (
         <>
           <ScrollView
-            contentContainerStyle={styles.content}
             contentContainerStyle={[
               styles.content,
               isCompact && { paddingHorizontal: 12 },
@@ -712,685 +709,723 @@ export function ProjectDetailScreen({ route, navigation }) {
             showsVerticalScrollIndicator={false}
           >
             <View style={responsiveContainerStyle}>
-            {/* 1. Apple Glossy Hero Card */}
-            <View style={styles.floatingHeroCard}>
-              {/* Top Row: Category Badge & Escrow Status Tag */}
-              <View style={styles.floatingHeroTopRow}>
-                <View style={styles.categoryBadgePill}>
-                  <Text style={styles.categoryBadgePillText}>
-                    {project.kategori
-                      ? project.kategori.toUpperCase()
-                      : "UMKM DIGITAL"}
-                  </Text>
-                </View>
-
-                <View style={styles.floatingHeroEscrowTag}>
-                  <ShieldCheck size={12} color="#059669" />
-                  <Text style={styles.floatingHeroEscrowTagText}>
-                    Escrow Terjamin
-                  </Text>
-                </View>
-              </View>
-
-              {/* Big Prominent Budget Display */}
-              <View style={styles.floatingHeroBudgetSection}>
-                <Text style={styles.floatingHeroBudgetMicro}>
-                  PAGU MAKSIMAL ANGGARAN
-                </Text>
-                <Text style={styles.floatingHeroBudgetValue}>
-                  {formatCurrency(project.budget_max)}
-                </Text>
-              </View>
-
-              {/* Project Title */}
-              <Text style={styles.floatingHeroTitle}>{project.judul}</Text>
-
-              {/* Meta Footer Row: Deadline & Invoice Trigger */}
-              <View style={styles.floatingHeroMetaRow}>
-                <View style={styles.floatingHeroMetaItem}>
-                  <Calendar size={13} color={COLORS.textMuted} />
-                  <Text style={styles.floatingHeroMetaText}>
-                    Tenggat: {formatDate(project.deadline)}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.floatingHeroInvoiceBtn}
-                  onPress={() => setInvoiceModal(true)}
-                  activeOpacity={0.8}
-                >
-                  <FileCheck size={12} color="#2563EB" />
-                  <Text style={styles.floatingHeroInvoiceBtnText}>
-                    Faktur Escrow 100%
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Match Score Card for Mahasiswa */}
-            {project.match_score && isMahasiswa ? (
-              <View style={styles.matchScoreCard}>
-                <View style={styles.matchScoreCardHeader}>
-                  <View style={styles.matchScoreBadgeLarge}>
-                    <Check size={12} color="#065F46" strokeWidth={3} />
-                    <Text style={styles.matchScoreBadgeLargeText}>
-                      {project.match_score}% Cocok
+              {/* 1. Apple Glossy Hero Card */}
+              <View style={styles.floatingHeroCard}>
+                {/* Top Row: Category Badge & Escrow Status Tag */}
+                <View style={styles.floatingHeroTopRow}>
+                  <View style={styles.categoryBadgePill}>
+                    <Text style={styles.categoryBadgePillText}>
+                      {project.kategori
+                        ? project.kategori.toUpperCase()
+                        : "UMKM DIGITAL"}
                     </Text>
                   </View>
-                  <Text style={styles.matchScoreCardSub}>
-                    Profil & keahlian Anda sesuai dengan proyek ini
-                  </Text>
-                </View>
-                {project.match_reasons && project.match_reasons.length > 0 ? (
-                  <View style={styles.matchReasonsWrap}>
-                    {project.match_reasons.map((reason, idx) => (
-                      <View key={idx} style={styles.matchReasonPill}>
-                        <Check size={9} color="#065F46" strokeWidth={2.5} />
-                        <Text style={styles.matchReasonText}>{reason}</Text>
-                      </View>
-                    ))}
-                  </View>
-                ) : null}
-              </View>
-            ) : null}
 
-            {/* 2. Interactive Escrow Progress Stepper */}
-            <ProjectStatusBar currentStatus={project.status} />
-
-            {/* Cancellation / Expiry Audit Trail Card */}
-            {project.status === "CANCELLED" && (
-              <View style={styles.cancellationAuditCard}>
-                <View style={styles.cancellationAuditHeader}>
-                  <View style={styles.cancellationAuditBadgeRow}>
-                    <View style={styles.cancellationBadge}>
-                      <XCircle size={14} color="#DC2626" />
-                      <Text style={styles.cancellationBadgeText}>
-                        {project.cancelled_by_role === "MAHASISWA"
-                          ? "Mahasiswa Mengundurkan Diri"
-                          : project.cancelled_by_role === "UMKM"
-                            ? "Dibatalkan Klien UMKM"
-                            : project.cancelled_by_role === "SYSTEM_EXPIRED"
-                              ? "Kedaluwarsa Otomatis (Tenggat)"
-                              : "Proyek Dibatalkan"}
-                      </Text>
-                    </View>
-                    <View style={styles.refundEscrowBadge}>
-                      <ShieldCheck size={12} color="#059669" />
-                      <Text style={styles.refundEscrowBadgeText}>
-                        100% Escrow Dikembalikan
-                      </Text>
-                    </View>
-                  </View>
-                  {project.cancelled_at ? (
-                    <Text style={styles.cancellationTimeText}>
-                      Waktu: {formatDate(project.cancelled_at)}
-                    </Text>
-                  ) : null}
-                </View>
-
-                <View style={styles.cancellationReasonBox}>
-                  <Text style={styles.cancellationReasonLabel}>
-                    Alasan Pembatalan Resmi:
-                  </Text>
-                  <Text style={styles.cancellationReasonQuote}>
-                    "
-                    {project.cancel_reason ||
-                      "Tidak ada catatan alasan tertulis."}
-                    "
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            {/* Team Collaboration Slots Card */}
-            {project.tipe_kolaborasi === "TIM" &&
-              Array.isArray(project.slots) &&
-              project.slots.length > 0 && (
-                <View style={styles.teamSlotsCard}>
-                  <View style={styles.teamSlotsCardHeader}>
-                    <View style={styles.teamSlotsIconBox}>
-                      <Users size={16} color={COLORS.brandIndigo} />
-                    </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.teamSlotsCardTitle}>
-                        Formasi Tim Proyek ({project.slots.length} Talenta)
-                      </Text>
-                      <Text style={styles.teamSlotsCardSub}>
-                        Proyek kolaborasi multi-peran dengan alokasi escrow
-                        independen tiap posisi.
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.teamSlotsList}>
-                    {project.slots.map((s, idx) => {
-                      const isSlotOpen = s.status === "OPEN";
-                      const isSlotDone = s.status === "COMPLETED";
-                      return (
-                        <View key={s.id || idx} style={styles.teamSlotItem}>
-                          <View style={styles.teamSlotItemTop}>
-                            <View style={{ flex: 1, marginRight: 8 }}>
-                              <Text style={styles.teamSlotItemRole}>
-                                {s.nama_peran}
-                              </Text>
-                              <Text style={styles.teamSlotItemBudget}>
-                                Pagu: {formatCurrency(s.alokasi_budget)}
-                              </Text>
-                            </View>
-                            <View
-                              style={[
-                                styles.teamSlotStatusTag,
-                                isSlotOpen
-                                  ? styles.teamSlotStatusTagOpen
-                                  : isSlotDone
-                                    ? styles.teamSlotStatusTagDone
-                                    : styles.teamSlotStatusTagActive,
-                              ]}
-                            >
-                              <Text
-                                style={[
-                                  styles.teamSlotStatusText,
-                                  isSlotOpen
-                                    ? styles.teamSlotStatusTextOpen
-                                    : isSlotDone
-                                      ? styles.teamSlotStatusTextDone
-                                      : styles.teamSlotStatusTextActive,
-                                ]}
-                              >
-                                {isSlotOpen
-                                  ? "Mencari Talenta"
-                                  : isSlotDone
-                                    ? "Selesai"
-                                    : "Sedang Dikerjakan"}
-                              </Text>
-                            </View>
-                          </View>
-                          {s.deskripsi_tugas ? (
-                            <Text style={styles.teamSlotItemDesc}>
-                              {s.deskripsi_tugas}
-                            </Text>
-                          ) : null}
-                          {s.mahasiswa_nama ? (
-                            <View style={styles.assignedMhsRow}>
-                              <CheckCircle2 size={12} color="#059669" />
-                              <Text style={styles.assignedMhsText}>
-                                Talenta: {s.mahasiswa_nama}
-                              </Text>
-                            </View>
-                          ) : null}
-                        </View>
-                      );
-                    })}
-                  </View>
-                </View>
-              )}
-
-            {/* 3. Client UMKM Profile Info */}
-            <View style={styles.clientBox}>
-              {clientPhoto ? (
-                <Image
-                  source={{ uri: clientPhoto }}
-                  style={styles.clientAvatarImage}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.clientAvatarBox}>
-                  <Building2 size={20} color={COLORS.brandIndigo} />
-                </View>
-              )}
-              <View style={{ flex: 1 }}>
-                <View style={styles.clientNameRow}>
-                  <Text style={styles.clientTitle}>{clientDisplayName}</Text>
-                  <View style={styles.verifiedTag}>
-                    <Check size={10} color={COLORS.success} strokeWidth={3} />
-                    <Text style={styles.verifiedTagText}>Mitra Kampus</Text>
-                  </View>
-                </View>
-                <Text style={styles.clientMeta}>
-                  {project.lokasi || "Jakarta Selatan"} • Pembayaran Escrow
-                  Terjamin
-                </Text>
-              </View>
-            </View>
-
-            {/* 3B. Collaboration Chat Entry Point OR Recruitment Status Banner */}
-            {hasAcceptedStudent ? (
-              <TouchableOpacity
-                style={styles.openChatBar}
-                onPress={() =>
-                  navigation.navigate("Chat", {
-                    projectId: project.id,
-                    projectTitle: project.judul,
-                    partnerName: activePartnerName,
-                    partnerPhoto: activePartnerPhoto,
-                    partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-                  })
-                }
-                activeOpacity={0.85}
-              >
-                <View style={styles.openChatBarLeft}>
-                  {activePartnerPhoto ? (
-                    <Image
-                      source={{ uri: activePartnerPhoto }}
-                      style={styles.chatPartnerAvatar}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.chatIconBadge}>
-                      <MessageSquare size={16} color="#FFFFFF" />
-                    </View>
-                  )}
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.openChatTitle}>
-                      Ruang Obrolan & Kolaborasi{" "}
-                      {activePartnerName ? `(${activePartnerName})` : ""}
-                    </Text>
-                    <Text style={styles.openChatSub}>
-                      Kirim pesan, revisi, dan tautan Figma secara realtime
+                  <View style={styles.floatingHeroEscrowTag}>
+                    <ShieldCheck size={12} color="#059669" />
+                    <Text style={styles.floatingHeroEscrowTagText}>
+                      Escrow Terjamin
                     </Text>
                   </View>
                 </View>
-                <ChevronRight size={16} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-            ) : isUmkmOwner ? (
-              <View style={styles.recruitmentStatusCard}>
-                <View style={styles.recruitmentIconCircle}>
-                  <Users size={18} color={COLORS.brandIndigo} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.recruitmentTitle}>
-                    {proposals.length === 0
-                      ? "Menunggu Pelamar Pertama"
-                      : `${proposals.length} Proposal Masuk`}
+
+                {/* Big Prominent Budget Display */}
+                <View style={styles.floatingHeroBudgetSection}>
+                  <Text style={styles.floatingHeroBudgetMicro}>
+                    PAGU MAKSIMAL ANGGARAN
                   </Text>
-                  <Text style={styles.recruitmentSub}>
-                    {proposals.length === 0
-                      ? "Proyek ini sedang aktif di katalog eksplorasi. Ruang obrolan kerja otomatis aktif setelah Anda menerima proposal pelamar."
-                      : "Tinjau proposal mahasiswa di tab bawah dan setujui untuk membuka ruang obrolan kerja."}
+                  <Text style={styles.floatingHeroBudgetValue}>
+                    {formatCurrency(project.budget_max)}
                   </Text>
                 </View>
-                {proposals.length > 0 ? (
+
+                {/* Project Title */}
+                <Text style={styles.floatingHeroTitle}>{project.judul}</Text>
+
+                {/* Meta Footer Row: Deadline & Invoice Trigger */}
+                <View style={styles.floatingHeroMetaRow}>
+                  <View style={styles.floatingHeroMetaItem}>
+                    <Calendar size={13} color={COLORS.textMuted} />
+                    <Text style={styles.floatingHeroMetaText}>
+                      Tenggat: {formatDate(project.deadline)}
+                    </Text>
+                  </View>
+
                   <TouchableOpacity
-                    style={styles.reviewApplicantsBtn}
-                    onPress={() => setActiveTab("proposals")}
+                    style={styles.floatingHeroInvoiceBtn}
+                    onPress={() => setInvoiceModal(true)}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.reviewApplicantsBtnText}>Tinjau</Text>
+                    <FileCheck size={12} color="#2563EB" />
+                    <Text style={styles.floatingHeroInvoiceBtnText}>
+                      Faktur Escrow 100%
+                    </Text>
                   </TouchableOpacity>
-                ) : null}
+                </View>
               </View>
-            ) : null}
 
-            {/* 4. Description & Scope */}
-            <View style={styles.sectionBox}>
-              <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
-              <Text style={styles.descriptionText}>
-                {project.deskripsi_raw}
-              </Text>
-            </View>
+              {/* Match Score Card for Mahasiswa */}
+              {project.match_score && isMahasiswa ? (
+                <View style={styles.matchScoreCard}>
+                  <View style={styles.matchScoreCardHeader}>
+                    <View style={styles.matchScoreBadgeLarge}>
+                      <Check size={12} color="#065F46" strokeWidth={3} />
+                      <Text style={styles.matchScoreBadgeLargeText}>
+                        {project.match_score}% Cocok
+                      </Text>
+                    </View>
+                    <Text style={styles.matchScoreCardSub}>
+                      Profil & keahlian Anda sesuai dengan proyek ini
+                    </Text>
+                  </View>
+                  {project.match_reasons && project.match_reasons.length > 0 ? (
+                    <View style={styles.matchReasonsWrap}>
+                      {project.match_reasons.map((reason, idx) => (
+                        <View key={idx} style={styles.matchReasonPill}>
+                          <Check size={9} color="#065F46" strokeWidth={2.5} />
+                          <Text style={styles.matchReasonText}>{reason}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
 
-            {/* 4B. Modular Deliverables Reel */}
-            <View style={styles.deliverablesContainer}>
-              <Text style={styles.deliverablesHeading}>
-                Spesifikasi Deliverable Proyek
-              </Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.deliverablesScroll}
-              >
-                <View style={styles.deliverablePill}>
-                  <View style={styles.deliverableIconBox}>
-                    <Palette size={14} color="#2563EB" />
-                  </View>
-                  <View>
-                    <Text style={styles.deliverableTitle}>
-                      Figma & Asset Desain
-                    </Text>
-                    <Text style={styles.deliverableSub}>
-                      Komponen & Style Guide
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.deliverablePill}>
-                  <View style={styles.deliverableIconBox}>
-                    <Smartphone size={14} color="#2563EB" />
-                  </View>
-                  <View>
-                    <Text style={styles.deliverableTitle}>
-                      Hasil Kerja Digital
-                    </Text>
-                    <Text style={styles.deliverableSub}>
-                      Sesuai Rincian Brief
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.deliverablePill}>
-                  <View
-                    style={[
-                      styles.deliverableIconBox,
-                      { backgroundColor: "#ECFDF5" },
-                    ]}
-                  >
-                    <ShieldCheck size={14} color="#059669" />
-                  </View>
-                  <View>
-                    <Text style={styles.deliverableTitle}>
-                      Proteksi Escrow 100%
-                    </Text>
-                    <Text style={styles.deliverableSub}>
-                      Dana Aman di Makarya
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.deliverablePill}>
-                  <View style={styles.deliverableIconBox}>
-                    <MessageSquare size={14} color="#2563EB" />
-                  </View>
-                  <View>
-                    <Text style={styles.deliverableTitle}>
-                      Revisi Terstruktur
-                    </Text>
-                    <Text style={styles.deliverableSub}>
-                      Ruang Obrolan Realtime
-                    </Text>
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
+              {/* 2. Interactive Escrow Progress Stepper */}
+              <ProjectStatusBar currentStatus={project.status} />
 
-            {/* 5. Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
-            {isMahasiswa && isAcceptedProposal && (
-              <View style={styles.submissionSectionBox}>
-                <View style={styles.submissionHeader}>
-                  <View style={styles.submissionIconBox}>
-                    <UploadCloud size={20} color={COLORS.brandIndigo} />
+              {/* Cancellation / Expiry Audit Trail Card */}
+              {project.status === "CANCELLED" && (
+                <View style={styles.cancellationAuditCard}>
+                  <View style={styles.cancellationAuditHeader}>
+                    <View style={styles.cancellationAuditBadgeRow}>
+                      <View style={styles.cancellationBadge}>
+                        <XCircle size={14} color="#DC2626" />
+                        <Text style={styles.cancellationBadgeText}>
+                          {project.cancelled_by_role === "MAHASISWA"
+                            ? "Mahasiswa Mengundurkan Diri"
+                            : project.cancelled_by_role === "UMKM"
+                              ? "Dibatalkan Klien UMKM"
+                              : project.cancelled_by_role === "SYSTEM_EXPIRED"
+                                ? "Kedaluwarsa Otomatis (Tenggat)"
+                                : "Proyek Dibatalkan"}
+                        </Text>
+                      </View>
+                      <View style={styles.refundEscrowBadge}>
+                        <ShieldCheck size={12} color="#059669" />
+                        <Text style={styles.refundEscrowBadgeText}>
+                          100% Escrow Dikembalikan
+                        </Text>
+                      </View>
+                    </View>
+                    {project.cancelled_at ? (
+                      <Text style={styles.cancellationTimeText}>
+                        Waktu: {formatDate(project.cancelled_at)}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  <View style={styles.cancellationReasonBox}>
+                    <Text style={styles.cancellationReasonLabel}>
+                      Alasan Pembatalan Resmi:
+                    </Text>
+                    <Text style={styles.cancellationReasonQuote}>
+                      "
+                      {project.cancel_reason ||
+                        "Tidak ada catatan alasan tertulis."}
+                      "
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Team Collaboration Slots Card */}
+              {project.tipe_kolaborasi === "TIM" &&
+                Array.isArray(project.slots) &&
+                project.slots.length > 0 && (
+                  <View style={styles.teamSlotsCard}>
+                    <View style={styles.teamSlotsCardHeader}>
+                      <View style={styles.teamSlotsIconBox}>
+                        <Users size={16} color={COLORS.brandIndigo} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.teamSlotsCardTitle}>
+                          Formasi Tim Proyek ({project.slots.length} Talenta)
+                        </Text>
+                        <Text style={styles.teamSlotsCardSub}>
+                          Proyek kolaborasi multi-peran dengan alokasi escrow
+                          independen tiap posisi.
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.teamSlotsList}>
+                      {project.slots.map((s, idx) => {
+                        const isSlotOpen = s.status === "OPEN";
+                        const isSlotDone = s.status === "COMPLETED";
+                        return (
+                          <View key={s.id || idx} style={styles.teamSlotItem}>
+                            <View style={styles.teamSlotItemTop}>
+                              <View style={{ flex: 1, marginRight: 8 }}>
+                                <Text style={styles.teamSlotItemRole}>
+                                  {s.nama_peran}
+                                </Text>
+                                <Text style={styles.teamSlotItemBudget}>
+                                  Pagu: {formatCurrency(s.alokasi_budget)}
+                                </Text>
+                              </View>
+                              <View
+                                style={[
+                                  styles.teamSlotStatusTag,
+                                  isSlotOpen
+                                    ? styles.teamSlotStatusTagOpen
+                                    : isSlotDone
+                                      ? styles.teamSlotStatusTagDone
+                                      : styles.teamSlotStatusTagActive,
+                                ]}
+                              >
+                                <Text
+                                  style={[
+                                    styles.teamSlotStatusText,
+                                    isSlotOpen
+                                      ? styles.teamSlotStatusTextOpen
+                                      : isSlotDone
+                                        ? styles.teamSlotStatusTextDone
+                                        : styles.teamSlotStatusTextActive,
+                                  ]}
+                                >
+                                  {isSlotOpen
+                                    ? "Mencari Talenta"
+                                    : isSlotDone
+                                      ? "Selesai"
+                                      : "Sedang Dikerjakan"}
+                                </Text>
+                              </View>
+                            </View>
+                            {s.deskripsi_tugas ? (
+                              <Text style={styles.teamSlotItemDesc}>
+                                {s.deskripsi_tugas}
+                              </Text>
+                            ) : null}
+                            {s.mahasiswa_nama ? (
+                              <View style={styles.assignedMhsRow}>
+                                <CheckCircle2 size={12} color="#059669" />
+                                <Text style={styles.assignedMhsText}>
+                                  Talenta: {s.mahasiswa_nama}
+                                </Text>
+                              </View>
+                            ) : null}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
+
+              {/* 3. Client UMKM Profile Info */}
+              <View style={styles.clientBox}>
+                {clientPhoto ? (
+                  <Image
+                    source={{ uri: clientPhoto }}
+                    style={styles.clientAvatarImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={styles.clientAvatarBox}>
+                    <Building2 size={20} color={COLORS.brandIndigo} />
+                  </View>
+                )}
+                <View style={{ flex: 1 }}>
+                  <View style={styles.clientNameRow}>
+                    <Text style={styles.clientTitle}>{clientDisplayName}</Text>
+                    <View style={styles.verifiedTag}>
+                      <Check size={10} color={COLORS.success} strokeWidth={3} />
+                      <Text style={styles.verifiedTagText}>Mitra Kampus</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.clientMeta}>
+                    {project.lokasi || "Jakarta Selatan"} • Pembayaran Escrow
+                    Terjamin
+                  </Text>
+                </View>
+              </View>
+
+              {/* 3B. Collaboration Chat Entry Point OR Recruitment Status Banner */}
+              {hasAcceptedStudent ? (
+                <TouchableOpacity
+                  style={styles.openChatBar}
+                  onPress={() =>
+                    navigation.navigate("Chat", {
+                      projectId: project.id,
+                      projectTitle: project.judul,
+                      partnerName: activePartnerName,
+                      partnerPhoto: activePartnerPhoto,
+                      partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+                    })
+                  }
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.openChatBarLeft}>
+                    {activePartnerPhoto ? (
+                      <Image
+                        source={{ uri: activePartnerPhoto }}
+                        style={styles.chatPartnerAvatar}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={styles.chatIconBadge}>
+                        <MessageSquare size={16} color="#FFFFFF" />
+                      </View>
+                    )}
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.openChatTitle}>
+                        Ruang Obrolan & Kolaborasi{" "}
+                        {activePartnerName ? `(${activePartnerName})` : ""}
+                      </Text>
+                      <Text style={styles.openChatSub}>
+                        Kirim pesan, revisi, dan tautan Figma secara realtime
+                      </Text>
+                    </View>
+                  </View>
+                  <ChevronRight size={16} color={COLORS.brandIndigo} />
+                </TouchableOpacity>
+              ) : isUmkmOwner ? (
+                <View style={styles.recruitmentStatusCard}>
+                  <View style={styles.recruitmentIconCircle}>
+                    <Users size={18} color={COLORS.brandIndigo} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.submissionHeaderTitle}>
-                      Hasil Pekerjaan (Deliverable)
+                    <Text style={styles.recruitmentTitle}>
+                      {proposals.length === 0
+                        ? "Menunggu Pelamar Pertama"
+                        : `${proposals.length} Proposal Masuk`}
                     </Text>
-                    <Text style={styles.submissionHeaderSub}>
-                      {submissions.length > 0
-                        ? "Berkas berhasil diunggah & sedang direview klien"
-                        : "Unggah tautan Figma, GitHub, atau Google Drive hasil karyamu"}
+                    <Text style={styles.recruitmentSub}>
+                      {proposals.length === 0
+                        ? "Proyek ini sedang aktif di katalog eksplorasi. Ruang obrolan kerja otomatis aktif setelah Anda menerima proposal pelamar."
+                        : "Tinjau proposal mahasiswa di tab bawah dan setujui untuk membuka ruang obrolan kerja."}
                     </Text>
                   </View>
-                </View>
-
-                {submissions.length > 0 ? (
-                  <View style={styles.submittedFileList}>
-                    {submissions.map((sub, idx) => (
-                      <View
-                        key={sub.id || idx}
-                        style={styles.submittedFileCard}
-                      >
-                        <View style={styles.fileCardTop}>
-                          <Link2 size={16} color={COLORS.brandIndigo} />
-                          <Text style={styles.fileUrlText} numberOfLines={1}>
-                            {sub.url_berkas || "Tautan Deliverable"}
-                          </Text>
-                          <View style={styles.subStatusBadge}>
-                            <Text style={styles.subStatusBadgeText}>
-                              {formatStatus(sub.status || "SUBMITTED")}
-                            </Text>
-                          </View>
-                        </View>
-                        {renderSubmissionNote(sub.catatan_pengiriman)}
-                      </View>
-                    ))}
-
+                  {proposals.length > 0 ? (
                     <TouchableOpacity
-                      style={styles.reuploadBtn}
-                      onPress={() => setSubmissionModal(true)}
+                      style={styles.reviewApplicantsBtn}
+                      onPress={() => setActiveTab("proposals")}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.reuploadBtnText}>
-                        Perbarui Tautan Berkas
+                      <Text style={styles.reviewApplicantsBtnText}>Tinjau</Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+              ) : null}
+
+              {/* 4. Description & Scope */}
+              <View style={styles.sectionBox}>
+                <Text style={styles.sectionTitle}>Rincian Kebutuhan Brief</Text>
+                <Text style={styles.descriptionText}>
+                  {project.deskripsi_raw}
+                </Text>
+              </View>
+
+              {/* 4B. Modular Deliverables Reel */}
+              <View style={styles.deliverablesContainer}>
+                <Text style={styles.deliverablesHeading}>
+                  Spesifikasi Deliverable Proyek
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.deliverablesScroll}
+                >
+                  <View style={styles.deliverablePill}>
+                    <View style={styles.deliverableIconBox}>
+                      <Palette size={14} color="#2563EB" />
+                    </View>
+                    <View>
+                      <Text style={styles.deliverableTitle}>
+                        Figma & Asset Desain
+                      </Text>
+                      <Text style={styles.deliverableSub}>
+                        Komponen & Style Guide
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.deliverablePill}>
+                    <View style={styles.deliverableIconBox}>
+                      <Smartphone size={14} color="#2563EB" />
+                    </View>
+                    <View>
+                      <Text style={styles.deliverableTitle}>
+                        Hasil Kerja Digital
+                      </Text>
+                      <Text style={styles.deliverableSub}>
+                        Sesuai Rincian Brief
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.deliverablePill}>
+                    <View
+                      style={[
+                        styles.deliverableIconBox,
+                        { backgroundColor: "#ECFDF5" },
+                      ]}
+                    >
+                      <ShieldCheck size={14} color="#059669" />
+                    </View>
+                    <View>
+                      <Text style={styles.deliverableTitle}>
+                        Proteksi Escrow 100%
+                      </Text>
+                      <Text style={styles.deliverableSub}>
+                        Dana Aman di Makarya
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.deliverablePill}>
+                    <View style={styles.deliverableIconBox}>
+                      <MessageSquare size={14} color="#2563EB" />
+                    </View>
+                    <View>
+                      <Text style={styles.deliverableTitle}>
+                        Revisi Terstruktur
+                      </Text>
+                      <Text style={styles.deliverableSub}>
+                        Ruang Obrolan Realtime
+                      </Text>
+                    </View>
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* 5. Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
+              {isMahasiswa && isAcceptedProposal && (
+                <View style={styles.submissionSectionBox}>
+                  <View style={styles.submissionHeader}>
+                    <View style={styles.submissionIconBox}>
+                      <UploadCloud size={20} color={COLORS.brandIndigo} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.submissionHeaderTitle}>
+                        Hasil Pekerjaan (Deliverable)
+                      </Text>
+                      <Text style={styles.submissionHeaderSub}>
+                        {submissions.length > 0
+                          ? "Berkas berhasil diunggah & sedang direview klien"
+                          : "Unggah tautan Figma, GitHub, atau Google Drive hasil karyamu"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {submissions.length > 0 ? (
+                    <View style={styles.submittedFileList}>
+                      {submissions.map((sub, idx) => (
+                        <View
+                          key={sub.id || idx}
+                          style={styles.submittedFileCard}
+                        >
+                          <View style={styles.fileCardTop}>
+                            <Link2 size={16} color={COLORS.brandIndigo} />
+                            <Text style={styles.fileUrlText} numberOfLines={1}>
+                              {sub.url_berkas || "Tautan Deliverable"}
+                            </Text>
+                            <View style={styles.subStatusBadge}>
+                              <Text style={styles.subStatusBadgeText}>
+                                {formatStatus(sub.status || "SUBMITTED")}
+                              </Text>
+                            </View>
+                          </View>
+                          {renderSubmissionNote(sub.catatan_pengiriman)}
+                        </View>
+                      ))}
+
+                      <TouchableOpacity
+                        style={styles.reuploadBtn}
+                        onPress={() => setSubmissionModal(true)}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={styles.reuploadBtnText}>
+                          Perbarui Tautan Berkas
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.uploadCtaBox}
+                      onPress={() => setSubmissionModal(true)}
+                      activeOpacity={0.88}
+                    >
+                      <UploadCloud size={24} color={COLORS.brandIndigo} />
+                      <Text style={styles.uploadCtaMain}>
+                        Unggah Berkas Deliverable Sekarang
+                      </Text>
+                      <Text style={styles.uploadCtaSub}>
+                        Kirim hasil pengerjaan untuk membuka pencairan dana
+                        escrow
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+
+              {/* 6. Escrow Protection Assurance Banner */}
+              <View style={styles.guaranteeBox}>
+                <ShieldCheck size={20} color={COLORS.success} />
+                <View style={styles.guaranteeContent}>
+                  <Text style={styles.guaranteeTitle}>
+                    Proteksi Rekening Bersama (Escrow)
+                  </Text>
+                  <Text style={styles.guaranteeDesc}>
+                    {isMahasiswa
+                      ? "Honor Anda dijamin 100% aman tersimpan di platform dan cair otomatis setelah deliverable disetujui."
+                      : "Dana Anda baru cair ke mahasiswa setelah hasil pengerjaan proyek disetujui."}
+                  </Text>
+                </View>
+              </View>
+
+              {/* 7. UMKM Management Section */}
+              {isUmkmOwner && (
+                <View style={styles.managementSection}>
+                  <View style={styles.tabContainer}>
+                    <TouchableOpacity
+                      onPress={() => setActiveTab("proposals")}
+                      style={[
+                        styles.tabButton,
+                        activeTab === "proposals" && styles.tabButtonActive,
+                      ]}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.tabText,
+                          activeTab === "proposals" && styles.tabTextActive,
+                        ]}
+                      >
+                        Proposal Masuk ({proposals.length})
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setActiveTab("submission")}
+                      style={[
+                        styles.tabButton,
+                        activeTab === "submission" && styles.tabButtonActive,
+                      ]}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.tabText,
+                          activeTab === "submission" && styles.tabTextActive,
+                        ]}
+                      >
+                        Hasil Deliverable ({submissions.length})
                       </Text>
                     </TouchableOpacity>
                   </View>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.uploadCtaBox}
-                    onPress={() => setSubmissionModal(true)}
-                    activeOpacity={0.88}
-                  >
-                    <UploadCloud size={24} color={COLORS.brandIndigo} />
-                    <Text style={styles.uploadCtaMain}>
-                      Unggah Berkas Deliverable Sekarang
-                    </Text>
-                    <Text style={styles.uploadCtaSub}>
-                      Kirim hasil pengerjaan untuk membuka pencairan dana escrow
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
 
-            {/* 6. Escrow Protection Assurance Banner */}
-            <View style={styles.guaranteeBox}>
-              <ShieldCheck size={20} color={COLORS.success} />
-              <View style={styles.guaranteeContent}>
-                <Text style={styles.guaranteeTitle}>
-                  Proteksi Rekening Bersama (Escrow)
-                </Text>
-                <Text style={styles.guaranteeDesc}>
-                  {isMahasiswa
-                    ? "Honor Anda dijamin 100% aman tersimpan di platform dan cair otomatis setelah deliverable disetujui."
-                    : "Dana Anda baru cair ke mahasiswa setelah hasil pengerjaan proyek disetujui."}
-                </Text>
-              </View>
-            </View>
-
-            {/* 7. UMKM Management Section */}
-            {isUmkmOwner && (
-              <View style={styles.managementSection}>
-                <View style={styles.tabContainer}>
-                  <TouchableOpacity
-                    onPress={() => setActiveTab("proposals")}
-                    style={[
-                      styles.tabButton,
-                      activeTab === "proposals" && styles.tabButtonActive,
-                    ]}
-                    activeOpacity={0.8}
-                  >
-                    <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === "proposals" && styles.tabTextActive,
-                      ]}
-                    >
-                      Proposal Masuk ({proposals.length})
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => setActiveTab("submission")}
-                    style={[
-                      styles.tabButton,
-                      activeTab === "submission" && styles.tabButtonActive,
-                    ]}
-                    activeOpacity={0.8}
-                  >
-                    <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === "submission" && styles.tabTextActive,
-                      ]}
-                    >
-                      Hasil Deliverable ({submissions.length})
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Tab 1: Proposals List */}
-                {activeTab === "proposals" && (
-                  <View style={styles.tabContent}>
-                    {proposals.length === 0 ? (
-                      <View style={styles.emptyBox}>
-                        <Briefcase size={32} color={COLORS.textDim} />
-                        <Text style={styles.emptyText}>
-                          Belum ada proposal masuk dari mahasiswa.
-                        </Text>
-                      </View>
-                    ) : (
-                      proposals.map((prop) => (
-                        <ProposalCard
-                          key={prop.id}
-                          proposal={prop}
-                          projectSlots={project.slots}
-                          isMultiSlot={
-                            Boolean(
-                              project.slots && project.slots.length > 1,
-                            ) || project.tipe_kolaborasi === "TIM"
-                          }
-                          onAccept={() => handleOpenAcceptModal(prop)}
-                          onReject={() => handleRejectProposal(prop.id)}
-                          loadingAccept={
-                            actionLoading &&
-                            selectedProposalToAccept?.id === prop.id
-                          }
-                          loadingReject={actionLoading}
-                        />
-                      ))
-                    )}
-                  </View>
-                )}
-
-                {/* Tab 2: Submission Deliverable */}
-                {activeTab === "submission" && (
-                  <View style={styles.tabContent}>
-                    {submissions.length === 0 ? (
-                      <View style={styles.emptyBox}>
-                        <FileCheck size={32} color={COLORS.textDim} />
-                        <Text style={styles.emptyText}>
-                          Mahasiswa belum mengunggah hasil deliverable.
-                        </Text>
-                        {isProjectExpired && (
-                          <View style={styles.overdueCallout}>
-                            <AlertTriangle size={14} color="#BE123C" />
-                            <Text style={styles.overdueCalloutText}>
-                              Tenggat pengerjaan telah terlewati. Anda dapat
-                              mengganti mahasiswa dan membuka kembali proyek ke
-                              katalog eksplorasi (escrow dikembalikan ke Saldo
-                              Aktif), atau membatalkan proyek.
-                            </Text>
-                          </View>
-                        )}
-
-                        {project?.status === "IN_PROGRESS" && (
-                          <View
-                            style={{ marginTop: 14, width: "100%", gap: 8 }}
-                          >
-                            <Button
-                              title="Ganti Mahasiswa & Buka ke Eksplorasi"
-                              variant="brand"
-                              size="sm"
-                              icon={<RotateCcw size={14} color="#FFF" />}
-                              onPress={() => setReopenModal(true)}
-                            />
-                            <Button
-                              title="Batalkan Proyek (Refund Escrow)"
-                              variant="outline"
-                              size="sm"
-                              icon={<XCircle size={14} color="#BE123C" />}
-                              textStyle={{ color: "#BE123C" }}
-                              style={{ borderColor: "#FECACA" }}
-                              onPress={() => setTerminateModal(true)}
-                            />
-                          </View>
-                        )}
-                      </View>
-                    ) : (
-                      submissions.map((sub) => (
-                        <View key={sub.id} style={styles.submissionCard}>
-                          <Text style={styles.submissionTitle}>
-                            File Deliverable Proyek
+                  {/* Tab 1: Proposals List */}
+                  {activeTab === "proposals" && (
+                    <View style={styles.tabContent}>
+                      {proposals.length === 0 ? (
+                        <View style={styles.emptyBox}>
+                          <Briefcase size={32} color={COLORS.textDim} />
+                          <Text style={styles.emptyText}>
+                            Belum ada proposal masuk dari mahasiswa.
                           </Text>
-                          <TouchableOpacity
-                            style={styles.submittedLinkBox}
-                            activeOpacity={0.7}
-                          >
-                            <Link2 size={15} color={COLORS.brandIndigo} />
-                            <Text
-                              style={styles.submittedLinkText}
-                              numberOfLines={1}
-                            >
-                              {sub.url_berkas}
-                            </Text>
-                          </TouchableOpacity>
-                          {renderSubmissionNote(sub.catatan_pengiriman)}
-                          <PebbleButton
-                            variant="emerald"
-                            size="md"
-                            label="Setujui & Lepas Escrow"
-                            icon={CheckCircle2}
-                            onPress={() => handleOpenApproveModal(sub)}
-                            loading={
-                              actionLoading &&
-                              selectedSubmissionToApprove?.id === sub.id
-                            }
-                            style={{ marginTop: 12, width: "100%" }}
-                          />
                         </View>
-                      ))
-                    )}
-                  </View>
-                )}
-              </View>
-            )}
+                      ) : (
+                        proposals.map((prop) => (
+                          <ProposalCard
+                            key={prop.id}
+                            proposal={prop}
+                            projectSlots={project.slots}
+                            isMultiSlot={
+                              Boolean(
+                                project.slots && project.slots.length > 1,
+                              ) || project.tipe_kolaborasi === "TIM"
+                            }
+                            onAccept={() => handleOpenAcceptModal(prop)}
+                            onReject={() => handleRejectProposal(prop.id)}
+                            loadingAccept={
+                              actionLoading &&
+                              selectedProposalToAccept?.id === prop.id
+                            }
+                            loadingReject={actionLoading}
+                          />
+                        ))
+                      )}
+                    </View>
+                  )}
 
-            {/* 7b. Mahasiswa Project Collaboration & Deliverable Section */}
-            {isMahasiswa && myExistingProposal && (
-              <View style={styles.managementSection}>
-                <View style={styles.tabContainer}>
-                  <View style={[styles.tabButton, styles.tabButtonActive]}>
-                    <Text style={[styles.tabText, styles.tabTextActive]}>
-                      {isAcceptedProposal
-                        ? "Deliverable & Hasil Kerja"
-                        : "Status Lamaran Anda"}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.tabContent}>
-                  {isAcceptedProposal ? (
-                    <View style={styles.submissionCard}>
-                      <Text style={styles.submissionTitle}>
-                        {submissions.length > 0
-                          ? "Berkas Deliverable Terkirim"
-                          : "Unggah Berkas Deliverable"}
-                      </Text>
-                      {submissions.length > 0 ? (
-                        <>
-                          <TouchableOpacity
-                            style={styles.submittedLinkBox}
-                            activeOpacity={0.7}
-                          >
-                            <Link2 size={15} color={COLORS.brandIndigo} />
-                            <Text
-                              style={styles.submittedLinkText}
-                              numberOfLines={1}
-                            >
-                              {submissions[0].url_berkas}
-                            </Text>
-                          </TouchableOpacity>
-                          {renderSubmissionNote(
-                            submissions[0].catatan_pengiriman,
+                  {/* Tab 2: Submission Deliverable */}
+                  {activeTab === "submission" && (
+                    <View style={styles.tabContent}>
+                      {submissions.length === 0 ? (
+                        <View style={styles.emptyBox}>
+                          <FileCheck size={32} color={COLORS.textDim} />
+                          <Text style={styles.emptyText}>
+                            Mahasiswa belum mengunggah hasil deliverable.
+                          </Text>
+                          {isProjectExpired && (
+                            <View style={styles.overdueCallout}>
+                              <AlertTriangle size={14} color="#BE123C" />
+                              <Text style={styles.overdueCalloutText}>
+                                Tenggat pengerjaan telah terlewati. Anda dapat
+                                mengganti mahasiswa dan membuka kembali proyek
+                                ke katalog eksplorasi (escrow dikembalikan ke
+                                Saldo Aktif), atau membatalkan proyek.
+                              </Text>
+                            </View>
                           )}
-                          <View style={{ marginTop: 10, gap: 8 }}>
-                            <Button
-                              title="Perbarui Berkas Deliverable"
-                              variant="outline"
-                              size="sm"
-                              icon={
-                                <UploadCloud
-                                  size={15}
-                                  color={COLORS.brandIndigo}
-                                />
+
+                          {project?.status === "IN_PROGRESS" && (
+                            <View
+                              style={{ marginTop: 14, width: "100%", gap: 8 }}
+                            >
+                              <Button
+                                title="Ganti Mahasiswa & Buka ke Eksplorasi"
+                                variant="brand"
+                                size="sm"
+                                icon={<RotateCcw size={14} color="#FFF" />}
+                                onPress={() => setReopenModal(true)}
+                              />
+                              <Button
+                                title="Batalkan Proyek (Refund Escrow)"
+                                variant="outline"
+                                size="sm"
+                                icon={<XCircle size={14} color="#BE123C" />}
+                                textStyle={{ color: "#BE123C" }}
+                                style={{ borderColor: "#FECACA" }}
+                                onPress={() => setTerminateModal(true)}
+                              />
+                            </View>
+                          )}
+                        </View>
+                      ) : (
+                        submissions.map((sub) => (
+                          <View key={sub.id} style={styles.submissionCard}>
+                            <Text style={styles.submissionTitle}>
+                              File Deliverable Proyek
+                            </Text>
+                            <TouchableOpacity
+                              style={styles.submittedLinkBox}
+                              activeOpacity={0.7}
+                            >
+                              <Link2 size={15} color={COLORS.brandIndigo} />
+                              <Text
+                                style={styles.submittedLinkText}
+                                numberOfLines={1}
+                              >
+                                {sub.url_berkas}
+                              </Text>
+                            </TouchableOpacity>
+                            {renderSubmissionNote(sub.catatan_pengiriman)}
+                            <PebbleButton
+                              variant="emerald"
+                              size="md"
+                              label="Setujui & Lepas Escrow"
+                              icon={CheckCircle2}
+                              onPress={() => handleOpenApproveModal(sub)}
+                              loading={
+                                actionLoading &&
+                                selectedSubmissionToApprove?.id === sub.id
                               }
+                              style={{ marginTop: 12, width: "100%" }}
+                            />
+                          </View>
+                        ))
+                      )}
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {/* 7b. Mahasiswa Project Collaboration & Deliverable Section */}
+              {isMahasiswa && myExistingProposal && (
+                <View style={styles.managementSection}>
+                  <View style={styles.tabContainer}>
+                    <View style={[styles.tabButton, styles.tabButtonActive]}>
+                      <Text style={[styles.tabText, styles.tabTextActive]}>
+                        {isAcceptedProposal
+                          ? "Deliverable & Hasil Kerja"
+                          : "Status Lamaran Anda"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.tabContent}>
+                    {isAcceptedProposal ? (
+                      <View style={styles.submissionCard}>
+                        <Text style={styles.submissionTitle}>
+                          {submissions.length > 0
+                            ? "Berkas Deliverable Terkirim"
+                            : "Unggah Berkas Deliverable"}
+                        </Text>
+                        {submissions.length > 0 ? (
+                          <>
+                            <TouchableOpacity
+                              style={styles.submittedLinkBox}
+                              activeOpacity={0.7}
+                            >
+                              <Link2 size={15} color={COLORS.brandIndigo} />
+                              <Text
+                                style={styles.submittedLinkText}
+                                numberOfLines={1}
+                              >
+                                {submissions[0].url_berkas}
+                              </Text>
+                            </TouchableOpacity>
+                            {renderSubmissionNote(
+                              submissions[0].catatan_pengiriman,
+                            )}
+                            <View style={{ marginTop: 10, gap: 8 }}>
+                              <Button
+                                title="Perbarui Berkas Deliverable"
+                                variant="outline"
+                                size="sm"
+                                icon={
+                                  <UploadCloud
+                                    size={15}
+                                    color={COLORS.brandIndigo}
+                                  />
+                                }
+                                onPress={() => setSubmissionModal(true)}
+                              />
+                              <Button
+                                title="Ajukan Pengunduran Diri"
+                                variant="outline"
+                                size="sm"
+                                icon={<XCircle size={14} color="#BE123C" />}
+                                textStyle={{ color: "#BE123C" }}
+                                style={{ borderColor: "#FECACA" }}
+                                onPress={() => setResignModal(true)}
+                              />
+                            </View>
+                          </>
+                        ) : (
+                          <View style={styles.emptyBox}>
+                            <Clock size={28} color={COLORS.brandIndigo} />
+                            <Text style={styles.emptyText}>
+                              Proyek disetujui! Silakan kerjakan dan unggah
+                              tautan hasil kerja (Figma / Drive) Anda.
+                            </Text>
+                            {isProjectExpired && (
+                              <View style={styles.overdueCallout}>
+                                <AlertTriangle size={14} color="#BE123C" />
+                                <Text style={styles.overdueCalloutText}>
+                                  Tenggat pengerjaan telah terlewati. Harap
+                                  segera unggah hasil deliverable Anda atau
+                                  ajukan pengunduran diri jika Anda berhalangan
+                                  melanjutkan.
+                                </Text>
+                              </View>
+                            )}
+                            <Button
+                              title="Unggah Deliverable Sekarang"
+                              variant="brand"
+                              size="md"
+                              icon={<UploadCloud size={16} color="#FFF" />}
                               onPress={() => setSubmissionModal(true)}
+                              style={{ marginTop: 12 }}
                             />
                             <Button
                               title="Ajukan Pengunduran Diri"
@@ -1398,141 +1433,101 @@ export function ProjectDetailScreen({ route, navigation }) {
                               size="sm"
                               icon={<XCircle size={14} color="#BE123C" />}
                               textStyle={{ color: "#BE123C" }}
-                              style={{ borderColor: "#FECACA" }}
+                              style={{ borderColor: "#FECACA", marginTop: 8 }}
                               onPress={() => setResignModal(true)}
                             />
                           </View>
-                        </>
-                      ) : (
-                        <View style={styles.emptyBox}>
-                          <Clock size={28} color={COLORS.brandIndigo} />
-                          <Text style={styles.emptyText}>
-                            Proyek disetujui! Silakan kerjakan dan unggah tautan
-                            hasil kerja (Figma / Drive) Anda.
+                        )}
+                      </View>
+                    ) : (
+                      <View style={styles.submissionCard}>
+                        <Text style={styles.submissionTitle}>
+                          Rencana Kerja yang Diajukan
+                        </Text>
+                        <Text style={styles.submissionDesc}>
+                          "{myExistingProposal.cover_letter}"
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 10,
+                            paddingTop: 10,
+                            borderTopWidth: 1,
+                            borderTopColor: COLORS.borderDark,
+                          }}
+                        >
+                          <Text
+                            style={{ fontSize: 12, color: COLORS.textMuted }}
+                          >
+                            Tawaran Anda:
                           </Text>
-                          {isProjectExpired && (
-                            <View style={styles.overdueCallout}>
-                              <AlertTriangle size={14} color="#BE123C" />
-                              <Text style={styles.overdueCalloutText}>
-                                Tenggat pengerjaan telah terlewati. Harap segera
-                                unggah hasil deliverable Anda atau ajukan
-                                pengunduran diri jika Anda berhalangan
-                                melanjutkan.
+                          <Text
+                            style={{
+                              fontSize: 13,
+                              fontWeight: "700",
+                              color: COLORS.textDark,
+                            }}
+                          >
+                            {formatCurrency(myExistingProposal.harga_tawar)}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginTop: 6,
+                          }}
+                        >
+                          <Text
+                            style={{ fontSize: 12, color: COLORS.textMuted }}
+                          >
+                            Status Seleksi:
+                          </Text>
+                          <Badge
+                            label={
+                              myExistingProposal.status === "PENDING"
+                                ? "Menunggu Keputusan Klien"
+                                : myExistingProposal.status === "WITHDRAWN"
+                                  ? "Mengundurkan Diri (Batal)"
+                                  : myExistingProposal.status === "REJECTED"
+                                    ? "Lamaran Ditolak"
+                                    : "Disetujui"
+                            }
+                            variant={
+                              myExistingProposal.status === "PENDING"
+                                ? "warning"
+                                : myExistingProposal.status === "WITHDRAWN"
+                                  ? "neutral"
+                                  : myExistingProposal.status === "REJECTED"
+                                    ? "danger"
+                                    : "success"
+                            }
+                          />
+                        </View>
+                        {myExistingProposal.status === "WITHDRAWN" &&
+                          myExistingProposal.withdraw_reason && (
+                            <View style={styles.withdrawnDetailBox}>
+                              <Text style={styles.withdrawnDetailLabel}>
+                                Alasan Pengunduran Diri:
+                              </Text>
+                              <Text style={styles.withdrawnDetailText}>
+                                "{myExistingProposal.withdraw_reason}"
                               </Text>
                             </View>
                           )}
-                          <Button
-                            title="Unggah Deliverable Sekarang"
-                            variant="brand"
-                            size="md"
-                            icon={<UploadCloud size={16} color="#FFF" />}
-                            onPress={() => setSubmissionModal(true)}
-                            style={{ marginTop: 12 }}
-                          />
-                          <Button
-                            title="Ajukan Pengunduran Diri"
-                            variant="outline"
-                            size="sm"
-                            icon={<XCircle size={14} color="#BE123C" />}
-                            textStyle={{ color: "#BE123C" }}
-                            style={{ borderColor: "#FECACA", marginTop: 8 }}
-                            onPress={() => setResignModal(true)}
-                          />
-                        </View>
-                      )}
-                    </View>
-                  ) : (
-                    <View style={styles.submissionCard}>
-                      <Text style={styles.submissionTitle}>
-                        Rencana Kerja yang Diajukan
-                      </Text>
-                      <Text style={styles.submissionDesc}>
-                        "{myExistingProposal.cover_letter}"
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: 10,
-                          paddingTop: 10,
-                          borderTopWidth: 1,
-                          borderTopColor: COLORS.borderDark,
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
-                          Tawaran Anda:
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 13,
-                            fontWeight: "700",
-                            color: COLORS.textDark,
-                          }}
-                        >
-                          {formatCurrency(myExistingProposal.harga_tawar)}
-                        </Text>
                       </View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          marginTop: 6,
-                        }}
-                      >
-                        <Text style={{ fontSize: 12, color: COLORS.textMuted }}>
-                          Status Seleksi:
-                        </Text>
-                        <Badge
-                          label={
-                            myExistingProposal.status === "PENDING"
-                              ? "Menunggu Keputusan Klien"
-                              : myExistingProposal.status === "WITHDRAWN"
-                                ? "Mengundurkan Diri (Batal)"
-                                : myExistingProposal.status === "REJECTED"
-                                  ? "Lamaran Ditolak"
-                                  : "Disetujui"
-                          }
-                          variant={
-                            myExistingProposal.status === "PENDING"
-                              ? "warning"
-                              : myExistingProposal.status === "WITHDRAWN"
-                                ? "neutral"
-                                : myExistingProposal.status === "REJECTED"
-                                  ? "danger"
-                                  : "success"
-                          }
-                        />
-                      </View>
-                      {myExistingProposal.status === "WITHDRAWN" &&
-                        myExistingProposal.withdraw_reason && (
-                          <View style={styles.withdrawnDetailBox}>
-                            <Text style={styles.withdrawnDetailLabel}>
-                              Alasan Pengunduran Diri:
-                            </Text>
-                            <Text style={styles.withdrawnDetailText}>
-                              "{myExistingProposal.withdraw_reason}"
-                            </Text>
-                          </View>
-                        )}
-                    </View>
-                  )}
+                    )}
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
 
-            <View style={{ height: 100 }} />
               <View style={{ height: 100 }} />
             </View>
           </ScrollView>
 
           {/* 8. Persistent Sticky Bottom Action Bar */}
           <View style={styles.stickyBottomBar}>
-            <View style={styles.stickyPriceCol}>
-              <Text style={styles.stickyPriceLabel}>Pagu Anggaran</Text>
-              <Text style={styles.stickyPriceValue}>
-                {formatCurrency(project.budget_max)}
-              </Text>
-            </View>
             <View
               style={[
                 {
@@ -1551,95 +1546,99 @@ export function ProjectDetailScreen({ route, navigation }) {
                 </Text>
               </View>
 
-            {/* Dedicated Sticky Chat Button (Only when there is an active collaboration partner) */}
-            {hasAcceptedStudent && (
-              <TouchableOpacity
-                style={styles.stickyChatBtn}
-                onPress={() =>
-                  navigation.navigate("Chat", {
-                    projectId: project.id,
-                    projectTitle: project.judul,
-                    partnerName: activePartnerName,
-                    partnerPhoto: activePartnerPhoto,
-                    partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-                  })
-                }
-                activeOpacity={0.8}
-              >
-                <MessageSquare size={18} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-            )}
-
-            <View style={styles.stickyActionCol}>
-              {canApply ? (
-                <PebbleButton
-                  variant="sapphire"
-                  label="Ajukan Lamaran"
-                  icon={Send}
-                  onPress={() => {
-                    if (
-                      isMahasiswa &&
-                      (!user?.nim || (!user?.prodi_id && !user?.prodi))
-                    ) {
-                      showConfirm({
-                        title: "Lengkapi Profil Anda",
-                        message:
-                          "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau keabsahan dan keahlian Anda.",
-                        confirmText: "Lengkapi Sekarang",
-                        cancelText: "Nanti Saja",
-                        onConfirm: () =>
-                          navigation.navigate("Main", { screen: "ProfileTab" }),
-                      });
-                      return;
-                    }
-                    setProposalModal(true);
-                  }}
-                  style={{ flex: 1 }}
-                />
-              ) : isAcceptedProposal ? (
-                <PebbleButton
-                  variant="sapphire"
-                  label="Unggah Deliverable"
-                  icon={UploadCloud}
-                  onPress={() => setSubmissionModal(true)}
-                  style={{ flex: 1 }}
-                />
-              ) : myExistingProposal ? (
-                <View style={styles.alreadyAppliedPill}>
-                  <CheckCircle2 size={14} color={COLORS.success} />
-                  <Text style={styles.alreadyAppliedText}>
-                    Proposal Terkirim
-                  </Text>
-                </View>
-              ) : isUmkmOwner ? (
-                <PebbleButton
-                  variant="sapphire"
-                  label={`Pelamar (${proposals.length})`}
-                  icon={Layers}
-                  onPress={() => setActiveTab("proposals")}
-                  style={{ flex: 1 }}
-                />
-              ) : isProjectExpired ? (
-                <View
-                  style={[
-                    styles.closedStatusPill,
-                    { backgroundColor: "#FEF2F2", borderColor: "#FECACA" },
-                  ]}
+              {/* Dedicated Sticky Chat Button (Only when there is an active collaboration partner) */}
+              {hasAcceptedStudent && (
+                <TouchableOpacity
+                  style={styles.stickyChatBtn}
+                  onPress={() =>
+                    navigation.navigate("Chat", {
+                      projectId: project.id,
+                      projectTitle: project.judul,
+                      partnerName: activePartnerName,
+                      partnerPhoto: activePartnerPhoto,
+                      partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+                    })
+                  }
+                  activeOpacity={0.8}
                 >
-                  <Info size={14} color="#DC2626" />
-                  <Text style={[styles.closedStatusText, { color: "#DC2626" }]}>
-                    Tenggat Berakhir
-                  </Text>
-                </View>
-              ) : (
-                <View style={styles.closedStatusPill}>
-                  <Info size={14} color={COLORS.textMuted} />
-                  <Text style={styles.closedStatusText}>
-                    Pendaftaran Ditutup
-                  </Text>
-                </View>
+                  <MessageSquare size={18} color={COLORS.brandIndigo} />
+                </TouchableOpacity>
               )}
-            </View>
+
+              <View style={styles.stickyActionCol}>
+                {canApply ? (
+                  <PebbleButton
+                    variant="sapphire"
+                    label="Ajukan Lamaran"
+                    icon={Send}
+                    onPress={() => {
+                      if (
+                        isMahasiswa &&
+                        (!user?.nim || (!user?.prodi_id && !user?.prodi))
+                      ) {
+                        showConfirm({
+                          title: "Lengkapi Profil Anda",
+                          message:
+                            "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau keabsahan dan keahlian Anda.",
+                          confirmText: "Lengkapi Sekarang",
+                          cancelText: "Nanti Saja",
+                          onConfirm: () =>
+                            navigation.navigate("Main", {
+                              screen: "ProfileTab",
+                            }),
+                        });
+                        return;
+                      }
+                      setProposalModal(true);
+                    }}
+                    style={{ flex: 1 }}
+                  />
+                ) : isAcceptedProposal ? (
+                  <PebbleButton
+                    variant="sapphire"
+                    label="Unggah Deliverable"
+                    icon={UploadCloud}
+                    onPress={() => setSubmissionModal(true)}
+                    style={{ flex: 1 }}
+                  />
+                ) : myExistingProposal ? (
+                  <View style={styles.alreadyAppliedPill}>
+                    <CheckCircle2 size={14} color={COLORS.success} />
+                    <Text style={styles.alreadyAppliedText}>
+                      Proposal Terkirim
+                    </Text>
+                  </View>
+                ) : isUmkmOwner ? (
+                  <PebbleButton
+                    variant="sapphire"
+                    label={`Pelamar (${proposals.length})`}
+                    icon={Layers}
+                    onPress={() => setActiveTab("proposals")}
+                    style={{ flex: 1 }}
+                  />
+                ) : isProjectExpired ? (
+                  <View
+                    style={[
+                      styles.closedStatusPill,
+                      { backgroundColor: "#FEF2F2", borderColor: "#FECACA" },
+                    ]}
+                  >
+                    <Info size={14} color="#DC2626" />
+                    <Text
+                      style={[styles.closedStatusText, { color: "#DC2626" }]}
+                    >
+                      Tenggat Berakhir
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={styles.closedStatusPill}>
+                    <Info size={14} color={COLORS.textMuted} />
+                    <Text style={styles.closedStatusText}>
+                      Pendaftaran Ditutup
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           </View>
         </>

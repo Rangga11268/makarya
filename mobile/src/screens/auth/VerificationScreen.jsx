@@ -124,97 +124,101 @@ export function VerificationScreen({ route, navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={authContainerStyle}>
-        {/* Back navigation */}
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.navigate("Login")}
-          activeOpacity={0.7}
-        >
-          <View style={styles.backIconCircle}>
-            <ArrowLeft size={16} color={COLORS.textDark} />
-          </View>
-          <Text style={styles.backText}>Kembali ke Masuk</Text>
-        </TouchableOpacity>
-
-        {/* Shield Icon Graphic */}
-        <View style={styles.header}>
-          <View style={styles.iconCircle}>
-            <ShieldCheck size={36} color={COLORS.brandIndigo} />
-          </View>
-          <Text style={styles.title}>Verifikasi Akun Anda</Text>
-          <Text style={styles.subtitle}>
-            Masukkan 6 digit kode OTP yang telah kami kirimkan untuk
-            mengaktifkan akun Anda.
-          </Text>
-
-          <View style={styles.targetBadge}>
-            <Mail size={14} color={COLORS.brandIndigo} />
-            <Text style={styles.targetEmail}>{email}</Text>
-          </View>
-        </View>
-
-        {/* OTP 6-Box Inputs */}
-        <View style={styles.otpRow}>
-          {otp.map((digit, idx) => (
-            <TextInput
-              key={idx}
-              ref={(ref) => (inputRefs.current[idx] = ref)}
-              style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
-              value={digit}
-              onChangeText={(text) => handleOtpChange(text, idx)}
-              onKeyPress={(e) => handleKeyPress(e, idx)}
-              keyboardType="number-pad"
-              maxLength={1}
-              selectTextOnFocus
-              textAlign="center"
-            />
-          ))}
-        </View>
-
-        {/* Test Code Tip */}
-        <View style={styles.infoCallout}>
-          <Info size={16} color={COLORS.brandIndigo} style={styles.infoIcon} />
-          <Text style={styles.infoText}>
-            Uji Coba Cepat: Gunakan kode verifikasi default{" "}
-            <Text style={styles.boldText}>123456</Text> untuk langsung
-            mengaktifkan akun.
-          </Text>
-        </View>
-
-        {/* Action Button - Fully consistent Pill CTA */}
-        <Button
-          title="Verifikasi & Masuk Sekarang"
-          variant="brand"
-          size="lg"
-          onPress={handleVerify}
-          loading={loading}
-          iconRight={<ArrowRight size={18} color="#FFFFFF" />}
-          style={styles.verifyBtn}
-        />
-
-        {/* Resend Timer Controls */}
-        <View style={styles.resendContainer}>
-          <Text style={styles.resendNotice}>
-            Belum menerima kode verifikasi?
-          </Text>
-          {timer > 0 ? (
-            <View style={styles.timerBadge}>
-              <Text style={styles.timerText}>
-                Kirim ulang dalam {timer} detik
-              </Text>
+          {/* Back navigation */}
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.navigate("Login")}
+            activeOpacity={0.7}
+          >
+            <View style={styles.backIconCircle}>
+              <ArrowLeft size={16} color={COLORS.textDark} />
             </View>
-          ) : (
-            <Button
-              title="Kirim Ulang Kode OTP"
-              variant="soft"
-              size="md"
-              onPress={handleResend}
-              loading={resending}
-              icon={<RotateCcw size={15} color={COLORS.brandIndigo} />}
-              style={styles.resendBtn}
+            <Text style={styles.backText}>Kembali ke Masuk</Text>
+          </TouchableOpacity>
+
+          {/* Shield Icon Graphic */}
+          <View style={styles.header}>
+            <View style={styles.iconCircle}>
+              <ShieldCheck size={36} color={COLORS.brandIndigo} />
+            </View>
+            <Text style={styles.title}>Verifikasi Akun Anda</Text>
+            <Text style={styles.subtitle}>
+              Masukkan 6 digit kode OTP yang telah kami kirimkan untuk
+              mengaktifkan akun Anda.
+            </Text>
+
+            <View style={styles.targetBadge}>
+              <Mail size={14} color={COLORS.brandIndigo} />
+              <Text style={styles.targetEmail}>{email}</Text>
+            </View>
+          </View>
+
+          {/* OTP 6-Box Inputs */}
+          <View style={styles.otpRow}>
+            {otp.map((digit, idx) => (
+              <TextInput
+                key={idx}
+                ref={(ref) => (inputRefs.current[idx] = ref)}
+                style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
+                value={digit}
+                onChangeText={(text) => handleOtpChange(text, idx)}
+                onKeyPress={(e) => handleKeyPress(e, idx)}
+                keyboardType="number-pad"
+                maxLength={1}
+                selectTextOnFocus
+                textAlign="center"
+              />
+            ))}
+          </View>
+
+          {/* Test Code Tip */}
+          <View style={styles.infoCallout}>
+            <Info
+              size={16}
+              color={COLORS.brandIndigo}
+              style={styles.infoIcon}
             />
-          )}
-        </View>
+            <Text style={styles.infoText}>
+              Uji Coba Cepat: Gunakan kode verifikasi default{" "}
+              <Text style={styles.boldText}>123456</Text> untuk langsung
+              mengaktifkan akun.
+            </Text>
+          </View>
+
+          {/* Action Button - Fully consistent Pill CTA */}
+          <Button
+            title="Verifikasi & Masuk Sekarang"
+            variant="brand"
+            size="lg"
+            onPress={handleVerify}
+            loading={loading}
+            iconRight={<ArrowRight size={18} color="#FFFFFF" />}
+            style={styles.verifyBtn}
+          />
+
+          {/* Resend Timer Controls */}
+          <View style={styles.resendContainer}>
+            <Text style={styles.resendNotice}>
+              Belum menerima kode verifikasi?
+            </Text>
+            {timer > 0 ? (
+              <View style={styles.timerBadge}>
+                <Text style={styles.timerText}>
+                  Kirim ulang dalam {timer} detik
+                </Text>
+              </View>
+            ) : (
+              <Button
+                title="Kirim Ulang Kode OTP"
+                variant="soft"
+                size="md"
+                onPress={handleResend}
+                loading={resending}
+                icon={<RotateCcw size={15} color={COLORS.brandIndigo} />}
+                style={styles.resendBtn}
+              />
+            )}
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

@@ -102,110 +102,111 @@ export function ForgotPasswordScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={authContainerStyle}>
-        {/* Back Button */}
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => {
-            if (step === 2) {
-              setStep(1);
-            } else {
-              navigation.goBack();
-            }
-          }}
-          activeOpacity={0.7}
-        >
-          <View style={styles.backIconCircle}>
-            <ArrowLeft size={16} color={COLORS.textDark} />
-          </View>
-          <Text style={styles.backText}>
-            {step === 2 ? "Ganti Alamat Email" : "Kembali ke Masuk"}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.header}>
-          <View style={styles.iconCircle}>
-            <KeyRound size={36} color={COLORS.brandIndigo} />
-          </View>
-          <Text style={styles.title}>
-            {step === 1 ? "Lupa Kata Sandi?" : "Buat Kata Sandi Baru"}
-          </Text>
-          <Text style={styles.subtitle}>
-            {step === 1
-              ? "Masukkan email yang terdaftar pada akun Makarya Anda untuk menerima kode verifikasi pemulihan."
-              : `Masukkan 6 digit kode OTP yang dikirimkan ke ${email} dan tentukan kata sandi baru Anda.`}
-          </Text>
-        </View>
-
-        {step === 1 ? (
-          <View style={styles.formContainer}>
-            <Input
-              label="Alamat Email Terdaftar"
-              placeholder="nama@kampus.ac.id atau email UMKM"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              icon={<Mail size={18} color={COLORS.textMuted} />}
-            />
-
-            <Button
-              title="Kirim Kode Pemulihan"
-              variant="brand"
-              size="lg"
-              onPress={handleRequestOtp}
-              loading={loading}
-              iconRight={<ArrowRight size={18} color="#FFFFFF" />}
-              style={styles.submitBtn}
-            />
-          </View>
-        ) : (
-          <View style={styles.formContainer}>
-            <Input
-              label="Kode OTP Pemulihan"
-              placeholder="Masukkan 6 digit (contoh: 123456)"
-              value={otpCode}
-              onChangeText={setOtpCode}
-              keyboardType="number-pad"
-              maxLength={8}
-            />
-
-            <View style={styles.infoBox}>
-              <Info size={15} color={COLORS.brandIndigo} />
-              <Text style={styles.infoText}>
-                Kode demo dev: Gunakan{" "}
-                <Text style={styles.boldText}>123456</Text> untuk reset instan.
-              </Text>
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => {
+              if (step === 2) {
+                setStep(1);
+              } else {
+                navigation.goBack();
+              }
+            }}
+            activeOpacity={0.7}
+          >
+            <View style={styles.backIconCircle}>
+              <ArrowLeft size={16} color={COLORS.textDark} />
             </View>
+            <Text style={styles.backText}>
+              {step === 2 ? "Ganti Alamat Email" : "Kembali ke Masuk"}
+            </Text>
+          </TouchableOpacity>
 
-            <Input
-              label="Kata Sandi Baru"
-              placeholder="Minimal 8 karakter"
-              value={newPassword}
-              onChangeText={setNewPassword}
-              isPassword={true}
-              icon={<Lock size={18} color={COLORS.textMuted} />}
-            />
-
-            <Input
-              label="Konfirmasi Kata Sandi Baru"
-              placeholder="Ketik ulang kata sandi baru"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              isPassword={true}
-              icon={<Lock size={18} color={COLORS.textMuted} />}
-            />
-
-            <Button
-              title="Simpan Kata Sandi & Masuk"
-              variant="brand"
-              size="lg"
-              onPress={handleResetPassword}
-              loading={loading}
-              iconRight={<CheckCircle2 size={18} color="#FFFFFF" />}
-              style={styles.submitBtn}
-            />
+          <View style={styles.header}>
+            <View style={styles.iconCircle}>
+              <KeyRound size={36} color={COLORS.brandIndigo} />
+            </View>
+            <Text style={styles.title}>
+              {step === 1 ? "Lupa Kata Sandi?" : "Buat Kata Sandi Baru"}
+            </Text>
+            <Text style={styles.subtitle}>
+              {step === 1
+                ? "Masukkan email yang terdaftar pada akun Makarya Anda untuk menerima kode verifikasi pemulihan."
+                : `Masukkan 6 digit kode OTP yang dikirimkan ke ${email} dan tentukan kata sandi baru Anda.`}
+            </Text>
           </View>
-        )}
+
+          {step === 1 ? (
+            <View style={styles.formContainer}>
+              <Input
+                label="Alamat Email Terdaftar"
+                placeholder="nama@kampus.ac.id atau email UMKM"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                icon={<Mail size={18} color={COLORS.textMuted} />}
+              />
+
+              <Button
+                title="Kirim Kode Pemulihan"
+                variant="brand"
+                size="lg"
+                onPress={handleRequestOtp}
+                loading={loading}
+                iconRight={<ArrowRight size={18} color="#FFFFFF" />}
+                style={styles.submitBtn}
+              />
+            </View>
+          ) : (
+            <View style={styles.formContainer}>
+              <Input
+                label="Kode OTP Pemulihan"
+                placeholder="Masukkan 6 digit (contoh: 123456)"
+                value={otpCode}
+                onChangeText={setOtpCode}
+                keyboardType="number-pad"
+                maxLength={8}
+              />
+
+              <View style={styles.infoBox}>
+                <Info size={15} color={COLORS.brandIndigo} />
+                <Text style={styles.infoText}>
+                  Kode demo dev: Gunakan{" "}
+                  <Text style={styles.boldText}>123456</Text> untuk reset
+                  instan.
+                </Text>
+              </View>
+
+              <Input
+                label="Kata Sandi Baru"
+                placeholder="Minimal 8 karakter"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                isPassword={true}
+                icon={<Lock size={18} color={COLORS.textMuted} />}
+              />
+
+              <Input
+                label="Konfirmasi Kata Sandi Baru"
+                placeholder="Ketik ulang kata sandi baru"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                isPassword={true}
+                icon={<Lock size={18} color={COLORS.textMuted} />}
+              />
+
+              <Button
+                title="Simpan Kata Sandi & Masuk"
+                variant="brand"
+                size="lg"
+                onPress={handleResetPassword}
+                loading={loading}
+                iconRight={<CheckCircle2 size={18} color="#FFFFFF" />}
+                style={styles.submitBtn}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

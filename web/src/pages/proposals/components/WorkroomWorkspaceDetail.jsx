@@ -188,7 +188,9 @@ export function WorkroomWorkspaceDetail({
                   <select
                     value={activeProjectId}
                     onChange={(e) => {
-                      const proj = allProjects.find((p) => p.id === e.target.value);
+                      const proj = allProjects.find(
+                        (p) => p.id === e.target.value,
+                      );
                       if (proj && onSelectProject) onSelectProject(proj);
                     }}
                     className="w-full text-xs font-bold py-1 px-2.5 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo truncate"
@@ -209,12 +211,15 @@ export function WorkroomWorkspaceDetail({
                 <span>Garansi Escrow Aman</span>
               </div>
 
-              {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
-                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                  <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
-                </div>
-              )}
+              {selectedProject?.deadline &&
+                isExpired(selectedProject.deadline) && (
+                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                    <span>
+                      Lewat Tenggat ({formatDate(selectedProject.deadline)})
+                    </span>
+                  </div>
+                )}
 
               {setIsFocusMode && (
                 <button

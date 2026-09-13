@@ -36,7 +36,6 @@ def _resolve_accepted_mhs(proj_id: UUID, db: Session):
     )
     if accepted_prop:
         mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == accepted_prop.mhs_id).first()
-        if mhs_profile:
         if mhs_profile and mhs_profile.nama_lengkap:
             return (mhs_profile.nama_lengkap, mhs_profile.url_foto)
         mhs_user = db.query(User).filter(User.id == accepted_prop.mhs_id).first()
@@ -100,7 +99,6 @@ def _build_project_response(
         created_at=proj.created_at,
         updated_at=proj.updated_at,
         umkm_profile=umkm_summary,
-        umkm_nama=umkm_profile.nama_usaha if umkm_profile and umkm_profile.nama_usaha else None,
         umkm_nama=resolved_umkm_nama,
         accepted_mhs_nama=acc_nama,
         accepted_mhs_foto=acc_foto,

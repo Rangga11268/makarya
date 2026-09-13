@@ -121,7 +121,6 @@ export function HelpScreen({ navigation }) {
       />
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
         contentContainerStyle={[
           styles.scrollContent,
           isCompact && { paddingHorizontal: 12 },
@@ -130,122 +129,133 @@ export function HelpScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={responsiveContainerStyle}>
-        {/* 2. Escrow Protection Trust Banner */}
-        <View style={styles.glassBanner}>
-          <View style={styles.bannerIconCircle}>
-            <Lock size={20} color="#059669" strokeWidth={2.4} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.bannerTitle}>Garansi 100% Escrow Makarya</Text>
-            <Text style={styles.bannerText}>
-              Setiap transaksi proyek mahasiswa dilindungi rekening bersama
-              resmi. Jangan pernah bertransaksi di luar aplikasi demi keamanan
-              dana Anda.
-            </Text>
-          </View>
-        </View>
-
-        {/* 3. Direct Support Cards (WhatsApp & Email) */}
-        <Text style={styles.sectionHeading}>Saluran Bantuan Langsung</Text>
-        <View style={styles.contactRow}>
-          <View style={styles.contactCard}>
-            <View
-              style={[styles.contactIconCircle, { backgroundColor: "#ECFDF5" }]}
-            >
-              <MessageCircle size={20} color="#059669" />
+          {/* 2. Escrow Protection Trust Banner */}
+          <View style={styles.glassBanner}>
+            <View style={styles.bannerIconCircle}>
+              <Lock size={20} color="#059669" strokeWidth={2.4} />
             </View>
-            <Text style={styles.contactTitle}>WhatsApp CS</Text>
-            <Text style={styles.contactSubtitle}>
-              Respon cepat (08.00 - 21.00)
-            </Text>
-            <PebbleButton
-              variant="emerald"
-              size="xs"
-              label="Chat Sekarang"
-              onPress={handleOpenWhatsApp}
-              style={{ width: "100%", marginTop: 8 }}
-            />
-          </View>
-
-          <View style={styles.contactCard}>
-            <View
-              style={[styles.contactIconCircle, { backgroundColor: "#EFF6FF" }]}
-            >
-              <Mail size={20} color="#2563EB" />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.bannerTitle}>
+                Garansi 100% Escrow Makarya
+              </Text>
+              <Text style={styles.bannerText}>
+                Setiap transaksi proyek mahasiswa dilindungi rekening bersama
+                resmi. Jangan pernah bertransaksi di luar aplikasi demi keamanan
+                dana Anda.
+              </Text>
             </View>
-            <Text style={styles.contactTitle}>Email Support</Text>
-            <Text style={styles.contactSubtitle}>
-              Untuk kendala teknis & akun
-            </Text>
-            <PebbleButton
-              variant="sapphire"
-              size="xs"
-              label="Kirim Email"
-              onPress={handleOpenEmail}
-              style={{ width: "100%", marginTop: 8 }}
-            />
           </View>
-        </View>
 
-        {/* 4. Frequently Asked Questions (FAQ) */}
-        <View style={styles.faqSectionHeader}>
-          <HelpCircle size={16} color={COLORS.brandIndigo} />
-          <Text style={styles.sectionHeadingFaq}>
-            Pertanyaan yang Sering Diajukan
-          </Text>
-        </View>
-
-        {FAQ_ITEMS.map((item) => {
-          const isExpanded = expandedId === item.id;
-          const IconComp = item.icon;
-
-          return (
-            <TouchableOpacity
-              key={item.id}
-              style={[styles.faqCard, isExpanded && styles.faqCardExpanded]}
-              onPress={() => toggleAccordion(item.id)}
-              activeOpacity={0.88}
-            >
-              <View style={styles.faqHeaderRow}>
-                <View
-                  style={[styles.faqIconBox, { backgroundColor: item.iconBg }]}
-                >
-                  <IconComp
-                    size={16}
-                    color={item.iconColor}
-                    strokeWidth={2.2}
-                  />
-                </View>
-
-                <View style={{ flex: 1, paddingRight: 8 }}>
-                  <Text style={styles.faqCategoryLabel}>{item.category}</Text>
-                  <Text style={styles.faqQuestionText}>{item.question}</Text>
-                </View>
-
-                {isExpanded ? (
-                  <ChevronUp size={18} color={COLORS.brandIndigo} />
-                ) : (
-                  <ChevronDown size={18} color={COLORS.textMuted} />
-                )}
+          {/* 3. Direct Support Cards (WhatsApp & Email) */}
+          <Text style={styles.sectionHeading}>Saluran Bantuan Langsung</Text>
+          <View style={styles.contactRow}>
+            <View style={styles.contactCard}>
+              <View
+                style={[
+                  styles.contactIconCircle,
+                  { backgroundColor: "#ECFDF5" },
+                ]}
+              >
+                <MessageCircle size={20} color="#059669" />
               </View>
+              <Text style={styles.contactTitle}>WhatsApp CS</Text>
+              <Text style={styles.contactSubtitle}>
+                Respon cepat (08.00 - 21.00)
+              </Text>
+              <PebbleButton
+                variant="emerald"
+                size="xs"
+                label="Chat Sekarang"
+                onPress={handleOpenWhatsApp}
+                style={{ width: "100%", marginTop: 8 }}
+              />
+            </View>
 
-              {isExpanded && (
-                <View style={styles.faqAnswerContainer}>
-                  <View style={styles.faqDivider} />
-                  <Text style={styles.faqAnswerText}>{item.answer}</Text>
+            <View style={styles.contactCard}>
+              <View
+                style={[
+                  styles.contactIconCircle,
+                  { backgroundColor: "#EFF6FF" },
+                ]}
+              >
+                <Mail size={20} color="#2563EB" />
+              </View>
+              <Text style={styles.contactTitle}>Email Support</Text>
+              <Text style={styles.contactSubtitle}>
+                Untuk kendala teknis & akun
+              </Text>
+              <PebbleButton
+                variant="sapphire"
+                size="xs"
+                label="Kirim Email"
+                onPress={handleOpenEmail}
+                style={{ width: "100%", marginTop: 8 }}
+              />
+            </View>
+          </View>
+
+          {/* 4. Frequently Asked Questions (FAQ) */}
+          <View style={styles.faqSectionHeader}>
+            <HelpCircle size={16} color={COLORS.brandIndigo} />
+            <Text style={styles.sectionHeadingFaq}>
+              Pertanyaan yang Sering Diajukan
+            </Text>
+          </View>
+
+          {FAQ_ITEMS.map((item) => {
+            const isExpanded = expandedId === item.id;
+            const IconComp = item.icon;
+
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.faqCard, isExpanded && styles.faqCardExpanded]}
+                onPress={() => toggleAccordion(item.id)}
+                activeOpacity={0.88}
+              >
+                <View style={styles.faqHeaderRow}>
+                  <View
+                    style={[
+                      styles.faqIconBox,
+                      { backgroundColor: item.iconBg },
+                    ]}
+                  >
+                    <IconComp
+                      size={16}
+                      color={item.iconColor}
+                      strokeWidth={2.2}
+                    />
+                  </View>
+
+                  <View style={{ flex: 1, paddingRight: 8 }}>
+                    <Text style={styles.faqCategoryLabel}>{item.category}</Text>
+                    <Text style={styles.faqQuestionText}>{item.question}</Text>
+                  </View>
+
+                  {isExpanded ? (
+                    <ChevronUp size={18} color={COLORS.brandIndigo} />
+                  ) : (
+                    <ChevronDown size={18} color={COLORS.textMuted} />
+                  )}
                 </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
 
-        {/* 5. Footer Safe Note */}
-        <View style={styles.footerNote}>
-          <CheckCircle2 size={13} color="#059669" />
-          <Text style={styles.footerNoteText}>
-            Layanan pengaduan & bantuan Makarya beroperasi 7 hari seminggu.
-          </Text>
-        </View>
+                {isExpanded && (
+                  <View style={styles.faqAnswerContainer}>
+                    <View style={styles.faqDivider} />
+                    <Text style={styles.faqAnswerText}>{item.answer}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+
+          {/* 5. Footer Safe Note */}
+          <View style={styles.footerNote}>
+            <CheckCircle2 size={13} color="#059669" />
+            <Text style={styles.footerNoteText}>
+              Layanan pengaduan & bantuan Makarya beroperasi 7 hari seminggu.
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>

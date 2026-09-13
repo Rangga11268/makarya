@@ -329,7 +329,6 @@ export function ProfileScreen({ navigation }) {
       />
 
       <ScrollView
-        contentContainerStyle={styles.content}
         contentContainerStyle={[styles.content, responsiveContainerStyle]}
         showsVerticalScrollIndicator={false}
       >

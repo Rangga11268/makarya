@@ -467,32 +467,34 @@ export function ProposalBoardPage() {
   const hasAcceptedApplicant = Boolean(
     acceptedApplicant ||
     (isUmkm && selectedProject?.accepted_mhs_nama) ||
-    (!isUmkm && selectedProposal?.status === "ACCEPTED")
+    (!isUmkm && selectedProposal?.status === "ACCEPTED"),
   );
 
   const activePartnerName = isUmkm
-    ? (acceptedApplicant?.mhs_profile?.nama_lengkap ||
-       selectedProject?.accepted_mhs_nama ||
-       (projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile?.nama_lengkap) ||
-       "Mahasiswa Pelaksana")
-    : (selectedProposal?.project_umkm_nama ||
-       selectedProposal?.umkm_nama ||
-       selectedProposal?.umkm_profile?.nama_usaha ||
-       selectedProject?.umkm_profile?.nama_usaha ||
-       selectedProject?.umkm_nama ||
-       "Klien Mitra UMKM");
+    ? acceptedApplicant?.mhs_profile?.nama_lengkap ||
+      selectedProject?.accepted_mhs_nama ||
+      projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
+        ?.nama_lengkap ||
+      "Mahasiswa Pelaksana"
+    : selectedProposal?.project_umkm_nama ||
+      selectedProposal?.umkm_nama ||
+      selectedProposal?.umkm_profile?.nama_usaha ||
+      selectedProject?.umkm_profile?.nama_usaha ||
+      selectedProject?.umkm_nama ||
+      "Klien Mitra UMKM";
 
   const activePartnerPhoto = isUmkm
-    ? (acceptedApplicant?.mhs_profile?.url_foto ||
-       selectedProject?.accepted_mhs_foto ||
-       (projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile?.url_foto) ||
-       null)
-    : (selectedProposal?.project_umkm_foto ||
-       selectedProposal?.umkm_foto ||
-       selectedProposal?.umkm_profile?.url_foto_usaha ||
-       selectedProject?.umkm_profile?.url_foto_usaha ||
-       selectedProject?.umkm_foto ||
-       null);
+    ? acceptedApplicant?.mhs_profile?.url_foto ||
+      selectedProject?.accepted_mhs_foto ||
+      projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile
+        ?.url_foto ||
+      null
+    : selectedProposal?.project_umkm_foto ||
+      selectedProposal?.umkm_foto ||
+      selectedProposal?.umkm_profile?.url_foto_usaha ||
+      selectedProject?.umkm_profile?.url_foto_usaha ||
+      selectedProject?.umkm_foto ||
+      null;
 
   const activePartnerRole = isUmkm ? "MHS" : "UMKM";
 

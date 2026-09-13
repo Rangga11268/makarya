@@ -481,7 +481,6 @@ export function TalentListScreen({ navigation }) {
       />
 
       {/* 2. Search Bar with Filter Tuning Button */}
-      <View style={styles.searchSection}>
       <View style={[styles.searchSection, responsiveContainerStyle]}>
         <SearchBar
           placeholder="Cari nama talenta, keahlian, atau prodi..."
@@ -495,7 +494,6 @@ export function TalentListScreen({ navigation }) {
       </View>
 
       {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
-      <View style={styles.segmentedContainer}>
       <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -524,7 +522,6 @@ export function TalentListScreen({ navigation }) {
 
       {/* 4. Active Filter Bar */}
       {activeFilterCount > 0 && (
-        <View style={styles.activeFilterBar}>
         <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
           <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
           {selectedProdi !== "ALL" && (
@@ -577,7 +574,6 @@ export function TalentListScreen({ navigation }) {
       {/* 5. Main Feed */}
       {loading && !refreshing ? (
         <ScrollView
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
@@ -601,7 +597,6 @@ export function TalentListScreen({ navigation }) {
               colors={[COLORS.brandIndigo]}
             />
           }
-          contentContainerStyle={styles.listContent}
           contentContainerStyle={[
             styles.listContent,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },

@@ -424,7 +424,6 @@ export function ChatScreen({ route, navigation }) {
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
       {/* 1. Header Bar */}
-      <View style={styles.header}>
       <View
         style={[
           styles.header,
@@ -490,7 +489,6 @@ export function ChatScreen({ route, navigation }) {
           data={messages}
           keyExtractor={(item, index) => item.id || String(index)}
           renderItem={renderMessageItem}
-          contentContainerStyle={styles.messagesList}
           contentContainerStyle={[
             styles.messagesList,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
@@ -599,7 +597,6 @@ export function ChatScreen({ route, navigation }) {
         <View
           style={[
             styles.inputContainer,
-            { justifyContent: "center", paddingVertical: 14 },
             {
               justifyContent: "center",
               paddingVertical: 14,
@@ -621,7 +618,6 @@ export function ChatScreen({ route, navigation }) {
           </Text>
         </View>
       ) : (
-        <View style={styles.inputContainer}>
         <View
           style={[
             styles.inputContainer,
