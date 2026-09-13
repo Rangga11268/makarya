@@ -17,6 +17,11 @@ import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import { renderProjectCategoryVectorIcon } from "../icons/CategoryIcons";
 import {
+  AppleEscrowLockIcon,
+  AppleCalendarDeadlineIcon,
+  AppleShieldVerifiedIcon,
+} from "../ui/AppleGlossyIcons";
+import {
   Users,
   User,
   ShieldCheck,
@@ -154,7 +159,7 @@ export function ProjectCard({ project, onPress }) {
             </View>
           ) : (
             <View style={styles.escrowChip}>
-              <ShieldCheck size={11} color="#166534" />
+              <AppleEscrowLockIcon size={14} />
               <Text style={styles.escrowText}>Escrow</Text>
             </View>
           )}
@@ -204,10 +209,7 @@ export function ProjectCard({ project, onPress }) {
               deadlineInfo.isUrgent && styles.deadlinePillUrgent,
             ]}
           >
-            <Clock
-              size={10.5}
-              color={deadlineInfo.isUrgent ? "#E11D48" : COLORS.textMuted}
-            />
+            <AppleCalendarDeadlineIcon size={13} />
             <Text
               style={[
                 styles.deadlinePillText,
@@ -278,24 +280,22 @@ export function ProjectCard({ project, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
-    borderRadius: 20,
-    padding: 14,
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
+    borderRadius: 22,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    borderColor: "rgba(226, 232, 240, 0.9)",
+    borderColor:
+      Platform.OS === "android"
+        ? "rgba(226, 232, 240, 0.9)"
+        : "rgba(255, 255, 255, 0.95)",
     marginBottom: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: Platform.OS === "android" ? 0 : 2,
+    shadowRadius: 12,
+    elevation: Platform.OS === "android" ? 1 : 2,
+    overflow: "hidden",
   },
   headerMetaRow: {
     flexDirection: "row",

@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from "react-native";
+import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import { COLORS } from "../../theme/colors";
 
 /**

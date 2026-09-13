@@ -124,7 +124,103 @@ export function AppleStructuredRevisionIcon({ size = 20, className = "" }) {
 }
 
 /**
- * 5. AppleGlossyBadge (Web)
+ * 5. Apple Vector Icon: Shield Verified (Web)
+ */
+export function AppleShieldVerifiedIcon({ size = 20, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <defs>
+        <linearGradient id="webAppleShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#047857" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#webAppleShieldGrad)" />
+      <path
+        d="M12 6L7 8V12.5C7 15.8 9.1 18.8 12 19.5C14.9 18.8 17 15.8 17 12.5V8L12 6Z"
+        fill="#FFFFFF"
+        opacity="0.9"
+      />
+      <path
+        d="M10 12.5L11.5 14L14.5 11"
+        stroke="#047857"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * 6. Apple Vector Icon: Escrow Lock Guarantee (Web)
+ */
+export function AppleEscrowLockIcon({ size = 20, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <defs>
+        <linearGradient id="webAppleLockGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F59E0B" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#webAppleLockGrad)" />
+      <path
+        d="M9 11V9C9 7.34 10.34 6 12 6C13.66 6 15 7.34 15 9V11"
+        stroke="#FFFFFF"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <rect x="7.5" y="11" width="9" height="7" rx="2" fill="#FFFFFF" />
+      <circle cx="12" cy="14" r="1" fill="#D97706" />
+    </svg>
+  );
+}
+
+/**
+ * 7. Apple Vector Icon: Wallet / Budget Pagu (Web)
+ */
+export function AppleWalletPayIcon({ size = 20, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <defs>
+        <linearGradient id="webAppleWalletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#3B82F6" />
+          <stop offset="100%" stopColor="#1D4ED8" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#webAppleWalletGrad)" />
+      <rect x="6" y="8" width="12" height="9" rx="2" fill="#FFFFFF" />
+      <path d="M6 10H18" stroke="#1D4ED8" strokeWidth="1.2" />
+      <circle cx="14.5" cy="13.5" r="1" fill="#F59E0B" />
+    </svg>
+  );
+}
+
+/**
+ * 8. Apple Vector Icon: Calendar Deadline (Web)
+ */
+export function AppleCalendarDeadlineIcon({ size = 20, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <defs>
+        <linearGradient id="webAppleCalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#EF4444" />
+          <stop offset="100%" stopColor="#DC2626" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#webAppleCalGrad)" />
+      <rect x="6" y="7" width="12" height="11" rx="2" fill="#FFFFFF" />
+      <path d="M6 10.5H18" stroke="#DC2626" strokeWidth="1.2" />
+      <circle cx="9" cy="13.5" r="0.8" fill="#64748B" />
+      <circle cx="12" cy="13.5" r="0.8" fill="#64748B" />
+      <circle cx="15" cy="13.5" r="0.8" fill="#64748B" />
+    </svg>
+  );
+}
+
+/**
+ * 9. AppleGlossyBadge (Web)
  */
 export function AppleGlossyBadge({
   icon: IconComponent,

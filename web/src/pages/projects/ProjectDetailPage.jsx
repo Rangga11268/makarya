@@ -541,7 +541,11 @@ export function ProjectDetailPage() {
               {/* Realtime Chat Banner */}
               <div className="p-4 bg-white/90 border border-slate-200/80 rounded-2xl shadow-[0_4px_16px_rgb(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
                 <div className="flex items-center gap-3">
-                  <AppleMessageIcon size={38} variant="blue" className="shrink-0" />
+                  <AppleMessageIcon
+                    size={38}
+                    variant="blue"
+                    className="shrink-0"
+                  />
                   <div>
                     <h4 className="text-xs font-bold text-dark-900">
                       Ruang Diskusi & Kolaborasi Realtime
@@ -754,7 +758,11 @@ export function ProjectDetailPage() {
               }}
               className="w-full text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 py-3 flex items-center justify-center gap-2 rounded-2xl"
             >
-              <AppleMessageIcon size={22} variant="green" className="shrink-0" />
+              <AppleMessageIcon
+                size={22}
+                variant="green"
+                className="shrink-0"
+              />
               <span>Buka Ruang Kerja & Obrolan</span>
             </Button>
 

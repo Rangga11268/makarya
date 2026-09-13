@@ -19,6 +19,10 @@ import {
   AppleSourceAssetIcon,
   AppleReadyDeliverableIcon,
   AppleStructuredRevisionIcon,
+  AppleShieldVerifiedIcon,
+  AppleEscrowLockIcon,
+  AppleWalletPayIcon,
+  AppleCalendarDeadlineIcon,
   AppleGlossyBadge,
 } from "../../../components/ui/AppleGlossyIcons";
 import { ProposalCard } from "../../../components/features/ProposalCard";
@@ -174,7 +178,7 @@ export function ProjectExploreDetailView({
                     {clientDisplayName}
                   </Text>
                   <View style={styles.verifiedBadge}>
-                    <Check size={9} color="#059669" strokeWidth={3} />
+                    <AppleShieldVerifiedIcon size={14} />
                     <Text style={styles.verifiedBadgeText}>Terverifikasi</Text>
                   </View>
                 </View>
@@ -190,28 +194,32 @@ export function ProjectExploreDetailView({
             {/* Key Metrics: Budget & Deadline in 2-Column Apple Stat Display */}
             <View style={styles.keyMetricsGrid}>
               <View style={styles.metricColumn}>
-                <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                  <AppleWalletPayIcon size={14} />
+                  <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
+                </View>
                 <Text style={styles.metricValuePrimary}>
                   {formatCurrency(project.budget_max)}
                 </Text>
               </View>
               <View style={styles.metricDividerVertical} />
               <View style={styles.metricColumn}>
-                <Text style={styles.metricLabel}>BATAS WAKTU</Text>
-                <View style={styles.metricValueRow}>
-                  <Calendar size={13} color="#475569" />
-                  <Text style={styles.metricValueSecondary}>
-                    {formatDate(project.deadline)}
-                  </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                  <AppleCalendarDeadlineIcon size={14} />
+                  <Text style={styles.metricLabel}>BATAS WAKTU</Text>
                 </View>
+                <Text style={styles.metricValueSecondary}>
+                  {formatDate(project.deadline)}
+                </Text>
               </View>
             </View>
 
             {/* Escrow Guarantee Trust Banner (Integrated at bottom of hero) */}
             <View style={styles.escrowTrustStrip}>
-              <ShieldCheck size={14} color="#059669" />
+              <AppleEscrowLockIcon size={16} />
               <Text style={styles.escrowTrustText}>
-                Garansi Escrow 100% • Dana honor tersimpan aman di rekening bersama
+                Garansi Escrow 100% • Dana honor tersimpan aman di rekening
+                bersama
               </Text>
             </View>
 
@@ -271,7 +279,10 @@ export function ProjectExploreDetailView({
                   Alasan Pembatalan:
                 </Text>
                 <Text style={styles.cancellationReasonQuote}>
-                  "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
+                  "
+                  {project.cancel_reason ||
+                    "Tidak ada catatan alasan tertulis."}
+                  "
                 </Text>
               </View>
             </View>
@@ -405,8 +416,7 @@ export function ProjectExploreDetailView({
             <Text
               style={styles.briefParagraph}
               numberOfLines={
-                !isBriefExpanded &&
-                (project.deskripsi_raw?.length || 0) > 280
+                !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
                   ? 6
                   : undefined
               }
@@ -770,7 +780,8 @@ export function ProjectExploreDetailView({
                             <Text style={styles.overdueCalloutText}>
                               Tenggat pengerjaan telah terlewati. Harap segera
                               unggah hasil deliverable Anda atau ajukan
-                              pengunduran diri jika Anda berhalangan melanjutkan.
+                              pengunduran diri jika Anda berhalangan
+                              melanjutkan.
                             </Text>
                           </View>
                         )}

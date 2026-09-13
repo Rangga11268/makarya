@@ -13,6 +13,8 @@ import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { Button } from "../../../components/ui/Button";
+import { AppleGlossyCard } from "../../../components/ui/AppleGlossyCard";
+import { AppleMessageIcon } from "../../../components/ui/AppleGlossyIcons";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import {
@@ -189,7 +191,7 @@ export function WorkroomActiveView({
               }
               activeOpacity={0.8}
             >
-              <MessageSquare size={14} color="#2563EB" />
+              <AppleMessageIcon size={22} variant="blue" />
               <Text style={styles.heroChatBtnText}>Chat</Text>
             </TouchableOpacity>
           </View>
@@ -660,14 +662,19 @@ const styles = StyleSheet.create({
   heroChatBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "rgba(37, 99, 235, 0.08)",
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    borderRadius: 11,
+    gap: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.2)",
+    borderColor: "rgba(226, 232, 240, 0.9)",
     marginLeft: 8,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1.5 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   },
   heroChatBtnText: {
     fontFamily: FONTS.displayBold,

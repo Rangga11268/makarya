@@ -32,7 +32,7 @@ export function AppleGlossyCard({
         // Hover State
         hover &&
           "cursor-pointer hover:shadow-[0_14px_45px_rgb(0,0,0,0.08)] hover:border-slate-300 hover:-translate-y-0.5",
-        className
+        className,
       )}
       {...props}
     >
