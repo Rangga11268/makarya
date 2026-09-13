@@ -185,30 +185,32 @@ export function ProjectListScreen({ navigation, route }) {
       </View>
 
       {/* Segmented Tabs */}
-      <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
-        {segmentedTabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <TouchableOpacity
-              key={tab.id}
-              onPress={() => setActiveTab(tab.id)}
-              style={[
-                styles.segmentedTabItem,
-                isActive && styles.segmentedTabItemActive,
-              ]}
-              activeOpacity={0.7}
-            >
-              <Text
+      <View style={[styles.segmentedSection, responsiveContainerStyle]}>
+        <View style={styles.segmentedContainer}>
+          {segmentedTabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => setActiveTab(tab.id)}
                 style={[
-                  styles.segmentedTabText,
-                  isActive && styles.segmentedTabTextActive,
+                  styles.segmentedTabItem,
+                  isActive && styles.segmentedTabItemActive,
                 ]}
+                activeOpacity={0.7}
               >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+                <Text
+                  style={[
+                    styles.segmentedTabText,
+                    isActive && styles.segmentedTabTextActive,
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
       {/* Active Filter Tag Bar */}
@@ -376,20 +378,23 @@ const styles = StyleSheet.create({
   searchSection: {
     paddingHorizontal: 20,
     paddingTop: 8,
-    paddingBottom: 6,
+    paddingBottom: 4,
     backgroundColor: "transparent",
   },
 
-  // Segmented Tabs
+  // Segmented Tabs Section
+  segmentedSection: {
+    paddingHorizontal: 20,
+    paddingTop: 2,
+    paddingBottom: 8,
+    backgroundColor: "transparent",
+  },
   segmentedContainer: {
     flexDirection: "row",
     backgroundColor:
       Platform.OS === "android" ? "#F1F5F9" : "rgba(15, 23, 42, 0.05)",
-    marginHorizontal: 20,
-    marginTop: 2,
-    marginBottom: 6,
     borderRadius: 14,
-    padding: 3,
+    padding: 3.5,
     borderWidth: 1,
     borderColor:
       Platform.OS === "android"
@@ -398,27 +403,28 @@ const styles = StyleSheet.create({
   },
   segmentedTabItem: {
     flex: 1,
-    paddingVertical: 7,
+    paddingVertical: 8,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 11,
+    borderRadius: 10,
   },
   segmentedTabItemActive: {
     backgroundColor: "#FFFFFF",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
-    elevation: Platform.OS === "android" ? 0 : 2,
+    elevation: Platform.OS === "android" ? 1 : 2,
   },
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 12,
+    fontSize: 12.5,
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
     fontFamily: FONTS.displaySemiBold,
     color: "#2563EB",
+    fontWeight: "700",
   },
 
   // Active Filter Tag Bar
