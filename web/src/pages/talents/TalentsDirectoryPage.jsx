@@ -87,12 +87,18 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
 
               <p className="text-xs sm:text-sm text-slate-300 flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
                 <span className="flex items-center gap-1 truncate">
-                  <ProdiVectorIcon size={14} className="text-sky-400 shrink-0" />
+                  <ProdiVectorIcon
+                    size={14}
+                    className="text-sky-400 shrink-0"
+                  />
                   {talent.prodi || "Belum Memilih Prodi"}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1 truncate">
-                  <CampusVectorIcon size={14} className="text-amber-400 shrink-0" />
+                  <CampusVectorIcon
+                    size={14}
+                    className="text-amber-400 shrink-0"
+                  />
                   {talent.universitas || "Universitas Bina Sarana Informatika"}
                 </span>
               </p>
@@ -486,7 +492,10 @@ export function TalentsDirectoryPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-1">
           <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
-              <CampusVectorIcon size={15} className="text-brand-indigo shrink-0" />
+              <CampusVectorIcon
+                size={15}
+                className="text-brand-indigo shrink-0"
+              />
               <span className="truncate">Kampus Resmi</span>
             </div>
             <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
@@ -647,7 +656,8 @@ export function TalentsDirectoryPage() {
             </label>
 
             <span className="text-muted text-[11px] font-medium bg-canvas px-2.5 py-1 rounded-full border border-border w-fit">
-              Ditemukan: <b className="text-dark-900">{talents.length}</b> talenta
+              Ditemukan: <b className="text-dark-900">{talents.length}</b>{" "}
+              talenta
             </span>
           </div>
         </div>

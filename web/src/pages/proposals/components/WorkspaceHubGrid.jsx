@@ -378,7 +378,7 @@ function UmkmProjectGridCard({ project, onOpen }) {
         <Button
           onClick={onOpen}
           variant="outline"
-          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs group-hover:border-dark-900"
+          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border bg-canvas group-hover:bg-dark-900 group-hover:text-white group-hover:border-dark-900 hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs min-h-[42px]"
         >
           {project.status === "OPEN" || project.status === "BIDDING" ? (
             <span className="flex items-center gap-1.5 text-brand-indigo group-hover:text-white">
@@ -387,7 +387,7 @@ function UmkmProjectGridCard({ project, onOpen }) {
             </span>
           ) : isInProgress ? (
             <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse group-hover:bg-emerald-400" />
               <span>Masuk Ruang Kerja</span>
             </span>
           ) : isDone ? (
@@ -396,9 +396,9 @@ function UmkmProjectGridCard({ project, onOpen }) {
               <span>Arsip & Faktur Escrow</span>
             </span>
           ) : (
-            <span>Buka Detail Proyek</span>
+            <span className="group-hover:text-white">Buka Detail Proyek</span>
           )}
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
         </Button>
       </div>
     </div>
@@ -509,27 +509,27 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
         <Button
           onClick={onOpen}
           variant="outline"
-          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs group-hover:border-dark-900"
+          className="w-full py-2.5 rounded-2xl text-xs font-bold text-dark-900 border-border bg-canvas group-hover:bg-dark-900 group-hover:text-white group-hover:border-dark-900 hover:bg-dark-900 hover:text-white hover:border-dark-900 transition-all flex items-center justify-between gap-2 shadow-2xs min-h-[42px]"
         >
           {isAccepted ? (
             <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse group-hover:bg-emerald-400" />
               <span>Masuk Ruang Kerja</span>
             </span>
           ) : isDone ? (
             <span className="flex items-center gap-1.5 text-slate-700 group-hover:text-white">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 group-hover:text-emerald-300" />
               <span>Arsip & Portofolio</span>
             </span>
           ) : proposal.status === "PENDING" ? (
             <span className="flex items-center gap-1.5 text-amber-800 group-hover:text-white">
-              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              <Clock className="w-3.5 h-3.5 text-amber-600 group-hover:text-amber-300" />
               <span>Lihat Status Lamaran</span>
             </span>
           ) : (
-            <span>Rincian Lamaran</span>
+            <span className="group-hover:text-white">Rincian Lamaran</span>
           )}
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
         </Button>
       </div>
     </div>

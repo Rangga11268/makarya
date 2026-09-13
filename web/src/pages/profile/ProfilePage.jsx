@@ -336,38 +336,38 @@ export function ProfilePage() {
       </div>
 
       {/* Quick Metrics Grid */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-6">
-        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
-          <div className="flex items-center gap-1.5 text-amber-500 font-bold text-lg sm:text-2xl font-serif">
-            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-500" />
+      <div className="grid grid-cols-3 gap-2 sm:gap-6">
+        <div className="bg-surface border border-border rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs min-w-0">
+          <div className="flex items-center gap-1.5 text-amber-500 font-bold text-base sm:text-2xl font-serif">
+            <Star className="w-3.5 h-3.5 sm:w-5 sm:h-5 fill-amber-400 text-amber-500 shrink-0" />
             <span>
               {user?.rating_avg != null
                 ? Number(user.rating_avg).toFixed(1)
                 : "-"}
             </span>
           </div>
-          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
+          <span className="text-[10px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium truncate w-full">
             Reputasi Skor{" "}
             {user?.total_ulasan > 0 ? `(${user.total_ulasan})` : ""}
           </span>
         </div>
 
-        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
-          <span className="text-lg sm:text-2xl font-bold text-dark-900 font-serif">
+        <div className="bg-surface border border-border rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs min-w-0">
+          <span className="text-base sm:text-2xl font-bold text-dark-900 font-serif">
             {!isUmkm
               ? (user?.total_proyek_selesai ?? 0)
               : (user?.total_proyek_diterbitkan ?? 0)}
           </span>
-          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
-            {!isUmkm ? "Proyek Tuntas" : "Proyek Diterbitkan"}
+          <span className="text-[10px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium truncate w-full">
+            {!isUmkm ? "Proyek Tuntas" : "Proyek Dipasang"}
           </span>
         </div>
 
-        <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs">
-          <span className="text-lg sm:text-2xl font-bold text-emerald-600 font-serif">
+        <div className="bg-surface border border-border rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs min-w-0">
+          <span className="text-base sm:text-2xl font-bold text-emerald-600 font-serif">
             {user?.escrow_success_rate || "-"}
           </span>
-          <span className="text-[11px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium">
+          <span className="text-[10px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium truncate w-full">
             Sukses Escrow
           </span>
         </div>

@@ -561,17 +561,14 @@ export function WorkroomWorkspaceDetail({
         </div>
 
         {/* Sub-Nav Segmented Tabs for the Active Workroom */}
-        <div
-          className={`grid ${
-            isUmkm ? "grid-cols-2" : "grid-cols-3"
-          } sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 pt-2 border-t border-border`}
-        >
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 pt-2.5 border-t border-border w-full">
           <button
+            type="button"
             onClick={() => setActiveStageTab("chat")}
-            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${
+            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
               activeStageTab === "chat"
-                ? "bg-brand-indigo text-white shadow-brand"
-                : "bg-canvas border border-border text-muted hover:text-dark-900"
+                ? "bg-dark-900 text-white shadow-xs"
+                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
             }`}
           >
             {hasAcceptedApplicant ? (
@@ -583,24 +580,31 @@ export function WorkroomWorkspaceDetail({
             {hasAcceptedApplicant ? (
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             ) : (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-muted font-semibold border border-border">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-muted font-semibold border border-border">
                 Terkunci
               </span>
             )}
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveStageTab("deliverable")}
-            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
               activeStageTab === "deliverable"
                 ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900"
+                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
             }`}
           >
             <FileCheck2 className="w-3.5 h-3.5" />
             <span>Deliverable</span>
             {activeDeliverable && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-extrabold">
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                  activeStageTab === "deliverable"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                    : "bg-emerald-100 text-emerald-800"
+                }`}
+              >
                 Ada
               </span>
             )}
@@ -608,11 +612,12 @@ export function WorkroomWorkspaceDetail({
 
           {isUmkm && (
             <button
+              type="button"
               onClick={() => setActiveStageTab("applicants")}
-              className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas border border-border text-muted hover:text-dark-900"
+                  : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -621,11 +626,12 @@ export function WorkroomWorkspaceDetail({
           )}
 
           <button
+            type="button"
             onClick={() => setActiveStageTab("brief")}
-            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
               activeStageTab === "brief"
                 ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900"
+                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
