@@ -1,9 +1,24 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { FONTS } from "../../theme/fonts";
+import { View, StyleSheet, Platform } from "react-native";
 import { COLORS } from "../../theme/colors";
+import { AppleGlossyCard } from "./AppleGlossyCard";
 
-export function Card({ children, variant = "dark", style }) {
+export { AppleGlossyCard };
+
+export function Card({
+  children,
+  variant = "glossy", // default to apple glossy
+  style,
+  ...props
+}) {
+  if (variant === "glossy" || variant === "apple") {
+    return (
+      <AppleGlossyCard style={style} {...props}>
+        {children}
+      </AppleGlossyCard>
+    );
+  }
+
   return (
     <View
       style={[
@@ -13,6 +28,7 @@ export function Card({ children, variant = "dark", style }) {
         variant === "lime" && styles.lime,
         style,
       ]}
+      {...props}
     >
       {children}
     </View>
@@ -26,14 +42,15 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   dark: {
-    backgroundColor: COLORS.bgSurface,
+    backgroundColor:
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "rgba(226, 232, 240, 0.9)",
     elevation: 2,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
   },
   cream: {
     backgroundColor: COLORS.canvasSoft,

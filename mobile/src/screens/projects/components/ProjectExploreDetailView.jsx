@@ -13,6 +13,14 @@ import { FONTS } from "../../../theme/fonts";
 import { Badge } from "../../../components/ui/Badge";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { Button } from "../../../components/ui/Button";
+import { AppleGlossyCard } from "../../../components/ui/AppleGlossyCard";
+import {
+  AppleMessageIcon,
+  AppleSourceAssetIcon,
+  AppleReadyDeliverableIcon,
+  AppleStructuredRevisionIcon,
+  AppleGlossyBadge,
+} from "../../../components/ui/AppleGlossyIcons";
 import { ProposalCard } from "../../../components/features/ProposalCard";
 import { ProjectStatusBar } from "../../../components/features/ProjectStatusBar";
 import { formatCurrency } from "../../../utils/formatCurrency";
@@ -97,7 +105,7 @@ export function ProjectExploreDetailView({
           {/* 1. APPLE GLOSSY HERO CARD                                        */}
           {/* Unifies Meta, Title, Client Info, Metrics, & Escrow without clutter*/}
           {/* ================================================================= */}
-          <View style={styles.appleHeroCard}>
+          <AppleGlossyCard variant="hero" style={styles.appleHeroCard}>
             {/* Top Row: Meta Badges (Left) & Faktur Button (Right) - Zero Collision */}
             <View style={styles.appleTopRow}>
               <View style={styles.appleBadgeGroup}>
@@ -219,7 +227,7 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
             ) : null}
-          </View>
+          </AppleGlossyCard>
 
           {/* ================================================================= */}
           {/* 2. ESCROW STEPPER (FLAT)                                          */}
@@ -371,9 +379,7 @@ export function ProjectExploreDetailView({
                       resizeMode="cover"
                     />
                   ) : (
-                    <View style={styles.chatIconBadge}>
-                      <MessageSquare size={15} color="#FFFFFF" />
-                    </View>
+                    <AppleMessageIcon size={34} variant="blue" />
                   )}
                   <View style={{ flex: 1 }}>
                     <Text style={styles.openChatTitle}>
@@ -433,18 +439,18 @@ export function ProjectExploreDetailView({
               STANDAR DELIVERABLE:
             </Text>
             <View style={styles.deliverablePillsRow}>
-              <View style={styles.specChip}>
-                <Palette size={12} color="#2563EB" />
-                <Text style={styles.specChipText}>Aset / Berkas Sumber</Text>
-              </View>
-              <View style={styles.specChip}>
-                <Smartphone size={12} color="#2563EB" />
-                <Text style={styles.specChipText}>Deliverable Siap Pakai</Text>
-              </View>
-              <View style={styles.specChip}>
-                <MessageSquare size={12} color="#2563EB" />
-                <Text style={styles.specChipText}>Revisi Terstruktur</Text>
-              </View>
+              <AppleGlossyBadge
+                icon={AppleSourceAssetIcon}
+                label="Aset / Berkas Sumber"
+              />
+              <AppleGlossyBadge
+                icon={AppleReadyDeliverableIcon}
+                label="Deliverable Siap Pakai"
+              />
+              <AppleGlossyBadge
+                icon={AppleStructuredRevisionIcon}
+                label="Revisi Terstruktur"
+              />
             </View>
           </View>
 
@@ -886,7 +892,7 @@ export function ProjectExploreDetailView({
               }
               activeOpacity={0.8}
             >
-              <MessageSquare size={18} color={COLORS.brandIndigo} />
+              <AppleMessageIcon size={36} variant="green" />
             </TouchableOpacity>
           )}
 
@@ -1819,12 +1825,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   stickyChatBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: COLORS.brandIndigoLight,
-    borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
+    width: 40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 8,

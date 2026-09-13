@@ -35,6 +35,7 @@ import { ProposalCard } from "../../components/features/ProposalCard";
 import { WorkroomActiveView } from "./components/WorkroomActiveView";
 import { ApplicantReviewBoardView } from "./components/ApplicantReviewBoardView";
 import { ProjectExploreDetailView } from "./components/ProjectExploreDetailView";
+import { AppleMessageIcon } from "../../components/ui/AppleGlossyIcons";
 import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -670,9 +671,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                   partnerRole: isUmkmOwner ? "MHS" : "UMKM",
                 })
               }
-              activeOpacity={0.7}
+              activeOpacity={0.8}
             >
-              <MessageSquare size={18} color={COLORS.brandIndigo} />
+              <AppleMessageIcon size={32} variant="blue" />
             </TouchableOpacity>
           ) : null
         }
@@ -865,12 +866,8 @@ const styles = StyleSheet.create({
   headerChatBtn: {
     width: 36,
     height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.cardLight,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: COLORS.borderSubtle,
   },
   fileNotesText: {
     fontFamily: FONTS.bodyRegular,

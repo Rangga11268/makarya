@@ -3,7 +3,14 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { projectApi } from "../../api";
-import { Card } from "../../components/ui/Card";
+import { Card, AppleGlossyCard } from "../../components/ui/Card";
+import {
+  AppleMessageIcon,
+  AppleSourceAssetIcon,
+  AppleReadyDeliverableIcon,
+  AppleStructuredRevisionIcon,
+  AppleGlossyBadge,
+} from "../../components/ui/AppleGlossyIcons";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -510,12 +517,31 @@ export function ProjectDetailPage() {
                 </div>
               )}
 
+              {/* Standar Deliverable Scope */}
+              <div className="pt-3 pb-1 border-t border-slate-100">
+                <span className="text-[10px] font-bold tracking-wider text-muted uppercase">
+                  STANDAR DELIVERABLE:
+                </span>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <AppleGlossyBadge
+                    icon={AppleSourceAssetIcon}
+                    label="Aset / Berkas Sumber"
+                  />
+                  <AppleGlossyBadge
+                    icon={AppleReadyDeliverableIcon}
+                    label="Deliverable Siap Pakai"
+                  />
+                  <AppleGlossyBadge
+                    icon={AppleStructuredRevisionIcon}
+                    label="Revisi Terstruktur"
+                  />
+                </div>
+              </div>
+
               {/* Realtime Chat Banner */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
+              <div className="p-4 bg-white/90 border border-slate-200/80 rounded-2xl shadow-[0_4px_16px_rgb(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
+                  <AppleMessageIcon size={38} variant="blue" className="shrink-0" />
                   <div>
                     <h4 className="text-xs font-bold text-dark-900">
                       Ruang Diskusi & Kolaborasi Realtime
@@ -728,7 +754,7 @@ export function ProjectDetailPage() {
               }}
               className="w-full text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 py-3 flex items-center justify-center gap-2 rounded-2xl"
             >
-              <MessageSquare className="w-4 h-4 text-brand-indigo" />
+              <AppleMessageIcon size={22} variant="green" className="shrink-0" />
               <span>Buka Ruang Kerja & Obrolan</span>
             </Button>
 
@@ -858,7 +884,7 @@ export function ProjectDetailPage() {
               aria-label="Buka Ruang Obrolan Realtime"
               title="Buka Ruang Obrolan Realtime"
             >
-              <MessageSquare className="w-4 h-4 text-brand-indigo" />
+              <AppleMessageIcon size={26} variant="blue" />
             </button>
 
             {isOwner ? (
