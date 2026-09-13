@@ -18,15 +18,33 @@ import {
   ProfileTabIcon,
 } from "../components/icons/TabIcons";
 
+import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
+
 const Tab = createBottomTabNavigator();
 
 export function MainTabs() {
   const { user } = useAuthStore();
+  const { width, height, isTablet, isLandscape, isLandscapePhone } =
+    useResponsiveLayout();
+
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+
+  const tabWidth =
+    isTablet || isLandscape ? Math.min(width - 32, 600) : width - 32;
+  const tabHorizontalOffset = Math.max(16, (width - tabWidth) / 2);
+
+  const dynamicTabBarStyle = [
+    styles.tabBar,
+    {
+      left: tabHorizontalOffset,
+      right: tabHorizontalOffset,
+      ...(isLandscapePhone ? { height: 52, bottom: 6, paddingTop: 3 } : {}),
+    },
+  ];
 
   return (
     <Tab.Navigator
@@ -34,6 +52,7 @@ export function MainTabs() {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarStyle: styles.tabBar,
+        tabBarStyle: dynamicTabBarStyle,
         tabBarActiveTintColor: "#2563EB",
         tabBarInactiveTintColor: "#94A3B8",
         tabBarLabelStyle: styles.tabLabel,

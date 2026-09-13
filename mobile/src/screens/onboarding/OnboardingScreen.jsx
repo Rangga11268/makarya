@@ -11,6 +11,7 @@ import {
 import Svg, { Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { Button } from "../../components/ui/Button";
 import { ArrowRight } from "lucide-react-native";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { styles as s } from "./OnboardingScreen.styles";
 
 const { width } = Dimensions.get("window");
@@ -58,6 +59,7 @@ const slides = [
 ];
 
 export function OnboardingScreen({ navigation, onComplete }) {
+  const { width, isTablet } = useResponsiveLayout();
   const [current, setCurrent] = useState(0);
   const scrollRef = useRef(null);
 
@@ -107,6 +109,7 @@ export function OnboardingScreen({ navigation, onComplete }) {
           <View
             key={sl.id}
             style={[s.slidePage, { backgroundColor: sl.bgColor }]}
+            style={[s.slidePage, { width, backgroundColor: sl.bgColor }]}
           >
             {/* Background Illustration covering top 60% */}
             <Image source={sl.image} style={s.bgImage} resizeMode="cover" />
@@ -153,6 +156,12 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
             {/* Content Section - Flowing naturally over the blend */}
             <View style={s.contentArea}>
+            <View
+              style={[
+                s.contentArea,
+                isTablet && { maxWidth: 580, alignSelf: "center", width: "100%" },
+              ]}
+            >
               <View
                 style={[
                   s.slideBadge,
@@ -187,6 +196,12 @@ export function OnboardingScreen({ navigation, onComplete }) {
 
       {/* Bottom Controls */}
       <View style={s.bottomBar}>
+      <View
+        style={[
+          s.bottomBar,
+          isTablet && { maxWidth: 580, alignSelf: "center", width: "100%" },
+        ]}
+      >
         <View style={s.dots}>
           {slides.map((sl, i) => (
             <TouchableOpacity

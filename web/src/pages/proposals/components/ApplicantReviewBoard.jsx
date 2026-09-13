@@ -106,7 +106,7 @@ export function ApplicantReviewBoard({
                   );
                   if (found && onSelectProject) onSelectProject(found);
                 }}
-                className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
+                className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-[200px] sm:max-w-xs truncate"
               >
                 {allProjects.map((p) => (
                   <option key={p.id} value={p.id}>

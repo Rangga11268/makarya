@@ -24,10 +24,13 @@ import { ShieldCheck } from "lucide-react-native";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 16 : 16;
 
 export function AuthLandingScreen({ navigation }) {
+  const { width, height, authContainerStyle } = useResponsiveLayout();
   return (
     <View style={styles.container}>
       <StatusBar
@@ -68,6 +71,7 @@ export function AuthLandingScreen({ navigation }) {
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
+        <View style={[styles.content, authContainerStyle]}>
           {/* Top Logo with Official Makarya Icon */}
           <View style={styles.logoRow}>
             <Image

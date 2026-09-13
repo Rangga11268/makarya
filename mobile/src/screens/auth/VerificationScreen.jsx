@@ -14,6 +14,7 @@ import { FONTS } from "../../theme/fonts";
 import { Button } from "../../components/ui/Button";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import {
   ShieldCheck,
   Mail,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react-native";
 
 export function VerificationScreen({ route, navigation }) {
+  const { authContainerStyle } = useResponsiveLayout();
   const email = route.params?.email || "email.anda@gmail.com";
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -121,6 +123,7 @@ export function VerificationScreen({ route, navigation }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <View style={authContainerStyle}>
         {/* Back navigation */}
         <TouchableOpacity
           style={styles.backBtn}
@@ -211,6 +214,7 @@ export function VerificationScreen({ route, navigation }) {
               style={styles.resendBtn}
             />
           )}
+        </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

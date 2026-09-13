@@ -31,10 +31,13 @@ import {
 import { PebbleButton } from "../../components/ui/PebbleButton";
 
 const { width, height } = Dimensions.get("window");
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
 export function RoleSelectionScreen({ navigation }) {
+  const { width, height, authContainerStyle } = useResponsiveLayout();
   // 'MAHASISWA' (Find a job) | 'UMKM' (Hire talent)
   const [selectedRole, setSelectedRole] = useState("MAHASISWA");
 
@@ -101,6 +104,7 @@ export function RoleSelectionScreen({ navigation }) {
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
+        <View style={[styles.content, authContainerStyle]}>
           {/* Top Bar with Back Button & Official Logo */}
           <View style={styles.topBar}>
             <TouchableOpacity

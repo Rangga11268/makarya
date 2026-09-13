@@ -109,6 +109,16 @@ export function WorkroomActiveView({
     );
   };
 
+  const resolvedPartnerName =
+    activePartnerName && activePartnerName !== "Klien UMKM" && activePartnerName !== "Mahasiswa"
+      ? activePartnerName
+      : isUmkmOwner
+        ? project?.accepted_mhs_nama || "Mahasiswa Pelaksana"
+        : project?.umkm_nama ||
+          project?.umkm_profile?.nama_usaha ||
+          myExistingProposal?.project_umkm_nama ||
+          "Klien Mitra UMKM";
+
   return (
     <ScrollView
       contentContainerStyle={[
@@ -134,6 +144,7 @@ export function WorkroomActiveView({
               <View style={styles.partnerAvatarPlaceholder}>
                 <Text style={styles.partnerAvatarText}>
                   {(activePartnerName || "M").charAt(0).toUpperCase()}
+                  {(resolvedPartnerName || (isUmkmOwner ? "M" : "K")).charAt(0).toUpperCase()}
                 </Text>
               </View>
             )}
@@ -148,6 +159,7 @@ export function WorkroomActiveView({
             </Text>
             <Text style={styles.partnerName} numberOfLines={1}>
               {activePartnerName || (isUmkmOwner ? "Mahasiswa" : "Klien UMKM")}
+              {resolvedPartnerName}
             </Text>
           </View>
 
@@ -159,6 +171,7 @@ export function WorkroomActiveView({
                 projectId: project.id,
                 projectTitle: project.judul,
                 partnerName: activePartnerName,
+                partnerName: resolvedPartnerName,
                 partnerPhoto: activePartnerPhoto,
                 partnerRole: isUmkmOwner ? "MHS" : "UMKM",
               })

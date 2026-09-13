@@ -37,7 +37,11 @@ def _resolve_accepted_mhs(proj_id: UUID, db: Session):
     if accepted_prop:
         mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == accepted_prop.mhs_id).first()
         if mhs_profile:
+        if mhs_profile and mhs_profile.nama_lengkap:
             return (mhs_profile.nama_lengkap, mhs_profile.url_foto)
+        mhs_user = db.query(User).filter(User.id == accepted_prop.mhs_id).first()
+        if mhs_user:
+            return (mhs_user.username or mhs_user.email.split("@")[0], None)
     return (None, None)
 
 
@@ -50,6 +54,13 @@ def _build_project_response(
     if not umkm_profile:
         umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
     umkm_summary = UmkmSummary.model_validate(umkm_profile) if umkm_profile else None
+
+    umkm_user = db.query(User).filter(User.id == proj.umkm_id).first()
+    resolved_umkm_nama = (
+        umkm_profile.nama_usaha
+        if umkm_profile and umkm_profile.nama_usaha
+        else (umkm_user.username if umkm_user and umkm_user.username else (umkm_user.email.split("@")[0] if umkm_user else "Klien Mitra UMKM"))
+    )
 
     total_pelamar = db.query(Proposal).filter(
         Proposal.project_id == proj.id,
@@ -90,6 +101,7 @@ def _build_project_response(
         updated_at=proj.updated_at,
         umkm_profile=umkm_summary,
         umkm_nama=umkm_profile.nama_usaha if umkm_profile and umkm_profile.nama_usaha else None,
+        umkm_nama=resolved_umkm_nama,
         accepted_mhs_nama=acc_nama,
         accepted_mhs_foto=acc_foto,
         total_pelamar=total_pelamar,

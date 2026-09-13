@@ -181,8 +181,11 @@ const FALLBACK_TALENTS = [
   },
 ];
 
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 export function TalentListScreen({ navigation }) {
   const { user } = useAuthStore();
+  const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
   const [talents, setTalents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -479,6 +482,7 @@ export function TalentListScreen({ navigation }) {
 
       {/* 2. Search Bar with Filter Tuning Button */}
       <View style={styles.searchSection}>
+      <View style={[styles.searchSection, responsiveContainerStyle]}>
         <SearchBar
           placeholder="Cari nama talenta, keahlian, atau prodi..."
           value={searchQuery}
@@ -492,6 +496,7 @@ export function TalentListScreen({ navigation }) {
 
       {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
+      <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -520,6 +525,7 @@ export function TalentListScreen({ navigation }) {
       {/* 4. Active Filter Bar */}
       {activeFilterCount > 0 && (
         <View style={styles.activeFilterBar}>
+        <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
           <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
           {selectedProdi !== "ALL" && (
             <View style={styles.activeFilterPill}>
@@ -572,6 +578,10 @@ export function TalentListScreen({ navigation }) {
       {loading && !refreshing ? (
         <ScrollView
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <TalentCardSkeleton />
@@ -592,6 +602,10 @@ export function TalentListScreen({ navigation }) {
             />
           }
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Compass size={40} color={COLORS.brandIndigo} />

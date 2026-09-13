@@ -33,9 +33,11 @@ import {
 import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
+  const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
   const isMahasiswa =
     user?.role === "MHS" ||
     user?.role === "MAHASISWA" ||
@@ -198,6 +200,7 @@ export function ProjectListScreen({ navigation, route }) {
 
       {/* 2. Search Bar with Filter Tuning Button */}
       <View style={styles.searchSection}>
+      <View style={[styles.searchSection, responsiveContainerStyle]}>
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -211,6 +214,7 @@ export function ProjectListScreen({ navigation, route }) {
 
       {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
       <View style={styles.segmentedContainer}>
+      <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -239,6 +243,7 @@ export function ProjectListScreen({ navigation, route }) {
       {/* 4. Active Filter Tag Bar (Shown ONLY when a filter is active) */}
       {activeFilterCount > 0 && (
         <View style={styles.activeFilterBar}>
+        <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
           <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
           {categoryFilter !== "ALL" && (
             <View style={styles.activeFilterPill}>
@@ -284,6 +289,10 @@ export function ProjectListScreen({ navigation, route }) {
       {loading && projects.length === 0 ? (
         <ScrollView
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <ProjectCardSkeleton />
@@ -303,6 +312,10 @@ export function ProjectListScreen({ navigation, route }) {
             />
           }
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           ListEmptyComponent={
             !loading && (
               <View style={styles.emptyState}>

@@ -11,6 +11,7 @@ import {
 import { Header } from "../../components/ui/Header";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import {
@@ -104,6 +105,8 @@ export function HelpScreen({ navigation }) {
   };
 
   const canGoBack = navigation?.canGoBack && navigation.canGoBack();
+  const { responsiveContainerStyle, isCompact, isLandscape } =
+    useResponsiveLayout();
 
   return (
     <View style={styles.container}>
@@ -119,8 +122,14 @@ export function HelpScreen({ navigation }) {
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          isCompact && { paddingHorizontal: 12 },
+          isLandscape && { paddingVertical: 10 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
+        <View style={responsiveContainerStyle}>
         {/* 2. Escrow Protection Trust Banner */}
         <View style={styles.glassBanner}>
           <View style={styles.bannerIconCircle}>
@@ -236,6 +245,7 @@ export function HelpScreen({ navigation }) {
           <Text style={styles.footerNoteText}>
             Layanan pengaduan & bantuan Makarya beroperasi 7 hari seminggu.
           </Text>
+        </View>
         </View>
       </ScrollView>
     </View>

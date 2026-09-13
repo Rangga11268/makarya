@@ -59,9 +59,12 @@ import {
   Camera,
 } from "lucide-react-native";
 
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 export function ProfileScreen({ navigation }) {
   const { user, updateUser, logout } = useAuthStore();
   const { showToast } = useToastStore();
+  const { responsiveContainerStyle } = useResponsiveLayout();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [escrowAlertsEnabled, setEscrowAlertsEnabled] = useState(true);
@@ -327,6 +330,7 @@ export function ProfileScreen({ navigation }) {
 
       <ScrollView
         contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, responsiveContainerStyle]}
         showsVerticalScrollIndicator={false}
       >
         {/* 1. Profile Hero Card */}

@@ -37,6 +37,7 @@ import { ApplicantReviewBoardView } from "./components/ApplicantReviewBoardView"
 import { projectApi, proposalApi, submissionApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { showConfirm } from "../../store/dialogStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../utils/formatDate";
@@ -108,6 +109,8 @@ export function ProjectDetailScreen({ route, navigation }) {
     useState(null);
 
   const { showToast } = useToastStore();
+  const { responsiveContainerStyle, isCompact, isLandscape } =
+    useResponsiveLayout();
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -244,6 +247,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     project.umkm_profile.nama_usaha.toLowerCase() !== "string"
       ? project.umkm_profile.nama_usaha
       : null) ||
+    myExistingProposal?.project_umkm_nama ||
     (project?.umkm?.profile_umkm?.nama_usaha &&
     project.umkm.profile_umkm.nama_usaha.toLowerCase() !== "string"
       ? project.umkm.profile_umkm.nama_usaha
@@ -255,12 +259,14 @@ export function ProjectDetailScreen({ route, navigation }) {
       ? project.nama_usaha
       : null) ||
     "Klien Usaha UMKM";
+    "Klien Mitra UMKM";
 
   const clientPhoto =
     project?.umkm_profile?.url_foto_usaha ||
     project?.umkm_profile?.url_foto ||
     project?.umkm_foto ||
     project?.project_umkm_foto ||
+    myExistingProposal?.project_umkm_foto ||
     project?.umkm?.profile_umkm?.url_foto_usaha ||
     project?.url_foto ||
     null;
@@ -269,6 +275,7 @@ export function ProjectDetailScreen({ route, navigation }) {
     ? project?.accepted_mhs_nama ||
       acceptedProposal?.mhs_profile?.nama_lengkap ||
       acceptedProposal?.mahasiswa_nama ||
+      myExistingProposal?.mhs_profile?.nama_lengkap ||
       "Mahasiswa Pelaksana"
     : clientDisplayName;
 
@@ -697,8 +704,14 @@ export function ProjectDetailScreen({ route, navigation }) {
         <>
           <ScrollView
             contentContainerStyle={styles.content}
+            contentContainerStyle={[
+              styles.content,
+              isCompact && { paddingHorizontal: 12 },
+              isLandscape && { paddingVertical: 10 },
+            ]}
             showsVerticalScrollIndicator={false}
           >
+            <View style={responsiveContainerStyle}>
             {/* 1. Apple Glossy Hero Card */}
             <View style={styles.floatingHeroCard}>
               {/* Top Row: Category Badge & Escrow Status Tag */}
@@ -1508,6 +1521,8 @@ export function ProjectDetailScreen({ route, navigation }) {
             )}
 
             <View style={{ height: 100 }} />
+              <View style={{ height: 100 }} />
+            </View>
           </ScrollView>
 
           {/* 8. Persistent Sticky Bottom Action Bar */}
@@ -1518,6 +1533,23 @@ export function ProjectDetailScreen({ route, navigation }) {
                 {formatCurrency(project.budget_max)}
               </Text>
             </View>
+            <View
+              style={[
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                },
+                responsiveContainerStyle,
+              ]}
+            >
+              <View style={styles.stickyPriceCol}>
+                <Text style={styles.stickyPriceLabel}>Pagu Anggaran</Text>
+                <Text style={styles.stickyPriceValue}>
+                  {formatCurrency(project.budget_max)}
+                </Text>
+              </View>
 
             {/* Dedicated Sticky Chat Button (Only when there is an active collaboration partner) */}
             {hasAcceptedStudent && (
@@ -1607,6 +1639,7 @@ export function ProjectDetailScreen({ route, navigation }) {
                   </Text>
                 </View>
               )}
+            </View>
             </View>
           </View>
         </>

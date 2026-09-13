@@ -84,7 +84,7 @@ export function PendingProposalView({
                   );
                   if (found && onSelectProposal) onSelectProposal(found);
                 }}
-                className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-xs truncate"
+                className="text-xs font-semibold py-1.5 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo max-w-[200px] sm:max-w-xs truncate"
               >
                 {allProposals.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -334,7 +334,8 @@ export function PendingProposalView({
                 <span className="font-bold text-dark-900 text-sm block truncate">
                   {proposal.project_umkm_nama ||
                     proposal.umkm_nama ||
-                    "Klien Usaha UMKM"}
+                    proposal.umkm_profile?.nama_usaha ||
+                    "Klien Mitra UMKM"}
                 </span>
                 <span className="text-[10px] text-muted block">
                   Pemberi Pekerjaan Resmi

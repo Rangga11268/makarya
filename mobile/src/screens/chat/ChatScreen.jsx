@@ -36,10 +36,12 @@ import {
   Radio,
   AlertTriangle,
 } from "lucide-react-native";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 export function ChatScreen({ route, navigation }) {
   const { user } = useAuthStore();
   const { showToast } = useToastStore();
+  const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
 
   const projectId = route.params?.projectId || route.params?.id;
   const projectTitle = route.params?.projectTitle || "Ruang Kolaborasi Proyek";
@@ -423,6 +425,12 @@ export function ChatScreen({ route, navigation }) {
     >
       {/* 1. Header Bar */}
       <View style={styles.header}>
+      <View
+        style={[
+          styles.header,
+          { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
@@ -483,6 +491,10 @@ export function ChatScreen({ route, navigation }) {
           keyExtractor={(item, index) => item.id || String(index)}
           renderItem={renderMessageItem}
           contentContainerStyle={styles.messagesList}
+          contentContainerStyle={[
+            styles.messagesList,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
@@ -588,6 +600,13 @@ export function ChatScreen({ route, navigation }) {
           style={[
             styles.inputContainer,
             { justifyContent: "center", paddingVertical: 14 },
+            {
+              justifyContent: "center",
+              paddingVertical: 14,
+              maxWidth: contentMaxWidth,
+              width: "100%",
+              alignSelf: "center",
+            },
           ]}
         >
           <Text
@@ -603,6 +622,12 @@ export function ChatScreen({ route, navigation }) {
         </View>
       ) : (
         <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
+        >
           {/* Tombol Lampiran */}
           <TouchableOpacity
             style={styles.attachBtn}

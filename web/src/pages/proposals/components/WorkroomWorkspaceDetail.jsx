@@ -162,156 +162,99 @@ export function WorkroomWorkspaceDetail({
     <div className="space-y-4">
       {/* Stage Top Bar (Project Card Summary) */}
       <div className="bg-surface rounded-3xl border border-border p-4 sm:p-6 shadow-xs space-y-3.5">
-        {/* Mobile View (< sm) */}
-        <div className="sm:hidden space-y-3 border-b border-border pb-3.5">
-          <div className="flex items-center justify-between gap-2">
-            {onBack ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onBack}
-                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl shadow-2xs shrink-0"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Semua Proyek</span>
-              </Button>
-            ) : (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
-                Proyek Aktif
-              </span>
-            )}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold shrink-0">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Escrow Aman</span>
+        {/* Unified Responsive Stage Top Bar */}
+        <div className="border-b border-border pb-3.5 space-y-3">
+          {/* Top row: Navigation Back Button, Project Switcher & Status Badges */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              {onBack ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onBack}
+                  className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs shrink-0"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Semua Proyek</span>
+                </Button>
+              ) : (
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
+                  Proyek Aktif
+                </span>
+              )}
+
+              {allProjects.length > 1 && (
+                <div className="relative max-w-[180px] sm:max-w-xs">
+                  <select
+                    value={activeProjectId}
+                    onChange={(e) => {
+                      const proj = allProjects.find((p) => p.id === e.target.value);
+                      if (proj && onSelectProject) onSelectProject(proj);
+                    }}
+                    className="w-full text-xs font-bold py-1 px-2.5 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo truncate"
+                  >
+                    {allProjects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.judul || p.project_judul}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Garansi Escrow Aman</span>
+              </div>
+
+              {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
+                <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                  <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
+                </div>
+              )}
+
+              {setIsFocusMode && (
+                <button
+                  type="button"
+                  onClick={() => setIsFocusMode(!isFocusMode)}
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                    isFocusMode
+                      ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                      : "bg-canvas border-border text-dark-900 hover:bg-slate-100"
+                  }`}
+                  title={
+                    isFocusMode
+                      ? "Kembalikan Tampilan Split"
+                      : "Buka Mode Fokus Layar Penuh (12 Kolom)"
+                  }
+                >
+                  {isFocusMode ? (
+                    <>
+                      <Minimize2 className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Keluar Fokus</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Mode Fokus</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="space-y-1">
+          {/* Bottom row: Category badge & Full Project Title */}
+          <div className="space-y-1 min-w-0">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
               {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
             </span>
-            <h2 className="text-base font-bold text-dark-900 leading-snug">
+            <h2 className="text-base sm:text-xl font-bold text-dark-900 leading-snug break-words">
               {activeProjectTitle}
             </h2>
-          </div>
-
-          {allProjects.length > 1 && (
-            <div className="relative w-full">
-              <select
-                value={activeProjectId}
-                onChange={(e) => {
-                  const proj = allProjects.find((p) => p.id === e.target.value);
-                  if (proj && onSelectProject) onSelectProject(proj);
-                }}
-                className="w-full text-xs font-bold py-2 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
-              >
-                {allProjects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.judul || p.project_judul}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-              <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
-            </div>
-          )}
-        </div>
-
-        {/* Desktop View (>= sm) */}
-        <div className="hidden sm:flex sm:items-center justify-between gap-3 border-b border-border pb-3.5">
-          <div className="flex items-center gap-3">
-            {onBack && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onBack}
-                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs shrink-0"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Semua Proyek</span>
-              </Button>
-            )}
-            {onBack && <div className="h-4 w-px bg-border" />}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
-                  {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
-                </span>
-                {allProjects.length > 1 && (
-                  <div className="relative inline-block">
-                    <select
-                      value={activeProjectId}
-                      onChange={(e) => {
-                        const proj = allProjects.find(
-                          (p) => p.id === e.target.value,
-                        );
-                        if (proj && onSelectProject) onSelectProject(proj);
-                      }}
-                      className="text-[11px] font-bold py-1 px-2.5 rounded-lg bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
-                    >
-                      {allProjects.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.judul || p.project_judul}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-              <h2 className="text-base sm:text-lg font-bold text-dark-900 leading-snug">
-                {activeProjectTitle}
-              </h2>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {selectedProject?.deadline &&
-              isExpired(selectedProject.deadline) && (
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                  <span>
-                    Lewat Tenggat ({formatDate(selectedProject.deadline)})
-                  </span>
-                </div>
-              )}
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Garansi Escrow Aman</span>
-            </div>
-
-            {setIsFocusMode && (
-              <button
-                type="button"
-                onClick={() => setIsFocusMode(!isFocusMode)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
-                  isFocusMode
-                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                    : "bg-canvas border-border text-dark-900 hover:bg-slate-100"
-                }`}
-                title={
-                  isFocusMode
-                    ? "Kembalikan Tampilan Split"
-                    : "Buka Mode Fokus Layar Penuh (12 Kolom)"
-                }
-              >
-                {isFocusMode ? (
-                  <>
-                    <Minimize2 className="w-3.5 h-3.5" />
-                    <span>Keluar Fokus</span>
-                  </>
-                ) : (
-                  <>
-                    <Maximize2 className="w-3.5 h-3.5" />
-                    <span>Mode Fokus</span>
-                  </>
-                )}
-              </button>
-            )}
           </div>
         </div>
 
@@ -530,7 +473,7 @@ export function WorkroomWorkspaceDetail({
 
         {/* Partner Info & Quick Metas */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             {hasAcceptedApplicant ? (
               <>
                 {activePartnerPhoto ? (
@@ -546,11 +489,11 @@ export function WorkroomWorkspaceDetail({
                       : "M"}
                   </div>
                 )}
-                <div>
-                  <span className="font-bold text-dark-900 block leading-tight">
+                <div className="min-w-0">
+                  <span className="font-bold text-dark-900 block leading-tight truncate">
                     {activePartnerName}
                   </span>
-                  <span className="text-[10px] text-muted">
+                  <span className="text-[10px] text-muted block truncate">
                     {activePartnerRole === "UMKM"
                       ? "Klien Usaha UMKM"
                       : "Mahasiswa Talenta (Terpilih)"}

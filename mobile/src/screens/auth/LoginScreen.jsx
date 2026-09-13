@@ -23,10 +23,13 @@ import { PebbleButton } from "../../components/ui/PebbleButton";
 import { GoogleIcon } from "../../components/icons/GoogleIcon";
 
 const { width, height } = Dimensions.get("window");
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
 export function LoginScreen({ navigation }) {
+  const { width, height, authContainerStyle } = useResponsiveLayout();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -172,6 +175,7 @@ export function LoginScreen({ navigation }) {
         >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[styles.scrollContent, authContainerStyle]}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >

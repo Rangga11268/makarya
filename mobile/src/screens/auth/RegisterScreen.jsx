@@ -33,12 +33,14 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { GoogleIcon } from "../../components/icons/GoogleIcon";
 import { initiateGoogleSignIn } from "../../services/googleAuth";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 const { width, height } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
 export function RegisterScreen({ route, navigation }) {
+  const { width, height, authContainerStyle } = useResponsiveLayout();
   // Role passed from RoleSelectionScreen or default to 'MAHASISWA'
   const initialRole = route.params?.role || "MAHASISWA";
   const [role, setRole] = useState(initialRole);
@@ -266,6 +268,7 @@ export function RegisterScreen({ route, navigation }) {
         >
           <ScrollView
             contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[styles.scrollContent, authContainerStyle]}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >

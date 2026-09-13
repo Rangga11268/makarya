@@ -38,9 +38,11 @@ import {
   User,
   CheckCircle2,
 } from "lucide-react-native";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
 export function TrackerScreen({ navigation }) {
   const { user } = useAuthStore();
+  const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("ALL"); // 'ALL' | 'ACTIVE' | 'PENDING' | 'DONE'
@@ -185,6 +187,7 @@ export function TrackerScreen({ navigation }) {
 
       {/* 2. Unified 4-Column Segmented Tab (Fits 100% Screen Width without Sliding/Stacking) */}
       <View style={styles.segmentedWrapper}>
+      <View style={[styles.segmentedWrapper, responsiveContainerStyle]}>
         <View style={styles.segmentedContainer}>
           {segmentedTabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -218,6 +221,10 @@ export function TrackerScreen({ navigation }) {
       {loading && items.length === 0 ? (
         <ScrollView
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <TrackerCardSkeleton />
@@ -237,6 +244,10 @@ export function TrackerScreen({ navigation }) {
             />
           }
           contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+          ]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             !loading && (
@@ -314,9 +325,11 @@ export function TrackerScreen({ navigation }) {
             // Partner details for Mahasiswa (Client UMKM)
             const clientName = isMahasiswa
               ? item.project_umkm_nama || item.umkm_nama || "Klien UMKM"
+              ? item.project_umkm_nama || item.umkm_nama || item.umkm_profile?.nama_usaha || "Klien Mitra UMKM"
               : null;
             const clientPhoto = isMahasiswa
               ? item.project_umkm_foto || item.umkm_foto
+              ? item.project_umkm_foto || item.umkm_foto || item.umkm_profile?.url_foto_usaha
               : null;
 
             return (

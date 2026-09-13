@@ -49,10 +49,13 @@ const STEPS = [
   { id: 3, title: "Pratinjau" },
 ];
 
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 export function PostProjectScreen({ navigation }) {
   const scrollViewRef = useRef(null);
   const { user } = useAuthStore();
   const { showToast } = useToastStore();
+  const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
 
   // Multi-step state: 1, 2, 3
   const [currentStep, setCurrentStep] = useState(1);
@@ -277,6 +280,12 @@ export function PostProjectScreen({ navigation }) {
 
       {/* Step Tracker Indicator */}
       <View style={styles.stepTrackerContainer}>
+      <View
+        style={[
+          styles.stepTrackerContainer,
+          { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
+        ]}
+      >
         {STEPS.map((s, idx) => {
           const stepNum = idx + 1;
           const isActive = currentStep === stepNum;
@@ -339,6 +348,7 @@ export function PostProjectScreen({ navigation }) {
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, responsiveContainerStyle]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}

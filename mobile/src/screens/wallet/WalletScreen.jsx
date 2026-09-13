@@ -44,8 +44,11 @@ import {
   AlertCircle,
 } from "lucide-react-native";
 
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+
 export function WalletScreen({ navigation }) {
   const { user } = useAuthStore();
+  const { responsiveContainerStyle } = useResponsiveLayout();
   const [wallet, setWallet] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -234,7 +237,7 @@ export function WalletScreen({ navigation }) {
 
       <ScrollView
         style={styles.scrollArea}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, responsiveContainerStyle]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -753,6 +756,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 18,
     marginTop: 4,
+    width: "100%",
+    maxWidth: 520,
+    alignSelf: "center",
   },
 
   // Layer 1: Peeking Card (Back/Top)

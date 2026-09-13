@@ -14,6 +14,7 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
+import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import {
   KeyRound,
   Mail,
@@ -25,6 +26,7 @@ import {
 } from "lucide-react-native";
 
 export function ForgotPasswordScreen({ navigation }) {
+  const { authContainerStyle } = useResponsiveLayout();
   const [step, setStep] = useState(1); // 1: Input Email, 2: Input OTP & New Password
   const [email, setEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
@@ -99,6 +101,7 @@ export function ForgotPasswordScreen({ navigation }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <View style={authContainerStyle}>
         {/* Back Button */}
         <TouchableOpacity
           style={styles.backBtn}
@@ -203,6 +206,7 @@ export function ForgotPasswordScreen({ navigation }) {
             />
           </View>
         )}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

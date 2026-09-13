@@ -149,13 +149,13 @@ export function WorkspaceHubGrid({
           />
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Filter Pills (Scrollable on small mobile, wraps on larger viewports) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveFilter(tab.key)}
-              className={`py-1.5 px-3.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 ${
+              className={`py-1.5 px-3.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 shrink-0 ${
                 activeFilter === tab.key
                   ? "bg-dark-900 text-white shadow-xs"
                   : "bg-canvas text-muted hover:text-dark-900 border border-border"
@@ -177,7 +177,7 @@ export function WorkspaceHubGrid({
           ))}
 
           {isUmkm && (
-            <Link to="/post-project" className="ml-auto md:ml-2">
+            <Link to="/post-project" className="ml-auto md:ml-2 shrink-0">
               <Button
                 variant="primary"
                 size="sm"
@@ -475,7 +475,10 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
               Klien UMKM
             </span>
             <span className="text-xs font-bold text-dark-900 truncate block">
-              {proposal.project_umkm_nama || proposal.umkm_nama || "Klien UMKM"}
+              {proposal.project_umkm_nama ||
+                proposal.umkm_nama ||
+                proposal.umkm_profile?.nama_usaha ||
+                "Klien Mitra UMKM"}
             </span>
           </div>
         </div>
