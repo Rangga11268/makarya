@@ -464,17 +464,30 @@ export function ProposalBoardPage() {
       ? selectedProposal
       : null;
 
-  const hasAcceptedApplicant = Boolean(acceptedApplicant);
+  const hasAcceptedApplicant = Boolean(
+    acceptedApplicant ||
+    (isUmkm && selectedProject?.accepted_mhs_nama) ||
+    (!isUmkm && selectedProposal?.status === "ACCEPTED")
+  );
 
   const activePartnerName = isUmkm
-    ? acceptedApplicant?.mhs_profile?.nama_lengkap || null
-    : selectedProposal?.project_umkm_nama || "Klien UMKM";
+    ? (acceptedApplicant?.mhs_profile?.nama_lengkap ||
+       selectedProject?.accepted_mhs_nama ||
+       "Mahasiswa Pelaksana")
+    : (selectedProposal?.project_umkm_nama ||
+       selectedProposal?.umkm_nama ||
+       selectedProject?.umkm_profile?.nama_usaha ||
+       selectedProject?.umkm_nama ||
+       "Klien Usaha UMKM");
 
   const activePartnerPhoto = isUmkm
-    ? acceptedApplicant?.mhs_profile?.url_foto || null
-    : selectedProposal?.project_umkm_foto ||
-      selectedProposal?.umkm_foto ||
-      selectedProject?.umkm_profile?.url_foto_usaha;
+    ? (acceptedApplicant?.mhs_profile?.url_foto ||
+       selectedProject?.accepted_mhs_foto ||
+       null)
+    : (selectedProposal?.project_umkm_foto ||
+       selectedProposal?.umkm_foto ||
+       selectedProject?.umkm_profile?.url_foto_usaha ||
+       null);
 
   const activePartnerRole = isUmkm ? "MHS" : "UMKM";
 

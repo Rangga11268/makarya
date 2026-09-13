@@ -161,8 +161,69 @@ export function WorkroomWorkspaceDetail({
   return (
     <div className="space-y-4">
       {/* Stage Top Bar (Project Card Summary) */}
-      <div className="bg-surface rounded-3xl border border-border p-5 sm:p-6 shadow-xs space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3.5">
+      <div className="bg-surface rounded-3xl border border-border p-4 sm:p-6 shadow-xs space-y-3.5">
+        {/* Mobile View (< sm) */}
+        <div className="sm:hidden space-y-3 border-b border-border pb-3.5">
+          <div className="flex items-center justify-between gap-2">
+            {onBack ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onBack}
+                className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl shadow-2xs shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Semua Proyek</span>
+              </Button>
+            ) : (
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
+                Proyek Aktif
+              </span>
+            )}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Escrow Aman</span>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
+              {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
+            </span>
+            <h2 className="text-base font-bold text-dark-900 leading-snug">
+              {activeProjectTitle}
+            </h2>
+          </div>
+
+          {allProjects.length > 1 && (
+            <div className="relative w-full">
+              <select
+                value={activeProjectId}
+                onChange={(e) => {
+                  const proj = allProjects.find((p) => p.id === e.target.value);
+                  if (proj && onSelectProject) onSelectProject(proj);
+                }}
+                className="w-full text-xs font-bold py-2 px-3 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+              >
+                {allProjects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.judul || p.project_judul}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {selectedProject?.deadline && isExpired(selectedProject.deadline) && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+              <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span>Lewat Tenggat ({formatDate(selectedProject.deadline)})</span>
+            </div>
+          )}
+        </div>
+
+        {/* Desktop View (>= sm) */}
+        <div className="hidden sm:flex sm:items-center justify-between gap-3 border-b border-border pb-3.5">
           <div className="flex items-center gap-3">
             {onBack && (
               <Button
@@ -175,7 +236,7 @@ export function WorkroomWorkspaceDetail({
                 <span>Semua Proyek</span>
               </Button>
             )}
-            {onBack && <div className="h-4 w-px bg-border hidden sm:block" />}
+            {onBack && <div className="h-4 w-px bg-border" />}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
@@ -208,7 +269,7 @@ export function WorkroomWorkspaceDetail({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2">
             {selectedProject?.deadline &&
               isExpired(selectedProject.deadline) && (
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
@@ -241,12 +302,12 @@ export function WorkroomWorkspaceDetail({
                 {isFocusMode ? (
                   <>
                     <Minimize2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Keluar Fokus</span>
+                    <span>Keluar Fokus</span>
                   </>
                 ) : (
                   <>
                     <Maximize2 className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Mode Fokus</span>
+                    <span>Mode Fokus</span>
                   </>
                 )}
               </button>
@@ -552,10 +613,14 @@ export function WorkroomWorkspaceDetail({
         </div>
 
         {/* Sub-Nav Segmented Tabs for the Active Workroom */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 pt-2 border-t border-border">
+        <div
+          className={`grid ${
+            isUmkm ? "grid-cols-2" : "grid-cols-3"
+          } sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 pt-2 border-t border-border`}
+        >
           <button
             onClick={() => setActiveStageTab("chat")}
-            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 sm:gap-2 transition-all ${
               activeStageTab === "chat"
                 ? "bg-brand-indigo text-white shadow-brand"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
@@ -578,7 +643,7 @@ export function WorkroomWorkspaceDetail({
 
           <button
             onClick={() => setActiveStageTab("deliverable")}
-            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               activeStageTab === "deliverable"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"
@@ -596,7 +661,7 @@ export function WorkroomWorkspaceDetail({
           {isUmkm && (
             <button
               onClick={() => setActiveStageTab("applicants")}
-              className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
                   : "bg-canvas border border-border text-muted hover:text-dark-900"
@@ -609,7 +674,7 @@ export function WorkroomWorkspaceDetail({
 
           <button
             onClick={() => setActiveStageTab("brief")}
-            className={`px-3 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`px-2.5 py-2 sm:px-3.5 sm:py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
               activeStageTab === "brief"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900"

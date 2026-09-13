@@ -33,6 +33,7 @@ import {
   ChevronRight,
   Users,
 } from "lucide-react-native";
+import { useResponsiveLayout } from "../../../hooks/useResponsiveLayout";
 
 export function WorkroomActiveView({
   project,
@@ -54,6 +55,7 @@ export function WorkroomActiveView({
   selectedSubmissionToApprove,
 }) {
   const [activeTab, setActiveTab] = useState("deliverable"); // 'deliverable' | 'brief' | 'escrow'
+  const { isLandscape, isCompact, responsiveContainerStyle } = useResponsiveLayout();
 
   const isProjectExpired =
     Boolean(project?.deadline && isExpired(project.deadline)) ||
@@ -109,11 +111,16 @@ export function WorkroomActiveView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[
+        styles.container,
+        isCompact && { paddingHorizontal: 12 },
+        isLandscape && { paddingVertical: 10 },
+      ]}
       showsVerticalScrollIndicator={false}
     >
-      {/* 1. Unified Partner & Project Hero Card (Flat, zero card-ception) */}
-      <View style={styles.heroCard}>
+      <View style={responsiveContainerStyle}>
+        {/* 1. Unified Partner & Project Hero Card (Flat, zero card-ception) */}
+        <View style={styles.heroCard}>
         {/* Top: Partner Profile & Clean Chat Shortcut */}
         <View style={styles.partnerHeaderRow}>
           <View style={styles.partnerAvatarWrap}>
@@ -515,6 +522,7 @@ export function WorkroomActiveView({
           </TouchableOpacity>
         </View>
       )}
+      </View>
     </ScrollView>
   );
 }

@@ -22,6 +22,7 @@ import {
   Sparkles,
   ShieldCheck,
 } from "lucide-react-native";
+import { useResponsiveLayout } from "../../../hooks/useResponsiveLayout";
 
 export function ApplicantReviewBoardView({
   project,
@@ -32,14 +33,20 @@ export function ApplicantReviewBoardView({
   selectedProposalToAccept,
 }) {
   const [isBriefExpanded, setIsBriefExpanded] = useState(false);
+  const { isLandscape, isCompact, responsiveContainerStyle } = useResponsiveLayout();
 
   return (
     <ScrollView
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[
+        styles.container,
+        isCompact && { paddingHorizontal: 12 },
+        isLandscape && { paddingVertical: 10 },
+      ]}
       showsVerticalScrollIndicator={false}
     >
-      {/* 1. Project Snapshot Header Card */}
-      <View style={styles.projectHeaderCard}>
+      <View style={responsiveContainerStyle}>
+        {/* 1. Project Snapshot Header Card */}
+        <View style={styles.projectHeaderCard}>
         <View style={styles.headerTopRow}>
           <View style={styles.categoryBadge}>
             <Text style={styles.categoryBadgeText}>
@@ -151,6 +158,7 @@ export function ApplicantReviewBoardView({
             />
           ))
         )}
+      </View>
       </View>
     </ScrollView>
   );

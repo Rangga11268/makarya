@@ -195,10 +195,10 @@ export function WorkroomChatPanel({
   };
 
   return (
-    <div className="flex flex-col h-[560px] bg-surface rounded-2xl border border-border overflow-hidden shadow-xs font-sans">
+    <div className="flex flex-col h-[500px] sm:h-[560px] bg-surface rounded-2xl border border-border overflow-hidden shadow-xs font-sans">
       {/* 1. Chat Header Bar */}
-      <div className="px-5 py-3.5 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="px-4 sm:px-5 py-3.5 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           {partnerPhoto ? (
             <img
               src={partnerPhoto}
@@ -219,12 +219,12 @@ export function WorkroomChatPanel({
               {(partnerName || "M").charAt(0).toUpperCase()}
             </div>
           )}
-          <div>
-            <div className="flex items-center gap-2">
-              <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate max-w-[140px] sm:max-w-xs">
                 {partnerName}
               </h4>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 shrink-0">
                 {partnerRole === "UMKM"
                   ? "Klien UMKM"
                   : "Mahasiswa Terverifikasi"}

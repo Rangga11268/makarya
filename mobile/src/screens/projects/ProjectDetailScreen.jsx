@@ -236,11 +236,40 @@ export function ProjectDetailScreen({ route, navigation }) {
     (!isUmkmOwner && isAcceptedProposal),
   );
 
+  const clientDisplayName =
+    (project?.umkm_nama && project.umkm_nama.toLowerCase() !== "string"
+      ? project.umkm_nama
+      : null) ||
+    (project?.umkm_profile?.nama_usaha &&
+    project.umkm_profile.nama_usaha.toLowerCase() !== "string"
+      ? project.umkm_profile.nama_usaha
+      : null) ||
+    (project?.umkm?.profile_umkm?.nama_usaha &&
+    project.umkm.profile_umkm.nama_usaha.toLowerCase() !== "string"
+      ? project.umkm.profile_umkm.nama_usaha
+      : null) ||
+    (project?.client_name && project.client_name.toLowerCase() !== "string"
+      ? project.client_name
+      : null) ||
+    (project?.nama_usaha && project.nama_usaha.toLowerCase() !== "string"
+      ? project.nama_usaha
+      : null) ||
+    "Klien Usaha UMKM";
+
+  const clientPhoto =
+    project?.umkm_profile?.url_foto_usaha ||
+    project?.umkm_profile?.url_foto ||
+    project?.umkm_foto ||
+    project?.project_umkm_foto ||
+    project?.umkm?.profile_umkm?.url_foto_usaha ||
+    project?.url_foto ||
+    null;
+
   const activePartnerName = isUmkmOwner
     ? project?.accepted_mhs_nama ||
       acceptedProposal?.mhs_profile?.nama_lengkap ||
       acceptedProposal?.mahasiswa_nama ||
-      null
+      "Mahasiswa Pelaksana"
     : clientDisplayName;
 
   const activePartnerPhoto = isUmkmOwner
@@ -543,28 +572,6 @@ export function ProjectDetailScreen({ route, navigation }) {
     projectStatusUpper === "BIDDING" ||
     projectStatusUpper === "TERBUKA";
 
-  const clientDisplayName =
-    (project?.umkm_nama && project.umkm_nama.toLowerCase() !== "string"
-      ? project.umkm_nama
-      : null) ||
-    (project?.umkm_profile?.nama_usaha &&
-    project.umkm_profile.nama_usaha.toLowerCase() !== "string"
-      ? project.umkm_profile.nama_usaha
-      : null) ||
-    (project?.client_name && project.client_name.toLowerCase() !== "string"
-      ? project.client_name
-      : null) ||
-    (project?.nama_usaha && project.nama_usaha.toLowerCase() !== "string"
-      ? project.nama_usaha
-      : null) ||
-    "Klien UMKM";
-
-  const clientPhoto =
-    project?.umkm_profile?.url_foto_usaha ||
-    project?.umkm_profile?.url_foto ||
-    project?.umkm_foto ||
-    project?.project_umkm_foto ||
-    project?.url_foto;
 
   const renderSubmissionNote = (note) => {
     if (!note) return null;
