@@ -96,11 +96,14 @@ export function WalletPage() {
             ...prev,
             nama_bank: res.data.nama_bank || "Bank Central Asia (BCA)",
             nomor_rekening: res.data.nomor_rekening || "8270-3491-8821",
+            nama_bank: res.data.nama_bank || "BCA",
+            nomor_rekening: res.data.nomor_rekening || "",
             nama_pemilik:
               res.data.nama_pemilik_rekening ||
               res.data.nama_lengkap ||
               res.data.nama_usaha ||
               "Darell Rangga Putra",
+              "",
           }));
         }
       })

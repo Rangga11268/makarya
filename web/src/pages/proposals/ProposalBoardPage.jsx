@@ -14,6 +14,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { SubmissionModal } from "../../components/features/SubmissionModal";
 import { RatingModal } from "../../components/features/RatingModal";
+import { DisputeTicketModal } from "../../components/features/DisputeTicketModal";
 import { RevisionModal } from "../../components/features/RevisionModal";
 import {
   ReopenProjectModal,
@@ -102,6 +103,7 @@ export function ProposalBoardPage() {
   // Modals
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
   const [selectedSubmissionForRevision, setSelectedSubmissionForRevision] =
     useState(null);
@@ -705,6 +707,8 @@ export function ProposalBoardPage() {
           onOpenReopenModal={() => setReopenModalOpen(true)}
           onOpenTerminateModal={() => setTerminateModalOpen(true)}
           onOpenResignModal={() => setResignModalOpen(true)}
+          onOpenRatingModal={() => setRatingModalOpen(true)}
+          onOpenFileDisputeModal={() => setDisputeModalOpen(true)}
         />
       )}
 
@@ -730,6 +734,29 @@ export function ProposalBoardPage() {
         isOpen={ratingModalOpen}
         onClose={() => setRatingModalOpen(false)}
         projectId={selectedProject?.id || selectedProjectId}
+        keUserId={
+          isUmkm
+            ? selectedProject?.accepted_mhs_id ||
+              projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_id
+            : selectedProposal?.umkm_id || selectedProject?.umkm_id
+        }
+        recipientName={
+          isUmkm
+            ? selectedProject?.accepted_mhs_nama ||
+              projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_nama ||
+              "Mahasiswa"
+            : selectedProposal?.umkm_nama ||
+              selectedProject?.umkm_nama ||
+              "Klien UMKM"
+        }
+        onSuccess={() => loadData()}
+      />
+
+      <DisputeTicketModal
+        isOpen={disputeModalOpen}
+        onClose={() => setDisputeModalOpen(false)}
+        projectId={selectedProject?.id || selectedProjectId}
+        projectTitle={selectedProject?.judul || selectedProposal?.project_judul}
         onSuccess={() => loadData()}
       />
 
