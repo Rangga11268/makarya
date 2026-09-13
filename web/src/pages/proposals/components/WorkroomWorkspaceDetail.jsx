@@ -113,6 +113,7 @@ import { WorkspaceProjectHUD } from "./workspace/WorkspaceProjectHUD";
 import { SmartDeliverableCard } from "./workspace/SmartDeliverableCard";
 import { AssetHandoffModal } from "./workspace/AssetHandoffModal";
 import { WorkspaceActivityTimeline } from "./workspace/WorkspaceActivityTimeline";
+import { TeamWorkspaceMatrix } from "./workspace/TeamWorkspaceMatrix";
 
 export function WorkroomWorkspaceDetail({
   onBack,
@@ -700,6 +701,21 @@ export function WorkroomWorkspaceDetail({
             >
               <Users className="w-3.5 h-3.5" />
               <span>Pelamar ({projectProposals.length})</span>
+            </button>
+          )}
+
+          {selectedProject?.tipe_kolaborasi === "TIM" && (
+            <button
+              type="button"
+              onClick={() => setActiveStageTab("team")}
+              className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                activeStageTab === "team"
+                  ? "bg-dark-900 text-white shadow-xs"
+                  : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Tim ({selectedProject?.slots?.length || 0})</span>
             </button>
           )}
 
@@ -1313,6 +1329,20 @@ export function WorkroomWorkspaceDetail({
             submissions={effectiveSubmissions}
             selectedProposal={selectedProposal}
             isUmkm={isUmkm}
+          />
+        </div>
+      )}
+
+      {/* STAGE TAB 6: MULTI-STUDENT TEAM MATRIX & ESTAFET ASET */}
+      {activeStageTab === "team" && (
+        <div className="animate-in fade-in duration-200">
+          <TeamWorkspaceMatrix
+            project={selectedProject}
+            isUmkm={isUmkm}
+            onApproveSlot={(slot) => {
+              setPendingSubmissionId(activeDeliverable?.id);
+              setHandoffModalOpen(true);
+            }}
           />
         </div>
       )}

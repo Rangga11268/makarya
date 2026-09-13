@@ -40,6 +40,7 @@ import { WorkroomProjectHUD } from "./workroom/WorkroomProjectHUD";
 import { MobileSmartDeliverableCard } from "./workroom/MobileSmartDeliverableCard";
 import { MobileAssetHandoffModal } from "./workroom/MobileAssetHandoffModal";
 import { MobileActivityTimeline } from "./workroom/MobileActivityTimeline";
+import { MobileTeamMatrix } from "./workroom/MobileTeamMatrix";
 
 export function WorkroomActiveView({
   project,
@@ -281,7 +282,12 @@ export function WorkroomActiveView({
         </View>
 
         {/* 2. Apple Segmented Workroom Navigation Switcher */}
-        <View style={styles.segmentedTabsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.segmentedTabsScroll}
+          contentContainerStyle={styles.segmentedTabsContent}
+        >
           <TouchableOpacity
             style={[
               styles.segmentedTab,
@@ -326,6 +332,30 @@ export function WorkroomActiveView({
             </Text>
           </TouchableOpacity>
 
+          {project?.tipe_kolaborasi === "TIM" && (
+            <TouchableOpacity
+              style={[
+                styles.segmentedTab,
+                activeTab === "team" && styles.segmentedTabActive,
+              ]}
+              onPress={() => setActiveTab("team")}
+              activeOpacity={0.75}
+            >
+              <Users
+                size={13}
+                color={activeTab === "team" ? "#0F172A" : "#64748B"}
+              />
+              <Text
+                style={[
+                  styles.segmentedTabText,
+                  activeTab === "team" && styles.segmentedTabTextActive,
+                ]}
+              >
+                Tim ({project?.slots?.length || 0})
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={[
               styles.segmentedTab,
@@ -369,7 +399,7 @@ export function WorkroomActiveView({
               Escrow 100%
             </Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
 
         {/* 3. TAB CONTENT (Direct Flat Layout - No Inner Nesting Cards) */}
 
@@ -614,6 +644,17 @@ export function WorkroomActiveView({
             />
           </View>
         )}
+
+        {/* TAB 5: FORMATION & TEAM COLLABORATION MATRIX */}
+        {activeTab === "team" && (
+          <View style={styles.tabContentWrap}>
+            <MobileTeamMatrix
+              project={project}
+              isUmkmOwner={isUmkmOwner}
+              onApproveSlot={handleTriggerApproveHandoff}
+            />
+          </View>
+        )}
       </View>
 
       {/* Asset Handoff Protocol Modal (Before Escrow Payout) */}
@@ -801,19 +842,23 @@ const styles = StyleSheet.create({
   },
 
   // 2. Segmented Tabs
-  segmentedTabsContainer: {
-    flexDirection: "row",
-    backgroundColor: "rgba(15, 23, 42, 0.05)",
-    padding: 3,
-    borderRadius: 13,
+  segmentedTabsScroll: {
     marginBottom: 12,
   },
+  segmentedTabsContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
+    padding: 3.5,
+    borderRadius: 14,
+    gap: 4,
+  },
   segmentedTab: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 5,
+    gap: 5.5,
+    paddingHorizontal: 12,
     paddingVertical: 7.5,
     borderRadius: 10,
   },
@@ -821,13 +866,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
     shadowRadius: 3,
     elevation: 2,
   },
   segmentedTabText: {
     fontFamily: FONTS.displaySemiBold,
-    fontSize: 11,
+    fontSize: 11.5,
     color: "#64748B",
     fontWeight: "600",
   },
