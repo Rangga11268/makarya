@@ -627,7 +627,13 @@ export function ProjectDetailScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        !isDedicatedWorkroom &&
+          !isApplicantBoardMode && { backgroundColor: "#FFFFFF" },
+      ]}
+    >
       <Header
         title={
           isDedicatedWorkroom
@@ -671,7 +677,9 @@ export function ProjectDetailScreen({ route, navigation }) {
         }
       />
 
-      <OrganicRibbonBackground height={360} />
+      {isDedicatedWorkroom || isApplicantBoardMode ? (
+        <OrganicRibbonBackground height={360} />
+      ) : null}
 
       {isDedicatedWorkroom ? (
         <WorkroomActiveView
@@ -730,7 +738,8 @@ export function ProjectDetailScreen({ route, navigation }) {
                         styles.docStatusDot,
                         {
                           backgroundColor:
-                            project.status === "OPEN" || project.status === "BIDDING"
+                            project.status === "OPEN" ||
+                            project.status === "BIDDING"
                               ? "#059669"
                               : project.status === "IN_PROGRESS"
                                 ? "#2563EB"
@@ -762,10 +771,14 @@ export function ProjectDetailScreen({ route, navigation }) {
                   )}
                   <View style={{ flex: 1 }}>
                     <View style={styles.docClientNameRow}>
-                      <Text style={styles.docClientName}>{clientDisplayName}</Text>
+                      <Text style={styles.docClientName}>
+                        {clientDisplayName}
+                      </Text>
                       <View style={styles.docVerifiedTag}>
                         <Check size={9} color="#059669" strokeWidth={3} />
-                        <Text style={styles.docVerifiedTagText}>Mitra Terverifikasi</Text>
+                        <Text style={styles.docVerifiedTagText}>
+                          Mitra Terverifikasi
+                        </Text>
                       </View>
                     </View>
                     <Text style={styles.docClientMeta}>
@@ -818,7 +831,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                 <View style={styles.docMatchRow}>
                   <Check size={12} color="#059669" strokeWidth={3} />
                   <Text style={styles.docMatchText}>
-                    <Text style={styles.docMatchBold}>{project.match_score}% Cocok</Text> dengan profil keahlian Anda
+                    <Text style={styles.docMatchBold}>
+                      {project.match_score}% Cocok
+                    </Text>{" "}
+                    dengan profil keahlian Anda
                   </Text>
                 </View>
               ) : null}
@@ -866,7 +882,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                       Alasan Pembatalan:
                     </Text>
                     <Text style={styles.cancellationReasonQuote}>
-                      "{project.cancel_reason || "Tidak ada catatan alasan tertulis."}"
+                      "
+                      {project.cancel_reason ||
+                        "Tidak ada catatan alasan tertulis."}
+                      "
                     </Text>
                   </View>
                 </View>
@@ -891,7 +910,10 @@ export function ProjectDetailScreen({ route, navigation }) {
                         const isSlotOpen = s.status === "OPEN";
                         const isSlotDone = s.status === "COMPLETED";
                         return (
-                          <View key={s.id || idx} style={styles.docTeamSlotItem}>
+                          <View
+                            key={s.id || idx}
+                            style={styles.docTeamSlotItem}
+                          >
                             <View style={styles.teamSlotItemTop}>
                               <View style={{ flex: 1, marginRight: 8 }}>
                                 <Text style={styles.teamSlotItemRole}>
@@ -1050,7 +1072,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                   </View>
                   <View style={styles.docSpecChip}>
                     <MessageSquare size={12} color="#2563EB" />
-                    <Text style={styles.docSpecChipText}>Revisi Terstruktur</Text>
+                    <Text style={styles.docSpecChipText}>
+                      Revisi Terstruktur
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -1751,7 +1775,7 @@ const styles = StyleSheet.create({
   },
   docScrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 14,
     paddingBottom: 110,
     backgroundColor: "#FFFFFF",
   },
@@ -1762,68 +1786,74 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   docCategoryChip: {
-    backgroundColor: "#EFF6FF",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
     borderRadius: 6,
   },
   docCategoryChipText: {
     fontFamily: FONTS.displayBold,
-    fontSize: 10,
-    color: "#2563EB",
-    letterSpacing: 0.3,
+    fontSize: 10.5,
+    color: "#4338CA",
+    letterSpacing: 0.4,
+    fontWeight: "700",
   },
   docStatusChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 5.5,
     backgroundColor: "#F8FAFC",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
   docStatusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 6.5,
+    height: 6.5,
+    borderRadius: 3.25,
   },
   docStatusChipText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: COLORS.textDark,
+    fontSize: 10.5,
+    color: "#1E293B",
+    fontWeight: "700",
   },
   docMainTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 20,
+    fontSize: 21,
     fontWeight: "800",
     color: "#0F172A",
-    lineHeight: 28,
-    letterSpacing: -0.3,
-    marginBottom: 14,
+    lineHeight: 29,
+    letterSpacing: -0.4,
+    marginBottom: 16,
   },
   docBylineRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   docClientAvatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   docClientAvatarPlaceholder: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#EEF2FF",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E0E7FF",
   },
   docClientNameRow: {
     flexDirection: "row",
@@ -1832,7 +1862,7 @@ const styles = StyleSheet.create({
   },
   docClientName: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "700",
     color: "#0F172A",
   },
@@ -1841,9 +1871,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 3,
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6,
+    paddingHorizontal: 6.5,
     paddingVertical: 1.5,
     borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
   docVerifiedTagText: {
     fontFamily: FONTS.bodyBold,
@@ -1853,88 +1885,106 @@ const styles = StyleSheet.create({
   },
   docClientMeta: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 11.5,
     color: "#64748B",
     marginTop: 2,
   },
   docInvoiceBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 4.5,
     backgroundColor: "#EFF6FF",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(37, 99, 235, 0.15)",
   },
   docInvoiceBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 11,
     color: "#2563EB",
+    fontWeight: "700",
   },
   docDivider: {
     height: 1,
     backgroundColor: "#F1F5F9",
-    marginVertical: 14,
+    marginVertical: 16,
   },
   docKeyMetricsRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 2,
+    paddingVertical: 4,
   },
   docMetricCol: {
     flex: 1,
   },
   docMetricDivider: {
     width: 1,
-    height: 32,
+    height: 36,
     backgroundColor: "#E2E8F0",
-    marginHorizontal: 14,
+    marginHorizontal: 16,
   },
   docMetricLabel: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: FONTS.displayBold,
     fontSize: 9.5,
     color: "#64748B",
-    letterSpacing: 0.5,
-    marginBottom: 3,
+    letterSpacing: 0.6,
+    fontWeight: "700",
+    marginBottom: 4,
   },
   docMetricValuePrimary: {
     fontFamily: FONTS.displayBold,
-    fontSize: 18,
-    color: "#2563EB",
+    fontSize: 19,
+    color: "#1E40AF",
     fontWeight: "800",
     letterSpacing: -0.3,
   },
   docMetricValueSecondary: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 12.5,
+    fontSize: 13,
     color: "#0F172A",
+    fontWeight: "700",
   },
   docMetricValueRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 5,
   },
   docEscrowTrustRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    marginTop: 10,
+    gap: 7,
+    marginTop: 12,
+    backgroundColor: "#F0FDF4",
+    paddingHorizontal: 11,
+    paddingVertical: 7.5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#DCFCE7",
   },
   docEscrowTrustText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: "#059669",
+    fontSize: 11.5,
+    color: "#15803D",
     flex: 1,
+    lineHeight: 16,
   },
   docMatchRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 7,
     marginTop: 8,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 11,
+    paddingVertical: 7.5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
   docMatchText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 11.5,
     color: "#065F46",
     flex: 1,
   },
@@ -1950,16 +2000,17 @@ const styles = StyleSheet.create({
   },
   docSectionTitle: {
     fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "800",
     color: "#0F172A",
-    marginBottom: 8,
+    marginBottom: 9,
+    letterSpacing: -0.2,
   },
   docArticleParagraph: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 13.5,
+    fontSize: 14,
     color: "#334155",
-    lineHeight: 22,
+    lineHeight: 23,
   },
   docExpandBriefBtn: {
     flexDirection: "row",
@@ -1967,12 +2018,12 @@ const styles = StyleSheet.create({
     gap: 4,
     marginTop: 8,
     alignSelf: "flex-start",
-    paddingVertical: 2,
+    paddingVertical: 5,
   },
   docExpandBriefBtnText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    fontWeight: "600",
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
     color: COLORS.brandIndigo,
   },
   docDeliverableSection: {
@@ -1982,29 +2033,31 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.displayBold,
     fontSize: 10,
     color: "#64748B",
-    letterSpacing: 0.5,
-    marginBottom: 6,
+    letterSpacing: 0.6,
+    fontWeight: "700",
+    marginBottom: 8,
   },
   docDeliverablePillsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 7,
   },
   docSpecChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 5.5,
     backgroundColor: "#F8FAFC",
-    paddingHorizontal: 9,
-    paddingVertical: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 7,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
   docSpecChipText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 11.5,
     color: "#334155",
+    fontWeight: "600",
   },
   docSubSection: {
     marginBottom: 10,
@@ -2035,25 +2088,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 10,
-    backgroundColor: "#F0FDF4",
+    backgroundColor: "#F8FAFC",
     borderRadius: 12,
-    padding: 12,
+    padding: 14,
     borderWidth: 1,
-    borderColor: "#BBF7D0",
+    borderColor: "#E2E8F0",
     marginBottom: 14,
   },
   docEscrowFooterTitle: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 12,
+    fontSize: 12.5,
     fontWeight: "700",
-    color: "#065F46",
-    marginBottom: 2,
+    color: "#0F172A",
+    marginBottom: 3,
   },
   docEscrowFooterDesc: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: "#047857",
-    lineHeight: 16,
+    fontSize: 11.5,
+    color: "#475569",
+    lineHeight: 17,
   },
   deliverablesScroll: {
     gap: 10,
@@ -2636,9 +2689,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
+    backgroundColor: "rgba(255, 255, 255, 0.97)",
     borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    borderTopColor: "rgba(226, 232, 240, 0.85)",
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: Platform.OS === "ios" ? 34 : 16,
@@ -2646,24 +2699,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 8,
   },
   stickyPriceCol: {
     flex: 1,
   },
   stickyPriceLabel: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
+    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    color: "#64748B",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    fontWeight: "700",
   },
   stickyPriceValue: {
     fontFamily: FONTS.displayBold,
-    fontSize: 17,
-    fontWeight: "700",
-    color: COLORS.brandIndigo,
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#1E40AF",
     letterSpacing: -0.3,
   },
   stickyActionCol: {
