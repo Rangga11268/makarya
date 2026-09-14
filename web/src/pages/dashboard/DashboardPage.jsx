@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { projectApi, proposalApi, walletApi, talentApi } from "../../api";
@@ -30,7 +31,9 @@ import {
   Users,
   FolderKanban,
   Star,
+  BadgeCheck,
 } from "lucide-react";
+
 
 export function DashboardPage() {
   const { user } = useAuthStore();
@@ -115,10 +118,103 @@ export function DashboardPage() {
     user?.nama_usaha ||
     (user?.email ? user.email.split("@")[0] : "Rekan");
 
+  // Metrik Ringkas Real-time Dashboard
+  const metrics = useMemo(() => {
+    if (isUmkm) {
+      const inProgress = myProjects.filter((p) => p.status === "IN_PROGRESS").length;
+      const openBidding = myProjects.filter((p) => p.status === "OPEN" || p.status === "BIDDING").length;
+      const doneCount = myProjects.filter((p) => p.status === "DONE").length;
+      const totalEscrow = wallet?.saldo_escrow || 0;
+      return [
+        {
+          label: "Proyek Sedang Berjalan",
+          value: inProgress,
+          subtext: "Dikerjakan mahasiswa aktif",
+          icon: Briefcase,
+          colorText: "text-blue-600",
+          colorBg: "bg-blue-50 border-blue-200/80",
+          link: "/proposals",
+        },
+        {
+          label: "Menunggu Pelamar",
+          value: openBidding,
+          subtext: "Proyek terbuka di katalog",
+          icon: Users,
+          colorText: "text-indigo-600",
+          colorBg: "bg-indigo-50 border-indigo-200/80",
+          link: "/proposals",
+        },
+        {
+          label: "Dana Escrow Terkunci",
+          value: `Rp ${formatCurrency(totalEscrow)}`,
+          subtext: "100% aman di penampungan",
+          icon: ShieldCheck,
+          colorText: "text-emerald-700",
+          colorBg: "bg-emerald-50 border-emerald-200/80",
+          link: "/wallet",
+        },
+        {
+          label: "Proyek Selesai & Lunas",
+          value: doneCount,
+          subtext: "Hasil disetujui & tuntas",
+          icon: CheckCircle2,
+          colorText: "text-purple-600",
+          colorBg: "bg-purple-50 border-purple-200/80",
+          link: "/proposals",
+        },
+      ];
+    } else {
+      const activeContracts = myProposals.filter((p) => p.status === "ACCEPTED").length;
+      const pendingTawaran = myProposals.filter((p) => p.status === "PENDING").length;
+      const saldoAktif = wallet?.saldo_aktif || 0;
+      const saldoEscrow = wallet?.saldo_escrow || 0;
+      return [
+        {
+          label: "Kontrak Tugas Aktif",
+          value: activeContracts,
+          subtext: "Deliverable sedang diproses",
+          icon: Briefcase,
+          colorText: "text-blue-600",
+          colorBg: "bg-blue-50 border-blue-200/80",
+          link: "/proposals",
+        },
+        {
+          label: "Proposal Terkirim",
+          value: pendingTawaran,
+          subtext: "Menunggu tinjauan klien",
+          icon: Clock,
+          colorText: "text-amber-600",
+          colorBg: "bg-amber-50 border-amber-200/80",
+          link: "/proposals",
+        },
+        {
+          label: "Saldo Dompet Aktif",
+          value: `Rp ${formatCurrency(saldoAktif)}`,
+          subtext: "Bebas ditarik ke rekening bank",
+          icon: WalletIcon,
+          colorText: "text-emerald-700",
+          colorBg: "bg-emerald-50 border-emerald-200/80",
+          link: "/wallet",
+        },
+        {
+          label: "Honor Escrow Berjalan",
+          value: `Rp ${formatCurrency(saldoEscrow)}`,
+          subtext: "Cair otomatis setelah approval",
+          icon: ShieldCheck,
+          colorText: "text-indigo-600",
+          colorBg: "bg-indigo-50 border-indigo-200/80",
+          link: "/wallet",
+        },
+      ];
+    }
+  }, [isUmkm, myProjects, myProposals, wallet]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-7 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* ========================================================================= */}
       {/* 1. FREELANCE WORKSPACE WELCOME HEADER */}
+      {/* 1. WELCOME COMMAND CENTER HEADER */}
       {/* ========================================================================= */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 bg-white border border-slate-200/80 rounded-3xl shadow-xs">
         <div className="flex items-center gap-4">
@@ -132,9 +228,31 @@ export function DashboardPage() {
             ) : (
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-slate-900 text-white text-base sm:text-lg font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform">
                 {userDisplayName.charAt(0).toUpperCase()}
+      <div className="p-5 sm:p-7 bg-white border border-slate-200/90 rounded-3xl shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-start sm:items-center gap-4">
+            <Link to="/profile" className="shrink-0 relative group">
+              {user?.url_foto ? (
+                <img
+                  src={user.url_foto}
+                  alt="Avatar"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shadow-xs border border-slate-200 group-hover:scale-105 transition-transform"
+                />
+              ) : (
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-950 text-white text-lg sm:text-xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform">
+                  {userDisplayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              {/* Subtle verified check attached to avatar */}
+              <div
+                className="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full shadow-2xs"
+                title="Akun Terverifikasi Kampus"
+              >
+                <BadgeCheck className="w-5 h-5 text-blue-600 fill-blue-500 text-white" />
               </div>
             )}
           </Link>
+            </Link>
 
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -146,6 +264,25 @@ export function DashboardPage() {
                 <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                 Terverifikasi Kampus
               </span>
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  {isUmkm ? "Mitra UMKM Kampus" : "Talenta Mahasiswa"}
+                </span>
+                <span className="text-slate-300 text-xs">•</span>
+                <span className="text-[11px] font-semibold text-slate-500">
+                  Status: Terverifikasi
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5 flex-wrap">
+                <span>Halo, {userDisplayName}</span>
+                <span className="text-lg">👋</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+                {isUmkm
+                  ? "Kelola proses rekrutmen mahasiswa bertalenta, pantau progres deliverable, dan amankan pembayaran kerja sama dengan garansi escrow 100%."
+                  : "Kelola penugasan proyek aktif, pantau status review deliverable, dan eksplorasi peluang proyek UMKM terverifikasi dengan pembayaran terjamin."}
+              </p>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
               Halo, {userDisplayName} 👋
@@ -156,7 +293,47 @@ export function DashboardPage() {
                 : "Temukan peluang proyek UMKM yang sesuai dengan keahlian dan kembangkan portofolio Anda."}
             </p>
           </div>
+
+          {/* Action Button: Non-redundant in desktop (already in navbar), shown only when helpful */}
+          <div className="flex items-center gap-2.5 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+            {isUmkm ? (
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Link to="/projects/new" className="sm:hidden flex-1">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    className="w-full text-xs font-bold shadow-brand"
+                  >
+                    <PlusCircle className="w-4 h-4 mr-1.5" />
+                    Pasang Proyek
+                  </Button>
+                </Link>
+                <Link to="/proposals" className="flex-1 sm:flex-initial">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-50"
+                  >
+                    <FolderKanban className="w-4 h-4 mr-1.5 text-slate-600" />
+                    <span>Ruang Kerja Proyek</span>
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Link to="/projects" className="w-full sm:w-auto">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="w-full text-xs font-bold shadow-brand"
+                >
+                  <Compass className="w-4 h-4 mr-1.5" />
+                  <span>Jelajahi Proyek Tersedia</span>
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
+      </div>
 
         <div className="flex items-center gap-2.5 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
           {isUmkm ? (
@@ -165,6 +342,36 @@ export function DashboardPage() {
                 <PlusCircle className="w-4 h-4 text-emerald-400" />
                 <span>Pasang Proyek Baru</span>
               </button>
+      {/* ========================================================================= */}
+      {/* 2. REAL-TIME KPI METRICS GRID */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {metrics.map((m, idx) => {
+          const Icon = m.icon;
+          return (
+            <Link
+              key={idx}
+              to={m.link}
+              className="p-4 sm:p-5 bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between gap-3 group"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold text-slate-600 group-hover:text-slate-900 transition-colors">
+                  {m.label}
+                </span>
+                <div
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center border ${m.colorBg}`}
+                >
+                  <Icon className={`w-4 h-4 ${m.colorText}`} />
+                </div>
+              </div>
+              <div>
+                <div className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight tabular-nums">
+                  {m.value}
+                </div>
+                <span className="text-[11px] text-slate-500 mt-0.5 block truncate">
+                  {m.subtext}
+                </span>
+              </div>
             </Link>
           ) : (
             <Link to="/projects">
@@ -174,11 +381,94 @@ export function DashboardPage() {
               </button>
             </Link>
           )}
+          );
+        })}
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 3. VISUAL COLLABORATION WORKFLOW STEPPER */}
+      {/* ========================================================================= */}
+      <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-50 to-indigo-50/40 border border-slate-200/80 rounded-2xl sm:rounded-3xl space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
+            <span>Alur Kerja Kolaborasi Makarya Terlindungi Escrow</span>
+          </span>
+          <span className="hidden sm:inline-block text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            Garansi 100% Aman
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+          {(isUmkm
+            ? [
+                {
+                  step: "1",
+                  title: "Pasang Kebutuhan",
+                  desc: "Tentukan deliverable & batas honor",
+                },
+                {
+                  step: "2",
+                  title: "Pilih Mahasiswa",
+                  desc: "Review portofolio pelamar",
+                },
+                {
+                  step: "3",
+                  title: "Kunci Escrow",
+                  desc: "Dana aman di penampungan",
+                },
+                {
+                  step: "4",
+                  title: "Verifikasi & Selesai",
+                  desc: "Puas hasil kerja, honor dicairkan",
+                },
+              ]
+            : [
+                {
+                  step: "1",
+                  title: "Lengkapi Portofolio",
+                  desc: "Pamerkan karya terbaik Anda",
+                },
+                {
+                  step: "2",
+                  title: "Lamar Proyek",
+                  desc: "Ajukan tawaran proposal terukur",
+                },
+                {
+                  step: "3",
+                  title: "Kerjakan Tugas",
+                  desc: "Upload deliverable tepat waktu",
+                },
+                {
+                  step: "4",
+                  title: "Terima Honor",
+                  desc: "Dana escrow masuk ke saldo aktif",
+                },
+              ]
+          ).map((item, i) => (
+            <div
+              key={i}
+              className="p-3 bg-white/90 border border-slate-200/70 rounded-xl space-y-1 shadow-2xs"
+            >
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-slate-900 text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                  {item.step}
+                </span>
+                <span className="text-xs font-bold text-slate-900 truncate">
+                  {item.title}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 pl-7 line-clamp-1">
+                {item.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* ========================================================================= */}
       {/* 2. ACTIVE CONTRACT WORKROOM BANNER (If Mahasiswa has an ongoing project) */}
+      {/* 4. ACTIVE CONTRACT WORKROOM BANNER (If Mahasiswa has an ongoing project) */}
       {/* ========================================================================= */}
       {!isUmkm && activeJob && (
         <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl shadow-sm border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -201,12 +491,20 @@ export function DashboardPage() {
 
           <Link to={`/proposals/${activeJob.project_id}`} className="shrink-0">
             <button className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer">
+            <Button
+              variant="brand"
+              size="sm"
+              className="text-xs font-bold shadow-sm"
+            >
               <span>Buka Ruang Kerja & Obrolan</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            </Button>
           </Link>
         </div>
       )}
+
 
       {/* ========================================================================= */}
       {/* 3. MAIN WORKSPACE TWO-COLUMN GRID */}
@@ -305,10 +603,17 @@ export function DashboardPage() {
 
                           <Link to={`/projects/${p.id}`}>
                             <button className="px-3 py-1.5 rounded-full bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 text-[11px] font-bold transition-colors cursor-pointer">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-[11px] font-bold border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white"
+                            >
                               Lamar Proyek
                             </button>
+                            </Button>
                           </Link>
                         </div>
+
                       </div>
                     );
                   })}
@@ -388,8 +693,14 @@ export function DashboardPage() {
                       <div className="pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex items-center justify-end shrink-0">
                         <Link to="/proposals">
                           <button className="px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-900 hover:text-white border border-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white"
+                          >
                             Kelola Pelamar →
                           </button>
+                          </Button>
                         </Link>
                       </div>
                     </div>
@@ -515,8 +826,14 @@ export function DashboardPage() {
 
             <Link to="/wallet" className="block">
               <button className="w-full py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors cursor-pointer">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-50"
+              >
                 {isUmkm ? "Isi Saldo / Top Up" : "Pencairan Honor Bank"}
               </button>
+              </Button>
             </Link>
           </div>
 
@@ -544,8 +861,14 @@ export function DashboardPage() {
 
               <Link to="/portfolio" className="block">
                 <button className="w-full py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all cursor-pointer">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="w-full text-xs font-bold shadow-brand"
+                >
                   Kelola Portofolio Karya
                 </button>
+                </Button>
               </Link>
             </div>
           ) : (
@@ -572,11 +895,18 @@ export function DashboardPage() {
 
               <Link to="/talents" className="block">
                 <button className="w-full py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-colors cursor-pointer">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-50"
+                >
                   Cari Mahasiswa Sesuai Kategori
                 </button>
+                </Button>
               </Link>
             </div>
           )}
+
 
           {/* Card 3: Quick Guidelines & Escrow Rules */}
           <div className="p-4 bg-slate-50/60 border border-slate-200/60 rounded-2xl space-y-2 text-[11px] text-slate-500">
