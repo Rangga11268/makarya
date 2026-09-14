@@ -75,6 +75,7 @@ export const chatApi = {
 export const talentApi = {
   getTalents: (params) => api.get("/talents", { params }),
   getTalentDetail: (id) => api.get(`/talents/${id}`),
+  inviteTalent: (id, data) => api.post(`/talents/${id}/invite`, data),
 };
 
 export const notificationApi = {

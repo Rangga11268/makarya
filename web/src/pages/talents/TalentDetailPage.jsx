@@ -33,6 +33,9 @@ import {
   Share2,
   Calendar,
   Layers,
+  Send,
+  Copy,
+  Check,
   RotateCcw,
 } from "lucide-react";
 
@@ -101,15 +104,62 @@ export function TalentDetailPage() {
 
   // Handle Action: Open Workspace Chat
   const handleOpenProjectChat = () => {
+  const [inviting, setInviting] = useState(false);
+  const [copiedProject, setCopiedProject] = useState(false);
+
+  const selectedProject = myProjects.find((p) => p.id === selectedProjectId);
+
+  // Handle Action: Send Official Collaboration Invitation
+  const handleSendInvitation = async () => {
     if (!selectedProjectId) {
       addToast({
         type: "warning",
         title: "Pilih Proyek",
         message: "Silakan pilih salah satu proyek aktif Anda untuk membuka diskusi.",
+        message:
+          "Silakan pilih salah satu proyek aktif Anda untuk mengundang talenta ini.",
       });
       return;
     }
     navigate(`/proposals/${selectedProjectId}?tab=chat`);
+    try {
+      setInviting(true);
+      const res = await talentApi.inviteTalent(talent.id, {
+        project_id: selectedProjectId,
+      });
+      addToast({
+        type: "success",
+        title: "Undangan Kolaborasi Terkirim!",
+        message:
+          res?.data?.message ||
+          `Tawaran kolaborasi resmi berhasil dikirimkan ke akun ${talent.nama_lengkap}.`,
+      });
+    } catch (err) {
+      const msg =
+        err?.response?.data?.detail || "Gagal mengirimkan undangan kolaborasi.";
+      addToast({
+        type: "error",
+        title: "Gagal Mengirim Undangan",
+        message: msg,
+      });
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  // Salin tautan proyek untuk dibagikan ke mahasiswa
+  const handleCopyProjectLink = () => {
+    if (!selectedProjectId) return;
+    const url = `${window.location.origin}/projects/${selectedProjectId}`;
+    navigator.clipboard.writeText(url);
+    setCopiedProject(true);
+    addToast({
+      type: "success",
+      title: "Tautan Proyek Disalin",
+      message:
+        "Tautan rincian proyek berhasil disalin untuk dibagikan ke talenta.",
+    });
+    setTimeout(() => setCopiedProject(false), 2000);
   };
 
   // Copy Profile Link
@@ -551,6 +601,45 @@ export function TalentDetailPage() {
                       <MessageSquare className="w-3.5 h-3.5 mr-1.5 shrink-0" />
                       Mulai Diskusi di Ruang Kerja
                     </Button>
+                    <div className="pt-2 space-y-2">
+                      <Button
+                        variant="brand"
+                        size="sm"
+                        loading={inviting}
+                        onClick={handleSendInvitation}
+                        className="w-full font-bold text-xs shadow-brand py-2.5 cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Send className="w-3.5 h-3.5 shrink-0" />
+                        <span>Kirim Undangan Kolaborasi Resmi</span>
+                      </Button>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={handleCopyProjectLink}
+                          className="py-2 px-2.5 rounded-xl border border-border bg-canvas hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                          title="Salin tautan proyek untuk dibagikan ke mahasiswa"
+                        >
+                          {copiedProject ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5 text-slate-500" />
+                          )}
+                          <span>{copiedProject ? "Tersalin!" : "Salin Link"}</span>
+                        </button>
+
+                        <Link
+                          to={`/projects/${selectedProjectId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="py-2 px-2.5 rounded-xl border border-border bg-canvas hover:bg-slate-100 text-xs font-semibold text-slate-700 flex items-center justify-center gap-1.5 transition-colors"
+                          title="Lihat rincian halaman proyek"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                          <span>Rincian Proyek</span>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 text-center">
@@ -582,6 +671,7 @@ export function TalentDetailPage() {
                     </div>
                     <a
                       href={`mailto:${talent.email}?subject=Tawaran%20Kolaborasi%20Proyek%20Makarya`}
+                      href={`mailto:${talent.email}?subject=Tawaran%20Kolaborasi%20Proyek%20Makarya%20-%20${encodeURIComponent(selectedProject?.judul || "Peluang Kerja Sama")}&body=Halo%20${encodeURIComponent(talent.nama_lengkap)},%0D%0A%0D%0AKami%20dari%20UMKM%20tertarik%20mengajak%20Anda%20berkolaborasi%20untuk%20proyek%20%22${encodeURIComponent(selectedProject?.judul || "")}%22.%0D%0A%0D%0ASilakan%20buka%20rincian%20proyek%20kami%20di%20platform%20Makarya.`}
                       className="px-2.5 py-1 text-xs font-bold text-brand-indigo hover:underline shrink-0"
                     >
                       Kirim Email

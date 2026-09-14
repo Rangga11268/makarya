@@ -5,13 +5,16 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
+from pydantic import BaseModel
 from app.core.database import get_db
+from app.dependencies import require_role
 from app.models.user import User, UserRole
 from app.models.profile import ProfileMhs, ProfileUmkm
 from app.models.master import MasterProdi
 from app.models.rating import Rating
 from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
+from app.models.notification import Notification, NotificationType
 from app.schemas.talent import TalentResponse, TalentReview
 
 router = APIRouter(prefix="/talents", tags=["Talents & Directory"])
@@ -238,3 +241,72 @@ def get_talent_detail(user_id: UUID, db: Session = Depends(get_db)):
         )
 
     return _format_talent(mhs, db)
+
+
+class TalentInviteRequest(BaseModel):
+    project_id: UUID
+    catatan: Optional[str] = None
+
+
+@router.post("/{user_id}/invite", status_code=status.HTTP_200_OK)
+def invite_talent_to_project(
+    user_id: UUID,
+    req: TalentInviteRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.UMKM)),
+):
+    """
+    Mengirimkan undangan kolaborasi resmi dari Klien UMKM ke talenta mahasiswa untuk proyek tertentu.
+    Notifikasi resmi akan masuk ke akun mahasiswa dengan tautan langsung ke rincian proyek.
+    """
+    mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == user_id).first()
+    if not mhs:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Talenta mahasiswa tidak ditemukan.",
+        )
+
+    project = db.query(Project).filter(Project.id == req.project_id).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Proyek tidak ditemukan.",
+        )
+
+    if project.umkm_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda hanya dapat mengundang mahasiswa ke proyek milik Anda sendiri.",
+        )
+
+    umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
+    umkm_nama = (
+        umkm_profile.nama_usaha.strip()
+        if umkm_profile and umkm_profile.nama_usaha and umkm_profile.nama_usaha.lower() != "string"
+        else "Klien UMKM"
+    )
+
+    pesan_notif = (
+        f"UMKM {umkm_nama} mengundang Anda untuk berkolaborasi pada proyek '{project.judul}'. "
+        f"Silakan periksa brief proyek dan kirimkan proposal pengerjaan Anda."
+    )
+    if req.catatan and req.catatan.strip():
+        pesan_notif += f" Catatan klien: \"{req.catatan.strip()}\""
+
+    notif = Notification(
+        user_id=user_id,
+        judul=f"Tawaran Kolaborasi dari {umkm_nama}",
+        pesan=pesan_notif,
+        tipe=NotificationType.SYSTEM,
+        url_referensi=f"/projects/{project.id}",
+    )
+    db.add(notif)
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Undangan kolaborasi berhasil dikirimkan ke {mhs.nama_lengkap}.",
+        "project_id": str(project.id),
+        "talent_id": str(user_id),
+    }
+

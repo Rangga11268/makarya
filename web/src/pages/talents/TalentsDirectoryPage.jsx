@@ -601,6 +601,16 @@ export function TalentsDirectoryPage() {
                     <MessageSquare className="w-3.5 h-3.5 shrink-0" />
                     <span>Ajak Kolaborasi</span>
                   </Button>
+                  <Link to={`/talents/${talent.id}`} className="flex-1">
+                    <Button
+                      variant="brand"
+                      size="sm"
+                      className="w-full font-bold text-xs shadow-brand rounded-xl py-2 px-3 min-h-[38px] cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                      <span>Ajak Kolaborasi</span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
             );
