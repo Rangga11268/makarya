@@ -90,11 +90,11 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="relative p-1.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-slate-600 flex items-center justify-center cursor-pointer"
+        className="relative p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all text-slate-600 flex items-center justify-center cursor-pointer"
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border border-white rounded-full animate-pulse" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
         )}
       </button>
 

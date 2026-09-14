@@ -29,7 +29,7 @@ export function WorkspaceActivityTimeline({
     events.push({
       id: "kickoff",
       title: "Kontrak Resmi Dimulai & Escrow Diamankan",
-      description: `Klien mendanai saldo garansi escrow sebesar Rp ${formatCurrency(project.budget_max || 0)} ke rekening bersama Makarya.`,
+      description: `Klien mendanai saldo garansi escrow sebesar ${formatCurrency(project.budget_max || 0)} ke rekening bersama Makarya.`,
       date: project.created_at,
       icon: ShieldCheck,
       iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
@@ -93,7 +93,7 @@ export function WorkspaceActivityTimeline({
       events.push({
         id: `appr-${sub.id || idx}`,
         title: "Pekerjaan Disetujui & Honor Escrow Dicairkan",
-        description: `Seluruh deliverable telah diverifikasi. Dana garansi escrow Rp ${formatCurrency(project.budget_max || 0)} diteruskan ke dompet mahasiswa.`,
+        description: `Seluruh deliverable telah diverifikasi. Dana garansi escrow ${formatCurrency(project.budget_max || 0)} diteruskan ke dompet mahasiswa.`,
         date: sub.updated_at || sub.created_at,
         icon: CheckCircle2,
         iconBg: "bg-emerald-600 text-white border-emerald-600",

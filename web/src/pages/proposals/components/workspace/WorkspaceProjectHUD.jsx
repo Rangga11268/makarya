@@ -169,15 +169,15 @@ export function WorkspaceProjectHUD({
 
             return (
               <>
-                <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   <span>
-                    {escrowStatusLabel}: Rp {formatCurrency(escrowAmount)}
+                    {escrowStatusLabel}: {formatCurrency(escrowAmount)}
                   </span>
                 </div>
                 {autoApproveRemainingText && (
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold animate-pulse"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold animate-pulse"
                     title="Dana escrow otomatis dicairkan ke mahasiswa jika klien UMKM tidak mereview dalam 7 hari"
                   >
                     <Clock className="w-3 h-3 text-blue-600" />

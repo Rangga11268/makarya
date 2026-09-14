@@ -141,7 +141,7 @@ export function DashboardPage() {
         },
         {
           label: "Dana Escrow Terkunci",
-          value: `Rp ${formatCurrency(wallet?.saldo_escrow || 0)}`,
+          value: formatCurrency(wallet?.saldo_escrow || 0),
           subtext: "100% aman di penampungan",
           icon: ShieldCheck,
           colorText: "text-emerald-700",
@@ -179,7 +179,7 @@ export function DashboardPage() {
         },
         {
           label: "Saldo Dompet Aktif",
-          value: `Rp ${formatCurrency(wallet?.saldo_aktif || 0)}`,
+          value: formatCurrency(wallet?.saldo_aktif || 0),
           subtext: "Bebas ditarik ke rekening bank",
           icon: WalletIcon,
           colorText: "text-emerald-700",
@@ -188,7 +188,7 @@ export function DashboardPage() {
         },
         {
           label: "Honor Escrow Berjalan",
-          value: `Rp ${formatCurrency(wallet?.saldo_escrow || 0)}`,
+          value: formatCurrency(wallet?.saldo_escrow || 0),
           subtext: "Cair otomatis setelah approval",
           icon: ShieldCheck,
           colorText: "text-indigo-600",
@@ -740,7 +740,7 @@ export function DashboardPage() {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-500">Saldo Aktif</span>
                 <span className="text-sm font-bold text-slate-900 tabular-nums">
-                  Rp {formatCurrency(wallet?.saldo_aktif || 0)}
+                  {formatCurrency(wallet?.saldo_aktif || 0)}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
@@ -748,7 +748,7 @@ export function DashboardPage() {
                   Saldo Terproteksi Escrow
                 </span>
                 <span className="text-xs font-bold text-emerald-700 tabular-nums">
-                  Rp {formatCurrency(wallet?.saldo_escrow || 0)}
+                  {formatCurrency(wallet?.saldo_escrow || 0)}
                 </span>
               </div>
             </div>

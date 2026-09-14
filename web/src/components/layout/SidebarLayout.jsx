@@ -21,6 +21,7 @@ import {
   Building2,
 } from "lucide-react";
 import { cn } from "../../utils/cn";
+import { Button } from "../ui/Button";
 import { NotificationBell } from "../features/NotificationBell";
 
 export function SidebarLayout() {
@@ -187,7 +188,7 @@ export function SidebarLayout() {
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-16 flex items-center justify-between gap-4">
-            {/* Left: Brand Identity & Escrow Guarantee Pill */}
+            {/* Left: Brand Identity */}
             <div className="flex items-center gap-3.5 shrink-0">
               <Link
                 to="/dashboard"
@@ -200,15 +201,10 @@ export function SidebarLayout() {
                   className="h-7 w-auto object-contain transition-transform group-hover:scale-105"
                 />
               </Link>
-
-              <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50/80 border border-emerald-200/70 text-[11px] font-bold text-emerald-700 select-none">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>100% Proteksi Escrow</span>
-              </div>
             </div>
 
-            {/* Center: The 3 Core Nav Pills (Clean, Spacious, Never Overcrowded) */}
-            <nav className="hidden md:flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-full border border-slate-200/70">
+            {/* Center: The 3 Core Nav Tabs (Clean, Modern, Non-pill) */}
+            <nav className="hidden md:flex items-center gap-1 bg-slate-100/70 p-1 rounded-xl border border-slate-200/60">
               {coreNavLinks.map((tab) => {
                 const active = isTabActive(tab.path);
                 const Icon = tab.icon;
@@ -217,16 +213,16 @@ export function SidebarLayout() {
                     key={tab.path}
                     to={tab.path}
                     className={cn(
-                      "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all select-none",
+                      "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all select-none",
                       active
-                        ? "bg-slate-900 text-white shadow-xs font-bold"
-                        : "text-slate-600 hover:text-slate-950 hover:bg-white/80",
+                        ? "bg-white text-slate-900 shadow-2xs font-bold"
+                        : "text-slate-600 hover:text-slate-950 hover:bg-white/60",
                     )}
                   >
                     <Icon
                       className={cn(
                         "w-3.5 h-3.5",
-                        active ? "text-white" : "text-slate-500",
+                        active ? "text-brand-indigo" : "text-slate-400",
                       )}
                     />
                     <span>{tab.label}</span>
@@ -240,23 +236,27 @@ export function SidebarLayout() {
               {/* UMKM Primary Action */}
               {isUmkm && (
                 <Link to="/projects/new" className="hidden sm:inline-flex">
-                  <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all cursor-pointer">
-                    <PlusCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    className="text-xs font-bold rounded-xl shadow-brand"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5 mr-1" />
                     <span>Pasang Proyek</span>
-                  </button>
+                  </Button>
                 </Link>
               )}
 
-              {/* Quick Escrow / Wallet Pill (Clean on mobile, desktop/tablet only since mobile has it in bottom dock) */}
+              {/* Quick Wallet Link */}
               {!isAdmin && (
                 <Link
                   to="/wallet"
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200/80 text-xs font-bold text-slate-800 transition-colors select-none group"
+                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800 transition-colors select-none group"
                   title="Lihat Rincian Dompet & Escrow"
                 >
-                  <WalletIcon className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                  <WalletIcon className="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-indigo transition-colors" />
                   <span className="tabular-nums">
-                    Rp {formatCurrency(wallet?.saldo_aktif || 0)}
+                    {formatCurrency(wallet?.saldo_aktif || 0)}
                   </span>
                 </Link>
               )}
@@ -500,7 +500,7 @@ export function SidebarLayout() {
                       Saldo Dompet & Escrow
                     </p>
                     <p className="text-sm font-black tabular-nums text-slate-900">
-                      Rp {formatCurrency(wallet?.saldo_aktif || 0)}
+                      {formatCurrency(wallet?.saldo_aktif || 0)}
                     </p>
                   </div>
                 </div>

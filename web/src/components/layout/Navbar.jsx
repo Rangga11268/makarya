@@ -434,7 +434,7 @@ export function Navbar() {
                     <Button
                       variant="brand"
                       size="sm"
-                      className="hidden sm:inline-flex text-xs font-bold py-1.5 px-3.5 rounded-full shadow-sm"
+                      className="hidden sm:inline-flex text-xs font-bold py-1.5 px-3.5 rounded-xl shadow-brand"
                     >
                       <PlusCircle className="w-3.5 h-3.5 mr-1" />
                       Pasang Proyek

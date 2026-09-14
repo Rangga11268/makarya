@@ -89,7 +89,7 @@ export function AssetHandoffModal({
                 Total Honor Escrow yang Dicairkan:
               </span>
               <span className="text-base font-extrabold text-emerald-700">
-                Rp {formatCurrency(budgetAmount)}
+                {formatCurrency(budgetAmount)}
               </span>
             </div>
           </div>

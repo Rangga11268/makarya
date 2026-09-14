@@ -228,7 +228,7 @@ export function TeamWorkspaceMatrix({
                     </span>
 
                     <span className="text-xs font-extrabold text-slate-900">
-                      Rp {formatCurrency(slot.alokasi_budget)}
+                      {formatCurrency(slot.alokasi_budget)}
                     </span>
                   </div>
 

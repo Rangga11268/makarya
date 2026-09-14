@@ -124,7 +124,7 @@ export function WalletPage() {
             setTopUpModalOpen(false);
             showSuccess(
               "Top-Up Berhasil Diproses",
-              `Deposit saldo Rp ${formatCurrency(nominal)} berhasil masuk.`,
+              `Deposit saldo ${formatCurrency(nominal)} berhasil masuk.`,
             );
             fetchWalletData();
           },
