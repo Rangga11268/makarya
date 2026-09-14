@@ -61,7 +61,11 @@ export function SidebarLayout() {
   // Click outside to close dropdown
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !event.target.closest("#mobile-profile-sheet")
+      ) {
         setDropdownOpen(false);
       }
     }
@@ -286,266 +290,92 @@ export function SidebarLayout() {
                   />
                 </button>
 
-                {/* Dropdown Card / Mobile Bottom Sheet */}
+                {/* Desktop Dropdown Card (>= 640px) */}
                 {dropdownOpen && (
-                  <>
-                    {/* Mobile Backdrop Overlay */}
-                    <div
-                      className="sm:hidden fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs animate-in fade-in duration-200"
-                      onClick={() => setDropdownOpen(false)}
-                    />
-
-                    {/* A. Mobile Action Sheet Drawer (< 640px) */}
-                    <div className="sm:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl border-t border-slate-200 shadow-2xl p-5 pb-8 space-y-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200 font-sans">
-                      {/* Drag Handle Indicator */}
-                      <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto" />
-
-                      {/* Header: User Info */}
-                      <div className="flex items-center gap-3.5 pb-3 border-b border-slate-100">
-                        {user?.url_foto ? (
-                          <img
-                            src={user.url_foto}
-                            alt={userDisplayName}
-                            className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0"
-                          />
+                  <div className="hidden sm:block absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans">
+                    {/* Header: User Info */}
+                    <div className="px-4 py-2.5 border-b border-slate-100">
+                      <p className="text-xs font-bold text-slate-900 truncate">
+                        {userDisplayName}
+                      </p>
+                      <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                        {user?.email}
+                      </p>
+                      <div className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700">
+                        {isUmkm ? (
+                          <Building2 className="w-3 h-3 text-amber-600" />
                         ) : (
-                          <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white text-base font-bold flex items-center justify-center shadow-xs shrink-0">
-                            {userInitial}
-                          </div>
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                         )}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold text-slate-900 truncate">
-                            {userDisplayName}
-                          </p>
-                          <p className="text-xs text-slate-400 truncate">
-                            {user?.email}
-                          </p>
-                          <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700">
-                            {isUmkm ? (
-                              <Building2 className="w-3 h-3 text-amber-600" />
-                            ) : (
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            )}
-                            <span>{roleBadgeLabel}</span>
-                          </div>
-                        </div>
+                        <span>{roleBadgeLabel}</span>
                       </div>
+                    </div>
 
-                      {/* Quick Escrow / Wallet Card */}
+                    {/* Navigation Options */}
+                    <div className="py-1.5 px-1.5 space-y-0.5">
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-slate-400" />
+                        <span>Beranda Kerja</span>
+                      </Link>
+
+                      <Link
+                        to="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                      >
+                        <User className="w-4 h-4 text-slate-400" />
+                        <span>Profil & Pengaturan Akun</span>
+                      </Link>
+
                       {!isAdmin && (
                         <Link
                           to="/wallet"
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 text-emerald-900 active:scale-[0.99] transition-all"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                         >
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                              <WalletIcon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-                                Saldo Dompet & Escrow
-                              </p>
-                              <p className="text-sm font-black tabular-nums text-slate-900">
-                                Rp {formatCurrency(wallet?.saldo_aktif || 0)}
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-2xs border border-emerald-200">
-                            Rincian →
-                          </span>
+                          <WalletIcon className="w-4 h-4 text-emerald-600" />
+                          <span>Dompet & Rekening Escrow</span>
                         </Link>
                       )}
 
-                      {/* Nav Links */}
-                      <div className="space-y-1">
+                      {isMahasiswa && (
                         <Link
-                          to="/dashboard"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                        >
-                          <LayoutDashboard className="w-4 h-4 text-slate-500" />
-                          <span>Beranda Kerja</span>
-                        </Link>
-
-                        <Link
-                          to="/profile"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                        >
-                          <User className="w-4 h-4 text-slate-500" />
-                          <span>Profil & Pengaturan Akun</span>
-                        </Link>
-
-                        {!isAdmin && (
-                          <Link
-                            to="/wallet"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                          >
-                            <WalletIcon className="w-4 h-4 text-emerald-600" />
-                            <span>Dompet & Rekening Escrow</span>
-                          </Link>
-                        )}
-
-                        {isMahasiswa && (
-                          <>
-                            <Link
-                              to="/portfolio"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                            >
-                              <Award className="w-4 h-4 text-brand-indigo" />
-                              <span>Portofolio Karya Saya</span>
-                            </Link>
-                            <Link
-                              to="/projects"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                            >
-                              <Compass className="w-4 h-4 text-slate-500" />
-                              <span>Jelajah Katalog Proyek</span>
-                            </Link>
-                          </>
-                        )}
-
-                        {isUmkm && (
-                          <>
-                            <Link
-                              to="/projects/new"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-emerald-700 bg-emerald-50/50 hover:bg-emerald-50 active:bg-emerald-100 transition-colors"
-                            >
-                              <PlusCircle className="w-4 h-4 text-emerald-600" />
-                              <span>Pasang Proyek Baru</span>
-                            </Link>
-                            <Link
-                              to="/talents"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                            >
-                              <GraduationCap className="w-4 h-4 text-slate-500" />
-                              <span>Cari Talenta Mahasiswa</span>
-                            </Link>
-                          </>
-                        )}
-
-                        {isAdmin && (
-                          <Link
-                            to="/admin/disputes"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                          >
-                            <ShieldAlert className="w-4 h-4 text-slate-500" />
-                            <span>Pusat Sengketa & Escrow</span>
-                          </Link>
-                        )}
-                      </div>
-
-                      {/* Footer Actions */}
-                      <div className="pt-2 border-t border-slate-100 flex gap-2">
-                        <button
-                          onClick={handleLogout}
-                          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 active:bg-rose-200 transition-colors cursor-pointer"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Keluar dari Akun</span>
-                        </button>
-                        <button
-                          onClick={() => setDropdownOpen(false)}
-                          className="py-2.5 px-4 rounded-2xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors cursor-pointer"
-                        >
-                          Tutup
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* B. Desktop Dropdown Card (>= 640px) */}
-                    <div className="hidden sm:block absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans">
-                      {/* Header: User Info */}
-                      <div className="px-4 py-2.5 border-b border-slate-100">
-                        <p className="text-xs font-bold text-slate-900 truncate">
-                          {userDisplayName}
-                        </p>
-                        <p className="text-[11px] text-slate-400 truncate mt-0.5">
-                          {user?.email}
-                        </p>
-                        <div className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700">
-                          {isUmkm ? (
-                            <Building2 className="w-3 h-3 text-amber-600" />
-                          ) : (
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          )}
-                          <span>{roleBadgeLabel}</span>
-                        </div>
-                      </div>
-
-                      {/* Navigation Options */}
-                      <div className="py-1.5 px-1.5 space-y-0.5">
-                        <Link
-                          to="/dashboard"
+                          to="/portfolio"
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                         >
-                          <LayoutDashboard className="w-4 h-4 text-slate-400" />
-                          <span>Beranda Kerja</span>
+                          <Award className="w-4 h-4 text-brand-indigo" />
+                          <span>Portofolio Karya Saya</span>
                         </Link>
+                      )}
 
+                      {isUmkm && (
                         <Link
-                          to="/profile"
+                          to="/projects/new"
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                         >
-                          <User className="w-4 h-4 text-slate-400" />
-                          <span>Profil & Pengaturan Akun</span>
+                          <PlusCircle className="w-4 h-4 text-emerald-600" />
+                          <span>Pasang Proyek Baru</span>
                         </Link>
-
-                        {!isAdmin && (
-                          <Link
-                            to="/wallet"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                          >
-                            <WalletIcon className="w-4 h-4 text-emerald-600" />
-                            <span>Dompet & Rekening Escrow</span>
-                          </Link>
-                        )}
-
-                        {isMahasiswa && (
-                          <Link
-                            to="/portfolio"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                          >
-                            <Award className="w-4 h-4 text-brand-indigo" />
-                            <span>Portofolio Karya Saya</span>
-                          </Link>
-                        )}
-
-                        {isUmkm && (
-                          <Link
-                            to="/projects/new"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                          >
-                            <PlusCircle className="w-4 h-4 text-emerald-600" />
-                            <span>Pasang Proyek Baru</span>
-                          </Link>
-                        )}
-                      </div>
-
-                      {/* Divider & Logout */}
-                      <div className="border-t border-slate-100 pt-1.5 px-1.5 mt-1">
-                        <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left"
-                        >
-                          <LogOut className="w-4 h-4 text-rose-500" />
-                          <span>Keluar dari Akun</span>
-                        </button>
-                      </div>
+                      )}
                     </div>
-                  </>
+
+                    {/* Divider & Logout */}
+                    <div className="border-t border-slate-100 pt-1.5 px-1.5 mt-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left"
+                      >
+                        <LogOut className="w-4 h-4 text-rose-500" />
+                        <span>Keluar dari Akun</span>
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -604,7 +434,189 @@ export function SidebarLayout() {
       </nav>
 
       {/* ========================================================================= */}
-      {/* 4. MINIMAL DESKTOP FOOTER */}
+      {/* 4. MOBILE PROFILE ACTION SHEET DRAWER (< 640px) */}
+      {/* (Rendered outside <header> so backdrop-blur does not distort fixed viewport) */}
+      {/* ========================================================================= */}
+      {dropdownOpen && (
+        <div id="mobile-profile-sheet" className="sm:hidden">
+          {/* Mobile Backdrop Overlay */}
+          <div
+            className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200"
+            onClick={() => setDropdownOpen(false)}
+          />
+
+          {/* Sheet Container */}
+          <div
+            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl border-t border-slate-200 shadow-2xl p-5 space-y-4 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200 font-sans"
+            style={{
+              paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 1.5rem))",
+            }}
+          >
+            {/* Drag Handle Indicator */}
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto" />
+
+            {/* Header: User Info */}
+            <div className="flex items-center gap-3.5 pb-3 border-b border-slate-100">
+              {user?.url_foto ? (
+                <img
+                  src={user.url_foto}
+                  alt={userDisplayName}
+                  className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white text-base font-bold flex items-center justify-center shadow-xs shrink-0">
+                  {userInitial}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-slate-900 truncate">
+                  {userDisplayName}
+                </p>
+                <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-700">
+                  {isUmkm ? (
+                    <Building2 className="w-3 h-3 text-amber-600" />
+                  ) : (
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  )}
+                  <span>{roleBadgeLabel}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Escrow / Wallet Card */}
+            {!isAdmin && (
+              <Link
+                to="/wallet"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/70 text-emerald-900 active:scale-[0.99] transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <WalletIcon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                      Saldo Dompet & Escrow
+                    </p>
+                    <p className="text-sm font-black tabular-nums text-slate-900">
+                      Rp {formatCurrency(wallet?.saldo_aktif || 0)}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-2xs border border-emerald-200">
+                  Rincian →
+                </span>
+              </Link>
+            )}
+
+            {/* Nav Links */}
+            <div className="space-y-1">
+              <Link
+                to="/dashboard"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4 text-slate-500" />
+                <span>Beranda Kerja</span>
+              </Link>
+
+              <Link
+                to="/profile"
+                onClick={() => setDropdownOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+              >
+                <User className="w-4 h-4 text-slate-500" />
+                <span>Profil & Pengaturan Akun</span>
+              </Link>
+
+              {!isAdmin && (
+                <Link
+                  to="/wallet"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                >
+                  <WalletIcon className="w-4 h-4 text-emerald-600" />
+                  <span>Dompet & Rekening Escrow</span>
+                </Link>
+              )}
+
+              {isMahasiswa && (
+                <>
+                  <Link
+                    to="/portfolio"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                  >
+                    <Award className="w-4 h-4 text-brand-indigo" />
+                    <span>Portofolio Karya Saya</span>
+                  </Link>
+                  <Link
+                    to="/projects"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                  >
+                    <Compass className="w-4 h-4 text-slate-500" />
+                    <span>Jelajah Katalog Proyek</span>
+                  </Link>
+                </>
+              )}
+
+              {isUmkm && (
+                <>
+                  <Link
+                    to="/projects/new"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-emerald-700 bg-emerald-50/50 hover:bg-emerald-50 active:bg-emerald-100 transition-colors"
+                  >
+                    <PlusCircle className="w-4 h-4 text-emerald-600" />
+                    <span>Pasang Proyek Baru</span>
+                  </Link>
+                  <Link
+                    to="/talents"
+                    onClick={() => setDropdownOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                  >
+                    <GraduationCap className="w-4 h-4 text-slate-500" />
+                    <span>Cari Talenta Mahasiswa</span>
+                  </Link>
+                </>
+              )}
+
+              {isAdmin && (
+                <Link
+                  to="/admin/disputes"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                >
+                  <ShieldAlert className="w-4 h-4 text-slate-500" />
+                  <span>Pusat Sengketa & Escrow</span>
+                </Link>
+              )}
+            </div>
+
+            {/* Footer Actions */}
+            <div className="pt-2 border-t border-slate-100 flex gap-2">
+              <button
+                onClick={handleLogout}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 active:bg-rose-200 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Keluar dari Akun</span>
+              </button>
+              <button
+                onClick={() => setDropdownOpen(false)}
+                className="py-2.5 px-4 rounded-2xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. MINIMAL DESKTOP FOOTER */}
       {/* ========================================================================= */}
       <footer className="hidden md:block py-6 border-t border-slate-200/60 text-center text-xs text-slate-400 font-sans">
         <p>
