@@ -8,7 +8,7 @@ export function Card({
   children,
   className,
   hover = false,
-  variant = "glossy",
+  variant = "default",
   ...props
 }) {
   if (variant === "glossy" || variant === "apple") {
@@ -22,9 +22,9 @@ export function Card({
   return (
     <div
       className={cn(
-        "bg-white/95 backdrop-blur-md rounded-2xl md:rounded-3xl border border-slate-200/80 p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-white/60 ring-inset transition-all duration-200",
+        "bg-white rounded-2xl border border-slate-200/80 p-5 md:p-6 shadow-2xs transition-all duration-200",
         hover &&
-          "hover:border-slate-300 hover:shadow-[0_14px_45px_rgb(0,0,0,0.08)] cursor-pointer hover:-translate-y-0.5",
+          "hover:border-slate-300 hover:shadow-xs cursor-pointer hover:-translate-y-0.5",
         className,
       )}
       {...props}
