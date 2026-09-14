@@ -56,7 +56,9 @@ export function DashboardPage() {
           talentApi.getTalents({ limit: 4 }).catch(() => ({ data: [] })),
         ]);
         setWallet(wRes.data);
-        setMyProjects(Array.isArray(pRes.data) ? pRes.data : pRes.data?.items || []);
+        setMyProjects(
+          Array.isArray(pRes.data) ? pRes.data : pRes.data?.items || [],
+        );
         setRecommendedTalents(
           Array.isArray(tRes.data) ? tRes.data : tRes.data?.items || [],
         );
@@ -72,10 +74,14 @@ export function DashboardPage() {
         ]);
         setWallet(wRes.data);
         setMyProposals(
-          Array.isArray(propRes.data) ? propRes.data : propRes.data?.items || [],
+          Array.isArray(propRes.data)
+            ? propRes.data
+            : propRes.data?.items || [],
         );
         setOpenProjects(
-          Array.isArray(projRes.data) ? projRes.data : projRes.data?.items || [],
+          Array.isArray(projRes.data)
+            ? projRes.data
+            : projRes.data?.items || [],
         );
       }
     } finally {
@@ -193,10 +199,7 @@ export function DashboardPage() {
             </p>
           </div>
 
-          <Link
-            to={`/proposals/${activeJob.project_id}`}
-            className="shrink-0"
-          >
+          <Link to={`/proposals/${activeJob.project_id}`} className="shrink-0">
             <button className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-sm transition-all cursor-pointer">
               <span>Buka Ruang Kerja & Obrolan</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -223,7 +226,8 @@ export function DashboardPage() {
                     <span>Peluang Proyek Terbaru untuk Anda</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Proyek terbuka dari mitra UMKM terverifikasi dengan jaminan saldo escrow.
+                    Proyek terbuka dari mitra UMKM terverifikasi dengan jaminan
+                    saldo escrow.
                   </p>
                 </div>
 
@@ -245,7 +249,8 @@ export function DashboardPage() {
                     Belum Ada Proyek Terbuka
                   </h4>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Proyek baru dari UMKM akan segera muncul di sini. Pantau terus katalog proyek.
+                    Proyek baru dari UMKM akan segera muncul di sini. Pantau
+                    terus katalog proyek.
                   </p>
                 </div>
               ) : (
@@ -320,7 +325,8 @@ export function DashboardPage() {
                     <span>Daftar Proyek & Pelamar Masuk</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Pantau pengajuan lamaran mahasiswa dan status pengerjaan tugas Anda.
+                    Pantau pengajuan lamaran mahasiswa dan status pengerjaan
+                    tugas Anda.
                   </p>
                 </div>
 
@@ -342,7 +348,8 @@ export function DashboardPage() {
                     Belum Ada Proyek yang Dipasang
                   </h4>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Pasang kebutuhan desain, website, atau konten media sosial Anda untuk menerima tawaran dari mahasiswa.
+                    Pasang kebutuhan desain, website, atau konten media sosial
+                    Anda untuk menerima tawaran dari mahasiswa.
                   </p>
                   <Link to="/projects/new">
                     <button className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all mt-2 cursor-pointer inline-flex items-center gap-1.5">
@@ -497,7 +504,9 @@ export function DashboardPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
-                <span className="text-xs text-slate-500">Saldo Terproteksi Escrow</span>
+                <span className="text-xs text-slate-500">
+                  Saldo Terproteksi Escrow
+                </span>
                 <span className="text-xs font-bold text-emerald-700 tabular-nums">
                   Rp {formatCurrency(wallet?.saldo_escrow || 0)}
                 </span>
@@ -529,7 +538,8 @@ export function DashboardPage() {
               </div>
 
               <p className="text-xs text-slate-500 leading-relaxed">
-                Tampilkan hasil tugas kuliah, desain, atau aplikasi yang pernah Anda buat untuk memperbesar peluang diterima lamaran.
+                Tampilkan hasil tugas kuliah, desain, atau aplikasi yang pernah
+                Anda buat untuk memperbesar peluang diterima lamaran.
               </p>
 
               <Link to="/portfolio" className="block">
@@ -555,7 +565,9 @@ export function DashboardPage() {
               </div>
 
               <p className="text-xs text-slate-500 leading-relaxed">
-                Dana pembayaran ditahan di rekening penampungan Makarya dan hanya diteruskan ke mahasiswa setelah Anda menyetujui hasil deliverable.
+                Dana pembayaran ditahan di rekening penampungan Makarya dan
+                hanya diteruskan ke mahasiswa setelah Anda menyetujui hasil
+                deliverable.
               </p>
 
               <Link to="/talents" className="block">
