@@ -232,7 +232,6 @@ export function BrowseProjectsPage() {
 
         <div className="flex items-center gap-2">
           {user?.role === "UMKM" ? (
-            <Link to="/projects/new">
             <div className="flex items-center gap-2">
               <Link to="/projects/new" className="sm:hidden">
                 <Button
@@ -245,20 +244,14 @@ export function BrowseProjectsPage() {
                 </Button>
               </Link>
               <Button
-                variant="brand"
-                size="md"
-                className="text-xs font-bold shadow-brand"
                 variant="outline"
                 size="sm"
                 onClick={handleResetFilter}
                 className="text-xs font-bold text-muted hover:text-dark-900"
               >
-                <PlusCircle className="w-4 h-4 mr-1.5" />
-                Pasang Proyek Baru
                 <RotateCcw className="w-3.5 h-3.5 mr-1" />
                 Reset Filter
               </Button>
-            </Link>
             </div>
           ) : (
             <Button
@@ -273,7 +266,6 @@ export function BrowseProjectsPage() {
           )}
         </div>
       </div>
-
 
       {/* UMKM Banner */}
       {user?.role === "UMKM" && (
