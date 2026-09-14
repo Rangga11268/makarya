@@ -31,6 +31,7 @@ import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminDisputePage } from "./pages/admin/AdminDisputePage";
 import { TalentsDirectoryPage } from "./pages/talents/TalentsDirectoryPage";
 import { TalentDetailPage } from "./pages/talents/TalentDetailPage";
+import { ChatPage } from "./pages/chat/ChatPage";
 
 // Public Layout with Standard Top Navbar and Footer
 function PublicLayout() {
@@ -154,6 +155,8 @@ export default function App() {
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/wallet" element={<WalletPage />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/chat/:projectId" element={<ChatPage />} />
             </Route>
 
             {/* Admin Exclusive */}

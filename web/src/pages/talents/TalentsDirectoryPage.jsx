@@ -6,7 +6,6 @@ import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { StarRating } from "../../components/ui/StarRating";
-import { ContactTalentModal } from "../../components/features/ContactTalentModal";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -51,10 +50,6 @@ export function TalentsDirectoryPage() {
   );
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "rating");
   const [onlyCompleted, setOnlyCompleted] = useState(false);
-
-  // Modals State
-  const [activeContactTalent, setActiveContactTalent] = useState(null);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const categoryPills = [
     { key: "", label: "Semua Bidang" },
@@ -107,11 +102,6 @@ export function TalentsDirectoryPage() {
     setSortBy("rating");
     setOnlyCompleted(false);
     setSearchParams({});
-  };
-
-  const handleOpenContact = (talent) => {
-    setActiveContactTalent(talent);
-    setIsContactModalOpen(true);
   };
 
   return (
@@ -592,16 +582,7 @@ export function TalentsDirectoryPage() {
                     </Button>
                   </Link>
 
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    onClick={() => handleOpenContact(talent)}
-                    className="flex-1 font-bold text-xs shadow-brand rounded-xl py-2 px-3 min-h-[38px] cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                    <span>Ajak Kolaborasi</span>
-                  </Button>
-                  <Link to={`/talents/${talent.id}`} className="flex-1">
+                  <Link to={`/chat?talent=${talent.id}`} className="flex-1">
                     <Button
                       variant="brand"
                       size="sm"
@@ -617,13 +598,6 @@ export function TalentsDirectoryPage() {
           })}
         </div>
       )}
-
-      {/* Contact Modal */}
-      <ContactTalentModal
-        isOpen={isContactModalOpen}
-        onClose={() => setIsContactModalOpen(false)}
-        talent={activeContactTalent}
-      />
     </div>
   );
 }

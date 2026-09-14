@@ -32,7 +32,6 @@ import {
   Quote,
   Share2,
   Calendar,
-  Layers,
   Send,
   Copy,
   Check,
@@ -102,8 +101,6 @@ export function TalentDetailPage() {
     }
   }, [isUmkm]);
 
-  // Handle Action: Open Workspace Chat
-  const handleOpenProjectChat = () => {
   const [inviting, setInviting] = useState(false);
   const [copiedProject, setCopiedProject] = useState(false);
 
@@ -115,13 +112,11 @@ export function TalentDetailPage() {
       addToast({
         type: "warning",
         title: "Pilih Proyek",
-        message: "Silakan pilih salah satu proyek aktif Anda untuk membuka diskusi.",
         message:
           "Silakan pilih salah satu proyek aktif Anda untuk mengundang talenta ini.",
       });
       return;
     }
-    navigate(`/proposals/${selectedProjectId}?tab=chat`);
     try {
       setInviting(true);
       const res = await talentApi.inviteTalent(talent.id, {
@@ -193,7 +188,11 @@ export function TalentDetailPage() {
             {error || "Profil talenta tidak ditemukan."}
           </p>
           <div className="flex items-center justify-center gap-3">
-            <Button variant="secondary" size="sm" onClick={() => navigate("/talents")}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate("/talents")}
+            >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
               Kembali ke Direktori
             </Button>
@@ -267,13 +266,21 @@ export function TalentDetailPage() {
 
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1.5 text-xs text-slate-600">
               <span className="flex items-center gap-1 font-medium">
-                <ProdiVectorIcon size={14} className="text-brand-indigo shrink-0" />
+                <ProdiVectorIcon
+                  size={14}
+                  className="text-brand-indigo shrink-0"
+                />
                 <span>{talent.prodi || "Belum Memilih Prodi"}</span>
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                <CampusVectorIcon size={14} className="text-amber-500 shrink-0" />
-                <span>{talent.universitas || "Universitas Bina Sarana Informatika"}</span>
+                <CampusVectorIcon
+                  size={14}
+                  className="text-amber-500 shrink-0"
+                />
+                <span>
+                  {talent.universitas || "Universitas Bina Sarana Informatika"}
+                </span>
               </span>
             </div>
 
@@ -297,7 +304,9 @@ export function TalentDetailPage() {
         {/* 3 Core Trust Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
           <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
-            <span className="text-xs text-slate-500 block">Rating Kepuasan</span>
+            <span className="text-xs text-slate-500 block">
+              Rating Kepuasan
+            </span>
             <div className="flex items-center justify-center gap-1.5 mt-1">
               <StarRating rating={ratingScore} size="sm" />
               <span className="text-sm font-bold text-dark-900">
@@ -320,10 +329,16 @@ export function TalentDetailPage() {
           </div>
 
           <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
-            <span className="text-xs text-slate-500 block">Proteksi Escrow</span>
+            <span className="text-xs text-slate-500 block">
+              Proteksi Escrow
+            </span>
             <div className="flex items-center justify-center gap-1 text-base font-extrabold text-emerald-700 mt-1">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>{completedProjects > 0 ? talent.escrow_success_rate || "100%" : "100% Aman"}</span>
+              <span>
+                {completedProjects > 0
+                  ? talent.escrow_success_rate || "100%"
+                  : "100% Aman"}
+              </span>
             </div>
             <span className="text-[11px] text-slate-400 block mt-0.5">
               Dana Dijamin Sistem
@@ -517,7 +532,8 @@ export function TalentDetailPage() {
                   Belum ada ulasan publik untuk mahasiswa ini.
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  Jadilah UMKM pertama yang berkolaborasi dan memberikan ulasan kinerja.
+                  Jadilah UMKM pertama yang berkolaborasi dan memberikan ulasan
+                  kinerja.
                 </p>
               </div>
             )}
@@ -535,7 +551,8 @@ export function TalentDetailPage() {
             {isUmkm ? (
               <div className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Pilih salah satu proyek aktif Anda untuk membuka diskusi kerja sama langsung dengan talenta ini:
+                  Pilih salah satu proyek aktif Anda untuk membuka diskusi kerja
+                  sama langsung dengan talenta ini:
                 </p>
 
                 {loadingProjects ? (
@@ -592,25 +609,30 @@ export function TalentDetailPage() {
                       })}
                     </div>
 
-                    <Button
-                      variant="brand"
-                      size="sm"
-                      onClick={handleOpenProjectChat}
-                      className="w-full font-bold text-xs shadow-brand py-2.5 mt-2 cursor-pointer flex items-center justify-center"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                      Mulai Diskusi di Ruang Kerja
-                    </Button>
                     <div className="pt-2 space-y-2">
+                      <Link
+                        to={`/chat/${selectedProjectId}?talent=${talent.id}`}
+                        className="block w-full"
+                      >
+                        <Button
+                          variant="brand"
+                          size="sm"
+                          className="w-full font-bold text-xs shadow-brand py-2.5 cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                          <span>Buka Ruang Chat Kolaborasi</span>
+                        </Button>
+                      </Link>
+
                       <Button
-                        variant="brand"
+                        variant="secondary"
                         size="sm"
                         loading={inviting}
                         onClick={handleSendInvitation}
-                        className="w-full font-bold text-xs shadow-brand py-2.5 cursor-pointer flex items-center justify-center gap-1.5"
+                        className="w-full font-semibold text-xs py-2 cursor-pointer flex items-center justify-center gap-1.5 border border-border bg-canvas hover:bg-slate-100"
                       >
-                        <Send className="w-3.5 h-3.5 shrink-0" />
-                        <span>Kirim Undangan Kolaborasi Resmi</span>
+                        <Send className="w-3.5 h-3.5 shrink-0 text-brand-indigo" />
+                        <span>Kirim Notifikasi Undangan Resmi</span>
                       </Button>
 
                       <div className="grid grid-cols-2 gap-2">
@@ -625,7 +647,9 @@ export function TalentDetailPage() {
                           ) : (
                             <Copy className="w-3.5 h-3.5 text-slate-500" />
                           )}
-                          <span>{copiedProject ? "Tersalin!" : "Salin Link"}</span>
+                          <span>
+                            {copiedProject ? "Tersalin!" : "Salin Link"}
+                          </span>
                         </button>
 
                         <Link
@@ -644,10 +668,15 @@ export function TalentDetailPage() {
                 ) : (
                   <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 text-center">
                     <p className="text-xs text-slate-500">
-                      Anda belum memiliki proyek aktif untuk mengajak mahasiswa ini.
+                      Anda belum memiliki proyek aktif untuk mengajak mahasiswa
+                      ini.
                     </p>
                     <Link to="/projects/new">
-                      <Button variant="brand" size="sm" className="w-full text-xs font-bold">
+                      <Button
+                        variant="brand"
+                        size="sm"
+                        className="w-full text-xs font-bold"
+                      >
                         <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
                         Pasang Proyek Baru
                       </Button>
@@ -670,7 +699,6 @@ export function TalentDetailPage() {
                       </div>
                     </div>
                     <a
-                      href={`mailto:${talent.email}?subject=Tawaran%20Kolaborasi%20Proyek%20Makarya`}
                       href={`mailto:${talent.email}?subject=Tawaran%20Kolaborasi%20Proyek%20Makarya%20-%20${encodeURIComponent(selectedProject?.judul || "Peluang Kerja Sama")}&body=Halo%20${encodeURIComponent(talent.nama_lengkap)},%0D%0A%0D%0AKami%20dari%20UMKM%20tertarik%20mengajak%20Anda%20berkolaborasi%20untuk%20proyek%20%22${encodeURIComponent(selectedProject?.judul || "")}%22.%0D%0A%0D%0ASilakan%20buka%20rincian%20proyek%20kami%20di%20platform%20Makarya.`}
                       className="px-2.5 py-1 text-xs font-bold text-brand-indigo hover:underline shrink-0"
                     >
@@ -682,7 +710,8 @@ export function TalentDetailPage() {
             ) : (
               <div className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Masuk sebagai <b>Klien UMKM</b> untuk langsung mengajak talenta ini berkolaborasi dalam proyek usaha Anda.
+                  Masuk sebagai <b>Klien UMKM</b> untuk langsung mengajak
+                  talenta ini berkolaborasi dalam proyek usaha Anda.
                 </p>
                 <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs text-slate-600">
                   <div className="flex items-center gap-1.5 font-bold text-slate-800">
@@ -697,7 +726,11 @@ export function TalentDetailPage() {
                 </div>
 
                 <Link to="/login" className="block">
-                  <Button variant="brand" size="sm" className="w-full text-xs font-bold">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    className="w-full text-xs font-bold"
+                  >
                     Masuk Sebagai Klien UMKM
                   </Button>
                 </Link>
@@ -709,4 +742,3 @@ export function TalentDetailPage() {
     </div>
   );
 }
-

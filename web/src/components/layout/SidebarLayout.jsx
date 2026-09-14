@@ -97,7 +97,10 @@ export function SidebarLayout() {
       );
     }
     if (path === "/proposals") {
-      return location.pathname.startsWith("/proposals");
+      return (
+        location.pathname.startsWith("/proposals") ||
+        location.pathname.startsWith("/chat")
+      );
     }
     if (path === "/talents") {
       return location.pathname.startsWith("/talents");
