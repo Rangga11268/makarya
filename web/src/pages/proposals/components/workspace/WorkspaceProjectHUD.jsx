@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   AlertCircle,
   MessageSquare,
-  Sparkles,
   ArrowRight,
   Flame,
 } from "lucide-react";
@@ -197,7 +196,7 @@ export function WorkspaceProjectHUD({
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition-all shadow-2xs hover:shadow-xs active:scale-95"
             title="Kirim pengingat pesan perkembangan ramah ke ruang chat mahasiswa"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <MessageSquare className="w-3.5 h-3.5 text-slate-600" />
             <span>Tanya Perkembangan</span>
           </button>
         )}

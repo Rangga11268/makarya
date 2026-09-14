@@ -4,7 +4,6 @@ import { projectApi } from "../../../api";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { Button } from "../../../components/ui/Button";
 import {
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Building2,
@@ -139,7 +138,7 @@ export function WorkspaceEmptyRecommendations({ isUmkm = false }) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-8 text-center max-w-2xl mx-auto space-y-4 shadow-xs">
         <div className="w-14 h-14 rounded-2xl bg-brand-indigo/10 border border-brand-indigo/20 flex items-center justify-center text-brand-indigo mx-auto">
-          <Sparkles className="w-7 h-7" />
+          <Briefcase className="w-7 h-7" />
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-bold text-dark-900">
@@ -152,7 +151,7 @@ export function WorkspaceEmptyRecommendations({ isUmkm = false }) {
           </p>
         </div>
         <div className="pt-2">
-          <Link to="/post-project" className="inline-block">
+          <Link to="/projects/new" className="inline-block">
             <Button
               variant="primary"
               size="sm"
@@ -174,7 +173,7 @@ export function WorkspaceEmptyRecommendations({ isUmkm = false }) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-              <Sparkles className="w-5 h-5" />
+              <Compass className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">

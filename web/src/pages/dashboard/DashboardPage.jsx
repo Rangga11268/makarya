@@ -838,8 +838,9 @@ export function DashboardPage() {
 
           {/* Card 3: Quick Guidelines & Escrow Rules */}
           <div className="p-4 bg-slate-50/60 border border-slate-200/60 rounded-2xl space-y-2 text-[11px] text-slate-500">
-            <span className="font-bold text-slate-700 block">
-              💡 Ketentuan Kolaborasi Kampus:
+            <span className="font-bold text-slate-800 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-slate-600" />
+              <span>Ketentuan Kolaborasi Platform:</span>
             </span>
             <ul className="space-y-1 list-disc list-inside">
               <li>Maksimal 2 kali revisi minor per deliverable.</li>
