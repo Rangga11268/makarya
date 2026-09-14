@@ -1,9 +1,13 @@
 import logging
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from sqlalchemy.orm import Session
 from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
+from app.models.submission import Submission, SubmissionStatus
+from app.models.escrow import Escrow, EscrowStatus
+from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.notification import Notification, NotificationType
+
 
 logger = logging.getLogger(__name__)
 
@@ -146,3 +150,109 @@ def run_project_deadline_check(db: Session):
         db.rollback()
         logger.error(f"Gagal mengeksekusi cronjob deadline: {str(e)}")
         return 0
+
+
+def run_escrow_auto_approval(db: Session):
+    """
+    Cronjob Auto-Approval Escrow:
+    Mencari transaksi escrow yang berstatus SUBMITTED dan sudah melewati batas auto_approve_at (default 7 hari).
+    Jika UMKM tidak melakukan tindakan dalam 7 hari:
+    1. Sistem secara otomatis menyetujui hasil kerja.
+    2. Proyek dialihkan ke DONE.
+    3. Dana dicairkan ke mahasiswa (RELEASED).
+    4. Catat transaksi di LedgerLog.
+    5. Kirim notifikasi sistem ke kedua belah pihak.
+    """
+    now = datetime.now(timezone.utc)
+    due_escrows = db.query(Escrow).filter(
+        Escrow.status == EscrowStatus.SUBMITTED,
+        Escrow.auto_approve_at.isnot(None),
+        Escrow.auto_approve_at <= now
+    ).all()
+
+    processed_count = 0
+    for escrow in due_escrows:
+        try:
+            project = db.query(Project).filter(Project.id == escrow.project_id).first()
+            proposal = db.query(Proposal).filter(Proposal.id == escrow.proposal_id).first()
+            if not project or not proposal:
+                continue
+
+            # Kunci dompet kedua belah pihak
+            umkm_wallet = db.query(Wallet).filter(Wallet.user_id == escrow.client_id).with_for_update().first()
+            mhs_wallet = db.query(Wallet).filter(Wallet.user_id == escrow.talent_id).with_for_update().first()
+
+            if not umkm_wallet or not mhs_wallet:
+                continue
+
+            if umkm_wallet.saldo_escrow < escrow.amount_total:
+                logger.warning(f"Saldo escrow UMKM ({umkm_wallet.saldo_escrow}) kurang dari {escrow.amount_total} untuk escrow {escrow.id}")
+                continue
+
+            # Mutasi saldo
+            umkm_wallet.saldo_escrow -= escrow.amount_total
+            mhs_wallet.saldo_aktif += escrow.amount_talent
+
+            # Catat Ledger
+            log_umkm = LedgerLog(
+                wallet_id=umkm_wallet.id,
+                project_id=project.id,
+                tipe=TransactionType.RELEASE,
+                nominal=escrow.amount_total,
+                keterangan=f"Pencairan otomatis (7 hari review berakhir) dana escrow untuk proyek '{project.judul}'",
+            )
+            log_mhs = LedgerLog(
+                wallet_id=mhs_wallet.id,
+                project_id=project.id,
+                tipe=TransactionType.RELEASE,
+                nominal=escrow.amount_talent,
+                keterangan=f"Penerimaan honor otomatis (7 hari review berakhir) dari proyek '{project.judul}'",
+            )
+            db.add(log_umkm)
+            db.add(log_mhs)
+
+            # Update Submission jika ada
+            submission = db.query(Submission).filter(Submission.proposal_id == proposal.id).first()
+            if submission:
+                submission.status = SubmissionStatus.APPROVED
+
+            # Update Project & Escrow
+            project.status = ProjectStatus.DONE
+            escrow.status = EscrowStatus.RELEASED
+            escrow.released_at = now
+            escrow.auto_approve_at = None
+
+            # Notifikasi ke UMKM
+            notif_umkm = Notification(
+                user_id=escrow.client_id,
+                judul="Hasil Kerja Disetujui Otomatis",
+                pesan=f"Hasil kerja proyek '{project.judul}' disetujui otomatis oleh sistem karena batas review 7 hari telah selesai. Dana escrow sebesar Rp {int(escrow.amount_total):,} telah dicairkan ke mahasiswa.",
+                tipe=NotificationType.SYSTEM,
+                url_referensi=f"/workroom/{project.id}"
+            )
+            db.add(notif_umkm)
+
+            # Notifikasi ke Mahasiswa
+            notif_mhs = Notification(
+                user_id=escrow.talent_id,
+                judul="Honor Proyek Dicairkan Otomatis",
+                pesan=f"Selamat! Hasil kerja proyek '{project.judul}' disetujui otomatis oleh sistem (7 hari auto-approval). Honor sebesar Rp {int(escrow.amount_talent):,} telah masuk ke saldo aktif Anda.",
+                tipe=NotificationType.SYSTEM,
+                url_referensi=f"/proposals/{proposal.id}"
+            )
+            db.add(notif_mhs)
+
+            processed_count += 1
+        except Exception as err:
+            logger.error(f"Error memproses auto-approve untuk escrow {escrow.id}: {err}")
+
+    try:
+        db.commit()
+        if processed_count > 0:
+            logger.info(f"Cronjob berhasil mengeksekusi auto-approval untuk {processed_count} transaksi escrow.")
+        return processed_count
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Gagal commit auto-approval escrow: {str(e)}")
+        return 0
+

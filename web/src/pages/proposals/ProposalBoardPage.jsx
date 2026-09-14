@@ -5,7 +5,14 @@ import {
   useParams,
   useNavigate,
 } from "react-router-dom";
-import { proposalApi, projectApi, submissionApi, walletApi } from "../../api";
+import {
+  proposalApi,
+  projectApi,
+  submissionApi,
+  walletApi,
+  escrowApi,
+} from "../../api";
+
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { useAlertStore } from "../../store/alertStore";
@@ -79,7 +86,9 @@ export function ProposalBoardPage() {
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [projectProposals, setProjectProposals] = useState([]);
   const [projectSubmissions, setProjectSubmissions] = useState([]);
+  const [projectEscrow, setProjectEscrow] = useState(null);
   const [mhsSubmissions, setMhsSubmissions] = useState({});
+
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
@@ -182,6 +191,10 @@ export function ProposalBoardPage() {
           );
           if (found) {
             setSelectedProposal(found);
+            escrowApi
+              .getByProject(found.project_id)
+              .then((res) => setProjectEscrow(res.data || null))
+              .catch(() => setProjectEscrow(null));
             const isCompleted =
               found.status === "COMPLETED" ||
               subMap[found.project_id]?.status === "APPROVED" ||
@@ -196,6 +209,7 @@ export function ProposalBoardPage() {
             }
           } else {
             setSelectedProposal(null);
+            setProjectEscrow(null);
           }
         } else {
           setSelectedProposal(null);
@@ -210,9 +224,10 @@ export function ProposalBoardPage() {
 
   const loadProjectDetails = async (projectId) => {
     try {
-      const [propRes, subRes] = await Promise.all([
+      const [propRes, subRes, escrowRes] = await Promise.all([
         proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
         submissionApi.getByProject(projectId).catch(() => ({ data: null })),
+        escrowApi.getByProject(projectId).catch(() => ({ data: null })),
       ]);
       const props = Array.isArray(propRes.data) ? propRes.data : [];
       setProjectProposals(props);
@@ -223,7 +238,12 @@ export function ProposalBoardPage() {
             ? subRes.data
             : [];
       setProjectSubmissions(subs);
-      return { proposals: props, submissions: subs };
+      setProjectEscrow(escrowRes.data || null);
+      return {
+        proposals: props,
+        submissions: subs,
+        escrow: escrowRes.data || null,
+      };
     } catch (err) {
       console.warn("Gagal memuat rincian proyek:", err);
       return { proposals: [], submissions: [] };
@@ -268,6 +288,11 @@ export function ProposalBoardPage() {
     setSearchParams({ project: proposal.project_id });
     window.scrollTo({ top: 0, behavior: "smooth" });
 
+    escrowApi
+      .getByProject(proposal.project_id)
+      .then((res) => setProjectEscrow(res.data || null))
+      .catch(() => setProjectEscrow(null));
+
     const isCompleted =
       proposal.status === "COMPLETED" ||
       mhsSubmissions[proposal.project_id]?.status === "APPROVED" ||
@@ -287,6 +312,7 @@ export function ProposalBoardPage() {
   const handleBackToHub = () => {
     setSelectedProject(null);
     setSelectedProposal(null);
+    setProjectEscrow(null);
     setSearchParams({});
     navigate("/proposals");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -684,6 +710,7 @@ export function ProposalBoardPage() {
           isUmkm={isUmkm}
           selectedProject={selectedProject}
           selectedProposal={selectedProposal}
+          projectEscrow={projectEscrow}
           detailsLoading={detailsLoading}
           activeStageTab={activeStageTab}
           setActiveStageTab={setActiveStageTab}

@@ -12,7 +12,9 @@ from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.dispute import Dispute, DisputeStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow, EscrowStatus
 from app.schemas.dispute import DisputeCreateRequest, DisputeResolveRequest, DisputeResponse
+
 
 router = APIRouter(prefix="/disputes", tags=["Dispute Resolution"])
 
@@ -62,9 +64,17 @@ def file_dispute(
         status=DisputeStatus.OPEN,
     )
     db.add(new_dispute)
+
+    # Sinkronisasi status Escrow ke DISPUTED & pause timer auto-approval
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
+    if escrow:
+        escrow.status = EscrowStatus.DISPUTED
+        escrow.auto_approve_at = None
+
     db.commit()
     db.refresh(new_dispute)
     return new_dispute
+
 
 
 @router.get("", response_model=List[DisputeResponse])
@@ -154,6 +164,20 @@ def resolve_dispute(
     dispute.persentase_klien = body.persentase_klien
     dispute.persentase_freelancer = body.persentase_freelancer
     dispute.resolved_at = datetime.now(timezone.utc)
+
+    # Sinkronisasi status Escrow berdasarkan hasil putusan sengketa
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
+    if escrow:
+        if body.persentase_freelancer == Decimal("100"):
+            escrow.status = EscrowStatus.RELEASED
+            escrow.released_at = datetime.now(timezone.utc)
+        elif body.persentase_klien == Decimal("100"):
+            escrow.status = EscrowStatus.REFUNDED
+            escrow.refunded_at = datetime.now(timezone.utc)
+        else:
+            escrow.status = EscrowStatus.PARTIALLY_RELEASED
+            escrow.released_at = datetime.now(timezone.utc)
+        escrow.auto_approve_at = None
 
     project.status = ProjectStatus.DONE
 

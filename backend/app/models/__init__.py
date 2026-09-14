@@ -7,6 +7,7 @@ from app.models.ai_req import AIRequirement
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.submission import Submission, SubmissionStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow, EscrowStatus
 from app.models.rating import Rating
 from app.models.dispute import Dispute, DisputeStatus
 from app.models.notification import Notification, NotificationType
@@ -33,6 +34,8 @@ __all__ = [
     "Wallet",
     "LedgerLog",
     "TransactionType",
+    "Escrow",
+    "EscrowStatus",
     "Rating",
     "Dispute",
     "DisputeStatus",

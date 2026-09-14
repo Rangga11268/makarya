@@ -12,7 +12,9 @@ from app.models.project import Project, ProjectCategory, ProjectStatus, ProjectS
 from app.models.profile import ProfileUmkm, ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow, EscrowStatus
 from app.models.notification import Notification, NotificationType
+
 from app.schemas.project import (
     ProjectCreateRequest,
     ProjectUpdateRequest,
@@ -413,7 +415,13 @@ def reopen_project(
             )
             db.add(ledger_entry)
 
+        escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_prop.id).first()
+        if escrow:
+            escrow.status = EscrowStatus.REFUNDED
+            escrow.refunded_at = func.now()
+
         accepted_prop.status = ProposalStatus.WITHDRAWN
+
         accepted_prop.withdraw_reason = body.reason or "Kontrak dibatalkan oleh klien UMKM dan proyek dibuka kembali ke eksplorasi"
         accepted_prop.withdrawn_at = func.now()
 
@@ -496,7 +504,13 @@ def terminate_and_cancel_project(
             )
             db.add(ledger_entry)
 
+        escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_prop.id).first()
+        if escrow:
+            escrow.status = EscrowStatus.REFUNDED
+            escrow.refunded_at = func.now()
+
         accepted_prop.status = ProposalStatus.WITHDRAWN
+
         accepted_prop.withdraw_reason = body.reason or "Proyek dibatalkan secara permanen oleh klien UMKM"
         accepted_prop.withdrawn_at = func.now()
 

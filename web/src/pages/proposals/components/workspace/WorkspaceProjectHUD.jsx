@@ -14,6 +14,7 @@ import { formatDate, isExpired } from "../../../../utils/formatDate";
 
 export function WorkspaceProjectHUD({
   project,
+  projectEscrow,
   activeDeliverable,
   isUmkm,
   onPingProgress,
@@ -121,11 +122,71 @@ export function WorkspaceProjectHUD({
             <span>{remainingText}</span>
           </div>
 
-          {/* Guaranteed Escrow Tag */}
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/70 border border-emerald-200 text-emerald-800 text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Escrow Rp {formatCurrency(project.budget_max || 0)}</span>
-          </div>
+          {/* Guaranteed Escrow & Auto-Approval Tags */}
+          {(() => {
+            let escrowStatusLabel = "Escrow Aman";
+            let escrowAmount = projectEscrow
+              ? projectEscrow.amount_total
+              : project.budget_max || 0;
+            let autoApproveRemainingText = null;
+
+            if (projectEscrow) {
+              if (
+                projectEscrow.status === "SUBMITTED" &&
+                projectEscrow.auto_approve_at
+              ) {
+                const autoApproveDate = new Date(projectEscrow.auto_approve_at);
+                const diffAutoMs = autoApproveDate.getTime() - now.getTime();
+                if (diffAutoMs > 0) {
+                  const autoDays = Math.floor(
+                    diffAutoMs / (1000 * 60 * 60 * 24),
+                  );
+                  const autoHours = Math.floor(
+                    (diffAutoMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+                  );
+                  autoApproveRemainingText =
+                    autoDays > 0
+                      ? `${autoDays}h ${autoHours}j`
+                      : `${autoHours} jam`;
+                } else {
+                  autoApproveRemainingText = "Sedang diproses";
+                }
+                escrowStatusLabel = "Review Escrow";
+              } else if (projectEscrow.status === "REVISION") {
+                escrowStatusLabel = "Masa Revisi";
+              } else if (projectEscrow.status === "RELEASED") {
+                escrowStatusLabel = "Honor Dicairkan";
+              } else if (projectEscrow.status === "PARTIALLY_RELEASED") {
+                escrowStatusLabel = "Putusan Sengketa";
+              } else if (projectEscrow.status === "DISPUTED") {
+                escrowStatusLabel = "Mediasi Sengketa";
+              } else if (projectEscrow.status === "REFUNDED") {
+                escrowStatusLabel = "Dana Dikembalikan";
+              } else {
+                escrowStatusLabel = "100% Escrow Aman";
+              }
+            }
+
+            return (
+              <>
+                <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>
+                    {escrowStatusLabel}: Rp {formatCurrency(escrowAmount)}
+                  </span>
+                </div>
+                {autoApproveRemainingText && (
+                  <div
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold animate-pulse"
+                    title="Dana escrow otomatis dicairkan ke mahasiswa jika klien UMKM tidak mereview dalam 7 hari"
+                  >
+                    <Clock className="w-3 h-3 text-blue-600" />
+                    <span>Auto-Approve: {autoApproveRemainingText}</span>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         {/* Right Action: UMKM Ping Progress button */}

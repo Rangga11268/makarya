@@ -130,8 +130,10 @@ export function WorkroomWorkspaceDetail({
   isUmkm,
   selectedProject,
   selectedProposal,
+  projectEscrow,
   detailsLoading = false,
   activeStageTab,
+
   setActiveStageTab,
   activeDeliverable,
   projectSubmissions = [],
@@ -197,6 +199,7 @@ export function WorkroomWorkspaceDetail({
       {/* 1. Real-time Project Health & Pipeline HUD */}
       <WorkspaceProjectHUD
         project={selectedProject || selectedProposal}
+        projectEscrow={projectEscrow}
         activeDeliverable={activeDeliverable}
         isUmkm={isUmkm}
         onPingProgress={() => setActiveStageTab("chat")}
@@ -836,6 +839,7 @@ export function WorkroomWorkspaceDetail({
                 <SmartDeliverableCard
                   key={sub.id || idx}
                   submission={sub}
+                  escrow={projectEscrow}
                   isLatest={idx === 0}
                   index={idx}
                   totalSubmissions={effectiveSubmissions.length}

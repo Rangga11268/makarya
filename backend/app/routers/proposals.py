@@ -11,7 +11,9 @@ from app.models.profile import ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.notification import Notification, NotificationType
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow, EscrowStatus
 from app.schemas.proposal import ProposalCreateRequest, ProposalResponse, MhsSummary, ProposalResignRequest
+
 
 
 router = APIRouter(prefix="/proposals", tags=["Proposals"])
@@ -215,8 +217,22 @@ def accept_proposal(
     )
     db.add(ledger_entry)
 
+    # Buat perjanjian Escrow baru
+    escrow = Escrow(
+        project_id=project.id,
+        proposal_id=proposal.id,
+        client_id=project.umkm_id,
+        talent_id=proposal.mhs_id,
+        amount_total=proposal.harga_tawar,
+        platform_fee=0.00,
+        amount_talent=proposal.harga_tawar,
+        status=EscrowStatus.HELD,
+    )
+    db.add(escrow)
+
     # Update status proposal menjadi ACCEPTED
     proposal.status = ProposalStatus.ACCEPTED
+
 
     if proposal.slot_id:
         slot = db.query(ProjectSlot).filter(ProjectSlot.id == proposal.slot_id).first()
@@ -349,10 +365,17 @@ def resign_from_accepted_project(
         )
         db.add(ledger_entry)
 
+    # Update status escrow menjadi REFUNDED
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == proposal.id).first()
+    if escrow:
+        escrow.status = EscrowStatus.REFUNDED
+        escrow.refunded_at = func.now()
+
     # Ubah status proposal menjadi WITHDRAWN
     proposal.status = ProposalStatus.WITHDRAWN
     proposal.withdraw_reason = body.reason
     proposal.withdrawn_at = func.now()
+
 
     # Catat audit pembatalan pada proyek
     project.cancel_reason = f"Mahasiswa mengundurkan diri: {body.reason}"

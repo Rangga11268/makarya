@@ -49,6 +49,10 @@ export const walletApi = {
   withdraw: (data) => api.post("/wallet/withdraw", data),
 };
 
+export const escrowApi = {
+  getByProject: (projectId) => api.get(`/wallet/escrow/project/${projectId}`),
+};
+
 export const ratingApi = {
   giveRating: (data) => api.post("/ratings", data),
   getByUser: (userId) => api.get(`/ratings/user/${userId}`),

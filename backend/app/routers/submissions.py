@@ -1,7 +1,9 @@
+from datetime import datetime, timezone, timedelta
 from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role
@@ -10,7 +12,9 @@ from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.submission import Submission, SubmissionStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow, EscrowStatus
 from app.schemas.submission import SubmissionCreateRequest, RevisionRequest, SubmissionResponse
+
 
 router = APIRouter(prefix="/submissions", tags=["Submissions & Revision Control"])
 
@@ -67,9 +71,17 @@ def submit_work(
         )
         db.add(submission)
 
+    # Sinkronisasi status Escrow ke SUBMITTED & set timer auto-approval 7 hari
+
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
+    if escrow:
+        escrow.status = EscrowStatus.SUBMITTED
+        escrow.auto_approve_at = datetime.now(timezone.utc) + timedelta(days=7)
+
     db.commit()
     db.refresh(submission)
     return submission
+
 
 
 @router.get("/project/{project_id}", response_model=SubmissionResponse)
@@ -201,6 +213,13 @@ def approve_submission(
     submission.status = SubmissionStatus.APPROVED
     project.status = ProjectStatus.DONE
 
+    # Sinkronisasi status Escrow ke RELEASED
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
+    if escrow:
+        escrow.status = EscrowStatus.RELEASED
+        escrow.released_at = func.now()
+        escrow.auto_approve_at = None
+
     db.commit()
     db.refresh(submission)
     return submission
@@ -253,6 +272,12 @@ def request_revision(
     submission.jumlah_revisi += 1
     submission.status = SubmissionStatus.REVISION_REQUESTED
     submission.catatan_pengiriman = f"[Revisi #{submission.jumlah_revisi}] {body.alasan_revisi}{checklist_text}"
+
+    # Sinkronisasi status Escrow ke REVISION dan pause timer auto-approval
+    escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
+    if escrow:
+        escrow.status = EscrowStatus.REVISION
+        escrow.auto_approve_at = None
 
     db.commit()
     db.refresh(submission)

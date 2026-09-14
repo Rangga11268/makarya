@@ -1,5 +1,5 @@
 import uuid
-from typing import List
+from typing import List, Optional
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
@@ -8,6 +8,7 @@ from app.core.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.wallet import Wallet, LedgerLog, TransactionType
+from app.models.escrow import Escrow
 from app.schemas.wallet import (
     WalletResponse,
     TopUpRequest,
@@ -15,7 +16,9 @@ from app.schemas.wallet import (
     WithdrawRequest,
     LedgerLogResponse,
 )
+from app.schemas.escrow import EscrowResponse
 from app.services.midtrans import create_snap_transaction, verify_midtrans_signature
+
 
 router = APIRouter(prefix="/wallet", tags=["Wallet & Escrow"])
 
@@ -185,3 +188,18 @@ def withdraw_balance(
     db.refresh(wallet)
 
     return wallet
+
+
+@router.get("/escrow/project/{project_id}", response_model=Optional[EscrowResponse])
+def get_project_escrow(
+    project_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Melihat Detail Kontrak Escrow untuk Proyek Tertentu"""
+    escrow = db.query(Escrow).filter(Escrow.project_id == project_id).order_by(Escrow.created_at.desc()).first()
+    if not escrow:
+        return None
+    if escrow.client_id != current_user.id and escrow.talent_id != current_user.id and current_user.role.value != "ADMIN":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin melihat data escrow ini")
+    return escrow

@@ -12,7 +12,7 @@ from app.core.database import get_db, SessionLocal
 from app.core.limiter import limiter
 from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat, talents
 from app.routers.notifications import router as notifications_router
-from app.services.scheduler import run_project_deadline_check
+from app.services.scheduler import run_project_deadline_check, run_escrow_auto_approval
 
 # Inisialisasi Scheduler Background
 scheduler = BackgroundScheduler()
@@ -21,8 +21,10 @@ def daily_project_check():
     db = SessionLocal()
     try:
         run_project_deadline_check(db)
+        run_escrow_auto_approval(db)
     finally:
         db.close()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

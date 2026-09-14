@@ -96,6 +96,7 @@ export function getSmartLinkMeta(url) {
 
 export function SmartDeliverableCard({
   submission,
+  escrow,
   isLatest = true,
   index = 0,
   totalSubmissions = 1,
@@ -251,6 +252,22 @@ export function SmartDeliverableCard({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Escrow Auto-Approval Protection Banner */}
+
+      {isLatest && !isApproved && !isRevisionRequested && (
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/50 border border-blue-200/80 text-xs space-y-1.5 shadow-2xs">
+          <div className="flex items-center gap-2 text-blue-900 font-bold">
+            <Clock className="w-4 h-4 text-blue-600 shrink-0" />
+            <span>Garansi Auto-Approval 7 Hari Aktif</span>
+          </div>
+          <p className="text-slate-600 leading-relaxed text-[11px]">
+            Klien UMKM memiliki tenggat 7 hari untuk meninjau atau meminta
+            perbaikan berkas ini. Jika waktu toleransi habis tanpa tanggapan,
+            sistem otomatis mencairkan dana escrow kepada mahasiswa pekerja.
+          </p>
         </div>
       )}
 
