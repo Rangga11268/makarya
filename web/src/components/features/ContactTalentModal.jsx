@@ -59,7 +59,7 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
   const handleOpenProjectChat = () => {
     if (!selectedProjectId) return;
     onClose();
-    navigate(`/projects/${selectedProjectId}`);
+    navigate(`/proposals/${selectedProjectId}?tab=chat`);
   };
 
   return (

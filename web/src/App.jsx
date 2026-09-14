@@ -30,6 +30,7 @@ import { WalletPage } from "./pages/wallet/WalletPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminDisputePage } from "./pages/admin/AdminDisputePage";
 import { TalentsDirectoryPage } from "./pages/talents/TalentsDirectoryPage";
+import { TalentDetailPage } from "./pages/talents/TalentDetailPage";
 
 // Public Layout with Standard Top Navbar and Footer
 function PublicLayout() {
@@ -101,6 +102,7 @@ export default function App() {
               <Route path="/projects" element={<BrowseProjectsPage />} />
               <Route path="/projects/:id" element={<ProjectDetailPage />} />
               <Route path="/talents" element={<TalentsDirectoryPage />} />
+              <Route path="/talents/:id" element={<TalentDetailPage />} />
             </>
           )}
         </Route>
@@ -120,6 +122,7 @@ export default function App() {
             <Route path="/projects" element={<BrowseProjectsPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
             <Route path="/talents" element={<TalentsDirectoryPage />} />
+            <Route path="/talents/:id" element={<TalentDetailPage />} />
 
             {/* UMKM Exclusive */}
             <Route element={<ProtectedRoute allowedRoles={["UMKM"]} />}>

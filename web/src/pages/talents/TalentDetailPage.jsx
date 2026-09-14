@@ -1,0 +1,622 @@
+import React, { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { talentApi, projectApi } from "../../api";
+import { useAuthStore } from "../../store/authStore";
+import { useToastStore } from "../../store/toastStore";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { StarRating } from "../../components/ui/StarRating";
+import { formatCurrency } from "../../utils/formatCurrency";
+import { formatStatus } from "../../utils/formatStatus";
+import { formatDate } from "../../utils/formatDate";
+import {
+  ProdiVectorIcon,
+  CampusVectorIcon,
+  GithubVectorIcon,
+  FigmaVectorIcon,
+  GlobeVectorIcon,
+  LinkedinVectorIcon,
+} from "../../components/icons/ProfileVectorIcons";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  GraduationCap,
+  Award,
+  Star,
+  ShieldCheck,
+  Briefcase,
+  MessageSquare,
+  Mail,
+  ExternalLink,
+  PlusCircle,
+  Quote,
+  Share2,
+  Calendar,
+  Layers,
+  RotateCcw,
+} from "lucide-react";
+
+export function TalentDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuthStore();
+  const { addToast } = useToastStore();
+
+  const [talent, setTalent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // UMKM project selection states
+  const isUmkm = isAuthenticated && user?.role?.toUpperCase() === "UMKM";
+  const [myProjects, setMyProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState("");
+
+  // 1. Fetch Talent Detail
+  const fetchTalent = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await talentApi.getTalentDetail(id);
+      setTalent(res?.data || res);
+    } catch (err) {
+      console.error("Gagal memuat detail talenta:", err);
+      setError("Profil talenta tidak ditemukan atau terjadi kendala jaringan.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchTalent();
+    }
+  }, [id]);
+
+  // 2. Fetch UMKM Active Projects if logged in as UMKM
+  useEffect(() => {
+    if (isUmkm) {
+      async function loadProjects() {
+        try {
+          setLoadingProjects(true);
+          const res = await projectApi.getMyProjects();
+          const list = Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res)
+              ? res
+              : [];
+          setMyProjects(list);
+          if (list.length > 0) {
+            setSelectedProjectId(list[0].id);
+          }
+        } catch (err) {
+          console.error("Gagal memuat daftar proyek UMKM:", err);
+        } finally {
+          setLoadingProjects(false);
+        }
+      }
+      loadProjects();
+    }
+  }, [isUmkm]);
+
+  // Handle Action: Open Workspace Chat
+  const handleOpenProjectChat = () => {
+    if (!selectedProjectId) {
+      addToast({
+        type: "warning",
+        title: "Pilih Proyek",
+        message: "Silakan pilih salah satu proyek aktif Anda untuk membuka diskusi.",
+      });
+      return;
+    }
+    navigate(`/proposals/${selectedProjectId}?tab=chat`);
+  };
+
+  // Copy Profile Link
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    addToast({
+      type: "success",
+      title: "Tautan Disalin",
+      message: "Link profil talenta berhasil disalin ke clipboard.",
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+        <div className="h-6 w-44 bg-slate-200 rounded-md animate-pulse" />
+        <div className="h-64 bg-surface rounded-2xl border border-border animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="h-48 md:col-span-2 bg-surface rounded-2xl border border-border animate-pulse" />
+          <div className="h-48 bg-surface rounded-2xl border border-border animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !talent) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-4">
+        <div className="p-8 bg-surface rounded-2xl border border-border shadow-xs space-y-4">
+          <p className="text-base font-semibold text-slate-800">
+            {error || "Profil talenta tidak ditemukan."}
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="secondary" size="sm" onClick={() => navigate("/talents")}>
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              Kembali ke Direktori
+            </Button>
+            <Button variant="brand" size="sm" onClick={fetchTalent}>
+              <RotateCcw className="w-4 h-4 mr-1.5" />
+              Coba Lagi
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const initial = talent.nama_lengkap
+    ? talent.nama_lengkap.charAt(0).toUpperCase()
+    : "M";
+  const ratingScore = Number(talent.rating_avg) || 0;
+  const hasRating = ratingScore > 0;
+  const completedProjects = talent.total_proyek_selesai ?? 0;
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6 font-sans">
+      {/* Top Bar Navigation */}
+      <div className="flex items-center justify-between">
+        <Link
+          to="/talents"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-dark-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Kembali ke Direktori Mahasiswa</span>
+        </Link>
+
+        <button
+          onClick={handleShare}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-dark-900 bg-surface hover:bg-slate-100 border border-border rounded-xl transition-colors cursor-pointer"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          <span>Bagikan Profil</span>
+        </button>
+      </div>
+
+      {/* Main Profile Header Card */}
+      <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          {/* Avatar */}
+          {talent.url_foto ? (
+            <img
+              src={talent.url_foto}
+              alt={talent.nama_lengkap}
+              className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shrink-0 shadow-sm border border-border"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shrink-0 shadow-sm">
+              {initial}
+            </div>
+          )}
+
+          {/* Identity Info */}
+          <div className="flex-1 text-center sm:text-left space-y-3 min-w-0">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-bold text-dark-900">
+                {talent.nama_lengkap}
+              </h1>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi Kampus
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1.5 text-xs text-slate-600">
+              <span className="flex items-center gap-1 font-medium">
+                <ProdiVectorIcon size={14} className="text-brand-indigo shrink-0" />
+                <span>{talent.prodi || "Belum Memilih Prodi"}</span>
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <CampusVectorIcon size={14} className="text-amber-500 shrink-0" />
+                <span>{talent.universitas || "Universitas Bina Sarana Informatika"}</span>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+              {talent.nim && (
+                <span className="text-xs font-mono text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                  NIM {talent.nim}
+                </span>
+              )}
+              <span className="text-xs font-semibold text-brand-indigo bg-brand-indigo-light px-2.5 py-1 rounded-lg border border-brand-indigo/15">
+                Semester {talent.semester || 6}
+              </span>
+              <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 flex items-center gap-1">
+                <Award className="w-3.5 h-3.5 text-amber-600" />
+                <span>{talent.status_badge || "Talenta Terverifikasi"}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 3 Core Trust Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
+          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+            <span className="text-xs text-slate-500 block">Rating Kepuasan</span>
+            <div className="flex items-center justify-center gap-1.5 mt-1">
+              <StarRating rating={ratingScore} size="sm" />
+              <span className="text-sm font-bold text-dark-900">
+                {hasRating ? ratingScore.toFixed(1) : "Belum Ada"}
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-400 block mt-0.5">
+              {talent.reviews_count || 0} Ulasan Klien
+            </span>
+          </div>
+
+          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+            <span className="text-xs text-slate-500 block">Proyek Selesai</span>
+            <span className="text-base font-extrabold text-dark-900 block mt-1">
+              {completedProjects} Proyek
+            </span>
+            <span className="text-[11px] text-slate-400 block mt-0.5">
+              Penyelesaian Tepat Waktu
+            </span>
+          </div>
+
+          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+            <span className="text-xs text-slate-500 block">Proteksi Escrow</span>
+            <div className="flex items-center justify-center gap-1 text-base font-extrabold text-emerald-700 mt-1">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>{completedProjects > 0 ? talent.escrow_success_rate || "100%" : "100% Aman"}</span>
+            </div>
+            <span className="text-[11px] text-slate-400 block mt-0.5">
+              Dana Dijamin Sistem
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Detail Grid: Left (Bio, Skills, Portofolio, Testimoni) vs Right (Kolaborasi) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column: 2/3 Width */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Bio Section */}
+          <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-3">
+            <h2 className="text-sm font-bold text-dark-900 uppercase tracking-wider text-slate-500">
+              Tentang & Ringkasan Profil
+            </h2>
+            {talent.bio ? (
+              <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                {talent.bio}
+              </p>
+            ) : (
+              <p className="text-sm text-slate-400 italic">
+                Mahasiswa belum melengkapi deskripsi bio profil.
+              </p>
+            )}
+          </div>
+
+          {/* Skills Section */}
+          {talent.skills && talent.skills.length > 0 && (
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-3">
+              <h2 className="text-sm font-bold text-dark-900 uppercase tracking-wider text-slate-500">
+                Keahlian & Kemampuan Teknis
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {talent.skills.map((skill, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs font-semibold px-3 py-1 rounded-lg bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* External Portofolio Links */}
+          {(talent.github_url ||
+            talent.figma_url ||
+            talent.website_url ||
+            talent.linkedin_url ||
+            talent.url_portofolio) && (
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-3">
+              <h2 className="text-sm font-bold text-dark-900 uppercase tracking-wider text-slate-500">
+                Tautan Portofolio & Karya
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {talent.github_url && (
+                  <a
+                    href={talent.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 text-slate-800 transition-colors flex items-center justify-between text-xs font-semibold group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <GithubVectorIcon size={18} />
+                      <span>GitHub Repository</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-dark-900" />
+                  </a>
+                )}
+                {talent.figma_url && (
+                  <a
+                    href={talent.figma_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 text-slate-800 transition-colors flex items-center justify-between text-xs font-semibold group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <FigmaVectorIcon size={18} />
+                      <span>Figma Portofolio</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-dark-900" />
+                  </a>
+                )}
+                {talent.website_url && (
+                  <a
+                    href={talent.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 text-slate-800 transition-colors flex items-center justify-between text-xs font-semibold group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <GlobeVectorIcon size={18} />
+                      <span>Website Pribadi</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-dark-900" />
+                  </a>
+                )}
+                {talent.linkedin_url && (
+                  <a
+                    href={talent.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 text-[#0A66C2] transition-colors flex items-center justify-between text-xs font-semibold group"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <LinkedinVectorIcon size={18} />
+                      <span>LinkedIn Profile</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-dark-900" />
+                  </a>
+                )}
+                {talent.url_portofolio &&
+                  !talent.github_url &&
+                  !talent.figma_url &&
+                  !talent.website_url &&
+                  !talent.linkedin_url && (
+                    <a
+                      href={
+                        talent.url_portofolio.startsWith("http")
+                          ? talent.url_portofolio
+                          : `https://${talent.url_portofolio}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 text-slate-800 transition-colors flex items-center justify-between text-xs font-semibold group"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <GlobeVectorIcon size={18} />
+                        <span>Lihat Portofolio</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-dark-900" />
+                    </a>
+                  )}
+              </div>
+            </div>
+          )}
+
+          {/* Client Reviews Section */}
+          <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-dark-900 uppercase tracking-wider text-slate-500">
+                Ulasan & Riwayat Klien UMKM
+              </h2>
+              <span className="text-xs text-slate-500">
+                {talent.recent_reviews?.length || 0} Ulasan Terverifikasi
+              </span>
+            </div>
+
+            {talent.recent_reviews && talent.recent_reviews.length > 0 ? (
+              <div className="space-y-3">
+                {talent.recent_reviews.map((rev) => (
+                  <div
+                    key={rev.id}
+                    className="p-4 rounded-xl border border-border bg-canvas space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-bold text-dark-900 text-xs block truncate">
+                          {rev.client_name}
+                        </span>
+                        {rev.project_title && (
+                          <span className="text-[11px] text-slate-500 block truncate">
+                            Proyek: {rev.project_title}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                        <span className="text-xs font-bold text-dark-900">
+                          {Number(rev.skor).toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-700 italic leading-relaxed">
+                      "{rev.ulasan}"
+                    </p>
+                    {rev.created_at && (
+                      <span className="text-[10px] text-slate-400 block pt-1">
+                        {formatDate(rev.created_at)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 bg-canvas rounded-xl border border-border text-center space-y-1">
+                <p className="text-xs font-medium text-slate-700">
+                  Belum ada ulasan publik untuk mahasiswa ini.
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  Jadilah UMKM pertama yang berkolaborasi dan memberikan ulasan kinerja.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: 1/3 Width (Collaboration Action Sidebar) */}
+        <div className="space-y-6">
+          <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-4">
+            <h2 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-brand-indigo" />
+              <span>Ajak Kolaborasi Proyek</span>
+            </h2>
+
+            {isUmkm ? (
+              <div className="space-y-4">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Pilih salah satu proyek aktif Anda untuk membuka diskusi kerja sama langsung dengan talenta ini:
+                </p>
+
+                {loadingProjects ? (
+                  <div className="p-4 text-center text-xs text-slate-500 bg-canvas rounded-xl border border-border">
+                    Memeriksa daftar proyek aktif Anda...
+                  </div>
+                ) : myProjects.length > 0 ? (
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-slate-700 block">
+                      Pilih Proyek UMKM Anda:
+                    </label>
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {myProjects.map((p) => {
+                        const isSelected = selectedProjectId === p.id;
+                        const isOpen =
+                          p.status === "OPEN" || p.status === "BIDDING";
+                        const isInProgress = p.status === "IN_PROGRESS";
+
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => setSelectedProjectId(p.id)}
+                            className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
+                              isSelected
+                                ? "bg-brand-indigo-light/30 border-brand-indigo ring-1 ring-brand-indigo shadow-xs"
+                                : "bg-canvas border-border hover:border-slate-300"
+                            }`}
+                          >
+                            <div className="min-w-0 flex-1">
+                              <span className="font-bold text-dark-900 truncate block">
+                                {p.judul}
+                              </span>
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                                <span className="font-bold text-brand-indigo font-mono">
+                                  {formatCurrency(p.budget_max)}
+                                </span>
+                                <span>•</span>
+                                <span>{p.kategori || "UMKM Digital"}</span>
+                              </div>
+                            </div>
+                            <div
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected
+                                  ? "border-brand-indigo bg-brand-indigo"
+                                  : "border-slate-300 bg-white"
+                              }`}
+                            >
+                              {isSelected && (
+                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="brand"
+                      size="sm"
+                      onClick={handleOpenProjectChat}
+                      className="w-full font-bold text-xs shadow-brand py-2.5 mt-2 cursor-pointer flex items-center justify-center"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                      Mulai Diskusi di Ruang Kerja
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 text-center">
+                    <p className="text-xs text-slate-500">
+                      Anda belum memiliki proyek aktif untuk mengajak mahasiswa ini.
+                    </p>
+                    <Link to="/projects/new">
+                      <Button variant="brand" size="sm" className="w-full text-xs font-bold">
+                        <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+                        Pasang Proyek Baru
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+
+                {/* Email Direct Option */}
+                {talent.email && (
+                  <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="w-4 h-4 text-brand-indigo shrink-0" />
+                      <div className="min-w-0">
+                        <span className="font-semibold text-dark-900 block truncate">
+                          Email Resmi Kampus
+                        </span>
+                        <span className="text-[11px] text-slate-500 block truncate">
+                          {talent.email}
+                        </span>
+                      </div>
+                    </div>
+                    <a
+                      href={`mailto:${talent.email}?subject=Tawaran%20Kolaborasi%20Proyek%20Makarya`}
+                      className="px-2.5 py-1 text-xs font-bold text-brand-indigo hover:underline shrink-0"
+                    >
+                      Kirim Email
+                    </a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Masuk sebagai <b>Klien UMKM</b> untuk langsung mengajak talenta ini berkolaborasi dalam proyek usaha Anda.
+                </p>
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs text-slate-600">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Keuntungan Kolaborasi Resmi:</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-[11px] text-slate-500">
+                    <li>Sistem pembayaran escrow aman & bergaransi.</li>
+                    <li>Ruang kerja terstruktur dengan fitur chat resmi.</li>
+                    <li>Sertifikat kolaborasi kampus untuk mahasiswa.</li>
+                  </ul>
+                </div>
+
+                <Link to="/login" className="block">
+                  <Button variant="brand" size="sm" className="w-full text-xs font-bold">
+                    Masuk Sebagai Klien UMKM
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

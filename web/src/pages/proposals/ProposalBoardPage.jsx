@@ -148,7 +148,15 @@ export function ProposalBoardPage() {
             const hasAccepted = details.proposals.some(
               (p) => p.status === "ACCEPTED",
             );
-            if (isCompleted) {
+            const requestedTab = searchParams.get("tab");
+            if (
+              requestedTab &&
+              ["chat", "deliverable", "brief", "applicants"].includes(
+                requestedTab,
+              )
+            ) {
+              setActiveStageTab(requestedTab);
+            } else if (isCompleted) {
               setActiveStageTab("deliverable");
             } else if (hasAccepted) {
               setActiveStageTab("chat");
@@ -200,7 +208,15 @@ export function ProposalBoardPage() {
               subMap[found.project_id]?.status === "APPROVED" ||
               found.project_status === "DONE" ||
               found.project_status === "COMPLETED";
-            if (isCompleted) {
+            const requestedTab = searchParams.get("tab");
+            if (
+              requestedTab &&
+              ["chat", "deliverable", "brief", "applicants"].includes(
+                requestedTab,
+              )
+            ) {
+              setActiveStageTab(requestedTab);
+            } else if (isCompleted) {
               setActiveStageTab("deliverable");
             } else if (found.status === "ACCEPTED") {
               setActiveStageTab("chat");
@@ -253,6 +269,16 @@ export function ProposalBoardPage() {
   useEffect(() => {
     loadData();
   }, [isUmkm, targetProjectId]);
+
+  useEffect(() => {
+    const requestedTab = searchParams.get("tab");
+    if (
+      requestedTab &&
+      ["chat", "deliverable", "brief", "applicants"].includes(requestedTab)
+    ) {
+      setActiveStageTab(requestedTab);
+    }
+  }, [searchParams]);
 
   // Handle UMKM selecting a project to open dedicated workspace
   const handleSelectProject = async (project) => {

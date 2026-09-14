@@ -30,332 +30,11 @@ import {
   Star,
   ShieldCheck,
   Briefcase,
-  Eye,
   SlidersHorizontal,
   ArrowUpDown,
-  X,
   Layers,
   ChevronRight,
 } from "lucide-react";
-
-/**
- * TalentDetailModal: Modal detail lengkap portofolio dan ulasan talenta mahasiswa
- */
-function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
-  if (!isOpen || !talent) return null;
-
-  const initial = talent.nama_lengkap
-    ? talent.nama_lengkap.charAt(0).toUpperCase()
-    : "M";
-  const ratingScore = Number(talent.rating_avg) || 5.0;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden font-sans flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
-        {/* Top Header Banner */}
-        <div className="relative p-5 sm:p-6 bg-slate-900 text-white border-b border-slate-800">
-          <button
-            onClick={onClose}
-            className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-            title="Tutup"
-          >
-            <X className="w-5 h-5" />
-          </button>
-
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
-            {talent.url_foto ? (
-              <img
-                src={talent.url_foto}
-                alt={talent.nama_lengkap}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shrink-0 shadow-sm border border-white/20 select-none"
-              />
-            ) : (
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-brand-indigo text-white font-serif text-2xl sm:text-3xl font-bold flex items-center justify-center shrink-0 shadow-sm border border-white/20 select-none">
-                {initial}
-              </div>
-            )}
-
-            <div className="text-center sm:text-left space-y-1.5 flex-1 min-w-0">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <h2 className="text-lg sm:text-2xl font-bold font-sans truncate">
-                  {talent.nama_lengkap}
-                </h2>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-semibold">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi
-                </span>
-              </div>
-
-              <p className="text-xs sm:text-sm text-slate-300 flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-                <span className="flex items-center gap-1 truncate">
-                  <ProdiVectorIcon
-                    size={14}
-                    className="text-sky-400 shrink-0"
-                  />
-                  {talent.prodi || "Belum Memilih Prodi"}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1 truncate">
-                  <CampusVectorIcon
-                    size={14}
-                    className="text-amber-400 shrink-0"
-                  />
-                  {talent.universitas || "Universitas Bina Sarana Informatika"}
-                </span>
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 pt-1">
-                {talent.nim && (
-                  <span className="text-[10px] sm:text-[11px] font-mono text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
-                    NIM: {talent.nim}
-                  </span>
-                )}
-                <span className="text-[10px] sm:text-[11px] font-semibold text-brand-cyan bg-brand-cyan/20 px-2 py-0.5 rounded-md">
-                  Semester {talent.semester || 6}
-                </span>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <Award className="w-3 h-3" />{" "}
-                  {talent.status_badge || "Talenta Terverifikasi"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scrollable Body */}
-        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
-            <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
-              <div className="flex items-center justify-center gap-1 text-amber-500 font-bold text-lg sm:text-xl font-serif">
-                <Star
-                  className={`w-4 h-4 ${Number(talent.rating_avg) > 0 ? "fill-amber-400 text-amber-500" : "text-slate-300"}`}
-                />
-                <span>
-                  {Number(talent.rating_avg) > 0
-                    ? Number(talent.rating_avg).toFixed(1)
-                    : "-"}
-                </span>
-              </div>
-              <span className="text-[11px] text-muted block mt-0.5 font-medium">
-                {Number(talent.rating_avg) > 0
-                  ? "Reputasi Skor"
-                  : "Belum Ada Skor"}
-              </span>
-            </div>
-
-            <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
-              <span className="text-lg sm:text-xl font-bold text-dark-900 font-serif block">
-                {talent.total_proyek_selesai ?? 0}
-              </span>
-              <span className="text-[11px] text-muted block mt-0.5 font-medium">
-                Proyek Tuntas
-              </span>
-            </div>
-
-            <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
-              <span className="text-lg sm:text-xl font-bold text-emerald-700 font-serif block">
-                {talent.total_proyek_selesai > 0
-                  ? talent.escrow_success_rate || "100%"
-                  : "-"}
-              </span>
-              <span className="text-[11px] text-muted block mt-0.5 font-medium">
-                Sukses Escrow
-              </span>
-            </div>
-          </div>
-
-          {/* Bio Singkat */}
-          {talent.bio && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-                Ringkasan Profesional
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-canvas p-4 rounded-2xl border border-border">
-                {talent.bio}
-              </p>
-            </div>
-          )}
-
-          {/* Portfolio Links */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-              Tautan Portofolio & Akun Resmi
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {talent.github_url && (
-                <a
-                  href={talent.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 hover:shadow-xs transition-all text-xs font-medium text-dark-900 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <GithubVectorIcon size={16} className="text-slate-800" />
-                    <span>GitHub Repository</span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-dark-900" />
-                </a>
-              )}
-
-              {talent.figma_url && (
-                <a
-                  href={talent.figma_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 hover:shadow-xs transition-all text-xs font-medium text-dark-900 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <FigmaVectorIcon size={16} />
-                    <span>Figma Showcase</span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-dark-900" />
-                </a>
-              )}
-
-              {talent.website_url && (
-                <a
-                  href={talent.website_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 hover:shadow-xs transition-all text-xs font-medium text-dark-900 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <GlobeVectorIcon size={16} className="text-emerald-600" />
-                    <span>Situs / Web Portofolio</span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-dark-900" />
-                </a>
-              )}
-
-              {talent.linkedin_url && (
-                <a
-                  href={talent.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-xl border border-border bg-canvas hover:border-dark-900 hover:shadow-xs transition-all text-xs font-medium text-dark-900 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <LinkedinVectorIcon size={16} className="text-[#0A66C2]" />
-                    <span>Profil LinkedIn</span>
-                  </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-dark-900" />
-                </a>
-              )}
-            </div>
-
-            {!talent.github_url &&
-              !talent.figma_url &&
-              !talent.website_url &&
-              !talent.linkedin_url && (
-                <p className="text-xs text-muted italic bg-canvas p-3 rounded-xl border border-border">
-                  Tautan portofolio publik belum ditambahkan. Anda dapat meminta
-                  sampel pekerjaan saat berdiskusi via chat.
-                </p>
-              )}
-          </div>
-
-          {/* Skills */}
-          {talent.skills && talent.skills.length > 0 && (
-            <div className="space-y-2.5">
-              <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-                Keahlian & Bidang Spesialisasi
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {talent.skills.map((skill, idx) => (
-                  <span
-                    key={idx}
-                    className="text-xs font-semibold px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Reviews List */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-                Ulasan Klien UMKM ({talent.reviews_count || 0})
-              </h4>
-              <span className="text-[11px] text-muted">
-                Ulasan transaksi escrow terverifikasi
-              </span>
-            </div>
-
-            {talent.recent_reviews && talent.recent_reviews.length > 0 ? (
-              <div className="space-y-2.5">
-                {talent.recent_reviews.map((rev) => (
-                  <div
-                    key={rev.id}
-                    className="p-4 bg-canvas rounded-2xl border border-border space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-slate-200 font-bold text-xs flex items-center justify-center text-slate-700">
-                          {rev.client_name
-                            ? rev.client_name.charAt(0).toUpperCase()
-                            : "K"}
-                        </div>
-                        <div>
-                          <span className="text-xs font-bold text-dark-900 block leading-tight">
-                            {rev.client_name}
-                          </span>
-                          <span className="text-[10px] text-muted">
-                            Klien UMKM Terverifikasi
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
-                        <span className="text-xs font-bold text-amber-800">
-                          {rev.skor}.0
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-slate-700 italic leading-relaxed">
-                      "{rev.ulasan}"
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted italic bg-canvas p-3.5 rounded-xl border border-border">
-                Belum ada ulasan tertulis. Mahasiswa ini siap mengerjakan
-                deliverable pertama untuk usaha Anda.
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Modal Bottom CTA */}
-        <div className="p-4 sm:p-6 border-t border-border bg-canvas flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onClose}
-            className="font-semibold text-xs py-2.5 min-h-[44px] justify-center"
-          >
-            Tutup
-          </Button>
-          <Button
-            variant="brand"
-            size="sm"
-            onClick={() => {
-              onClose();
-              if (onContact) onContact(talent);
-            }}
-            className="font-bold text-xs shadow-brand flex items-center justify-center gap-1.5 py-2.5 min-h-[44px]"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            Ajak Chat & Kolaborasi
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function TalentsDirectoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -376,8 +55,6 @@ export function TalentsDirectoryPage() {
   // Modals State
   const [activeContactTalent, setActiveContactTalent] = useState(null);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [activeDetailTalent, setActiveDetailTalent] = useState(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const categoryPills = [
     { key: "", label: "Semua Bidang" },
@@ -435,11 +112,6 @@ export function TalentsDirectoryPage() {
   const handleOpenContact = (talent) => {
     setActiveContactTalent(talent);
     setIsContactModalOpen(true);
-  };
-
-  const handleOpenDetail = (talent) => {
-    setActiveDetailTalent(talent);
-    setIsDetailModalOpen(true);
   };
 
   return (
@@ -712,30 +384,27 @@ export function TalentsDirectoryPage() {
                   {/* Top Profile Header */}
                   <div className="flex items-start justify-between gap-3 mb-3.5">
                     <div className="flex items-center gap-3">
-                      {talent.url_foto ? (
-                        <img
-                          src={talent.url_foto}
-                          alt={talent.nama_lengkap}
-                          onClick={() => handleOpenDetail(talent)}
-                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer border border-border"
-                        />
-                      ) : (
-                        <div
-                          onClick={() => handleOpenDetail(talent)}
-                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-brand-indigo text-white font-serif text-base font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
-                        >
-                          {initial}
-                        </div>
-                      )}
+                      <Link to={`/talents/${talent.id}`} className="shrink-0">
+                        {talent.url_foto ? (
+                          <img
+                            src={talent.url_foto}
+                            alt={talent.nama_lengkap}
+                            className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover shrink-0 shadow-xs select-none hover:scale-105 transition-transform cursor-pointer border border-border"
+                          />
+                        ) : (
+                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-brand-indigo text-white font-serif text-base font-bold flex items-center justify-center shrink-0 shadow-xs select-none hover:scale-105 transition-transform cursor-pointer">
+                            {initial}
+                          </div>
+                        )}
+                      </Link>
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h3
-                            onClick={() => handleOpenDetail(talent)}
-                            className="text-sm sm:text-base font-bold text-dark-900 leading-snug truncate hover:text-brand-indigo cursor-pointer transition-colors"
-                          >
-                            {talent.nama_lengkap}
-                          </h3>
+                          <Link to={`/talents/${talent.id}`}>
+                            <h3 className="text-sm sm:text-base font-bold text-dark-900 leading-snug truncate hover:text-brand-indigo cursor-pointer transition-colors">
+                              {talent.nama_lengkap}
+                            </h3>
+                          </Link>
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         </div>
 
@@ -911,26 +580,26 @@ export function TalentsDirectoryPage() {
                   )}
                 </div>
 
-                {/* Bottom Actions */}
+                {/* Bottom Actions - Styled cleanly matching mobile layout */}
                 <div className="pt-4 border-t border-border flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOpenDetail(talent)}
-                    className="font-semibold text-xs rounded-xl py-2.5 px-3 min-h-[44px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center"
-                  >
-                    <Eye className="w-3.5 h-3.5 mr-1.5 text-muted shrink-0" />
-                    Detail
-                  </Button>
+                  <Link to={`/talents/${talent.id}`} className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full font-semibold text-xs rounded-xl py-2 px-3 min-h-[38px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center"
+                    >
+                      Portofolio
+                    </Button>
+                  </Link>
 
                   <Button
                     variant="brand"
                     size="sm"
                     onClick={() => handleOpenContact(talent)}
-                    className="flex-1 font-bold text-xs shadow-brand rounded-xl py-2.5 min-h-[44px] cursor-pointer flex items-center justify-center"
+                    className="flex-1 font-bold text-xs shadow-brand rounded-xl py-2 px-3 min-h-[38px] cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <MessageSquare className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-                    Ajak Chat / Rekrut
+                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                    <span>Ajak Kolaborasi</span>
                   </Button>
                 </div>
               </div>
@@ -938,14 +607,6 @@ export function TalentsDirectoryPage() {
           })}
         </div>
       )}
-
-      {/* Detail Modal */}
-      <TalentDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        talent={activeDetailTalent}
-        onContact={handleOpenContact}
-      />
 
       {/* Contact Modal */}
       <ContactTalentModal
