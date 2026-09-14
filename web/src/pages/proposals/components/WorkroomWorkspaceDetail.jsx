@@ -639,12 +639,12 @@ export function WorkroomWorkspaceDetail({
           </div>
         </div>
 
-        {/* Sub-Nav Segmented Tabs for the Active Workroom */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 pt-2.5 border-t border-border w-full">
+        {/* Sub-Nav Segmented Tabs for the Active Workroom - Responsive flex-wrap, NO horizontal slider */}
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 pb-1 pt-2.5 border-t border-border w-full">
           <button
             type="button"
             onClick={() => setActiveStageTab("chat")}
-            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
               activeStageTab === "chat"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
@@ -659,7 +659,7 @@ export function WorkroomWorkspaceDetail({
             {hasAcceptedApplicant ? (
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             ) : (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-muted font-semibold border border-border">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-muted font-semibold border border-border">
                 Terkunci
               </span>
             )}
@@ -668,7 +668,7 @@ export function WorkroomWorkspaceDetail({
           <button
             type="button"
             onClick={() => setActiveStageTab("deliverable")}
-            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
               activeStageTab === "deliverable"
                 ? "bg-dark-900 text-white shadow-xs"
                 : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
@@ -678,7 +678,7 @@ export function WorkroomWorkspaceDetail({
             <span>Deliverable</span>
             {activeDeliverable && (
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
                   activeStageTab === "deliverable"
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                     : "bg-emerald-100 text-emerald-800"
@@ -693,7 +693,7 @@ export function WorkroomWorkspaceDetail({
             <button
               type="button"
               onClick={() => setActiveStageTab("applicants")}
-              className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeStageTab === "applicants"
                   ? "bg-dark-900 text-white shadow-xs"
                   : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
@@ -708,7 +708,7 @@ export function WorkroomWorkspaceDetail({
             <button
               type="button"
               onClick={() => setActiveStageTab("team")}
-              className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeStageTab === "team"
                   ? "bg-dark-900 text-white shadow-xs"
                   : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"

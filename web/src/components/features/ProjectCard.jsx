@@ -1,19 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Card } from "../ui/Card";
-import { Badge } from "../ui/Badge";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { daysRemaining, isExpired } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
 import { useAuthStore } from "../../store/authStore";
 import {
   Clock,
-  Tag,
   Building2,
-  ArrowRight,
   AlertCircle,
   CheckCircle2,
   Users,
+  ChevronRight,
 } from "lucide-react";
 
 export function ProjectCard({ project }) {
@@ -37,120 +34,116 @@ export function ProjectCard({ project }) {
     project.umkm_profile?.url_foto_usaha ||
     project.umkm_profile?.url_foto ||
     project.umkm_foto;
+  const clientName = project.umkm_profile?.nama_usaha || "Klien UMKM";
+  const clientCity = project.umkm_profile?.kota;
+
+  const isTeam =
+    project.tipe_kolaborasi === "TIM" ||
+    (Array.isArray(project.slots) && project.slots.length > 1);
+  const openSlotsCount = Array.isArray(project.slots)
+    ? project.slots.filter((s) => s.status === "OPEN").length
+    : 0;
 
   return (
-    <Card
-      hover
-      className={`flex flex-col justify-between h-full group bg-surface border-border ${expired ? "opacity-80" : ""}`}
+    <Link
+      to={getProjectUrl(project)}
+      className={`group block bg-white rounded-2xl p-5 border border-slate-200/80 hover:border-indigo-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full ${
+        expired ? "opacity-75" : ""
+      }`}
     >
       <div>
-        {/* Top Header: UMKM Client Info & Days Left */}
-        <div className="flex items-center justify-between gap-2 mb-3.5 pb-3 border-b border-border-subtle">
-          <div className="flex items-center gap-2.5 overflow-hidden">
+        {/* 1. Header: Klien UMKM & Deadline Status */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
             {clientPhoto && !imgError ? (
               <img
                 src={clientPhoto}
-                alt={project.umkm_profile?.nama_usaha || "UMKM"}
-                className="w-8 h-8 rounded-full object-cover shrink-0 border border-border"
+                alt={clientName}
+                className="w-6 h-6 rounded-full object-cover shrink-0 border border-slate-200"
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0">
-                <Building2 className="w-4 h-4" />
+              <div className="w-6 h-6 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-[10px] shrink-0">
+                <Building2 className="w-3.5 h-3.5" />
               </div>
             )}
-            <div className="truncate">
-              <h4 className="text-xs font-semibold text-dark-900 truncate font-sans">
-                {project.umkm_profile?.nama_usaha || "Klien UMKM"}
-              </h4>
-              <p className="text-[11px] text-muted truncate font-sans">
-                {project.umkm_profile?.kota || "Indonesia"}
-              </p>
-            </div>
+            <span className="text-xs font-medium text-slate-600 truncate">
+              {clientName}
+            </span>
+            {clientCity && (
+              <>
+                <span className="text-[10px] text-slate-300">•</span>
+                <span className="text-xs text-slate-400 truncate">
+                  {clientCity}
+                </span>
+              </>
+            )}
           </div>
 
           {expired ? (
-            <div className="flex items-center gap-1 text-[11px] text-rose-700 font-medium shrink-0 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">
+            <span className="inline-flex items-center gap-1 text-[11px] text-rose-600 font-medium shrink-0 bg-rose-50 px-2 py-0.5 rounded-md">
               <AlertCircle className="w-3 h-3 text-rose-500" />
               <span>Kedaluwarsa</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-[11px] text-muted font-medium shrink-0 bg-canvas px-2.5 py-1 rounded-full border border-border">
-              <Clock className="w-3 h-3 text-slate-500" />
-              <span>
-                {daysLeft === 0 ? "Hari Terakhir" : `${daysLeft} hari`}
-              </span>
-            </div>
-          )}
+            </span>
+          ) : daysLeft !== null ? (
+            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 font-normal shrink-0">
+              <Clock className="w-3 h-3 text-slate-400" />
+              <span>{daysLeft === 0 ? "Hari Ini" : `Sisa ${daysLeft} hr`}</span>
+            </span>
+          ) : null}
         </div>
 
-        {/* Project Title */}
-        <h3 className="text-base font-semibold text-dark-900 group-hover:text-slate-900 transition-colors line-clamp-2 leading-snug mb-2 font-sans">
+        {/* 2. Project Title */}
+        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug mb-3">
           {project.judul}
         </h3>
 
-        {/* Project Description */}
-        <p className="text-xs text-muted line-clamp-2 mb-4 leading-relaxed font-sans font-normal">
-          {project.deskripsi_raw}
-        </p>
+        {/* 3. Metadata Inline Row (Category • Collab • Match) */}
+        <div className="flex items-center flex-wrap gap-2 text-xs mb-4">
+          <span className="font-medium text-indigo-600">
+            {categoryLabels[project.kategori] ||
+              project.kategori ||
+              "Proyek Digital"}
+          </span>
+
+          <span className="text-[10px] text-slate-300">•</span>
+
+          {isTeam ? (
+            <span className="inline-flex items-center gap-1 text-purple-700 font-medium">
+              <Users className="w-3.5 h-3.5 text-purple-600" />
+              <span>
+                Tim {openSlotsCount > 0 ? `(${openSlotsCount} peran buka)` : ""}
+              </span>
+            </span>
+          ) : (
+            <span className="text-slate-500">Individu</span>
+          )}
+
+          {project.match_score && isMhs ? (
+            <>
+              <span className="text-[10px] text-slate-300">•</span>
+              <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <span>{project.match_score}% cocok</span>
+              </span>
+            </>
+          ) : null}
+        </div>
       </div>
 
-      {/* Footer Meta: Category Badge, Budget, & Action */}
-      <div className="pt-3 border-t border-border-subtle mt-2 space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge variant="neutral" className="text-[11px] px-2.5 py-0.5">
-              <Tag className="w-3 h-3 mr-1 text-slate-500" />
-              {categoryLabels[project.kategori] || project.kategori}
-            </Badge>
-
-            {project.tipe_kolaborasi === "TIM" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
-                <Users className="w-3 h-3 text-indigo-600" />
-                <span>
-                  Tim{" "}
-                  {project.slots
-                    ? `(${project.slots.filter((s) => s.status === "OPEN").length} Buka)`
-                    : ""}
-                </span>
-              </span>
-            )}
-
-            {project.match_score && isMhs ? (
-              <span
-                className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/90"
-                title={
-                  project.match_reasons?.join(" • ") || "Kecocokan Keahlian"
-                }
-              >
-                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                <span>{project.match_score}% Cocok</span>
-              </span>
-            ) : null}
-          </div>
-
-          <div className="text-right">
-            <span className="text-[10px] text-muted block uppercase tracking-wider font-semibold">
-              Maks Budget
-            </span>
-            <span className="text-sm font-bold text-dark-900 font-sans">
-              {formatCurrency(project.budget_max)}
-            </span>
-          </div>
+      {/* 4. Footer: Budget & Action Indicator */}
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
+        <div>
+          <span className="text-sm font-bold text-slate-900 tracking-tight">
+            {formatCurrency(project.budget_max)}
+          </span>
         </div>
 
-        <Link
-          to={getProjectUrl(project)}
-          className={`w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-semibold transition-all gap-1.5 shadow-xs select-none ${
-            expired
-              ? "bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200"
-              : "bg-dark-900 hover:bg-dark-800 text-white"
-          }`}
-        >
-          <span>{expired ? "Lihat Detail" : "Ajukan Proposal"}</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+        <div className="flex items-center gap-1 text-slate-400 group-hover:text-indigo-600 transition-colors text-xs">
+          <span>{project.total_pelamar || 0} pelamar</span>
+          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+        </div>
       </div>
-    </Card>
+    </Link>
   );
 }

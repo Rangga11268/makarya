@@ -16,6 +16,7 @@ export const authApi = {
 export const projectApi = {
   create: (data) => api.post("/projects", data),
   browse: (params) => api.get("/projects", { params }),
+  getAll: (params) => api.get("/projects", { params }),
   getDetail: (id) => api.get(`/projects/${id}`),
   getMyProjects: () => api.get("/projects/my-projects"),
   reopen: (id, data) => api.post(`/projects/${id}/reopen`, data),

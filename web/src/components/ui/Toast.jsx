@@ -1,11 +1,10 @@
 import React from "react";
-import { useToastStore } from "../../store/toastStore";
 import { useToastStore, formatToastMessage } from "../../store/toastStore";
-import { 
-  AlertSuccessSvg, 
-  AlertErrorSvg, 
-  AlertWarningSvg, 
-  AlertInfoSvg 
+import {
+  AlertSuccessSvg,
+  AlertErrorSvg,
+  AlertWarningSvg,
+  AlertInfoSvg,
 } from "./AlertIcons";
 import { X } from "lucide-react";
 import { cn } from "../../utils/cn";
@@ -36,10 +35,14 @@ export function ToastContainer() {
           key={toast.id}
           className={cn(
             "pointer-events-auto flex items-start gap-3.5 p-4 rounded-2xl border shadow-2xl backdrop-blur-md text-dark-900 animate-in slide-in-from-top-4 fade-in duration-200",
-            toast.type === "success" && "border-emerald-300 bg-white/95 text-slate-900 shadow-emerald-950/10",
-            toast.type === "error" && "border-rose-300 bg-white/95 text-slate-900 shadow-rose-950/10",
-            toast.type === "warning" && "border-amber-300 bg-white/95 text-slate-900 shadow-amber-950/10",
-            toast.type === "info" && "border-brand-indigo/30 bg-white/95 text-slate-900 shadow-brand-indigo/10"
+            toast.type === "success" &&
+              "border-emerald-300 bg-white/95 text-slate-900 shadow-emerald-950/10",
+            toast.type === "error" &&
+              "border-rose-300 bg-white/95 text-slate-900 shadow-rose-950/10",
+            toast.type === "warning" &&
+              "border-amber-300 bg-white/95 text-slate-900 shadow-amber-950/10",
+            toast.type === "info" &&
+              "border-brand-indigo/30 bg-white/95 text-slate-900 shadow-brand-indigo/10",
           )}
         >
           {/* Vector SVG Icon */}
@@ -49,10 +52,15 @@ export function ToastContainer() {
 
           <div className="flex-1 min-w-0 pt-0.5">
             <span className="text-[11px] font-bold uppercase tracking-wider block text-muted">
-              {toast.type === "success" ? "Berhasil" : toast.type === "error" ? "Peringatan" : toast.type === "warning" ? "Perhatian" : "Informasi"}
+              {toast.type === "success"
+                ? "Berhasil"
+                : toast.type === "error"
+                  ? "Peringatan"
+                  : toast.type === "warning"
+                    ? "Perhatian"
+                    : "Informasi"}
             </span>
             <div className="text-xs font-semibold leading-relaxed text-dark-900 mt-0.5">
-              {toast.message}
               {formatToastMessage(toast.message)}
             </div>
           </div>

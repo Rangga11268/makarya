@@ -20,6 +20,7 @@ import { chatApi, getChatWsUrl } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { ChatSkeleton } from "../../components/ui/Skeleton";
+import { Header } from "../../components/ui/Header";
 import {
   ArrowLeft,
   Send,
@@ -423,62 +424,55 @@ export function ChatScreen({ route, navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
-      {/* 1. Header Bar */}
-      <View
-        style={[
-          styles.header,
-          { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
-        ]}
-      >
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <ArrowLeft size={20} color={COLORS.textDark} />
-        </TouchableOpacity>
-
-        <View style={styles.headerTitleWrap}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            {resolvedPartnerPhoto ? (
-              <Image
-                source={{ uri: resolvedPartnerPhoto }}
-                style={styles.headerPartnerAvatar}
-                resizeMode="cover"
-              />
-            ) : (
-              <View style={styles.headerPartnerAvatarPlaceholder}>
-                <Text style={styles.headerPartnerAvatarText}>
-                  {resolvedPartnerName.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
-            <View style={{ flex: 1 }}>
-              <Text style={styles.headerName} numberOfLines={1}>
-                {resolvedPartnerName}
-              </Text>
-              <View style={styles.headerSubRow}>
-                <Text style={styles.headerProjectTitle} numberOfLines={1}>
-                  {projectTitle}
-                </Text>
-                <View
-                  style={[
-                    styles.onlineDot,
-                    wsConnected
-                      ? styles.onlineDotActive
-                      : styles.onlineDotInactive,
-                  ]}
+      {/* 1. Header Bar (Standar Desain Makarya Mobile) */}
+      <Header
+        onBack={() => navigation.goBack()}
+        centerContent={
+          <View style={styles.headerTitleWrap}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
+              {resolvedPartnerPhoto ? (
+                <Image
+                  source={{ uri: resolvedPartnerPhoto }}
+                  style={styles.headerPartnerAvatar}
+                  resizeMode="cover"
                 />
+              ) : (
+                <View style={styles.headerPartnerAvatarPlaceholder}>
+                  <Text style={styles.headerPartnerAvatarText}>
+                    {resolvedPartnerName.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+              )}
+              <View style={{ flex: 1 }}>
+                <Text style={styles.headerName} numberOfLines={1}>
+                  {resolvedPartnerName}
+                </Text>
+                <View style={styles.headerSubRow}>
+                  <Text style={styles.headerProjectTitle} numberOfLines={1}>
+                    {projectTitle}
+                  </Text>
+                  <View
+                    style={[
+                      styles.onlineDot,
+                      wsConnected
+                        ? styles.onlineDotActive
+                        : styles.onlineDotInactive,
+                    ]}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
-
-        <View style={styles.escrowChip}>
-          <ShieldCheck size={12} color={COLORS.brandCyan} />
-          <Text style={styles.escrowChipText}>Escrow Aktif</Text>
-        </View>
-      </View>
+        }
+        rightAction={
+          <View style={styles.escrowChip}>
+            <ShieldCheck size={11} color={COLORS.brandCyan} />
+            <Text style={styles.escrowChipText}>Escrow</Text>
+          </View>
+        }
+      />
 
       {/* 2. Messages List */}
       {loading ? (
@@ -766,36 +760,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.bgDark,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 34,
-    paddingBottom: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(226, 232, 240, 0.7)",
-    gap: 12,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
   },
   headerTitleWrap: {
     flex: 1,

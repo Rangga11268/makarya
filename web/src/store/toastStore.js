@@ -48,7 +48,6 @@ export const useToastStore = create((set) => ({
     const id = Date.now().toString();
     const cleanMessage = formatToastMessage(message);
     set((state) => ({
-      toasts: [...state.toasts, { id, message, type }],
       toasts: [...state.toasts, { id, message: cleanMessage, type }],
     }));
 

@@ -110,7 +110,7 @@ export function ProjectExploreDetailView({
           {/* Unifies Meta, Title, Client Info, Metrics, & Escrow without clutter*/}
           {/* ================================================================= */}
           <AppleGlossyCard variant="hero" style={styles.appleHeroCard}>
-            {/* Top Row: Meta Badges (Left) & Faktur Button (Right) - Zero Collision */}
+            {/* Top Row: Meta Badges (Left) & Faktur Button (Right, only when completed) */}
             <View style={styles.appleTopRow}>
               <View style={styles.appleBadgeGroup}>
                 <View style={styles.categoryChip}>
@@ -136,20 +136,27 @@ export function ProjectExploreDetailView({
                     ]}
                   />
                   <Text style={styles.statusChipText}>
-                    {formatStatus(project.status || "OPEN")}
+                    {project.status === "OPEN" || project.status === "BIDDING"
+                      ? project.tipe_kolaborasi === "TIM"
+                        ? "Merekrut Tim"
+                        : "Merekrut Talenta"
+                      : formatStatus(project.status || "OPEN")}
                   </Text>
                 </View>
               </View>
 
-              {/* Dedicated Non-colliding Faktur Action */}
-              <TouchableOpacity
-                style={styles.appleInvoiceBtn}
-                onPress={() => setInvoiceModal(true)}
-                activeOpacity={0.75}
-              >
-                <FileCheck size={13} color="#2563EB" />
-                <Text style={styles.appleInvoiceBtnText}>Faktur</Text>
-              </TouchableOpacity>
+              {/* Dedicated Faktur Action HANYA tampil jika proyek sudah COMPLETED / DONE */}
+              {(project.status === "COMPLETED" ||
+                project.status === "DONE") && (
+                <TouchableOpacity
+                  style={styles.appleInvoiceBtn}
+                  onPress={() => setInvoiceModal(true)}
+                  activeOpacity={0.75}
+                >
+                  <FileCheck size={13} color="#2563EB" />
+                  <Text style={styles.appleInvoiceBtnText}>Faktur</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             {/* Project Main Headline */}
@@ -252,11 +259,16 @@ export function ProjectExploreDetailView({
           </AppleGlossyCard>
 
           {/* ================================================================= */}
-          {/* 2. ESCROW STEPPER (FLAT)                                          */}
+          {/* 2. ESCROW STEPPER (FLAT) - HANYA MUNCUL SAAT PROYEK BERJALAN/SELESAI */}
           {/* ================================================================= */}
-          <View style={styles.stepperWrapper}>
-            <ProjectStatusBar currentStatus={project.status} flat />
-          </View>
+          {(project.status === "IN_PROGRESS" ||
+            project.status === "REVIEW" ||
+            project.status === "COMPLETED" ||
+            project.status === "DONE") && (
+            <View style={styles.stepperWrapper}>
+              <ProjectStatusBar currentStatus={project.status} flat />
+            </View>
+          )}
 
           {/* Cancellation / Expiry Notice (if cancelled) */}
           {project.status === "CANCELLED" && (
@@ -456,29 +468,6 @@ export function ProjectExploreDetailView({
               </TouchableOpacity>
             ) : null}
           </View>
-
-          {/* Standar Deliverable Scope Chips */}
-          <View style={styles.deliverablesSection}>
-            <Text style={styles.deliverablesSmallHeading}>
-              STANDAR DELIVERABLE:
-            </Text>
-            <View style={styles.deliverablePillsRow}>
-              <AppleGlossyBadge
-                icon={AppleSourceAssetIcon}
-                label="Aset / Berkas Sumber"
-              />
-              <AppleGlossyBadge
-                icon={AppleReadyDeliverableIcon}
-                label="Deliverable Siap Pakai"
-              />
-              <AppleGlossyBadge
-                icon={AppleStructuredRevisionIcon}
-                label="Revisi Terstruktur"
-              />
-            </View>
-          </View>
-
-          <View style={styles.hairlineDivider} />
 
           {/* Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
           {isMahasiswa && isAcceptedProposal && (

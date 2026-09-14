@@ -7,17 +7,23 @@ export function SectionHeader({
   subtitle,
   centered = false,
   action,
-  className
+  className,
 }) {
   return (
-    <div className={cn("flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 sm:mb-8", centered && "text-center items-center", className)}>
-      <div className={cn("space-y-2 max-w-2xl", centered && "mx-auto")}>
+    <div
+      className={cn(
+        "flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5 sm:mb-6",
+        centered && "text-center items-center",
+        className,
+      )}
+    >
+      <div className={cn("space-y-1.5 max-w-2xl", centered && "mx-auto")}>
         {badgeText && (
           <span className="inline-flex items-center px-3 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
             {badgeText}
           </span>
         )}
-        <h2 className="text-2xl sm:text-3xl font-bold text-dark-900 tracking-tight leading-snug">
+        <h2 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-snug">
           {title}
         </h2>
         {subtitle && (

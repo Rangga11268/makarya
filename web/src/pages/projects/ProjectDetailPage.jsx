@@ -126,6 +126,14 @@ export function ProjectDetailPage() {
     try {
       setLoading(true);
       const projectId = extractIdFromSlug(id);
+      const IS_UUID =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!IS_UUID.test(projectId)) {
+        console.warn("Invalid project UUID format:", projectId);
+        setProject(null);
+        setLoading(false);
+        return;
+      }
       const res = await projectApi.getDetail(projectId);
       setProject(res.data);
     } catch (err) {
@@ -141,9 +149,9 @@ export function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 font-sans">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
         <div className="h-6 w-48 bg-slate-200 rounded animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           <div className="lg:col-span-8 h-96 bg-surface rounded-3xl border border-border animate-pulse" />
           <div className="lg:col-span-4 h-96 bg-surface rounded-3xl border border-border animate-pulse" />
         </div>
@@ -176,7 +184,7 @@ export function ProjectDetailPage() {
   const isOwner = user?.id === project.umkm_id;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-28 sm:pb-32 lg:pb-10 space-y-8 font-sans">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 lg:pb-8 space-y-6 font-sans">
       {/* 1. Breadcrumbs & Top Quick Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-muted">
@@ -206,13 +214,13 @@ export function ProjectDetailPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
         {/* ========================================================================= */}
         {/* LEFT COLUMN: MAIN PROJECT BRIEF & WORKFLOW ROADMAP (8 cols) */}
         {/* ========================================================================= */}
         <div className="lg:col-span-8 space-y-6">
           {/* Card 1: Main Project Header & Overview */}
-          <Card className="p-6 sm:p-8 space-y-6 bg-surface border-border rounded-3xl shadow-xs">
+          <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-2xl shadow-xs">
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2.5">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-canvas border border-border text-xs font-bold text-dark-900">
@@ -276,7 +284,7 @@ export function ProjectDetailPage() {
                   </div>
                 )}
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
+              <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-snug">
                 {project.judul}
               </h1>
 
@@ -517,27 +525,6 @@ export function ProjectDetailPage() {
                 </div>
               )}
 
-              {/* Standar Deliverable Scope */}
-              <div className="pt-3 pb-1 border-t border-slate-100">
-                <span className="text-[10px] font-bold tracking-wider text-muted uppercase">
-                  STANDAR DELIVERABLE:
-                </span>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <AppleGlossyBadge
-                    icon={AppleSourceAssetIcon}
-                    label="Aset / Berkas Sumber"
-                  />
-                  <AppleGlossyBadge
-                    icon={AppleReadyDeliverableIcon}
-                    label="Deliverable Siap Pakai"
-                  />
-                  <AppleGlossyBadge
-                    icon={AppleStructuredRevisionIcon}
-                    label="Revisi Terstruktur"
-                  />
-                </div>
-              </div>
-
               {/* Realtime Chat Banner */}
               <div className="p-4 bg-white/90 border border-slate-200/80 rounded-2xl shadow-[0_4px_16px_rgb(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-4">
                 <div className="flex items-center gap-3">
@@ -579,7 +566,7 @@ export function ProjectDetailPage() {
           </Card>
 
           {/* Card 2: How Escrow Pengerjaan Works (Roadmap Visual) */}
-          <Card className="p-6 sm:p-7 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
+          <Card className="p-5 sm:p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-brand-indigo" />
               <h3 className="text-sm font-bold text-dark-900 uppercase tracking-wider">
@@ -633,7 +620,7 @@ export function ProjectDetailPage() {
           </Card>
 
           {/* Card 3: Tips Sukses Melamar Bagi Mahasiswa */}
-          <Card className="p-6 space-y-3 bg-slate-50 border border-slate-200 rounded-3xl">
+          <Card className="p-5 space-y-3 bg-slate-50 border border-slate-200 rounded-3xl">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-slate-700" />
               <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -662,12 +649,12 @@ export function ProjectDetailPage() {
         {/* ========================================================================= */}
         <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
           {/* Card 1: Action Box (Apply Button) */}
-          <Card className="p-6 space-y-5 bg-surface border-border rounded-3xl shadow-md">
+          <Card className="p-5 sm:p-6 space-y-4 bg-surface border-border rounded-3xl shadow-md">
             <div className="space-y-1">
               <span className="text-xs font-bold text-muted uppercase tracking-wider block">
                 Batas Anggaran Klien (Budget Max)
               </span>
-              <div className="text-3xl sm:text-4xl font-black text-dark-900 font-sans tracking-tight">
+              <div className="text-2xl sm:text-3xl font-black text-dark-900 font-sans tracking-tight">
                 {formatCurrency(project.budget_max)}
               </div>
               <span className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">

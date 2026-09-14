@@ -4,6 +4,7 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
 import { Button } from "../../../components/ui/Button";
+import { WorkspaceEmptyRecommendations } from "./WorkspaceEmptyRecommendations";
 import {
   Search,
   Plus,
@@ -12,6 +13,7 @@ import {
   Users,
   Clock,
   Building2,
+  CheckCircle2,
 } from "lucide-react";
 
 export function WorkspaceHubGrid({
@@ -107,91 +109,129 @@ export function WorkspaceHubGrid({
 
   const tabs = isUmkm
     ? [
-        { key: "ALL", label: "Semua Proyek", count: counts.all },
+        {
+          key: "ALL",
+          label: "Semua",
+          fullLabel: "Semua Proyek",
+          count: counts.all,
+        },
         {
           key: "IN_PROGRESS",
-          label: "Sedang Berjalan",
+          label: "Berjalan",
+          fullLabel: "Sedang Berjalan",
           count: counts.inProgress,
         },
-        { key: "OPEN", label: "Seleksi Pelamar", count: counts.open },
-        { key: "COMPLETED", label: "Selesai", count: counts.completed },
+        {
+          key: "OPEN",
+          label: "Seleksi",
+          fullLabel: "Seleksi Pelamar",
+          count: counts.open,
+        },
+        {
+          key: "COMPLETED",
+          label: "Selesai",
+          fullLabel: "Selesai",
+          count: counts.completed,
+        },
       ]
     : [
-        { key: "ALL", label: "Semua Lamaran", count: counts.all },
+        {
+          key: "ALL",
+          label: "Semua",
+          fullLabel: "Semua Lamaran",
+          count: counts.all,
+        },
         {
           key: "IN_PROGRESS",
-          label: "Sedang Dikerjakan",
+          label: "Dikerjakan",
+          fullLabel: "Sedang Dikerjakan",
           count: counts.inProgress,
         },
-        { key: "PENDING", label: "Menunggu Seleksi", count: counts.pending },
-        { key: "COMPLETED", label: "Selesai", count: counts.completed },
+        {
+          key: "PENDING",
+          label: "Menunggu",
+          fullLabel: "Menunggu Seleksi",
+          count: counts.pending,
+        },
+        {
+          key: "COMPLETED",
+          label: "Selesai",
+          fullLabel: "Selesai",
+          count: counts.completed,
+        },
       ];
 
   const items = isUmkm ? filteredProjects : filteredProposals;
 
   return (
     <div className="space-y-6">
-      {/* Search and Action Bar */}
-      <div className="bg-surface rounded-3xl border border-border p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder={
-              isUmkm
-                ? "Cari nama proyek atau kategori..."
-                : "Cari lamaran, proyek, atau keahlian..."
-            }
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-canvas border border-border rounded-2xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans transition-all"
-          />
-        </div>
+      {/* Search and Action Bar (hanya tampil jika user sudah memiliki proyek/lamaran) */}
+      {counts.all > 0 && (
+        <div className="bg-surface rounded-3xl border border-border p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Search */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={
+                isUmkm
+                  ? "Cari nama proyek atau kategori..."
+                  : "Cari lamaran, proyek, atau keahlian..."
+              }
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-canvas border border-border rounded-2xl text-dark-900 placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-brand-indigo font-sans transition-all"
+            />
+          </div>
 
-        {/* Filter Pills (Scrollable on small mobile, wraps on larger viewports) */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveFilter(tab.key)}
-              className={`py-1.5 px-3.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 shrink-0 ${
-                activeFilter === tab.key
-                  ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas text-muted hover:text-dark-900 border border-border"
-              }`}
-            >
-              <span>{tab.label}</span>
-              {tab.count > 0 && (
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                    activeFilter === tab.key
-                      ? "bg-white/20 text-white"
-                      : "bg-surface text-muted"
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-
-          {isUmkm && (
-            <Link to="/post-project" className="ml-auto md:ml-2 shrink-0">
-              <Button
-                variant="primary"
-                size="sm"
-                className="text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow-xs"
+          {/* Filter Tabs (Segmented grid on mobile, fits 100% without horizontal slider) */}
+          <div className="grid grid-cols-4 sm:flex sm:flex-wrap items-center gap-1.5 w-full md:w-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveFilter(tab.key)}
+                className={`py-1.5 px-2 sm:px-3.5 rounded-xl font-bold transition-all text-xs flex items-center justify-center gap-1 sm:gap-1.5 text-center ${
+                  activeFilter === tab.key
+                    ? "bg-dark-900 text-white shadow-xs"
+                    : "bg-canvas text-muted hover:text-dark-900 border border-border"
+                }`}
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Pasang Proyek</span>
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+                <span className="sm:hidden">{tab.label}</span>
+                <span className="hidden sm:inline">{tab.fullLabel}</span>
+                {tab.count > 0 && (
+                  <span
+                    className={`text-[10px] px-1 sm:px-1.5 py-0.2 rounded-full tabular-nums ${
+                      activeFilter === tab.key
+                        ? "bg-white/20 text-white"
+                        : "bg-surface text-muted"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
 
-      {/* Grid of Projects */}
+            {isUmkm && (
+              <Link
+                to="/post-project"
+                className="col-span-4 sm:col-span-1 sm:ml-2"
+              >
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-full sm:w-auto text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center justify-center gap-1.5 shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Pasang Proyek</span>
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Grid of Projects or Empty Recommendation Deck */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((idx) => (
@@ -209,6 +249,8 @@ export function WorkspaceHubGrid({
             </div>
           ))}
         </div>
+      ) : counts.all === 0 ? (
+        <WorkspaceEmptyRecommendations isUmkm={isUmkm} />
       ) : items.length === 0 ? (
         <div className="bg-surface rounded-3xl border border-dashed border-border p-12 text-center space-y-3">
           <div className="w-12 h-12 rounded-2xl bg-canvas border border-border flex items-center justify-center text-muted mx-auto">
@@ -217,28 +259,13 @@ export function WorkspaceHubGrid({
           <h3 className="text-base font-bold text-dark-900">
             {isUmkm
               ? "Tidak Ada Proyek yang Sesuai"
-              : "Belum Ada Lamaran Proyek"}
+              : "Tidak Ada Lamaran di Tab Ini"}
           </h3>
           <p className="text-xs text-muted max-w-sm mx-auto">
             {isUmkm
               ? "Coba ubah kata kunci pencarian atau tab filter untuk melihat proyek lain."
-              : "Jelajahi tawaran proyek terbuka dan ajukan proposal terbaik Anda untuk memulai kolaborasi."}
+              : "Coba ubah filter status atau kata kunci pencarian untuk melihat lamaran lainnya."}
           </p>
-          {isUmkm ? (
-            <Link to="/post-project" className="inline-block mt-2">
-              <Button variant="primary" size="sm">
-                <Plus className="w-4 h-4 mr-1.5" />
-                Pasang Proyek Baru
-              </Button>
-            </Link>
-          ) : (
-            <Link to="/explore" className="inline-block mt-2">
-              <Button variant="primary" size="sm">
-                <Search className="w-4 h-4 mr-1.5" />
-                Jelajahi Proyek
-              </Button>
-            </Link>
-          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

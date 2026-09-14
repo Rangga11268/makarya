@@ -7,28 +7,11 @@ import {
   Image,
   Platform,
 } from "react-native";
-import { COLORS, SHADOWS } from "../../theme/colors";
+import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Badge } from "../ui/Badge";
-import { PebbleButton } from "../ui/PebbleButton";
-import { getCategorySkills } from "../../constants/categories";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
-import { formatStatus } from "../../utils/formatStatus";
-import { renderProjectCategoryVectorIcon } from "../icons/CategoryIcons";
-import {
-  AppleEscrowLockIcon,
-  AppleCalendarDeadlineIcon,
-  AppleShieldVerifiedIcon,
-} from "../ui/AppleGlossyIcons";
-import {
-  Users,
-  User,
-  ShieldCheck,
-  Clock,
-  Check,
-  ArrowRight,
-} from "lucide-react-native";
+import { Users, Clock, ChevronRight, Check } from "lucide-react-native";
 
 const getCategoryLabel = (cat) => {
   switch (cat) {
@@ -65,7 +48,7 @@ const getRemainingDaysInfo = (deadlineStr) => {
 
   if (diffDays < 0) return { text: "Berakhir", isUrgent: true };
   if (diffDays === 0) return { text: "Hari ini", isUrgent: true };
-  if (diffDays === 1) return { text: "Sisa 1 hari", isUrgent: true };
+  if (diffDays === 1) return { text: "Sisa 1 hr", isUrgent: true };
   if (diffDays <= 5) return { text: `Sisa ${diffDays} hr`, isUrgent: true };
   if (diffDays <= 30) return { text: `Sisa ${diffDays} hr`, isUrgent: false };
   return { text: formatDate(deadlineStr), isUrgent: false };
@@ -85,7 +68,6 @@ export function ProjectCard({ project, onPress }) {
     (Array.isArray(project.slots) && project.slots.length > 1);
   const slotsCount = Array.isArray(project.slots) ? project.slots.length : 0;
 
-  const skillPills = getCategorySkills(project.kategori);
   const rawClientName =
     project.umkm_nama ||
     project.umkm_profile?.nama_usaha ||
@@ -103,67 +85,55 @@ export function ProjectCard({ project, onPress }) {
     project.url_foto;
 
   const clientCity = project.umkm_profile?.kota;
-  const clientIndustry = project.umkm_profile?.bidang_industri;
-  const clientSubtext =
-    [clientIndustry, clientCity].filter(Boolean).join(" • ") ||
-    "UMKM Terverifikasi";
-
   const deadlineInfo = getRemainingDaysInfo(project.deadline);
 
   return (
     <TouchableOpacity
-      activeOpacity={0.88}
+      activeOpacity={0.85}
       onPress={onPress}
-      style={styles.card}
+      style={[styles.card, isExpired && styles.cardExpired]}
     >
-      {/* 1. Header Meta Bar: Category Icon & Label + Collaboration Pill + Status/Escrow */}
-      <View style={styles.headerMetaRow}>
-        <View style={styles.categoryPill}>
-          {renderProjectCategoryVectorIcon(
-            project.kategori,
-            project.judul,
-            12,
-            COLORS.brandIndigo,
-          )}
-          <Text style={styles.categoryPillText} numberOfLines={1}>
-            {getCategoryLabel(project.kategori)}
-          </Text>
-        </View>
-
-        <View style={styles.headerMetaRight}>
-          {isTeam ? (
-            <View style={styles.teamTagPill}>
-              <Users size={11} color="#6D28D9" />
-              <Text style={styles.teamTagText}>
-                {slotsCount > 1 ? `Tim (${slotsCount})` : "Tim"}
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.individualTagPill}>
-              <User size={11} color="#475569" />
-              <Text style={styles.individualTagText}>Individu</Text>
-            </View>
-          )}
-
-          {isExpired ? (
-            <Badge
-              label={project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
-              variant="danger"
+      {/* 1. Header: Client Info & Status Accent */}
+      <View style={styles.headerRow}>
+        <View style={styles.clientGroup}>
+          {clientPhoto && !imgError ? (
+            <Image
+              source={{ uri: clientPhoto }}
+              style={styles.clientAvatarImage}
+              resizeMode="cover"
+              onError={() => setImgError(true)}
             />
-          ) : project.match_score ? (
-            <View style={styles.matchScorePill}>
-              <Check size={10} color="#065F46" strokeWidth={2.5} />
-              <Text style={styles.matchScorePillText}>
-                {project.match_score}%
-              </Text>
-            </View>
           ) : (
-            <View style={styles.escrowChip}>
-              <AppleEscrowLockIcon size={14} />
-              <Text style={styles.escrowText}>Escrow</Text>
+            <View style={styles.clientAvatarFallback}>
+              <Text style={styles.clientAvatarText}>{clientInitial}</Text>
             </View>
           )}
+
+          <Text style={styles.clientNameText} numberOfLines={1}>
+            {clientName}
+          </Text>
+          {clientCity ? (
+            <>
+              <Text style={styles.metaDot}>•</Text>
+              <Text style={styles.clientCityText} numberOfLines={1}>
+                {clientCity}
+              </Text>
+            </>
+          ) : null}
         </View>
+
+        {isExpired ? (
+          <View style={styles.statusExpiredPill}>
+            <Text style={styles.statusExpiredText}>
+              {project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
+            </Text>
+          </View>
+        ) : project.match_score ? (
+          <View style={styles.matchBadge}>
+            <Check size={10} color="#059669" strokeWidth={2.5} />
+            <Text style={styles.matchBadgeText}>{project.match_score}%</Text>
+          </View>
+        ) : null}
       </View>
 
       {/* 2. Project Title */}
@@ -171,107 +141,57 @@ export function ProjectCard({ project, onPress }) {
         {project.judul}
       </Text>
 
-      {/* 3. Description Preview Snippet */}
-      {project.deskripsi_raw ? (
-        <Text style={styles.descriptionSnippet} numberOfLines={2}>
-          {project.deskripsi_raw.trim()}
+      {/* 3. Metadata Inline Row (Category • Collab • Deadline) */}
+      <View style={styles.metadataRow}>
+        <Text style={styles.categoryText}>
+          {getCategoryLabel(project.kategori)}
         </Text>
-      ) : null}
 
-      {/* 4. UMKM Profile & Deadline Row */}
-      <View style={styles.umkmRow}>
-        {clientPhoto && !imgError ? (
-          <Image
-            source={{ uri: clientPhoto }}
-            style={styles.clientAvatarImage}
-            resizeMode="cover"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <View style={styles.clientAvatar}>
-            <Text style={styles.clientAvatarText}>{clientInitial}</Text>
-          </View>
-        )}
+        <Text style={styles.metaDot}>•</Text>
 
-        <View style={styles.clientInfoCol}>
-          <Text style={styles.clientName} numberOfLines={1}>
-            {clientName}
-          </Text>
-          <Text style={styles.clientSubtext} numberOfLines={1}>
-            {clientSubtext}
-          </Text>
-        </View>
-
-        {deadlineInfo && (
-          <View
-            style={[
-              styles.deadlinePill,
-              deadlineInfo.isUrgent && styles.deadlinePillUrgent,
-            ]}
-          >
-            <AppleCalendarDeadlineIcon size={13} />
-            <Text
-              style={[
-                styles.deadlinePillText,
-                deadlineInfo.isUrgent && styles.deadlinePillTextUrgent,
-              ]}
-            >
-              {deadlineInfo.text}
+        {isTeam ? (
+          <View style={styles.inlineTeamTag}>
+            <Users size={11} color="#6D28D9" />
+            <Text style={styles.teamTagText}>
+              {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
             </Text>
           </View>
+        ) : (
+          <Text style={styles.metaSubtleText}>Individu</Text>
         )}
-      </View>
 
-      {/* 5. Team Roles or Skill Pills */}
-      {isTeam && slotsCount > 0 ? (
-        <View style={styles.skillsRow}>
-          {project.slots.slice(0, 3).map((slot, idx) => (
-            <View key={slot.id || idx} style={styles.teamRolePill}>
-              <Text style={styles.teamRolePillText} numberOfLines={1}>
-                {slot.nama_peran}
+        {deadlineInfo ? (
+          <>
+            <Text style={styles.metaDot}>•</Text>
+            <View style={styles.inlineDeadlineContainer}>
+              <Clock
+                size={11}
+                color={deadlineInfo.isUrgent ? "#E11D48" : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.deadlineText,
+                  deadlineInfo.isUrgent && styles.deadlineTextUrgent,
+                ]}
+              >
+                {deadlineInfo.text}
               </Text>
             </View>
-          ))}
-          {slotsCount > 3 && (
-            <View style={styles.morePill}>
-              <Text style={styles.morePillText}>+{slotsCount - 3}</Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        <View style={styles.skillsRow}>
-          {skillPills.slice(0, 3).map((skill, idx) => (
-            <View key={idx} style={styles.skillPill}>
-              <Text style={styles.skillPillText}>{skill}</Text>
-            </View>
-          ))}
-        </View>
-      )}
+          </>
+        ) : null}
+      </View>
 
-      {/* 6. Footer: Pagu Anggaran + Pelamar Count + CTA */}
+      {/* 4. Footer: Budget & Applicants */}
       <View style={styles.footerRow}>
-        <View style={styles.budgetCol}>
-          <Text style={styles.budgetLabel}>PAGU ANGGARAN</Text>
-          <Text style={styles.budgetValue}>
-            {formatCurrency(project.budget_max)}
-          </Text>
-        </View>
+        <Text style={styles.budgetValue}>
+          {formatCurrency(project.budget_max)}
+        </Text>
 
         <View style={styles.footerRight}>
-          <View style={styles.applicantBadge}>
-            <Users size={11} color={COLORS.textSecondary} />
-            <Text style={styles.applicantText}>
-              {project.total_pelamar || 0} Pelamar
-            </Text>
-          </View>
-
-          <PebbleButton
-            variant="sapphire"
-            size="xs"
-            label="Detail"
-            iconRight={ArrowRight}
-            onPress={onPress}
-          />
+          <Text style={styles.applicantText}>
+            {project.total_pelamar || 0} pelamar
+          </Text>
+          <ChevronRight size={14} color={COLORS.textMuted} />
         </View>
       </View>
     </TouchableOpacity>
@@ -280,272 +200,168 @@ export function ProjectCard({ project, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
-    borderRadius: 22,
-    padding: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 13,
     borderWidth: 1,
-    borderColor:
-      Platform.OS === "android"
-        ? "rgba(226, 232, 240, 0.9)"
-        : "rgba(255, 255, 255, 0.95)",
-    marginBottom: 12,
+    borderColor: "rgba(15, 23, 42, 0.08)",
+    marginBottom: 10,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: Platform.OS === "android" ? 1 : 2,
-    overflow: "hidden",
   },
-  headerMetaRow: {
+  cardExpired: {
+    opacity: 0.75,
+  },
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 8,
     gap: 8,
   },
-  categoryPill: {
+  clientGroup: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-    borderRadius: 8,
-    maxWidth: "52%",
+    flex: 1,
+    gap: 6,
   },
-  categoryPillText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
+  clientAvatarImage: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "rgba(15, 23, 42, 0.04)",
+  },
+  clientAvatarFallback: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clientAvatarText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 9.5,
     color: COLORS.brandIndigo,
   },
-  headerMetaRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  teamTagPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#F5F3FF",
-    borderWidth: 1,
-    borderColor: "#DDD6FE",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  teamTagText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#6D28D9",
-  },
-  individualTagPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3.5,
-    backgroundColor: "rgba(15, 23, 42, 0.04)",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  individualTagText: {
+  clientNameText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
-    color: "#475569",
+    fontSize: 11.5,
+    color: COLORS.textSecondary,
+    maxWidth: "55%",
   },
-  matchScorePill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#ECFDF5",
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
+  clientCityText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+    flexShrink: 1,
+  },
+  metaDot: {
+    fontSize: 10,
+    color: "rgba(15, 23, 42, 0.25)",
+  },
+  statusExpiredPill: {
+    backgroundColor: "#FFF1F2",
     paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
   },
-  matchScorePillText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#065F46",
+  statusExpiredText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 9.5,
+    color: "#E11D48",
   },
-  escrowChip: {
+  matchBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
-    backgroundColor: "#F0FDF4",
-    borderWidth: 1,
-    borderColor: "#DCFCE7",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 8,
+    gap: 2.5,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 5,
   },
-  escrowText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
-    color: "#166534",
+  matchBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9.5,
+    color: "#059669",
   },
   title: {
     fontFamily: FONTS.headingBold,
     fontSize: 14.5,
     color: COLORS.textDark,
-    letterSpacing: -0.25,
     lineHeight: 20,
-    marginBottom: 5,
+    letterSpacing: -0.2,
+    marginBottom: 8,
   },
-  descriptionSnippet: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
-    color: COLORS.textSecondary,
-    lineHeight: 16.5,
-    marginBottom: 10,
-  },
-  umkmRow: {
+  metadataRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    backgroundColor: "rgba(15, 23, 42, 0.03)",
-    borderRadius: 12,
-    marginBottom: 10,
-    gap: 8,
+    flexWrap: "wrap",
+    gap: 6,
+    marginBottom: 12,
   },
-  clientAvatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(15, 23, 42, 0.06)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clientAvatarImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-  },
-  clientAvatarText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 11.5,
+  categoryText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
     color: COLORS.brandIndigo,
   },
-  clientInfoCol: {
-    flex: 1,
-  },
-  clientName: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    color: COLORS.textDark,
-  },
-  clientSubtext: {
+  metaSubtleText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 9.5,
+    fontSize: 11,
     color: COLORS.textMuted,
-    marginTop: 0.5,
   },
-  deadlinePill: {
+  inlineTeamTag: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3.5,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
   },
-  deadlinePillUrgent: {
-    backgroundColor: "#FFF1F2",
-  },
-  deadlinePillText: {
+  teamTagText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 9.5,
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    color: "#6D28D9",
   },
-  deadlinePillTextUrgent: {
-    color: "#E11D48",
-    fontFamily: FONTS.bodyBold,
-  },
-  skillsRow: {
+  inlineDeadlineContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 5,
-    marginBottom: 12,
+    alignItems: "center",
+    gap: 3,
   },
-  skillPill: {
-    backgroundColor: "rgba(15, 23, 42, 0.04)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  skillPillText: {
+  deadlineText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: COLORS.textSecondary,
-  },
-  teamRolePill: {
-    backgroundColor: "#F5F3FF",
-    borderWidth: 0.8,
-    borderColor: "#E9D5FF",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  teamRolePillText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
-    color: "#7C3AED",
-  },
-  morePill: {
-    backgroundColor: "#F1F5F9",
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  morePillText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
+    fontSize: 11,
     color: COLORS.textMuted,
+  },
+  deadlineTextUrgent: {
+    fontFamily: FONTS.bodyMedium,
+    color: "#E11D48",
   },
   footerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 10,
+    paddingTop: 9,
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
-  },
-  budgetCol: {
-    flex: 1,
-  },
-  budgetLabel: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 9,
-    color: COLORS.textMuted,
-    letterSpacing: 0.5,
+    borderTopColor: "rgba(15, 23, 42, 0.05)",
   },
   budgetValue: {
     fontFamily: FONTS.headingBold,
     fontSize: 14,
-    color: COLORS.brandIndigo,
-    marginTop: 1,
+    color: COLORS.textDark,
+    letterSpacing: -0.2,
     fontVariant: ["tabular-nums"],
   },
   footerRight: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-  },
-  applicantBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3.5,
-    backgroundColor: "rgba(15, 23, 42, 0.04)",
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 8,
+    gap: 3,
   },
   applicantText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
   },
 });

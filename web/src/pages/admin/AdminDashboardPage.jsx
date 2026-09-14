@@ -282,16 +282,16 @@ export function AdminDashboardPage() {
   const openDisputes = disputes.filter((d) => d.status === "OPEN");
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* Header Banner */}
-      <div className="bg-dark-900 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-slate-800 shadow-sm">
+      <div className="bg-dark-900 text-white rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-slate-800 shadow-sm">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold border border-white/10">
               <ShieldCheck className="w-4 h-4" />
               Makarya Operations & Oversight Control
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
               Pusat Kendali & Pengawasan Administrator
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-normal max-w-xl">
@@ -400,7 +400,7 @@ export function AdminDashboardPage() {
 
       {/* TAB 1: IKHTISAR & KPI KAMPUS */}
       {activeTab === "overview" && (
-        <div className="space-y-8 animate-in fade-in">
+        <div className="space-y-6 animate-in fade-in">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="p-5 space-y-2">
               <div className="flex items-center justify-between text-xs text-muted font-bold uppercase">

@@ -122,11 +122,11 @@ export function HelpScreen({ navigation }) {
     <View style={styles.container}>
       <OrganicRibbonBackground height={320} />
 
-      {/* 1. Header with back button */}
+      {/* 1. Header (Standar Desain Makarya Mobile) */}
       <Header
-        category="PUSAT BANTUAN & PANDUAN"
+        category="PUSAT BANTUAN"
         title="Bantuan & Dukungan"
-        subtitle="Solusi cepat seputar escrow, proyek, dan pencairan honor"
+        subtitle="Panduan & Solusi Cepat"
         onBack={canGoBack ? () => navigation.goBack() : null}
       />
 

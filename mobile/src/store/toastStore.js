@@ -48,7 +48,6 @@ export const useToastStore = create((set) => ({
 
   showToast: (message, type = "success") => {
     if (toastTimer) clearTimeout(toastTimer);
-    set({ toast: { message, type, id: Date.now() } });
     const cleanMessage = formatToastMessage(message);
     set({ toast: { message: cleanMessage, type, id: Date.now() } });
     toastTimer = setTimeout(() => {

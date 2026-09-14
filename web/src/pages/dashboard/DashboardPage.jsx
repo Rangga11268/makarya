@@ -74,7 +74,7 @@ export function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
         <div className="h-10 w-64 bg-slate-200 rounded-xl animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -90,12 +90,12 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* ========================================================================= */}
       {/* TOP WELCOME BANNER */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-5 sm:p-8 bg-surface border border-border rounded-3xl shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6 bg-surface border border-border rounded-2xl shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 sm:gap-4">
           <Link
             to="/profile"
             className="shrink-0 self-start sm:self-auto group"
@@ -104,10 +104,10 @@ export function DashboardPage() {
               <img
                 src={user.url_foto}
                 alt="Avatar"
-                className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-xs border-2 border-slate-100 group-hover:scale-105 transition-transform"
+                className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl object-cover shadow-xs border border-border group-hover:scale-105 transition-transform"
               />
             ) : (
-              <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-dark-900 text-white text-xl sm:text-3xl font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform">
+              <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-xl bg-dark-900 text-white text-base sm:text-lg font-bold flex items-center justify-center shadow-xs select-none group-hover:scale-105 transition-transform">
                 {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
                   .charAt(0)
                   .toUpperCase()}
@@ -115,7 +115,7 @@ export function DashboardPage() {
             )}
           </Link>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-muted font-sans">
                 {isUmkm ? "Ruang Kerja Klien UMKM" : "Ruang Kerja Mahasiswa"}
@@ -126,13 +126,13 @@ export function DashboardPage() {
                 Akun Terverifikasi
               </span>
             </div>
-            <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-dark-900 tracking-tight leading-snug">
+            <h1 className="text-lg sm:text-xl font-bold text-dark-900 tracking-tight leading-snug">
               Selamat Datang,{" "}
               {user?.nama_lengkap ||
                 user?.nama_usaha ||
                 user?.email?.split("@")[0]}
             </h1>
-            <p className="text-xs sm:text-sm text-muted font-sans leading-relaxed">
+            <p className="text-xs text-muted font-sans leading-relaxed">
               {isUmkm
                 ? "Pantau proyek aktif Anda, tinjau lamaran masuk dari mahasiswa, dan kelola saldo escrow."
                 : "Pantau pengerjaan proyek aktif Anda, cek status proposal, dan tarik honor kerja."}
@@ -145,10 +145,10 @@ export function DashboardPage() {
             <Link to="/projects/new" className="w-full sm:w-auto">
               <Button
                 variant="brand"
-                size="md"
+                size="sm"
                 className="w-full sm:w-auto text-xs font-bold shadow-brand justify-center"
               >
-                <PlusCircle className="w-4 h-4 mr-1.5" />
+                <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
                 Pasang Proyek Baru
               </Button>
             </Link>
@@ -156,10 +156,10 @@ export function DashboardPage() {
             <Link to="/projects" className="w-full sm:w-auto">
               <Button
                 variant="brand"
-                size="md"
+                size="sm"
                 className="w-full sm:w-auto text-xs font-bold shadow-brand justify-center"
               >
-                <Compass className="w-4 h-4 mr-1.5" />
+                <Compass className="w-3.5 h-3.5 mr-1.5" />
                 Jelajah Proyek Terbuka
               </Button>
             </Link>
@@ -172,11 +172,11 @@ export function DashboardPage() {
       {/* ========================================================================= */}
       {isUmkm ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Total Proyek Anda
             </span>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate">
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold text-dark-900 font-sans tracking-tight truncate tabular-nums">
               {myProjects.length}
             </div>
             <span className="text-[11px] text-muted block truncate">
@@ -184,11 +184,11 @@ export function DashboardPage() {
             </span>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Sedang Dikerjakan
             </span>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-brand-indigo font-sans tracking-tight truncate">
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold text-brand-indigo font-sans tracking-tight truncate tabular-nums">
               {myProjects.filter((p) => p.status === "IN_PROGRESS").length}
             </div>
             <span className="text-[11px] text-muted block truncate">
@@ -196,12 +196,12 @@ export function DashboardPage() {
             </span>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Dana Escrow Terkunci
             </span>
             <div
-              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              className="text-lg sm:text-xl lg:text-2xl font-bold text-dark-900 font-sans tracking-tight truncate tabular-nums"
               title={formatCurrency(wallet?.saldo_escrow || 0)}
             >
               {formatCurrency(wallet?.saldo_escrow || 0)}
@@ -211,12 +211,12 @@ export function DashboardPage() {
             </span>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Saldo Aktif Dompet
             </span>
             <div
-              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              className="text-lg sm:text-xl lg:text-2xl font-bold text-dark-900 font-sans tracking-tight truncate tabular-nums"
               title={formatCurrency(wallet?.saldo_aktif || 0)}
             >
               {formatCurrency(wallet?.saldo_aktif || 0)}
@@ -231,11 +231,11 @@ export function DashboardPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Proyek Aktif
             </span>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-brand-indigo font-sans tracking-tight truncate">
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold text-brand-indigo font-sans tracking-tight truncate tabular-nums">
               {myProposals.filter((p) => p.status === "ACCEPTED").length}
             </div>
             <span className="text-[11px] text-muted block truncate">
@@ -243,11 +243,11 @@ export function DashboardPage() {
             </span>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Lamaran Terkirim
             </span>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate">
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold text-dark-900 font-sans tracking-tight truncate tabular-nums">
               {myProposals.length}
             </div>
             <span className="text-[11px] text-muted block truncate">
@@ -255,12 +255,12 @@ export function DashboardPage() {
             </span>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Saldo Honor Anda
             </span>
             <div
-              className="text-xl sm:text-2xl lg:text-3xl font-black text-dark-900 font-sans tracking-tight truncate"
+              className="text-lg sm:text-xl lg:text-2xl font-bold text-dark-900 font-sans tracking-tight truncate tabular-nums"
               title={formatCurrency(wallet?.saldo_aktif || 0)}
             >
               {formatCurrency(wallet?.saldo_aktif || 0)}
@@ -273,11 +273,11 @@ export function DashboardPage() {
             </Link>
           </Card>
 
-          <Card className="p-4 sm:p-5 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
+          <Card className="p-4 bg-surface border-border rounded-2xl shadow-xs space-y-1 min-w-0 overflow-hidden">
             <span className="text-[11px] font-bold text-muted uppercase tracking-wider block truncate">
               Proyek Selesai
             </span>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-black text-emerald-600 font-sans tracking-tight truncate">
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-600 font-sans tracking-tight truncate tabular-nums">
               {myProposals.filter((p) => p.status === "COMPLETED").length}
             </div>
             <span className="text-[11px] text-muted block truncate">
@@ -290,10 +290,10 @@ export function DashboardPage() {
       {/* ========================================================================= */}
       {/* MAIN TWO-COLUMN DASHBOARD SECTIONS */}
       {/* ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
         {/* LEFT COLUMN: ACTIVE PROJECTS / PROPOSALS (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
-          <Card className="p-6 space-y-5 bg-surface border-border rounded-3xl shadow-xs">
+          <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-3xl shadow-xs">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-dark-900">
@@ -457,7 +457,7 @@ export function DashboardPage() {
         {/* RIGHT COLUMN: QUICK SHORTCUTS & RECENT OPENINGS (4 cols) */}
         <div className="lg:col-span-4 space-y-6">
           {/* Quick Wallet Summary Card */}
-          <Card className="p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
+          <Card className="p-5 sm:p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
             <h3 className="text-xs font-bold text-dark-900 uppercase tracking-wider border-b border-border pb-2 flex items-center justify-between">
               <span>Ringkasan Dompet</span>
               <WalletIcon className="w-4 h-4 text-muted" />
@@ -491,7 +491,7 @@ export function DashboardPage() {
 
           {/* Quick Info & Recommendation */}
           {!isUmkm && openProjects.length > 0 && (
-            <Card className="p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
+            <Card className="p-5 sm:p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <h3 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
                   Peluang Proyek Terbaru

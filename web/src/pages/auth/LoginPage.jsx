@@ -177,8 +177,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 min-h-[calc(100vh-5rem)] flex items-center justify-center">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch w-full max-w-5xl">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 min-h-[calc(100vh-5rem)] flex items-center justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch w-full max-w-5xl">
         {/* Left Column: Visual Artwork & Social Proof Banner */}
         <div className="lg:col-span-6 flex">
           <AuthArtwork
@@ -188,16 +188,16 @@ export function LoginPage() {
         </div>
 
         {/* Right Column: Clean Form Container */}
-        <div className="lg:col-span-6 flex flex-col justify-center space-y-6">
-          <div className="text-left space-y-2">
+        <div className="lg:col-span-6 flex flex-col justify-center space-y-5">
+          <div className="text-left space-y-1.5">
             <Link to="/" className="inline-block">
               <img
                 src="/logo.webp"
                 alt="Logo Makarya"
-                className="h-14 sm:h-16 w-auto object-contain mb-3"
+                className="h-10 sm:h-12 w-auto object-contain mb-2"
               />
             </Link>
-            <h1 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-dark-900 tracking-tight">
               Masuk ke Akun Anda
             </h1>
             <p className="text-xs sm:text-sm text-muted font-sans font-normal">

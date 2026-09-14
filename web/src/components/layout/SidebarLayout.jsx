@@ -578,8 +578,13 @@ export function SidebarLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto relative bg-[#F8FAFC]">
+          {/* Global Atmospheric Ambient Aura Mesh */}
+          <div className="absolute top-0 right-0 w-[550px] h-[380px] bg-gradient-to-bl from-blue-200/50 via-indigo-100/35 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-48 left-0 w-[450px] h-[320px] bg-gradient-to-tr from-sky-200/40 via-purple-100/25 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

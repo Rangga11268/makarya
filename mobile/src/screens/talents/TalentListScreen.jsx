@@ -470,11 +470,11 @@ export function TalentListScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <OrganicRibbonBackground height={320} />
-      {/* 1. Standardized Unified Header */}
+      {/* 1. Header (Standar Desain Makarya Mobile) */}
       <Header
-        category="DIREKTORI TALENTA KAMPUS"
+        category="TALENTA KAMPUS"
         title="Eksplorasi Mahasiswa"
-        subtitle="Temukan talenta muda terverifikasi untuk proyek usaha Anda"
+        subtitle="100% Terverifikasi Kampus"
         showBell={true}
         onBellPress={() => setIsNotificationOpen(true)}
         unreadCount={unreadNotifications}

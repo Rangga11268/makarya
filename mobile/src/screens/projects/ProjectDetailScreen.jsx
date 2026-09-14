@@ -13,7 +13,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Header } from "../../components/ui/Header";
+import { Header, HeaderCircleButton } from "../../components/ui/Header";
 import { ProjectDetailSkeleton } from "../../components/ui/Skeleton";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -129,6 +129,34 @@ export function ProjectDetailScreen({ route, navigation }) {
 
   const loadDetail = async () => {
     if (!projectId) return;
+
+    const IS_UUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const initialProj = route.params?.initialProject;
+
+    // Jika ID bukan UUID standar atau merupakan ID demo fallback ("00000000-0000-4000-8000-..." / "rec-...")
+    const isMockId =
+      !IS_UUID.test(projectId) ||
+      String(projectId).startsWith("00000000-0000-4000-8000-") ||
+      String(projectId).startsWith("rec-");
+
+    if (isMockId) {
+      if (initialProj) {
+        setProject({
+          ...initialProj,
+          deskripsi_raw:
+            initialProj.deskripsi_raw ||
+            `${initialProj.judul}. Proyek ini difokuskan pada peningkatan kualitas visual dan operasional bisnis mitra UMKM.`,
+          status: initialProj.status || "OPEN",
+        });
+        setLoading(false);
+        return;
+      }
+      showToast("ID proyek tidak valid", "danger");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -575,7 +603,7 @@ export function ProjectDetailScreen({ route, navigation }) {
       <View style={styles.container}>
         <Header
           title="Detail Proyek"
-          subtitle="Memuat spesifikasi proyek..."
+          subtitle="Memuat Data..."
           onBack={() => {
             if (navigation?.canGoBack && navigation.canGoBack()) {
               navigation.goBack();
@@ -662,11 +690,13 @@ export function ProjectDetailScreen({ route, navigation }) {
               : "Detail Proyek"
         }
         subtitle={
-          isDedicatedWorkroom || isApplicantBoardMode
-            ? project.judul
-            : project.kategori
-              ? `Kategori: ${project.kategori}`
-              : undefined
+          isDedicatedWorkroom
+            ? "100% Proteksi Escrow"
+            : isApplicantBoardMode
+              ? "Tahap Seleksi"
+              : project.kategori
+                ? `Kategori: ${project.kategori}`
+                : "Spesifikasi Proyek"
         }
         onBack={() => {
           if (navigation?.canGoBack && navigation.canGoBack()) {
@@ -677,8 +707,7 @@ export function ProjectDetailScreen({ route, navigation }) {
         }}
         rightAction={
           hasAcceptedStudent && !isDedicatedWorkroom ? (
-            <TouchableOpacity
-              style={styles.headerChatBtn}
+            <HeaderCircleButton
               onPress={() =>
                 navigation.navigate("Chat", {
                   projectId: project.id,
@@ -688,10 +717,9 @@ export function ProjectDetailScreen({ route, navigation }) {
                   partnerRole: isUmkmOwner ? "MHS" : "UMKM",
                 })
               }
-              activeOpacity={0.8}
             >
-              <AppleMessageIcon size={32} variant="blue" />
-            </TouchableOpacity>
+              <AppleMessageIcon size={22} variant="blue" />
+            </HeaderCircleButton>
           ) : null
         }
       />

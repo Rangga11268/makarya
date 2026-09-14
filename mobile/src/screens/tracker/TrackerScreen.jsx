@@ -19,10 +19,11 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
 import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
-import { Header } from "../../components/ui/Header";
+import { Header, HeaderCircleButton } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
 import { PebbleButton } from "../../components/ui/PebbleButton";
+import { WorkspaceEmptyRecommendationDeck } from "./components/WorkspaceEmptyRecommendationDeck";
 import {
   Layers,
   ArrowRight,
@@ -167,17 +168,14 @@ export function TrackerScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <OrganicRibbonBackground height={340} />
-      {/* 1. Header */}
+      {/* 1. Header (Standar Desain Makarya Mobile) */}
       <Header
         category="WORKSPACE"
         title="Ruang Kerja & Proyek"
-        subtitle={`${activeJobsCount} sedang berjalan • ${items.length} total proyek`}
+        subtitle={`${activeJobsCount} Aktif • ${items.length} Total Proyek`}
         rightAction={
           !isMahasiswa ? (
-            <PebbleButton
-              variant="sapphire"
-              size="xs"
-              label="Proyek Baru"
+            <HeaderCircleButton
               icon={Plus}
               onPress={() => navigation.navigate("PostProject")}
             />
@@ -247,7 +245,13 @@ export function TrackerScreen({ navigation }) {
           ]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            !loading && (
+            !loading &&
+            (items.length === 0 ? (
+              <WorkspaceEmptyRecommendationDeck
+                navigation={navigation}
+                isMahasiswa={isMahasiswa}
+              />
+            ) : (
               <View style={styles.emptyBox}>
                 <View style={styles.emptyIconCircle}>
                   <Briefcase size={28} color={COLORS.brandIndigo} />
@@ -257,30 +261,11 @@ export function TrackerScreen({ navigation }) {
                 </Text>
                 <Text style={styles.emptyDesc}>
                   {isMahasiswa
-                    ? "Jelajahi tawaran proyek UMKM terverifikasi dan ajukan proposal terbaik Anda."
-                    : "Pasang proyek pertama Anda untuk terhubung dengan mahasiswa bertalenta kampus."}
+                    ? "Tidak ada data proyek atau kontrak yang sesuai dengan filter status yang dipilih."
+                    : "Tidak ada proyek Anda yang sesuai dengan filter status yang dipilih."}
                 </Text>
-                {isMahasiswa ? (
-                  <PebbleButton
-                    variant="pearl"
-                    size="sm"
-                    label="Jelajahi Proyek"
-                    icon={ArrowRight}
-                    onPress={() => navigation.navigate("ProjectsTab")}
-                    style={{ marginTop: 16 }}
-                  />
-                ) : (
-                  <PebbleButton
-                    variant="sapphire"
-                    size="sm"
-                    label="Pasang Proyek Baru"
-                    icon={Plus}
-                    onPress={() => navigation.navigate("PostProject")}
-                    style={{ marginTop: 16 }}
-                  />
-                )}
               </View>
-            )
+            ))
           }
           renderItem={({ item }) => {
             const projectId = isMahasiswa ? item.project_id : item.id;

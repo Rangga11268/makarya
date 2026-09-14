@@ -81,6 +81,8 @@ def test_team_project_browse_with_partial_slots(client):
 
         slot1 = ProjectSlot(
             project_id=proj.id,
+            nama_peran='Role A',
+            deskripsi_tugas='Task A',
             nama_peran='Desainer Interface',
             deskripsi_tugas='Merancang wireframe dan visual',
             alokasi_budget=Decimal('500000'),
@@ -88,6 +90,8 @@ def test_team_project_browse_with_partial_slots(client):
         )
         slot2 = ProjectSlot(
             project_id=proj.id,
+            nama_peran='Role B',
+            deskripsi_tugas='Task B',
             nama_peran='Developer Web',
             deskripsi_tugas='Membangun frontend web',
             alokasi_budget=Decimal('500000'),
@@ -102,6 +106,9 @@ def test_team_project_browse_with_partial_slots(client):
         data = res.json()
         found_ids = [p["id"] for p in data]
         assert str(proj.id) in found_ids
+
+        db.delete(proj)
+        db.commit()
     finally:
         try:
             p = db.query(Project).filter(Project.judul == 'Test Proyek Tim Partial Slot Browse').first()

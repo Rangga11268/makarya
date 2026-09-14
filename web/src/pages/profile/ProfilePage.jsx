@@ -250,13 +250,13 @@ export function ProfilePage() {
       : "D";
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* Header */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
           Pengaturan Akun & Identitas
         </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight mt-1">
           Kelola Profil {isUmkm ? "Usaha UMKM" : "Talenta Mahasiswa"}
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -269,7 +269,7 @@ export function ProfilePage() {
       </div>
 
       {/* Profile ID Card Banner */}
-      <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-xs">
+      <div className="bg-surface border border-border rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5 shadow-xs">
         <div
           className="relative group cursor-pointer shrink-0"
           onClick={() => fileInputRef.current?.click()}
@@ -286,10 +286,10 @@ export function ProfilePage() {
             <img
               src={user.url_foto}
               alt="Foto Profil"
-              className="w-20 h-20 rounded-full object-cover shadow-xs border-2 border-slate-200"
+              className="w-16 h-16 sm:w-18 sm:h-18 rounded-full object-cover shadow-xs border-2 border-slate-200"
             />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-dark-900 text-white text-3xl font-bold flex items-center justify-center shadow-xs select-none">
+            <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-xs select-none">
               {initial}
             </div>
           )}

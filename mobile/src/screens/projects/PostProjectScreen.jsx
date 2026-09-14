@@ -267,8 +267,8 @@ export function PostProjectScreen({ navigation }) {
       <OrganicRibbonBackground height={360} />
       <Header
         category="PASANG PROYEK"
-        title="Pasang Proyek UMKM"
-        subtitle={`Langkah ${currentStep} dari 3: ${STEPS[currentStep - 1].title}`}
+        title="Pasang Proyek"
+        subtitle={`Langkah ${currentStep}/3: ${STEPS[currentStep - 1].title}`}
         onBack={() => {
           if (currentStep > 1) {
             goToStep(currentStep - 1);

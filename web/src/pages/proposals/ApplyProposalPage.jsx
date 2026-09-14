@@ -227,7 +227,7 @@ export function ApplyProposalPage() {
   const parsedNominal = parseFloat(hargaTawar) || 0;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* Back Link & Header */}
       <div className="space-y-3">
         <Link
@@ -242,7 +242,7 @@ export function ApplyProposalPage() {
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             Formulir Lamaran Resmi Mahasiswa
           </span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             Ajukan Proposal & Penawaran Kerja
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">

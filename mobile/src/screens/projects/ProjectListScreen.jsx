@@ -161,11 +161,11 @@ export function ProjectListScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <OrganicRibbonBackground height={320} />
-      {/* Header */}
+      {/* Header (Standar Desain Makarya Mobile) */}
       <Header
-        category="KATALOG PROYEK KAMPUS"
-        title="Jelajah Proyek UMKM"
-        subtitle="Temukan peluang kerja freelance dan ajukan penawaran terbaik"
+        category="KATALOG PROYEK"
+        title="Jelajah Proyek"
+        subtitle="100% Terverifikasi UMKM"
         showBell={true}
         onBellPress={() => setIsNotificationOpen(true)}
         unreadCount={unreadNotifications}

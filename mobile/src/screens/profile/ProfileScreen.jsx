@@ -317,13 +317,10 @@ export function ProfileScreen({ navigation }) {
     <View style={styles.container}>
       <OrganicRibbonBackground height={360} />
       <Header
-        category="PENGATURAN IDENTITAS"
-        title={isMahasiswa ? "Profil Talenta Mahasiswa" : "Profil Akun UMKM"}
+        category="AKUN & PROFIL"
+        title={isMahasiswa ? "Profil Mahasiswa" : "Profil Akun UMKM"}
         subtitle={
-          isMahasiswa
-            ? user?.profil_subtitle ||
-              "Profil talenta muda dengan rekam jejak deliverable memuaskan"
-            : user?.profil_subtitle || "Informasi bisnis & manajemen akun UMKM"
+          isMahasiswa ? "Kredensial & Portofolio" : "Profil Usaha & Kontak"
         }
         onBack={canGoBack ? () => navigation.goBack() : undefined}
       />

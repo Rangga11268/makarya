@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
   RefreshControl,
   Platform,
+  StatusBar,
 } from "react-native";
 import { FONTS } from "../../theme/fonts";
+import { COLORS } from "../../theme/colors";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
+import { Header, HeaderCircleButton } from "../../components/ui/Header";
 import { walletApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -165,46 +168,45 @@ export function WalletScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <OrganicRibbonBackground height={400} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
 
-      {/* Top Header Bar with Apple Glass Aesthetics */}
-      <View style={styles.topHeader}>
-        <TouchableOpacity
-          onPress={() => {
-            if (navigation?.canGoBack && navigation.canGoBack()) {
-              navigation.goBack();
-            } else {
-              loadWallet();
+      {/* Global Atmospheric Ambient Canvas */}
+      <OrganicRibbonBackground height={480} />
+
+      {/* Top Header: Standar Desain Makarya Mobile */}
+      <Header
+        title="Dompet Digital"
+        subtitle="100% Proteksi Escrow"
+        leftAction={
+          <HeaderCircleButton
+            onPress={() => {
+              if (navigation?.canGoBack && navigation.canGoBack()) {
+                navigation.goBack();
+              } else {
+                loadWallet();
+              }
+            }}
+            icon={
+              navigation?.canGoBack && navigation.canGoBack()
+                ? ArrowLeft
+                : SlidersHorizontal
             }
-          }}
-          style={styles.headerCircleBtn}
-          activeOpacity={0.7}
-        >
-          {navigation?.canGoBack && navigation.canGoBack() ? (
-            <ArrowLeft size={18} color="#0F172A" />
-          ) : (
-            <SlidersHorizontal size={18} color="#0F172A" />
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerMainTitle}>Dompet Digital</Text>
-          <Text style={styles.headerSubTitle}>
-            Kartu Escrow & Riwayat Mutasi
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
-            setTxModal(true);
-          }}
-          style={styles.headerCircleBtn}
-          activeOpacity={0.7}
-        >
-          <Plus size={20} color="#0F172A" strokeWidth={2.5} />
-        </TouchableOpacity>
-      </View>
+          />
+        }
+        rightAction={
+          <HeaderCircleButton
+            onPress={() => {
+              setTxType(isMahasiswa ? "WITHDRAW" : "TOPUP");
+              setTxModal(true);
+            }}
+            icon={Plus}
+          />
+        }
+      />
 
       <ScrollView
         style={styles.scrollArea}
@@ -214,8 +216,8 @@ export function WalletScreen({ navigation }) {
           <RefreshControl
             refreshing={loading}
             onRefresh={loadWallet}
-            tintColor="#4F46E5"
-            colors={["#4F46E5"]}
+            tintColor={COLORS.brandIndigo}
+            colors={[COLORS.brandIndigo]}
           />
         }
       >
@@ -295,46 +297,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8FAFC",
-  },
-  topHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 54 : 34,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(226, 232, 240, 0.7)",
-    backgroundColor: "rgba(255, 255, 255, 0.92)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  headerCircleBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "rgba(241, 245, 249, 0.85)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.95)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerCenter: {
-    alignItems: "center",
-  },
-  headerMainTitle: {
-    fontSize: 16,
-    fontFamily: FONTS.bold,
-    color: "#0F172A",
-  },
-  headerSubTitle: {
-    fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: "#64748B",
-    marginTop: 1,
   },
   scrollArea: {
     flex: 1,

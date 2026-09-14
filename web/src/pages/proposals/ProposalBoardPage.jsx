@@ -562,7 +562,7 @@ export function ProposalBoardPage() {
       {/* 1. Hub View: Header Bar & Catalog Grid (Only shown when browsing projects) */}
       {!isSelectingProject && (
         <>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 sm:p-8 rounded-3xl border border-border shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-4 sm:p-6 rounded-2xl border border-border shadow-xs">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans flex items-center gap-1.5">
@@ -583,7 +583,7 @@ export function ProposalBoardPage() {
                 </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight mt-1">
                 {isUmkm
                   ? "Kelola Proyek & Ruang Diskusi Terpadu"
                   : "Papan Proyek, Obrolan & Deliverable"}

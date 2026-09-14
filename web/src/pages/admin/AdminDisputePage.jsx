@@ -122,13 +122,13 @@ export function AdminDisputePage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* Header */}
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
           Pusat Keadilan Ekosistem
         </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
           Pusat Resolusi Sengketa (Admin Mediation)
         </h1>
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">

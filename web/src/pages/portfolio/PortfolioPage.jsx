@@ -69,14 +69,14 @@ export function PortfolioPage() {
   const initial = user?.email ? user.email.charAt(0).toUpperCase() : "U";
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             {isUmkm ? "Profil & Riwayat Kemitraan" : "Reputasi & Kinerja Kerja"}
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
             {isUmkm ? "Rekam Jejak Usaha UMKM" : "Portofolio Karya Mahasiswa"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
@@ -101,7 +101,7 @@ export function PortfolioPage() {
       </div>
 
       {/* ID Badge Card */}
-      <div className="bg-surface border border-border rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
+      <div className="bg-surface border border-border rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-xs">
         <div className="flex items-center gap-4 text-center sm:text-left">
           {user?.url_foto ? (
             <img

@@ -53,7 +53,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden font-sans flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
         {/* Top Header Banner */}
-        <div className="relative p-5 sm:p-8 bg-slate-900 text-white border-b border-slate-800">
+        <div className="relative p-5 sm:p-6 bg-slate-900 text-white border-b border-slate-800">
           <button
             onClick={onClose}
             className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
@@ -122,7 +122,7 @@ function TalentDetailModal({ isOpen, onClose, talent, onContact }) {
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-4 sm:p-8 space-y-5 sm:space-y-6 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
           {/* Quick Metrics */}
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <div className="p-3.5 sm:p-4 bg-canvas rounded-2xl border border-border text-center">
@@ -443,34 +443,34 @@ export function TalentsDirectoryPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 space-y-6 sm:space-y-8 font-sans">
-      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta */}
-      <div className="flex items-center gap-2 border-b border-border pb-3 overflow-x-auto no-scrollbar">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6 font-sans">
+      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta - Responsive 2-col, no horizontal slider */}
+      <div className="grid grid-cols-2 gap-2 max-w-md w-full border-b border-border pb-3">
         <Link
           to="/projects"
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors shrink-0"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors text-center border border-border sm:border-transparent"
         >
-          <Briefcase className="w-4 h-4" />
-          <span>Katalog Proyek UMKM</span>
+          <Briefcase className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Katalog Proyek</span>
         </Link>
         <Link
           to="/talents"
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs shrink-0"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center"
         >
-          <GraduationCap className="w-4 h-4" />
-          <span>Direktori Mahasiswa Berprestasi</span>
+          <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Direktori Talenta</span>
         </Link>
       </div>
 
       {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
-      <div className="bg-surface border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-10 shadow-xs space-y-5 sm:space-y-6">
+      <div className="bg-surface border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold uppercase tracking-wider border border-brand-indigo/15">
               <Award className="w-3.5 h-3.5" />
               <span>Direktori Talenta Terkurasi</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-dark-900 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight">
               Mahasiswa Berprestasi & Terverifikasi
             </h1>
             <p className="text-xs sm:text-sm text-muted max-w-2xl font-sans">
@@ -599,14 +599,14 @@ export function TalentsDirectoryPage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Pilihan Program Studi & Spesialisasi
           </span>
-          <div className="flex gap-2 overflow-x-auto no-scrollbar sm:flex-wrap pb-1">
+          <div className="flex flex-wrap gap-1.5 pb-1">
             {categoryPills.map((pill) => {
               const active = selectedProdi === pill.key;
               return (
                 <button
                   key={pill.key}
                   onClick={() => setSelectedProdi(pill.key)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 shrink-0 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 ${
                     active
                       ? "bg-brand-indigo text-white shadow-xs"
                       : "bg-canvas text-slate-700 hover:bg-slate-200/60 border border-border"
@@ -621,7 +621,7 @@ export function TalentsDirectoryPage() {
 
         {/* Rating & Proyek Status Filter Row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pt-3 border-t border-border/60">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1 sm:pb-0">
+          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto pb-1 sm:pb-0">
             <span className="text-xs text-muted font-medium mr-1 shrink-0">
               Filter:
             </span>
@@ -673,7 +673,7 @@ export function TalentsDirectoryPage() {
           </Button>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((n) => (
             <div
               key={n}
@@ -692,7 +692,7 @@ export function TalentsDirectoryPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
           {talents.map((talent) => {
             const initial = talent.nama_lengkap
               ? talent.nama_lengkap.charAt(0).toUpperCase()
@@ -706,23 +706,23 @@ export function TalentsDirectoryPage() {
             return (
               <div
                 key={talent.id}
-                className="bg-surface rounded-2xl sm:rounded-3xl border border-border p-5 sm:p-6 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
+                className="bg-surface rounded-2xl border border-border p-4 sm:p-5 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
               >
                 <div>
                   {/* Top Profile Header */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-3.5">
+                  <div className="flex items-start justify-between gap-3 mb-3.5">
+                    <div className="flex items-center gap-3">
                       {talent.url_foto ? (
                         <img
                           src={talent.url_foto}
                           alt={talent.nama_lengkap}
                           onClick={() => handleOpenDetail(talent)}
-                          className="w-14 h-14 rounded-2xl object-cover shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer border border-border"
+                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer border border-border"
                         />
                       ) : (
                         <div
                           onClick={() => handleOpenDetail(talent)}
-                          className="w-14 h-14 rounded-2xl bg-brand-indigo text-white font-serif text-xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
+                          className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-brand-indigo text-white font-serif text-base font-bold flex items-center justify-center shrink-0 shadow-xs select-none group-hover:scale-105 transition-transform cursor-pointer"
                         >
                           {initial}
                         </div>
@@ -732,11 +732,11 @@ export function TalentsDirectoryPage() {
                         <div className="flex items-center gap-1.5">
                           <h3
                             onClick={() => handleOpenDetail(talent)}
-                            className="text-base font-bold text-dark-900 leading-snug truncate hover:text-brand-indigo cursor-pointer transition-colors"
+                            className="text-sm sm:text-base font-bold text-dark-900 leading-snug truncate hover:text-brand-indigo cursor-pointer transition-colors"
                           >
                             {talent.nama_lengkap}
                           </h3>
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         </div>
 
                         <p className="text-xs text-muted flex items-center gap-1 mt-0.5 truncate">
