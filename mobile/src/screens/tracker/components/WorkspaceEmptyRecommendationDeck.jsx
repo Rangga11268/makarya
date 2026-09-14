@@ -42,8 +42,18 @@ const FALLBACK_PROJECTS = [
     budget_max: 1500000,
     tipe_kolaborasi: "TIM",
     slots: [
-      { id: "slot-1", nama_peran: "UI/UX Designer", alokasi_budget: 650000, status: "OPEN" },
-      { id: "slot-2", nama_peran: "Frontend Developer", alokasi_budget: 850000, status: "OPEN" },
+      {
+        id: "slot-1",
+        nama_peran: "UI/UX Designer",
+        alokasi_budget: 650000,
+        status: "OPEN",
+      },
+      {
+        id: "slot-2",
+        nama_peran: "Frontend Developer",
+        alokasi_budget: 850000,
+        status: "OPEN",
+      },
     ],
     umkm_nama: "Kopi Kenangan Nusantara",
     umkm_profile: {
