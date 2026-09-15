@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { authApi } from "../../api";
-import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
-import { AuthArtwork } from "../../components/features/AuthArtwork";
 import { GoogleVectorIcon } from "../../components/icons/ProfileVectorIcons";
 import { initiateGoogleWebSignIn } from "../../services/googleAuth";
 import {
@@ -21,10 +18,15 @@ import {
   CheckCircle2,
   RotateCcw,
   KeyRound,
+  MapPin,
+  Phone,
+  BookOpen,
 } from "lucide-react";
 
 export function RegisterPage() {
-  const [role, setRole] = useState("MHS"); // 'MHS' | 'UMKM'
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get("role") === "UMKM" ? "UMKM" : "MHS";
+  const [role, setRole] = useState(initialRole); // 'MHS' | 'UMKM'
 
   // Form states for Mahasiswa
   const [mhsForm, setMhsForm] = useState({
@@ -213,7 +215,6 @@ export function RegisterPage() {
 
       const googleUser = await initiateGoogleWebSignIn({ role });
 
-      // Validasi ketat domain kampus untuk Mahasiswa (.ac.id atau .edu)
       const isCampusEmail =
         googleUser.email.endsWith(".ac.id") ||
         googleUser.email.endsWith(".edu");
@@ -234,7 +235,7 @@ export function RegisterPage() {
       });
 
       setAuth(res.data);
-      addToast("Pendaftaran Google berhasil tanpa verifikasi OTP!", "success");
+      addToast("Pendaftaran Google berhasil!", "success");
       navigate("/dashboard");
     } catch (err) {
       if (err.message && err.message.includes("dibatalkan")) {
@@ -252,337 +253,301 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 min-h-[calc(100vh-5rem)] flex items-center justify-center">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch w-full max-w-5xl">
-        {/* Left Column: Visual Artwork Banner */}
-        <div className="lg:col-span-6 flex">
-          <AuthArtwork
-            headline={
-              isOtpStep
-                ? "Satu Langkah Lagi Menuju Dunia Proyek Nyata."
-                : "Daftar Sekali, Bangun Portofolio & Reputasi Nyata."
-            }
-            subtext={
-              isOtpStep
-                ? "Verifikasi identitas Anda untuk menjamin rasa aman dan transaksi escrow terpercaya antar mahasiswa dan UMKM."
-                : "Setiap proyek yang Anda selesaikan otomatis tercatat dalam portofolio digital terverifikasi dan siap dibagikan ke calon klien."
-            }
-          />
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#F8FAFC] flex flex-col lg:flex-row font-sans">
+      {/* ========================================================================= */}
+      {/* 1. LEFT SIDE: BRAND SHOWCASE & SPECTRUM HERO CANVAS (Axora Style)         */}
+      {/* ========================================================================= */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-slate-900 via-[#0B0F17] to-slate-950 text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800">
+        {/* Subtle Ambient Radial Glows */}
+        <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Left Vertical Spectrum Pillars */}
+        <div className="absolute -left-6 bottom-16 top-24 w-14 flex items-end gap-1.5 opacity-80 pointer-events-none z-0 animate-float-slow">
+          <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 to-transparent rounded-t-lg" />
         </div>
 
-        {/* Right Column: Register or OTP Form */}
-        <div className="lg:col-span-6 flex flex-col justify-center space-y-5">
-          <div className="text-left space-y-1.5">
-            <Link to="/" className="inline-block">
-              <img
-                src="/logo.webp"
-                alt="Logo Makarya"
-                className="h-10 sm:h-12 w-auto object-contain mb-2"
-              />
-            </Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-dark-900 tracking-tight">
+        {/* Top Brand Identity */}
+        <div className="relative z-10 space-y-4">
+          <Link to="/" className="inline-flex items-center gap-3 group select-none">
+            <img
+              src="/logo-icon.svg"
+              alt="Makarya Logo"
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+            />
+            <span className="text-2xl font-black tracking-tight text-white">
+              Makarya
+            </span>
+          </Link>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-800 text-cyan-300 text-xs font-semibold">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Pendaftaran Akun Terverifikasi</span>
+          </div>
+
+          <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-2">
+            Mulai Karir & Proyek Digital Bersama{" "}
+            <span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+              Ekosistem Makarya.
+            </span>
+          </h2>
+
+          <p className="text-xs xl:text-sm text-slate-300 leading-relaxed max-w-sm">
+            Bangun portofolio industri terakreditasi untuk mahasiswa dan dapatkan hasil kerja profesional dengan biaya terjangkau untuk UMKM.
+          </p>
+        </div>
+
+        {/* Center Live Proof Card */}
+        <div className="relative z-10 my-8 space-y-3 max-w-md">
+          <div className="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl border border-slate-700/80 shadow-2xl space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
+              <span className="text-xs font-bold text-white">
+                Keunggulan Ekosistem
+              </span>
+              <span className="text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded">
+                Terintegrasi
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs text-slate-300">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span><b>100% Escrow Protection:</b> Pembayaran aman disimpan di rekening penampungan resmi.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <span><b>Formasi Tim Multi-Role:</b> Kolaborasi antar keahlian UI/UX, Frontend, dan Backend.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <span><b>Akreditasi Kampus .ac.id:</b> Reputasi dan portofolio diverifikasi langsung oleh perguruan tinggi.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Guarantee Badges */}
+        <div className="relative z-10 pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+          <span>&copy; {new Date().getFullYear()} Makarya Indonesia</span>
+          <span className="flex items-center gap-1 text-emerald-400 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5" /> Verifikasi Aman 100%
+          </span>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 2. RIGHT SIDE: CLEAN REGISTRATION / OTP FORM CONTAINER                     */}
+      {/* ========================================================================= */}
+      <div className="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-6 sm:p-10 lg:p-16">
+        <div className="w-full max-w-lg space-y-6">
+          {/* Header Title */}
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-semibold shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-cyan-600" />
+              <span>{isOtpStep ? "Verifikasi Email" : "Buat Akun Baru"}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               {isOtpStep
-                ? "Verifikasi Kode OTP"
+                ? "Masukkan Kode OTP"
                 : role === "MHS"
-                  ? "Daftar Akun Mahasiswa"
-                  : "Daftar Akun Klien UMKM"}
+                  ? "Daftar Talenta Mahasiswa"
+                  : "Daftar Pelaku Usaha UMKM"}
             </h1>
-            <p className="text-xs sm:text-sm text-muted font-sans font-normal">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               {isOtpStep
-                ? `Masukkan 6 digit kode OTP yang kami kirimkan ke ${registeredEmail}`
+                ? `Kode 6 digit telah dikirimkan ke ${registeredEmail}`
                 : role === "MHS"
-                  ? "Gunakan email kampus resmi (.ac.id) untuk verifikasi talenta mahasiswa"
-                  : "Akses ratusan talenta mahasiswa terverifikasi untuk proyek bisnis Anda"}
+                  ? "Gunakan email kampus resmi (.ac.id) untuk meraih portofolio industri dan honor terlindungi."
+                  : "Pasang kebutuhan proyek digital dan temukan mahasiswa berbakat dari berbagai kampus."}
             </p>
           </div>
 
-          {/* Mobile Hero Banner */}
-          <div className="lg:hidden relative w-full h-32 rounded-2xl overflow-hidden border border-border shadow-2xs">
-            <img
-              src="/images/register_hero.jpg"
-              alt="Makarya Registrasi"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-dark-900/80 via-dark-900/30 to-transparent flex items-end p-3">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-brand-cyan" />
-                Platform Kolaborasi Kampus & UMKM Terverifikasi
-              </span>
+          {/* Form Error Banner */}
+          {error && (
+            <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2 animate-fade-in-fast">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0" />
+              <span>{error}</span>
             </div>
-          </div>
+          )}
 
-          <Card className="p-6 sm:p-7 shadow-xs">
-            {isOtpStep ? (
-              /* OTP VERIFICATION VIEW */
-              <form onSubmit={handleVerifyOtp} className="space-y-5">
-                {error && (
-                  <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
-                    {error}
-                  </div>
-                )}
-
-                <div className="p-4 bg-brand-indigo/5 border border-brand-indigo/15 rounded-2xl text-center space-y-1">
-                  <KeyRound className="w-6 h-6 text-brand-indigo mx-auto mb-1" />
-                  <p className="text-xs font-semibold text-dark-900">
-                    Kode Verifikasi Terkirim
-                  </p>
-                  <p className="text-[11px] text-muted">
-                    Periksa kotak masuk atau spam email{" "}
-                    <strong>{registeredEmail}</strong>
-                  </p>
-                </div>
-
-                <div className="space-y-1.5 text-left">
-                  <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans text-center">
-                    Masukkan 6 Digit OTP
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={6}
-                    value={otpCode}
-                    onChange={(e) =>
-                      setOtpCode(e.target.value.replace(/\D/g, ""))
-                    }
-                    placeholder="123456"
-                    className="w-full text-center tracking-[0.6em] text-2xl font-mono font-bold py-3 px-4 bg-surface border-2 border-brand-indigo/30 rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo focus:ring-2 focus:ring-brand-indigo/20 transition-all"
-                  />
-                </div>
-
-                <Button
-                  variant="brand"
-                  size="lg"
-                  type="submit"
-                  loading={otpLoading}
-                  className="w-full text-sm font-bold shadow-brand"
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                  <span>Verifikasi & Aktifkan Akun</span>
-                </Button>
-
-                <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsOtpStep(false);
-                      setError(null);
-                    }}
-                    className="text-muted hover:text-dark-900 font-semibold"
-                  >
-                    ← Ubah Data Pendaftaran
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={!canResend}
-                    onClick={handleResendOtp}
-                    className={`font-semibold flex items-center gap-1 ${
-                      canResend
-                        ? "text-brand-indigo hover:underline cursor-pointer"
-                        : "text-muted cursor-not-allowed"
-                    }`}
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    {canResend
-                      ? "Kirim Ulang OTP"
-                      : `Kirim ulang dalam (${otpTimer}s)`}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              /* REGISTRATION FORM VIEW */
-              <>
-                {/* Role Switcher */}
-                <div className="flex p-1 bg-canvas border border-border rounded-xl mb-4">
-                  <button
-                    type="button"
-                    onClick={() => setRole("MHS")}
-                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                      role === "MHS"
-                        ? "bg-brand-indigo text-white shadow-2xs"
-                        : "text-muted hover:text-dark-900"
-                    }`}
-                  >
-                    <GraduationCap className="w-3.5 h-3.5" />
-                    Mahasiswa (.ac.id)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole("UMKM")}
-                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                      role === "UMKM"
-                        ? "bg-brand-indigo text-white shadow-2xs"
-                        : "text-muted hover:text-dark-900"
-                    }`}
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    Klien UMKM
-                  </button>
-                </div>
-
-                {/* Google Sign-up Button */}
+          {!isOtpStep ? (
+            <div className="space-y-5">
+              {/* Role Toggle Switcher Tabs */}
+              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200">
                 <button
                   type="button"
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                  className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setRole("MHS");
+                    setError(null);
+                  }}
+                  className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                    role === "MHS"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  <GoogleVectorIcon size={18} />
-                  <span>
-                    {loading
-                      ? "Menghubungkan..."
-                      : `Daftar sebagai ${role === "MHS" ? "Mahasiswa" : "UMKM"} dengan Google`}
-                  </span>
+                  <GraduationCap className="w-4 h-4 text-cyan-600" />
+                  <span>Mahasiswa Kampus</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRole("UMKM");
+                    setError(null);
+                  }}
+                  className={`py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                    role === "UMKM"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Building2 className="w-4 h-4 text-emerald-600" />
+                  <span>Klien UMKM</span>
+                </button>
+              </div>
 
-                <div className="relative my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-surface px-2 text-muted font-semibold">
-                      Atau isi data manual
-                    </span>
-                  </div>
-                </div>
+              {/* Google OAuth Button */}
+              <button
+                type="button"
+                onClick={handleGoogleSignup}
+                disabled={loading}
+                className="w-full py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+              >
+                <GoogleVectorIcon className="w-4 h-4" />
+                <span>Daftar Cepat dengan Akun Google</span>
+              </button>
 
-                <form onSubmit={handleRegister} className="space-y-4">
-                  {error && (
-                    <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
-                      {error}
+              {/* Clean Divider */}
+              <div className="relative flex items-center justify-center">
+                <div className="border-t border-slate-200 w-full" />
+                <span className="bg-[#F8FAFC] px-3 text-xs text-slate-400 font-medium absolute">
+                  atau isi formulir pendaftaran
+                </span>
+              </div>
+
+              {/* Main Registration Form */}
+              <form onSubmit={handleRegister} className="space-y-4">
+                {role === "MHS" ? (
+                  <>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Nama Lengkap
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="text"
+                          required
+                          value={mhsForm.nama_lengkap}
+                          onChange={(e) =>
+                            setMhsForm({ ...mhsForm, nama_lengkap: e.target.value })
+                          }
+                          placeholder="Nama lengkap sesuai KTM..."
+                          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                        />
+                      </div>
                     </div>
-                  )}
 
-                  {role === "MHS" ? (
-                    <>
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                          Nama Lengkap Sesuai KTM
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Email Kampus (.ac.id / .edu)
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="email"
+                          required
+                          value={mhsForm.email}
+                          onChange={(e) =>
+                            setMhsForm({ ...mhsForm, email: e.target.value })
+                          }
+                          placeholder="contoh: darell@ui.ac.id"
+                          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          NIM Mahasiswa
                         </label>
-                        <div className="relative">
-                          <User className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            required
-                            placeholder="Contoh: Darell Rangga Putra"
-                            value={mhsForm.nama_lengkap}
-                            onChange={(e) =>
-                              setMhsForm({
-                                ...mhsForm,
-                                nama_lengkap: e.target.value,
-                              })
-                            }
-                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                          />
-                        </div>
+                        <input
+                          type="text"
+                          value={mhsForm.nim}
+                          onChange={(e) =>
+                            setMhsForm({ ...mhsForm, nim: e.target.value })
+                          }
+                          placeholder="NIM aktif..."
+                          className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
+                        />
                       </div>
-
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                          Email Kampus Resmi (.ac.id)
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Program Studi
                         </label>
-                        <div className="relative">
-                          <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="email"
-                            required
-                            placeholder="nama@kampus.ac.id"
-                            value={mhsForm.email}
-                            onChange={(e) =>
-                              setMhsForm({ ...mhsForm, email: e.target.value })
-                            }
-                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                          />
-                        </div>
+                        <select
+                          value={mhsForm.prodi_id}
+                          onChange={(e) =>
+                            setMhsForm({ ...mhsForm, prodi_id: e.target.value })
+                          }
+                          className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
+                        >
+                          {prodiOptions.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5 text-left">
-                          <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                            NIM
-                          </label>
-                          <input
-                            type="text"
-                            placeholder="Cth: 12210001"
-                            value={mhsForm.nim}
-                            onChange={(e) =>
-                              setMhsForm({ ...mhsForm, nim: e.target.value })
-                            }
-                            className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5 text-left">
-                          <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                            Program Studi
-                          </label>
-                          <select
-                            value={mhsForm.prodi_id}
-                            onChange={(e) =>
-                              setMhsForm({
-                                ...mhsForm,
-                                prodi_id: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans cursor-pointer"
-                          >
-                            {prodiOptions.map((p) => (
-                              <option key={p.id} value={p.id}>
-                                {p.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Nama Usaha / Brand UMKM
+                      </label>
+                      <div className="relative">
+                        <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="text"
+                          required
+                          value={umkmForm.nama_usaha}
+                          onChange={(e) =>
+                            setUmkmForm({ ...umkmForm, nama_usaha: e.target.value })
+                          }
+                          placeholder="Contoh: Kopi Kenangan Nusantara"
+                          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                        />
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                          Nama Usaha / Toko / Merek
-                        </label>
-                        <div className="relative">
-                          <Building2 className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="text"
-                            required
-                            placeholder="Contoh: Kopi Senja Nusantara"
-                            value={umkmForm.nama_usaha}
-                            onChange={(e) =>
-                              setUmkmForm({
-                                ...umkmForm,
-                                nama_usaha: e.target.value,
-                              })
-                            }
-                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                          />
-                        </div>
-                      </div>
+                    </div>
 
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                          Email Bisnis / Pribadi
-                        </label>
-                        <div className="relative">
-                          <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                          <input
-                            type="email"
-                            required
-                            placeholder="kontak@bisnisanda.com"
-                            value={umkmForm.email}
-                            onChange={(e) =>
-                              setUmkmForm({
-                                ...umkmForm,
-                                email: e.target.value,
-                              })
-                            }
-                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                          />
-                        </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Email Akun Bisnis
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="email"
+                          required
+                          value={umkmForm.email}
+                          onChange={(e) =>
+                            setUmkmForm({ ...umkmForm, email: e.target.value })
+                          }
+                          placeholder="nama@usaha.com"
+                          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                        />
                       </div>
+                    </div>
 
-                      <div className="space-y-1.5 text-left">
-                        <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
                           Bidang Industri
                         </label>
                         <select
@@ -593,90 +558,136 @@ export function RegisterPage() {
                               bidang_industri: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans cursor-pointer"
+                          className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
                         >
-                          {industriOptions.map((ind, idx) => (
-                            <option key={idx} value={ind}>
+                          {industriOptions.map((ind, i) => (
+                            <option key={i} value={ind}>
                               {ind}
                             </option>
                           ))}
                         </select>
                       </div>
-                    </>
-                  )}
-
-                  <div className="space-y-1.5 text-left">
-                    <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                      Kata Sandi
-                    </label>
-                    <div className="relative">
-                      <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        required
-                        minLength={8}
-                        placeholder="Minimal 8 karakter"
-                        value={
-                          role === "MHS" ? mhsForm.password : umkmForm.password
-                        }
-                        onChange={(e) =>
-                          role === "MHS"
-                            ? setMhsForm({
-                                ...mhsForm,
-                                password: e.target.value,
-                              })
-                            : setUmkmForm({
-                                ...umkmForm,
-                                password: e.target.value,
-                              })
-                        }
-                        className="w-full pl-10 pr-10 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-brand-indigo font-sans"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
-                        ) : (
-                          <Eye className="w-4 h-4" />
-                        )}
-                      </button>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Kota Lokasi
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={umkmForm.kota}
+                          onChange={(e) =>
+                            setUmkmForm({ ...umkmForm, kota: e.target.value })
+                          }
+                          placeholder="Jakarta Selatan"
+                          className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
+                        />
+                      </div>
                     </div>
+                  </>
+                )}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Kata Sandi (Min. 8 Karakter)
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={8}
+                      value={role === "MHS" ? mhsForm.password : umkmForm.password}
+                      onChange={(e) => {
+                        if (role === "MHS") {
+                          setMhsForm({ ...mhsForm, password: e.target.value });
+                        } else {
+                          setUmkmForm({ ...umkmForm, password: e.target.value });
+                        }
+                      }}
+                      placeholder="Masukkan kata sandi aman..."
+                      className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
+                </div>
 
-                  <Button
-                    variant="brand"
-                    size="lg"
-                    type="submit"
-                    loading={loading}
-                    className="w-full text-sm font-bold shadow-brand mt-2"
-                  >
-                    <span>Lanjutkan & Verifikasi OTP</span>
-                    <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </Button>
-                </form>
-              </>
-            )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+                >
+                  <span>{loading ? "Mendaftarkan..." : "Daftar Akun Sekarang"}</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-400" />
+                </button>
+              </form>
+            </div>
+          ) : (
+            /* OTP Verification Form */
+            <form onSubmit={handleVerifyOtp} className="space-y-4 animate-fade-in-fast">
+              <div className="p-4 bg-cyan-50/70 border border-cyan-200 rounded-2xl text-xs text-cyan-900 leading-relaxed">
+                Kami telah mengirimkan 6 digit kode verifikasi ke alamat email <b>{registeredEmail}</b>. Harap periksa folder kotak masuk atau spam.
+              </div>
 
-            <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
-              Sudah memiliki akun?{" "}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1 text-center">
+                  Masukkan 6 Digit Kode OTP
+                </label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder="Contoh: 123456"
+                  className="w-full py-3 text-center font-mono text-lg font-bold tracking-widest bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={otpLoading}
+                className="w-full py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+              >
+                <span>{otpLoading ? "Memverifikasi..." : "Verifikasi & Aktifkan Akun"}</span>
+                <CheckCircle2 className="w-4 h-4" />
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={!canResend}
+                  className="text-xs font-semibold text-cyan-700 hover:text-cyan-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {canResend
+                    ? "Kirim Ulang Kode OTP"
+                    : `Kirim ulang OTP dalam ${otpTimer} detik`}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Footer Navigation Link */}
+          <div className="text-center pt-2">
+            <p className="text-xs text-slate-600">
+              Sudah memiliki akun Makarya?{" "}
               <Link
                 to="/login"
-                className="font-bold text-brand-indigo hover:underline"
+                className="font-bold text-cyan-700 hover:text-cyan-800 hover:underline"
               >
-                Masuk ke Akun Anda
+                Masuk di Sini
               </Link>
-            </div>
-          </Card>
-
-          {/* Security Trust Badge */}
-          <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>
-              Verifikasi Kampus Resmi | Enkripsi Standar OWASP | Keamanan Escrow
-            </span>
+            </p>
           </div>
         </div>
       </div>

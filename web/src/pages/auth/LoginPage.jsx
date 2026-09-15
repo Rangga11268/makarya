@@ -3,10 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { authApi } from "../../api";
-import { Card } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
-import { AuthArtwork } from "../../components/features/AuthArtwork";
 import { GoogleVectorIcon } from "../../components/icons/ProfileVectorIcons";
 import { initiateGoogleWebSignIn } from "../../services/googleAuth";
 import {
@@ -21,6 +18,9 @@ import {
   KeyRound,
   CheckCircle2,
   X,
+  Sparkles,
+  Layers,
+  FileCheck,
 } from "lucide-react";
 
 export function LoginPage() {
@@ -177,318 +177,359 @@ export function LoginPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 min-h-[calc(100vh-5rem)] flex items-center justify-center">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch w-full max-w-5xl">
-        {/* Left Column: Visual Artwork & Social Proof Banner */}
-        <div className="lg:col-span-6 flex">
-          <AuthArtwork
-            headline="Kembangkan Karir Freelance Nyata Sejak Masa Kuliah."
-            subtext="Makarya menghubungkan keahlian digital mahasiswa dengan ribuan UMKM yang siap membayar secara adil dan aman."
-          />
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#F8FAFC] flex flex-col lg:flex-row font-sans">
+      {/* ========================================================================= */}
+      {/* 1. LEFT SIDE: BRAND SHOWCASE & SPECTRUM HERO CANVAS (Axora Style)         */}
+      {/* ========================================================================= */}
+      <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-slate-900 via-[#0B0F17] to-slate-950 text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800">
+        {/* Subtle Ambient Radial Glows */}
+        <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Left Vertical Spectrum Pillars */}
+        <div className="absolute -left-6 bottom-16 top-24 w-14 flex items-end gap-1.5 opacity-80 pointer-events-none z-0 animate-float-slow">
+          <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
+          <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 to-transparent rounded-t-lg" />
         </div>
 
-        {/* Right Column: Clean Form Container */}
-        <div className="lg:col-span-6 flex flex-col justify-center space-y-5">
-          <div className="text-left space-y-1.5">
-            <Link to="/" className="inline-block">
-              <img
-                src="/logo.webp"
-                alt="Logo Makarya"
-                className="h-10 sm:h-12 w-auto object-contain mb-2"
-              />
-            </Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-dark-900 tracking-tight">
-              Masuk ke Akun Anda
+        {/* Top Brand Identity */}
+        <div className="relative z-10 space-y-4">
+          <Link to="/" className="inline-flex items-center gap-3 group select-none">
+            <img
+              src="/logo-icon.svg"
+              alt="Makarya Logo"
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+            />
+            <span className="text-2xl font-black tracking-tight text-white">
+              Makarya
+            </span>
+          </Link>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-800 text-cyan-300 text-xs font-semibold">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Portal Masuk Resmi Mahasiswa & UMKM</span>
+          </div>
+
+          <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-2">
+            Kolaborasi Nyata dengan{" "}
+            <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              Proteksi Escrow Penuh.
+            </span>
+          </h2>
+
+          <p className="text-xs xl:text-sm text-slate-300 leading-relaxed max-w-sm">
+            Akses ribuan proyek digital terverifikasi dari pelaku usaha UMKM dan wujudkan formasi tim multidisiplin kampus.
+          </p>
+        </div>
+
+        {/* Center Live Showcase Card (Axora Workroom Card Style) */}
+        <div className="relative z-10 my-8 space-y-3 max-w-md">
+          <div className="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl border border-slate-700/80 shadow-2xl space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 text-white font-bold text-xs flex items-center justify-center">
+                  DR
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white flex items-center gap-1">
+                    Darell Radhitya
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <div className="text-[10px] text-slate-400 font-mono">
+                    Frontend Dev | Universitas Indonesia
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded">
+                Honor Terverifikasi
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-200 leading-relaxed italic">
+              "Pengerjaan proyek website e-commerce kopi selesai tepat waktu. Pembayaran diamankan di escrow dan cair otomatis saat klien puas."
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+              <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 text-slate-300">
+                <Lock className="w-3 h-3 text-emerald-400" />
+                <span>Escrow 100% Aman</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 text-slate-300">
+                <GraduationCap className="w-3 h-3 text-cyan-400" />
+                <span>Akun .ac.id Valid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Guarantee Badges */}
+        <div className="relative z-10 pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+          <span>&copy; {new Date().getFullYear()} Makarya Indonesia</span>
+          <span className="flex items-center gap-1 text-emerald-400 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5" /> Jaminan Transaksi Aman
+          </span>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 2. RIGHT SIDE: HIGH-CONTRAST CLEAN AUTH FORM CONTAINER                    */}
+      {/* ========================================================================= */}
+      <div className="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-6 sm:p-10 lg:p-16">
+        <div className="w-full max-w-md space-y-6">
+          {/* Header Title */}
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-semibold shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-cyan-600" />
+              <span>Masuk ke Akun Anda</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Selamat Datang Kembali
             </h1>
-            <p className="text-xs sm:text-sm text-muted font-sans font-normal">
-              Akses dashboard proyek, proposal, dan dompet pencairan dana escrow
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Akses dashboard proyek, proposal, dan dompet pencairan dana escrow Anda.
             </p>
           </div>
 
           {/* Quick Fill Test Accounts Chips */}
-          <div className="p-3.5 bg-canvas border border-border rounded-2xl space-y-2">
+          <div className="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-2 shadow-2xs">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-dark-900 flex items-center gap-1.5 font-sans">
-                <UserCheck className="w-3.5 h-3.5 text-brand-indigo" />
-                Pilih Akun Uji Coba Cepat:
+              <span className="font-bold text-slate-900 flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-cyan-600" />
+                Akun Uji Coba Cepat:
               </span>
-              <span className="text-[10px] text-muted">
-                Password: password123
+              <span className="text-[10px] text-slate-400 font-mono">
+                Pass: password123
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => fillTestAccount("darell@ubsi.ac.id")}
-                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-brand-indigo hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
               >
-                <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
+                <GraduationCap className="w-3.5 h-3.5 text-cyan-600" />
                 Mahasiswa (Darell)
               </button>
               <button
                 type="button"
                 onClick={() => fillTestAccount("admin@makarya.id")}
-                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-dark-900 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
-                Admin Platform
+                Admin
               </button>
               <button
                 type="button"
                 onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-emerald-700 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
               >
                 <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Klien UMKM (Kopi)
+                UMKM (Kopi)
               </button>
             </div>
           </div>
 
-          <Card className="p-6 sm:p-7 shadow-xs">
-            {/* Google OAuth Direct Button */}
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl border border-border bg-surface hover:bg-canvas text-dark-900 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 shadow-2xs transition-all cursor-pointer mb-4 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              <GoogleVectorIcon size={18} />
-              <span>
-                {loading ? "Menghubungkan..." : "Masuk dengan Google"}
-              </span>
-            </button>
+          {/* Google OAuth Button */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+          >
+            <GoogleVectorIcon className="w-4 h-4" />
+            <span>Masuk Cepat dengan Akun Google</span>
+          </button>
 
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface px-2 text-muted font-semibold">
-                  Atau masuk dengan email
-                </span>
+          {/* Clean Divider */}
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-slate-200 w-full" />
+            <span className="bg-[#F8FAFC] px-3 text-xs text-slate-400 font-medium absolute">
+              atau dengan email terdaftar
+            </span>
+          </div>
+
+          {/* Form Error Banner */}
+          {error && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2 animate-fade-in-fast">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Alamat Email
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nama@kampus.ac.id atau email usaha"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                />
               </div>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              {error && (
-                <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl animate-in fade-in">
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                  Email Akun / Kampus
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  Kata Sandi
                 </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    placeholder="nama@kampus.ac.id atau email UMKM"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all font-sans"
-                  />
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setForgotModalOpen(true)}
+                  className="text-xs font-semibold text-cyan-700 hover:text-cyan-800 hover:underline"
+                >
+                  Lupa Password?
+                </button>
               </div>
-
-              <div className="space-y-1.5 text-left">
-                <div className="flex items-center justify-between">
-                  <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider font-sans">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setForgotEmail(email);
-                      setForgotStep(1);
-                      setForgotError(null);
-                      setForgotModalOpen(true);
-                    }}
-                    className="text-xs text-brand-indigo hover:underline font-semibold"
-                  >
-                    Lupa Password?
-                  </button>
-                </div>
-                <div className="relative">
-                  <Lock className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full pl-10 pr-10 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo focus:ring-1 focus:ring-brand-indigo transition-all font-sans"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="p-1 text-muted hover:text-dark-900 absolute right-3 top-1/2 -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Masukkan kata sandi..."
+                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
+            </div>
 
-              <Button
-                variant="brand"
-                size="lg"
-                type="submit"
-                loading={loading}
-                className="w-full text-sm font-bold shadow-brand mt-2 justify-center"
-              >
-                <span>Masuk Sekarang</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Button>
-            </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+            >
+              <span>{loading ? "Memverifikasi..." : "Masuk ke Akun"}</span>
+              <ArrowRight className="w-4 h-4 text-cyan-400" />
+            </button>
+          </form>
 
-            <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted font-sans">
-              Belum memiliki akun mahasiswa?{" "}
+          {/* Footer Navigation Link */}
+          <div className="text-center pt-2">
+            <p className="text-xs text-slate-600">
+              Belum memiliki akun Makarya?{" "}
               <Link
                 to="/register"
-                className="font-bold text-brand-indigo hover:underline"
+                className="font-bold text-cyan-700 hover:text-cyan-800 hover:underline"
               >
-                Daftar Mahasiswa (.ac.id)
+                Daftar Sekarang Gratis
               </Link>
-            </div>
-          </Card>
-
-          {/* Security Trust Badge */}
-          <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>
-              Garansi Rekening Bersama (Escrow) & Keamanan Data OWASP Top 10
-            </span>
+            </p>
           </div>
         </div>
       </div>
 
-      {/* MODAL LUPA PASSWORD (FORGOT PASSWORD & RESET OTP) */}
-      <Modal
-        isOpen={forgotModalOpen}
-        onClose={() => setForgotModalOpen(false)}
-        title={
-          forgotStep === 1 ? "Lupa Kata Sandi" : "Verifikasi OTP & Sandi Baru"
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-xs text-muted">
-            {forgotStep === 1
-              ? "Masukkan email akun Anda. Kami akan mengirimkan 6 digit kode OTP verifikasi."
-              : `Masukkan kode 6 digit OTP yang dikirim ke ${forgotEmail} dan kata sandi baru Anda.`}
-          </p>
-
-          {forgotError && (
-            <div className="p-3 text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-700 rounded-xl">
-              {forgotError}
-            </div>
-          )}
-
-          {forgotStep === 1 ? (
-            <form onSubmit={handleSendForgotOtp} className="space-y-4">
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-dark-900">
-                  Email Akun
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  placeholder="nama@kampus.ac.id atau email UMKM"
-                  className="w-full px-4 py-2.5 text-sm border border-border rounded-xl bg-canvas focus:outline-none focus:border-brand-indigo font-sans"
-                />
+      {/* Forgot Password Modal */}
+      {forgotModalOpen && (
+        <Modal
+          isOpen={forgotModalOpen}
+          onClose={() => {
+            setForgotModalOpen(false);
+            setForgotStep(1);
+            setForgotError(null);
+          }}
+          title="Reset Kata Sandi"
+        >
+          <div className="space-y-4 p-1">
+            {forgotError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs">
+                {forgotError}
               </div>
+            )}
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  onClick={() => setForgotModalOpen(false)}
-                >
-                  Batal
-                </Button>
-                <Button
-                  type="submit"
-                  variant="brand"
-                  size="md"
-                  loading={forgotLoading}
-                >
-                  Kirim Kode OTP
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleResetPassword} className="space-y-4">
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-dark-900">
-                  Kode OTP (6 Digit)
-                </label>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  value={forgotOtp}
-                  onChange={(e) =>
-                    setForgotOtp(e.target.value.replace(/\D/g, ""))
-                  }
-                  placeholder="Contoh: 123456"
-                  className="w-full px-4 py-2.5 text-center tracking-widest text-lg font-mono font-bold border border-border rounded-xl bg-canvas focus:outline-none focus:border-brand-indigo"
-                />
-              </div>
-
-              <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-dark-900">
-                  Kata Sandi Baru
-                </label>
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={forgotNewPass}
-                  onChange={(e) => setForgotNewPass(e.target.value)}
-                  placeholder="Minimal 8 karakter"
-                  className="w-full px-4 py-2.5 text-sm border border-border rounded-xl bg-canvas focus:outline-none focus:border-brand-indigo font-sans"
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setForgotStep(1)}
-                  className="text-xs text-brand-indigo hover:underline font-semibold"
-                >
-                  Ganti Email
-                </button>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="md"
-                    onClick={() => setForgotModalOpen(false)}
-                  >
-                    Batal
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="brand"
-                    size="md"
-                    loading={forgotLoading}
-                  >
-                    Simpan Sandi Baru
-                  </Button>
+            {forgotStep === 1 && (
+              <form onSubmit={handleSendForgotOtp} className="space-y-4">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Masukkan email akun Anda. Kami akan mengirimkan 6 digit kode OTP verifikasi untuk mengubah kata sandi Anda.
+                </p>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Email Akun
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="nama@email.com"
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
                 </div>
-              </div>
-            </form>
-          )}
-        </div>
-      </Modal>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
+                >
+                  {forgotLoading ? "Mengirim OTP..." : "Kirim Kode OTP"}
+                </button>
+              </form>
+            )}
+
+            {forgotStep === 2 && (
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Kode OTP telah dikirim ke <b>{forgotEmail}</b>. Masukkan kode 6 digit dan kata sandi baru Anda.
+                </p>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Kode OTP (6 Digit)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value)}
+                    placeholder="Contoh: 123456"
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-center font-mono text-sm tracking-widest text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Password Baru (Min. 8 Karakter)
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    value={forgotNewPass}
+                    onChange={(e) => setForgotNewPass(e.target.value)}
+                    placeholder="Password baru..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors"
+                >
+                  {forgotLoading ? "Menyimpan..." : "Simpan Password Baru"}
+                </button>
+              </form>
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
