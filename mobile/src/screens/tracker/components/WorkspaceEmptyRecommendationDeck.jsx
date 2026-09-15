@@ -17,9 +17,12 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { renderProjectCategoryVectorIcon } from "../../../components/icons/CategoryIcons";
 import {
+  WorkspaceDeskVectorIcon,
+  ContractHubVectorIcon,
+} from "../../../components/icons/WorkspaceVectorIcons";
+import {
   Compass,
   ArrowRight,
-  Sparkles,
   Users,
   ShieldCheck,
   Building2,
@@ -156,8 +159,8 @@ export function WorkspaceEmptyRecommendationDeck({
     return (
       <View style={styles.container}>
         <View style={styles.activationCard}>
-          <View style={styles.sparkleCircle}>
-            <Sparkles size={20} color={COLORS.brandIndigo} />
+          <View style={styles.iconCircleBadge}>
+            <ContractHubVectorIcon size={22} color={COLORS.brandIndigo} secondaryColor="#3B82F6" />
           </View>
           <Text style={styles.activationTitle}>
             Mulai Kolaborasi Pertama Anda
@@ -185,8 +188,8 @@ export function WorkspaceEmptyRecommendationDeck({
       {/* 1. Activation Onboarding Card */}
       <View style={styles.activationCard}>
         <View style={styles.activationHeaderRow}>
-          <View style={styles.sparkleCircle}>
-            <Sparkles size={18} color="#2563EB" />
+          <View style={styles.iconCircleBadge}>
+            <WorkspaceDeskVectorIcon size={20} color="#2563EB" secondaryColor="#60A5FA" />
           </View>
           <View style={styles.activationHeaderTextCol}>
             <Text style={styles.activationGreeting}>Ruang Kerja Baru</Text>
@@ -400,10 +403,10 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 8,
   },
-  sparkleCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  iconCircleBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
     backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",

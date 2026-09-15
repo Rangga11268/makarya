@@ -28,7 +28,6 @@ import {
   GraduationCap,
   Clock,
   ArrowRight,
-  Sparkles,
 } from "lucide-react-native";
 
 export function ChatListScreen({ navigation }) {

@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
+  Send,
   Flame,
 } from "lucide-react-native";
 
@@ -142,7 +142,7 @@ export function WorkroomProjectHUD({
             style={styles.pingBtn}
             activeOpacity={0.8}
           >
-            <Sparkles size={11} color="#4F46E5" />
+            <Send size={11} color="#4F46E5" />
             <Text style={styles.pingBtnText}>Tanya Progres</Text>
           </TouchableOpacity>
         )}

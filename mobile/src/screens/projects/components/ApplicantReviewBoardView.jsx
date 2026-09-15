@@ -18,7 +18,6 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
-  Sparkles,
   ShieldCheck,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../../hooks/useResponsiveLayout";
