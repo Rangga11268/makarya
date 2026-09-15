@@ -103,7 +103,7 @@ export function ApplicantReviewBoardView({
                     </Text>
                     {project.deliverables.map((d, i) => (
                       <Text key={i} style={styles.deliverableItemText}>
-                        • {d}
+                        - {d}
                       </Text>
                     ))}
                   </View>

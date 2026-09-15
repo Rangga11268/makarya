@@ -132,12 +132,12 @@ export function PortfolioPage() {
               {isUmkm ? (
                 <>
                   <Building2 className="w-4 h-4 text-brand-indigo" />
-                  <span>Klien UMKM Terverifikasi • Mitra Usaha Makarya</span>
+                  <span>Klien UMKM Terverifikasi, Mitra Usaha Makarya</span>
                 </>
               ) : (
                 <>
                   <GraduationCap className="w-4 h-4 text-brand-indigo" />
-                  <span>Mahasiswa Terverifikasi • Domain Kampus .ac.id</span>
+                  <span>Mahasiswa Terverifikasi, Domain Kampus .ac.id</span>
                 </>
               )}
             </div>

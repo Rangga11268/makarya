@@ -103,7 +103,7 @@ export function PendingProposalView({
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
                 {proposal.project_kategori || "KOLABORASI KAMPUS"}
               </span>
-              <span className="text-muted/60 text-xs">•</span>
+              <span className="text-muted/60 text-xs">|</span>
               <span className="text-[11px] text-muted">
                 Diajukan {formatDate(proposal.created_at)}
               </span>

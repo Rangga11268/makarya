@@ -91,7 +91,7 @@ export function CurrencyInput({
       {/* Terbilang Preview */}
       {terbilangText && (
         <div className="flex items-center gap-1.5 text-[11px] font-medium text-brand-indigo italic pl-1 animate-in fade-in duration-150">
-          <span className="text-muted">•</span>
+          <span className="text-muted">≈</span>
           <span className="truncate">{terbilangText}</span>
         </div>
       )}

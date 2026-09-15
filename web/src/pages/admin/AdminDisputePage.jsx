@@ -216,7 +216,7 @@ export function AdminDisputePage() {
                       ID #{d.id.substring(0, 8)}
                     </span>
                     <span className="text-xs text-muted">
-                      • Dilaporkan: {formatDate(d.created_at)}
+                      Dilaporkan: {formatDate(d.created_at)}
                     </span>
                   </div>
 

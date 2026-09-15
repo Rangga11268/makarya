@@ -507,7 +507,7 @@ export function ProfileScreen({ navigation }) {
                 <Text style={styles.detailLabel}>Status Akademik & NIM</Text>
                 <Text style={styles.detailValue}>
                   {user?.nim
-                    ? `${user.nim}${user.semester ? ` • Semester ${user.semester}` : ""} (Aktif)`
+                    ? `${user.nim}${user.semester ? `, Semester ${user.semester}` : ""} (Aktif)`
                     : "Belum diatur"}
                 </Text>
               </View>
@@ -719,7 +719,7 @@ export function ProfileScreen({ navigation }) {
               </View>
               <Text style={styles.bankAccountDetail}>
                 {user?.nomor_rekening
-                  ? `${user.nomor_rekening} • ${
+                  ? `${user.nomor_rekening} | ${
                       user?.nama_pemilik_rekening ||
                       user?.nama_lengkap ||
                       user?.nama_usaha ||

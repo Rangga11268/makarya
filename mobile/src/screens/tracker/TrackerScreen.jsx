@@ -174,7 +174,7 @@ export function TrackerScreen({ navigation }) {
       <Header
         category="WORKSPACE"
         title="Ruang Kerja & Proyek"
-        subtitle={`${activeJobsCount} Aktif • ${items.length} Total Proyek`}
+        subtitle={`${activeJobsCount} Aktif (${items.length} Total Proyek)`}
         rightAction={
           !isMahasiswa ? (
             <HeaderCircleButton
@@ -567,7 +567,7 @@ export function TrackerScreen({ navigation }) {
                         isMahasiswa ? item.harga_tawar : item.budget_max,
                       )}
                     </Text>
-                    <Text style={styles.metaDivider}>•</Text>
+                    <Text style={styles.metaDivider}>|</Text>
                     <View style={styles.metaIconText}>
                       <Clock size={11} color={COLORS.textMuted} />
                       <Text style={styles.metaLabel}>
@@ -578,7 +578,7 @@ export function TrackerScreen({ navigation }) {
                             : `${item.total_pelamar || 0} pelamar`}
                       </Text>
                     </View>
-                    <Text style={styles.metaDivider}>•</Text>
+                    <Text style={styles.metaDivider}>|</Text>
                     <View style={styles.metaIconText}>
                       <ShieldCheck size={11} color={COLORS.success} />
                       <Text style={styles.escrowLabel}>Escrow</Text>

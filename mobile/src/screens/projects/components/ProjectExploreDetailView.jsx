@@ -190,7 +190,7 @@ export function ProjectExploreDetailView({
                   </View>
                 </View>
                 <Text style={styles.clientLocationText}>
-                  {project.lokasi || "Indonesia"} • Mitra Klien UMKM
+                  {project.lokasi || "Indonesia"}, Mitra Klien UMKM
                 </Text>
               </View>
             </View>
@@ -239,7 +239,7 @@ export function ProjectExploreDetailView({
             <View style={styles.escrowTrustStrip}>
               <AppleEscrowLockIcon size={16} />
               <Text style={styles.escrowTrustText}>
-                Garansi Escrow 100% • Dana honor tersimpan aman di rekening
+                Garansi Escrow 100% | Dana honor tersimpan aman di rekening
                 bersama
               </Text>
             </View>

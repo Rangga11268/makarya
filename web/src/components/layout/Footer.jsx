@@ -256,14 +256,14 @@ export function Footer() {
             <Link to="/terms" className="hover:text-dark-900 transition-colors">
               Syarat & Ketentuan
             </Link>
-            <span>•</span>
+            <span>|</span>
             <Link
               to="/privacy"
               className="hover:text-dark-900 transition-colors"
             >
               Kebijakan Privasi
             </Link>
-            <span>•</span>
+            <span>|</span>
             <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
               <Lock className="w-3 h-3" /> Escrow Terenkripsi
             </span>

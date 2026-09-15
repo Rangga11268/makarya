@@ -124,7 +124,7 @@ export function ApplicantReviewBoard({
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
                 {project?.kategori || "UMKM DIGITAL"}
               </span>
-              <span className="text-muted/60 text-xs">•</span>
+              <span className="text-muted/60 text-xs">|</span>
               <span className="text-[11px] text-muted">
                 Dibuat {formatDate(project?.created_at)}
               </span>
@@ -397,19 +397,19 @@ export function ApplicantReviewBoard({
                           </span>
                         </div>
 
-                        <p className="text-xs text-muted flex flex-wrap items-center gap-2">
+                        <p className="text-xs text-muted flex flex-wrap items-center gap-1.5">
                           <span className="font-semibold text-dark-900/80">
                             {prop.mhs_profile?.asal_kampus ||
                               "Perguruan Tinggi Terakreditasi"}
                           </span>
-                          <span>•</span>
+                          <span>,</span>
                           <span>
                             {prop.mhs_profile?.jurusan ||
                               "Program Studi Mahasiswa"}
                           </span>
                           {prop.mhs_profile?.semester && (
                             <>
-                              <span>•</span>
+                              <span>,</span>
                               <span>Semester {prop.mhs_profile.semester}</span>
                             </>
                           )}

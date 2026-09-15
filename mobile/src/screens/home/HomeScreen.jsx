@@ -518,7 +518,7 @@ export function HomeScreen({ navigation }) {
               <Text style={styles.walletAvailableSub} numberOfLines={1}>
                 {wallet?.saldo_escrow > 0
                   ? `${formatCurrency(wallet?.saldo_escrow)} tersimpan di Escrow aman`
-                  : "Tersedia untuk dicairkan • Dilindungi Rekening Bersama"}
+                  : "Tersedia untuk dicairkan, Dilindungi Rekening Bersama"}
               </Text>
             </TouchableOpacity>
 
@@ -586,7 +586,7 @@ export function HomeScreen({ navigation }) {
                       style={styles.completionMissingFieldsText}
                       numberOfLines={1}
                     >
-                      Belum diisi: {profileCompleteness.missing.join(" • ")}
+                      Belum diisi: {profileCompleteness.missing.join(", ")}
                     </Text>
                   </View>
                 </View>
@@ -793,7 +793,7 @@ export function HomeScreen({ navigation }) {
                           style={styles.ongoingPartnerMetaText}
                           numberOfLines={1}
                         >
-                          {pPartner} • {formatCurrency(pBudget)}
+                          {pPartner} | {formatCurrency(pBudget)}
                         </Text>
                       </View>
 

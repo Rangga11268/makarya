@@ -325,11 +325,11 @@ export function ProfilePage() {
 
           <p className="text-xs text-muted flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <span>{user?.email}</span>
-            <span>•</span>
+            <span>|</span>
             <span>
               {isUmkm
-                ? `${umkmData.bidang_industri} • ${umkmData.kota}`
-                : `${mhsData.prodi} • NIM ${mhsData.nim} • Semester ${mhsData.semester}`}
+                ? `${umkmData.bidang_industri}, ${umkmData.kota}`
+                : `${mhsData.prodi}, NIM ${mhsData.nim}, Semester ${mhsData.semester}`}
             </span>
           </p>
         </div>

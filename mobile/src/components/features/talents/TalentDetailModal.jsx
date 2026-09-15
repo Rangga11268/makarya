@@ -95,11 +95,11 @@ export function TalentDetailModal({
                 </View>
                 <Text style={styles.detailProdiText}>
                   {talent.prodi || "Sistem Informasi"}
-                  {talent.semester ? ` • Semester ${talent.semester}` : ""}
+                  {talent.semester ? `, Semester ${talent.semester}` : ""}
                 </Text>
                 {talent.nim ? (
                   <Text style={styles.detailNimText}>
-                    NIM: {talent.nim} • Universitas BSI
+                    NIM: {talent.nim}, Universitas BSI
                   </Text>
                 ) : null}
               </View>

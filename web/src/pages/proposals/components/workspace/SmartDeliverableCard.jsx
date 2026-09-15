@@ -247,7 +247,7 @@ export function SmartDeliverableCard({
                 key={cIdx}
                 className="flex items-start gap-1.5 text-emerald-800 font-medium"
               >
-                <span className="text-emerald-600 font-bold">•</span>
+                <span className="text-emerald-600 font-bold">-</span>
                 <span className="text-xs">{item}</span>
               </div>
             ))}

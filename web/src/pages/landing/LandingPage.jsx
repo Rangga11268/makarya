@@ -878,7 +878,7 @@ export function LandingPage() {
                     Redesign Kemasan & Label Botol Kopi
                   </div>
                   <div className="text-xs text-slate-500">
-                    Klien: Aura Coffee Roasters • Mahasiswa: Darell (DKV)
+                    Klien: Aura Coffee Roasters | Mahasiswa: Darell (DKV)
                   </div>
                 </div>
 

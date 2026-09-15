@@ -359,7 +359,7 @@ export function TalentListScreen({ navigation }) {
               <ProdiVectorIcon size={12} color={COLORS.brandCyan} />
               <Text style={styles.prodiText} numberOfLines={1}>
                 {item.prodi || "Program Studi Belum Diatur"}
-                {item.semester ? ` • Smt ${item.semester}` : ""}
+                {item.semester ? `, Smt ${item.semester}` : ""}
               </Text>
             </View>
           </View>

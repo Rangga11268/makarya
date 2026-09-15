@@ -574,8 +574,8 @@ export function WorkroomChatPanel({
                             <span className="leading-snug break-words">
                               {getCleanRoleName(offer)}
                               {offer.tipe_kolaborasi === "TIM" && (
-                                <span className="opacity-75 font-normal ml-1.5 text-[10px]">
-                                  • Proyek Tim
+                                <span className="opacity-80 font-medium ml-1.5 text-[10px]">
+                                  (Proyek Tim)
                                 </span>
                               )}
                             </span>
@@ -767,8 +767,8 @@ export function WorkroomChatPanel({
                             >
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                               <span>
-                                ✓ Tawaran Diterima • Kolaborasi Dimulai
-                              </span>
+                                 ✓ Tawaran Diterima (Kolaborasi Dimulai)
+                               </span>
                             </div>
                           ) : (
                             <div

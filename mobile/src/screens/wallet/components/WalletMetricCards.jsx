@@ -38,7 +38,7 @@ export function WalletMetricCards({ wallet, user, showBalance, displayName }) {
         {hasBankAccount ? (
           <>
             <Text style={styles.bankNameText} numberOfLines={1}>
-              {user.nama_bank} • {String(user.nomor_rekening).slice(-4)}
+              {user.nama_bank} | {String(user.nomor_rekening).slice(-4)}
             </Text>
             <Text style={styles.metricSubtext} numberOfLines={1}>
               a.n {user.nama_pemilik_rekening || displayName}

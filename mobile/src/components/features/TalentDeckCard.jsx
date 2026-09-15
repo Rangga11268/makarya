@@ -59,7 +59,7 @@ export function TalentDeckCard({
       ? talent.skills
       : ["UI/UX Design", "Mobile App", "Web Coding"];
 
-  const specialty = skillsList.slice(0, 2).join(" • ");
+  const specialty = skillsList.slice(0, 2).join(", ");
 
   return (
     <View style={styles.deckContainer}>
@@ -135,7 +135,7 @@ export function TalentDeckCard({
               {displayName}
             </Text>
             <Text style={styles.talentUniversity} numberOfLines={1}>
-              {prodiText} • {university}
+              {prodiText}, {university}
             </Text>
           </View>
 

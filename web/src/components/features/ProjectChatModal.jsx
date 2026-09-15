@@ -230,7 +230,7 @@ export function ProjectChatModal({
                   }`}
                 />
                 <span className="truncate max-w-xs">
-                  {wsConnected ? "Online" : "Offline"} • {projectTitle}
+                  {wsConnected ? "Online" : "Offline"} | {projectTitle}
                 </span>
               </p>
             </div>

@@ -675,7 +675,7 @@ export function RegisterPage() {
           <div className="flex items-center justify-center gap-2 text-xs text-muted font-medium font-sans">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>
-              Verifikasi Kampus Resmi • Enkripsi Standar OWASP • Keamanan Escrow
+              Verifikasi Kampus Resmi | Enkripsi Standar OWASP | Keamanan Escrow
             </span>
           </div>
         </div>

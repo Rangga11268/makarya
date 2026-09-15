@@ -588,7 +588,7 @@ export function TalentDetailPage() {
                                 <span className="font-bold text-brand-indigo font-mono">
                                   {formatCurrency(p.budget_max)}
                                 </span>
-                                <span>•</span>
+                                <span>|</span>
                                 <span>{p.kategori || "UMKM Digital"}</span>
                               </div>
                             </div>

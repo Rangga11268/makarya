@@ -375,7 +375,7 @@ def get_user_conversations(
                                 "partner_name": peer_name,
                                 "partner_role": peer_role,
                                 "partner_photo": peer_photo,
-                                "partner_sub": f"Rekan Tim • {other_slot.nama_peran}",
+                                "partner_sub": f"Rekan Tim ({other_slot.nama_peran})",
                                 "project_id": proj.id,
                                 "project_title": proj.judul,
                                 "project_status": proj.status,

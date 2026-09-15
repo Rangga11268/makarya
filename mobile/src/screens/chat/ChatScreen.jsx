@@ -697,7 +697,7 @@ export function ChatScreen({ route, navigation }) {
                       <Text style={{ fontWeight: "700" }}>
                         {getCleanRoleName(offer)}
                       </Text>
-                      {offer.tipe_kolaborasi === "TIM" ? " • Proyek Tim" : ""}
+                      {offer.tipe_kolaborasi === "TIM" ? " (Proyek Tim)" : ""}
                     </Text>
                   </View>
 
@@ -958,7 +958,7 @@ export function ChatScreen({ route, navigation }) {
                           isMe && { color: "#A7F3D0" },
                         ]}
                       >
-                        ✓ Tawaran Diterima • Proyek Dimulai
+                        ✓ Tawaran Diterima (Proyek Dimulai)
                       </Text>
                     </View>
                   ) : (
@@ -1539,7 +1539,7 @@ export function ChatScreen({ route, navigation }) {
                           {item.judul}
                         </Text>
                         <Text style={styles.projectOptionStatus}>
-                          {isTeam ? "Proyek Tim" : "Proyek Individu"} •
+                          {isTeam ? "Proyek Tim" : "Proyek Individu"} |
                           Anggaran: Rp{" "}
                           {Number(item.budget_max).toLocaleString("id-ID")}
                         </Text>
