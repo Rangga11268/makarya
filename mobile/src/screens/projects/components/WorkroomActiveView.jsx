@@ -527,6 +527,66 @@ export function WorkroomActiveView({
         {/* TAB 2: INSTRUKSI BRIEF & SPESIFIKASI */}
         {activeTab === "brief" && (
           <View style={styles.cleanSectionCard}>
+            {/* Posisi & Peran Penugasan Mahasiswa */}
+            {isMahasiswa && (
+              <View
+                style={{
+                  backgroundColor: "#EEF2FF",
+                  borderRadius: 14,
+                  padding: 12,
+                  marginBottom: 14,
+                  borderWidth: 1,
+                  borderColor: "#C7D2FE",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontFamily: FONTS.displayBold,
+                    color: "#4338CA",
+                    textTransform: "uppercase",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  Posisi & Peran Kontrak Anda
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: FONTS.displayBold,
+                    color: "#1E1B4B",
+                    fontWeight: "700",
+                    marginTop: 2,
+                  }}
+                >
+                  {myExistingProposal?.slot_nama_peran ||
+                    (project?.slots &&
+                      project.slots.find(
+                        (s) =>
+                          s.id === myExistingProposal?.slot_id ||
+                          s.accepted_mhs_id ||
+                          s.status === "IN_PROGRESS",
+                      )?.nama_peran) ||
+                    (project?.tipe_kolaborasi === "TIM"
+                      ? "Anggota Tim Proyek"
+                      : "Pelaksana Utama (Individu)")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontFamily: FONTS.bodyRegular,
+                    color: "#4F46E5",
+                    marginTop: 2,
+                  }}
+                >
+                  Honor Disepakati:{" "}
+                  {formatCurrency(
+                    myExistingProposal?.harga_tawar || project.budget_max,
+                  )}
+                </Text>
+              </View>
+            )}
+
             <Text style={styles.sectionHeaderTitle}>
               Rincian Kebutuhan Brief
             </Text>
@@ -553,29 +613,59 @@ export function WorkroomActiveView({
               Array.isArray(project.slots) &&
               project.slots.length > 0 && (
                 <View style={{ marginTop: 14 }}>
-                  <Text style={styles.subSectionTitle}>Peran Tim Proyek</Text>
-                  {project.slots.map((slot) => (
-                    <View key={slot.id} style={styles.slotRow}>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.slotRoleName}>
-                          {slot.nama_peran}
-                        </Text>
-                        <Text style={styles.slotBudget}>
-                          Alokasi: {formatCurrency(slot.alokasi_budget)}
-                        </Text>
+                  <Text style={styles.subSectionTitle}>
+                    Formasi Peran Tim Proyek ({project.slots.length} Posisi)
+                  </Text>
+                  {project.slots.map((slot) => {
+                    const isSlotFilled =
+                      slot.status !== "OPEN" || Boolean(slot.accepted_mhs_id);
+                    const talentName =
+                      slot.accepted_mhs_nama || slot.mahasiswa_nama;
+
+                    return (
+                      <View key={slot.id} style={styles.slotRow}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.slotRoleName}>
+                            {slot.nama_peran}
+                          </Text>
+                          <Text style={styles.slotBudget}>
+                            Alokasi: {formatCurrency(slot.alokasi_budget)}
+                          </Text>
+                          {talentName ? (
+                            <Text
+                              style={{
+                                fontSize: 10.5,
+                                fontFamily: FONTS.bodyMedium,
+                                color: "#0F172A",
+                                marginTop: 2,
+                              }}
+                            >
+                              Talenta: {talentName}
+                            </Text>
+                          ) : null}
+                        </View>
+                        <View
+                          style={[
+                            styles.slotBadge,
+                            isSlotFilled
+                              ? styles.slotBadgeTaken
+                              : { backgroundColor: "#F1F5F9" },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.slotBadgeText,
+                              isSlotFilled
+                                ? { color: "#047857" }
+                                : { color: "#64748B" },
+                            ]}
+                          >
+                            {isSlotFilled ? "Terisi" : "Terbuka"}
+                          </Text>
+                        </View>
                       </View>
-                      <View
-                        style={[
-                          styles.slotBadge,
-                          slot.status === "TAKEN" && styles.slotBadgeTaken,
-                        ]}
-                      >
-                        <Text style={styles.slotBadgeText}>
-                          {slot.status === "TAKEN" ? "Terisi" : "Terbuka"}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
+                    );
+                  })}
                 </View>
               )}
           </View>

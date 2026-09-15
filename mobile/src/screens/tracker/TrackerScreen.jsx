@@ -414,6 +414,15 @@ export function TrackerScreen({ navigation }) {
                   {projectTitle || "Penugasan Proyek"}
                 </Text>
 
+                {/* Role / Position Badge for Mahasiswa */}
+                {isMahasiswa && item.slot_nama_peran && (
+                  <View style={styles.roleBadgeBox}>
+                    <Text style={styles.roleBadgeText}>
+                      Posisi: {item.slot_nama_peran}
+                    </Text>
+                  </View>
+                )}
+
                 {/* 3. Reason Banner if Cancelled or Withdrawn */}
                 {isCancelled && (
                   <View style={styles.reasonCardBox}>
@@ -902,6 +911,22 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
     lineHeight: 20,
     marginBottom: 6,
+  },
+  roleBadgeBox: {
+    alignSelf: "flex-start",
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#C7D2FE",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  roleBadgeText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 10.5,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
   },
 
   // Reason Callouts

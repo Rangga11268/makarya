@@ -376,11 +376,11 @@ export function ProjectExploreDetailView({
                             {s.deskripsi_tugas}
                           </Text>
                         ) : null}
-                        {s.mahasiswa_nama ? (
+                        {s.accepted_mhs_nama || s.mahasiswa_nama ? (
                           <View style={styles.assignedMhsRow}>
                             <CheckCircle2 size={12} color="#059669" />
                             <Text style={styles.assignedMhsText}>
-                              Talenta: {s.mahasiswa_nama}
+                              Talenta: {s.accepted_mhs_nama || s.mahasiswa_nama}
                             </Text>
                           </View>
                         ) : null}

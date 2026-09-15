@@ -114,6 +114,17 @@ export function PendingProposalView({
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            {proposal.slot_nama_peran && (
+              <div className="bg-indigo-50 border border-indigo-200 px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
+                <span className="text-[10px] font-bold text-indigo-700 uppercase block">
+                  Posisi Dilamar:
+                </span>
+                <span className="text-xs sm:text-sm font-extrabold text-brand-indigo">
+                  {proposal.slot_nama_peran}
+                </span>
+              </div>
+            )}
+
             <div className="bg-canvas border border-border px-3.5 py-1.5 rounded-2xl flex items-center gap-2">
               <span className="text-[10px] font-bold text-muted uppercase block">
                 Tawaran Anda:

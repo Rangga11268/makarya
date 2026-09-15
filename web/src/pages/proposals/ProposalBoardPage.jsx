@@ -199,6 +199,12 @@ export function ProposalBoardPage() {
           );
           if (found) {
             setSelectedProposal(found);
+            projectApi
+              .getById(found.project_id)
+              .then((res) => {
+                if (res.data) setSelectedProject(res.data);
+              })
+              .catch(() => {});
             escrowApi
               .getByProject(found.project_id)
               .then((res) => setProjectEscrow(res.data || null))
@@ -225,10 +231,12 @@ export function ProposalBoardPage() {
             }
           } else {
             setSelectedProposal(null);
+            setSelectedProject(null);
             setProjectEscrow(null);
           }
         } else {
           setSelectedProposal(null);
+          setSelectedProject(null);
         }
       }
     } catch (err) {
@@ -313,6 +321,13 @@ export function ProposalBoardPage() {
     setSelectedProposal(proposal);
     setSearchParams({ project: proposal.project_id });
     window.scrollTo({ top: 0, behavior: "smooth" });
+
+    projectApi
+      .getById(proposal.project_id)
+      .then((res) => {
+        if (res.data) setSelectedProject(res.data);
+      })
+      .catch(() => {});
 
     escrowApi
       .getByProject(proposal.project_id)

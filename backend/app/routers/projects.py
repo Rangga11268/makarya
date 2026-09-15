@@ -74,9 +74,25 @@ def _build_project_response(
     if proj.slots:
         for s in proj.slots:
             slot_mhs_nama = None
-            if s.accepted_mhs_id:
-                m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == s.accepted_mhs_id).first()
-                slot_mhs_nama = m_prof.nama_lengkap if m_prof else "Mahasiswa Terpilih"
+            resolved_mhs_id = s.accepted_mhs_id
+            if resolved_mhs_id:
+                m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == resolved_mhs_id).first()
+                if m_prof and m_prof.nama_lengkap:
+                    slot_mhs_nama = m_prof.nama_lengkap
+                else:
+                    m_user = db.query(User).filter(User.id == resolved_mhs_id).first()
+                    slot_mhs_nama = m_user.username if m_user and m_user.username else (m_user.email.split("@")[0] if m_user else "Mahasiswa Terpilih")
+            else:
+                acc_prop = db.query(Proposal).filter(Proposal.slot_id == s.id, Proposal.status == ProposalStatus.ACCEPTED).first()
+                if acc_prop:
+                    resolved_mhs_id = acc_prop.mhs_id
+                    m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == acc_prop.mhs_id).first()
+                    if m_prof and m_prof.nama_lengkap:
+                        slot_mhs_nama = m_prof.nama_lengkap
+                    else:
+                        m_user = db.query(User).filter(User.id == acc_prop.mhs_id).first()
+                        slot_mhs_nama = m_user.username if m_user and m_user.username else (m_user.email.split("@")[0] if m_user else "Mahasiswa Terpilih")
+
             slot_responses.append(ProjectSlotResponse(
                 id=s.id,
                 project_id=s.project_id,
@@ -84,7 +100,7 @@ def _build_project_response(
                 deskripsi_tugas=s.deskripsi_tugas,
                 alokasi_budget=s.alokasi_budget,
                 status=s.status,
-                accepted_mhs_id=s.accepted_mhs_id,
+                accepted_mhs_id=resolved_mhs_id,
                 accepted_mhs_nama=slot_mhs_nama,
                 created_at=s.created_at
             ))

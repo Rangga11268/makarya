@@ -25,7 +25,17 @@ def _build_proposal_response(proposal: Proposal, db: Session, mhs_profile: Optio
     mhs_summary = MhsSummary.model_validate(mhs_profile) if mhs_profile else None
 
     proj = proposal.project
-    slot_nama = proposal.slot.nama_peran if proposal.slot else None
+    slot_nama = None
+    if proposal.slot and proposal.slot.nama_peran:
+        slot_nama = proposal.slot.nama_peran
+    elif proposal.slot_id:
+        sl = db.query(ProjectSlot).filter(ProjectSlot.id == proposal.slot_id).first()
+        if sl:
+            slot_nama = sl.nama_peran
+    elif proj and proj.slots and proposal.mhs_id:
+        sl = next((s for s in proj.slots if s.accepted_mhs_id == proposal.mhs_id), None)
+        if sl:
+            slot_nama = sl.nama_peran
 
     umkm_nama = None
     umkm_foto = None

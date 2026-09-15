@@ -177,6 +177,32 @@ export function WorkroomWorkspaceDetail({
     activeDeliverable?.status === "COMPLETED",
   );
 
+  const assignedRoleName = React.useMemo(() => {
+    if (selectedProposal?.slot_nama_peran) {
+      return selectedProposal.slot_nama_peran;
+    }
+    const slots = selectedProject?.slots || [];
+    if (selectedProposal?.slot_id) {
+      const match = slots.find((s) => s.id === selectedProposal.slot_id);
+      if (match) return match.nama_peran;
+    }
+    if (selectedProposal?.mhs_id) {
+      const match = slots.find(
+        (s) => s.accepted_mhs_id === selectedProposal.mhs_id,
+      );
+      if (match) return match.nama_peran;
+    }
+    if (!isUmkm) {
+      const match = slots.find(
+        (s) =>
+          s.accepted_mhs_nama?.toLowerCase().includes("darell") ||
+          s.status === "IN_PROGRESS",
+      );
+      if (match) return match.nama_peran;
+    }
+    return null;
+  }, [selectedProposal, selectedProject, isUmkm]);
+
   if (!activeProjectId) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
@@ -1168,12 +1194,13 @@ export function WorkroomWorkspaceDetail({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          {/* Metric Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
               <span className="text-[10px] font-bold text-muted uppercase">
                 Kategori & Bidang
               </span>
-              <p className="font-bold text-dark-900">
+              <p className="font-bold text-dark-900 text-sm">
                 {isUmkm
                   ? selectedProject?.kategori
                   : selectedProposal?.project_kategori || "Desain Kreatif"}
@@ -1182,13 +1209,40 @@ export function WorkroomWorkspaceDetail({
 
             <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
               <span className="text-[10px] font-bold text-muted uppercase">
+                Posisi / Peran Kontrak
+              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="font-extrabold text-brand-indigo text-sm">
+                  {assignedRoleName ||
+                    (selectedProject?.tipe_kolaborasi === "TIM" ||
+                    (selectedProject?.slots && selectedProject.slots.length > 0)
+                      ? "Anggota Tim Proyek"
+                      : "Pelaksana Utama (Individu)")}
+                </p>
+                {assignedRoleName ? (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-brand-indigo border border-indigo-200">
+                    Posisi Terpilih
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    {selectedProject?.tipe_kolaborasi === "TIM"
+                      ? "Multi-Talenta"
+                      : "Individu"}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
+              <span className="text-[10px] font-bold text-muted uppercase">
                 Batas Honor Disepakati
               </span>
-              <p className="font-bold text-dark-900">
+              <p className="font-bold text-dark-900 text-sm">
                 {formatCurrency(
                   isUmkm
                     ? selectedProject?.budget_max
-                    : selectedProposal?.harga_tawar,
+                    : selectedProposal?.harga_tawar ||
+                        selectedProject?.budget_max,
                 )}
               </p>
             </div>
@@ -1203,9 +1257,98 @@ export function WorkroomWorkspaceDetail({
               {isUmkm
                 ? selectedProject?.deskripsi_raw || "Rincian brief proyek UMKM."
                 : selectedProposal?.project_deskripsi ||
+                  selectedProject?.deskripsi_raw ||
                   "Brief kebutuhan proyek yang telah diterbitkan oleh klien UMKM."}
             </p>
           </div>
+
+          {/* Rincian Formasi Tim Proyek (Jika Proyek Tim / Memiliki Slot Peran) */}
+          {selectedProject?.slots && selectedProject.slots.length > 0 && (
+            <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-border pb-2.5">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-brand-indigo" />
+                  <div>
+                    <span className="font-bold text-dark-900 block text-xs">
+                      Formasi & Pembagian Peran Tim (
+                      {selectedProject.slots.length} Posisi)
+                    </span>
+                    <span className="text-[11px] text-muted">
+                      Rincian peran kerja dan alokasi honor masing-masing posisi
+                      tim
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                {selectedProject.slots.map((slot) => {
+                  const isSlotFilled =
+                    slot.status !== "OPEN" || Boolean(slot.accepted_mhs_id);
+                  const isCurrentSlot =
+                    (selectedProposal?.slot_id &&
+                      selectedProposal.slot_id === slot.id) ||
+                    (assignedRoleName && assignedRoleName === slot.nama_peran);
+
+                  return (
+                    <div
+                      key={slot.id}
+                      className={`p-3.5 rounded-xl border transition-all ${
+                        isCurrentSlot
+                          ? "bg-indigo-50/60 border-indigo-200 ring-1 ring-brand-indigo/30"
+                          : "bg-surface border-border"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-bold text-xs text-dark-900">
+                              {slot.nama_peran}
+                            </span>
+                            {isCurrentSlot && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-indigo text-white">
+                                Posisi Anda
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-600 block mt-0.5">
+                            {formatCurrency(slot.alokasi_budget)}
+                          </span>
+                        </div>
+
+                        {isSlotFilled ? (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 shrink-0">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>Terisi</span>
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                            Mencari Talenta
+                          </span>
+                        )}
+                      </div>
+
+                      {slot.deskripsi_tugas && (
+                        <p className="text-[11px] text-muted line-clamp-2 mt-1 mb-2">
+                          {slot.deskripsi_tugas}
+                        </p>
+                      )}
+
+                      <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[10px]">
+                        <span className="text-muted">Pelaksana:</span>
+                        <span className="font-bold text-dark-900 truncate max-w-[150px]">
+                          {slot.accepted_mhs_nama ||
+                            (isSlotFilled
+                              ? "Mahasiswa Terpilih"
+                              : "Belum Ditugaskan")}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Proposal Cover Letter if Student view */}
           {!isUmkm &&

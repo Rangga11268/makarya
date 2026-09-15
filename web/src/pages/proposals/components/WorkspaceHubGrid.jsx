@@ -497,11 +497,17 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
           </span>
         </div>
 
-        {/* Project Title */}
+        {/* Project Title & Position Badge */}
         <div>
           <h3 className="text-base font-bold text-dark-900 line-clamp-2 leading-snug group-hover:text-brand-indigo transition-colors">
             {proposal.project_judul || "Proyek UMKM"}
           </h3>
+          {proposal.slot_nama_peran && (
+            <div className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-200/80 text-brand-indigo text-[11px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-indigo" />
+              <span>Posisi: {proposal.slot_nama_peran}</span>
+            </div>
+          )}
           <p className="text-[11px] text-muted mt-1 flex items-center gap-1.5">
             <Clock className="w-3 h-3 text-muted" />
             <span>Diajukan {formatDate(proposal.created_at)}</span>
