@@ -217,20 +217,30 @@ export function ChatPage() {
   };
 
   // Kirim tawaran proyek resmi interaktif ke chat (Khusus UMKM)
-  const handleSendProjectOffer = async (proj) => {
+  const handleSendProjectOffer = async (proj, selectedSlot = null) => {
     try {
       const targetPartnerId =
         selectedConv?.partner_id || talentId || urlPartnerId;
+      const roleName = selectedSlot
+        ? selectedSlot.nama_peran
+        : proj.tipe_kolaborasi === "TIM"
+          ? "Anggota Tim"
+          : (proj.kategori ? `Spesialis ${proj.kategori}` : "Spesialis Proyek");
+
       const offerData = {
         projectId: proj.id,
         projectTitle: proj.judul,
-        budget: proj.budget_max,
+        posisi: roleName,
+        slotId: selectedSlot ? selectedSlot.id : null,
+        tipe_kolaborasi: proj.tipe_kolaborasi || "INDIVIDU",
+        budget: selectedSlot?.alokasi_budget || proj.budget_max,
         deadline: proj.deadline,
         kategori: proj.kategori,
+        slots: proj.slots || [],
         status: "PENDING",
       };
       const payload = {
-        message: `Tawaran Proyek Resmi: ${proj.judul}`,
+        message: `Tawaran Proyek Resmi: ${proj.judul}${selectedSlot ? ` (${selectedSlot.nama_peran})` : ""}`,
         attachment_url: JSON.stringify(offerData),
         attachment_type: "PROJECT_OFFER",
         recipient_id: targetPartnerId,
@@ -634,6 +644,7 @@ export function ChatPage() {
               ) : (
                 myProjects.map((proj) => {
                   const isCurrent = proj.id === selectedConv?.project_id;
+                  const hasSlots = proj.slots && proj.slots.length > 0;
                   return (
                     <div
                       key={proj.id}
@@ -645,13 +656,19 @@ export function ChatPage() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold uppercase tracking-wider">
                               {proj.kategori || "UMKM"}
                             </span>
                             <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                               {proj.status || "OPEN"}
                             </span>
+                            {proj.tipe_kolaborasi === "TIM" && (
+                              <span className="text-[10px] text-indigo-700 font-semibold bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200 flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                Proyek Tim
+                              </span>
+                            )}
                           </div>
                           <h4 className="text-sm font-bold text-slate-900 leading-snug">
                             {proj.judul}
@@ -661,6 +678,41 @@ export function ChatPage() {
                           </p>
                         </div>
                       </div>
+
+                      {/* Team Slots Selection if Team Project */}
+                      {hasSlots && (
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                          <span className="text-[11px] font-bold text-slate-700 block">
+                            Pilih Posisi Tim yang Ditawarkan:
+                          </span>
+                          <div className="space-y-1.5">
+                            {proj.slots.map((slot) => (
+                              <div
+                                key={slot.id}
+                                className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 text-xs"
+                              >
+                                <div>
+                                  <span className="font-bold text-slate-800 block">
+                                    {slot.nama_peran}
+                                  </span>
+                                  <span className="text-[10px] text-emerald-600 font-medium">
+                                    {slot.alokasi_budget
+                                      ? `Rp ${Number(slot.alokasi_budget).toLocaleString("id-ID")}`
+                                      : "Sesuai Proyek"}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleSendProjectOffer(proj, slot)}
+                                  className="px-3 py-1 rounded-lg bg-brand-indigo hover:bg-brand-indigo/90 text-white font-bold text-[11px] transition-colors cursor-pointer"
+                                >
+                                  Tawarkan Posisi Ini
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
                         <div>
@@ -674,13 +726,15 @@ export function ChatPage() {
                           </span>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleSendProjectOffer(proj)}
-                          className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-brand-indigo text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-                        >
-                          <span>Tawarkan Proyek Ini</span>
-                        </button>
+                        {!hasSlots && (
+                          <button
+                            type="button"
+                            onClick={() => handleSendProjectOffer(proj)}
+                            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-brand-indigo text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                          >
+                            <span>Tawarkan Proyek Ini</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   );

@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   Clock,
   X,
+  Users,
 } from "lucide-react";
 
 export function WorkroomChatPanel({
@@ -460,16 +461,38 @@ export function WorkroomChatPanel({
 
                           {/* Project Title */}
                           <h5
-                            className={`text-sm font-bold leading-snug mb-3 ${
+                            className={`text-sm font-bold leading-snug mb-2.5 ${
                               isMe ? "text-white" : "text-slate-900"
                             }`}
                           >
                             {offer.projectTitle || "Proyek Kolaborasi"}
                           </h5>
 
+                          {/* Position / Role Highlight Pill */}
+                          <div
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl mb-2.5 text-xs font-medium ${
+                              isMe
+                                ? "bg-white/15 text-white"
+                                : "bg-indigo-50/80 text-brand-indigo border border-indigo-100"
+                            }`}
+                          >
+                            <Users className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">
+                              Posisi Ditawarkan:{" "}
+                              <strong className="font-bold">
+                                {offer.posisi ||
+                                  offer.nama_peran ||
+                                  (offer.kategori
+                                    ? `Spesialis ${offer.kategori}`
+                                    : "Anggota Tim")}
+                              </strong>
+                              {offer.tipe_kolaborasi === "TIM" ? " (Proyek Tim)" : ""}
+                            </span>
+                          </div>
+
                           {/* Clean Details Box */}
                           <div
-                            className={`flex items-center justify-between p-2.5 rounded-xl mb-3 text-xs ${
+                            className={`flex items-center justify-between p-2.5 rounded-xl mb-2.5 text-xs ${
                               isMe
                                 ? "bg-white/10 text-white"
                                 : "bg-slate-50 border border-slate-100 text-slate-800"
@@ -481,7 +504,7 @@ export function WorkroomChatPanel({
                                   isMe ? "text-white/70" : "text-slate-500"
                                 }`}
                               >
-                                Nilai Proyek
+                                {offer.posisi ? "Alokasi Posisi" : "Nilai Proyek"}
                               </span>
                               <span className="font-bold text-sm">
                                 {offer.budget
@@ -506,6 +529,69 @@ export function WorkroomChatPanel({
                               </div>
                             )}
                           </div>
+
+                          {/* Formasi Peran Tim List (If Team Project) */}
+                          {offer.slots && offer.slots.length > 0 && (
+                            <div
+                              className={`p-2.5 rounded-xl mb-3 border text-left ${
+                                isMe
+                                  ? "bg-white/10 border-white/15"
+                                  : "bg-slate-50 border-slate-200"
+                              }`}
+                            >
+                              <span
+                                className={`text-[10px] font-bold block mb-1.5 uppercase ${
+                                  isMe ? "text-white/80" : "text-slate-500"
+                                }`}
+                              >
+                                Formasi Peran Tim ({offer.slots.length} Posisi):
+                              </span>
+                              <div className="space-y-1">
+                                {offer.slots.map((s, idx) => {
+                                  const isThisSlot =
+                                    (offer.slotId &&
+                                      String(s.id) === String(offer.slotId)) ||
+                                    s.nama_peran === offer.posisi;
+                                  return (
+                                    <div
+                                      key={s.id || idx}
+                                      className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
+                                        isThisSlot
+                                          ? isMe
+                                            ? "bg-white/20 text-white font-bold border border-white/30"
+                                            : "bg-indigo-50 text-brand-indigo font-bold border border-indigo-200"
+                                          : isMe
+                                            ? "text-white/70"
+                                            : "text-slate-600 bg-white border border-slate-100"
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-1.5 min-w-0">
+                                        <span className="truncate">
+                                          {s.nama_peran}
+                                        </span>
+                                        {isThisSlot && (
+                                          <span
+                                            className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                                              isMe
+                                                ? "bg-white/20 text-white"
+                                                : "bg-brand-indigo text-white"
+                                            }`}
+                                          >
+                                            Ditawarkan
+                                          </span>
+                                        )}
+                                      </div>
+                                      <span className="shrink-0 text-[10px] font-semibold ml-2">
+                                        {s.alokasi_budget
+                                          ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
+                                          : "Sesuai Proyek"}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
 
                           {/* Actions for Student / Status for UMKM */}
                           {offerStatus === "PENDING" ? (
