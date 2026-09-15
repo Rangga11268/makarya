@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Users,
-  Sparkles,
   ChevronRight,
   Plus,
   Minus,
@@ -24,6 +23,8 @@ import {
   ChevronLeft,
   ExternalLink,
   Search,
+  FileText,
+  X,
 } from "lucide-react";
 
 export function LandingPage() {
@@ -55,15 +56,21 @@ export function LandingPage() {
   // Interactive FAQ State
   const [openFaqIdx, setOpenFaqIdx] = useState(0);
 
+  // Floating Brief Toast State
+  const [showFloatingToast, setShowFloatingToast] = useState(true);
+
   useEffect(() => {
     async function loadData() {
       try {
-        const resProj = await projectApi.getProjects();
+        setLoadingProjects(true);
+        const resProj = await projectApi.browse({ status: "OPEN" });
         const pList = Array.isArray(resProj?.data?.data)
           ? resProj.data.data
           : Array.isArray(resProj?.data)
             ? resProj.data
-            : [];
+            : Array.isArray(resProj)
+              ? resProj
+              : [];
         setProjects(pList.slice(0, 4));
       } catch (err) {
         console.error("Failed loading projects:", err);
@@ -72,12 +79,15 @@ export function LandingPage() {
       }
 
       try {
+        setLoadingTalents(true);
         const resTal = await talentApi.getTalents();
         const tList = Array.isArray(resTal?.data?.data)
           ? resTal.data.data
           : Array.isArray(resTal?.data)
             ? resTal.data
-            : [];
+            : Array.isArray(resTal)
+              ? resTal
+              : [];
         setTalents(tList.slice(0, 4));
       } catch (err) {
         console.error("Failed loading talents:", err);
@@ -192,7 +202,7 @@ export function LandingPage() {
     },
   ];
 
-  // Campus partners list (duplicated for seamless marquee loop)
+  // Campus partners list
   const campuses = [
     "Universitas Indonesia",
     "Institut Teknologi Bandung",
@@ -207,7 +217,7 @@ export function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-cyan-500/20 selection:text-cyan-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-cyan-500/20 selection:text-cyan-900 overflow-x-hidden relative">
       {/* ========================================================================= */}
       {/* 1. HERO SECTION & FULL-FIDELITY INTERACTIVE SAAS WORKROOM CANVAS          */}
       {/* ========================================================================= */}
@@ -298,7 +308,7 @@ export function LandingPage() {
         {/* INTERACTIVE WORKFLOW CANVAS FLANKED BY VISIBLE SPECTRUM GRADIENT PILLARS  */}
         {/* ========================================================================= */}
         <div className="relative mt-14 max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Left Flank Vertical Spectrum Pillars (Axora Signature Backdrop with floating animation) */}
+          {/* Left Flank Vertical Spectrum Pillars (Axora Signature Backdrop) */}
           <div className="hidden sm:flex absolute -left-6 md:-left-12 bottom-6 top-12 w-12 md:w-20 items-end gap-1.5 opacity-90 pointer-events-none z-0 animate-float-slow">
             <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg transition-all duration-700" />
             <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg transition-all duration-700" />
@@ -306,7 +316,7 @@ export function LandingPage() {
             <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg transition-all duration-700" />
           </div>
 
-          {/* Right Flank Vertical Spectrum Pillars (Axora Signature Backdrop with floating animation) */}
+          {/* Right Flank Vertical Spectrum Pillars (Axora Signature Backdrop) */}
           <div className="hidden sm:flex absolute -right-6 md:-right-12 bottom-6 top-12 w-12 md:w-20 items-end justify-end gap-1.5 opacity-90 pointer-events-none z-0 animate-float-slow">
             <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg transition-all duration-700" />
             <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg transition-all duration-700" />
@@ -734,7 +744,7 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. CAMPUS PARTNER INFINITE MARQUEE TICKER (Seamless & Classy)             */}
+      {/* 2. CAMPUS PARTNER INFINITE MARQUEE TICKER                                 */}
       {/* ========================================================================= */}
       <section className="py-8 bg-white border-y border-slate-200/80 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 mb-4 text-center">
@@ -743,7 +753,7 @@ export function LandingPage() {
           </p>
         </div>
 
-        {/* Gradient edge masks for high-end fade out effect */}
+        {/* Gradient edge masks */}
         <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
@@ -1221,7 +1231,10 @@ export function LandingPage() {
                     ))}
                   </div>
 
-                  <div className="p-3 rounded-lg bg-white border border-slate-200 text-xs animate-fade-in-fast" key={selectedSlotRole}>
+                  <div
+                    className="p-3 rounded-lg bg-white border border-slate-200 text-xs animate-fade-in-fast"
+                    key={selectedSlotRole}
+                  >
                     {selectedSlotRole === "uiux" && (
                       <div className="flex justify-between items-center">
                         <div>
@@ -1458,7 +1471,7 @@ export function LandingPage() {
                       <div>
                         <div className="text-xs font-bold text-slate-900 flex items-center gap-1">
                           Arya Nugraha
-                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                         </div>
                         <div className="text-[10px] text-slate-500 font-mono">
                           NIM 13521088 | IF ITB
@@ -1622,11 +1635,14 @@ export function LandingPage() {
 
           {/* Testimonial Card with Axora Left-Border Spectrum Ribbon */}
           <div className="relative flex rounded-3xl border border-slate-200/90 shadow-md bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            {/* Left Spectrum Vertical Accent Ribbon (Axora Signature) */}
+            {/* Left Spectrum Vertical Accent Ribbon */}
             <div className="w-3 sm:w-4 bg-gradient-to-b from-cyan-400 via-emerald-400 to-blue-600 shrink-0 self-stretch" />
 
             <div className="flex-1 p-6 sm:p-10 bg-gradient-to-b from-slate-50/50 to-white">
-              <div className="space-y-6 animate-fade-in-fast" key={activeStoryIdx}>
+              <div
+                className="space-y-6 animate-fade-in-fast"
+                key={activeStoryIdx}
+              >
                 <span className="inline-block text-[11px] font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-3 py-1 rounded-full">
                   {stories[activeStoryIdx].tag}
                 </span>
@@ -1738,45 +1754,126 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 9. BOTTOM CTA CONVERSION BANNER (Clean Light Brand Card Style)             */}
+      {/* 9. BOTTOM CTA CONVERSION BANNER (Exact Axora Layout from Reference)        */}
       {/* ========================================================================= */}
-      <section className="py-20 bg-gradient-to-b from-white to-[#F0F9FF] border-t border-slate-200/80 text-slate-900 relative overflow-hidden">
-        {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cyan-200/40 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
+      <section className="py-24 bg-white border-t border-slate-200/80 text-slate-900 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Content Side */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Axora Style Badge with Spectrum Dash */}
+              <div className="inline-flex items-center gap-2">
+                <div className="flex gap-1">
+                  <span className="w-2.5 h-1 rounded-full bg-cyan-500" />
+                  <span className="w-2.5 h-1 rounded-full bg-amber-400" />
+                  <span className="w-2.5 h-1 rounded-full bg-blue-600" />
+                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-800">
+                  MULAI SEKARANG
+                </span>
+              </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-cyan-600" />
-            <span>Mulai Kolaborasi Terpercaya</span>
-          </div>
+              {/* Main Headline */}
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+                Dapatkan Proyek yang Cocok{" "}
+                <span className="text-cyan-600">
+                  Hanya dalam Hitungan Menit.
+                </span>
+              </h2>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
-            Siap Memulai Kolaborasi Digital Hari Ini?
-          </h2>
-          <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
-            Pasang kebutuhan proyek UMKM Anda atau raih portofolio industri
-            nyata dengan garansi keamanan transaksi escrow 100%.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button
-              size="lg"
-              variant="brand"
-              onClick={() => navigate("/register")}
-              className="w-full sm:w-auto font-bold px-8 py-3.5 shadow-lg shadow-cyan-600/10 rounded-xl hover:-translate-y-0.5 transition-transform"
-            >
-              Daftar Sekarang Gratis
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => navigate("/projects")}
-              className="w-full sm:w-auto font-semibold px-6 py-3.5 bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl hover:-translate-y-0.5 transition-transform"
-            >
-              Jelajahi Peluang Proyek
-            </Button>
+              <p className="text-sm sm:text-base text-slate-600 max-w-xl leading-relaxed">
+                Daftar dengan email kampus Anda dan segera ajukan penawaran
+                proposal ke berbagai UMKM lokal, atau pasang kebutuhan proyek
+                Anda dengan proteksi escrow 100%.
+              </p>
+
+              {/* Dual Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate(
+                      isAuthenticated
+                        ? user?.role === "UMKM"
+                          ? "/create-project"
+                          : "/projects"
+                        : "/register?role=UMKM",
+                    )
+                  }
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-lg shadow-slate-900/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                >
+                  {isAuthenticated ? "Buka Dashboard" : "Mulai Pasang Proyek"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/projects")}
+                  className="bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-full border border-slate-300 shadow-2xs hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                >
+                  Jelajahi Proyek
+                </button>
+              </div>
+            </div>
+
+            {/* Right Side: Horizontal Stacked Fade Spectrum Gradient Bars (Axora Signature) */}
+            <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[320px] flex flex-col justify-center gap-2.5 overflow-hidden rounded-2xl p-4">
+              {/* Stacked Horizontal Gradient Strips */}
+              <div className="w-full h-8 bg-gradient-to-r from-transparent via-cyan-100/60 to-cyan-400/80 rounded-full blur-[1px] animate-pulse-glow" />
+              <div className="w-5/6 ml-auto h-9 bg-gradient-to-r from-transparent via-amber-200/50 to-amber-400/80 rounded-full blur-[1px]" />
+              <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-200/60 via-cyan-300/80 to-blue-500/80 rounded-full blur-[1px]" />
+              <div className="w-4/5 ml-auto h-9 bg-gradient-to-r from-transparent via-cyan-200/70 to-teal-400/80 rounded-full blur-[1px]" />
+              <div className="w-full h-8 bg-gradient-to-r from-transparent via-blue-200/50 via-cyan-300/70 to-cyan-500/80 rounded-full blur-[1px] animate-pulse-glow" />
+              <div className="w-3/4 ml-auto h-7 bg-gradient-to-r from-transparent via-amber-200/40 to-amber-400/70 rounded-full blur-[1px]" />
+            </div>
           </div>
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 10. FLOATING BOTTOM QUICK-ACTION TOAST (Axora Floating Widget Style)      */}
+      {/* ========================================================================= */}
+      {showFloatingToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-xl w-[calc(100%-2rem)] bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-2xl p-3 sm:p-3.5 flex items-center justify-between gap-3 animate-fade-in-fast">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0 border border-cyan-200">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div className="text-xs min-w-0">
+              <div className="font-bold text-slate-900 truncate">
+                Mulai Buat Brief Proyek Digital
+              </div>
+              <div className="text-slate-500 truncate text-[11px]">
+                Ceritakan kebutuhan Anda & temukan talenta kampus yang tepat.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() =>
+                navigate(
+                  isAuthenticated
+                    ? user?.role === "UMKM"
+                      ? "/create-project"
+                      : "/projects"
+                    : "/register?role=UMKM",
+                )
+              }
+              className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-sm"
+            >
+              Mulai Sekarang
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowFloatingToast(false)}
+              aria-label="Tutup"
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

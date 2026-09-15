@@ -1,271 +1,232 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
-import { useToastStore } from "../../store/toastStore";
 import {
-  ShieldCheck,
-  Send,
   GraduationCap,
-  Building2,
+  ShieldCheck,
   Lock,
-  ArrowUpRight,
-  Sparkles,
-  CheckCircle2,
+  ArrowRight,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Github,
 } from "lucide-react";
 
 export function Footer() {
-  const { isAuthenticated, user } = useAuthStore();
-  const { addToast } = useToastStore();
-  const [newsletterEmail, setNewsletterEmail] = useState("");
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (!newsletterEmail.trim()) return;
-    addToast(
-      "Terima kasih! Notifikasi proyek baru telah diaktifkan.",
-      "success",
-    );
-    setNewsletterEmail("");
-  };
-
   return (
-    <footer className="relative bg-surface border-t border-border mt-20 overflow-hidden font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-14 pb-10">
-        {/* Top Pre-Footer Banner for Non-Logged In or Dashboard CTA */}
-        {!isAuthenticated && (
-          <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
-            <div className="space-y-2 max-w-xl text-center md:text-left">
-              <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-semibold">
-                <GraduationCap className="w-3.5 h-3.5 text-sky-400" />
-                Mulai Karir Freelance Kampus
+    <footer className="bg-[#090D16] text-white border-t border-slate-800/80 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10">
+        {/* Top Row: Brand & Tagline + Social Links (Axora Style) */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between pb-10 border-b border-slate-800 gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white font-extrabold flex items-center justify-center text-sm shadow-md">
+                M
+              </div>
+              <span className="text-xl font-extrabold tracking-tight text-white">
+                Makarya
               </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                Dapatkan Proyek yang Cocok Hanya dalam Hitungan Menit.
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Daftar dengan email kampus Anda dan segera ajukan penawaran
-                proposal ke berbagai UMKM lokal.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                to="/register"
-                className="px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white hover:bg-slate-100 text-slate-900 transition-all shadow-sm inline-flex items-center gap-2"
-              >
-                <span>Daftar Mahasiswa</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* 5-Column Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-12 border-b border-border">
-          {/* Col 1: Brand Info (Span 4) */}
-          <div className="lg:col-span-4 space-y-4">
-            <Link to="/" className="inline-block">
-              <img
-                src="/logo.webp"
-                alt="Logo Makarya"
-                className="h-12 sm:h-14 w-auto object-contain"
-              />
             </Link>
-            <p className="text-xs text-muted leading-relaxed max-w-sm">
-              Platform micro-freelancing terkurasi yang menjembatani talenta
-              mahasiswa bertalenta dengan kebutuhan digital UMKM secara amanah
-              melalui sistem <b>Escrow Holding</b>.
-            </p>
-            <div className="pt-2 flex flex-col gap-1.5 text-xs text-dark-900 font-medium">
-              <span className="flex items-center gap-2 text-slate-700">
-                <GraduationCap className="w-4 h-4 text-brand-indigo shrink-0" />
-                Talenta Mahasiswa Terverifikasi Perguruan Tinggi
-              </span>
-              <span className="flex items-center gap-2 text-slate-700">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                Sistem Terverifikasi Akademik & Finansial
-              </span>
-            </div>
+            <span className="hidden sm:inline text-slate-600">|</span>
+            <span className="text-xs sm:text-sm text-slate-400">
+              Platform Kolaborasi Digital Terpercaya Mahasiswa & UMKM.
+            </span>
           </div>
 
-          {/* Col 2: Kategori Layanan (Span 2) */}
-          <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-              Kategori Proyek
+          {/* Social Icon Pills */}
+          <div className="flex items-center gap-2.5">
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800 transition-all"
+            >
+              <Instagram className="w-4 h-4" />
+            </a>
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (Twitter)"
+              className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800 transition-all"
+            >
+              <Twitter className="w-4 h-4" />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800 transition-all"
+            >
+              <Linkedin className="w-4 h-4" />
+            </a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-700 hover:bg-slate-800 transition-all"
+            >
+              <Github className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+        {/* 4-Column Navigation Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-12 border-b border-slate-800/80 text-xs">
+          {/* Col 1: Produk */}
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Produk
             </h4>
-            <ul className="space-y-2 text-xs text-muted">
+            <ul className="space-y-2.5 text-slate-400">
               <li>
                 <Link
-                  to="/projects?category=DESIGN"
-                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                  to="/projects"
+                  className="hover:text-cyan-400 transition-colors"
                 >
-                  <span>Desain & Branding</span>
+                  Jelajah Katalog Proyek
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/projects?category=UIUX"
-                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                  to="/talents"
+                  className="hover:text-cyan-400 transition-colors"
                 >
-                  <span>UI/UX Design</span>
+                  Direktori Talenta Kampus
                 </Link>
               </li>
               <li>
                 <Link
                   to="/projects?category=PEMROGRAMAN"
-                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
+                  className="hover:text-cyan-400 transition-colors"
                 >
-                  <span>Web & Mobile App</span>
+                  Formasi Tim Multi-Role
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/projects?category=VIDEO"
-                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
-                >
-                  <span>Video & Reels</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/projects?category=COPYWRITING"
-                  className="hover:text-brand-indigo transition-colors flex items-center justify-between"
-                >
-                  <span>Copywriting SEO</span>
-                </Link>
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Sistem Escrow Holding
+                </span>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Navigasi Platform (Span 2) */}
-          <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-              Platform & Fitur
+          {/* Col 2: Solusi */}
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Solusi
             </h4>
-            <ul className="space-y-2 text-xs text-muted">
+            <ul className="space-y-2.5 text-slate-400">
               <li>
                 <Link
-                  to="/projects"
-                  className="hover:text-brand-indigo transition-colors"
+                  to="/register?role=UMKM"
+                  className="hover:text-cyan-400 transition-colors"
                 >
-                  Jelajah Semua Proyek
+                  Untuk Pelaku Usaha UMKM
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/proposals"
-                  className="hover:text-brand-indigo transition-colors"
+                  to="/register?role=MAHASISWA"
+                  className="hover:text-cyan-400 transition-colors"
                 >
-                  Proposal & Penawaran
+                  Untuk Mahasiswa Kampus
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/portfolio"
-                  className="hover:text-brand-indigo transition-colors"
-                >
-                  Portofolio Terverifikasi
-                </Link>
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Program Kemitraan Kampus
+                </span>
               </li>
               <li>
-                <Link
-                  to="/wallet"
-                  className="hover:text-brand-indigo transition-colors"
-                >
-                  Dompet & Pencairan Dana
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/login"
-                  className="hover:text-brand-indigo transition-colors"
-                >
-                  Portal Masuk Akun
-                </Link>
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Perlindungan Milestone
+                </span>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Keamanan & Bantuan (Span 2) */}
-          <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-              Pusat Dukungan
+          {/* Col 3: Sumber Daya */}
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Sumber Daya
             </h4>
-            <ul className="space-y-2 text-xs text-muted">
+            <ul className="space-y-2.5 text-slate-400">
               <li>
-                <span className="hover:text-brand-indigo cursor-pointer transition-colors">
-                  Panduan Mahasiswa
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Panduan Penulisan Brief
                 </span>
               </li>
               <li>
-                <span className="hover:text-brand-indigo cursor-pointer transition-colors">
-                  Panduan Klien UMKM
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Standar Portofolio Digital
                 </span>
               </li>
               <li>
-                <span className="hover:text-brand-indigo cursor-pointer transition-colors">
-                  Mediasi Sengketa
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Kebijakan Rekening Bersama
                 </span>
               </li>
               <li>
-                <span className="hover:text-brand-indigo cursor-pointer transition-colors">
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Mediasi Sengketa & Resolusi
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Perusahaan */}
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Perusahaan
+            </h4>
+            <ul className="space-y-2.5 text-slate-400">
+              <li>
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Tentang Makarya Indonesia
+                </span>
+              </li>
+              <li>
+                <span className="hover:text-cyan-400 cursor-pointer transition-colors">
+                  Pusat Bantuan & Kontak
+                </span>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="hover:text-cyan-400 transition-colors"
+                >
                   Syarat & Ketentuan
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="hover:text-brand-indigo cursor-pointer transition-colors">
+                <Link
+                  to="/privacy"
+                  className="hover:text-cyan-400 transition-colors"
+                >
                   Kebijakan Privasi
-                </span>
+                </Link>
               </li>
             </ul>
-          </div>
-
-          {/* Col 5: Newsletter & Info Proyek (Span 2) */}
-          <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
-              Info Proyek Baru
-            </h4>
-            <p className="text-xs text-muted leading-relaxed">
-              Dapatkan notifikasi proyek UMKM terbaru langsung ke email Anda.
-            </p>
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <input
-                type="email"
-                placeholder="Email kampus Anda..."
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-canvas border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo"
-              />
-              <button
-                type="submit"
-                className="w-full py-2 px-3 rounded-xl text-xs font-bold bg-dark-900 hover:bg-brand-indigo text-white transition-all inline-flex items-center justify-center gap-1.5 shadow-xs"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Berlangganan</span>
-              </button>
-            </form>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted">
+        {/* Bottom Bar: Copyright & Security Badges */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            &copy; {new Date().getFullYear()} <b>Makarya Platform</b>. Hak Cipta
-            Dilindungi Undang-Undang.
+            &copy; {new Date().getFullYear()} Makarya Indonesia. Seluruh hak
+            cipta dilindungi undang-undang.
           </div>
-          <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            <Link to="/terms" className="hover:text-dark-900 transition-colors">
-              Syarat & Ketentuan
-            </Link>
-            <span>|</span>
-            <Link
-              to="/privacy"
-              className="hover:text-dark-900 transition-colors"
-            >
-              Kebijakan Privasi
-            </Link>
-            <span>|</span>
-            <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
-              <Lock className="w-3 h-3" /> Escrow Terenkripsi
+          <div className="flex items-center gap-4 text-[11px]">
+            <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Sistem Operasional (Escrow & Workroom Live)
+            </span>
+            <span>•</span>
+            <span className="inline-flex items-center gap-1 text-slate-400">
+              <Lock className="w-3 h-3 text-cyan-400" /> Transaksi Terenkripsi
             </span>
           </div>
         </div>
