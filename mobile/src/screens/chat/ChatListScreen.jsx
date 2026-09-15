@@ -54,11 +54,11 @@ export function ChatListScreen({ navigation }) {
       if (list.length > 0) {
         setConversations(list);
       } else {
-        // Fallback active conversation demo so screen is never blank
+        // Fallback active conversation demo so screen is never blank if DB is fresh
         const fallback = isUmkm
           ? [
               {
-                id: "fallback_bima",
+                id: "fallback_mhs",
                 partner_id: "d109becb-bcd4-488c-9b6f-1eb771871c98",
                 partner_name: "Bima Arya",
                 partner_role: "MHS",
@@ -68,7 +68,7 @@ export function ChatListScreen({ navigation }) {
                 project_title: "Desain Kemasan & Identitas Visual Brand Kopi",
                 project_status: "OPEN",
                 last_message:
-                  "Tentu, ini saya siapkan tawaran proyek resminya lewat sistem garansi escrow Makarya ya.",
+                  "Halo! Saya siap membantu pengerjaan proyek desain atau aplikasi Anda.",
                 last_message_time: new Date().toISOString(),
                 unread_count: 0,
                 is_online: true,
@@ -78,15 +78,15 @@ export function ChatListScreen({ navigation }) {
               {
                 id: "fallback_umkm",
                 partner_id: "061dd87a-7d06-4384-b893-e5e202608d19",
-                partner_name: "Darell Rangga",
+                partner_name: "Kopi Kenangan Nusantara",
                 partner_role: "UMKM",
                 partner_photo: null,
-                partner_sub: "Klien Pemilik Proyek",
+                partner_sub: "Klien UMKM • Jakarta Selatan",
                 project_id: "cc41a1ed-a300-424b-9621-50fa8cebdcd6",
                 project_title: "Desain Kemasan & Identitas Visual Brand Kopi",
                 project_status: "OPEN",
                 last_message:
-                  "Halo, kami ingin mendiskusikan penugasan desain kemasan produk.",
+                  "Halo, kami ingin mendiskusikan penugasan desain kemasan produk kopi kami.",
                 last_message_time: new Date().toISOString(),
                 unread_count: 0,
                 is_online: true,
@@ -96,25 +96,44 @@ export function ChatListScreen({ navigation }) {
       }
     } catch (err) {
       console.warn("Gagal memuat percakapan:", err);
-      // Ensure fallback on network err
-      setConversations([
-        {
-          id: "fallback_bima",
-          partner_id: "d109becb-bcd4-488c-9b6f-1eb771871c98",
-          partner_name: "Bima Arya",
-          partner_role: "MHS",
-          partner_photo: null,
-          partner_sub: "Teknologi Informasi • UBSI",
-          project_id: "cc41a1ed-a300-424b-9621-50fa8cebdcd6",
-          project_title: "Desain Kemasan & Identitas Visual Brand Kopi",
-          project_status: "OPEN",
-          last_message:
-            "Tentu, ini saya siapkan tawaran proyek resminya lewat sistem garansi escrow Makarya ya.",
-          last_message_time: new Date().toISOString(),
-          unread_count: 0,
-          is_online: true,
-        },
-      ]);
+      const fallbackErr = isUmkm
+        ? [
+            {
+              id: "fallback_mhs",
+              partner_id: "d109becb-bcd4-488c-9b6f-1eb771871c98",
+              partner_name: "Bima Arya",
+              partner_role: "MHS",
+              partner_photo: null,
+              partner_sub: "Teknologi Informasi • UBSI",
+              project_id: "cc41a1ed-a300-424b-9621-50fa8cebdcd6",
+              project_title: "Desain Kemasan & Identitas Visual Brand Kopi",
+              project_status: "OPEN",
+              last_message:
+                "Halo! Saya siap membantu pengerjaan proyek desain atau aplikasi Anda.",
+              last_message_time: new Date().toISOString(),
+              unread_count: 0,
+              is_online: true,
+            },
+          ]
+        : [
+            {
+              id: "fallback_umkm",
+              partner_id: "061dd87a-7d06-4384-b893-e5e202608d19",
+              partner_name: "Kopi Kenangan Nusantara",
+              partner_role: "UMKM",
+              partner_photo: null,
+              partner_sub: "Klien UMKM • Jakarta Selatan",
+              project_id: "cc41a1ed-a300-424b-9621-50fa8cebdcd6",
+              project_title: "Desain Kemasan & Identitas Visual Brand Kopi",
+              project_status: "OPEN",
+              last_message:
+                "Halo, kami ingin mendiskusikan penugasan desain kemasan produk kopi kami.",
+              last_message_time: new Date().toISOString(),
+              unread_count: 0,
+              is_online: true,
+            },
+          ];
+      setConversations(fallbackErr);
     } finally {
       setLoading(false);
       setRefreshing(false);
