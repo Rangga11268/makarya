@@ -25,7 +25,6 @@ import {
   User,
   PlusCircle,
   ChevronDown,
-  Sparkles,
   GraduationCap,
   HelpCircle,
   ArrowRight,

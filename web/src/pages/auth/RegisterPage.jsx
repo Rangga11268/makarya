@@ -267,10 +267,7 @@ export function RegisterPage() {
 
         {/* Top Brand Identity */}
         <div className="relative z-10 space-y-3">
-          <Link
-            to="/"
-            className="inline-flex items-center group select-none"
-          >
+          <Link to="/" className="inline-flex items-center group select-none">
             <img
               src="/logo.webp"
               alt="Makarya"
@@ -345,10 +342,7 @@ export function RegisterPage() {
         <div className="w-full max-w-lg space-y-6">
           {/* Mobile Only Brand Header */}
           <div className="lg:hidden flex items-center justify-between pb-2">
-            <Link
-              to="/"
-              className="inline-flex items-center group select-none"
-            >
+            <Link to="/" className="inline-flex items-center group select-none">
               <img
                 src="/logo.webp"
                 alt="Makarya"
