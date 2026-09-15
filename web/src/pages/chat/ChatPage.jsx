@@ -221,11 +221,23 @@ export function ChatPage() {
     try {
       const targetPartnerId =
         selectedConv?.partner_id || talentId || urlPartnerId;
+      const catMap = {
+        PEMROGRAMAN: "Programmer / Developer",
+        DESAIN: "Desainer / UI/UX",
+        MARKETING: "Digital Marketer",
+        PENULISAN: "Content Writer",
+        MULTIMEDIA: "Multimedia & Video",
+        BISNIS: "Konsultan Bisnis",
+        DATA: "Data Analyst",
+      };
+
       const roleName = selectedSlot
         ? selectedSlot.nama_peran
-        : proj.tipe_kolaborasi === "TIM"
-          ? "Anggota Tim"
-          : (proj.kategori ? `Spesialis ${proj.kategori}` : "Spesialis Proyek");
+        : proj.tipe_kolaborasi === "TIM" && proj.slots && proj.slots.length > 0
+          ? proj.slots[0].nama_peran
+          : proj.kategori
+            ? catMap[String(proj.kategori).toUpperCase()] || proj.kategori
+            : "Pelaksana Proyek";
 
       const offerData = {
         projectId: proj.id,
@@ -703,7 +715,9 @@ export function ChatPage() {
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() => handleSendProjectOffer(proj, slot)}
+                                  onClick={() =>
+                                    handleSendProjectOffer(proj, slot)
+                                  }
                                   className="px-3 py-1 rounded-lg bg-brand-indigo hover:bg-brand-indigo/90 text-white font-bold text-[11px] transition-colors cursor-pointer"
                                 >
                                   Tawarkan Posisi Ini

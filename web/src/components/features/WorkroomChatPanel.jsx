@@ -255,6 +255,27 @@ export function WorkroomChatPanel({
     }
   };
 
+  const getCleanRoleName = (offer) => {
+    let role = offer.posisi || offer.nama_peran;
+    const catMap = {
+      PEMROGRAMAN: "Programmer / Developer",
+      DESAIN: "Desainer / UI/UX",
+      MARKETING: "Digital Marketer",
+      PENULISAN: "Content Writer",
+      MULTIMEDIA: "Multimedia & Video",
+      BISNIS: "Konsultan Bisnis",
+      DATA: "Data Analyst",
+    };
+    if (!role && offer.kategori) {
+      role = catMap[String(offer.kategori).toUpperCase()] || offer.kategori;
+    }
+    if (role && typeof role === "string" && role.startsWith("Spesialis ")) {
+      const clean = role.replace(/^Spesialis\s+/i, "");
+      role = catMap[clean.toUpperCase()] || clean;
+    }
+    return role || (offer.tipe_kolaborasi === "TIM" ? "Anggota Tim" : "Pelaksana Proyek");
+  };
+
   return (
     <div
       className={`flex flex-col bg-surface rounded-2xl border border-border overflow-hidden shadow-xs font-sans ${
@@ -470,23 +491,20 @@ export function WorkroomChatPanel({
 
                           {/* Position / Role Highlight Pill */}
                           <div
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl mb-2.5 text-xs font-medium ${
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl mb-2.5 text-xs font-semibold ${
                               isMe
                                 ? "bg-white/15 text-white"
-                                : "bg-indigo-50/80 text-brand-indigo border border-indigo-100"
+                                : "bg-indigo-50/90 text-brand-indigo border border-indigo-100"
                             }`}
                           >
                             <Users className="w-3.5 h-3.5 shrink-0" />
-                            <span className="truncate">
-                              Posisi Ditawarkan:{" "}
-                              <strong className="font-bold">
-                                {offer.posisi ||
-                                  offer.nama_peran ||
-                                  (offer.kategori
-                                    ? `Spesialis ${offer.kategori}`
-                                    : "Anggota Tim")}
-                              </strong>
-                              {offer.tipe_kolaborasi === "TIM" ? " (Proyek Tim)" : ""}
+                            <span className="leading-snug break-words">
+                              {getCleanRoleName(offer)}
+                              {offer.tipe_kolaborasi === "TIM" && (
+                                <span className="opacity-75 font-normal ml-1.5 text-[10px]">
+                                  • Proyek Tim
+                                </span>
+                              )}
                             </span>
                           </div>
 
@@ -504,7 +522,9 @@ export function WorkroomChatPanel({
                                   isMe ? "text-white/70" : "text-slate-500"
                                 }`}
                               >
-                                {offer.posisi ? "Alokasi Posisi" : "Nilai Proyek"}
+                                {offer.posisi
+                                  ? "Alokasi Posisi"
+                                  : "Nilai Proyek"}
                               </span>
                               <span className="font-bold text-sm">
                                 {offer.budget
