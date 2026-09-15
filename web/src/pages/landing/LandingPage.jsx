@@ -24,9 +24,6 @@ import {
   ChevronLeft,
   ExternalLink,
   Search,
-  CheckCircle,
-  HelpCircle,
-  TrendingUp,
 } from "lucide-react";
 
 export function LandingPage() {
@@ -195,7 +192,7 @@ export function LandingPage() {
     },
   ];
 
-  // Campus partners list
+  // Campus partners list (duplicated for seamless marquee loop)
   const campuses = [
     "Universitas Indonesia",
     "Institut Teknologi Bandung",
@@ -205,6 +202,8 @@ export function LandingPage() {
     "BINUS University",
     "Universitas Brawijaya",
     "Universitas Airlangga",
+    "Universitas Diponegoro",
+    "Universitas Sebelas Maret",
   ];
 
   return (
@@ -217,26 +216,26 @@ export function LandingPage() {
         <div className="w-full bg-[#E0F7FA] border-b border-cyan-200/70 py-2.5 px-4 text-center">
           <Link
             to="/projects"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-cyan-950 hover:text-cyan-800 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-cyan-950 hover:text-cyan-800 transition-colors group"
           >
             <span className="font-bold">Kolaborasi Multi-Role Terkurasi:</span>
             <span>
               Wujudkan proyek digital UMKM bersama talenta kampus terbaik.
             </span>
-            <span className="font-bold inline-flex items-center ml-1 text-cyan-800 hover:underline">
+            <span className="font-bold inline-flex items-center ml-1 text-cyan-800 group-hover:translate-x-0.5 transition-transform">
               Jelajahi Proyek <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
             </span>
           </Link>
         </div>
 
         {/* Ambient Top Background Radial Glow */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-cyan-200/40 via-blue-100/30 to-transparent blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-cyan-200/40 via-blue-100/30 to-transparent blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
 
         {/* Hero Headline & CTA Area */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 text-center">
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-sm hover:border-cyan-300 transition-colors cursor-default">
+            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
             <span>Platform Kolaborasi Digital Mahasiswa & UMKM</span>
           </div>
 
@@ -264,7 +263,7 @@ export function LandingPage() {
                     user?.role === "UMKM" ? "/create-project" : "/projects",
                   )
                 }
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:translate-y-[-1px]"
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
                 <span>
                   {user?.role === "UMKM"
@@ -278,7 +277,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=UMKM")}
-                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:translate-y-[-1px]"
+                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <span>Mulai Pasang Proyek</span>
                   <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -286,7 +285,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=MAHASISWA")}
-                  className="px-6 py-3 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-colors shadow-sm"
+                  className="px-6 py-3 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
                 >
                   Daftar Sebagai Mahasiswa
                 </button>
@@ -299,24 +298,24 @@ export function LandingPage() {
         {/* INTERACTIVE WORKFLOW CANVAS FLANKED BY VISIBLE SPECTRUM GRADIENT PILLARS  */}
         {/* ========================================================================= */}
         <div className="relative mt-14 max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Left Flank Vertical Spectrum Pillars (Axora Signature Backdrop) */}
-          <div className="hidden sm:flex absolute -left-6 md:-left-12 bottom-6 top-12 w-12 md:w-20 items-end gap-1.5 opacity-90 pointer-events-none z-0">
-            <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg" />
+          {/* Left Flank Vertical Spectrum Pillars (Axora Signature Backdrop with floating animation) */}
+          <div className="hidden sm:flex absolute -left-6 md:-left-12 bottom-6 top-12 w-12 md:w-20 items-end gap-1.5 opacity-90 pointer-events-none z-0 animate-float-slow">
+            <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg transition-all duration-700" />
           </div>
 
-          {/* Right Flank Vertical Spectrum Pillars (Axora Signature Backdrop) */}
-          <div className="hidden sm:flex absolute -right-6 md:-right-12 bottom-6 top-12 w-12 md:w-20 items-end justify-end gap-1.5 opacity-90 pointer-events-none z-0">
-            <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
-            <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg" />
+          {/* Right Flank Vertical Spectrum Pillars (Axora Signature Backdrop with floating animation) */}
+          <div className="hidden sm:flex absolute -right-6 md:-right-12 bottom-6 top-12 w-12 md:w-20 items-end justify-end gap-1.5 opacity-90 pointer-events-none z-0 animate-float-slow">
+            <div className="w-1/4 h-full bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-5/6 bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg transition-all duration-700" />
+            <div className="w-1/4 h-2/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg transition-all duration-700" />
           </div>
 
           {/* Main Full-Fidelity SaaS Workroom Application Mockup Card */}
-          <div className="relative z-10 bg-white rounded-2xl border border-slate-200/90 shadow-2xl overflow-hidden">
+          <div className="relative z-10 bg-white rounded-2xl border border-slate-200/90 shadow-2xl overflow-hidden transition-all duration-300">
             {/* Top SaaS Header Bar inside App */}
             <div className="px-4 py-2.5 bg-slate-50/95 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-4">
@@ -381,9 +380,9 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveHeroNode("brief")}
-                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-colors ${
+                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-all duration-200 ${
                         activeHeroNode === "brief"
-                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600 translate-x-0.5"
                           : "text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -393,9 +392,9 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveHeroNode("team")}
-                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-colors ${
+                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-all duration-200 ${
                         activeHeroNode === "team"
-                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600 translate-x-0.5"
                           : "text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -405,9 +404,9 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveHeroNode("escrow")}
-                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-colors ${
+                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-all duration-200 ${
                         activeHeroNode === "escrow"
-                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600 translate-x-0.5"
                           : "text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -417,9 +416,9 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setActiveHeroNode("workroom")}
-                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-colors ${
+                      className={`w-full text-left px-2 py-1.5 rounded-lg flex items-center gap-2 transition-all duration-200 ${
                         activeHeroNode === "workroom"
-                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600 translate-x-0.5"
                           : "text-slate-600 hover:bg-slate-100"
                       }`}
                     >
@@ -459,10 +458,10 @@ export function LandingPage() {
                 {/* Visual Node 1: Brief Masuk */}
                 <div
                   onClick={() => setActiveHeroNode("brief")}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                     activeHeroNode === "brief"
-                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
-                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200 scale-[1.01]"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -489,10 +488,10 @@ export function LandingPage() {
                 {/* Visual Node 2: Formasi Tim */}
                 <div
                   onClick={() => setActiveHeroNode("team")}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                     activeHeroNode === "team"
-                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
-                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200 scale-[1.01]"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -519,10 +518,10 @@ export function LandingPage() {
                 {/* Visual Node 3: Escrow Vault */}
                 <div
                   onClick={() => setActiveHeroNode("escrow")}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                     activeHeroNode === "escrow"
-                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
-                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200 scale-[1.01]"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -549,10 +548,10 @@ export function LandingPage() {
                 {/* Visual Node 4: Milestone Deliverable */}
                 <div
                   onClick={() => setActiveHeroNode("workroom")}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
                     activeHeroNode === "workroom"
-                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
-                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200 scale-[1.01]"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -574,158 +573,160 @@ export function LandingPage() {
                 </div>
               </div>
 
-              {/* Column 3: Right Inspector Panel */}
+              {/* Column 3: Right Inspector Panel with smooth animated transition */}
               <div className="col-span-1 md:col-span-3 lg:col-span-4 border-t md:border-t-0 md:border-l border-slate-200/80 p-4 sm:p-5 bg-white flex flex-col justify-between text-xs">
-                {activeHeroNode === "brief" && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="font-bold text-slate-900">
-                        Detail Kebutuhan Proyek
-                      </span>
-                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
-                        Aktif
-                      </span>
+                <div key={activeHeroNode} className="animate-fade-in-fast">
+                  {activeHeroNode === "brief" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="font-bold text-slate-900">
+                          Detail Kebutuhan Proyek
+                        </span>
+                        <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
+                          Aktif
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase">
+                          NAMA PROYEK
+                        </div>
+                        <div className="font-semibold text-slate-800 mt-0.5">
+                          Website & Branding Kopi Kenangan Nusantara
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase">
+                          DESKRIPSI BRIEF
+                        </div>
+                        <p className="text-slate-600 text-[11px] leading-relaxed mt-0.5">
+                          Pengembangan landing page responsif terintegrasi katalog
+                          produk kopi dan desain kemasan label botol modern.
+                        </p>
+                      </div>
+                      <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-[11px] border border-slate-100">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Klien UMKM:</span>
+                          <span className="font-semibold text-slate-900">
+                            Hendra Wijaya
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Pagu Maksimal:</span>
+                          <span className="font-mono font-bold text-slate-900">
+                            Rp 2.500.000
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-slate-400 uppercase">
-                        NAMA PROYEK
+                  )}
+
+                  {activeHeroNode === "team" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="font-bold text-slate-900">
+                          Formasi Slot Tim (2/2 Terisi)
+                        </span>
+                        <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                          Komplit
+                        </span>
                       </div>
-                      <div className="font-semibold text-slate-800 mt-0.5">
-                        Website & Branding Kopi Kenangan Nusantara
+                      <div className="space-y-2">
+                        <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-100">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold text-slate-900">
+                              Darell Radhitya
+                            </span>
+                            <span className="font-mono text-[11px] font-bold text-blue-700">
+                              Rp 1.500.000
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            Frontend Dev | UI (Semester 6)
+                          </div>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-indigo-50/50 border border-indigo-100">
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold text-slate-900">
+                              Amanda Putri
+                            </span>
+                            <span className="font-mono text-[11px] font-bold text-indigo-700">
+                              Rp 1.000.000
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            UI/UX Designer | ITB (Semester 4)
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div>
-                      <div className="text-[10px] font-bold text-slate-400 uppercase">
-                        DESKRIPSI BRIEF
+                  )}
+
+                  {activeHeroNode === "escrow" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="font-bold text-slate-900">
+                          Status Escrow Invariant
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                          100% Aman
+                        </span>
                       </div>
-                      <p className="text-slate-600 text-[11px] leading-relaxed mt-0.5">
-                        Pengembangan landing page responsif terintegrasi katalog
-                        produk kopi dan desain kemasan label botol modern.
+                      <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 space-y-1.5">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-slate-600">Total Pagu:</span>
+                          <span className="font-mono font-bold text-slate-900">
+                            Rp 2.500.000
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-slate-600">
+                            Biaya Klien UMKM:
+                          </span>
+                          <span className="font-mono font-bold text-emerald-700">
+                            Rp 0 (0%)
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-500 italic">
+                        Dana tersimpan aman dan hanya dicairkan setelah UMKM
+                        menyetujui hasil deliverable.
                       </p>
                     </div>
-                    <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-[11px] border border-slate-100">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Klien UMKM:</span>
-                        <span className="font-semibold text-slate-900">
-                          Hendra Wijaya
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Pagu Maksimal:</span>
-                        <span className="font-mono font-bold text-slate-900">
-                          Rp 2.500.000
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {activeHeroNode === "team" && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="font-bold text-slate-900">
-                        Formasi Slot Tim (2/2 Terisi)
-                      </span>
-                      <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-                        Komplit
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-100">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-900">
-                            Darell Radhitya
-                          </span>
-                          <span className="font-mono text-[11px] font-bold text-blue-700">
-                            Rp 1.500.000
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-500">
-                          Frontend Dev | UI (Semester 6)
-                        </div>
+                  {activeHeroNode === "workroom" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="font-bold text-slate-900">
+                          Deliverable Siap Review
+                        </span>
+                        <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
+                          Milestone 1
+                        </span>
                       </div>
-                      <div className="p-2.5 rounded-lg bg-indigo-50/50 border border-indigo-100">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-900">
-                            Amanda Putri
+                      <div className="space-y-1.5 text-[11px]">
+                        <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                          <span className="font-medium text-slate-700">
+                            github.com/darell/kopi-kenangan
                           </span>
-                          <span className="font-mono text-[11px] font-bold text-indigo-700">
-                            Rp 1.000.000
-                          </span>
+                          <ExternalLink className="w-3 h-3 text-cyan-600" />
                         </div>
-                        <div className="text-[10px] text-slate-500">
-                          UI/UX Designer | ITB (Semester 4)
+                        <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                          <span className="font-medium text-slate-700">
+                            figma.com/@amanda/kopi-ui
+                          </span>
+                          <ExternalLink className="w-3 h-3 text-cyan-600" />
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs shadow transition-colors"
+                      >
+                        Setujui & Cairkan Honor
+                      </button>
                     </div>
-                  </div>
-                )}
-
-                {activeHeroNode === "escrow" && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="font-bold text-slate-900">
-                        Status Escrow Invariant
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                        100% Aman
-                      </span>
-                    </div>
-                    <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 space-y-1.5">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-600">Total Pagu:</span>
-                        <span className="font-mono font-bold text-slate-900">
-                          Rp 2.500.000
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-600">
-                          Biaya Klien UMKM:
-                        </span>
-                        <span className="font-mono font-bold text-emerald-700">
-                          Rp 0 (0%)
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-slate-500 italic">
-                      Dana tersimpan aman dan hanya dicairkan setelah UMKM
-                      menyetujui hasil deliverable.
-                    </p>
-                  </div>
-                )}
-
-                {activeHeroNode === "workroom" && (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                      <span className="font-bold text-slate-900">
-                        Deliverable Siap Review
-                      </span>
-                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
-                        Milestone 1
-                      </span>
-                    </div>
-                    <div className="space-y-1.5 text-[11px]">
-                      <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
-                        <span className="font-medium text-slate-700">
-                          github.com/darell/kopi-kenangan
-                        </span>
-                        <ExternalLink className="w-3 h-3 text-cyan-600" />
-                      </div>
-                      <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
-                        <span className="font-medium text-slate-700">
-                          figma.com/@amanda/kopi-ui
-                        </span>
-                        <ExternalLink className="w-3 h-3 text-cyan-600" />
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs shadow transition-colors"
-                    >
-                      Setujui & Cairkan Honor
-                    </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -733,24 +734,30 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. CAMPUS PARTNER TICKER / LOGO RIBBON                                    */}
+      {/* 2. CAMPUS PARTNER INFINITE MARQUEE TICKER (Seamless & Classy)             */}
       {/* ========================================================================= */}
-      <section className="py-8 bg-white border-y border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-xs font-bold tracking-wider text-slate-400 uppercase mb-4">
-            Didukung Oleh Mahasiswa Berbakat Dari Perguruan Tinggi Terkemuka
+      <section className="py-8 bg-white border-y border-slate-200/80 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-4 mb-4 text-center">
+          <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+            Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-slate-600 text-xs sm:text-sm font-semibold">
-            {campuses.map((c, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-2 hover:text-slate-900 transition-colors"
-              >
-                <GraduationCap className="w-4 h-4 text-cyan-600" />
-                <span>{c}</span>
-              </div>
-            ))}
-          </div>
+        </div>
+
+        {/* Gradient edge masks for high-end fade out effect */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+        {/* Infinite scrolling ticker track */}
+        <div className="flex animate-marquee gap-8 sm:gap-12 items-center text-slate-600 text-xs sm:text-sm font-semibold">
+          {[...campuses, ...campuses].map((c, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 hover:text-slate-900 transition-colors shrink-0 px-2 cursor-default"
+            >
+              <GraduationCap className="w-4 h-4 text-cyan-600" />
+              <span>{c}</span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -773,9 +780,9 @@ export function LandingPage() {
           </div>
 
           {/* Core Engine Visual Card */}
-          <div className="relative max-w-3xl mx-auto mb-14 p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+          <div className="relative max-w-3xl mx-auto mb-14 p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
             <div className="relative flex flex-col items-center justify-center text-center py-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-cyan-600/20 mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-cyan-600/20 mb-4 animate-float-slow">
                 <Layers className="w-7 h-7" />
               </div>
               <h3 className="text-lg font-bold text-slate-900">
@@ -788,7 +795,7 @@ export function LandingPage() {
 
               {/* Orbiting Feature Badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 w-full">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
                   <Lock className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
                   <div className="text-xs font-bold text-slate-900">
                     Escrow 100%
@@ -797,7 +804,7 @@ export function LandingPage() {
                     Rekening Terpisah
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
                   <Users className="w-4 h-4 text-blue-600 mx-auto mb-1" />
                   <div className="text-xs font-bold text-slate-900">
                     Multi-Role Slot
@@ -806,7 +813,7 @@ export function LandingPage() {
                     Tim Terstruktur
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
                   <GraduationCap className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
                   <div className="text-xs font-bold text-slate-900">
                     Domain .ac.id
@@ -815,7 +822,7 @@ export function LandingPage() {
                     Verifikasi Kampus
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
                   <Clock className="w-4 h-4 text-amber-600 mx-auto mb-1" />
                   <div className="text-xs font-bold text-slate-900">
                     Workroom Live
@@ -830,7 +837,7 @@ export function LandingPage() {
 
           {/* 4 Stat Metrics Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs">
+            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs hover:-translate-y-0.5 hover:shadow-md transition-all">
               <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-mono">
                 Rp 450Jt+
               </div>
@@ -838,7 +845,7 @@ export function LandingPage() {
                 Total Honor Diamankan
               </div>
             </div>
-            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs">
+            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs hover:-translate-y-0.5 hover:shadow-md transition-all">
               <div className="text-3xl sm:text-4xl font-extrabold text-emerald-600 font-mono">
                 100%
               </div>
@@ -846,7 +853,7 @@ export function LandingPage() {
                 Garansi Keamanan Escrow
               </div>
             </div>
-            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs">
+            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs hover:-translate-y-0.5 hover:shadow-md transition-all">
               <div className="text-3xl sm:text-4xl font-extrabold text-cyan-600 font-mono">
                 99.2%
               </div>
@@ -854,7 +861,7 @@ export function LandingPage() {
                 Penyelesaian Tepat Waktu
               </div>
             </div>
-            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs">
+            <div className="p-6 bg-white rounded-xl border border-slate-200/80 text-center shadow-2xs hover:-translate-y-0.5 hover:shadow-md transition-all">
               <div className="text-3xl sm:text-4xl font-extrabold text-blue-600 font-mono">
                 1.800+
               </div>
@@ -895,9 +902,9 @@ export function LandingPage() {
                   <div
                     key={idx}
                     onClick={() => setActiveStep(idx)}
-                    className={`p-5 rounded-xl border transition-all cursor-pointer ${
+                    className={`p-5 rounded-xl border transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? "bg-slate-900 text-white border-slate-900 shadow-md ring-1 ring-slate-800"
+                        ? "bg-slate-900 text-white border-slate-900 shadow-md ring-1 ring-slate-800 scale-[1.01]"
                         : "bg-white text-slate-800 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
                     }`}
                   >
@@ -938,177 +945,179 @@ export function LandingPage() {
               })}
             </div>
 
-            {/* Right Column: Clean Light Interactive Preview Pane */}
+            {/* Right Column: Clean Light Interactive Preview Pane with smooth transition */}
             <div className="lg:col-span-7 bg-[#F8FAFC] border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-sm min-h-[420px] flex flex-col justify-between">
-              {activeStep === 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Langkah 1: Pengaturan Formasi Proyek
-                    </span>
-                    <span className="text-xs font-bold text-cyan-800 bg-cyan-100 px-2.5 py-1 rounded">
-                      Format Fleksibel
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900">
-                    Pilih Format Kolaborasi yang Sesuai Kebutuhan
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                      <div className="text-sm font-bold text-slate-900 mb-1">
-                        Proyek Solo (1 Talenta)
-                      </div>
-                      <p className="text-xs text-slate-500 leading-relaxed">
-                        Cocok untuk kebutuhan spesifik seperti desain logo, foto
-                        produk, atau perbaikan satu fitur.
-                      </p>
+              <div key={activeStep} className="animate-fade-in-fast">
+                {activeStep === 0 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Langkah 1: Pengaturan Formasi Proyek
+                      </span>
+                      <span className="text-xs font-bold text-cyan-800 bg-cyan-100 px-2.5 py-1 rounded">
+                        Format Fleksibel
+                      </span>
                     </div>
-                    <div className="p-4 rounded-xl bg-cyan-50/70 border border-cyan-200 shadow-2xs">
-                      <div className="text-sm font-bold text-cyan-950 mb-1 flex items-center justify-between">
-                        <span>Proyek Tim (Multi-Role)</span>
-                        <span className="text-[10px] bg-cyan-600 text-white font-bold px-1.5 py-0.2 rounded">
-                          Populer
+                    <h4 className="text-lg font-bold text-slate-900">
+                      Pilih Format Kolaborasi yang Sesuai Kebutuhan
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-slate-300 transition-colors">
+                        <div className="text-sm font-bold text-slate-900 mb-1">
+                          Proyek Solo (1 Talenta)
+                        </div>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          Cocok untuk kebutuhan spesifik seperti desain logo, foto
+                          produk, atau perbaikan satu fitur.
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-xl bg-cyan-50/70 border border-cyan-200 shadow-2xs">
+                        <div className="text-sm font-bold text-cyan-950 mb-1 flex items-center justify-between">
+                          <span>Proyek Tim (Multi-Role)</span>
+                          <span className="text-[10px] bg-cyan-600 text-white font-bold px-1.5 py-0.2 rounded">
+                            Populer
+                          </span>
+                        </div>
+                        <p className="text-xs text-cyan-900 leading-relaxed">
+                          Cocok untuk pembuatan aplikasi, website utuh, dan
+                          rebranding lengkap dengan tim lintas disiplin.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-600">
+                      <span className="text-slate-900 font-bold">Catatan:</span>{" "}
+                      Setiap peran dalam formasi tim memiliki pagu anggaran dan
+                      kontrak tersendiri (misal: UI/UX Rp 1Jt, Frontend Rp 1.5Jt).
+                    </div>
+                  </div>
+                )}
+
+                {activeStep === 1 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Langkah 2: Review Pelamar & Portofolio
+                      </span>
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded">
+                        Terverifikasi Kampus
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-bold text-slate-900">
+                      Evaluasi Profil Akademik & Bukti Karya Asli
+                    </h4>
+                    <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-3 shadow-2xs">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center font-bold">
+                          DR
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                            Darell Radhitya
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            Universitas Indonesia | Sistem Informasi (Semester 6)
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
+                          React.js
+                        </span>
+                        <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
+                          Tailwind CSS
+                        </span>
+                        <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
+                          Figma
+                        </span>
+                        <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
+                          Rating: 4.9 (8 Selesai)
                         </span>
                       </div>
-                      <p className="text-xs text-cyan-900 leading-relaxed">
-                        Cocok untuk pembuatan aplikasi, website utuh, dan
-                        rebranding lengkap dengan tim lintas disiplin.
-                      </p>
                     </div>
                   </div>
-                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-600">
-                    <span className="text-slate-900 font-bold">Catatan:</span>{" "}
-                    Setiap peran dalam formasi tim memiliki pagu anggaran dan
-                    kontrak tersendiri (misal: UI/UX Rp 1Jt, Frontend Rp 1.5Jt).
-                  </div>
-                </div>
-              )}
+                )}
 
-              {activeStep === 1 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Langkah 2: Review Pelamar & Portofolio
-                    </span>
-                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded">
-                      Terverifikasi Kampus
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900">
-                    Evaluasi Profil Akademik & Bukti Karya Asli
-                  </h4>
-                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-3 shadow-2xs">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center font-bold">
-                        DR
+                {activeStep === 2 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Langkah 3: Pengamanan Dana Escrow
+                      </span>
+                      <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />{" "}
+                        100% Terlindungi
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-bold text-slate-900">
+                      Dana Disimpan Aman Sebelum Pengerjaan Dimulai
+                    </h4>
+                    <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-slate-600">
+                          Total Nominal Proyek:
+                        </span>
+                        <span className="font-mono font-bold text-slate-900">
+                          Rp 2.500.000
+                        </span>
                       </div>
-                      <div>
-                        <div className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                          Darell Radhitya
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Universitas Indonesia | Sistem Informasi (Semester 6)
-                        </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-slate-600">
+                          Status Rekening Bersama:
+                        </span>
+                        <span className="font-bold text-emerald-700">
+                          DIAMANKAN (Vault Mandiri)
+                        </span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
-                        React.js
-                      </span>
-                      <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
-                        Tailwind CSS
-                      </span>
-                      <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">
-                        Figma
-                      </span>
-                      <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
-                        Rating: 4.9 (8 Selesai)
-                      </span>
-                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Mahasiswa dapat bekerja dengan tenang mengetahui dana telah
+                      siap, sementara UMKM memiliki kendali penuh sebelum
+                      menyetujui hasil akhir.
+                    </p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {activeStep === 2 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Langkah 3: Pengamanan Dana Escrow
-                    </span>
-                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />{" "}
-                      100% Terlindungi
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900">
-                    Dana Disimpan Aman Sebelum Pengerjaan Dimulai
-                  </h4>
-                  <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-xl space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-600">
-                        Total Nominal Proyek:
+                {activeStep === 3 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Langkah 4: Serah Terima & Pencairan
                       </span>
-                      <span className="font-mono font-bold text-slate-900">
-                        Rp 2.500.000
+                      <span className="text-xs font-bold text-cyan-800 bg-cyan-100 px-2.5 py-1 rounded">
+                        Pencairan Otomatis
                       </span>
                     </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-600">
-                        Status Rekening Bersama:
-                      </span>
-                      <span className="font-bold text-emerald-700">
-                        DIAMANKAN (Vault Mandiri)
-                      </span>
+                    <h4 className="text-lg font-bold text-slate-900">
+                      Persetujuan 1-Klik & Transparansi Hasil
+                    </h4>
+                    <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-3 shadow-2xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-600">
+                          Deliverable Akhir:
+                        </span>
+                        <span className="text-xs font-bold text-emerald-700">
+                          Siap Ditinjau
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          className="flex-1 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
+                        >
+                          Setujui & Cairkan Honor
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors border border-slate-200"
+                        >
+                          Minta Revisi
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Mahasiswa dapat bekerja dengan tenang mengetahui dana telah
-                    siap, sementara UMKM memiliki kendali penuh sebelum
-                    menyetujui hasil akhir.
-                  </p>
-                </div>
-              )}
-
-              {activeStep === 3 && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Langkah 4: Serah Terima & Pencairan
-                    </span>
-                    <span className="text-xs font-bold text-cyan-800 bg-cyan-100 px-2.5 py-1 rounded">
-                      Pencairan Otomatis
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900">
-                    Persetujuan 1-Klik & Transparansi Hasil
-                  </h4>
-                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-3 shadow-2xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-slate-600">
-                        Deliverable Akhir:
-                      </span>
-                      <span className="text-xs font-bold text-emerald-700">
-                        Siap Ditinjau
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="flex-1 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
-                      >
-                        Setujui & Cairkan Honor
-                      </button>
-                      <button
-                        type="button"
-                        className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors border border-slate-200"
-                      >
-                        Minta Revisi
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* Step Navigation Dots Footer */}
               <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
@@ -1117,7 +1126,7 @@ export function LandingPage() {
                     <button
                       key={idx}
                       onClick={() => setActiveStep(idx)}
-                      className={`h-1.5 rounded-full transition-all ${
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
                         activeStep === idx ? "w-8 bg-cyan-600" : "w-2 bg-slate-300"
                       }`}
                     />
@@ -1129,7 +1138,7 @@ export function LandingPage() {
                     onClick={() =>
                       setActiveStep((prev) => Math.max(0, prev - 1))
                     }
-                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 shadow-2xs"
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 shadow-2xs transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -1140,7 +1149,7 @@ export function LandingPage() {
                         Math.min(steps.length - 1, prev + 1),
                       )
                     }
-                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 shadow-2xs"
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed text-slate-600 shadow-2xs transition-colors"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -1171,7 +1180,7 @@ export function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Bento Card 1: Interactive Multi-Role Slot Selector */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -1201,7 +1210,7 @@ export function LandingPage() {
                         key={role.id}
                         type="button"
                         onClick={() => setSelectedSlotRole(role.id)}
-                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                        className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
                           selectedSlotRole === role.id
                             ? "bg-slate-900 text-white shadow-sm"
                             : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
@@ -1212,7 +1221,7 @@ export function LandingPage() {
                     ))}
                   </div>
 
-                  <div className="p-3 rounded-lg bg-white border border-slate-200 text-xs">
+                  <div className="p-3 rounded-lg bg-white border border-slate-200 text-xs animate-fade-in-fast" key={selectedSlotRole}>
                     {selectedSlotRole === "uiux" && (
                       <div className="flex justify-between items-center">
                         <div>
@@ -1264,7 +1273,7 @@ export function LandingPage() {
             </div>
 
             {/* Bento Card 2: Interactive Escrow Breakdown Slider */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between">
+            <div className="p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -1325,9 +1334,9 @@ export function LandingPage() {
             </div>
 
             {/* Bento Card 3: Interactive Workroom Deliverable Simulator */}
-            <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between overflow-hidden group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               {/* Subtle Corner Spectrum Accent */}
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-tl from-cyan-400/20 via-blue-400/10 to-transparent rounded-full blur-xl pointer-events-none" />
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-tl from-cyan-400/20 via-blue-400/10 to-transparent rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -1400,14 +1409,14 @@ export function LandingPage() {
                     <button
                       type="button"
                       onClick={() => setSimulatedDeliverableStatus("approved")}
-                      className="flex-1 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-2xs"
+                      className="flex-1 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-2xs active:scale-[0.98]"
                     >
                       Setujui & Cairkan Honor
                     </button>
                     <button
                       type="button"
                       onClick={() => setSimulatedDeliverableStatus("revision")}
-                      className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 rounded-lg transition-colors border border-slate-200"
+                      className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 rounded-lg transition-colors border border-slate-200 active:scale-[0.98]"
                     >
                       Minta Revisi
                     </button>
@@ -1417,9 +1426,9 @@ export function LandingPage() {
             </div>
 
             {/* Bento Card 4: Verified Identity & Multi-Agent Network */}
-            <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between overflow-hidden group">
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between overflow-hidden group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
               {/* Corner Spectrum Accent */}
-              <div className="absolute -bottom-6 -right-6 w-28 h-28 bg-gradient-to-tl from-amber-400/20 via-cyan-400/10 to-transparent rounded-full blur-xl pointer-events-none" />
+              <div className="absolute -bottom-6 -right-6 w-28 h-28 bg-gradient-to-tl from-amber-400/20 via-cyan-400/10 to-transparent rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -1498,7 +1507,7 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setExploreTab("projects")}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
                   exploreTab === "projects"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
@@ -1509,7 +1518,7 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setExploreTab("talents")}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
                   exploreTab === "talents"
                     ? "bg-white text-slate-900 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
@@ -1522,7 +1531,7 @@ export function LandingPage() {
 
           {/* Tab 1: Live Projects List */}
           {exploreTab === "projects" && (
-            <div>
+            <div className="animate-fade-in-fast">
               {loadingProjects ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[1, 2].map((n) => (
@@ -1549,7 +1558,7 @@ export function LandingPage() {
                   variant="outline"
                   size="lg"
                   onClick={() => navigate("/projects")}
-                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200"
+                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200 shadow-2xs hover:-translate-y-0.5 transition-all"
                 >
                   Jelajahi Semua Proyek <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -1559,7 +1568,7 @@ export function LandingPage() {
 
           {/* Tab 2: Live Talents List */}
           {exploreTab === "talents" && (
-            <div>
+            <div className="animate-fade-in-fast">
               {loadingTalents ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[1, 2].map((n) => (
@@ -1586,7 +1595,7 @@ export function LandingPage() {
                   variant="outline"
                   size="lg"
                   onClick={() => navigate("/talents")}
-                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200"
+                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200 shadow-2xs hover:-translate-y-0.5 transition-all"
                 >
                   Lihat Semua Talenta Mahasiswa{" "}
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -1612,12 +1621,12 @@ export function LandingPage() {
           </div>
 
           {/* Testimonial Card with Axora Left-Border Spectrum Ribbon */}
-          <div className="relative flex rounded-3xl border border-slate-200/90 shadow-md bg-white overflow-hidden">
+          <div className="relative flex rounded-3xl border border-slate-200/90 shadow-md bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300">
             {/* Left Spectrum Vertical Accent Ribbon (Axora Signature) */}
             <div className="w-3 sm:w-4 bg-gradient-to-b from-cyan-400 via-emerald-400 to-blue-600 shrink-0 self-stretch" />
 
             <div className="flex-1 p-6 sm:p-10 bg-gradient-to-b from-slate-50/50 to-white">
-              <div className="space-y-6">
+              <div className="space-y-6 animate-fade-in-fast" key={activeStoryIdx}>
                 <span className="inline-block text-[11px] font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-3 py-1 rounded-full">
                   {stories[activeStoryIdx].tag}
                 </span>
@@ -1658,10 +1667,10 @@ export function LandingPage() {
                           type="button"
                           aria-label={`Slide ${idx + 1}`}
                           onClick={() => setActiveStoryIdx(idx)}
-                          className={`h-2 rounded-full transition-all ${
+                          className={`h-2 rounded-full transition-all duration-300 ${
                             activeStoryIdx === idx
                               ? "w-8 bg-slate-900"
-                              : "w-2 bg-slate-300"
+                              : "w-2 bg-slate-300 hover:bg-slate-400"
                           }`}
                         />
                       ))}
@@ -1698,7 +1707,7 @@ export function LandingPage() {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F8FAFC] rounded-xl border border-slate-200/90 overflow-hidden shadow-2xs transition-all"
+                  className="bg-[#F8FAFC] rounded-xl border border-slate-200/90 overflow-hidden shadow-2xs transition-all duration-200"
                 >
                   <button
                     type="button"
@@ -1708,7 +1717,7 @@ export function LandingPage() {
                     <span className="text-sm sm:text-base font-bold text-slate-900">
                       {faq.q}
                     </span>
-                    <span className="p-1 rounded-md bg-white border border-slate-200 text-slate-600 shrink-0">
+                    <span className="p-1 rounded-md bg-white border border-slate-200 text-slate-600 shrink-0 transition-transform duration-200">
                       {isOpen ? (
                         <Minus className="w-4 h-4" />
                       ) : (
@@ -1717,7 +1726,7 @@ export function LandingPage() {
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-200/60 pt-3 bg-white">
+                    <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-200/60 pt-3 bg-white animate-fade-in-fast">
                       {faq.a}
                     </div>
                   )}
@@ -1733,7 +1742,7 @@ export function LandingPage() {
       {/* ========================================================================= */}
       <section className="py-20 bg-gradient-to-b from-white to-[#F0F9FF] border-t border-slate-200/80 text-slate-900 relative overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cyan-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-cyan-200/40 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-2xs">
@@ -1753,7 +1762,7 @@ export function LandingPage() {
               size="lg"
               variant="brand"
               onClick={() => navigate("/register")}
-              className="w-full sm:w-auto font-bold px-8 py-3.5 shadow-lg shadow-cyan-600/10 rounded-xl"
+              className="w-full sm:w-auto font-bold px-8 py-3.5 shadow-lg shadow-cyan-600/10 rounded-xl hover:-translate-y-0.5 transition-transform"
             >
               Daftar Sekarang Gratis
             </Button>
@@ -1761,7 +1770,7 @@ export function LandingPage() {
               size="lg"
               variant="outline"
               onClick={() => navigate("/projects")}
-              className="w-full sm:w-auto font-semibold px-6 py-3.5 bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl"
+              className="w-full sm:w-auto font-semibold px-6 py-3.5 bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl hover:-translate-y-0.5 transition-transform"
             >
               Jelajahi Peluang Proyek
             </Button>
