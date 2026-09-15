@@ -379,16 +379,16 @@ export function RegisterPage() {
           {!isOtpStep ? (
             <div className="space-y-5">
               {/* Role Toggle Switcher Tabs */}
-              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200">
+              <div className="grid grid-cols-2 p-1 bg-slate-100/90 rounded-full border border-slate-200/80">
                 <button
                   type="button"
                   onClick={() => {
                     setRole("MHS");
                     setError(null);
                   }}
-                  className={`min-h-[44px] py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                  className={`min-h-[40px] py-2 px-3 text-xs font-bold rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
                     role === "MHS"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -401,9 +401,9 @@ export function RegisterPage() {
                     setRole("UMKM");
                     setError(null);
                   }}
-                  className={`min-h-[44px] py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
+                  className={`min-h-[40px] py-2 px-3 text-xs font-bold rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
                     role === "UMKM"
-                      ? "bg-white text-slate-900 shadow-sm"
+                      ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -417,7 +417,7 @@ export function RegisterPage() {
                 type="button"
                 onClick={handleGoogleSignup}
                 disabled={loading}
-                className="w-full min-h-[44px] py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+                className="w-full min-h-[44px] py-3 px-6 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 <GoogleVectorIcon className="w-4 h-4" />
                 <span>Daftar Cepat dengan Akun Google</span>
@@ -639,7 +639,7 @@ export function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+                  className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50"
                 >
                   <span>
                     {loading ? "Mendaftarkan..." : "Daftar Akun Sekarang"}
@@ -678,7 +678,7 @@ export function RegisterPage() {
               <button
                 type="submit"
                 disabled={otpLoading}
-                className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+                className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50"
               >
                 <span>
                   {otpLoading

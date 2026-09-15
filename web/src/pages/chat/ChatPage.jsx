@@ -5,7 +5,7 @@ import {
   useNavigate,
   Link,
 } from "react-router-dom";
-import { chatApi, projectApi, talentApi } from "../../api";
+import { chatApi, projectApi, talentApi, getUserChatWsUrl } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { WorkroomChatPanel } from "../../components/features/WorkroomChatPanel";
@@ -30,7 +30,7 @@ export function ChatPage() {
   const { projectId: routeProjectId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, accessToken } = useAuthStore();
   const { addToast } = useToastStore();
 
   const isUmkm = user?.role?.toUpperCase() === "UMKM";
@@ -76,6 +76,127 @@ export function ChatPage() {
   useEffect(() => {
     loadConversations();
   }, []);
+
+  // Realtime update handler for messages across sidebar & chat
+  const handleConversationMessageUpdate = (incomingMsg) => {
+    if (!incomingMsg) return;
+    setConversations((prev) => {
+      const pId = String(incomingMsg.project_id || "");
+      const sId = String(incomingMsg.sender_id || "");
+      const rId = String(incomingMsg.recipient_id || "");
+      const myId = String(user?.id || "");
+
+      const idx = prev.findIndex((c) => {
+        const cProj = String(c.project_id || "");
+        const cPart = String(c.partner_id || "");
+        return (
+          cProj === pId && (cPart === sId || cPart === rId || (!cPart && !rId))
+        );
+      });
+
+      const isCurrentSelected =
+        selectedConv &&
+        String(selectedConv.project_id || "") === pId &&
+        (String(selectedConv.partner_id || "") === sId ||
+          String(selectedConv.partner_id || "") === rId);
+
+      const isFromOther = sId !== myId;
+
+      if (idx !== -1) {
+        const existing = prev[idx];
+        const newUnread = isCurrentSelected
+          ? 0
+          : isFromOther
+            ? (existing.unread_count || 0) + 1
+            : existing.unread_count || 0;
+
+        const updated = {
+          ...existing,
+          last_message: incomingMsg.message,
+          last_message_time: incomingMsg.created_at || new Date().toISOString(),
+          unread_count: newUnread,
+        };
+
+        const copy = [...prev];
+        copy.splice(idx, 1);
+        return [updated, ...copy];
+      } else {
+        loadConversations();
+        return prev;
+      }
+    });
+  };
+
+  const handlePartnerPresenceChange = (partnerId, isOnline) => {
+    if (!partnerId) return;
+    setConversations((prev) =>
+      prev.map((c) =>
+        String(c.partner_id) === String(partnerId)
+          ? { ...c, is_online: isOnline }
+          : c,
+      ),
+    );
+    setSelectedConv((prev) =>
+      prev && String(prev.partner_id) === String(partnerId)
+        ? { ...prev, is_online: isOnline }
+        : prev,
+    );
+  };
+
+  // Global user WebSocket for real-time sidebar & inbox push updates
+  useEffect(() => {
+    const token =
+      accessToken ||
+      localStorage.getItem("makarya_token") ||
+      localStorage.getItem("token");
+    if (!token || !user?.id) return;
+
+    let ws = null;
+    let pingInterval = null;
+
+    try {
+      const url = getUserChatWsUrl(token);
+      ws = new WebSocket(url);
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (!data) return;
+
+          if (data.type === "CHAT_MESSAGE") {
+            handleConversationMessageUpdate(data);
+          } else if (data.type === "READ_RECEIPT") {
+            if (String(data.reader_id) === String(user?.id)) {
+              setConversations((prev) =>
+                prev.map((c) =>
+                  String(c.project_id) === String(data.project_id) &&
+                  (!data.partner_id ||
+                    String(c.partner_id) === String(data.partner_id))
+                    ? { ...c, unread_count: 0 }
+                    : c,
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          console.warn("Global chat WS message parse error:", e);
+        }
+      };
+
+      pingInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: "PING" }));
+        }
+      }, 30000);
+    } catch (err) {
+      console.warn("Failed to connect global user chat WS:", err);
+    }
+
+    return () => {
+      if (pingInterval) clearInterval(pingInterval);
+      if (ws) ws.close();
+    };
+  }, [accessToken, user?.id, selectedConv]);
 
   // 2. Fetch UMKM active projects for project context picker (Hanya yang OPEN/BIDDING)
   useEffect(() => {
@@ -193,6 +314,9 @@ export function ChatPage() {
   const handleSelectConversation = (conv) => {
     setSelectedConv(conv);
     setMobileViewChat(true);
+    setConversations((prev) =>
+      prev.map((c) => (c.id === conv.id ? { ...c, unread_count: 0 } : c)),
+    );
     const searchPart = conv.partner_id ? `?partner=${conv.partner_id}` : "";
     if (conv.project_id) {
       navigate(`/chat/${conv.project_id}${searchPart}`, { replace: true });
@@ -566,6 +690,7 @@ export function ChatPage() {
             partnerName={selectedConv.partner_name || "Mitra Kolaborasi"}
             partnerRole={selectedConv.partner_role || (isUmkm ? "MHS" : "UMKM")}
             partnerPhoto={selectedConv.partner_photo || null}
+            initialPartnerOnline={Boolean(selectedConv.is_online)}
             onBack={() => setMobileViewChat(false)}
             className="h-full w-full rounded-none border-0 shadow-none"
             initialDraft=""
@@ -573,6 +698,8 @@ export function ChatPage() {
             activeProject={activeProject}
             myProjects={myProjects}
             projectSlots={activeProject?.slots || []}
+            onNewMessage={handleConversationMessageUpdate}
+            onPartnerPresenceChange={handlePartnerPresenceChange}
           />
         ) : (
           <div className="hidden md:flex flex-col items-center justify-center h-full text-center p-8 bg-slate-50/60">

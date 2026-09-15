@@ -34,39 +34,96 @@ router = APIRouter(prefix="/chat", tags=["Realtime Collaboration Chat"])
 
 
 # ============================================================================
-# 1. WEBSOCKET CONNECTION MANAGER (ROOM ISOLATION)
+# 1. WEBSOCKET CONNECTION MANAGER (ROOM ISOLATION & USER PRESENCE)
 # ============================================================================
 class ConnectionManager:
     def __init__(self):
-        # Format: { "project_id_str": [WebSocket, WebSocket, ...] }
-        self.active_rooms: Dict[str, List[WebSocket]] = {}
+        # Format: { "room_id_str": { "user_id_str": [WebSocket, ...] } }
+        self.active_rooms: Dict[str, Dict[str, List[WebSocket]]] = {}
+        # Global user sockets: { "user_id_str": [WebSocket, ...] }
+        self.active_users: Dict[str, List[WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, room_id: str):
+    async def connect(self, websocket: WebSocket, room_id: str, user_id: str):
         await websocket.accept()
+        # 1. Register to room
         if room_id not in self.active_rooms:
-            self.active_rooms[room_id] = []
-        self.active_rooms[room_id].append(websocket)
+            self.active_rooms[room_id] = {}
+        if user_id not in self.active_rooms[room_id]:
+            self.active_rooms[room_id][user_id] = []
+        self.active_rooms[room_id][user_id].append(websocket)
 
-    def disconnect(self, websocket: WebSocket, room_id: str):
-        if room_id in self.active_rooms:
-            if websocket in self.active_rooms[room_id]:
-                self.active_rooms[room_id].remove(websocket)
+        # 2. Register to global user sockets
+        if user_id not in self.active_users:
+            self.active_users[user_id] = []
+        self.active_users[user_id].append(websocket)
+
+    def disconnect(self, websocket: WebSocket, room_id: str, user_id: str):
+        # 1. Unregister from room
+        if room_id in self.active_rooms and user_id in self.active_rooms[room_id]:
+            if websocket in self.active_rooms[room_id][user_id]:
+                self.active_rooms[room_id][user_id].remove(websocket)
+            if not self.active_rooms[room_id][user_id]:
+                del self.active_rooms[room_id][user_id]
             if not self.active_rooms[room_id]:
                 del self.active_rooms[room_id]
 
+        # 2. Unregister from global user sockets
+        if user_id in self.active_users:
+            if websocket in self.active_users[user_id]:
+                self.active_users[user_id].remove(websocket)
+            if not self.active_users[user_id]:
+                del self.active_users[user_id]
+
+    async def connect_user(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        if user_id not in self.active_users:
+            self.active_users[user_id] = []
+        self.active_users[user_id].append(websocket)
+
+    def disconnect_user(self, websocket: WebSocket, user_id: str):
+        if user_id in self.active_users:
+            if websocket in self.active_users[user_id]:
+                self.active_users[user_id].remove(websocket)
+            if not self.active_users[user_id]:
+                del self.active_users[user_id]
+
+    def is_user_online(self, user_id: str) -> bool:
+        return bool(self.active_users.get(str(user_id)))
+
+    def get_online_users_in_room(self, room_id: str) -> List[str]:
+        if room_id in self.active_rooms:
+            return list(self.active_rooms[room_id].keys())
+        return []
+
     async def broadcast(self, room_id: str, message: dict):
+        """Broadcast pesan ke seluruh websocket di ruang proyek tertentu."""
         if room_id in self.active_rooms:
             dead_connections = []
-            for connection in self.active_rooms[room_id]:
-                try:
-                    await connection.send_json(message)
-                except Exception:
-                    dead_connections.append(connection)
+            for uid, sockets in list(self.active_rooms[room_id].items()):
+                for ws in sockets:
+                    try:
+                        await ws.send_json(message)
+                    except Exception:
+                        dead_connections.append((uid, ws))
 
-            # Bersihkan koneksi yang terputus tanpa raise error
-            for dead in dead_connections:
-                if dead in self.active_rooms.get(room_id, []):
-                    self.active_rooms[room_id].remove(dead)
+            for uid, dead in dead_connections:
+                if room_id in self.active_rooms and uid in self.active_rooms[room_id]:
+                    if dead in self.active_rooms[room_id][uid]:
+                        self.active_rooms[room_id][uid].remove(dead)
+
+    async def send_to_user(self, user_id: str, message: dict):
+        """Kirim pesan langsung ke seluruh socket milik user tertentu (misal untuk sidebar / inbox realtime)."""
+        uid_str = str(user_id)
+        if uid_str in self.active_users:
+            dead = []
+            for ws in list(self.active_users[uid_str]):
+                try:
+                    await ws.send_json(message)
+                except Exception:
+                    dead.append(ws)
+            for d in dead:
+                if uid_str in self.active_users and d in self.active_users[uid_str]:
+                    self.active_users[uid_str].remove(d)
 
 
 manager = ConnectionManager()
@@ -256,7 +313,7 @@ def get_user_conversations(
                 .count()
             )
 
-            is_online = str(m.project_id) in manager.active_rooms
+            is_online = manager.is_user_online(str(partner_id))
 
             conversations_map[conv_key] = {
                 "id": conv_key,
@@ -301,7 +358,7 @@ def get_user_conversations(
                                 "last_message": "Ruang kolaborasi telah siap.",
                                 "last_message_time": slot.created_at,
                                 "unread_count": 0,
-                                "is_online": str(proj.id) in manager.active_rooms,
+                                "is_online": manager.is_user_online(str(slot.accepted_mhs_id)),
                             }
         # Sertakan juga pelamar proposal yang masuk
         my_proposals = db.query(Proposal).join(Project, Proposal.project_id == Project.id).filter(Project.umkm_id == current_user.id).all()
@@ -326,7 +383,7 @@ def get_user_conversations(
                             "last_message": f"Proposal: {prop.cover_letter[:60]}..." if prop.cover_letter else "Diskusi kolaborasi proyek.",
                             "last_message_time": prop.created_at,
                             "unread_count": 0,
-                            "is_online": str(prop.project_id) in manager.active_rooms,
+                            "is_online": manager.is_user_online(str(prop.mhs_id)),
                         }
     # 2b. Jika pengguna adalah Mahasiswa: ambil klien pemilik proyek & sesama mahasiswa anggota tim
     else:
@@ -357,7 +414,7 @@ def get_user_conversations(
                             "last_message": "Ruang kolaborasi telah siap.",
                             "last_message_time": s.created_at,
                             "unread_count": 0,
-                            "is_online": str(proj.id) in manager.active_rooms,
+                            "is_online": manager.is_user_online(str(proj.umkm_id)),
                         }
 
             # Sesama rekan mahasiswa dalam proyek yang sama (MHS ↔ MHS)
@@ -382,7 +439,7 @@ def get_user_conversations(
                                 "last_message": f"Kolaborasi satu tim di proyek {proj.judul}",
                                 "last_message_time": other_slot.created_at,
                                 "unread_count": 0,
-                                "is_online": str(proj.id) in manager.active_rooms,
+                                "is_online": manager.is_user_online(str(other_slot.accepted_mhs_id)),
                             }
 
         # Sertakan juga proposal yang pernah dilamar oleh mahasiswa ke UMKM
@@ -408,7 +465,7 @@ def get_user_conversations(
                             "last_message": f"Lamaran terkirim: {prop.cover_letter[:60]}..." if prop.cover_letter else "Diskusi proposal proyek.",
                             "last_message_time": prop.created_at,
                             "unread_count": 0,
-                            "is_online": str(prop.project_id) in manager.active_rooms,
+                            "is_online": manager.is_user_online(str(prop.project.umkm_id)),
                         }
 
     # 3. Fallback: Pastikan inbox TIDAK PERNAH kosong untuk demo/evaluasi
@@ -527,6 +584,19 @@ def get_chat_messages(
             m.is_read = True
         db.commit()
 
+        # Broadcast READ_RECEIPT realtime via WebSocket ke room & partner
+        read_payload = {
+            "type": "READ_RECEIPT",
+            "project_id": str(project_id),
+            "reader_id": str(current_user.id),
+            "partner_id": str(partner_id) if partner_id else None,
+            "read_at": datetime.now().isoformat(),
+        }
+        import asyncio
+        asyncio.create_task(manager.broadcast(str(project_id), read_payload))
+        if partner_id:
+            asyncio.create_task(manager.send_to_user(str(partner_id), read_payload))
+
     # Format response dengan nama, role, dan foto pengirim
     response_list = []
     for m in messages:
@@ -606,7 +676,13 @@ async def send_chat_message(
 
     # Broadcast instan ke siapapun yang sedang online di room proyek ini
     broadcast_payload = json.loads(msg_response.model_dump_json())
+    broadcast_payload["type"] = "CHAT_MESSAGE"
     await manager.broadcast(str(project_id), broadcast_payload)
+
+    # Kirim juga ke user socket penerima agar inbox / sidebar langsung terupdate
+    if body.recipient_id:
+        await manager.send_to_user(str(body.recipient_id), broadcast_payload)
+    await manager.send_to_user(str(current_user.id), broadcast_payload)
 
     # Buat notifikasi tersimpan untuk penerima pesan
     create_chat_notification(
@@ -625,28 +701,41 @@ async def send_chat_message(
 # 5. REST ENDPOINT: MARK MESSAGES AS READ
 # ============================================================================
 @router.patch("/project/{project_id}/read")
-def mark_messages_as_read(
+async def mark_messages_as_read(
     project_id: UUID,
+    partner_id: Optional[UUID] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """Menandai semua pesan yang belum dibaca dari lawan bicara sebagai sudah dibaca."""
     verify_project_participation(project_id, current_user, db)
 
-    unread_messages = (
-        db.query(ChatMessage)
-        .filter(
-            ChatMessage.project_id == project_id,
-            ChatMessage.sender_id != current_user.id,
-            ChatMessage.is_read == False,
-        )
-        .all()
+    query = db.query(ChatMessage).filter(
+        ChatMessage.project_id == project_id,
+        ChatMessage.sender_id != current_user.id,
+        ChatMessage.is_read == False,
     )
+    if partner_id:
+        query = query.filter(ChatMessage.sender_id == partner_id)
 
+    unread_messages = query.all()
     for m in unread_messages:
         m.is_read = True
 
     db.commit()
+
+    # Broadcast read receipt realtime
+    read_payload = {
+        "type": "READ_RECEIPT",
+        "project_id": str(project_id),
+        "reader_id": str(current_user.id),
+        "partner_id": str(partner_id) if partner_id else None,
+        "read_at": datetime.now().isoformat(),
+    }
+    await manager.broadcast(str(project_id), read_payload)
+    if partner_id:
+        await manager.send_to_user(str(partner_id), read_payload)
+
     return {"status": "success", "marked_read_count": len(unread_messages)}
 
 
@@ -875,13 +964,65 @@ async def websocket_chat_endpoint(
             return
 
         room_id = str(project_id)
-        await manager.connect(websocket, room_id)
+        user_id_str = str(current_user.id)
+        await manager.connect(websocket, room_id, user_id_str)
+
+        # Kirim status kehadiran awal ke user yang baru terhubung
+        online_users = manager.get_online_users_in_room(room_id)
+        await websocket.send_json({
+            "type": "ROOM_PRESENCE",
+            "project_id": room_id,
+            "online_users": online_users,
+        })
+
+        # Broadcast status kehadiran ONLINE ke seluruh peserta di room
+        await manager.broadcast(room_id, {
+            "type": "USER_PRESENCE",
+            "project_id": room_id,
+            "user_id": user_id_str,
+            "status": "ONLINE",
+            "online_users": online_users,
+        })
 
         # 3. Loop penerimaan & broadcast pesan realtime
         while True:
             data_text = await websocket.receive_text()
             try:
                 data_json = json.loads(data_text)
+                msg_type = data_json.get("type", "CHAT_MESSAGE")
+
+                # A. Penandaan Baca Realtime (MARK_READ)
+                if msg_type == "MARK_READ":
+                    partner_raw = data_json.get("partner_id")
+                    query = db.query(ChatMessage).filter(
+                        ChatMessage.project_id == project_id,
+                        ChatMessage.sender_id != current_user.id,
+                        ChatMessage.is_read == False,
+                    )
+                    if partner_raw:
+                        try:
+                            query = query.filter(ChatMessage.sender_id == UUID(str(partner_raw)))
+                        except Exception:
+                            pass
+                    unread_to_mark = query.all()
+                    for u in unread_to_mark:
+                        u.is_read = True
+                    if unread_to_mark:
+                        db.commit()
+
+                    read_event = {
+                        "type": "READ_RECEIPT",
+                        "project_id": room_id,
+                        "reader_id": user_id_str,
+                        "partner_id": str(partner_raw) if partner_raw else None,
+                        "read_at": datetime.now().isoformat(),
+                    }
+                    await manager.broadcast(room_id, read_event)
+                    if partner_raw:
+                        await manager.send_to_user(str(partner_raw), read_event)
+                    continue
+
+                # B. Pesan Chat Biasa (CHAT_MESSAGE)
                 msg_text = str(data_json.get("message") or "").strip()
                 att_url = data_json.get("attachment_url")
                 att_type = data_json.get("attachment_type")
@@ -918,6 +1059,7 @@ async def websocket_chat_endpoint(
                 sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
 
                 broadcast_data = {
+                    "type": "CHAT_MESSAGE",
                     "id": str(new_msg.id),
                     "project_id": str(new_msg.project_id),
                     "sender_id": str(new_msg.sender_id),
@@ -935,6 +1077,11 @@ async def websocket_chat_endpoint(
                 # Broadcast ke seluruh peserta yang sedang membuka chat room ini
                 await manager.broadcast(room_id, broadcast_data)
 
+                # Kirim juga ke socket pengguna penerima (untuk live inbox & update sidebar)
+                if recip_id:
+                    await manager.send_to_user(str(recip_id), broadcast_data)
+                await manager.send_to_user(user_id_str, broadcast_data)
+
                 # Simpan notifikasi ke database untuk lawan bicara
                 create_chat_notification(
                     db=db,
@@ -949,8 +1096,69 @@ async def websocket_chat_endpoint(
                 pass
 
     except WebSocketDisconnect:
-        manager.disconnect(websocket, str(project_id))
+        manager.disconnect(websocket, str(project_id), str(current_user.id))
+        remaining = manager.get_online_users_in_room(str(project_id))
+        is_still_online = manager.is_user_online(str(current_user.id))
+        await manager.broadcast(str(project_id), {
+            "type": "USER_PRESENCE",
+            "project_id": str(project_id),
+            "user_id": str(current_user.id),
+            "status": "ONLINE" if is_still_online else "OFFLINE",
+            "online_users": remaining,
+        })
     except Exception as e:
-        manager.disconnect(websocket, str(project_id))
+        manager.disconnect(websocket, str(project_id), str(current_user.id))
+    finally:
+        db.close()
+
+
+# ============================================================================
+# 7. WEBSOCKET ENDPOINT: GLOBAL USER SOCKET (LIVE SIDEBAR & INBOX)
+# ============================================================================
+@router.websocket("/ws/user")
+async def websocket_user_global_endpoint(
+    websocket: WebSocket,
+    token: str = Query(..., description="JWT Access Token"),
+):
+    """
+    WebSocket Endpoint tingkat pengguna untuk live update sidebar percakapan dan status global:
+    ws://localhost:8000/v1/chat/ws/user?token={JWT_TOKEN}
+    """
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
+    user_id = payload.get("sub")
+    db: Session = SessionLocal()
+
+    try:
+        current_user = db.query(User).filter(User.id == user_id).first()
+        if not current_user or not current_user.is_active:
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            return
+
+        user_id_str = str(current_user.id)
+        await manager.connect_user(websocket, user_id_str)
+
+        await websocket.send_json({
+            "type": "USER_CONNECTED",
+            "user_id": user_id_str,
+            "connected_at": datetime.now().isoformat(),
+        })
+
+        while True:
+            data_text = await websocket.receive_text()
+            try:
+                data_json = json.loads(data_text)
+                if data_json.get("type") == "PING":
+                    await websocket.send_json({"type": "PONG"})
+            except Exception:
+                pass
+
+    except WebSocketDisconnect:
+        manager.disconnect_user(websocket, str(current_user.id))
+    except Exception:
+        manager.disconnect_user(websocket, str(current_user.id))
     finally:
         db.close()

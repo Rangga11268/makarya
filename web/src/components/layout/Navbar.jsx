@@ -448,14 +448,12 @@ export function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center gap-2.5">
                 {user?.role === "UMKM" && (
-                  <Link to="/projects/new">
-                    <button
-                      type="button"
-                      className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold py-2 px-4 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white shadow-xs hover:-translate-y-0.5 transition-all"
-                    >
-                      <PlusCircle className="w-3.5 h-3.5" />
-                      <span>Pasang Proyek</span>
-                    </button>
+                  <Link
+                    to="/projects/new"
+                    className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold py-2 px-5 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-600/20 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>Pasang Proyek</span>
                   </Link>
                 )}
 
@@ -580,27 +578,23 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3.5 py-2 transition-colors select-none min-h-[44px] flex items-center"
+                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3.5 py-2 transition-colors select-none whitespace-nowrap min-h-[40px] inline-flex items-center active:scale-[0.98]"
                 >
                   Masuk
                 </Link>
 
-                <Link to="/register" className="hidden sm:inline-flex">
-                  <button
-                    type="button"
-                    className="min-h-[40px] px-4 py-2 rounded-full border border-slate-300 hover:border-slate-800 text-slate-800 text-xs font-bold transition-all bg-white hover:bg-slate-50"
-                  >
-                    Pasang Proyek
-                  </button>
+                <Link
+                  to="/register?role=UMKM"
+                  className="hidden sm:inline-flex items-center justify-center min-h-[40px] px-5 py-2 rounded-full border border-slate-300 hover:border-slate-800 text-slate-800 text-xs font-bold transition-all bg-white hover:bg-slate-50 shadow-2xs hover:shadow-sm active:scale-[0.98] whitespace-nowrap shrink-0"
+                >
+                  Pasang Proyek
                 </Link>
 
-                <Link to="/register">
-                  <button
-                    type="button"
-                    className="min-h-[40px] px-4.5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs hover:-translate-y-0.5 transition-all"
-                  >
-                    Daftar Sekarang
-                  </button>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center min-h-[40px] px-5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+                >
+                  Daftar Sekarang
                 </Link>
 
                 {/* Mobile Menu Toggle for Guests */}

@@ -26,6 +26,7 @@ export function WorkroomChatPanel({
   partnerName = "Mitra Kolaborasi",
   partnerRole = "USER",
   partnerPhoto = null,
+  initialPartnerOnline = false,
   onBack = null,
   headerExtra = null,
   projectContextBar = null,
@@ -35,6 +36,8 @@ export function WorkroomChatPanel({
   activeProject = null,
   myProjects = [],
   projectSlots = [],
+  onNewMessage = null,
+  onPartnerPresenceChange = null,
 }) {
   const { user, accessToken } = useAuthStore();
   const { addToast } = useToastStore();
@@ -46,6 +49,7 @@ export function WorkroomChatPanel({
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
+  const [partnerOnline, setPartnerOnline] = useState(initialPartnerOnline);
   const [showDraftPrompt, setShowDraftPrompt] = useState(true);
   const [respondingOfferId, setRespondingOfferId] = useState(null);
 
@@ -61,6 +65,10 @@ export function WorkroomChatPanel({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    setPartnerOnline(initialPartnerOnline);
+  }, [initialPartnerOnline, partnerId]);
+
   // 1. Muat riwayat chat lama via REST
   const loadHistory = async () => {
     if (!projectId) return;
@@ -69,6 +77,17 @@ export function WorkroomChatPanel({
       const res = await chatApi.getMessages(projectId, partnerId);
       const list = Array.isArray(res.data) ? res.data : [];
       setMessages(list);
+
+      // Jika ada pesan yang belum dibaca dari lawan bicara, kirim sinyal mark read
+      if (
+        wsRef.current &&
+        wsRef.current.readyState === WebSocket.OPEN &&
+        list.some((m) => !m.is_read && String(m.sender_id) !== String(user?.id))
+      ) {
+        wsRef.current.send(
+          JSON.stringify({ type: "MARK_READ", partner_id: partnerId }),
+        );
+      }
     } catch (err) {
       console.warn("Gagal memuat pesan:", err);
     } finally {
@@ -128,32 +147,100 @@ export function WorkroomChatPanel({
 
         socket.onopen = () => {
           setWsConnected(true);
+          // Kirim mark read saat socket aktif
+          if (partnerId) {
+            socket.send(
+              JSON.stringify({ type: "MARK_READ", partner_id: partnerId }),
+            );
+          }
         };
 
         socket.onmessage = (event) => {
           try {
-            const incomingMsg = JSON.parse(event.data);
-            if (incomingMsg && incomingMsg.id) {
+            const incoming = JSON.parse(event.data);
+            if (!incoming) return;
+
+            // A. Handle READ_RECEIPT (Lawan bicara baru membaca pesan kita)
+            if (incoming.type === "READ_RECEIPT") {
+              if (String(incoming.reader_id) !== String(user?.id)) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    String(m.sender_id) === String(user?.id)
+                      ? { ...m, is_read: true }
+                      : m,
+                  ),
+                );
+              }
+              return;
+            }
+
+            // B. Handle ROOM_PRESENCE / USER_PRESENCE (Status Online/Offline Lawan Bicara)
+            if (
+              incoming.type === "ROOM_PRESENCE" &&
+              Array.isArray(incoming.online_users)
+            ) {
+              if (partnerId) {
+                const isOnline = incoming.online_users.some(
+                  (uid) => String(uid) === String(partnerId),
+                );
+                setPartnerOnline(isOnline);
+                onPartnerPresenceChange?.(partnerId, isOnline);
+              }
+              return;
+            }
+
+            if (incoming.type === "USER_PRESENCE") {
+              if (partnerId && String(incoming.user_id) === String(partnerId)) {
+                const isOnline = incoming.status === "ONLINE";
+                setPartnerOnline(isOnline);
+                onPartnerPresenceChange?.(partnerId, isOnline);
+              } else if (Array.isArray(incoming.online_users) && partnerId) {
+                const isOnline = incoming.online_users.some(
+                  (uid) => String(uid) === String(partnerId),
+                );
+                setPartnerOnline(isOnline);
+                onPartnerPresenceChange?.(partnerId, isOnline);
+              }
+              return;
+            }
+
+            // C. Handle incoming Chat Message
+            if (incoming.id) {
               // Jika sedang dalam percakapan dengan partner tertentu, abaikan pesan orang ketiga
               if (
                 partnerId &&
-                String(incomingMsg.sender_id) !== String(user?.id) &&
-                String(incomingMsg.sender_id) !== String(partnerId)
+                String(incoming.sender_id) !== String(user?.id) &&
+                String(incoming.sender_id) !== String(partnerId)
               ) {
+                onNewMessage?.(incoming);
                 return;
               }
 
-              setMessages((prev) => {
-                const existsIdx = prev.findIndex(
-                  (m) => m.id === incomingMsg.id,
+              // Jika pesan masuk dari lawan bicara saat kita sedang buka chat room ini, otomatis kirim mark read
+              if (
+                String(incoming.sender_id) !== String(user?.id) &&
+                socket.readyState === WebSocket.OPEN
+              ) {
+                socket.send(
+                  JSON.stringify({
+                    type: "MARK_READ",
+                    partner_id: incoming.sender_id,
+                  }),
                 );
+              }
+
+              setMessages((prev) => {
+                const existsIdx = prev.findIndex((m) => m.id === incoming.id);
                 if (existsIdx !== -1) {
                   const updated = [...prev];
-                  updated[existsIdx] = incomingMsg;
+                  updated[existsIdx] = incoming;
                   return updated;
                 }
-                return [...prev, incomingMsg];
+                return [...prev, incoming];
               });
+
+              // Beritahu parent ChatPage agar sidebar terupdate realtime
+              onNewMessage?.(incoming);
             }
           } catch (e) {
             console.warn("Gagal parse pesan WS:", e);
@@ -179,7 +266,7 @@ export function WorkroomChatPanel({
         socket.close();
       }
     };
-  }, [projectId, accessToken]);
+  }, [projectId, partnerId, accessToken]);
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -405,17 +492,19 @@ export function WorkroomChatPanel({
             <p className="text-[10px] sm:text-[11px] flex items-center gap-1.5 mt-0.5">
               <span
                 className={`w-2 h-2 rounded-full shrink-0 ${
-                  wsConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                  partnerOnline
+                    ? "bg-emerald-500 ring-2 ring-emerald-500/20 animate-pulse"
+                    : "bg-slate-300"
                 }`}
               />
               <span
-                className={`text-[10px] truncate ${
-                  wsConnected
-                    ? "text-emerald-600 font-medium"
-                    : "text-rose-500 font-medium"
+                className={`text-[10px] truncate font-medium ${
+                  partnerOnline
+                    ? "text-emerald-600 font-semibold"
+                    : "text-slate-400"
                 }`}
               >
-                {wsConnected ? "Online" : "Offline"}
+                {partnerOnline ? "Online" : "Offline"}
               </span>
             </p>
           </div>

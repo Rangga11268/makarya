@@ -304,7 +304,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("darell@ubsi.ac.id")}
-                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
+                className="px-3 py-1.5 min-h-[36px] rounded-full bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <GraduationCap className="w-3.5 h-3.5 text-cyan-600" />
                 Mahasiswa (Darell)
@@ -312,7 +312,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("admin@makarya.id")}
-                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
+                className="px-3 py-1.5 min-h-[36px] rounded-full bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
                 Admin
@@ -320,7 +320,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
+                className="px-3 py-1.5 min-h-[36px] rounded-full bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
                 UMKM (Kopi)
@@ -333,7 +333,7 @@ export function LoginPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full min-h-[44px] py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+            className="w-full min-h-[44px] py-3 px-5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50"
           >
             <GoogleVectorIcon className="w-4 h-4" />
             <span>Masuk Cepat dengan Akun Google</span>
@@ -414,7 +414,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+              className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50"
             >
               <span>{loading ? "Memverifikasi..." : "Masuk ke Akun"}</span>
               <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -476,7 +476,7 @@ export function LoginPage() {
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full min-h-[44px] py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
+                  className="w-full min-h-[44px] py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-full shadow-sm active:scale-[0.98] transition-all disabled:opacity-50"
                 >
                   {forgotLoading ? "Mengirim OTP..." : "Kirim Kode OTP"}
                 </button>
@@ -520,7 +520,7 @@ export function LoginPage() {
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full min-h-[44px] py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors"
+                  className="w-full min-h-[44px] py-3 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-full shadow-sm active:scale-[0.98] transition-all disabled:opacity-50"
                 >
                   {forgotLoading ? "Menyimpan..." : "Simpan Password Baru"}
                 </button>

@@ -423,7 +423,7 @@ export function LandingPage() {
                     user?.role === "UMKM" ? "/create-project" : "/projects",
                   )
                 }
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
               >
                 <span>
                   {user?.role === "UMKM"
@@ -437,7 +437,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=UMKM")}
-                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-sm shadow-lg shadow-slate-900/10 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
                 >
                   <span>Mulai Pasang Proyek</span>
                   <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -445,7 +445,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=MAHASISWA")}
-                  className="px-6 py-3 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
+                  className="px-6 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
                 >
                   Daftar Sebagai Mahasiswa
                 </button>
@@ -1726,13 +1726,13 @@ export function LandingPage() {
             </div>
 
             {/* Tab Switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80 self-start sm:self-auto">
+            <div className="flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/80 self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setExploreTab("projects")}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
+                className={`px-4 py-2 text-xs font-bold rounded-full transition-all duration-200 active:scale-[0.98] ${
                   exploreTab === "projects"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -1741,9 +1741,9 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setExploreTab("talents")}
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
+                className={`px-4 py-2 text-xs font-bold rounded-full transition-all duration-200 active:scale-[0.98] ${
                   exploreTab === "talents"
-                    ? "bg-white text-slate-900 shadow-sm"
+                    ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -1777,14 +1777,14 @@ export function LandingPage() {
               )}
 
               <div className="text-center mt-10">
-                <Button
-                  variant="outline"
-                  size="lg"
+                <button
+                  type="button"
                   onClick={() => navigate("/projects")}
-                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200 shadow-2xs hover:-translate-y-0.5 transition-all"
+                  className="px-7 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
                 >
-                  Jelajahi Semua Proyek <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                  <span>Jelajahi Semua Proyek</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-700" />
+                </button>
               </div>
             </div>
           )}
@@ -1814,15 +1814,14 @@ export function LandingPage() {
               )}
 
               <div className="text-center mt-10">
-                <Button
-                  variant="outline"
-                  size="lg"
+                <button
+                  type="button"
                   onClick={() => navigate("/talents")}
-                  className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200 shadow-2xs hover:-translate-y-0.5 transition-all"
+                  className="px-7 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all inline-flex items-center gap-2"
                 >
-                  Lihat Semua Talenta Mahasiswa{" "}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                  <span>Lihat Semua Talenta Mahasiswa</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-700" />
+                </button>
               </div>
             </div>
           )}
@@ -2003,14 +2002,14 @@ export function LandingPage() {
                         : "/register?role=UMKM",
                     )
                   }
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-lg shadow-slate-900/10 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
                 >
                   {isAuthenticated ? "Buka Dashboard" : "Mulai Pasang Proyek"}
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate("/projects")}
-                  className="bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-full border border-slate-300 shadow-2xs hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                  className="bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-full border border-slate-300 shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
                 >
                   Jelajahi Proyek
                 </button>
@@ -2062,7 +2061,7 @@ export function LandingPage() {
                     : "/register?role=UMKM",
                 )
               }
-              className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-sm"
+              className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm active:scale-[0.98] transition-all"
             >
               Mulai Sekarang
             </button>

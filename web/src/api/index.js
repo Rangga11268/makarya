@@ -100,3 +100,14 @@ export const getChatWsUrl = (projectId, token) => {
       : window.location.host;
   return `${wsProto}//${host}/v1/chat/ws/project/${projectId}?token=${token}`;
 };
+
+export const getUserChatWsUrl = (token) => {
+  const isHttps = window.location.protocol === "https:";
+  const wsProto = isHttps ? "wss:" : "ws:";
+  const host =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+      ? "localhost:8000"
+      : window.location.host;
+  return `${wsProto}//${host}/v1/chat/ws/user?token=${token}`;
+};
