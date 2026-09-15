@@ -15,12 +15,7 @@ import {
   UserCheck,
   ArrowRight,
   GraduationCap,
-  KeyRound,
   CheckCircle2,
-  X,
-  Sparkles,
-  Layers,
-  FileCheck,
 } from "lucide-react";
 
 export function LoginPage() {
@@ -32,7 +27,7 @@ export function LoginPage() {
 
   // Forgot Password Modal States
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1: Email, 2: OTP & New Pass
+  const [forgotStep, setForgotStep] = useState(1);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotOtp, setForgotOtp] = useState("");
   const [forgotNewPass, setForgotNewPass] = useState("");
@@ -177,12 +172,12 @@ export function LoginPage() {
   };
 
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#F8FAFC] flex flex-col lg:flex-row font-sans">
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#F8FAFC] flex flex-col lg:flex-row font-sans overflow-x-hidden">
       {/* ========================================================================= */}
-      {/* 1. LEFT SIDE: BRAND SHOWCASE & SPECTRUM HERO CANVAS (Axora Style)         */}
+      {/* 1. LEFT SIDE: BRAND SHOWCASE & SPECTRUM HERO CANVAS (Desktop Only)        */}
       {/* ========================================================================= */}
       <div className="hidden lg:flex lg:w-5/12 xl:w-1/2 bg-gradient-to-br from-slate-900 via-[#0B0F17] to-slate-950 text-white p-10 xl:p-14 flex-col justify-between relative overflow-hidden border-r border-slate-800">
-        {/* Subtle Ambient Radial Glows */}
+        {/* Ambient Radial Glow */}
         <div className="absolute top-1/4 left-1/3 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
         <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -195,7 +190,7 @@ export function LoginPage() {
         </div>
 
         {/* Top Brand Identity */}
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-3">
           <Link to="/" className="inline-flex items-center gap-3 group select-none">
             <img
               src="/logo-icon.svg"
@@ -207,12 +202,7 @@ export function LoginPage() {
             </span>
           </Link>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-800 text-cyan-300 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span>Portal Masuk Resmi Mahasiswa & UMKM</span>
-          </div>
-
-          <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-2">
+          <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-3">
             Kolaborasi Nyata dengan{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
               Proteksi Escrow Penuh.
@@ -224,7 +214,7 @@ export function LoginPage() {
           </p>
         </div>
 
-        {/* Center Live Showcase Card (Axora Workroom Card Style) */}
+        {/* Center Live Showcase Card */}
         <div className="relative z-10 my-8 space-y-3 max-w-md">
           <div className="bg-slate-800/80 backdrop-blur-md p-5 rounded-2xl border border-slate-700/80 shadow-2xl space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
@@ -276,18 +266,28 @@ export function LoginPage() {
       {/* ========================================================================= */}
       {/* 2. RIGHT SIDE: HIGH-CONTRAST CLEAN AUTH FORM CONTAINER                    */}
       {/* ========================================================================= */}
-      <div className="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-6 sm:p-10 lg:p-16">
+      <div className="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-16">
         <div className="w-full max-w-md space-y-6">
+          {/* Mobile Only Brand Header */}
+          <div className="lg:hidden flex items-center justify-between pb-2">
+            <Link to="/" className="inline-flex items-center gap-2 group select-none">
+              <img
+                src="/logo-icon.svg"
+                alt="Makarya Logo"
+                className="w-8 h-8 object-contain"
+              />
+              <span className="text-xl font-black tracking-tight text-slate-900">
+                Makarya
+              </span>
+            </Link>
+          </div>
+
           {/* Header Title */}
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-semibold shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-cyan-600" />
-              <span>Masuk ke Akun Anda</span>
-            </div>
+          <div className="space-y-1.5">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
               Selamat Datang Kembali
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
               Akses dashboard proyek, proposal, dan dompet pencairan dana escrow Anda.
             </p>
           </div>
@@ -307,7 +307,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("darell@ubsi.ac.id")}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <GraduationCap className="w-3.5 h-3.5 text-cyan-600" />
                 Mahasiswa (Darell)
@@ -315,7 +315,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("admin@makarya.id")}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
                 Admin
@@ -323,7 +323,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs"
+                className="px-2.5 py-1.5 min-h-[36px] rounded-lg bg-white hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all flex items-center gap-1.5 shadow-2xs active:scale-95"
               >
                 <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
                 UMKM (Kopi)
@@ -336,7 +336,7 @@ export function LoginPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+            className="w-full min-h-[44px] py-3 px-4 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-2xs hover:shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
           >
             <GoogleVectorIcon className="w-4 h-4" />
             <span>Masuk Cepat dengan Akun Google</span>
@@ -353,7 +353,6 @@ export function LoginPage() {
           {/* Form Error Banner */}
           {error && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs flex items-center gap-2 animate-fade-in-fast">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
               <span>{error}</span>
             </div>
           )}
@@ -372,7 +371,7 @@ export function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nama@kampus.ac.id atau email usaha"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                  className="w-full min-h-[44px] pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
                 />
               </div>
             </div>
@@ -385,7 +384,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setForgotModalOpen(true)}
-                  className="text-xs font-semibold text-cyan-700 hover:text-cyan-800 hover:underline"
+                  className="text-xs font-semibold text-cyan-700 hover:text-cyan-800 hover:underline py-1"
                 >
                   Lupa Password?
                 </button>
@@ -398,12 +397,13 @@ export function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan kata sandi..."
-                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
+                  className="w-full min-h-[44px] pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  aria-label="Tampilkan kata sandi"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -417,7 +417,7 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+              className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
             >
               <span>{loading ? "Memverifikasi..." : "Masuk ke Akun"}</span>
               <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -430,7 +430,7 @@ export function LoginPage() {
               Belum memiliki akun Makarya?{" "}
               <Link
                 to="/register"
-                className="font-bold text-cyan-700 hover:text-cyan-800 hover:underline"
+                className="font-bold text-cyan-700 hover:text-cyan-800 hover:underline p-1 inline-block"
               >
                 Daftar Sekarang Gratis
               </Link>
@@ -472,13 +472,13 @@ export function LoginPage() {
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full min-h-[44px] px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
+                  className="w-full min-h-[44px] py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
                 >
                   {forgotLoading ? "Mengirim OTP..." : "Kirim Kode OTP"}
                 </button>
@@ -501,7 +501,7 @@ export function LoginPage() {
                     value={forgotOtp}
                     onChange={(e) => setForgotOtp(e.target.value)}
                     placeholder="Contoh: 123456"
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-center font-mono text-sm tracking-widest text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full min-h-[44px] px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-center font-mono text-sm tracking-widest text-slate-900 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -515,13 +515,13 @@ export function LoginPage() {
                     value={forgotNewPass}
                     onChange={(e) => setForgotNewPass(e.target.value)}
                     placeholder="Password baru..."
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                    className="w-full min-h-[44px] px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors"
+                  className="w-full min-h-[44px] py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-colors"
                 >
                   {forgotLoading ? "Menyimpan..." : "Simpan Password Baru"}
                 </button>

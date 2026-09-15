@@ -25,6 +25,8 @@ import {
   Search,
   FileText,
   X,
+  Sparkles,
+  Activity,
 } from "lucide-react";
 
 export function LandingPage() {
@@ -245,7 +247,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 text-center">
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-sm hover:border-cyan-300 transition-colors cursor-default">
-            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
+            <Sparkles className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
             <span>Platform Kolaborasi Digital Mahasiswa & UMKM</span>
           </div>
 
@@ -609,8 +611,9 @@ export function LandingPage() {
                           DESKRIPSI BRIEF
                         </div>
                         <p className="text-slate-600 text-[11px] leading-relaxed mt-0.5">
-                          Pengembangan landing page responsif terintegrasi katalog
-                          produk kopi dan desain kemasan label botol modern.
+                          Pengembangan landing page responsif terintegrasi
+                          katalog produk kopi dan desain kemasan label botol
+                          modern.
                         </p>
                       </div>
                       <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-[11px] border border-slate-100">
@@ -977,8 +980,8 @@ export function LandingPage() {
                           Proyek Solo (1 Talenta)
                         </div>
                         <p className="text-xs text-slate-500 leading-relaxed">
-                          Cocok untuk kebutuhan spesifik seperti desain logo, foto
-                          produk, atau perbaikan satu fitur.
+                          Cocok untuk kebutuhan spesifik seperti desain logo,
+                          foto produk, atau perbaikan satu fitur.
                         </p>
                       </div>
                       <div className="p-4 rounded-xl bg-cyan-50/70 border border-cyan-200 shadow-2xs">
@@ -997,7 +1000,8 @@ export function LandingPage() {
                     <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-600">
                       <span className="text-slate-900 font-bold">Catatan:</span>{" "}
                       Setiap peran dalam formasi tim memiliki pagu anggaran dan
-                      kontrak tersendiri (misal: UI/UX Rp 1Jt, Frontend Rp 1.5Jt).
+                      kontrak tersendiri (misal: UI/UX Rp 1Jt, Frontend Rp
+                      1.5Jt).
                     </div>
                   </div>
                 )}
@@ -1026,7 +1030,8 @@ export function LandingPage() {
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           </div>
                           <div className="text-xs text-slate-500">
-                            Universitas Indonesia | Sistem Informasi (Semester 6)
+                            Universitas Indonesia | Sistem Informasi (Semester
+                            6)
                           </div>
                         </div>
                       </div>
@@ -1081,8 +1086,8 @@ export function LandingPage() {
                       </div>
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Mahasiswa dapat bekerja dengan tenang mengetahui dana telah
-                      siap, sementara UMKM memiliki kendali penuh sebelum
+                      Mahasiswa dapat bekerja dengan tenang mengetahui dana
+                      telah siap, sementara UMKM memiliki kendali penuh sebelum
                       menyetujui hasil akhir.
                     </p>
                   </div>
@@ -1137,7 +1142,9 @@ export function LandingPage() {
                       key={idx}
                       onClick={() => setActiveStep(idx)}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
-                        activeStep === idx ? "w-8 bg-cyan-600" : "w-2 bg-slate-300"
+                        activeStep === idx
+                          ? "w-8 bg-cyan-600"
+                          : "w-2 bg-slate-300"
                       }`}
                     />
                   ))}
@@ -1372,7 +1379,7 @@ export function LandingPage() {
                 <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                      <Activity className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
                       <span className="text-xs font-bold text-slate-800">
                         Pipeline Pengerjaan Aktif
                       </span>
@@ -1761,16 +1768,10 @@ export function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Content Side */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Axora Style Badge with Spectrum Dash */}
-              <div className="inline-flex items-center gap-2">
-                <div className="flex gap-1">
-                  <span className="w-2.5 h-1 rounded-full bg-cyan-500" />
-                  <span className="w-2.5 h-1 rounded-full bg-amber-400" />
-                  <span className="w-2.5 h-1 rounded-full bg-blue-600" />
-                </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-800">
-                  MULAI SEKARANG
-                </span>
+              {/* CTA Section Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-bold shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
+                <span className="uppercase tracking-wider">MULAI SEKARANG</span>
               </div>
 
               {/* Main Headline */}

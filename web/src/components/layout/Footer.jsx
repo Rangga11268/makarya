@@ -35,7 +35,8 @@ export function Footer() {
             </Link>
             <span className="hidden sm:inline text-slate-700">|</span>
             <span className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed">
-              Platform Kolaborasi Digital Mahasiswa Terverifikasi & Pelaku Usaha UMKM Indonesia.
+              Platform Kolaborasi Digital Mahasiswa Terverifikasi & Pelaku Usaha
+              UMKM Indonesia.
             </span>
           </div>
 
@@ -233,14 +234,15 @@ export function Footer() {
         {/* Bottom Bar: Copyright & Security Badges */}
         <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            &copy; {new Date().getFullYear()} Makarya Indonesia. Seluruh hak cipta dilindungi undang-undang.
+            &copy; {new Date().getFullYear()} Makarya Indonesia. Seluruh hak
+            cipta dilindungi undang-undang.
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
             <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               Sistem Operasional (Escrow & Workroom Live)
             </span>
-            <span className="text-slate-700 hidden sm:inline">•</span>
+            <span className="text-slate-700 hidden sm:inline">|</span>
             <span className="inline-flex items-center gap-1 text-slate-400">
               <Lock className="w-3 h-3 text-cyan-400" /> Transaksi Terenkripsi
             </span>
