@@ -319,7 +319,8 @@ export function ProjectDetailPage() {
                     </span>
                   </div>
                   <p className="text-[11px] text-muted">
-                    {project.umkm_profile?.bidang_industri || "Usaha Mandiri"}, {project.umkm_profile?.kota || "Indonesia"}
+                    {project.umkm_profile?.bidang_industri || "Usaha Mandiri"},{" "}
+                    {project.umkm_profile?.kota || "Indonesia"}
                   </p>
                 </div>
               </div>

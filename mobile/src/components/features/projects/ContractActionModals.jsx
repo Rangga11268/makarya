@@ -521,7 +521,8 @@ export function AcceptProposalModal({
                   {mhs.nama_lengkap || "Mahasiswa Freelancer"}
                 </Text>
                 <Text style={styles.mhsMetaText} numberOfLines={1}>
-                  {mhs.prodi || "Talenta Terverifikasi"}, {proposal.estimasi_hari || 7} Hari Kerja
+                  {mhs.prodi || "Talenta Terverifikasi"},{" "}
+                  {proposal.estimasi_hari || 7} Hari Kerja
                 </Text>
                 {roleName ? (
                   <View style={styles.modalRolePill}>

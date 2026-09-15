@@ -767,8 +767,8 @@ export function WorkroomChatPanel({
                             >
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                               <span>
-                                 ✓ Tawaran Diterima (Kolaborasi Dimulai)
-                               </span>
+                                ✓ Tawaran Diterima (Kolaborasi Dimulai)
+                              </span>
                             </div>
                           ) : (
                             <div

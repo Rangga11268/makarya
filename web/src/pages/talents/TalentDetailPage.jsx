@@ -259,7 +259,8 @@ export function TalentDetailPage() {
                 {talent.nama_lengkap}
               </h1>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Terverifikasi Kampus
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />{" "}
+                Terverifikasi Kampus
               </span>
             </div>
 
