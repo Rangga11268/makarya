@@ -748,11 +748,24 @@ async def respond_to_project_offer(
         # Ubah status proyek menjadi IN_PROGRESS
         project.status = ProjectStatus.IN_PROGRESS
 
-        # Jika proyek memiliki slots, isi slot pertama yang OPEN
-        open_slot = db.query(ProjectSlot).filter(ProjectSlot.project_id == project.id, ProjectSlot.status == "OPEN").first()
-        if open_slot:
-            open_slot.accepted_mhs_id = current_user.id
-            open_slot.status = "IN_PROGRESS"
+        # Jika proyek memiliki slots, isi slot yang dipilih atau slot OPEN pertama
+        slot_id = offer_meta.get("slotId")
+        slot_assigned = False
+        if slot_id:
+            try:
+                target_slot = db.query(ProjectSlot).filter(ProjectSlot.id == UUID(str(slot_id))).first()
+                if target_slot:
+                    target_slot.accepted_mhs_id = current_user.id
+                    target_slot.status = "IN_PROGRESS"
+                    slot_assigned = True
+            except Exception:
+                pass
+
+        if not slot_assigned:
+            open_slot = db.query(ProjectSlot).filter(ProjectSlot.project_id == project.id, ProjectSlot.status == "OPEN").first()
+            if open_slot:
+                open_slot.accepted_mhs_id = current_user.id
+                open_slot.status = "IN_PROGRESS"
 
         offer_meta["status"] = "ACCEPTED"
         offer_meta["responded_at"] = datetime.now().isoformat()
