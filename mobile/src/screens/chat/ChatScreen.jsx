@@ -400,6 +400,7 @@ export function ChatScreen({ route, navigation }) {
 
   const renderMessageItem = ({ item }) => {
     const isMe = item.sender_id === user?.id;
+    const isOffer = item.attachment_type === "PROJECT_OFFER";
 
     return (
       <View
@@ -439,11 +440,13 @@ export function ChatScreen({ route, navigation }) {
         <View
           style={[
             styles.bubbleBox,
-            isMe ? styles.bubbleBoxMe : styles.bubbleBoxPartner,
+            isOffer
+              ? (isMe ? styles.bubbleBoxOfferMe : styles.bubbleBoxOfferPartner)
+              : (isMe ? styles.bubbleBoxMe : styles.bubbleBoxPartner),
           ]}
         >
-          {/* Sender Header if Partner */}
-          {!isMe && (
+          {/* Sender Header if Partner (only on regular text messages) */}
+          {!isMe && !isOffer && (
             <View style={styles.senderHeader}>
               <Text style={styles.senderNameText} numberOfLines={1}>
                 {item.sender_name && item.sender_name.toLowerCase() !== "string"
@@ -459,7 +462,7 @@ export function ChatScreen({ route, navigation }) {
           )}
 
           {/* Text Message (Exclude auto text when it is a PROJECT_OFFER) */}
-          {item.message && item.attachment_type !== "PROJECT_OFFER" ? (
+          {item.message && !isOffer ? (
             <Text
               style={[
                 styles.messageText,
@@ -471,7 +474,7 @@ export function ChatScreen({ route, navigation }) {
           ) : null}
 
           {/* Attachment Preview Card */}
-          {item.attachment_type === "PROJECT_OFFER" ? (
+          {isOffer ? (
             (() => {
               let offer = {};
               try {
@@ -491,94 +494,134 @@ export function ChatScreen({ route, navigation }) {
                     isMe ? styles.offerCardMe : styles.offerCardPartner,
                   ]}
                 >
-                  {/* Header Tag */}
+                  {/* Top Bar: Badge & Escrow Guarantee */}
                   <View style={styles.offerBadgeRow}>
                     <View
                       style={[
                         styles.offerBadge,
-                        isMe && styles.offerBadgeWhite,
+                        isMe ? styles.offerBadgeMe : styles.offerBadgePartner,
                       ]}
                     >
                       <ShieldCheck
                         size={11}
-                        color={isMe ? "#FFFFFF" : "#2563EB"}
+                        color={isMe ? "#FFFFFF" : COLORS.brandIndigo}
                       />
                       <Text
                         style={[
                           styles.offerBadgeText,
-                          isMe && { color: "#FFFFFF" },
+                          isMe
+                            ? { color: "#FFFFFF" }
+                            : { color: COLORS.brandIndigo },
                         ]}
                       >
-                        TAWARAN PROYEK RESMI
+                        TAWARAN PROYEK
                       </Text>
                     </View>
-                    <Text
-                      style={[
-                        styles.offerBudgetText,
-                        isMe && { color: "#A7F3D0" },
-                      ]}
-                    >
-                      {offer.budget
-                        ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
-                        : "Sesuai Kesepakatan"}
-                    </Text>
-                  </View>
-
-                  {/* Project Title */}
-                  <Text
-                    style={[
-                      styles.offerTitle,
-                      isMe && { color: "#FFFFFF" },
-                    ]}
-                  >
-                    {offer.projectTitle || "Proyek Kolaborasi"}
-                  </Text>
-
-                  {/* Metadata Micro-Pill Row */}
-                  <View
-                    style={[
-                      styles.offerMetaRow,
-                      isMe && { borderTopColor: "rgba(255, 255, 255, 0.2)" },
-                    ]}
-                  >
-                    <View
-                      style={[
-                        styles.offerEscrowPill,
-                        isMe && styles.offerEscrowPillMe,
-                      ]}
-                    >
+                    <View style={styles.offerEscrowBadge}>
                       <ShieldCheck
-                        size={10}
-                        color={isMe ? "#FFFFFF" : "#059669"}
+                        size={11}
+                        color={isMe ? "rgba(255,255,255,0.85)" : "#059669"}
                       />
                       <Text
                         style={[
                           styles.offerEscrowText,
-                          isMe && { color: "#FFFFFF" },
+                          isMe
+                            ? { color: "rgba(255,255,255,0.9)" }
+                            : { color: "#059669" },
                         ]}
                       >
                         100% Escrow
                       </Text>
                     </View>
+                  </View>
+
+                  {/* Sender Context (if partner sent it) */}
+                  {!isMe && (
+                    <Text style={styles.offerSenderLabel} numberOfLines={1}>
+                      Diajukan oleh{" "}
+                      <Text style={styles.offerSenderName}>
+                        {item.sender_name || resolvedPartnerName}
+                      </Text>
+                    </Text>
+                  )}
+
+                  {/* Project Title */}
+                  <Text
+                    style={[
+                      styles.offerTitle,
+                      isMe ? { color: "#FFFFFF" } : { color: "#0F172A" },
+                    ]}
+                  >
+                    {offer.projectTitle || "Proyek Kolaborasi"}
+                  </Text>
+
+                  {/* Budget & Deadline Section (Clean, Airy, Minimal) */}
+                  <View
+                    style={[
+                      styles.offerDetailsBox,
+                      isMe
+                        ? styles.offerDetailsBoxMe
+                        : styles.offerDetailsBoxPartner,
+                    ]}
+                  >
+                    <View style={styles.offerDetailCol}>
+                      <Text
+                        style={[
+                          styles.offerDetailLabel,
+                          isMe && { color: "rgba(255,255,255,0.7)" },
+                        ]}
+                      >
+                        Nilai Proyek
+                      </Text>
+                      <Text
+                        style={[
+                          styles.offerDetailValue,
+                          isMe && { color: "#FFFFFF" },
+                        ]}
+                      >
+                        {offer.budget
+                          ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
+                          : "Sesuai Diskusi"}
+                      </Text>
+                    </View>
+
                     {offer.deadline ? (
                       <View
                         style={[
-                          styles.offerDeadlinePill,
-                          isMe && styles.offerDeadlinePillMe,
+                          styles.offerDetailCol,
+                          { alignItems: "flex-end" },
                         ]}
                       >
-                        <Clock
-                          size={10}
-                          color={isMe ? "rgba(255,255,255,0.8)" : "#64748B"}
-                        />
                         <Text
                           style={[
-                            styles.offerDeadlineText,
-                            isMe && { color: "rgba(255,255,255,0.9)" },
+                            styles.offerDetailLabel,
+                            isMe && { color: "rgba(255,255,255,0.7)" },
                           ]}
                         >
-                          Tenggat: {offer.deadline}
+                          Tenggat
                         </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 3,
+                          }}
+                        >
+                          <Clock
+                            size={11}
+                            color={
+                              isMe ? "rgba(255,255,255,0.85)" : "#64748B"
+                            }
+                          />
+                          <Text
+                            style={[
+                              styles.offerDetailDeadlineText,
+                              isMe && { color: "#FFFFFF" },
+                            ]}
+                          >
+                            {offer.deadline}
+                          </Text>
+                        </View>
                       </View>
                     ) : null}
                   </View>
@@ -597,7 +640,7 @@ export function ChatScreen({ route, navigation }) {
                             <ActivityIndicator size="small" color="#FFFFFF" />
                           ) : (
                             <>
-                              <CheckCircle2 size={13} color="#FFFFFF" />
+                              <CheckCircle2 size={14} color="#FFFFFF" />
                               <Text style={styles.offerAcceptBtnText}>
                                 Terima Tawaran
                               </Text>
@@ -611,33 +654,85 @@ export function ChatScreen({ route, navigation }) {
                           disabled={isResponding}
                           activeOpacity={0.8}
                         >
-                          <X size={13} color="#E11D48" />
+                          <X size={14} color="#64748B" />
                           <Text style={styles.offerRejectBtnText}>Tolak</Text>
                         </TouchableOpacity>
                       </View>
                     ) : (
                       <View style={styles.offerStatusPendingBox}>
-                        <Clock size={12} color="#D97706" />
+                        <Clock size={12} color="rgba(255,255,255,0.8)" />
                         <Text style={styles.offerStatusPendingText}>
                           Menunggu tanggapan dari talenta...
                         </Text>
                       </View>
                     )
                   ) : offerStatus === "ACCEPTED" ? (
-                    <View style={styles.offerStatusAcceptedBox}>
-                      <CheckCircle2 size={13} color="#059669" />
-                      <Text style={styles.offerStatusAcceptedText}>
-                        ✓ Tawaran Diterima • Kolaborasi Dimulai
+                    <View
+                      style={[
+                        styles.offerStatusAcceptedBox,
+                        isMe && styles.offerStatusAcceptedBoxMe,
+                      ]}
+                    >
+                      <CheckCircle2
+                        size={13}
+                        color={isMe ? "#A7F3D0" : "#059669"}
+                      />
+                      <Text
+                        style={[
+                          styles.offerStatusAcceptedText,
+                          isMe && { color: "#A7F3D0" },
+                        ]}
+                      >
+                        ✓ Tawaran Diterima • Proyek Dimulai
                       </Text>
                     </View>
                   ) : (
-                    <View style={styles.offerStatusRejectedBox}>
-                      <X size={13} color="#64748B" />
-                      <Text style={styles.offerStatusRejectedText}>
+                    <View
+                      style={[
+                        styles.offerStatusRejectedBox,
+                        isMe && styles.offerStatusRejectedBoxMe,
+                      ]}
+                    >
+                      <X
+                        size={13}
+                        color={isMe ? "rgba(255,255,255,0.7)" : "#64748B"}
+                      />
+                      <Text
+                        style={[
+                          styles.offerStatusRejectedText,
+                          isMe && { color: "rgba(255,255,255,0.8)" },
+                        ]}
+                      >
                         ✕ Tawaran Ditolak
                       </Text>
                     </View>
                   )}
+
+                  {/* Time & Read Receipt Inside Offer Card */}
+                  <View style={styles.offerFooterRow}>
+                    <Text
+                      style={[
+                        styles.offerTimeText,
+                        isMe && { color: "rgba(255,255,255,0.7)" },
+                      ]}
+                    >
+                      {formatTime(item.created_at)}
+                    </Text>
+                    {isMe && (
+                      <View style={styles.readStatusWrap}>
+                        {item.is_read ? (
+                          <CheckCheck size={13} color="#38BDF8" />
+                        ) : item.id ? (
+                          <CheckCheck
+                            size={13}
+                            color="rgba(255, 255, 255, 0.65)"
+                          />
+                        ) : (
+                          <Check size={13} color="rgba(255, 255, 255, 0.65)" />
+                        )}
+                      </View>
+                    )}
+                  </View>
                 </View>
               );
             })()
@@ -686,28 +781,30 @@ export function ChatScreen({ route, navigation }) {
             </TouchableOpacity>
           ) : null}
 
-          {/* Bubble Footer: Time & WhatsApp Checkmark */}
-          <View style={styles.bubbleFooter}>
-            <Text
-              style={[
-                styles.timeText,
-                isMe ? styles.timeTextMe : styles.timeTextPartner,
-              ]}
-            >
-              {formatTime(item.created_at)}
-            </Text>
-            {isMe && (
-              <View style={styles.readStatusWrap}>
-                {item.is_read ? (
-                  <CheckCheck size={13} color="#38BDF8" />
-                ) : item.id ? (
-                  <CheckCheck size={13} color="rgba(255, 255, 255, 0.65)" />
-                ) : (
-                  <Check size={13} color="rgba(255, 255, 255, 0.65)" />
-                )}
-              </View>
-            )}
-          </View>
+          {/* Regular Bubble Footer: Time & WhatsApp Checkmark (only for normal messages) */}
+          {!isOffer && (
+            <View style={styles.bubbleFooter}>
+              <Text
+                style={[
+                  styles.timeText,
+                  isMe ? styles.timeTextMe : styles.timeTextPartner,
+                ]}
+              >
+                {formatTime(item.created_at)}
+              </Text>
+              {isMe && (
+                <View style={styles.readStatusWrap}>
+                  {item.is_read ? (
+                    <CheckCheck size={13} color="#38BDF8" />
+                  ) : item.id ? (
+                    <CheckCheck size={13} color="rgba(255, 255, 255, 0.65)" />
+                  ) : (
+                    <Check size={13} color="rgba(255, 255, 255, 0.65)" />
+                  )}
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {isMe &&
@@ -1387,6 +1484,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
+  bubbleBoxOfferMe: {
+    maxWidth: "88%",
+    borderRadius: 20,
+    padding: 0,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+  },
+  bubbleBoxOfferPartner: {
+    maxWidth: "88%",
+    borderRadius: 20,
+    padding: 0,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+  },
   senderHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -1776,120 +1887,122 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
   },
 
-  // Project Offer Attachment Card (Apple-style / anti-slop)
+  // Project Offer Attachment Card (Apple-style / Clean & Modern)
   offerCard: {
-    borderRadius: 16,
-    padding: 14,
-    marginTop: 8,
-    borderWidth: 1,
+    borderRadius: 20,
+    padding: 16,
     width: "100%",
   },
   offerCardMe: {
-    backgroundColor: "rgba(255, 255, 255, 0.12)",
-    borderColor: "rgba(255, 255, 255, 0.25)",
+    backgroundColor: COLORS.brandIndigo,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    shadowColor: COLORS.brandIndigo,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 3,
   },
   offerCardPartner: {
     backgroundColor: "#FFFFFF",
     borderColor: "#E2E8F0",
+    borderWidth: 1,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 10,
     elevation: 2,
   },
   offerBadgeRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 4,
     gap: 8,
   },
   offerBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#BFDBFE",
   },
-  offerBadgeWhite: {
+  offerBadgePartner: {
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  offerBadgeMe: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   offerBadgeText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9,
+    fontSize: 9.5,
     fontWeight: "700",
-    color: "#1D4ED8",
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
   },
-  offerBudgetText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#059669",
-  },
-  offerTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "700",
-    color: COLORS.textDark,
-    lineHeight: 19,
-    marginBottom: 6,
-  },
-  offerMetaRow: {
+  offerEscrowBadge: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 6,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.6)",
-    marginBottom: 10,
-  },
-  offerEscrowPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#ECFDF5",
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 100,
-  },
-  offerEscrowPillMe: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderColor: "rgba(255, 255, 255, 0.3)",
+    gap: 3.5,
   },
   offerEscrowText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 9.5,
+    fontSize: 10,
     fontWeight: "700",
-    color: "#059669",
   },
-  offerDeadlinePill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#F1F5F9",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 100,
-  },
-  offerDeadlinePillMe: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    borderColor: "rgba(255, 255, 255, 0.25)",
-  },
-  offerDeadlineText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 9.5,
+  offerSenderLabel: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyRegular,
     color: "#64748B",
+    marginTop: 4,
+  },
+  offerSenderName: {
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+  },
+  offerTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15,
+    fontWeight: "700",
+    lineHeight: 21,
+    marginTop: 6,
+    marginBottom: 10,
+  },
+  offerDetailsBox: {
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  offerDetailsBoxPartner: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+  },
+  offerDetailsBoxMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+  },
+  offerDetailCol: {
+    gap: 2,
+  },
+  offerDetailLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+  },
+  offerDetailValue: {
+    fontSize: 15,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  offerDetailDeadlineText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "600",
   },
   offerActionRow: {
     flexDirection: "row",
@@ -1903,8 +2016,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "#059669",
-    paddingVertical: 9,
+    backgroundColor: COLORS.brandIndigo,
+    paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 100,
   },
@@ -1919,34 +2032,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    backgroundColor: "#FFF1F2",
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#FECDD3",
-    paddingVertical: 9,
+    borderColor: "#E2E8F0",
+    paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 100,
   },
   offerRejectBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 12,
-    fontWeight: "700",
-    color: "#E11D48",
+    fontWeight: "600",
+    color: "#64748B",
   },
   offerStatusPendingBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#FFFBEB",
-    borderWidth: 1,
-    borderColor: "#FDE68A",
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   offerStatusPendingText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
-    color: "#92400E",
+    color: "#FFFFFF",
   },
   offerStatusAcceptedBox: {
     flexDirection: "row",
@@ -1955,31 +2066,50 @@ const styles = StyleSheet.create({
     backgroundColor: "#ECFDF5",
     borderWidth: 1,
     borderColor: "#A7F3D0",
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  offerStatusAcceptedBoxMe: {
+    backgroundColor: "rgba(16, 185, 129, 0.25)",
+    borderColor: "rgba(16, 185, 129, 0.4)",
   },
   offerStatusAcceptedText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#065F46",
+    fontSize: 11.5,
+    color: "#059669",
   },
   offerStatusRejectedBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F1F5F9",
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    borderRadius: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  offerStatusRejectedBoxMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderColor: "rgba(255, 255, 255, 0.25)",
   },
   offerStatusRejectedText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: "#64748B",
+  },
+  offerFooterRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 4,
+    marginTop: 8,
+  },
+  offerTimeText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 9.5,
+    color: "#94A3B8",
   },
   bottomBarContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.98)",

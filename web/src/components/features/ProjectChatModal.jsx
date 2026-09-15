@@ -226,9 +226,7 @@ export function ProjectChatModal({
               <p className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
                 <span
                   className={`w-2 h-2 rounded-full shrink-0 ${
-                    wsConnected
-                      ? "bg-emerald-500 animate-pulse"
-                      : "bg-rose-500"
+                    wsConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
                   }`}
                 />
                 <span className="truncate max-w-xs">
