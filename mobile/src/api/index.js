@@ -58,10 +58,16 @@ export const ratingApi = {
 };
 
 export const chatApi = {
-  getMessages: (projectId) => api.get(`/chat/project/${projectId}/messages`),
+  getConversations: () => api.get("/chat/conversations"),
+  getMessages: (projectId, partnerId = null) =>
+    api.get(`/chat/project/${projectId}/messages`, {
+      params: partnerId ? { partner_id: partnerId } : {},
+    }),
   sendMessage: (projectId, data) =>
     api.post(`/chat/project/${projectId}/messages`, data),
   markRead: (projectId) => api.patch(`/chat/project/${projectId}/read`),
+  respondToOffer: (messageId, action) =>
+    api.post(`/chat/offer/${messageId}/respond`, { action }),
 };
 
 export const talentApi = {

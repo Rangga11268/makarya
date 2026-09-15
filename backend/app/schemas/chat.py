@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 class ChatMessageCreate(BaseModel):
     project_id: Optional[UUID] = None
+    recipient_id: Optional[UUID] = None
     message: Optional[str] = Field(None, max_length=1000, description="Isi pesan chat")
     attachment_url: Optional[str] = Field(None, max_length=500, description="URL lampiran (opsional)")
     attachment_type: Optional[str] = Field(None, max_length=50, description="Tipe lampiran (opsional)")
@@ -48,6 +49,7 @@ class ChatMessageResponse(BaseModel):
     id: UUID
     project_id: UUID
     sender_id: UUID
+    recipient_id: Optional[UUID] = None
     sender_name: Optional[str] = None
     sender_role: Optional[str] = None
     sender_photo: Optional[str] = None
@@ -56,5 +58,23 @@ class ChatMessageResponse(BaseModel):
     attachment_type: Optional[str] = None
     is_read: bool
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ConversationItemResponse(BaseModel):
+    id: str
+    partner_id: UUID
+    partner_name: str
+    partner_role: str
+    partner_photo: Optional[str] = None
+    partner_sub: Optional[str] = None
+    project_id: Optional[UUID] = None
+    project_title: Optional[str] = None
+    project_status: Optional[str] = None
+    last_message: Optional[str] = None
+    last_message_time: Optional[datetime] = None
+    unread_count: int = 0
+    is_online: bool = False
 
     model_config = ConfigDict(from_attributes=True)

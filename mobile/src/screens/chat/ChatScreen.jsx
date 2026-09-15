@@ -16,11 +16,12 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { chatApi, getChatWsUrl } from "../../api";
+import { chatApi, projectApi, getChatWsUrl } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { ChatSkeleton } from "../../components/ui/Skeleton";
 import { Header } from "../../components/ui/Header";
+import { ProjectBriefVectorIcon } from "../../components/icons/CategoryIcons";
 import {
   ArrowLeft,
   Send,
@@ -29,13 +30,16 @@ import {
   ShieldCheck,
   Check,
   CheckCheck,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
   ExternalLink,
   Plus,
   Paperclip,
-  Briefcase,
   X,
   Radio,
   AlertTriangle,
+  Clock,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
@@ -44,10 +48,24 @@ export function ChatScreen({ route, navigation }) {
   const { showToast } = useToastStore();
   const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
 
-  const projectId = route.params?.projectId || route.params?.id;
-  const projectTitle = route.params?.projectTitle || "Ruang Kolaborasi Proyek";
+  const isUmkm = user?.role?.toUpperCase() === "UMKM";
+  const isMahasiswa = !isUmkm;
+  const talentId = route.params?.talentId || route.params?.talent?.id;
+  const initialProjectId = route.params?.projectId || route.params?.id;
+
+  const [currentProjectId, setCurrentProjectId] = useState(
+    initialProjectId || "",
+  );
+  const [currentProjectTitle, setCurrentProjectTitle] = useState(
+    route.params?.projectTitle || "Ruang Kolaborasi Proyek",
+  );
+  const [myProjects, setMyProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [respondingOfferId, setRespondingOfferId] = useState(null);
+
   const partnerName = route.params?.partnerName || "Mitra Kolaborasi";
-  const partnerRole = route.params?.partnerRole || "User";
+  const partnerRole = route.params?.partnerRole || (isUmkm ? "MHS" : "UMKM");
   const partnerPhoto =
     route.params?.partnerPhoto ||
     route.params?.photoUrl ||
@@ -77,18 +95,125 @@ export function ChatScreen({ route, navigation }) {
     : partnerName;
 
   const isUnassignedTalent =
+    !talentId &&
     (resolvedPartnerName === "Mahasiswa Talenta" ||
       resolvedPartnerName === "Mitra Kolaborasi") &&
     messages.length === 0;
 
+  // Never leak another student's photo if chatting with a specific targeted talent
   const resolvedPartnerPhoto =
     partnerPhoto ||
-    messages.find((m) => m.sender_id !== user?.id && m.sender_photo)
-      ?.sender_photo ||
-    null;
+    (talentId
+      ? null
+      : messages.find((m) => m.sender_id !== user?.id && m.sender_photo)
+          ?.sender_photo || null);
+
+  // Filter out messages from other students if a specific talent is targeted
+  const displayMessages = talentId
+    ? messages.filter(
+        (m) =>
+          String(m.sender_id) === String(user?.id) ||
+          String(m.sender_id) === String(talentId) ||
+          (m.sender_name &&
+            resolvedPartnerName &&
+            m.sender_name.toLowerCase() === resolvedPartnerName.toLowerCase()),
+      )
+    : messages;
 
   const userPhoto =
     user?.url_foto || user?.url_foto_usaha || user?.photoUrl || null;
+
+  // Load UMKM projects for offering
+  useEffect(() => {
+    if (isUmkm) {
+      async function loadProjects() {
+        try {
+          setLoadingProjects(true);
+          const res = await projectApi.getMyProjects();
+          const list = Array.isArray(res.data) ? res.data : [];
+          // Proyek yang sudah selesai TIDAK BISA ditawarkan lagi
+          const activeList = list.filter(
+            (p) => p.status === "OPEN" || p.status === "BIDDING",
+          );
+          setMyProjects(activeList);
+          if (!currentProjectId && activeList.length > 0) {
+            setCurrentProjectId(activeList[0].id);
+            setCurrentProjectTitle(activeList[0].judul);
+          }
+        } catch (err) {
+          console.warn("Gagal memuat proyek UMKM:", err);
+        } finally {
+          setLoadingProjects(false);
+        }
+      }
+      loadProjects();
+    }
+  }, [isUmkm, talentId]);
+
+  const handleSendProjectOffer = async (proj) => {
+    setCurrentProjectId(proj.id);
+    setCurrentProjectTitle(proj.judul);
+    setShowProjectModal(false);
+
+    try {
+      const offerData = {
+        projectId: proj.id,
+        projectTitle: proj.judul,
+        budget: proj.budget_max,
+        deadline: proj.deadline,
+        kategori: proj.kategori,
+        status: "PENDING",
+      };
+
+      const payload = {
+        message: `Tawaran Proyek Resmi: ${proj.judul}`,
+        attachment_url: JSON.stringify(offerData),
+        attachment_type: "PROJECT_OFFER",
+        recipient_id: targetRecipientId,
+      };
+
+      await chatApi.sendMessage(proj.id, payload);
+      showToast("Tawaran proyek berhasil diajukan kepada talenta!", "success");
+      loadHistory(proj.id);
+    } catch (err) {
+      console.warn("Gagal mengirim tawaran:", err);
+      showToast("Gagal mengajukan tawaran proyek", "danger");
+    }
+  };
+
+  const handleRespondOffer = async (messageId, action) => {
+    try {
+      setRespondingOfferId(messageId);
+      await chatApi.respondToOffer(messageId, action);
+      showToast(
+        action === "ACCEPT"
+          ? "Tawaran proyek diterima! Kolaborasi resmi dimulai."
+          : "Tawaran proyek ditolak.",
+        action === "ACCEPT" ? "success" : "info",
+      );
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === messageId && m.attachment_url) {
+            try {
+              const meta = JSON.parse(m.attachment_url);
+              meta.status = action === "ACCEPT" ? "ACCEPTED" : "REJECTED";
+              return { ...m, attachment_url: JSON.stringify(meta) };
+            } catch (_) {}
+          }
+          return m;
+        }),
+      );
+      loadHistory();
+    } catch (err) {
+      console.warn("Gagal merespons tawaran:", err);
+      showToast(
+        err?.response?.data?.detail || "Gagal memproses respons tawaran",
+        "danger",
+      );
+    } finally {
+      setRespondingOfferId(null);
+    }
+  };
 
   // Attachment Modal
   const [attachModal, setAttachModal] = useState(false);
@@ -98,12 +223,17 @@ export function ChatScreen({ route, navigation }) {
   const wsRef = useRef(null);
   const flatListRef = useRef(null);
 
+  const targetRecipientId = talentId || route.params?.partnerId || null;
+
   // 1. Muat riwayat chat lama via REST
   const loadHistory = async () => {
-    if (!projectId) return;
+    if (!currentProjectId) return;
     try {
       setLoading(true);
-      const res = await chatApi.getMessages(projectId);
+      const res = await chatApi.getMessages(
+        currentProjectId,
+        targetRecipientId,
+      );
       setMessages(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.warn("Gagal memuat riwayat pesan:", err);
@@ -125,9 +255,9 @@ export function ChatScreen({ route, navigation }) {
         const token =
           (await AsyncStorage.getItem("makarya_access_token")) ||
           useAuthStore.getState().token;
-        if (!token || !projectId) return;
+        if (!token || !currentProjectId) return;
 
-        const wsUrl = getChatWsUrl(projectId, token);
+        const wsUrl = getChatWsUrl(currentProjectId, token);
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
@@ -140,13 +270,20 @@ export function ChatScreen({ route, navigation }) {
           try {
             const incomingMsg = JSON.parse(event.data);
             if (incomingMsg && incomingMsg.id) {
+              // Jika sedang dalam percakapan dengan partner tertentu, abaikan pesan orang lain
+              if (
+                targetRecipientId &&
+                incomingMsg.sender_id !== user?.id &&
+                incomingMsg.sender_id !== targetRecipientId
+              ) {
+                return;
+              }
+
               setMessages((prev) => {
-                // Hindari duplikasi jika pesan sudah ada
                 const exists = prev.some((m) => m.id === incomingMsg.id);
                 if (exists) return prev;
                 return [...prev, incomingMsg];
               });
-              // Scroll ke bawah
               setTimeout(() => {
                 flatListRef.current?.scrollToEnd({ animated: true });
               }, 100);
@@ -179,7 +316,7 @@ export function ChatScreen({ route, navigation }) {
         socket.close();
       }
     };
-  }, [projectId]);
+  }, [currentProjectId]);
 
   // 3. Kirim pesan (WebSocket langsung atau fallback REST)
   const handleSendMessage = async (customAttachment = null) => {
@@ -195,6 +332,7 @@ export function ChatScreen({ route, navigation }) {
     if (!textToSend && !customAttachment) return;
 
     const payload = {
+      recipient_id: targetRecipientId,
       message: textToSend || (customAttachment ? "Lampiran tautan berkas" : ""),
       attachment_url: customAttachment?.url || null,
       attachment_type: customAttachment?.type || null,
@@ -219,7 +357,7 @@ export function ChatScreen({ route, navigation }) {
     // Fallback REST API
     try {
       setSending(true);
-      const res = await chatApi.sendMessage(projectId, payload);
+      const res = await chatApi.sendMessage(currentProjectId, payload);
       setMessages((prev) => [...prev, res.data]);
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
@@ -273,16 +411,27 @@ export function ChatScreen({ route, navigation }) {
         ]}
       >
         {!isMe &&
-          (item.sender_photo || resolvedPartnerPhoto ? (
+          ((
+            talentId
+              ? resolvedPartnerPhoto
+              : item.sender_photo || resolvedPartnerPhoto
+          ) ? (
             <Image
-              source={{ uri: item.sender_photo || resolvedPartnerPhoto }}
+              source={{
+                uri: talentId
+                  ? resolvedPartnerPhoto
+                  : item.sender_photo || resolvedPartnerPhoto,
+              }}
               style={styles.chatAvatarSmall}
               resizeMode="cover"
             />
           ) : (
             <View style={styles.chatAvatarPlaceholder}>
               <Text style={styles.chatAvatarPlaceholderText}>
-                {(item.sender_name || resolvedPartnerName || "P")
+                {(talentId
+                  ? resolvedPartnerName
+                  : item.sender_name || resolvedPartnerName || "P"
+                )
                   .charAt(0)
                   .toUpperCase()}
               </Text>
@@ -324,7 +473,117 @@ export function ChatScreen({ route, navigation }) {
           ) : null}
 
           {/* Attachment Preview Card */}
-          {item.attachment_url ? (
+          {item.attachment_type === "PROJECT_OFFER" ? (
+            (() => {
+              let offer = {};
+              try {
+                offer = JSON.parse(item.attachment_url || "{}");
+              } catch (_) {
+                offer = {
+                  projectTitle: item.message || "Tawaran Proyek Kolaborasi",
+                };
+              }
+              const offerStatus = (offer.status || "PENDING").toUpperCase();
+              const isResponding = respondingOfferId === item.id;
+
+              return (
+                <View
+                  style={[
+                    styles.offerCard,
+                    isMe ? styles.offerCardMe : styles.offerCardPartner,
+                  ]}
+                >
+                  {/* Header Tag */}
+                  <View style={styles.offerBadgeRow}>
+                    <View style={styles.offerBadge}>
+                      <ShieldCheck size={11} color="#2563EB" />
+                      <Text style={styles.offerBadgeText}>
+                        TAWARAN PROYEK RESMI
+                      </Text>
+                    </View>
+                    <Text style={styles.offerBudgetText}>
+                      {offer.budget
+                        ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
+                        : "Sesuai Kesepakatan"}
+                    </Text>
+                  </View>
+
+                  {/* Project Title */}
+                  <Text style={styles.offerTitle}>
+                    {offer.projectTitle || "Proyek Kolaborasi"}
+                  </Text>
+
+                  {/* Metadata Row */}
+                  <View style={styles.offerMetaRow}>
+                    <Text style={styles.offerMetaLabel}>
+                      Garansi Pembayaran Escrow
+                    </Text>
+                    {offer.deadline ? (
+                      <Text style={styles.offerDeadlineText}>
+                        Tenggat: {offer.deadline}
+                      </Text>
+                    ) : null}
+                  </View>
+
+                  {/* Action Buttons for Mahasiswa */}
+                  {offerStatus === "PENDING" ? (
+                    !isMe ? (
+                      <View style={styles.offerActionRow}>
+                        <TouchableOpacity
+                          style={styles.offerAcceptBtn}
+                          onPress={() => handleRespondOffer(item.id, "ACCEPT")}
+                          disabled={isResponding}
+                          activeOpacity={0.8}
+                        >
+                          {isResponding ? (
+                            <ActivityIndicator size="small" color="#FFFFFF" />
+                          ) : (
+                            <>
+                              <CheckCircle2 size={13} color="#FFFFFF" />
+                              <Text style={styles.offerAcceptBtnText}>
+                                Terima Tawaran
+                              </Text>
+                            </>
+                          )}
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={styles.offerRejectBtn}
+                          onPress={() => handleRespondOffer(item.id, "REJECT")}
+                          disabled={isResponding}
+                          activeOpacity={0.8}
+                        >
+                          <X size={13} color="#E11D48" />
+                          <Text style={styles.offerRejectBtnText}>Tolak</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <View style={styles.offerStatusPendingBox}>
+                        <Clock size={12} color="#D97706" />
+                        <Text style={styles.offerStatusPendingText}>
+                          Menunggu tanggapan dari talenta...
+                        </Text>
+                      </View>
+                    )
+                  ) : offerStatus === "ACCEPTED" ? (
+                    <View style={styles.offerStatusAcceptedBox}>
+                      <CheckCircle2 size={13} color="#059669" />
+                      <Text style={styles.offerStatusAcceptedText}>
+                        ✓ Tawaran Diterima • Kolaborasi Dimulai
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={styles.offerStatusRejectedBox}>
+                      <X size={13} color="#64748B" />
+                      <Text style={styles.offerStatusRejectedText}>
+                        ✕ Tawaran Ditolak
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })()
+          ) : item.attachment_url ? (
             <TouchableOpacity
               style={[
                 styles.attachmentCard,
@@ -424,52 +683,49 @@ export function ChatScreen({ route, navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
-      {/* 1. Header Bar (Standar Desain Makarya Mobile) */}
+      {/* 1. Header Bar (Standar Desain Makarya Mobile - Clean Centered Apple Style) */}
       <Header
         onBack={() => navigation.goBack()}
         centerContent={
-          <View style={styles.headerTitleWrap}>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-            >
+          <View style={styles.headerCenterWrap}>
+            <View style={styles.headerCenterNameRow}>
               {resolvedPartnerPhoto ? (
                 <Image
                   source={{ uri: resolvedPartnerPhoto }}
-                  style={styles.headerPartnerAvatar}
+                  style={styles.headerPartnerAvatarSmall}
                   resizeMode="cover"
                 />
               ) : (
-                <View style={styles.headerPartnerAvatarPlaceholder}>
-                  <Text style={styles.headerPartnerAvatarText}>
-                    {resolvedPartnerName.charAt(0).toUpperCase()}
+                <View style={styles.headerPartnerAvatarPlaceholderSmall}>
+                  <Text style={styles.headerPartnerAvatarTextSmall}>
+                    {(resolvedPartnerName || "M").charAt(0).toUpperCase()}
                   </Text>
                 </View>
               )}
-              <View style={{ flex: 1 }}>
-                <Text style={styles.headerName} numberOfLines={1}>
-                  {resolvedPartnerName}
-                </Text>
-                <View style={styles.headerSubRow}>
-                  <Text style={styles.headerProjectTitle} numberOfLines={1}>
-                    {projectTitle}
-                  </Text>
-                  <View
-                    style={[
-                      styles.onlineDot,
-                      wsConnected
-                        ? styles.onlineDotActive
-                        : styles.onlineDotInactive,
-                    ]}
-                  />
-                </View>
-              </View>
+              <Text style={styles.headerName} numberOfLines={1}>
+                {resolvedPartnerName}
+              </Text>
+              <CheckCircle2 size={13} color="#059669" />
+            </View>
+            <View style={styles.headerSubRow}>
+              <View
+                style={[
+                  styles.onlineDot,
+                  wsConnected
+                    ? styles.onlineDotActive
+                    : styles.onlineDotInactive,
+                ]}
+              />
+              <Text style={styles.headerStatusText} numberOfLines={1}>
+                {wsConnected ? "Online" : "Terhubung"}
+              </Text>
             </View>
           </View>
         }
         rightAction={
-          <View style={styles.escrowChip}>
-            <ShieldCheck size={11} color={COLORS.brandCyan} />
-            <Text style={styles.escrowChipText}>Escrow</Text>
+          <View style={styles.headerEscrowBadge}>
+            <ShieldCheck size={12} color="#059669" />
+            <Text style={styles.headerEscrowBadgeText}>Escrow</Text>
           </View>
         }
       />
@@ -480,7 +736,7 @@ export function ChatScreen({ route, navigation }) {
       ) : (
         <FlatList
           ref={flatListRef}
-          data={messages}
+          data={displayMessages}
           keyExtractor={(item, index) => item.id || String(index)}
           renderItem={renderMessageItem}
           contentContainerStyle={[
@@ -496,7 +752,7 @@ export function ChatScreen({ route, navigation }) {
                 <View
                   style={[styles.emptyIconBox, { backgroundColor: "#F1F5F9" }]}
                 >
-                  <Briefcase size={28} color={COLORS.textDim} />
+                  <ProjectBriefVectorIcon size={26} color={COLORS.textDim} />
                 </View>
                 <Text style={styles.emptyTitle}>
                   Ruang Obrolan Belum Terbuka
@@ -532,13 +788,15 @@ export function ChatScreen({ route, navigation }) {
             ) : (
               <View style={styles.emptyWrap}>
                 <View style={styles.emptyIconBox}>
-                  <Briefcase size={28} color={COLORS.brandIndigo} />
+                  <ProjectBriefVectorIcon
+                    size={26}
+                    color={COLORS.brandIndigo}
+                  />
                 </View>
                 <Text style={styles.emptyTitle}>Ruang Kolaborasi Resmi</Text>
                 <Text style={styles.emptyDesc}>
                   Percakapan ini dilindungi sistem escrow Makarya. Kirim pesan
-                  pertama untuk mulai mendiskusikan brief dan progres
-                  pengerjaan.
+                  atau ajukan tawaran proyek untuk mulai berkolaborasi.
                 </Text>
               </View>
             )
@@ -614,46 +872,70 @@ export function ChatScreen({ route, navigation }) {
       ) : (
         <View
           style={[
-            styles.inputContainer,
+            styles.bottomBarContainer,
             { maxWidth: contentMaxWidth, width: "100%", alignSelf: "center" },
           ]}
         >
-          {/* Tombol Lampiran */}
-          <TouchableOpacity
-            style={styles.attachBtn}
-            onPress={() => setAttachModal(true)}
-            activeOpacity={0.7}
-          >
-            <Plus size={20} color={COLORS.brandIndigo} />
-          </TouchableOpacity>
+          {/* Apple-Style Tawarkan Proyek Strip (UMKM Only) */}
+          {isUmkm && (
+            <View style={styles.offerBarTop}>
+              <TouchableOpacity
+                style={styles.offerProjectPillBtn}
+                onPress={() => setShowProjectModal(true)}
+                activeOpacity={0.75}
+              >
+                <ProjectBriefVectorIcon size={14} color={COLORS.brandIndigo} />
+                <Text style={styles.offerProjectPillText} numberOfLines={1}>
+                  {currentProjectTitle
+                    ? `Ajukan: ${currentProjectTitle}`
+                    : "Tawarkan Proyek ke Mahasiswa"}
+                </Text>
+                <ChevronRight size={13} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+          )}
 
-          {/* Input Text */}
-          <TextInput
-            style={styles.inputField}
-            placeholder="Tulis pesan atau perkembangan proyek..."
-            placeholderTextColor={COLORS.textMuted}
-            value={inputText}
-            onChangeText={setInputText}
-            multiline
-            maxLength={1000}
-          />
+          {/* Main Input Row */}
+          <View style={styles.inputContainer}>
+            {/* Tombol Lampiran */}
+            <TouchableOpacity
+              style={styles.attachBtn}
+              onPress={() => setAttachModal(true)}
+              activeOpacity={0.7}
+            >
+              <Plus size={20} color={COLORS.brandIndigo} />
+            </TouchableOpacity>
 
-          {/* Tombol Kirim */}
-          <TouchableOpacity
-            style={[
-              styles.sendBtn,
-              inputText.trim() ? styles.sendBtnActive : styles.sendBtnDisabled,
-            ]}
-            onPress={() => handleSendMessage()}
-            disabled={!inputText.trim() || sending}
-            activeOpacity={0.8}
-          >
-            {sending ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Send size={16} color="#FFFFFF" />
-            )}
-          </TouchableOpacity>
+            {/* Input Text */}
+            <TextInput
+              style={styles.inputField}
+              placeholder="Tulis pesan..."
+              placeholderTextColor={COLORS.textMuted}
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              maxLength={1000}
+            />
+
+            {/* Tombol Kirim */}
+            <TouchableOpacity
+              style={[
+                styles.sendBtn,
+                inputText.trim()
+                  ? styles.sendBtnActive
+                  : styles.sendBtnDisabled,
+              ]}
+              onPress={() => handleSendMessage()}
+              disabled={!inputText.trim() || sending}
+              activeOpacity={0.8}
+            >
+              {sending ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Send size={16} color="#FFFFFF" />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -709,7 +991,7 @@ export function ChatScreen({ route, navigation }) {
                 ]}
                 onPress={() => setAttachType("LINK")}
               >
-                <Briefcase
+                <ProjectBriefVectorIcon
                   size={16}
                   color={
                     attachType === "LINK"
@@ -752,6 +1034,78 @@ export function ChatScreen({ route, navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* 5. Modal Pilih Proyek */}
+      <Modal
+        visible={showProjectModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowProjectModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setShowProjectModal(false)}
+          />
+          <View style={styles.projectModalSheet}>
+            <View style={styles.projectModalHeader}>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <Text style={styles.projectModalTitle}>
+                  Pilih Proyek Kolaborasi
+                </Text>
+                <Text style={styles.modalSub}>
+                  Pilih proyek Anda yang ingin ditawarkan kepada{" "}
+                  {resolvedPartnerName}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowProjectModal(false)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <X size={20} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={myProjects}
+              keyExtractor={(item) => String(item.id)}
+              style={{ maxHeight: 320 }}
+              renderItem={({ item }) => {
+                const isSelected = item.id === currentProjectId;
+                return (
+                  <TouchableOpacity
+                    style={[
+                      styles.projectOptionItem,
+                      isSelected && styles.projectOptionItemSelected,
+                    ]}
+                    onPress={() => handleSendProjectOffer(item)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                      <Text
+                        style={[
+                          styles.projectOptionTitle,
+                          isSelected && { color: COLORS.brandIndigo },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {item.judul}
+                      </Text>
+                      <Text style={styles.projectOptionStatus}>
+                        Status: {item.status || "OPEN"}
+                      </Text>
+                    </View>
+                    {isSelected && (
+                      <CheckCircle2 size={16} color={COLORS.brandIndigo} />
+                    )}
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -763,6 +1117,52 @@ const styles = StyleSheet.create({
   },
   headerTitleWrap: {
     flex: 1,
+  },
+  headerCenterWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    maxWidth: 220,
+  },
+  headerCenterNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  headerPartnerAvatarSmall: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  headerPartnerAvatarPlaceholderSmall: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerPartnerAvatarTextSmall: {
+    fontSize: 10,
+    fontFamily: FONTS.displayBold,
+    color: COLORS.brandIndigo,
+  },
+  headerEscrowBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3.5,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: "rgba(16, 185, 129, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.22)",
+  },
+  headerEscrowBadgeText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.success,
+    fontWeight: "600",
   },
   headerName: {
     fontFamily: FONTS.displayBold,
@@ -793,14 +1193,21 @@ const styles = StyleSheet.create({
   onlineDotInactive: {
     backgroundColor: COLORS.textDim,
   },
+  headerStatusText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+  },
   escrowChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     backgroundColor: COLORS.brandCyanLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(6, 182, 212, 0.2)",
   },
   escrowChipText: {
     fontFamily: FONTS.bodyBold,
@@ -1077,17 +1484,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     gap: 8,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 4,
   },
   attachBtn: {
     width: 40,
@@ -1212,5 +1611,292 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     color: "#FFFFFF",
+  },
+
+  // Project Context Dock (Near Bottom Input)
+  projectContextDock: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    gap: 6,
+  },
+  projectContextLabel: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+  projectContextPicker: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(203, 213, 225, 0.8)",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    gap: 4,
+  },
+  projectContextPickerText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "600",
+    color: COLORS.brandIndigo,
+    flex: 1,
+  },
+
+  // Project Picker Modal Sheet
+  projectModalSheet: {
+    backgroundColor: COLORS.bgSurface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 20,
+    paddingBottom: Platform.OS === "ios" ? 40 : 24,
+    maxHeight: "75%",
+  },
+  projectModalHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  projectModalTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  projectOptionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    backgroundColor: COLORS.canvasSoft,
+    marginBottom: 8,
+  },
+  projectOptionItemSelected: {
+    borderColor: COLORS.brandIndigo,
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  projectOptionTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 13,
+    fontWeight: "600",
+    color: COLORS.textDark,
+    marginBottom: 2,
+  },
+  projectOptionStatus: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11,
+    color: COLORS.textMuted,
+  },
+
+  // Project Offer Attachment Card (Apple-style / anti-slop)
+  offerCard: {
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 8,
+    borderWidth: 1,
+    width: "100%",
+  },
+  offerCardMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    borderColor: "rgba(255, 255, 255, 0.25)",
+  },
+  offerCardPartner: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E2E8F0",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  offerBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    gap: 8,
+  },
+  offerBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  offerBadgeText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    fontWeight: "700",
+    color: "#1D4ED8",
+    letterSpacing: 0.3,
+  },
+  offerBudgetText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#059669",
+  },
+  offerTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 14,
+    fontWeight: "700",
+    color: COLORS.textDark,
+    lineHeight: 19,
+    marginBottom: 6,
+  },
+  offerMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.6)",
+    marginBottom: 10,
+  },
+  offerMetaLabel: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+  },
+  offerDeadlineText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    color: "#64748B",
+  },
+  offerActionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 2,
+  },
+  offerAcceptBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#059669",
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  offerAcceptBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  offerRejectBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    backgroundColor: "#FFF1F2",
+    borderWidth: 1,
+    borderColor: "#FECDD3",
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  offerRejectBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#E11D48",
+  },
+  offerStatusPendingBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#FFFBEB",
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  offerStatusPendingText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: "#92400E",
+  },
+  offerStatusAcceptedBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#ECFDF5",
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  offerStatusAcceptedText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#065F46",
+  },
+  offerStatusRejectedBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  offerStatusRejectedText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
+    color: "#64748B",
+  },
+  bottomBarContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.98)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
+  },
+  offerBarTop: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
+  offerProjectPillBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  offerProjectPillText: {
+    flex: 1,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: "#0F172A",
   },
 });

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { chatApi, getChatWsUrl } from "../../api";
+import { ProjectBriefVectorIcon } from "../icons/ProjectVectorIcon";
 import {
   Send,
   Link2,
@@ -9,26 +10,40 @@ import {
   ShieldCheck,
   Check,
   CheckCheck,
+  CheckCircle2,
   MessageSquare,
-  Briefcase,
   AlertCircle,
+  ArrowLeft,
+  Clock,
+  X,
 } from "lucide-react";
 
 export function WorkroomChatPanel({
   projectId,
   projectTitle = "Diskusi Proyek",
+  partnerId = null,
   partnerName = "Mitra Kolaborasi",
   partnerRole = "USER",
   partnerPhoto = null,
+  onBack = null,
+  headerExtra = null,
+  projectContextBar = null,
+  initialDraft = "",
+  className = "",
+  onOpenOfferModal = null,
 }) {
   const { user, accessToken } = useAuthStore();
   const { addToast } = useToastStore();
+
+  const isUmkm = user?.role?.toUpperCase() === "UMKM";
 
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
+  const [showDraftPrompt, setShowDraftPrompt] = useState(true);
+  const [respondingOfferId, setRespondingOfferId] = useState(null);
 
   // Quick Attachment State
   const [showAttachInput, setShowAttachInput] = useState(false);
@@ -47,12 +62,47 @@ export function WorkroomChatPanel({
     if (!projectId) return;
     try {
       setLoading(true);
-      const res = await chatApi.getMessages(projectId);
-      setMessages(Array.isArray(res.data) ? res.data : []);
+      const res = await chatApi.getMessages(projectId, partnerId);
+      const list = Array.isArray(res.data) ? res.data : [];
+      setMessages(list);
     } catch (err) {
       console.warn("Gagal memuat pesan:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRespondOffer = async (messageId, action) => {
+    try {
+      setRespondingOfferId(messageId);
+      await chatApi.respondToOffer(messageId, action);
+      addToast(
+        action === "ACCEPT"
+          ? "Tawaran proyek diterima! Kolaborasi resmi dimulai."
+          : "Tawaran proyek ditolak.",
+        action === "ACCEPT" ? "success" : "info",
+      );
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === messageId && m.attachment_url) {
+            try {
+              const meta = JSON.parse(m.attachment_url);
+              meta.status = action === "ACCEPT" ? "ACCEPTED" : "REJECTED";
+              return { ...m, attachment_url: JSON.stringify(meta) };
+            } catch (_) {}
+          }
+          return m;
+        }),
+      );
+      loadHistory();
+    } catch (err) {
+      console.warn("Gagal merespons tawaran:", err);
+      addToast(
+        err?.response?.data?.detail || "Gagal memproses respons tawaran",
+        "danger",
+      );
+    } finally {
+      setRespondingOfferId(null);
     }
   };
 
@@ -80,6 +130,15 @@ export function WorkroomChatPanel({
           try {
             const incomingMsg = JSON.parse(event.data);
             if (incomingMsg && incomingMsg.id) {
+              // Jika sedang dalam percakapan dengan partner tertentu, abaikan pesan orang ketiga
+              if (
+                partnerId &&
+                String(incomingMsg.sender_id) !== String(user?.id) &&
+                String(incomingMsg.sender_id) !== String(partnerId)
+              ) {
+                return;
+              }
+
               setMessages((prev) => {
                 const existsIdx = prev.findIndex(
                   (m) => m.id === incomingMsg.id,
@@ -143,6 +202,7 @@ export function WorkroomChatPanel({
     }
 
     const payload = {
+      recipient_id: partnerId || null,
       message:
         cleanText || (customUrl ? "Lampiran tautan pengerjaan proyek" : ""),
       attachment_url: customUrl,
@@ -195,22 +255,36 @@ export function WorkroomChatPanel({
   };
 
   return (
-    <div className="flex flex-col h-[500px] sm:h-[560px] bg-surface rounded-2xl border border-border overflow-hidden shadow-xs font-sans">
+    <div
+      className={`flex flex-col bg-surface rounded-2xl border border-border overflow-hidden shadow-xs font-sans ${
+        className || "h-[500px] sm:h-[560px]"
+      }`}
+    >
       {/* 1. Chat Header Bar */}
-      <div className="px-4 sm:px-5 py-3.5 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+      <div className="px-3.5 sm:px-5 py-3 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0 gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="p-1.5 rounded-lg border border-border bg-surface hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer shrink-0 -ml-1 sm:ml-0"
+              title="Kembali"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
           {partnerPhoto ? (
             <img
               src={partnerPhoto}
               alt={partnerName}
-              className="w-9 h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
               }}
             />
           ) : (
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
                 partnerRole === "UMKM"
                   ? "bg-amber-100 text-amber-900 border-amber-200"
                   : "bg-brand-indigo text-white border-brand-indigo"
@@ -220,32 +294,38 @@ export function WorkroomChatPanel({
             </div>
           )}
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate max-w-[140px] sm:max-w-xs">
+            <div className="flex items-center gap-1.5">
+              <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate max-w-[160px] sm:max-w-xs">
                 {partnerName}
               </h4>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 shrink-0">
-                {partnerRole === "UMKM"
-                  ? "Klien UMKM"
-                  : "Mahasiswa Terverifikasi"}
-              </span>
+              <CheckCircle2
+                className="w-3.5 h-3.5 text-emerald-600 shrink-0"
+                title={
+                  partnerRole === "UMKM"
+                    ? "Klien Terverifikasi"
+                    : "Mahasiswa Terverifikasi"
+                }
+              />
             </div>
-            <p className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
               <span
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2 h-2 rounded-full shrink-0 ${
                   wsConnected ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
                 }`}
               />
-              <span className="text-[10px]">
+              <span className="text-[10px] truncate">
                 {wsConnected ? "Koneksi Realtime Aktif" : "Menghubungkan..."}
               </span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          <span className="hidden sm:inline">Audit Escrow Makarya</span>
+        <div className="flex items-center gap-2 shrink-0">
+          {headerExtra}
+          <div className="hidden md:flex items-center gap-1 text-[11px] text-emerald-700 font-medium">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Audit Escrow Makarya</span>
+          </div>
         </div>
       </div>
 
@@ -259,7 +339,7 @@ export function WorkroomChatPanel({
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 py-8">
             <div className="w-11 h-11 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-indigo mb-2.5 shadow-xs">
-              <Briefcase className="w-5 h-5" />
+              <ProjectBriefVectorIcon size={22} color="#2563EB" />
             </div>
             <h5 className="text-xs sm:text-sm font-bold text-dark-900">
               Mulai Diskusi Pengerjaan Proyek
@@ -280,15 +360,26 @@ export function WorkroomChatPanel({
                 className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
               >
                 {!isMe &&
-                  (m.sender_photo || partnerPhoto ? (
+                  ((
+                    partnerId ? partnerPhoto : m.sender_photo || partnerPhoto
+                  ) ? (
                     <img
-                      src={m.sender_photo || partnerPhoto}
-                      alt={m.sender_name || partnerName}
+                      src={
+                        partnerId
+                          ? partnerPhoto
+                          : m.sender_photo || partnerPhoto
+                      }
+                      alt={
+                        partnerId ? partnerName : m.sender_name || partnerName
+                      }
                       className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
                     />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
-                      {(m.sender_name || partnerName || "P")
+                      {(partnerId
+                        ? partnerName
+                        : m.sender_name || partnerName || "P"
+                      )
                         .charAt(0)
                         .toUpperCase()}
                     </div>
@@ -303,7 +394,7 @@ export function WorkroomChatPanel({
                 >
                   {!isMe && (
                     <span className="block text-[10px] font-bold text-brand-indigo mb-1">
-                      {m.sender_name || partnerName}
+                      {partnerId ? partnerName : m.sender_name || partnerName}
                     </span>
                   )}
 
@@ -313,8 +404,147 @@ export function WorkroomChatPanel({
                     </p>
                   )}
 
-                  {/* Attachment Link Card */}
-                  {m.attachment_url && (
+                  {/* Project Offer Interactive Card (Apple-style / anti-slop) */}
+                  {m.attachment_type === "PROJECT_OFFER" ? (
+                    (() => {
+                      let offer = {};
+                      try {
+                        offer = JSON.parse(m.attachment_url || "{}");
+                      } catch (_) {
+                        offer = {
+                          projectTitle:
+                            m.message || "Tawaran Proyek Kolaborasi",
+                        };
+                      }
+                      const offerStatus = (
+                        offer.status || "PENDING"
+                      ).toUpperCase();
+                      const isResponding = respondingOfferId === m.id;
+
+                      return (
+                        <div
+                          className={`mt-2 p-3 rounded-2xl border transition-all ${
+                            isMe
+                              ? "bg-white/10 border-white/20 text-white"
+                              : "bg-white border-slate-200 text-slate-900 shadow-sm"
+                          }`}
+                        >
+                          {/* Header badge & budget */}
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <div
+                              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                                isMe
+                                  ? "bg-white/20 text-white border-white/30"
+                                  : "bg-blue-50 text-blue-700 border-blue-200"
+                              }`}
+                            >
+                              <ShieldCheck className="w-3 h-3 text-blue-600" />
+                              <span>TAWARAN PROYEK RESMI</span>
+                            </div>
+                            <span
+                              className={`text-xs font-bold ${
+                                isMe
+                                  ? "text-emerald-300"
+                                  : "text-emerald-700 font-semibold"
+                              }`}
+                            >
+                              {offer.budget
+                                ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
+                                : "Sesuai Kesepakatan"}
+                            </span>
+                          </div>
+
+                          {/* Project Title */}
+                          <h5
+                            className={`text-xs sm:text-sm font-bold leading-snug mb-1.5 ${
+                              isMe ? "text-white" : "text-slate-900"
+                            }`}
+                          >
+                            {offer.projectTitle || "Proyek Kolaborasi"}
+                          </h5>
+
+                          {/* Meta Row */}
+                          <div
+                            className={`flex items-center justify-between text-[10px] pt-1.5 border-t mb-2.5 ${
+                              isMe
+                                ? "border-white/15 text-white/80"
+                                : "border-slate-100 text-slate-500"
+                            }`}
+                          >
+                            <span>Garansi Pembayaran Escrow</span>
+                            {offer.deadline && (
+                              <span>Tenggat: {offer.deadline}</span>
+                            )}
+                          </div>
+
+                          {/* Actions for Student / Status for UMKM */}
+                          {offerStatus === "PENDING" ? (
+                            !isMe ? (
+                              <div className="flex items-center gap-2 pt-1">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleRespondOffer(m.id, "ACCEPT")
+                                  }
+                                  disabled={isResponding}
+                                  className="flex-1 py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                  {isResponding ? (
+                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  ) : (
+                                    <>
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                      <span>Terima Tawaran</span>
+                                    </>
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleRespondOffer(m.id, "REJECT")
+                                  }
+                                  disabled={isResponding}
+                                  className="py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                  <span>Tolak</span>
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 text-[11px] text-amber-200/90 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/20">
+                                <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                                <span>Menunggu tanggapan dari talenta...</span>
+                              </div>
+                            )
+                          ) : offerStatus === "ACCEPTED" ? (
+                            <div
+                              className={`flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg border ${
+                                isMe
+                                  ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/30"
+                                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              }`}
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                              <span>
+                                ✓ Tawaran Diterima • Kolaborasi Dimulai
+                              </span>
+                            </div>
+                          ) : (
+                            <div
+                              className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg border ${
+                                isMe
+                                  ? "bg-white/10 text-white/70 border-white/20"
+                                  : "bg-slate-100 text-slate-600 border-slate-200"
+                              }`}
+                            >
+                              <X className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                              <span>✕ Tawaran Ditolak</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
+                  ) : m.attachment_url ? (
                     <a
                       href={m.attachment_url}
                       target="_blank"
@@ -340,7 +570,7 @@ export function WorkroomChatPanel({
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
                     </a>
-                  )}
+                  ) : null}
 
                   {/* Timestamp & Read Receipt */}
                   <div
@@ -466,6 +696,13 @@ export function WorkroomChatPanel({
         );
       })()}
 
+      {/* Context Bar (Pilihan proyek langsung di daerah chat box) */}
+      {projectContextBar && (
+        <div className="px-3 sm:px-4 py-2 bg-canvas/90 border-t border-border flex items-center justify-between gap-2 shrink-0">
+          {projectContextBar}
+        </div>
+      )}
+
       {/* 4. Bottom Input Bar */}
       <form
         onSubmit={handleSendMessage}
@@ -483,6 +720,18 @@ export function WorkroomChatPanel({
         >
           <Link2 className="w-4 h-4" />
         </button>
+
+        {isUmkm && onOpenOfferModal && (
+          <button
+            type="button"
+            onClick={onOpenOfferModal}
+            className="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+            title="Tawarkan Proyek Resmi kepada Talenta"
+          >
+            <ProjectBriefVectorIcon size={14} color="#0F172A" />
+            <span className="hidden sm:inline">Tawarkan Proyek</span>
+          </button>
+        )}
 
         <input
           type="text"

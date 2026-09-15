@@ -11,6 +11,7 @@ class ChatMessage(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
     sender_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    recipient_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True)
     message = Column(Text, nullable=False)
     attachment_url = Column(Text, nullable=True)
     attachment_type = Column(Text, nullable=True)
@@ -20,6 +21,7 @@ class ChatMessage(Base):
     # Relationship
     project = relationship("Project", backref="chat_messages")
     sender = relationship("User", foreign_keys=[sender_id])
+    recipient = relationship("User", foreign_keys=[recipient_id])
 
 
    

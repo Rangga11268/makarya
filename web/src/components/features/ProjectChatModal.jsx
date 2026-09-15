@@ -11,10 +11,10 @@ import {
   Check,
   CheckCheck,
   MessageSquare,
-  Briefcase,
   Layers,
   Sparkles,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../icons/ProjectVectorIcon";
 
 export function ProjectChatModal({
   isOpen,
@@ -217,7 +217,7 @@ export function ProjectChatModal({
                 <h3 className="text-sm sm:text-base font-bold text-dark-900 leading-tight">
                   {partnerName}
                 </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
                   {partnerRole === "UMKM"
                     ? "Klien UMKM"
                     : "Mahasiswa Terverifikasi"}
@@ -237,13 +237,13 @@ export function ProjectChatModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">
+            <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Escrow Terlindungi</span>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full text-muted hover:text-dark-900 hover:bg-canvas transition-colors"
+              className="p-1.5 rounded-lg text-muted hover:text-dark-900 hover:bg-canvas transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -260,7 +260,10 @@ export function ProjectChatModal({
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-indigo mb-3 shadow-xs">
-                <Briefcase className="w-6 h-6" />
+                <ProjectBriefVectorIcon
+                  size={24}
+                  className="w-6 h-6 text-brand-indigo"
+                />
               </div>
               <h4 className="text-sm font-bold text-dark-900">
                 Ruang Kolaborasi Resmi Proyek
