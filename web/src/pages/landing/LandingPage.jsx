@@ -50,7 +50,8 @@ export function LandingPage() {
   // Interactive Bento Widgets State
   const [selectedSlotRole, setSelectedSlotRole] = useState("frontend"); // "uiux" | "frontend" | "backend"
   const [calcBudget, setCalcBudget] = useState(2500000);
-  const [simulatedDeliverableStatus, setSimulatedDeliverableStatus] = useState("review"); // "review" | "approved" | "revision"
+  const [simulatedDeliverableStatus, setSimulatedDeliverableStatus] =
+    useState("review"); // "review" | "approved" | "revision"
 
   // Interactive Testimonials Carousel State
   const [activeStoryIdx, setActiveStoryIdx] = useState(0);
@@ -65,8 +66,8 @@ export function LandingPage() {
         const pList = Array.isArray(resProj?.data?.data)
           ? resProj.data.data
           : Array.isArray(resProj?.data)
-          ? resProj.data
-          : [];
+            ? resProj.data
+            : [];
         setProjects(pList.slice(0, 4));
       } catch (err) {
         console.error("Failed loading projects:", err);
@@ -79,8 +80,8 @@ export function LandingPage() {
         const tList = Array.isArray(resTal?.data?.data)
           ? resTal.data.data
           : Array.isArray(resTal?.data)
-          ? resTal.data
-          : [];
+            ? resTal.data
+            : [];
         setTalents(tList.slice(0, 4));
       } catch (err) {
         console.error("Failed loading talents:", err);
@@ -213,8 +214,10 @@ export function LandingPage() {
       {/* 1. HERO SECTION & INTERACTIVE WORKFLOW CANVAS                             */}
       {/* ========================================================================= */}
       <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
-        {/* Subtle Ambient Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-brand-indigo/5 via-brand-cyan/5 to-transparent blur-3xl pointer-events-none -z-10" />
+        {/* Subtle Ambient Background */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-blue-100/50 via-cyan-50/40 to-transparent blur-3xl opacity-70" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Announcement Pill */}
@@ -307,11 +310,23 @@ export function LandingPage() {
           </div>
 
           {/* ================================================================= */}
-          {/* INTERACTIVE WORKFLOW CANVAS CONTAINER (Axora Hero Mockup Style)   */}
+          {/* INTERACTIVE WORKFLOW CANVAS CONTAINER WITH SPECTRUM GRADIENT BARS */}
           {/* ================================================================= */}
           <div className="relative mt-8 max-w-5xl mx-auto">
+            {/* Signature Spectrum Gradient Pillars Behind Canvas (Axora Hero Signature) */}
+            <div className="absolute -left-6 sm:-left-10 bottom-0 top-12 w-8 sm:w-14 bg-gradient-to-t from-cyan-600 via-amber-400 to-transparent opacity-75 rounded-t-xl blur-xs pointer-events-none -z-10 flex gap-1 items-end pb-4">
+              <div className="w-1/3 h-4/5 bg-gradient-to-t from-cyan-600 to-transparent rounded-t" />
+              <div className="w-1/3 h-full bg-gradient-to-t from-teal-500 to-transparent rounded-t" />
+              <div className="w-1/3 h-3/5 bg-gradient-to-t from-amber-400 to-transparent rounded-t" />
+            </div>
+            <div className="absolute -right-6 sm:-right-10 bottom-0 top-12 w-8 sm:w-14 bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent opacity-75 rounded-t-xl blur-xs pointer-events-none -z-10 flex gap-1 items-end pb-4 justify-end">
+              <div className="w-1/3 h-3/5 bg-gradient-to-t from-amber-400 to-transparent rounded-t" />
+              <div className="w-1/3 h-full bg-gradient-to-t from-cyan-500 to-transparent rounded-t" />
+              <div className="w-1/3 h-4/5 bg-gradient-to-t from-blue-600 to-transparent rounded-t" />
+            </div>
+
             {/* Ambient Shadow glow around canvas */}
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-indigo-500/20 rounded-2xl blur-xl opacity-60 pointer-events-none" />
+            <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/15 via-cyan-500/15 to-indigo-500/15 rounded-2xl blur-xl opacity-70 pointer-events-none" />
 
             <div className="relative bg-white rounded-2xl border border-slate-200/90 shadow-2xl overflow-hidden">
               {/* Mockup Header Bar */}
@@ -476,7 +491,8 @@ export function LandingPage() {
                             Milestone Deliverable Selesai
                           </div>
                           <div className="text-[11px] text-slate-500">
-                            Review hasil kerja, persetujuan 1-klik, dan pencairan honor
+                            Review hasil kerja, persetujuan 1-klik, dan
+                            pencairan honor
                           </div>
                         </div>
                       </div>
@@ -499,8 +515,9 @@ export function LandingPage() {
                           </span>
                         </div>
                         <div className="text-xs text-slate-600 leading-relaxed">
-                          UMKM Kopi Kenangan Nusantara membutuhkan website landing page
-                          modern beserta integrasi katalog menu online dan aset kemasan.
+                          UMKM Kopi Kenangan Nusantara membutuhkan website
+                          landing page modern beserta integrasi katalog menu
+                          online dan aset kemasan.
                         </div>
                         <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-xs">
                           <div className="flex justify-between text-slate-600">
@@ -578,26 +595,33 @@ export function LandingPage() {
                         </div>
                         <div className="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100 space-y-2">
                           <div className="flex justify-between text-xs">
-                            <span className="text-slate-600">Total Dana Disetor:</span>
+                            <span className="text-slate-600">
+                              Total Dana Disetor:
+                            </span>
                             <span className="font-bold text-slate-900 font-mono">
                               Rp 2.500.000
                             </span>
                           </div>
                           <div className="flex justify-between text-xs">
-                            <span className="text-slate-600">Biaya Klien UMKM:</span>
+                            <span className="text-slate-600">
+                              Biaya Klien UMKM:
+                            </span>
                             <span className="font-bold text-emerald-700 font-mono">
                               Rp 0 (0% Bebas Biaya)
                             </span>
                           </div>
                           <div className="border-t border-emerald-200/60 pt-1.5 flex justify-between text-xs">
-                            <span className="text-slate-600">Garansi Pengembalian:</span>
+                            <span className="text-slate-600">
+                              Garansi Pengembalian:
+                            </span>
                             <span className="font-bold text-emerald-700">
                               100% Terlindungi
                             </span>
                           </div>
                         </div>
                         <p className="text-[11px] text-slate-500 italic">
-                          Dana aman di rekening penampungan dan tidak akan keluar tanpa persetujuan UMKM.
+                          Dana aman di rekening penampungan dan tidak akan
+                          keluar tanpa persetujuan UMKM.
                         </p>
                       </div>
                     )}
@@ -617,10 +641,12 @@ export function LandingPage() {
                             Tautan & Berkas Pengerjaan:
                           </div>
                           <div className="text-[11px] text-blue-600 underline flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" /> github.com/darell/kopi-kenangan-web
+                            <ExternalLink className="w-3 h-3" />{" "}
+                            github.com/darell/kopi-kenangan-web
                           </div>
                           <div className="text-[11px] text-blue-600 underline flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" /> figma.com/file/branding-kopi-kenangan
+                            <ExternalLink className="w-3 h-3" />{" "}
+                            figma.com/file/branding-kopi-kenangan
                           </div>
                         </div>
                         <div className="flex items-center gap-2 pt-1">
@@ -647,7 +673,8 @@ export function LandingPage() {
       <section className="py-8 bg-white border-y border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-xs font-bold tracking-wider text-slate-400 uppercase mb-4">
-            Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi Terkemuka
+            Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi
+            Terkemuka
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-slate-600 text-xs sm:text-sm font-semibold">
             {campuses.map((c, idx) => (
@@ -691,30 +718,47 @@ export function LandingPage() {
                 Makarya Core Engine
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mt-1">
-                Sistem orkestrasi kontrak otomatis, pencairan escrow instan, dan kolaborasi talenta lintas kampus.
+                Sistem orkestrasi kontrak otomatis, pencairan escrow instan, dan
+                kolaborasi talenta lintas kampus.
               </p>
 
               {/* Orbiting Feature Badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 w-full">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Lock className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">Escrow 100%</div>
-                  <div className="text-[10px] text-slate-500">Rekening Terpisah</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    Escrow 100%
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    Rekening Terpisah
+                  </div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Users className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">Multi-Role Slot</div>
-                  <div className="text-[10px] text-slate-500">Tim Terstruktur</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    Multi-Role Slot
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    Tim Terstruktur
+                  </div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <GraduationCap className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">Domain .ac.id</div>
-                  <div className="text-[10px] text-slate-500">Verifikasi Resmi</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    Domain .ac.id
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    Verifikasi Resmi
+                  </div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Clock className="w-4 h-4 text-amber-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">Workroom Live</div>
-                  <div className="text-[10px] text-slate-500">Milestone Terukur</div>
+                  <div className="text-xs font-bold text-slate-900">
+                    Workroom Live
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    Milestone Terukur
+                  </div>
                 </div>
               </div>
             </div>
@@ -773,7 +817,8 @@ export function LandingPage() {
               </h2>
             </div>
             <p className="mt-3 md:mt-0 text-sm text-slate-500 max-w-md">
-              Hanya 4 langkah mudah untuk merealisasikan proyek digital Anda bersama talenta mahasiswa terbaik.
+              Hanya 4 langkah mudah untuk merealisasikan proyek digital Anda
+              bersama talenta mahasiswa terbaik.
             </p>
           </div>
 
@@ -850,7 +895,8 @@ export function LandingPage() {
                         Proyek Solo (1 Talenta)
                       </div>
                       <p className="text-xs text-slate-400 leading-relaxed">
-                        Cocok untuk tugas spesifik seperti desain logo, foto produk, atau penulisan copywriting.
+                        Cocok untuk tugas spesifik seperti desain logo, foto
+                        produk, atau penulisan copywriting.
                       </p>
                     </div>
                     <div className="p-4 rounded-xl bg-indigo-950/50 border border-indigo-600/60">
@@ -861,12 +907,17 @@ export function LandingPage() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        Cocok untuk pembuatan aplikasi, website utuh, dan rebranding lengkap dengan tim terkoordinasi.
+                        Cocok untuk pembuatan aplikasi, website utuh, dan
+                        rebranding lengkap dengan tim terkoordinasi.
                       </p>
                     </div>
                   </div>
                   <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-400">
-                    💡 <span className="text-slate-200 font-semibold">Tips:</span> Anda dapat menentukan pagu anggaran terpisah untuk masing-masing peran (misal: UI/UX Rp 1Jt, Frontend Rp 1.5Jt).
+                    💡{" "}
+                    <span className="text-slate-200 font-semibold">Tips:</span>{" "}
+                    Anda dapat menentukan pagu anggaran terpisah untuk
+                    masing-masing peran (misal: UI/UX Rp 1Jt, Frontend Rp
+                    1.5Jt).
                   </div>
                 </div>
               )}
@@ -932,20 +983,26 @@ export function LandingPage() {
                   </h4>
                   <div className="p-4 bg-emerald-950/30 border border-emerald-800/80 rounded-xl space-y-2">
                     <div className="flex justify-between text-xs">
-                      <span className="text-slate-300">Total Nominal Proyek:</span>
+                      <span className="text-slate-300">
+                        Total Nominal Proyek:
+                      </span>
                       <span className="font-mono font-bold text-white">
                         Rp 2.500.000
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-slate-300">Status Rekening Bersama:</span>
+                      <span className="text-slate-300">
+                        Status Rekening Bersama:
+                      </span>
                       <span className="font-bold text-emerald-400">
                         DIAMANKAN (Vault Mandiri)
                       </span>
                     </div>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Mahasiswa dapat bekerja dengan tenang mengetahui dana telah siap, sementara UMKM memiliki kendali penuh sebelum menyetujui hasil akhir.
+                    Mahasiswa dapat bekerja dengan tenang mengetahui dana telah
+                    siap, sementara UMKM memiliki kendali penuh sebelum
+                    menyetujui hasil akhir.
                   </p>
                 </div>
               )}
@@ -1008,7 +1065,9 @@ export function LandingPage() {
                 <div className="flex gap-2">
                   <button
                     disabled={activeStep === 0}
-                    onClick={() => setActiveStep((prev) => Math.max(0, prev - 1))}
+                    onClick={() =>
+                      setActiveStep((prev) => Math.max(0, prev - 1))
+                    }
                     className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -1017,7 +1076,7 @@ export function LandingPage() {
                     disabled={activeStep === steps.length - 1}
                     onClick={() =>
                       setActiveStep((prev) =>
-                        Math.min(steps.length - 1, prev + 1)
+                        Math.min(steps.length - 1, prev + 1),
                       )
                     }
                     className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300"
@@ -1044,7 +1103,8 @@ export function LandingPage() {
               Dirancang untuk Kolaborasi Tanpa Hambatan
             </h2>
             <p className="mt-3 text-sm sm:text-base text-slate-400">
-              Setiap komponen dibuat interaktif untuk memberikan transparansi dan kendali penuh.
+              Setiap komponen dibuat interaktif untuk memberikan transparansi
+              dan kendali penuh.
             </p>
           </div>
 
@@ -1064,7 +1124,8 @@ export function LandingPage() {
                   Formasi Tim Fleksibel Sesuai Kebutuhan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Buka slot pengerjaan secara spesifik untuk spesialisasi UI/UX, Frontend, atau Backend dengan alokasi anggaran mandiri.
+                  Buka slot pengerjaan secara spesifik untuk spesialisasi UI/UX,
+                  Frontend, atau Backend dengan alokasi anggaran mandiri.
                 </p>
 
                 {/* Interactive Slot Toggle */}
@@ -1094,28 +1155,46 @@ export function LandingPage() {
                     {selectedSlotRole === "uiux" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">Alokasi UI/UX</div>
-                          <div className="text-[11px] text-slate-400">Figma Wireframe & Prototipe</div>
+                          <div className="font-bold text-white">
+                            Alokasi UI/UX
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            Figma Wireframe & Prototipe
+                          </div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">Rp 1.000.000</span>
+                        <span className="font-mono font-bold text-indigo-400">
+                          Rp 1.000.000
+                        </span>
                       </div>
                     )}
                     {selectedSlotRole === "frontend" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">Alokasi Frontend</div>
-                          <div className="text-[11px] text-slate-400">React/Next.js Slicing & Responsive</div>
+                          <div className="font-bold text-white">
+                            Alokasi Frontend
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            React/Next.js Slicing & Responsive
+                          </div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">Rp 1.500.000</span>
+                        <span className="font-mono font-bold text-indigo-400">
+                          Rp 1.500.000
+                        </span>
                       </div>
                     )}
                     {selectedSlotRole === "backend" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">Alokasi Backend</div>
-                          <div className="text-[11px] text-slate-400">REST API & Database Integration</div>
+                          <div className="font-bold text-white">
+                            Alokasi Backend
+                          </div>
+                          <div className="text-[11px] text-slate-400">
+                            REST API & Database Integration
+                          </div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">Rp 1.200.000</span>
+                        <span className="font-mono font-bold text-indigo-400">
+                          Rp 1.200.000
+                        </span>
                       </div>
                     )}
                   </div>
@@ -1138,13 +1217,16 @@ export function LandingPage() {
                   Kalkulator Escrow Transparan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Geser slider anggaran proyek untuk melihat kalkulasi pembagian dana secara transparan tanpa biaya tersembunyi.
+                  Geser slider anggaran proyek untuk melihat kalkulasi pembagian
+                  dana secara transparan tanpa biaya tersembunyi.
                 </p>
 
                 {/* Interactive Slider & Breakdown */}
                 <div className="mt-6 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-400 font-medium">Anggaran Proyek:</span>
+                    <span className="text-slate-400 font-medium">
+                      Anggaran Proyek:
+                    </span>
                     <span className="text-sm font-bold text-emerald-400 font-mono">
                       {formatCurrency(calcBudget)}
                     </span>
@@ -1161,11 +1243,17 @@ export function LandingPage() {
 
                   <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
                     <div className="p-2 bg-slate-800/80 rounded-lg">
-                      <span className="text-slate-400 block text-[10px]">Biaya UMKM:</span>
-                      <span className="font-bold text-emerald-400">Rp 0 (0%)</span>
+                      <span className="text-slate-400 block text-[10px]">
+                        Biaya UMKM:
+                      </span>
+                      <span className="font-bold text-emerald-400">
+                        Rp 0 (0%)
+                      </span>
                     </div>
                     <div className="p-2 bg-slate-800/80 rounded-lg">
-                      <span className="text-slate-400 block text-[10px]">Honor Bersih Talenta:</span>
+                      <span className="text-slate-400 block text-[10px]">
+                        Honor Bersih Talenta:
+                      </span>
                       <span className="font-bold text-white font-mono">
                         {formatCurrency(calcBudget * 0.95)}
                       </span>
@@ -1175,96 +1263,143 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* Bento Card 3: Interactive Workroom Deliverable Simulator */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#131B2E] border border-slate-800 flex flex-col justify-between">
+            {/* Bento Card 3: Interactive Workroom Deliverable Simulator (Axora Visual Pipeline Style) */}
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-[#131B2E] border border-slate-800 flex flex-col justify-between overflow-hidden group">
+              {/* Subtle Corner Spectrum Accent */}
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-tl from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-xl pointer-events-none" />
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
                     <FileCheck className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-bold text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded-full border border-cyan-800/60">
-                    Smart Deliverable
+                    Visual Pipeline Builder
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-white">
-                  Workroom Milestone & Siklus Revisi
+                  Workroom Milestone & Siklus Deliverable
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Kelola serah terima hasil kerja secara bertahap dengan pelacakan revisi transparan dan proteksi auto-approval.
+                  Kelola serah terima bertahap dengan pelacakan revisi transparan dan proteksi auto-approval.
                 </p>
 
-                {/* Simulated Deliverable Interactive Box */}
+                {/* Simulated Interactive Pipeline Tree */}
                 <div className="mt-6 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">
-                      Status Deliverable Simulasi:
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                        simulatedDeliverableStatus === "approved"
-                          ? "bg-emerald-950 text-emerald-400"
-                          : simulatedDeliverableStatus === "revision"
-                          ? "bg-amber-950 text-amber-400"
-                          : "bg-blue-950 text-blue-400"
-                      }`}
-                    >
-                      {simulatedDeliverableStatus === "approved"
-                        ? "✓ Honor Dicairkan"
-                        : simulatedDeliverableStatus === "revision"
-                        ? "Revisi Diajukan"
-                        : "Menunggu Review"}
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="text-xs font-bold text-slate-200">
+                        Pipeline Pengerjaan Aktif
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                      Milestone 1 / 2 Selesai
                     </span>
                   </div>
-                  <div className="flex gap-2">
+
+                  {/* Visual Node Links */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-6 h-6 rounded bg-emerald-950 text-emerald-400 flex items-center justify-center font-bold text-[10px] border border-emerald-800/60">
+                        ✓
+                      </div>
+                      <div className="flex-1 bg-slate-800/70 px-2.5 py-1.5 rounded-lg border border-slate-700/60 flex justify-between items-center">
+                        <span className="text-slate-300 font-medium">1. Figma UI Prototype</span>
+                        <span className="text-[10px] text-emerald-400 font-bold">Disetujui</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="w-6 h-6 rounded bg-blue-950 text-blue-400 flex items-center justify-center font-bold text-[10px] border border-blue-800/60 animate-pulse">
+                        ●
+                      </div>
+                      <div className="flex-1 bg-slate-800/70 px-2.5 py-1.5 rounded-lg border border-slate-700/60 flex justify-between items-center">
+                        <span className="text-slate-200 font-medium">2. React Slicing & API</span>
+                        <span className="text-[10px] text-cyan-400 font-bold">
+                          {simulatedDeliverableStatus === "approved"
+                            ? "✓ Selesai & Cair"
+                            : simulatedDeliverableStatus === "revision"
+                            ? "Revisi Diminta"
+                            : "Siap Review"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Interactive Action Triggers */}
+                  <div className="flex gap-2 pt-2">
                     <button
                       type="button"
                       onClick={() => setSimulatedDeliverableStatus("approved")}
-                      className="flex-1 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
+                      className="flex-1 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow"
                     >
-                      Klik Setujui
+                      Setujui & Cairkan Honor
                     </button>
                     <button
                       type="button"
                       onClick={() => setSimulatedDeliverableStatus("revision")}
-                      className="flex-1 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors"
+                      className="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700"
                     >
-                      Klik Minta Revisi
+                      Minta Revisi
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Bento Card 4: Verified Identity & Digital Portfolio */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#131B2E] border border-slate-800 flex flex-col justify-between">
+            {/* Bento Card 4: Verified Identity & Multi-Agent Network (Axora Hub Style) */}
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-[#131B2E] border border-slate-800 flex flex-col justify-between overflow-hidden group">
+              {/* Corner Spectrum Accent (Axora Signature) */}
+              <div className="absolute -bottom-6 -right-6 w-28 h-28 bg-gradient-to-tl from-amber-400/20 via-cyan-400/10 to-transparent rounded-full blur-xl pointer-events-none" />
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
                     <GraduationCap className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-bold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-800/60">
-                    Akreditasi Resmi
+                    Jaringan Kampus Resmi
                   </span>
                 </div>
                 <h3 className="text-xl font-bold text-white">
                   Identitas Akademik & Portofolio Nyata
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Setiap talenta diverifikasi melalui NIM aktif dan email perguruan tinggi, terhubung langsung dengan repositori GitHub dan Figma asli.
+                  Setiap talenta diverifikasi melalui NIM aktif dan email perguruan tinggi, terhubung langsung dengan repositori kode dan desain asli.
                 </p>
 
-                <div className="mt-6 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Verifikasi Domain Kampus .ac.id Valid</span>
+                {/* Verified Talent Identity Card Preview */}
+                <div className="mt-6 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-600 text-white font-bold text-xs flex items-center justify-center">
+                        AR
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white flex items-center gap-1">
+                          Arya Nugraha
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-mono">
+                          NIM 13521088 | IF ITB
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/60">
+                      Terakreditasi
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Tautan Repositori GitHub & Figma Terverifikasi</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Rekam Jejak Penilaian Rating Dua Arah</span>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="p-2 rounded bg-slate-800/70 flex items-center gap-1.5 text-slate-300">
+                      <ExternalLink className="w-3 h-3 text-cyan-400" />
+                      <span>github.com/aryanugraha</span>
+                    </div>
+                    <div className="p-2 rounded bg-slate-800/70 flex items-center gap-1.5 text-slate-300">
+                      <ExternalLink className="w-3 h-3 text-amber-400" />
+                      <span>figma.com/@aryanugraha</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1383,7 +1518,8 @@ export function LandingPage() {
                   onClick={() => navigate("/talents")}
                   className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200"
                 >
-                  Lihat Semua Talenta Mahasiswa <ArrowRight className="w-4 h-4 ml-2" />
+                  Lihat Semua Talenta Mahasiswa{" "}
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -1392,9 +1528,9 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 7. TESTIMONIALS & CASE STUDIES (Axora Story Slider Style)                 */}
+      {/* 7. TESTIMONIALS & CASE STUDIES (Axora Signature Spectrum Card Style)      */}
       {/* ========================================================================= */}
-      <section className="py-20 bg-white border-t border-slate-200/80">
+      <section className="py-20 bg-white border-t border-slate-200/80 overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-xs font-bold text-brand-indigo uppercase tracking-wider">
@@ -1405,52 +1541,62 @@ export function LandingPage() {
             </h2>
           </div>
 
-          <div className="relative p-6 sm:p-10 bg-gradient-to-b from-slate-50 to-white rounded-3xl border border-slate-200/90 shadow-sm">
-            <div className="space-y-6">
-              <span className="inline-block text-[11px] font-bold text-brand-indigo bg-brand-indigo/10 px-3 py-1 rounded-full">
-                {stories[activeStoryIdx].tag}
-              </span>
+          {/* Testimonial Card with Axora Left-Border Spectrum Ribbon */}
+          <div className="relative flex rounded-3xl border border-slate-200/90 shadow-lg bg-white overflow-hidden">
+            {/* Left Spectrum Vertical Accent Ribbon (Axora Signature) */}
+            <div className="w-3 sm:w-4.5 bg-gradient-to-b from-cyan-400 via-amber-400 to-blue-600 shrink-0 self-stretch" />
 
-              <p className="text-lg sm:text-xl font-medium text-slate-800 leading-relaxed italic">
-                {stories[activeStoryIdx].quote}
-              </p>
+            <div className="flex-1 p-6 sm:p-10 bg-gradient-to-b from-slate-50/70 to-white">
+              <div className="space-y-6">
+                <span className="inline-block text-[11px] font-bold text-brand-indigo bg-brand-indigo/10 px-3 py-1 rounded-full">
+                  {stories[activeStoryIdx].tag}
+                </span>
 
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200/80">
-                {stories[activeStoryIdx].metrics.map((m, mIdx) => (
-                  <div key={mIdx}>
-                    <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono">
-                      {m.value}
+                <p className="text-lg sm:text-xl font-medium text-slate-800 leading-relaxed italic">
+                  {stories[activeStoryIdx].quote}
+                </p>
+
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200/80">
+                  {stories[activeStoryIdx].metrics.map((m, mIdx) => (
+                    <div key={mIdx}>
+                      <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-mono">
+                        {m.value}
+                      </div>
+                      <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                        {m.label}
+                      </div>
                     </div>
-                    <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
-                      {m.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between pt-4">
-                <div>
-                  <div className="font-bold text-slate-900 text-sm">
-                    {stories[activeStoryIdx].author}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    {stories[activeStoryIdx].role}
-                  </div>
+                  ))}
                 </div>
 
-                {/* Slider Indicators */}
-                <div className="flex gap-2">
-                  {stories.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveStoryIdx(idx)}
-                      className={`h-2 rounded-full transition-all ${
-                        activeStoryIdx === idx
-                          ? "w-8 bg-slate-900"
-                          : "w-2 bg-slate-300"
-                      }`}
-                    />
-                  ))}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
+                  <div>
+                    <div className="font-bold text-slate-900 text-sm">
+                      {stories[activeStoryIdx].author}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {stories[activeStoryIdx].role}
+                    </div>
+                  </div>
+
+                  {/* Slider Indicators & Navigation */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1.5">
+                      {stories.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          aria-label={`Slide ${idx + 1}`}
+                          onClick={() => setActiveStoryIdx(idx)}
+                          className={`h-2 rounded-full transition-all ${
+                            activeStoryIdx === idx
+                              ? "w-8 bg-slate-900"
+                              : "w-2 bg-slate-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1471,7 +1617,8 @@ export function LandingPage() {
               Hal yang Sering Ditanyakan
             </h2>
             <p className="mt-3 text-sm text-slate-500">
-              Pelajari selengkapnya tentang jaminan escrow, pembagian formasi tim, dan verifikasi kampus.
+              Pelajari selengkapnya tentang jaminan escrow, pembagian formasi
+              tim, dan verifikasi kampus.
             </p>
           </div>
 
@@ -1521,7 +1668,8 @@ export function LandingPage() {
             Siap Memulai Kolaborasi Digital Hari Ini?
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
-            Pasang kebutuhan proyek UMKM Anda atau raih portofolio industri nyata dengan garansi keamanan transaksi escrow 100%.
+            Pasang kebutuhan proyek UMKM Anda atau raih portofolio industri
+            nyata dengan garansi keamanan transaksi escrow 100%.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
