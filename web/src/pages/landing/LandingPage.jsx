@@ -10,19 +10,15 @@ import {
   ShieldCheck,
   CheckCircle2,
   Users,
-  Wallet,
   Sparkles,
   ChevronRight,
   Plus,
   Minus,
-  Star,
-  Building2,
   GraduationCap,
   Briefcase,
   Layers,
   FileCheck,
   Lock,
-  Zap,
   Clock,
   Check,
   ChevronLeft,
@@ -211,456 +207,476 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-slate-900 font-sans selection:bg-brand-indigo/10 selection:text-brand-indigo overflow-x-hidden">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION & INTERACTIVE WORKFLOW CANVAS                             */}
+      {/* 1. HERO SECTION & FULL-FIDELITY INTERACTIVE SAAS WORKROOM CANVAS          */}
       {/* ========================================================================= */}
-      <section className="relative pt-8 pb-20 lg:pt-14 lg:pb-28 overflow-hidden">
-        {/* Subtle Ambient Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none -z-10 overflow-hidden">
-          <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-blue-100/50 via-cyan-50/40 to-transparent blur-3xl opacity-70" />
+      <section className="relative pt-0 pb-20 lg:pb-28 overflow-hidden">
+        {/* Full-Width Soft Cyan Announcement Strip (Axora Top Bar Style) */}
+        <div className="w-full bg-[#D7F8FC] border-b border-cyan-200/60 py-2.5 px-4 text-center">
+          <Link
+            to="/projects"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-cyan-950 hover:text-cyan-800 transition-colors"
+          >
+            <span className="font-bold">Kolaborasi Multi-Role Terkurasi:</span>
+            <span>Wujudkan proyek digital UMKM bersama talenta kampus terbaik.</span>
+            <span className="font-bold inline-flex items-center ml-1 text-cyan-800 hover:underline">
+              Jelajahi Proyek <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+            </span>
+          </Link>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Announcement Pill */}
-          <div className="flex justify-center mb-6">
-            <Link
-              to="/projects"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200/90 shadow-sm hover:border-brand-indigo/30 hover:shadow transition-all group"
-            >
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] sm:text-xs font-semibold text-slate-700">
-                Platform Kolaborasi Digital Terpercaya Mahasiswa & UMKM
-              </span>
-              <span className="text-[11px] sm:text-xs font-bold text-brand-indigo group-hover:translate-x-0.5 transition-transform flex items-center">
-                Jelajahi Proyek <ArrowRight className="w-3 h-3 ml-1" />
-              </span>
-            </Link>
+        {/* Hero Headline & CTA Area */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 text-center">
+          {/* Top Pill Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200/80 text-cyan-900 text-xs font-semibold mb-6 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Platform Kolaborasi Digital Terpercaya Mahasiswa & UMKM</span>
           </div>
 
-          {/* Main Hero Header */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-              Wujudkan Proyek Nyata,{" "}
-              <span className="bg-gradient-to-r from-brand-indigo via-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                Kolaborasi Talenta Kampus
-              </span>
-            </h1>
-            <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
-              Hubungkan pelaku usaha UMKM dengan mahasiswa bertalenta dalam
-              proyek digital nyata, didukung sistem Rekening Escrow terjamin dan
-              formasi tim multidisiplin.
-            </p>
+          {/* Main Headline */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
+            Ubah ide digital menjadi{" "}
+            <span className="text-cyan-600">
+              proyek terkurasi.
+            </span>
+          </h1>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-              {isAuthenticated ? (
-                <Button
-                  size="lg"
-                  variant="brand"
-                  onClick={() =>
-                    navigate(user?.role === "UMKM" ? "/create-project" : "/projects")
-                  }
-                  className="w-full sm:w-auto font-bold px-7 py-3.5 shadow-lg shadow-brand-indigo/20 rounded-xl"
+          <p className="mt-4 text-sm sm:text-base lg:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Makarya menghubungkan pelaku usaha UMKM dengan mahasiswa bertalenta melalui sistem Rekening Bersama (Escrow) 100% aman dan formasi tim terkoordinasi.
+          </p>
+
+          {/* Axora Signature CTA Pill Button */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(user?.role === "UMKM" ? "/create-project" : "/projects")
+                }
+                className="inline-flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white pl-2 pr-6 py-2 rounded-full font-bold text-sm shadow-xl shadow-slate-900/10 transition-all group"
+              >
+                <span className="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs group-hover:scale-105 transition-transform">
+                  »
+                </span>
+                <span>{user?.role === "UMKM" ? "Buat Proyek Baru" : "Cari Proyek Kolaborasi"}</span>
+              </button>
+            ) : (
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate("/register?role=UMKM")}
+                  className="inline-flex items-center gap-3 bg-slate-900 hover:bg-slate-800 text-white pl-2 pr-6 py-2 rounded-full font-bold text-sm shadow-xl shadow-slate-900/15 transition-all group"
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  {user?.role === "UMKM"
-                    ? "Buat Proyek Baru"
-                    : "Cari Proyek Kolaborasi"}
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    size="lg"
-                    variant="brand"
-                    onClick={() => navigate("/register?role=UMKM")}
-                    className="w-full sm:w-auto font-bold px-7 py-3.5 shadow-lg shadow-brand-indigo/20 rounded-xl flex items-center justify-center"
-                  >
-                    <span>Mulai Pasang Proyek</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => navigate("/register?role=MAHASISWA")}
-                    className="w-full sm:w-auto font-semibold px-6 py-3.5 bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl"
-                  >
-                    <GraduationCap className="w-4 h-4 mr-2 text-brand-indigo" />
-                    Daftar Sebagai Mahasiswa
-                  </Button>
-                </>
-              )}
-            </div>
+                  <span className="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 flex items-center justify-center font-bold text-xs group-hover:scale-105 transition-transform">
+                    »
+                  </span>
+                  <span>Mulai Pasang Proyek</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/register?role=MAHASISWA")}
+                  className="px-5 py-2.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm transition-colors shadow-2xs"
+                >
+                  Daftar Sebagai Mahasiswa
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
-            {/* Trust Micro-Bullets */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-500 font-medium">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                Garansi Escrow 100% Aman
-              </span>
-              <span className="text-slate-300">|</span>
-              <span className="flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-blue-600" />
-                Pilihan Solo atau Tim Multi-Role
-              </span>
-              <span className="text-slate-300">|</span>
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-brand-indigo" />
-                Verifikasi Kampus .ac.id
-              </span>
-            </div>
+        {/* ========================================================================= */}
+        {/* INTERACTIVE WORKFLOW CANVAS FLANKED BY EXACT VERTICAL SPECTRUM BARS       */}
+        {/* ========================================================================= */}
+        <div className="relative mt-12 max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Left Flank Vertical Spectrum Pillars (Exact Axora Curtain) */}
+          <div className="absolute -left-10 sm:-left-16 bottom-0 top-16 w-16 sm:w-28 flex items-end gap-1.5 opacity-80 pointer-events-none -z-10">
+            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-4/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-full bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-2/3 bg-gradient-to-t from-blue-600 to-transparent rounded-t-lg" />
           </div>
 
-          {/* ================================================================= */}
-          {/* INTERACTIVE WORKFLOW CANVAS CONTAINER WITH SPECTRUM GRADIENT BARS */}
-          {/* ================================================================= */}
-          <div className="relative mt-8 max-w-5xl mx-auto">
-            {/* Signature Spectrum Gradient Pillars Behind Canvas (Axora Hero Signature) */}
-            <div className="absolute -left-6 sm:-left-10 bottom-0 top-12 w-8 sm:w-14 bg-gradient-to-t from-cyan-600 via-amber-400 to-transparent opacity-75 rounded-t-xl blur-xs pointer-events-none -z-10 flex gap-1 items-end pb-4">
-              <div className="w-1/3 h-4/5 bg-gradient-to-t from-cyan-600 to-transparent rounded-t" />
-              <div className="w-1/3 h-full bg-gradient-to-t from-teal-500 to-transparent rounded-t" />
-              <div className="w-1/3 h-3/5 bg-gradient-to-t from-amber-400 to-transparent rounded-t" />
-            </div>
-            <div className="absolute -right-6 sm:-right-10 bottom-0 top-12 w-8 sm:w-14 bg-gradient-to-t from-blue-600 via-cyan-400 to-transparent opacity-75 rounded-t-xl blur-xs pointer-events-none -z-10 flex gap-1 items-end pb-4 justify-end">
-              <div className="w-1/3 h-3/5 bg-gradient-to-t from-amber-400 to-transparent rounded-t" />
-              <div className="w-1/3 h-full bg-gradient-to-t from-cyan-500 to-transparent rounded-t" />
-              <div className="w-1/3 h-4/5 bg-gradient-to-t from-blue-600 to-transparent rounded-t" />
-            </div>
+          {/* Right Flank Vertical Spectrum Pillars (Exact Axora Curtain) */}
+          <div className="absolute -right-10 sm:-right-16 bottom-0 top-16 w-16 sm:w-28 flex items-end justify-end gap-1.5 opacity-80 pointer-events-none -z-10">
+            <div className="w-1/4 h-2/3 bg-gradient-to-t from-blue-600 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-full bg-gradient-to-t from-cyan-400 via-amber-300 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-4/5 bg-gradient-to-t from-cyan-500 via-emerald-400 to-transparent rounded-t-lg" />
+            <div className="w-1/4 h-3/5 bg-gradient-to-t from-cyan-600 via-teal-500 to-transparent rounded-t-lg" />
+          </div>
 
-            {/* Ambient Shadow glow around canvas */}
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/15 via-cyan-500/15 to-indigo-500/15 rounded-2xl blur-xl opacity-70 pointer-events-none" />
-
-            <div className="relative bg-white rounded-2xl border border-slate-200/90 shadow-2xl overflow-hidden">
-              {/* Mockup Header Bar */}
-              <div className="px-4 py-3 bg-slate-50/90 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-rose-400/80 inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-amber-400/80 inline-block" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-400/80 inline-block" />
-                  </div>
-                  <span className="text-xs font-bold text-slate-700 ml-2 font-mono flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    makarya.id / live-workroom-canvas
-                  </span>
+          {/* Main Full-Fidelity SaaS Workroom Application Mockup Card */}
+          <div className="relative bg-white rounded-2xl border border-slate-200/90 shadow-2xl overflow-hidden">
+            {/* Top SaaS Header Bar inside App */}
+            <div className="px-4 py-2.5 bg-slate-50/90 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-4">
+                {/* Traffic lights */}
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-rose-400/80 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400/80 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-400/80 inline-block" />
                 </div>
 
-                {/* Canvas Navigation Nodes */}
-                <div className="flex items-center gap-1 bg-slate-200/60 p-1 rounded-lg">
-                  {[
-                    { id: "brief", label: "1. Brief UMKM" },
-                    { id: "team", label: "2. Formasi Tim" },
-                    { id: "escrow", label: "3. Escrow Vault" },
-                    { id: "workroom", label: "4. Deliverable" },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveHeroNode(tab.id)}
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
-                        activeHeroNode === tab.id
-                          ? "bg-white text-slate-900 shadow-sm"
-                          : "text-slate-500 hover:text-slate-900"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+                {/* Logo & Search Bar */}
+                <div className="flex items-center gap-2 font-bold text-slate-800">
+                  <div className="w-5 h-5 rounded bg-cyan-600 text-white flex items-center justify-center text-[10px] font-extrabold">
+                    M
+                  </div>
+                  <span>Makarya</span>
+                </div>
+
+                <div className="hidden md:flex items-center gap-2 bg-white px-2.5 py-1 rounded-md border border-slate-200 text-slate-400 text-[11px]">
+                  <Search className="w-3 h-3" />
+                  <span>Cari workflow & modul...</span>
+                  <span className="font-mono text-[9px] bg-slate-100 px-1 py-0.2 rounded border border-slate-200">
+                    ⌘K
+                  </span>
                 </div>
               </div>
 
-              {/* Canvas Content Grid */}
-              <div className="p-4 sm:p-6 lg:p-8 bg-gradient-to-b from-white to-slate-50/50">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                  {/* Left Column: Interactive Diagram Flow */}
-                  <div className="lg:col-span-7 space-y-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                        Workflow Kolaborasi Aktif
-                      </span>
-                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                        Status: Berjalan Lancar
-                      </span>
-                    </div>
+              {/* Breadcrumb & Collaborator Avatars */}
+              <div className="flex items-center gap-3">
+                <span className="hidden sm:inline font-mono text-[11px] text-slate-500">
+                  Workflow / Redesign Kemasan Kopi Kenangan
+                </span>
+                <div className="flex -space-x-1.5">
+                  <span className="w-6 h-6 rounded-full bg-indigo-500 text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white">
+                    DR
+                  </span>
+                  <span className="w-6 h-6 rounded-full bg-cyan-500 text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white">
+                    AP
+                  </span>
+                  <span className="w-6 h-6 rounded-full bg-amber-500 text-white text-[9px] font-bold flex items-center justify-center ring-2 ring-white">
+                    HW
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="px-2.5 py-1 bg-cyan-600 hover:bg-cyan-700 text-white rounded text-[11px] font-bold"
+                >
+                  Bagikan
+                </button>
+              </div>
+            </div>
 
-                    {/* Step 1: Brief Node */}
-                    <div
-                      onClick={() => setActiveHeroNode("brief")}
-                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                        activeHeroNode === "brief"
-                          ? "bg-blue-50/70 border-blue-300 shadow-sm"
-                          : "bg-white border-slate-200/80 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 shrink-0 font-bold text-xs">
-                          01
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">
-                            Pengembangan Website & Kemasan Kopi Kenangan
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Pagu Anggaran: Rp 2.500.000 | Kategori: UMKM Digital
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
-                        Brief Disetujui
-                      </span>
-                    </div>
-
-                    {/* Connecting Line */}
-                    <div className="h-4 border-l-2 border-dashed border-slate-300 ml-7" />
-
-                    {/* Step 2: Team Formation Node */}
-                    <div
-                      onClick={() => setActiveHeroNode("team")}
-                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                        activeHeroNode === "team"
-                          ? "bg-indigo-50/70 border-indigo-300 shadow-sm ring-1 ring-indigo-200"
-                          : "bg-white border-slate-200/80 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 font-bold text-xs">
-                          02
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                            Formasi Tim: 2 Mahasiswa Terpilih
-                            <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded font-semibold">
-                              Proyek Tim
-                            </span>
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Frontend Dev (Darell - UI) & UI/UX (Amanda - ITB)
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">
-                        Tim Komplit
-                      </span>
-                    </div>
-
-                    {/* Connecting Line */}
-                    <div className="h-4 border-l-2 border-dashed border-slate-300 ml-7" />
-
-                    {/* Step 3: Escrow Node */}
-                    <div
-                      onClick={() => setActiveHeroNode("escrow")}
-                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                        activeHeroNode === "escrow"
-                          ? "bg-emerald-50/70 border-emerald-300 shadow-sm"
-                          : "bg-white border-slate-200/80 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 font-bold text-xs">
-                          03
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">
-                            Escrow Vault Terenkripsi
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Dana Rp 2.500.000 diamankan di Rekening Bersama
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded flex items-center gap-1">
-                        <Lock className="w-2.5 h-2.5" /> Diamankan
-                      </span>
-                    </div>
-
-                    {/* Connecting Line */}
-                    <div className="h-4 border-l-2 border-dashed border-slate-300 ml-7" />
-
-                    {/* Step 4: Deliverable Node */}
-                    <div
-                      onClick={() => setActiveHeroNode("workroom")}
-                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                        activeHeroNode === "workroom"
-                          ? "bg-cyan-50/70 border-cyan-300 shadow-sm"
-                          : "bg-white border-slate-200/80 hover:border-slate-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-cyan-100 flex items-center justify-center text-cyan-700 shrink-0 font-bold text-xs">
-                          04
-                        </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">
-                            Milestone Deliverable Selesai
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Review hasil kerja, persetujuan 1-klik, dan
-                            pencairan honor
-                          </div>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-bold bg-cyan-100 text-cyan-800 px-2 py-0.5 rounded">
-                        Siap Review
-                      </span>
-                    </div>
+            {/* 3-Column SaaS Application Body */}
+            <div className="grid grid-cols-1 md:grid-cols-12 min-h-[460px]">
+              {/* Column 1: Left Workspace Sidebar */}
+              <div className="hidden md:block md:col-span-3 lg:col-span-2 border-r border-slate-200/80 bg-slate-50/50 p-3 text-xs space-y-4">
+                <div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    WORKSPACE
                   </div>
-
-                  {/* Right Column: Live Contextual Detail Inspector */}
-                  <div className="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200/90 shadow-sm">
-                    {activeHeroNode === "brief" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                          <span className="text-xs font-bold text-slate-900">
-                            Detail Kebutuhan Proyek
-                          </span>
-                          <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                            ID #PRJ-8821
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-600 leading-relaxed">
-                          UMKM Kopi Kenangan Nusantara membutuhkan website
-                          landing page modern beserta integrasi katalog menu
-                          online dan aset kemasan.
-                        </div>
-                        <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-xs">
-                          <div className="flex justify-between text-slate-600">
-                            <span>Klien:</span>
-                            <span className="font-semibold text-slate-900">
-                              Hendra Wijaya (UMKM)
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-slate-600">
-                            <span>Lokasi:</span>
-                            <span className="font-semibold text-slate-900">
-                              Bandung, Jawa Barat
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-slate-600">
-                            <span>Batas Waktu:</span>
-                            <span className="font-semibold text-slate-900">
-                              14 Hari Kerja
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeHeroNode === "team" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                          <span className="text-xs font-bold text-slate-900">
-                            Formasi Slot Tim Aktif
-                          </span>
-                          <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
-                            2 Slot Terisi
-                          </span>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="p-2.5 rounded-lg bg-indigo-50/50 border border-indigo-100 flex items-center justify-between">
-                            <div>
-                              <div className="text-xs font-bold text-slate-900">
-                                Darell Radhitya
-                              </div>
-                              <div className="text-[10px] text-slate-500">
-                                Frontend Developer | UI (Smt 6)
-                              </div>
-                            </div>
-                            <span className="text-xs font-mono font-bold text-indigo-700">
-                              Rp 1.500.000
-                            </span>
-                          </div>
-                          <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-100 flex items-center justify-between">
-                            <div>
-                              <div className="text-xs font-bold text-slate-900">
-                                Amanda Putri
-                              </div>
-                              <div className="text-[10px] text-slate-500">
-                                UI/UX Designer | ITB (Smt 4)
-                              </div>
-                            </div>
-                            <span className="text-xs font-mono font-bold text-blue-700">
-                              Rp 1.000.000
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeHeroNode === "escrow" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                          <span className="text-xs font-bold text-slate-900">
-                            Keamanan Escrow Invariant
-                          </span>
-                          <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                            Terverifikasi Bank
-                          </span>
-                        </div>
-                        <div className="p-3 bg-emerald-50/60 rounded-lg border border-emerald-100 space-y-2">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-slate-600">
-                              Total Dana Disetor:
-                            </span>
-                            <span className="font-bold text-slate-900 font-mono">
-                              Rp 2.500.000
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-xs">
-                            <span className="text-slate-600">
-                              Biaya Klien UMKM:
-                            </span>
-                            <span className="font-bold text-emerald-700 font-mono">
-                              Rp 0 (0% Bebas Biaya)
-                            </span>
-                          </div>
-                          <div className="border-t border-emerald-200/60 pt-1.5 flex justify-between text-xs">
-                            <span className="text-slate-600">
-                              Garansi Pengembalian:
-                            </span>
-                            <span className="font-bold text-emerald-700">
-                              100% Terlindungi
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-[11px] text-slate-500 italic">
-                          Dana aman di rekening penampungan dan tidak akan
-                          keluar tanpa persetujuan UMKM.
-                        </p>
-                      </div>
-                    )}
-
-                    {activeHeroNode === "workroom" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                          <span className="text-xs font-bold text-slate-900">
-                            Deliverable & Review
-                          </span>
-                          <span className="text-[10px] font-semibold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
-                            Milestone 1 Selesai
-                          </span>
-                        </div>
-                        <div className="p-2.5 bg-slate-50 rounded-lg text-xs space-y-1.5">
-                          <div className="font-bold text-slate-900">
-                            Tautan & Berkas Pengerjaan:
-                          </div>
-                          <div className="text-[11px] text-blue-600 underline flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" />{" "}
-                            github.com/darell/kopi-kenangan-web
-                          </div>
-                          <div className="text-[11px] text-blue-600 underline flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" />{" "}
-                            figma.com/file/branding-kopi-kenangan
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 pt-1">
-                          <button
-                            type="button"
-                            className="flex-1 py-1.5 text-xs font-bold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-                          >
-                            Setujui & Cairkan
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                  <div className="space-y-1 font-medium">
+                    <button
+                      type="button"
+                      onClick={() => setActiveHeroNode("brief")}
+                      className={`w-full text-left px-2 py-1.5 rounded flex items-center gap-2 ${
+                        activeHeroNode === "brief"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Briefcase className="w-3.5 h-3.5 text-cyan-600" />
+                      <span>1. Brief Proyek</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveHeroNode("team")}
+                      className={`w-full text-left px-2 py-1.5 rounded flex items-center gap-2 ${
+                        activeHeroNode === "team"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      <Users className="w-3.5 h-3.5 text-blue-600" />
+                      <span>2. Formasi Tim</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveHeroNode("escrow")}
+                      className={`w-full text-left px-2 py-1.5 rounded flex items-center gap-2 ${
+                        activeHeroNode === "escrow"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>3. Escrow Vault</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveHeroNode("workroom")}
+                      className={`w-full text-left px-2 py-1.5 rounded flex items-center gap-2 ${
+                        activeHeroNode === "workroom"
+                          ? "bg-cyan-50 text-cyan-950 font-bold border-l-2 border-cyan-600"
+                          : "text-slate-600 hover:bg-slate-100"
+                      }`}
+                    >
+                      <FileCheck className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>4. Deliverables</span>
+                    </button>
                   </div>
                 </div>
+
+                <div className="pt-2 border-t border-slate-200">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    PROYEK AKTIF
+                  </div>
+                  <div className="p-2 bg-white rounded border border-slate-200 text-[11px]">
+                    <div className="font-bold text-slate-800">Kopi Kenangan</div>
+                    <div className="text-slate-500 font-mono text-[10px]">Rp 2.500.000</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Column 2: Center Visual Workflow Canvas Nodes */}
+              <div className="col-span-1 md:col-span-6 lg:col-span-6 p-4 sm:p-6 bg-slate-100/30 flex flex-col justify-center space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-mono font-semibold text-slate-400">
+                    STATUS ALUR KERJA
+                  </span>
+                  <span className="text-[10px] font-bold bg-cyan-100 text-cyan-900 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Check className="w-2.5 h-2.5" /> 3 dari 4 Tahap Tuntas
+                  </span>
+                </div>
+
+                {/* Visual Node 1: Brief Masuk */}
+                <div
+                  onClick={() => setActiveHeroNode("brief")}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    activeHeroNode === "brief"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-cyan-100 text-cyan-800 flex items-center justify-center font-bold text-xs">
+                      1
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Kebutuhan Proyek Diterima
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        Pagu Anggaran Rp 2.500.000 | Klien: Hendra Wijaya
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
+                    ✓ Terverifikasi
+                  </span>
+                </div>
+
+                {/* Connecting Track */}
+                <div className="h-3 border-l-2 border-dashed border-slate-300 ml-6" />
+
+                {/* Visual Node 2: Formasi Tim */}
+                <div
+                  onClick={() => setActiveHeroNode("team")}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    activeHeroNode === "team"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-xs">
+                      2
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Formasi Tim Multi-Role Terbentuk
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        Frontend (Darell - UI) & UI/UX (Amanda - ITB)
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-bold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                    Tim Terisi
+                  </span>
+                </div>
+
+                {/* Connecting Track */}
+                <div className="h-3 border-l-2 border-dashed border-slate-300 ml-6" />
+
+                {/* Visual Node 3: Escrow Vault */}
+                <div
+                  onClick={() => setActiveHeroNode("escrow")}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    activeHeroNode === "escrow"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+                      3
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Dana Diamankan di Escrow
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        Garansi 100% Saldo Terkunci di Rekening Penampungan
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> Diamankan
+                  </span>
+                </div>
+
+                {/* Connecting Track */}
+                <div className="h-3 border-l-2 border-dashed border-slate-300 ml-6" />
+
+                {/* Visual Node 4: Milestone Deliverable */}
+                <div
+                  onClick={() => setActiveHeroNode("workroom")}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    activeHeroNode === "workroom"
+                      ? "bg-white border-cyan-500 shadow-md ring-1 ring-cyan-200"
+                      : "bg-white/80 border-slate-200/80 hover:bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-xs">
+                      4
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Serah Terima & Pencairan Honor
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        Persetujuan 1-klik untuk pencairan dana otomatis
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-bold bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded">
+                    Siap Review
+                  </span>
+                </div>
+              </div>
+
+              {/* Column 3: Right Inspector Panel (Axora Detail Sidebar Style) */}
+              <div className="col-span-1 md:col-span-3 lg:col-span-4 border-t md:border-t-0 md:border-l border-slate-200/80 p-4 sm:p-5 bg-white flex flex-col justify-between text-xs">
+                {activeHeroNode === "brief" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="font-bold text-slate-900">
+                        Detail Kebutuhan Proyek
+                      </span>
+                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
+                        Aktif
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-slate-400 uppercase">NAMA PROYEK</div>
+                      <div className="font-semibold text-slate-800 mt-0.5">
+                        Website & Branding Kopi Kenangan Nusantara
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-slate-400 uppercase">DESKRIPSI BRIEF</div>
+                      <p className="text-slate-600 text-[11px] leading-relaxed mt-0.5">
+                        Pengembangan landing page responsif terintegrasi katalog produk kopi dan desain kemasan label botol modern.
+                      </p>
+                    </div>
+                    <div className="p-2.5 bg-slate-50 rounded-lg space-y-1 text-[11px]">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Klien UMKM:</span>
+                        <span className="font-semibold text-slate-900">Hendra Wijaya</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Pagu Maksimal:</span>
+                        <span className="font-mono font-bold text-slate-900">Rp 2.500.000</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeHeroNode === "team" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="font-bold text-slate-900">
+                        Formasi Slot Tim (2/2 Terisi)
+                      </span>
+                      <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                        Komplit
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="p-2.5 rounded-lg bg-blue-50/50 border border-blue-100">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-slate-900">Darell Radhitya</span>
+                          <span className="font-mono text-[11px] font-bold text-blue-700">Rp 1.500.000</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500">Frontend Dev | UI (Semester 6)</div>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-indigo-50/50 border border-indigo-100">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-slate-900">Amanda Putri</span>
+                          <span className="font-mono text-[11px] font-bold text-indigo-700">Rp 1.000.000</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500">UI/UX Designer | ITB (Semester 4)</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeHeroNode === "escrow" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="font-bold text-slate-900">
+                        Status Escrow Invariant
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                        100% Aman
+                      </span>
+                    </div>
+                    <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 space-y-1.5">
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-slate-600">Total Pagu:</span>
+                        <span className="font-mono font-bold text-slate-900">Rp 2.500.000</span>
+                      </div>
+                      <div className="flex justify-between text-[11px]">
+                        <span className="text-slate-600">Biaya Klien UMKM:</span>
+                        <span className="font-mono font-bold text-emerald-700">Rp 0 (0%)</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500 italic">
+                      Dana tersimpan aman dan hanya dicairkan setelah UMKM menyetujui hasil deliverable.
+                    </p>
+                  </div>
+                )}
+
+                {activeHeroNode === "workroom" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                      <span className="font-bold text-slate-900">
+                        Deliverable Siap Review
+                      </span>
+                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded">
+                        Milestone 1
+                      </span>
+                    </div>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                        <span className="font-medium text-slate-700">github.com/darell/kopi-kenangan</span>
+                        <ExternalLink className="w-3 h-3 text-cyan-600" />
+                      </div>
+                      <div className="p-2 bg-slate-50 rounded border border-slate-200 flex items-center justify-between">
+                        <span className="font-medium text-slate-700">figma.com/@amanda/kopi-ui</span>
+                        <ExternalLink className="w-3 h-3 text-cyan-600" />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs shadow transition-colors"
+                    >
+                      Setujui & Cairkan Honor
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -673,8 +689,7 @@ export function LandingPage() {
       <section className="py-8 bg-white border-y border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-xs font-bold tracking-wider text-slate-400 uppercase mb-4">
-            Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi
-            Terkemuka
+            Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi Terkemuka
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-slate-600 text-xs sm:text-sm font-semibold">
             {campuses.map((c, idx) => (
@@ -718,47 +733,30 @@ export function LandingPage() {
                 Makarya Core Engine
               </h3>
               <p className="text-xs text-slate-500 max-w-sm mt-1">
-                Sistem orkestrasi kontrak otomatis, pencairan escrow instan, dan
-                kolaborasi talenta lintas kampus.
+                Sistem orkestrasi kontrak otomatis, pencairan escrow instan, dan kolaborasi talenta lintas kampus.
               </p>
 
               {/* Orbiting Feature Badges */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 w-full">
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Lock className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Escrow 100%
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Rekening Terpisah
-                  </div>
+                  <div className="text-xs font-bold text-slate-900">Escrow 100%</div>
+                  <div className="text-[10px] text-slate-500">Rekening Terpisah</div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Users className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Multi-Role Slot
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Tim Terstruktur
-                  </div>
+                  <div className="text-xs font-bold text-slate-900">Multi-Role Slot</div>
+                  <div className="text-[10px] text-slate-500">Tim Terstruktur</div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <GraduationCap className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Domain .ac.id
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Verifikasi Resmi
-                  </div>
+                  <div className="text-xs font-bold text-slate-900">Domain .ac.id</div>
+                  <div className="text-[10px] text-slate-500">Verifikasi Resmi</div>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
                   <Clock className="w-4 h-4 text-amber-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Workroom Live
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Milestone Terukur
-                  </div>
+                  <div className="text-xs font-bold text-slate-900">Workroom Live</div>
+                  <div className="text-[10px] text-slate-500">Milestone Terukur</div>
                 </div>
               </div>
             </div>
@@ -817,8 +815,7 @@ export function LandingPage() {
               </h2>
             </div>
             <p className="mt-3 md:mt-0 text-sm text-slate-500 max-w-md">
-              Hanya 4 langkah mudah untuk merealisasikan proyek digital Anda
-              bersama talenta mahasiswa terbaik.
+              Hanya 4 langkah mudah untuk merealisasikan proyek digital Anda bersama talenta mahasiswa terbaik.
             </p>
           </div>
 
@@ -895,8 +892,7 @@ export function LandingPage() {
                         Proyek Solo (1 Talenta)
                       </div>
                       <p className="text-xs text-slate-400 leading-relaxed">
-                        Cocok untuk tugas spesifik seperti desain logo, foto
-                        produk, atau penulisan copywriting.
+                        Cocok untuk tugas spesifik seperti desain logo, foto produk, atau penulisan copywriting.
                       </p>
                     </div>
                     <div className="p-4 rounded-xl bg-indigo-950/50 border border-indigo-600/60">
@@ -907,17 +903,12 @@ export function LandingPage() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-300 leading-relaxed">
-                        Cocok untuk pembuatan aplikasi, website utuh, dan
-                        rebranding lengkap dengan tim terkoordinasi.
+                        Cocok untuk pembuatan aplikasi, website utuh, dan rebranding lengkap dengan tim terkoordinasi.
                       </p>
                     </div>
                   </div>
                   <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-400">
-                    💡{" "}
-                    <span className="text-slate-200 font-semibold">Tips:</span>{" "}
-                    Anda dapat menentukan pagu anggaran terpisah untuk
-                    masing-masing peran (misal: UI/UX Rp 1Jt, Frontend Rp
-                    1.5Jt).
+                    💡 <span className="text-slate-200 font-semibold">Tips:</span> Anda dapat menentukan pagu anggaran terpisah untuk masing-masing peran (misal: UI/UX Rp 1Jt, Frontend Rp 1.5Jt).
                   </div>
                 </div>
               )}
@@ -983,26 +974,20 @@ export function LandingPage() {
                   </h4>
                   <div className="p-4 bg-emerald-950/30 border border-emerald-800/80 rounded-xl space-y-2">
                     <div className="flex justify-between text-xs">
-                      <span className="text-slate-300">
-                        Total Nominal Proyek:
-                      </span>
+                      <span className="text-slate-300">Total Nominal Proyek:</span>
                       <span className="font-mono font-bold text-white">
                         Rp 2.500.000
                       </span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-slate-300">
-                        Status Rekening Bersama:
-                      </span>
+                      <span className="text-slate-300">Status Rekening Bersama:</span>
                       <span className="font-bold text-emerald-400">
                         DIAMANKAN (Vault Mandiri)
                       </span>
                     </div>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Mahasiswa dapat bekerja dengan tenang mengetahui dana telah
-                    siap, sementara UMKM memiliki kendali penuh sebelum
-                    menyetujui hasil akhir.
+                    Mahasiswa dapat bekerja dengan tenang mengetahui dana telah siap, sementara UMKM memiliki kendali penuh sebelum menyetujui hasil akhir.
                   </p>
                 </div>
               )}
@@ -1065,9 +1050,7 @@ export function LandingPage() {
                 <div className="flex gap-2">
                   <button
                     disabled={activeStep === 0}
-                    onClick={() =>
-                      setActiveStep((prev) => Math.max(0, prev - 1))
-                    }
+                    onClick={() => setActiveStep((prev) => Math.max(0, prev - 1))}
                     className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -1076,7 +1059,7 @@ export function LandingPage() {
                     disabled={activeStep === steps.length - 1}
                     onClick={() =>
                       setActiveStep((prev) =>
-                        Math.min(steps.length - 1, prev + 1),
+                        Math.min(steps.length - 1, prev + 1)
                       )
                     }
                     className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-slate-300"
@@ -1103,8 +1086,7 @@ export function LandingPage() {
               Dirancang untuk Kolaborasi Tanpa Hambatan
             </h2>
             <p className="mt-3 text-sm sm:text-base text-slate-400">
-              Setiap komponen dibuat interaktif untuk memberikan transparansi
-              dan kendali penuh.
+              Setiap komponen dibuat interaktif untuk memberikan transparansi dan kendali penuh.
             </p>
           </div>
 
@@ -1124,8 +1106,7 @@ export function LandingPage() {
                   Formasi Tim Fleksibel Sesuai Kebutuhan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Buka slot pengerjaan secara spesifik untuk spesialisasi UI/UX,
-                  Frontend, atau Backend dengan alokasi anggaran mandiri.
+                  Buka slot pengerjaan secara spesifik untuk spesialisasi UI/UX, Frontend, atau Backend dengan alokasi anggaran mandiri.
                 </p>
 
                 {/* Interactive Slot Toggle */}
@@ -1155,46 +1136,28 @@ export function LandingPage() {
                     {selectedSlotRole === "uiux" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">
-                            Alokasi UI/UX
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            Figma Wireframe & Prototipe
-                          </div>
+                          <div className="font-bold text-white">Alokasi UI/UX</div>
+                          <div className="text-[11px] text-slate-400">Figma Wireframe & Prototipe</div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">
-                          Rp 1.000.000
-                        </span>
+                        <span className="font-mono font-bold text-indigo-400">Rp 1.000.000</span>
                       </div>
                     )}
                     {selectedSlotRole === "frontend" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">
-                            Alokasi Frontend
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            React/Next.js Slicing & Responsive
-                          </div>
+                          <div className="font-bold text-white">Alokasi Frontend</div>
+                          <div className="text-[11px] text-slate-400">React/Next.js Slicing & Responsive</div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">
-                          Rp 1.500.000
-                        </span>
+                        <span className="font-mono font-bold text-indigo-400">Rp 1.500.000</span>
                       </div>
                     )}
                     {selectedSlotRole === "backend" && (
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-bold text-white">
-                            Alokasi Backend
-                          </div>
-                          <div className="text-[11px] text-slate-400">
-                            REST API & Database Integration
-                          </div>
+                          <div className="font-bold text-white">Alokasi Backend</div>
+                          <div className="text-[11px] text-slate-400">REST API & Database Integration</div>
                         </div>
-                        <span className="font-mono font-bold text-indigo-400">
-                          Rp 1.200.000
-                        </span>
+                        <span className="font-mono font-bold text-indigo-400">Rp 1.200.000</span>
                       </div>
                     )}
                   </div>
@@ -1217,16 +1180,13 @@ export function LandingPage() {
                   Kalkulator Escrow Transparan
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-                  Geser slider anggaran proyek untuk melihat kalkulasi pembagian
-                  dana secara transparan tanpa biaya tersembunyi.
+                  Geser slider anggaran proyek untuk melihat kalkulasi pembagian dana secara transparan tanpa biaya tersembunyi.
                 </p>
 
                 {/* Interactive Slider & Breakdown */}
                 <div className="mt-6 p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-400 font-medium">
-                      Anggaran Proyek:
-                    </span>
+                    <span className="text-slate-400 font-medium">Anggaran Proyek:</span>
                     <span className="text-sm font-bold text-emerald-400 font-mono">
                       {formatCurrency(calcBudget)}
                     </span>
@@ -1243,17 +1203,11 @@ export function LandingPage() {
 
                   <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
                     <div className="p-2 bg-slate-800/80 rounded-lg">
-                      <span className="text-slate-400 block text-[10px]">
-                        Biaya UMKM:
-                      </span>
-                      <span className="font-bold text-emerald-400">
-                        Rp 0 (0%)
-                      </span>
+                      <span className="text-slate-400 block text-[10px]">Biaya UMKM:</span>
+                      <span className="font-bold text-emerald-400">Rp 0 (0%)</span>
                     </div>
                     <div className="p-2 bg-slate-800/80 rounded-lg">
-                      <span className="text-slate-400 block text-[10px]">
-                        Honor Bersih Talenta:
-                      </span>
+                      <span className="text-slate-400 block text-[10px]">Honor Bersih Talenta:</span>
                       <span className="font-bold text-white font-mono">
                         {formatCurrency(calcBudget * 0.95)}
                       </span>
@@ -1518,8 +1472,7 @@ export function LandingPage() {
                   onClick={() => navigate("/talents")}
                   className="font-bold px-8 rounded-xl bg-white hover:bg-slate-50 border-slate-200"
                 >
-                  Lihat Semua Talenta Mahasiswa{" "}
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  Lihat Semua Talenta Mahasiswa <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </div>
@@ -1617,8 +1570,7 @@ export function LandingPage() {
               Hal yang Sering Ditanyakan
             </h2>
             <p className="mt-3 text-sm text-slate-500">
-              Pelajari selengkapnya tentang jaminan escrow, pembagian formasi
-              tim, dan verifikasi kampus.
+              Pelajari selengkapnya tentang jaminan escrow, pembagian formasi tim, dan verifikasi kampus.
             </p>
           </div>
 
@@ -1668,8 +1620,7 @@ export function LandingPage() {
             Siap Memulai Kolaborasi Digital Hari Ini?
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
-            Pasang kebutuhan proyek UMKM Anda atau raih portofolio industri
-            nyata dengan garansi keamanan transaksi escrow 100%.
+            Pasang kebutuhan proyek UMKM Anda atau raih portofolio industri nyata dengan garansi keamanan transaksi escrow 100%.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
