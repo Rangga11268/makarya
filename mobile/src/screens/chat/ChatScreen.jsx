@@ -427,18 +427,32 @@ export function ChatScreen({ route, navigation }) {
   };
 
   const getCleanRoleName = (offer) => {
+    // Cari daftar slots proyek baik dari offer.slots atau myProjects
+    const matchedProject = myProjects.find(
+      (p) => p.id === offer.projectId || p.id === currentProjectId,
+    );
+
+    const availableSlots =
+      offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0
+        ? offer.slots
+        : matchedProject?.slots &&
+            Array.isArray(matchedProject.slots) &&
+            matchedProject.slots.length > 0
+          ? matchedProject.slots
+          : [];
+
     // 1. Jika ada slots spesifik dari brief proyek:
-    if (offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
+    if (availableSlots.length > 0) {
       // Cocokkan by slotId jika ada
       if (offer.slotId) {
-        const found = offer.slots.find(
+        const found = availableSlots.find(
           (s) => String(s.id) === String(offer.slotId),
         );
         if (found && found.nama_peran) return found.nama_peran;
       }
       // Cocokkan jika budget tawaran sesuai alokasi slot tertentu
       if (offer.budget) {
-        const matchSlot = offer.slots.find(
+        const matchSlot = availableSlots.find(
           (s) => Number(s.alokasi_budget) === Number(offer.budget),
         );
         if (matchSlot && matchSlot.nama_peran) return matchSlot.nama_peran;
@@ -469,8 +483,8 @@ export function ChatScreen({ route, navigation }) {
       (typeof role === "string" && role.startsWith("Spesialis "));
 
     // Jika generic tapi ada slots, gunakan daftar peran dari brief
-    if (isGeneric && offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
-      return offer.slots.map((s) => s.nama_peran).join(" / ");
+    if (isGeneric && availableSlots.length > 0) {
+      return availableSlots.map((s) => s.nama_peran).join(" & ");
     }
 
     const catMap = {
@@ -757,111 +771,135 @@ export function ChatScreen({ route, navigation }) {
                   </View>
 
                   {/* Formasi Peran Tim (If Team Project with Slots) */}
-                  {offer.slots && offer.slots.length > 0 && (
-                    <View
-                      style={[
-                        styles.offerTeamSlotsContainer,
-                        isMe
-                          ? styles.offerTeamSlotsContainerMe
-                          : styles.offerTeamSlotsContainerPartner,
-                      ]}
-                    >
-                      <Text
+                  {(() => {
+                    const matchedProject = myProjects.find(
+                      (p) =>
+                        p.id === offer.projectId || p.id === currentProjectId,
+                    );
+                    const effectiveSlots =
+                      offer.slots &&
+                      Array.isArray(offer.slots) &&
+                      offer.slots.length > 0
+                        ? offer.slots
+                        : matchedProject?.slots &&
+                            Array.isArray(matchedProject.slots) &&
+                            matchedProject.slots.length > 0
+                          ? matchedProject.slots
+                          : [];
+
+                    if (!effectiveSlots || effectiveSlots.length === 0)
+                      return null;
+
+                    return (
+                      <View
                         style={[
-                          styles.offerTeamSlotsHeading,
+                          styles.offerTeamSlotsContainer,
                           isMe
-                            ? { color: "rgba(255, 255, 255, 0.85)" }
-                            : { color: "#64748B" },
+                            ? styles.offerTeamSlotsContainerMe
+                            : styles.offerTeamSlotsContainerPartner,
                         ]}
                       >
-                        FORMASI PERAN TIM ({offer.slots.length} POSISI):
-                      </Text>
-                      <View style={{ gap: 6 }}>
-                        {offer.slots.map((s, sIdx) => {
-                          const isThisRole =
-                            (offer.slotId &&
-                              String(s.id) === String(offer.slotId)) ||
-                            s.nama_peran === offer.posisi;
-                          return (
-                            <View
-                              key={s.id || sIdx}
-                              style={[
-                                styles.offerTeamSlotRow,
-                                isThisRole
-                                  ? isMe
-                                    ? styles.offerTeamSlotRowSelectedMe
-                                    : styles.offerTeamSlotRowSelectedPartner
-                                  : isMe
-                                    ? styles.offerTeamSlotRowMe
-                                    : styles.offerTeamSlotRowPartner,
-                              ]}
-                            >
+                        <Text
+                          style={[
+                            styles.offerTeamSlotsHeading,
+                            isMe
+                              ? { color: "rgba(255, 255, 255, 0.85)" }
+                              : { color: "#64748B" },
+                          ]}
+                        >
+                          FORMASI PERAN TIM ({effectiveSlots.length} POSISI):
+                        </Text>
+                        <View style={{ gap: 6 }}>
+                          {effectiveSlots.map((s, sIdx) => {
+                            const isThisRole =
+                              (offer.slotId &&
+                                String(s.id) === String(offer.slotId)) ||
+                              s.nama_peran === offer.posisi ||
+                              (offer.budget &&
+                                Number(s.alokasi_budget) ===
+                                  Number(offer.budget));
+                            return (
                               <View
-                                style={{
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 6,
-                                  flex: 1,
-                                }}
-                              >
-                                <Text
-                                  style={[
-                                    styles.offerTeamSlotRoleName,
-                                    isThisRole && { fontWeight: "700" },
-                                    isMe
-                                      ? { color: "#FFFFFF" }
-                                      : isThisRole
-                                        ? { color: COLORS.brandIndigo }
-                                        : { color: "#1E293B" },
-                                  ]}
-                                  numberOfLines={1}
-                                >
-                                  {s.nama_peran}
-                                </Text>
-                                {isThisRole && (
-                                  <View
-                                    style={[
-                                      styles.offerTeamSlotTag,
-                                      isMe
-                                        ? {
-                                            backgroundColor:
-                                              "rgba(255, 255, 255, 0.25)",
-                                          }
-                                        : {
-                                            backgroundColor: COLORS.brandIndigo,
-                                          },
-                                    ]}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#FFFFFF",
-                                        fontSize: 9,
-                                        fontWeight: "700",
-                                      }}
-                                    >
-                                      Ditawarkan
-                                    </Text>
-                                  </View>
-                                )}
-                              </View>
-                              <Text
+                                key={s.id || sIdx}
                                 style={[
-                                  styles.offerTeamSlotBudget,
-                                  isMe
-                                    ? { color: "rgba(255, 255, 255, 0.9)" }
-                                    : { color: "#059669" },
+                                  styles.offerTeamSlotRow,
+                                  isThisRole
+                                    ? isMe
+                                      ? styles.offerTeamSlotRowSelectedMe
+                                      : styles.offerTeamSlotRowSelectedPartner
+                                    : isMe
+                                      ? styles.offerTeamSlotRowMe
+                                      : styles.offerTeamSlotRowPartner,
                                 ]}
                               >
-                                {s.alokasi_budget
-                                  ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
-                                  : "Sesuai Proyek"}
-                              </Text>
-                            </View>
-                          );
-                        })}
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 6,
+                                    flex: 1,
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.offerTeamSlotRoleName,
+                                      isThisRole && { fontWeight: "700" },
+                                      isMe
+                                        ? { color: "#FFFFFF" }
+                                        : isThisRole
+                                          ? { color: COLORS.brandIndigo }
+                                          : { color: "#1E293B" },
+                                    ]}
+                                    numberOfLines={1}
+                                  >
+                                    {s.nama_peran}
+                                  </Text>
+                                  {isThisRole && (
+                                    <View
+                                      style={[
+                                        styles.offerTeamSlotTag,
+                                        isMe
+                                          ? {
+                                              backgroundColor:
+                                                "rgba(255, 255, 255, 0.25)",
+                                            }
+                                          : {
+                                              backgroundColor:
+                                                COLORS.brandIndigo,
+                                            },
+                                      ]}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#FFFFFF",
+                                          fontSize: 9,
+                                          fontWeight: "700",
+                                        }}
+                                      >
+                                        Ditawarkan
+                                      </Text>
+                                    </View>
+                                  )}
+                                </View>
+                                <Text
+                                  style={[
+                                    styles.offerTeamSlotBudget,
+                                    isMe
+                                      ? { color: "rgba(255, 255, 255, 0.9)" }
+                                      : { color: "#059669" },
+                                  ]}
+                                >
+                                  {s.alokasi_budget
+                                    ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
+                                    : "Sesuai Proyek"}
+                                </Text>
+                              </View>
+                            );
+                          })}
+                        </View>
                       </View>
-                    </View>
-                  )}
+                    );
+                  })()}
 
                   {/* Action Buttons for Mahasiswa */}
                   {offerStatus === "PENDING" ? (
@@ -1767,15 +1805,17 @@ const styles = StyleSheet.create({
     borderColor: COLORS.borderDark,
   },
   bubbleBoxOfferMe: {
-    maxWidth: "88%",
-    borderRadius: 20,
+    width: "95%",
+    maxWidth: "96%",
+    borderRadius: 22,
     padding: 0,
     backgroundColor: "transparent",
     borderWidth: 0,
   },
   bubbleBoxOfferPartner: {
-    maxWidth: "88%",
-    borderRadius: 20,
+    width: "95%",
+    maxWidth: "96%",
+    borderRadius: 22,
     padding: 0,
     backgroundColor: "transparent",
     borderWidth: 0,
