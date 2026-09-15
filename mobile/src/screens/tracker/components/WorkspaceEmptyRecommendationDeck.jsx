@@ -24,7 +24,6 @@ import {
   ShieldCheck,
   Building2,
   Clock,
-  Briefcase,
   Plus,
 } from "lucide-react-native";
 

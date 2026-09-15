@@ -31,6 +31,7 @@ import {
   VideoMotionVectorIcon,
   MarketingVectorIcon,
   WritingVectorIcon,
+  ProjectBriefVectorIcon,
   renderProjectCategoryVectorIcon,
 } from "../../components/icons/CategoryIcons";
 import { useAuthStore } from "../../store/authStore";
@@ -47,7 +48,6 @@ import {
   ShieldCheck,
   Compass,
   ArrowRight,
-  Briefcase,
   Lock,
   Bell,
   Star,
@@ -444,14 +444,30 @@ export function HomeScreen({ navigation }) {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.bellButton}
-                onPress={() => setIsNotificationOpen(true)}
-                activeOpacity={0.8}
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
               >
-                <Bell size={18} color="#0F172A" />
-                {unreadNotifications > 0 && <View style={styles.bellRedDot} />}
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.bellButton}
+                  onPress={() => navigation.navigate("ChatList")}
+                  activeOpacity={0.8}
+                  accessibilityLabel="Pesan & Diskusi"
+                >
+                  <MessageSquare size={18} color="#0F172A" />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.bellButton}
+                  onPress={() => setIsNotificationOpen(true)}
+                  activeOpacity={0.8}
+                  accessibilityLabel="Notifikasi"
+                >
+                  <Bell size={18} color="#0F172A" />
+                  {unreadNotifications > 0 && (
+                    <View style={styles.bellRedDot} />
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Subtle Internal Divider */}
@@ -823,7 +839,7 @@ export function HomeScreen({ navigation }) {
 
               {browseProjects.length === 0 ? (
                 <View style={styles.emptyCardBox}>
-                  <Briefcase size={32} color={COLORS.textDim} />
+                  <ProjectBriefVectorIcon size={32} color={COLORS.textDim} />
                   <Text style={styles.emptyCardTitle}>Belum Ada Proyek</Text>
                   <Text style={styles.emptyCardSubtitle}>
                     Periksa kembali beberapa saat lagi untuk tawaran terbaru.
@@ -1470,9 +1486,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
@@ -1989,14 +2005,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     lineHeight: 14,
   },
-  endCapPillBtn: {
+  endCapPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     backgroundColor: COLORS.brandIndigo,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
+    borderRadius: 8,
   },
   endCapPillText: {
     fontFamily: FONTS.bodyMedium,
@@ -2087,7 +2103,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFF6FF",
     paddingHorizontal: 6,
     paddingVertical: 1,
-    borderRadius: 9999,
+    borderRadius: 6,
   },
   completionPercentText: {
     fontFamily: FONTS.bold,
@@ -2114,14 +2130,14 @@ const styles = StyleSheet.create({
   completionProgressBarTrack: {
     height: 3.5,
     backgroundColor: "#F1F5F9",
-    borderRadius: 9999,
+    borderRadius: 2,
     overflow: "hidden",
     marginBottom: 10,
   },
   completionProgressBarFill: {
     height: "100%",
     backgroundColor: "#2563EB",
-    borderRadius: 9999,
+    borderRadius: 2,
   },
   completionFooterRow: {
     flexDirection: "row",

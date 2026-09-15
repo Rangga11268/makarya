@@ -15,7 +15,6 @@ import { formatDate } from "../../../utils/formatDate";
 import {
   Users,
   Calendar,
-  Briefcase,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -33,7 +32,8 @@ export function ApplicantReviewBoardView({
   selectedProposalToAccept,
 }) {
   const [isBriefExpanded, setIsBriefExpanded] = useState(false);
-  const { isLandscape, isCompact, responsiveContainerStyle } = useResponsiveLayout();
+  const { isLandscape, isCompact, responsiveContainerStyle } =
+    useResponsiveLayout();
 
   return (
     <ScrollView
@@ -47,118 +47,118 @@ export function ApplicantReviewBoardView({
       <View style={responsiveContainerStyle}>
         {/* 1. Project Snapshot Header Card */}
         <View style={styles.projectHeaderCard}>
-        <View style={styles.headerTopRow}>
-          <View style={styles.categoryBadge}>
-            <Text style={styles.categoryBadgeText}>
-              {project.kategori || "UMKM DIGITAL"}
+          <View style={styles.headerTopRow}>
+            <View style={styles.categoryBadge}>
+              <Text style={styles.categoryBadgeText}>
+                {project.kategori || "UMKM DIGITAL"}
+              </Text>
+            </View>
+            <View style={styles.statusPill}>
+              <View style={styles.pulseDot} />
+              <Text style={styles.statusPillText}>Tahap Seleksi Pelamar</Text>
+            </View>
+          </View>
+
+          <Text style={styles.projectTitle}>{project.judul}</Text>
+
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <Calendar size={13} color="#64748B" />
+              <Text style={styles.metaItemText}>
+                Tenggat: {formatDate(project.deadline)}
+              </Text>
+            </View>
+            <View style={styles.metaDivider} />
+            <Text style={styles.budgetValue}>
+              Pagu {formatCurrency(project.budget_max)}
             </Text>
           </View>
-          <View style={styles.statusPill}>
-            <View style={styles.pulseDot} />
-            <Text style={styles.statusPillText}>Tahap Seleksi Pelamar</Text>
-          </View>
-        </View>
 
-        <Text style={styles.projectTitle}>{project.judul}</Text>
-
-        <View style={styles.metaRow}>
-          <View style={styles.metaItem}>
-            <Calendar size={13} color="#64748B" />
-            <Text style={styles.metaItemText}>
-              Tenggat: {formatDate(project.deadline)}
+          {/* Collapsible Brief Toggle (Doesn't eat screen space) */}
+          <TouchableOpacity
+            style={styles.briefToggleBtn}
+            onPress={() => setIsBriefExpanded(!isBriefExpanded)}
+            activeOpacity={0.7}
+          >
+            <FileText size={14} color="#2563EB" />
+            <Text style={styles.briefToggleText}>
+              {isBriefExpanded
+                ? "Sembunyikan Rincian Brief"
+                : "Lihat Rincian Brief Proyek"}
             </Text>
-          </View>
-          <View style={styles.metaDivider} />
-          <Text style={styles.budgetValue}>
-            Pagu {formatCurrency(project.budget_max)}
-          </Text>
-        </View>
+            {isBriefExpanded ? (
+              <ChevronUp size={16} color="#2563EB" />
+            ) : (
+              <ChevronDown size={16} color="#2563EB" />
+            )}
+          </TouchableOpacity>
 
-        {/* Collapsible Brief Toggle (Doesn't eat screen space) */}
-        <TouchableOpacity
-          style={styles.briefToggleBtn}
-          onPress={() => setIsBriefExpanded(!isBriefExpanded)}
-          activeOpacity={0.7}
-        >
-          <FileText size={14} color="#2563EB" />
-          <Text style={styles.briefToggleText}>
-            {isBriefExpanded
-              ? "Sembunyikan Rincian Brief"
-              : "Lihat Rincian Brief Proyek"}
-          </Text>
-          {isBriefExpanded ? (
-            <ChevronUp size={16} color="#2563EB" />
-          ) : (
-            <ChevronDown size={16} color="#2563EB" />
-          )}
-        </TouchableOpacity>
-
-        {isBriefExpanded && (
-          <View style={styles.briefContentBox}>
-            <Text style={styles.briefBodyText}>{project.deskripsi_raw}</Text>
-            {Array.isArray(project.deliverables) &&
-              project.deliverables.length > 0 && (
-                <View style={{ marginTop: 10 }}>
-                  <Text style={styles.deliverableMiniTitle}>
-                    Luaran Deliverable:
-                  </Text>
-                  {project.deliverables.map((d, i) => (
-                    <Text key={i} style={styles.deliverableItemText}>
-                      • {d}
+          {isBriefExpanded && (
+            <View style={styles.briefContentBox}>
+              <Text style={styles.briefBodyText}>{project.deskripsi_raw}</Text>
+              {Array.isArray(project.deliverables) &&
+                project.deliverables.length > 0 && (
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={styles.deliverableMiniTitle}>
+                      Luaran Deliverable:
                     </Text>
-                  ))}
-                </View>
-              )}
-          </View>
-        )}
-      </View>
-
-      {/* 2. Applicant Section Header (Flat, no card-ception) */}
-      <View style={styles.applicantHeaderRow}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <Users size={15} color="#2563EB" />
-          <Text style={styles.applicantCountTitle}>
-            {proposals.length} Proposal Mahasiswa Masuk
-          </Text>
+                    {project.deliverables.map((d, i) => (
+                      <Text key={i} style={styles.deliverableItemText}>
+                        • {d}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+            </View>
+          )}
         </View>
-        <Text style={styles.applicantCountSub}>
-          Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk
-          memulai kontrak kerja.
-        </Text>
-      </View>
 
-      {/* 3. Candidate Stack (Daftar Proposal) */}
-      <View style={styles.proposalListWrap}>
-        {proposals.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <Users size={36} color="#94A3B8" />
-            <Text style={styles.emptyTitle}>Belum Ada Proposal Masuk</Text>
-            <Text style={styles.emptySub}>
-              Proyek Anda sedang aktif ditayangkan di katalog eksplorasi
-              mahasiswa. Begitu mahasiswa mengajukan penawaran, daftar kandidat
-              akan muncul di sini.
+        {/* 2. Applicant Section Header (Flat, no card-ception) */}
+        <View style={styles.applicantHeaderRow}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Users size={15} color="#2563EB" />
+            <Text style={styles.applicantCountTitle}>
+              {proposals.length} Proposal Mahasiswa Masuk
             </Text>
           </View>
-        ) : (
-          proposals.map((prop) => (
-            <ProposalCard
-              key={prop.id}
-              proposal={prop}
-              projectSlots={project.slots}
-              isMultiSlot={
-                Boolean(project.slots && project.slots.length > 1) ||
-                project.tipe_kolaborasi === "TIM"
-              }
-              onAccept={() => onAcceptProposal(prop)}
-              onReject={() => onRejectProposal(prop.id)}
-              loadingAccept={
-                actionLoading && selectedProposalToAccept?.id === prop.id
-              }
-              loadingReject={actionLoading}
-            />
-          ))
-        )}
-      </View>
+          <Text style={styles.applicantCountSub}>
+            Tinjau portofolio, nilai tawaran, dan setujui 1 mahasiswa untuk
+            memulai kontrak kerja.
+          </Text>
+        </View>
+
+        {/* 3. Candidate Stack (Daftar Proposal) */}
+        <View style={styles.proposalListWrap}>
+          {proposals.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Users size={36} color="#94A3B8" />
+              <Text style={styles.emptyTitle}>Belum Ada Proposal Masuk</Text>
+              <Text style={styles.emptySub}>
+                Proyek Anda sedang aktif ditayangkan di katalog eksplorasi
+                mahasiswa. Begitu mahasiswa mengajukan penawaran, daftar
+                kandidat akan muncul di sini.
+              </Text>
+            </View>
+          ) : (
+            proposals.map((prop) => (
+              <ProposalCard
+                key={prop.id}
+                proposal={prop}
+                projectSlots={project.slots}
+                isMultiSlot={
+                  Boolean(project.slots && project.slots.length > 1) ||
+                  project.tipe_kolaborasi === "TIM"
+                }
+                onAccept={() => onAcceptProposal(prop)}
+                onReject={() => onRejectProposal(prop.id)}
+                loadingAccept={
+                  actionLoading && selectedProposalToAccept?.id === prop.id
+                }
+                loadingReject={actionLoading}
+              />
+            ))
+          )}
+        </View>
       </View>
     </ScrollView>
   );

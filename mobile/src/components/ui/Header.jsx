@@ -8,9 +8,15 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { ArrowLeft, Bell, ShieldCheck } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Bell,
+  MessageSquare,
+  ShieldCheck,
+} from "lucide-react-native";
 
 export function HeaderCircleButton({
   onPress,
@@ -48,12 +54,28 @@ export function Header({
   showBell = false,
   onBellPress,
   unreadCount = 0,
+  showChat = false,
+  onChatPress,
+  chatUnreadCount = 0,
   userProfile,
   onProfilePress,
   showBrandLogo = false,
   style,
 }) {
   const insets = useSafeAreaInsets();
+  let nav;
+  try {
+    nav = useNavigation();
+  } catch (_) {}
+
+  const handleChatPress = () => {
+    if (onChatPress) {
+      onChatPress();
+    } else if (nav?.navigate) {
+      nav.navigate("ChatList");
+    }
+  };
+
   const topPadding =
     Math.max(insets?.top || 0, Platform.OS === "ios" ? 44 : 24) + 8;
 
@@ -131,19 +153,41 @@ export function Header({
       </View>
 
       {/* 3. Right Slot (Symmetric with Left) */}
-      <View style={styles.sideSlotRight}>
+      <View
+        style={[
+          styles.sideSlotRight,
+          showBell && showChat && { flexDirection: "row", gap: 6 },
+        ]}
+      >
         {rightAction ? (
           rightAction
-        ) : showBell ? (
-          <TouchableOpacity
-            onPress={onBellPress}
-            style={styles.headerCircleBtn}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Bell size={18} color="#0F172A" />
-            {unreadCount > 0 && <View style={styles.unreadDot} />}
-          </TouchableOpacity>
+        ) : showBell || showChat ? (
+          <>
+            {showChat && (
+              <TouchableOpacity
+                onPress={handleChatPress}
+                style={styles.headerCircleBtn}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Pesan & Diskusi"
+              >
+                <MessageSquare size={18} color="#0F172A" />
+                {chatUnreadCount > 0 && <View style={styles.unreadDot} />}
+              </TouchableOpacity>
+            )}
+            {showBell && (
+              <TouchableOpacity
+                onPress={onBellPress}
+                style={styles.headerCircleBtn}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Notifikasi"
+              >
+                <Bell size={18} color="#0F172A" />
+                {unreadCount > 0 && <View style={styles.unreadDot} />}
+              </TouchableOpacity>
+            )}
+          </>
         ) : rightIcon ? (
           <TouchableOpacity
             onPress={onRightPress}

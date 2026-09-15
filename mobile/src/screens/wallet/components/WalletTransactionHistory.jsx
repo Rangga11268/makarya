@@ -126,8 +126,8 @@ export function WalletTransactionHistory({
                   >
                     {isIncome ? "+" : "-"} {formatCurrency(tx.nominal)}
                   </Text>
-                  <View style={styles.txStatusPill}>
-                    <ShieldCheck size={9} color="#059669" />
+                  <View style={styles.txStatusRow}>
+                    <View style={styles.txStatusDot} />
                     <Text style={styles.txStatusText}>Berhasil</Text>
                   </View>
                 </View>
@@ -293,22 +293,22 @@ const styles = StyleSheet.create({
   txAmountOutcome: {
     color: "#0F172A",
   },
-  txStatusPill: {
+  txStatusRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
-    backgroundColor: "#F0FDF4",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#BBF7D0",
-    marginTop: 4,
+    gap: 4,
+    marginTop: 3,
+  },
+  txStatusDot: {
+    width: 4.5,
+    height: 4.5,
+    borderRadius: 2.25,
+    backgroundColor: "#059669",
   },
   txStatusText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 9.5,
     fontWeight: "600",
-    color: "#166534",
+    color: "#059669",
   },
 });

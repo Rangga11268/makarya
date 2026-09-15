@@ -207,9 +207,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(16, 185, 129, 0.16)",
     borderWidth: 1,
     borderColor: "rgba(110, 231, 183, 0.35)",
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 6,
     alignSelf: "flex-start",
     marginBottom: 14,
   },
@@ -236,14 +236,14 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
 
-  // Buttons (Apple Pill Style)
+  // Buttons (Modern iOS/Stripe Style)
   buttonBlock: {
     gap: 12,
   },
   primaryBtn: {
     backgroundColor: "#FFFFFF",
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000000",
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   secondaryBtn: {
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.18)",
     alignItems: "center",

@@ -17,7 +17,6 @@ import {
   CheckCheck,
   ShieldCheck,
   Wallet,
-  Briefcase,
   FileCheck,
   AlertTriangle,
 } from "lucide-react-native";

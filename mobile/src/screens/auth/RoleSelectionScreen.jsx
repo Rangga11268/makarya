@@ -21,13 +21,8 @@ import Svg, {
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
-import {
-  Briefcase,
-  Building2,
-  ArrowLeft,
-  CheckCircle2,
-  Users,
-} from "lucide-react-native";
+import { Building2, ArrowLeft, CheckCircle2, Users } from "lucide-react-native";
+import { ProjectBriefVectorIcon } from "../../components/icons/CategoryIcons";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
@@ -178,7 +173,7 @@ export function RoleSelectionScreen({ navigation }) {
                   selectedRole === "MAHASISWA" && styles.cardIconBoxActive,
                 ]}
               >
-                <Briefcase
+                <ProjectBriefVectorIcon
                   size={22}
                   color={selectedRole === "MAHASISWA" ? "#0F172A" : "#64748B"}
                 />
@@ -388,9 +383,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#F1F5F9",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
   },
   roleTagText: {
     fontFamily: FONTS.bodyBold,
@@ -399,14 +394,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Bottom Continue (Apple Pill Style)
+  // Bottom Continue (Modern iOS/Stripe Style)
   bottomBar: {
     marginTop: "auto",
   },
   continueBtn: {
     backgroundColor: "#0F172A", // Signature Slate 900
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#0F172A",

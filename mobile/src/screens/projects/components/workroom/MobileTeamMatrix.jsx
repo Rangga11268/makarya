@@ -18,7 +18,6 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
-  Briefcase,
   Share2,
   Palette,
   FileCode,

@@ -186,6 +186,47 @@ export function ProfileTabIcon({ focused, size = 22 }) {
   );
 }
 
+// 6. Minimalist Speech Bubble & Chat Icon (Chat / Diskusi)
+export function ChatTabIcon({ focused, size = 22 }) {
+  const activeColor = "#2563EB";
+  const inactiveColor = "#94A3B8";
+  const strokeColor = focused ? activeColor : inactiveColor;
+
+  return (
+    <View style={styles.iconWrapper}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Path
+          d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.6056 8.7 3.9C9.87812 3.30493 11.1801 2.99656 12.5 3H13C15.0843 3.115 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91569 21 11V11.5Z"
+          fill={focused ? "rgba(37, 99, 235, 0.10)" : "none"}
+          stroke={strokeColor}
+          strokeWidth={focused ? "2" : "1.6"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <Circle
+          cx="8.5"
+          cy="11.5"
+          r="1.2"
+          fill={focused ? activeColor : inactiveColor}
+        />
+        <Circle
+          cx="12.5"
+          cy="11.5"
+          r="1.2"
+          fill={focused ? activeColor : inactiveColor}
+        />
+        <Circle
+          cx="16.5"
+          cy="11.5"
+          r="1.2"
+          fill={focused ? activeColor : inactiveColor}
+        />
+      </Svg>
+      {focused && <View style={styles.activeDot} />}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   iconWrapper: {
     alignItems: "center",

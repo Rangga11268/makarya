@@ -8,6 +8,7 @@ import { TalentListScreen } from "../screens/talents/TalentListScreen";
 import { TrackerScreen } from "../screens/tracker/TrackerScreen";
 import { WalletScreen } from "../screens/wallet/WalletScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
+import { ChatListScreen } from "../screens/chat/ChatListScreen";
 import { useAuthStore } from "../store/authStore";
 import { COLORS } from "../theme/colors";
 import {
@@ -16,6 +17,7 @@ import {
   WorkspaceTabIcon,
   WalletTabIcon,
   ProfileTabIcon,
+  ChatTabIcon,
 } from "../components/icons/TabIcons";
 
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
@@ -58,62 +60,74 @@ export function MainTabs() {
         tabBarItemStyle: styles.tabItem,
       }}
     >
-      {/* 1. Home */}
+      {/* 1. Beranda */}
       <Tab.Screen
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: "Home",
+          tabBarLabel: "Beranda",
           tabBarIcon: ({ focused }) => (
-            <HomeTabIcon focused={focused} size={22} />
+            <HomeTabIcon focused={focused} size={21} />
           ),
         }}
       />
 
-      {/* 2. Explore Tab: Projects for Mahasiswa, Talenta Mahasiswa for Client/UMKM */}
+      {/* 2. Eksplor: Projects for Mahasiswa, Talenta Mahasiswa for Client/UMKM */}
       <Tab.Screen
         name="ProjectsTab"
         component={isMahasiswa ? ProjectListScreen : TalentListScreen}
         options={{
-          tabBarLabel: "Explore",
+          tabBarLabel: "Eksplor",
           tabBarIcon: ({ focused }) => (
-            <ExploreTabIcon focused={focused} size={22} />
+            <ExploreTabIcon focused={focused} size={21} />
           ),
         }}
       />
 
-      {/* 3. Workspace */}
+      {/* 3. Chat & Diskusi */}
+      <Tab.Screen
+        name="ChatTab"
+        component={ChatListScreen}
+        options={{
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ focused }) => (
+            <ChatTabIcon focused={focused} size={21} />
+          ),
+        }}
+      />
+
+      {/* 4. Ruang Kerja */}
       <Tab.Screen
         name="TrackerTab"
         component={TrackerScreen}
         options={{
-          tabBarLabel: "Workspace",
+          tabBarLabel: "Kerja",
           tabBarIcon: ({ focused }) => (
-            <WorkspaceTabIcon focused={focused} size={22} />
+            <WorkspaceTabIcon focused={focused} size={21} />
           ),
         }}
       />
 
-      {/* 4. Wallet */}
+      {/* 5. Dompet Escrow */}
       <Tab.Screen
         name="WalletTab"
         component={WalletScreen}
         options={{
-          tabBarLabel: "Wallet",
+          tabBarLabel: "Dompet",
           tabBarIcon: ({ focused }) => (
-            <WalletTabIcon focused={focused} size={22} />
+            <WalletTabIcon focused={focused} size={21} />
           ),
         }}
       />
 
-      {/* 5. Profile */}
+      {/* 6. Profil */}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
         options={{
-          tabBarLabel: "Profile",
+          tabBarLabel: "Profil",
           tabBarIcon: ({ focused }) => (
-            <ProfileTabIcon focused={focused} size={22} />
+            <ProfileTabIcon focused={focused} size={21} />
           ),
         }}
       />
@@ -124,35 +138,35 @@ export function MainTabs() {
 const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
-    bottom: Platform.OS === "ios" ? 22 : 12,
-    left: 16,
-    right: 16,
-    height: Platform.OS === "ios" ? 68 : 64,
+    bottom: Platform.OS === "ios" ? 20 : 10,
+    left: 14,
+    right: 14,
+    height: Platform.OS === "ios" ? 64 : 58,
     backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.94)",
-    borderRadius: 32,
+      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.95)",
+    borderRadius: 26,
     borderWidth: 1,
     borderColor:
       Platform.OS === "android"
         ? "rgba(226, 232, 240, 0.95)"
         : "rgba(255, 255, 255, 0.95)",
-    paddingTop: 6,
-    paddingBottom: Platform.OS === "ios" ? 8 : 6,
+    paddingTop: 4,
+    paddingBottom: Platform.OS === "ios" ? 6 : 4,
     elevation: 4,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 14,
   },
   tabItem: {
-    paddingVertical: 2,
+    paddingVertical: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   tabLabel: {
     fontFamily: FONTS.displaySemiBold,
-    fontSize: 10,
+    fontSize: 9.5,
     marginTop: 1,
-    letterSpacing: 0.1,
+    letterSpacing: -0.2,
   },
 });

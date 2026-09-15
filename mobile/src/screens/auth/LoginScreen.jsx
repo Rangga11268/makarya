@@ -494,11 +494,11 @@ const styles = StyleSheet.create({
     color: "#0F172A",
   },
 
-  // Buttons (Apple Pill Style)
+  // Buttons (Modern iOS/Stripe Style)
   signInBtn: {
     backgroundColor: "#0F172A",
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
@@ -534,11 +534,11 @@ const styles = StyleSheet.create({
     color: "#94A3B8",
   },
 
-  // Google (Apple Secondary Pill Style)
+  // Google (Modern Secondary Style)
   googleBtn: {
     backgroundColor: "#FFFFFF",
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     borderWidth: 1.2,
     borderColor: "#E2E8F0",
     alignItems: "center",

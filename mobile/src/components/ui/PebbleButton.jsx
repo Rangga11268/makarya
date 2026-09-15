@@ -262,7 +262,7 @@ export function PebbleButton({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 999,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     shadowOffset: { width: 0, height: 3 },
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   },
   innerClipped: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 999,
+    borderRadius: 12,
     overflow: "hidden",
   },
   content: {

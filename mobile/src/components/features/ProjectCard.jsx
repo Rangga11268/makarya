@@ -114,7 +114,7 @@ export function ProjectCard({ project, onPress }) {
           </Text>
           {clientCity ? (
             <>
-              <Text style={styles.metaDot}>•</Text>
+              <Text style={styles.metaSlash}>/</Text>
               <Text style={styles.clientCityText} numberOfLines={1}>
                 {clientCity}
               </Text>
@@ -141,43 +141,47 @@ export function ProjectCard({ project, onPress }) {
         {project.judul}
       </Text>
 
-      {/* 3. Metadata Inline Row (Category • Collab • Deadline) */}
+      {/* 3. Metadata Inline Row (Category, Collab, Deadline as micro-chips) */}
       <View style={styles.metadataRow}>
-        <Text style={styles.categoryText}>
-          {getCategoryLabel(project.kategori)}
-        </Text>
-
-        <Text style={styles.metaDot}>•</Text>
+        <View style={styles.categoryChip}>
+          <Text style={styles.categoryText}>
+            {getCategoryLabel(project.kategori)}
+          </Text>
+        </View>
 
         {isTeam ? (
-          <View style={styles.inlineTeamTag}>
+          <View style={styles.teamChip}>
             <Users size={11} color="#6D28D9" />
             <Text style={styles.teamTagText}>
               {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
             </Text>
           </View>
         ) : (
-          <Text style={styles.metaSubtleText}>Individu</Text>
+          <View style={styles.individuChip}>
+            <Text style={styles.metaSubtleText}>Individu</Text>
+          </View>
         )}
 
         {deadlineInfo ? (
-          <>
-            <Text style={styles.metaDot}>•</Text>
-            <View style={styles.inlineDeadlineContainer}>
-              <Clock
-                size={11}
-                color={deadlineInfo.isUrgent ? "#E11D48" : COLORS.textMuted}
-              />
-              <Text
-                style={[
-                  styles.deadlineText,
-                  deadlineInfo.isUrgent && styles.deadlineTextUrgent,
-                ]}
-              >
-                {deadlineInfo.text}
-              </Text>
-            </View>
-          </>
+          <View
+            style={[
+              styles.deadlineChip,
+              deadlineInfo.isUrgent && styles.deadlineChipUrgent,
+            ]}
+          >
+            <Clock
+              size={11}
+              color={deadlineInfo.isUrgent ? "#E11D48" : COLORS.textMuted}
+            />
+            <Text
+              style={[
+                styles.deadlineText,
+                deadlineInfo.isUrgent && styles.deadlineTextUrgent,
+              ]}
+            >
+              {deadlineInfo.text}
+            </Text>
+          </View>
         ) : null}
       </View>
 
@@ -261,9 +265,11 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     flexShrink: 1,
   },
-  metaDot: {
+  metaSlash: {
+    fontFamily: FONTS.bodyRegular,
     fontSize: 10,
-    color: "rgba(15, 23, 42, 0.25)",
+    color: "#CBD5E1",
+    marginHorizontal: 3,
   },
   statusExpiredPill: {
     backgroundColor: "#FFF1F2",
@@ -302,41 +308,74 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 5,
     marginBottom: 12,
+  },
+  categoryChip: {
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#E0E7FF",
   },
   categoryText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 10.5,
     color: COLORS.brandIndigo,
   },
-  metaSubtleText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-  },
-  inlineTeamTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3.5,
-  },
-  teamTagText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: "#6D28D9",
-  },
-  inlineDeadlineContainer: {
+  teamChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
+    backgroundColor: "#F5F3FF",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#EDE9FE",
+  },
+  teamTagText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10.5,
+    color: "#6D28D9",
+  },
+  individuChip: {
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  metaSubtleText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10.5,
+    color: COLORS.textMuted,
+  },
+  deadlineChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  deadlineChipUrgent: {
+    backgroundColor: "#FFF1F2",
+    borderColor: "#FFE4E6",
   },
   deadlineText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 10.5,
     color: COLORS.textMuted,
   },
   deadlineTextUrgent: {
     fontFamily: FONTS.bodyMedium,
+    fontSize: 10.5,
     color: "#E11D48",
   },
   footerRow: {

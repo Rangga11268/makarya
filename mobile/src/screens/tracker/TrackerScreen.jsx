@@ -18,7 +18,10 @@ import { useAuthStore } from "../../store/authStore";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
-import { renderProjectCategoryVectorIcon } from "../../components/icons/CategoryIcons";
+import {
+  renderProjectCategoryVectorIcon,
+  ProjectBriefVectorIcon,
+} from "../../components/icons/CategoryIcons";
 import { Header, HeaderCircleButton } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
@@ -33,7 +36,6 @@ import {
   MessageSquare,
   Users,
   Plus,
-  Briefcase,
   FileText,
   AlertCircle,
   User,
@@ -254,7 +256,10 @@ export function TrackerScreen({ navigation }) {
             ) : (
               <View style={styles.emptyBox}>
                 <View style={styles.emptyIconCircle}>
-                  <Briefcase size={28} color={COLORS.brandIndigo} />
+                  <ProjectBriefVectorIcon
+                    size={28}
+                    color={COLORS.brandIndigo}
+                  />
                 </View>
                 <Text style={styles.emptyTitle}>
                   Tidak ada proyek di tab ini
@@ -670,7 +675,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     paddingHorizontal: 12,
     paddingVertical: 7,
-    borderRadius: 999,
+    borderRadius: 10,
   },
   newProjectBtnText: {
     fontFamily: FONTS.bodyBold,
@@ -754,18 +759,18 @@ const styles = StyleSheet.create({
   statusPillActive: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 4.5,
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#A7F3D0",
   },
   pulseDotGreen: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     backgroundColor: "#059669",
   },
   statusTextActive: {
@@ -778,18 +783,18 @@ const styles = StyleSheet.create({
   statusPillReview: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: 4.5,
     backgroundColor: "#F5F3FF",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#DDD6FE",
   },
   pulseDotPurple: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     backgroundColor: COLORS.brandIndigo,
   },
   statusTextReview: {
@@ -801,9 +806,9 @@ const styles = StyleSheet.create({
 
   statusPillPending: {
     backgroundColor: "#FEF3C7",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FDE68A",
   },
@@ -816,9 +821,9 @@ const styles = StyleSheet.create({
 
   statusPillDone: {
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
@@ -831,9 +836,9 @@ const styles = StyleSheet.create({
 
   statusPillWithdrawn: {
     backgroundColor: "#FEF3C7",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FDE68A",
   },
@@ -846,9 +851,9 @@ const styles = StyleSheet.create({
 
   statusPillCancelled: {
     backgroundColor: "#FEE2E2",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FECACA",
   },
@@ -861,9 +866,9 @@ const styles = StyleSheet.create({
 
   statusPillRejected: {
     backgroundColor: "#FEE2E2",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FECACA",
   },
@@ -876,9 +881,9 @@ const styles = StyleSheet.create({
 
   statusPillDefault: {
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
   },
@@ -1172,7 +1177,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigo,
     paddingHorizontal: 16,
     paddingVertical: 9,
-    borderRadius: 999,
+    borderRadius: 12,
     marginTop: 16,
   },
   emptyCtaBtnText: {

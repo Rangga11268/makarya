@@ -250,7 +250,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 999, // Ergonomic pill radius
+    borderRadius: 12, // Modern iOS/Stripe button radius
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

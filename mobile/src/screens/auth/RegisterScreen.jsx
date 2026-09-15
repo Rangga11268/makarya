@@ -27,7 +27,6 @@ import {
   GraduationCap,
   ArrowLeft,
   Check,
-  Briefcase,
   Store,
 } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
@@ -597,9 +596,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     backgroundColor: "#EFF6FF",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 6,
     alignSelf: "flex-start",
     borderWidth: 1.2,
     borderColor: "#BFDBFE",
@@ -698,11 +697,11 @@ const styles = StyleSheet.create({
     color: "#475569",
   },
 
-  // Button (Apple Pill Style)
+  // Button (Modern iOS/Stripe Style)
   createBtn: {
     backgroundColor: "#0F172A",
     height: 54,
-    borderRadius: 999,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,

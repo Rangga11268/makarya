@@ -167,6 +167,7 @@ export function ProjectListScreen({ navigation, route }) {
         title="Jelajah Proyek"
         subtitle="100% Terverifikasi UMKM"
         showBell={true}
+        showChat={true}
         onBellPress={() => setIsNotificationOpen(true)}
         unreadCount={unreadNotifications}
       />

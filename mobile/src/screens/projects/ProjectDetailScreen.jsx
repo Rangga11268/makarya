@@ -52,7 +52,6 @@ import {
   CheckCircle2,
   FileCheck,
   Clock,
-  Briefcase,
   Layers,
   ArrowRight,
   Info,

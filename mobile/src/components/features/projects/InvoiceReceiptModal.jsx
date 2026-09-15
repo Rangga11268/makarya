@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import {
   CheckCircle2,
   X,
   Building2,
-  Briefcase,
+  GraduationCap,
   FileCheck,
 } from "lucide-react-native";
 import { Button } from "../../ui/Button";
@@ -148,7 +148,9 @@ export function InvoiceReceiptModal({
                   <Text style={styles.partyRoleLabel}>KLIEN UMKM</Text>
                 </View>
                 <Text style={styles.partyName} numberOfLines={1}>
-                  {clientName || project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                  {clientName ||
+                    project.umkm_profile?.nama_usaha ||
+                    "Klien UMKM"}
                 </Text>
                 <Text style={styles.partySub}>
                   {project.umkm_profile?.kota || "Indonesia"}
@@ -157,11 +159,13 @@ export function InvoiceReceiptModal({
 
               <View style={styles.partyBox}>
                 <View style={styles.partyLabelRow}>
-                  <Briefcase size={12} color={COLORS.textMuted} />
+                  <GraduationCap size={12} color={COLORS.textMuted} />
                   <Text style={styles.partyRoleLabel}>MAHASISWA</Text>
                 </View>
                 <Text style={styles.partyName} numberOfLines={1}>
-                  {mhsName || project.accepted_mhs_nama || "Mahasiswa Pelaksana"}
+                  {mhsName ||
+                    project.accepted_mhs_nama ||
+                    "Mahasiswa Pelaksana"}
                 </Text>
                 <Text style={styles.partySub}>Identitas Terverifikasi</Text>
               </View>
@@ -169,7 +173,9 @@ export function InvoiceReceiptModal({
 
             {/* Project Summary */}
             <View style={styles.detailSection}>
-              <Text style={styles.sectionHeading}>Rincian Kontrak Pengerjaan</Text>
+              <Text style={styles.sectionHeading}>
+                Rincian Kontrak Pengerjaan
+              </Text>
               <View style={styles.detailCard}>
                 <Text style={styles.projectJudul}>{project.judul}</Text>
                 <View style={styles.detailRow}>
@@ -177,13 +183,17 @@ export function InvoiceReceiptModal({
                   <Text style={styles.detailRowValue}>{project.kategori}</Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailRowLabel}>Nilai Kontrak Proyek:</Text>
+                  <Text style={styles.detailRowLabel}>
+                    Nilai Kontrak Proyek:
+                  </Text>
                   <Text style={styles.detailRowValue}>
                     {formatCurrency(contractAmount)}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailRowLabel}>Proteksi Escrow Makarya:</Text>
+                  <Text style={styles.detailRowLabel}>
+                    Proteksi Escrow Makarya:
+                  </Text>
                   <Text style={[styles.detailRowValue, { color: "#059669" }]}>
                     Gratis (Rp 0)
                   </Text>
@@ -288,9 +298,9 @@ const styles = StyleSheet.create({
   },
   officialBadge: {
     backgroundColor: "#E2E8F0",
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 2,
-    borderRadius: 999,
+    borderRadius: 6,
   },
   officialBadgeText: {
     fontFamily: FONTS.bodyBold,

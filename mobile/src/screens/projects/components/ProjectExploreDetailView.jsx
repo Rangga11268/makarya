@@ -30,13 +30,13 @@ import { ProjectStatusBar } from "../../../components/features/ProjectStatusBar"
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
+import { ProjectBriefVectorIcon } from "../../../components/icons/CategoryIcons";
 import {
   ShieldCheck,
   Calendar,
   Building2,
   CheckCircle2,
   FileCheck,
-  Briefcase,
   UploadCloud,
   Link2,
   ChevronRight,
@@ -600,7 +600,10 @@ export function ProjectExploreDetailView({
                 <View style={styles.tabContent}>
                   {proposals.length === 0 ? (
                     <View style={styles.emptyBox}>
-                      <Briefcase size={32} color={COLORS.textDim} />
+                      <ProjectBriefVectorIcon
+                        size={32}
+                        color={COLORS.textDim}
+                      />
                       <Text style={styles.emptyText}>
                         Belum ada proposal masuk dari mahasiswa.
                       </Text>
@@ -1126,7 +1129,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ECFDF5",
     paddingHorizontal: 6.5,
     paddingVertical: 1.5,
-    borderRadius: 999,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#A7F3D0",
   },
@@ -1853,8 +1856,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.successBorder,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
+    paddingVertical: 7,
+    borderRadius: 8,
   },
   alreadyAppliedText: {
     fontFamily: FONTS.bodyBold,
@@ -1870,7 +1873,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.brandIndigoDark,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 999,
+    borderRadius: 12,
     width: "100%",
   },
   primaryApplyBtnText: {
@@ -1885,8 +1888,8 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: COLORS.canvasSoft,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
+    paddingVertical: 7,
+    borderRadius: 8,
   },
   closedStatusText: {
     fontFamily: FONTS.bodyMedium,
