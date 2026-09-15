@@ -86,10 +86,7 @@ export function ContractHubVectorIcon({
 }
 
 // 3. Modern Briefcase Collaboration Icon
-export function BriefcaseWorkVectorIcon({
-  size = 20,
-  color = "#2563EB",
-}) {
+export function BriefcaseWorkVectorIcon({ size = 20, color = "#2563EB" }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect

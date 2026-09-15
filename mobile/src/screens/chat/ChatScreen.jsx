@@ -226,12 +226,13 @@ export function ChatScreen({ route, navigation }) {
   const targetRecipientId = talentId || route.params?.partnerId || null;
 
   // 1. Muat riwayat chat lama via REST
-  const loadHistory = async () => {
-    if (!currentProjectId) return;
+  const loadHistory = async (projId = currentProjectId) => {
+    const targetId = projId || currentProjectId;
+    if (!targetId) return;
     try {
       setLoading(true);
       const res = await chatApi.getMessages(
-        currentProjectId,
+        targetId,
         targetRecipientId,
       );
       setMessages(Array.isArray(res.data) ? res.data : []);

@@ -8,7 +8,7 @@ class ChatMessageCreate(BaseModel):
     project_id: Optional[UUID] = None
     recipient_id: Optional[UUID] = None
     message: Optional[str] = Field(None, max_length=1000, description="Isi pesan chat")
-    attachment_url: Optional[str] = Field(None, max_length=500, description="URL lampiran (opsional)")
+    attachment_url: Optional[str] = Field(None, max_length=5000, description="URL atau payload JSON lampiran (opsional)")
     attachment_type: Optional[str] = Field(None, max_length=50, description="Tipe lampiran (opsional)")
 
     @field_validator("message")
@@ -26,7 +26,7 @@ class ChatMessageCreate(BaseModel):
             clean_type = v.strip().upper()
             if not clean_type:
                 return None
-            allowed_types = ["LINK", "IMAGE", "FILE", "FIGMA"]
+            allowed_types = ["LINK", "IMAGE", "FILE", "FIGMA", "PROJECT_OFFER", "OFFER"]
             if clean_type not in allowed_types:
                 raise ValueError(f"Tipe lampiran tidak valid. Harus salah satu dari: {', '.join(allowed_types)}")
             return clean_type
@@ -39,7 +39,10 @@ class ChatMessageCreate(BaseModel):
             clean_url = v.strip()
             if not clean_url:
                 return None
-            if not (clean_url.startswith("http://") or clean_url.startswith("https://")):
+            # Jika berupa payload JSON (misalnya tawaran proyek resmi PROJECT_OFFER), izinkan
+            if clean_url.startswith("{") or clean_url.startswith("["):
+                return clean_url
+            if not (clean_url.startswith("http://") or clean_url.startswith("https://") or clean_url.startswith("/")):
                 raise ValueError("URL lampiran harus dimulai dengan 'http://' atau 'https://'")
             return clean_url
         return None

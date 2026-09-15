@@ -160,7 +160,11 @@ export function WorkspaceEmptyRecommendationDeck({
       <View style={styles.container}>
         <View style={styles.activationCard}>
           <View style={styles.iconCircleBadge}>
-            <ContractHubVectorIcon size={22} color={COLORS.brandIndigo} secondaryColor="#3B82F6" />
+            <ContractHubVectorIcon
+              size={22}
+              color={COLORS.brandIndigo}
+              secondaryColor="#3B82F6"
+            />
           </View>
           <Text style={styles.activationTitle}>
             Mulai Kolaborasi Pertama Anda
@@ -189,7 +193,11 @@ export function WorkspaceEmptyRecommendationDeck({
       <View style={styles.activationCard}>
         <View style={styles.activationHeaderRow}>
           <View style={styles.iconCircleBadge}>
-            <WorkspaceDeskVectorIcon size={20} color="#2563EB" secondaryColor="#60A5FA" />
+            <WorkspaceDeskVectorIcon
+              size={20}
+              color="#2563EB"
+              secondaryColor="#60A5FA"
+            />
           </View>
           <View style={styles.activationHeaderTextCol}>
             <Text style={styles.activationGreeting}>Ruang Kerja Baru</Text>
