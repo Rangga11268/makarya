@@ -427,7 +427,52 @@ export function ChatScreen({ route, navigation }) {
   };
 
   const getCleanRoleName = (offer) => {
+    // 1. Jika ada slots spesifik dari brief proyek:
+    if (offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
+      // Cocokkan by slotId jika ada
+      if (offer.slotId) {
+        const found = offer.slots.find(
+          (s) => String(s.id) === String(offer.slotId),
+        );
+        if (found && found.nama_peran) return found.nama_peran;
+      }
+      // Cocokkan jika budget tawaran sesuai alokasi slot tertentu
+      if (offer.budget) {
+        const matchSlot = offer.slots.find(
+          (s) => Number(s.alokasi_budget) === Number(offer.budget),
+        );
+        if (matchSlot && matchSlot.nama_peran) return matchSlot.nama_peran;
+      }
+    }
+
     let role = offer.posisi || offer.nama_peran;
+
+    // 2. Jika nama role sudah spesifik (bukan placeholder kategori umum), gunakan langsung
+    const genericList = [
+      "PEMROGRAMAN",
+      "DESAIN",
+      "MARKETING",
+      "PENULISAN",
+      "MULTIMEDIA",
+      "BISNIS",
+      "DATA",
+      "Programmer / Developer",
+      "Desainer / UI/UX",
+      "Anggota Tim",
+      "Pelaksana Proyek",
+      "Spesialis Proyek",
+    ];
+
+    const isGeneric =
+      !role ||
+      genericList.includes(role) ||
+      (typeof role === "string" && role.startsWith("Spesialis "));
+
+    // Jika generic tapi ada slots, gunakan daftar peran dari brief
+    if (isGeneric && offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
+      return offer.slots.map((s) => s.nama_peran).join(" / ");
+    }
+
     const catMap = {
       PEMROGRAMAN: "Programmer / Developer",
       DESAIN: "Desainer / UI/UX",
@@ -437,14 +482,20 @@ export function ChatScreen({ route, navigation }) {
       BISNIS: "Konsultan Bisnis",
       DATA: "Data Analyst",
     };
-    if (!role && offer.kategori) {
-      role = catMap[String(offer.kategori).toUpperCase()] || offer.kategori;
-    }
+
     if (role && typeof role === "string" && role.startsWith("Spesialis ")) {
       const clean = role.replace(/^Spesialis\s+/i, "");
       role = catMap[clean.toUpperCase()] || clean;
     }
-    return role || (offer.tipe_kolaborasi === "TIM" ? "Anggota Tim" : "Pelaksana Proyek");
+
+    if (!role && offer.kategori) {
+      role = catMap[String(offer.kategori).toUpperCase()] || offer.kategori;
+    }
+
+    return (
+      role ||
+      (offer.tipe_kolaborasi === "TIM" ? "Anggota Tim" : "Pelaksana Proyek")
+    );
   };
 
   const renderMessageItem = ({ item }) => {
