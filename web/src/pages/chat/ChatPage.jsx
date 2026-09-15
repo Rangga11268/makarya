@@ -696,37 +696,79 @@ export function ChatPage() {
 
                       {/* Team Slots Selection if Team Project */}
                       {hasSlots && (
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
+                        <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
                           <span className="text-[11px] font-bold text-slate-700 block">
                             Pilih Posisi Tim yang Ditawarkan:
                           </span>
-                          <div className="space-y-1.5">
-                            {proj.slots.map((slot) => (
-                              <div
-                                key={slot.id}
-                                className="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 text-xs"
-                              >
-                                <div>
-                                  <span className="font-bold text-slate-800 block">
-                                    {slot.nama_peran}
-                                  </span>
-                                  <span className="text-[10px] text-emerald-600 font-medium">
-                                    {slot.alokasi_budget
-                                      ? `Rp ${Number(slot.alokasi_budget).toLocaleString("id-ID")}`
-                                      : "Sesuai Proyek"}
-                                  </span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleSendProjectOffer(proj, slot)
-                                  }
-                                  className="px-3 py-1 rounded-lg bg-brand-indigo hover:bg-brand-indigo/90 text-white font-bold text-[11px] transition-colors cursor-pointer"
+                          <div className="space-y-2">
+                            {proj.slots.map((slot) => {
+                              const isFilled =
+                                slot.status !== "OPEN" ||
+                                Boolean(slot.accepted_mhs_id);
+                              return (
+                                <div
+                                  key={slot.id}
+                                  className={`flex items-center justify-between p-2.5 rounded-xl border text-xs gap-3 transition-colors ${
+                                    isFilled
+                                      ? "bg-slate-100/80 border-slate-200"
+                                      : "bg-white border-slate-200 hover:border-brand-indigo/40"
+                                  }`}
                                 >
-                                  Tawarkan Posisi Ini
-                                </button>
-                              </div>
-                            ))}
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span
+                                        className={`font-bold text-xs truncate ${
+                                          isFilled
+                                            ? "text-slate-500 line-through"
+                                            : "text-slate-900"
+                                        }`}
+                                      >
+                                        {slot.nama_peran}
+                                      </span>
+                                      {isFilled ? (
+                                        <span className="text-[9px] px-1.5 py-0.5 rounded-md font-bold bg-slate-200 text-slate-600">
+                                          Terisi
+                                          {slot.accepted_mhs_nama
+                                            ? ` (${slot.accepted_mhs_nama})`
+                                            : ""}
+                                        </span>
+                                      ) : (
+                                        <span className="text-[9px] px-1.5 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                          Tersedia
+                                        </span>
+                                      )}
+                                    </div>
+                                    <span
+                                      className={`text-[11px] font-bold block mt-0.5 ${
+                                        isFilled
+                                          ? "text-slate-400"
+                                          : "text-emerald-600"
+                                      }`}
+                                    >
+                                      {slot.alokasi_budget
+                                        ? `Rp ${Number(slot.alokasi_budget).toLocaleString("id-ID")}`
+                                        : "Sesuai Proyek"}
+                                    </span>
+                                  </div>
+
+                                  {isFilled ? (
+                                    <span className="px-3 py-1.5 rounded-full bg-slate-200 text-slate-500 font-semibold text-[11px] shrink-0 whitespace-nowrap">
+                                      Sudah Terisi
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleSendProjectOffer(proj, slot)
+                                      }
+                                      className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-brand-indigo text-white font-bold text-[11px] transition-colors cursor-pointer shrink-0 whitespace-nowrap shadow-xs"
+                                    >
+                                      Tawarkan Posisi
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       )}

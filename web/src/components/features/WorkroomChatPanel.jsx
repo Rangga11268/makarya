@@ -272,7 +272,9 @@ export function WorkroomChatPanel({
             Array.isArray(matchedProject.slots) &&
             matchedProject.slots.length > 0
           ? matchedProject.slots
-          : projectSlots && Array.isArray(projectSlots) && projectSlots.length > 0
+          : projectSlots &&
+              Array.isArray(projectSlots) &&
+              projectSlots.length > 0
             ? projectSlots
             : [];
 

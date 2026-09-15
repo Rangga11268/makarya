@@ -1557,31 +1557,90 @@ export function ChatScreen({ route, navigation }) {
                         <Text style={styles.projectSlotsHeading}>
                           Pilih Posisi Tim yang Ditawarkan:
                         </Text>
-                        {item.slots.map((slot) => (
-                          <TouchableOpacity
-                            key={slot.id}
-                            style={styles.projectSlotItem}
-                            onPress={() => handleSendProjectOffer(item, slot)}
-                            activeOpacity={0.75}
-                          >
-                            <View style={{ flex: 1 }}>
-                              <Text style={styles.projectSlotTitle}>
-                                {slot.nama_peran}
-                              </Text>
-                              <Text style={styles.projectSlotBudget}>
-                                Alokasi: Rp{" "}
-                                {Number(
-                                  slot.alokasi_budget || item.budget_max,
-                                ).toLocaleString("id-ID")}
-                              </Text>
-                            </View>
-                            <View style={styles.projectSlotOfferBtn}>
-                              <Text style={styles.projectSlotOfferBtnText}>
-                                Ajukan Posisi
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                        ))}
+                        {item.slots.map((slot) => {
+                          const isFilled =
+                            slot.status !== "OPEN" ||
+                            Boolean(slot.accepted_mhs_id);
+                          return (
+                            <TouchableOpacity
+                              key={slot.id}
+                              style={[
+                                styles.projectSlotItem,
+                                isFilled && {
+                                  opacity: 0.6,
+                                  backgroundColor: "#F1F5F9",
+                                },
+                              ]}
+                              onPress={() =>
+                                !isFilled && handleSendProjectOffer(item, slot)
+                              }
+                              disabled={isFilled}
+                              activeOpacity={0.75}
+                            >
+                              <View style={{ flex: 1, marginRight: 8 }}>
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 6,
+                                    flexWrap: "wrap",
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.projectSlotTitle,
+                                      isFilled && {
+                                        textDecorationLine: "line-through",
+                                        color: "#64748B",
+                                      },
+                                    ]}
+                                  >
+                                    {slot.nama_peran}
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      fontSize: 10,
+                                      fontWeight: "700",
+                                      color: isFilled ? "#64748B" : "#059669",
+                                    }}
+                                  >
+                                    {isFilled
+                                      ? `(Terisi${slot.accepted_mhs_nama ? `: ${slot.accepted_mhs_nama}` : ""})`
+                                      : "(Tersedia)"}
+                                  </Text>
+                                </View>
+                                <Text
+                                  style={[
+                                    styles.projectSlotBudget,
+                                    isFilled && { color: "#94A3B8" },
+                                  ]}
+                                >
+                                  Alokasi: Rp{" "}
+                                  {Number(
+                                    slot.alokasi_budget || item.budget_max,
+                                  ).toLocaleString("id-ID")}
+                                </Text>
+                              </View>
+                              <View
+                                style={[
+                                  styles.projectSlotOfferBtn,
+                                  isFilled && { backgroundColor: "#CBD5E1" },
+                                ]}
+                              >
+                                <Text
+                                  style={[
+                                    styles.projectSlotOfferBtnText,
+                                    isFilled && { color: "#64748B" },
+                                  ]}
+                                >
+                                  {isFilled
+                                    ? "Sudah Terisi"
+                                    : "Tawarkan Posisi"}
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          );
+                        })}
                       </View>
                     )}
                   </View>
@@ -2261,13 +2320,16 @@ const styles = StyleSheet.create({
   },
   projectSlotOfferBtn: {
     backgroundColor: COLORS.brandIndigo,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
   },
   projectSlotOfferBtnText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
 
