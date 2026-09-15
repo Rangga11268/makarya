@@ -191,15 +191,15 @@ export function LoginPage() {
 
         {/* Top Brand Identity */}
         <div className="relative z-10 space-y-3">
-          <Link to="/" className="inline-flex items-center gap-3 group select-none">
+          <Link
+            to="/"
+            className="inline-flex items-center group select-none"
+          >
             <img
-              src="/logo-icon.svg"
-              alt="Makarya Logo"
-              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+              src="/logo.webp"
+              alt="Makarya"
+              className="h-8 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105"
             />
-            <span className="text-2xl font-black tracking-tight text-white">
-              Makarya
-            </span>
           </Link>
 
           <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-3">
@@ -210,7 +210,8 @@ export function LoginPage() {
           </h2>
 
           <p className="text-xs xl:text-sm text-slate-300 leading-relaxed max-w-sm">
-            Akses ribuan proyek digital terverifikasi dari pelaku usaha UMKM dan wujudkan formasi tim multidisiplin kampus.
+            Akses ribuan proyek digital terverifikasi dari pelaku usaha UMKM dan
+            wujudkan formasi tim multidisiplin kampus.
           </p>
         </div>
 
@@ -238,7 +239,8 @@ export function LoginPage() {
             </div>
 
             <p className="text-xs text-slate-200 leading-relaxed italic">
-              "Pengerjaan proyek website e-commerce kopi selesai tepat waktu. Pembayaran diamankan di escrow dan cair otomatis saat klien puas."
+              "Pengerjaan proyek website e-commerce kopi selesai tepat waktu.
+              Pembayaran diamankan di escrow dan cair otomatis saat klien puas."
             </p>
 
             <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
@@ -270,15 +272,15 @@ export function LoginPage() {
         <div className="w-full max-w-md space-y-6">
           {/* Mobile Only Brand Header */}
           <div className="lg:hidden flex items-center justify-between pb-2">
-            <Link to="/" className="inline-flex items-center gap-2 group select-none">
+            <Link
+              to="/"
+              className="inline-flex items-center group select-none"
+            >
               <img
-                src="/logo-icon.svg"
-                alt="Makarya Logo"
-                className="w-8 h-8 object-contain"
+                src="/logo.webp"
+                alt="Makarya"
+                className="h-7 w-auto object-contain"
               />
-              <span className="text-xl font-black tracking-tight text-slate-900">
-                Makarya
-              </span>
             </Link>
           </div>
 
@@ -288,7 +290,8 @@ export function LoginPage() {
               Selamat Datang Kembali
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              Akses dashboard proyek, proposal, dan dompet pencairan dana escrow Anda.
+              Akses dashboard proyek, proposal, dan dompet pencairan dana escrow
+              Anda.
             </p>
           </div>
 
@@ -460,7 +463,8 @@ export function LoginPage() {
             {forgotStep === 1 && (
               <form onSubmit={handleSendForgotOtp} className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Masukkan email akun Anda. Kami akan mengirimkan 6 digit kode OTP verifikasi untuk mengubah kata sandi Anda.
+                  Masukkan email akun Anda. Kami akan mengirimkan 6 digit kode
+                  OTP verifikasi untuk mengubah kata sandi Anda.
                 </p>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -488,7 +492,8 @@ export function LoginPage() {
             {forgotStep === 2 && (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Kode OTP telah dikirim ke <b>{forgotEmail}</b>. Masukkan kode 6 digit dan kata sandi baru Anda.
+                  Kode OTP telah dikirim ke <b>{forgotEmail}</b>. Masukkan kode
+                  6 digit dan kata sandi baru Anda.
                 </p>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">

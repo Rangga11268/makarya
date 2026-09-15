@@ -267,15 +267,15 @@ export function RegisterPage() {
 
         {/* Top Brand Identity */}
         <div className="relative z-10 space-y-3">
-          <Link to="/" className="inline-flex items-center gap-3 group select-none">
+          <Link
+            to="/"
+            className="inline-flex items-center group select-none"
+          >
             <img
-              src="/logo-icon.svg"
-              alt="Makarya Logo"
-              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+              src="/logo.webp"
+              alt="Makarya"
+              className="h-8 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105"
             />
-            <span className="text-2xl font-black tracking-tight text-white">
-              Makarya
-            </span>
           </Link>
 
           <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight text-white leading-tight max-w-md pt-3">
@@ -286,7 +286,8 @@ export function RegisterPage() {
           </h2>
 
           <p className="text-xs xl:text-sm text-slate-300 leading-relaxed max-w-sm">
-            Bangun portofolio industri terakreditasi untuk mahasiswa dan dapatkan hasil kerja profesional dengan biaya terjangkau untuk UMKM.
+            Bangun portofolio industri terakreditasi untuk mahasiswa dan
+            dapatkan hasil kerja profesional dengan biaya terjangkau untuk UMKM.
           </p>
         </div>
 
@@ -305,15 +306,24 @@ export function RegisterPage() {
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><b>100% Escrow Protection:</b> Pembayaran aman disimpan di rekening penampungan resmi.</span>
+                <span>
+                  <b>100% Escrow Protection:</b> Pembayaran aman disimpan di
+                  rekening penampungan resmi.
+                </span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                <span><b>Formasi Tim Multi-Role:</b> Kolaborasi antar keahlian UI/UX, Frontend, dan Backend.</span>
+                <span>
+                  <b>Formasi Tim Multi-Role:</b> Kolaborasi antar keahlian
+                  UI/UX, Frontend, dan Backend.
+                </span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span><b>Akreditasi Kampus .ac.id:</b> Reputasi dan portofolio diverifikasi langsung oleh perguruan tinggi.</span>
+                <span>
+                  <b>Akreditasi Kampus .ac.id:</b> Reputasi dan portofolio
+                  diverifikasi langsung oleh perguruan tinggi.
+                </span>
               </div>
             </div>
           </div>
@@ -335,15 +345,15 @@ export function RegisterPage() {
         <div className="w-full max-w-lg space-y-6">
           {/* Mobile Only Brand Header */}
           <div className="lg:hidden flex items-center justify-between pb-2">
-            <Link to="/" className="inline-flex items-center gap-2 group select-none">
+            <Link
+              to="/"
+              className="inline-flex items-center group select-none"
+            >
               <img
-                src="/logo-icon.svg"
-                alt="Makarya Logo"
-                className="w-8 h-8 object-contain"
+                src="/logo.webp"
+                alt="Makarya"
+                className="h-7 w-auto object-contain"
               />
-              <span className="text-xl font-black tracking-tight text-slate-900">
-                Makarya
-              </span>
             </Link>
           </div>
 
@@ -442,7 +452,10 @@ export function RegisterPage() {
                           required
                           value={mhsForm.nama_lengkap}
                           onChange={(e) =>
-                            setMhsForm({ ...mhsForm, nama_lengkap: e.target.value })
+                            setMhsForm({
+                              ...mhsForm,
+                              nama_lengkap: e.target.value,
+                            })
                           }
                           placeholder="Nama lengkap sesuai KTM..."
                           className="w-full min-h-[44px] pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
@@ -517,7 +530,10 @@ export function RegisterPage() {
                           required
                           value={umkmForm.nama_usaha}
                           onChange={(e) =>
-                            setUmkmForm({ ...umkmForm, nama_usaha: e.target.value })
+                            setUmkmForm({
+                              ...umkmForm,
+                              nama_usaha: e.target.value,
+                            })
                           }
                           placeholder="Contoh: Kopi Kenangan Nusantara"
                           className="w-full min-h-[44px] pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 shadow-2xs transition-all"
@@ -595,12 +611,17 @@ export function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       required
                       minLength={8}
-                      value={role === "MHS" ? mhsForm.password : umkmForm.password}
+                      value={
+                        role === "MHS" ? mhsForm.password : umkmForm.password
+                      }
                       onChange={(e) => {
                         if (role === "MHS") {
                           setMhsForm({ ...mhsForm, password: e.target.value });
                         } else {
-                          setUmkmForm({ ...umkmForm, password: e.target.value });
+                          setUmkmForm({
+                            ...umkmForm,
+                            password: e.target.value,
+                          });
                         }
                       }}
                       placeholder="Masukkan kata sandi aman..."
@@ -626,16 +647,23 @@ export function RegisterPage() {
                   disabled={loading}
                   className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
                 >
-                  <span>{loading ? "Mendaftarkan..." : "Daftar Akun Sekarang"}</span>
+                  <span>
+                    {loading ? "Mendaftarkan..." : "Daftar Akun Sekarang"}
+                  </span>
                   <ArrowRight className="w-4 h-4 text-cyan-400" />
                 </button>
               </form>
             </div>
           ) : (
             /* OTP Verification Form */
-            <form onSubmit={handleVerifyOtp} className="space-y-4 animate-fade-in-fast">
+            <form
+              onSubmit={handleVerifyOtp}
+              className="space-y-4 animate-fade-in-fast"
+            >
               <div className="p-4 bg-cyan-50/70 border border-cyan-200 rounded-2xl text-xs text-cyan-900 leading-relaxed">
-                Kami telah mengirimkan 6 digit kode verifikasi ke alamat email <b>{registeredEmail}</b>. Harap periksa folder kotak masuk atau spam.
+                Kami telah mengirimkan 6 digit kode verifikasi ke alamat email{" "}
+                <b>{registeredEmail}</b>. Harap periksa folder kotak masuk atau
+                spam.
               </div>
 
               <div>
@@ -658,7 +686,11 @@ export function RegisterPage() {
                 disabled={otpLoading}
                 className="w-full min-h-[44px] py-3.5 px-6 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
               >
-                <span>{otpLoading ? "Memverifikasi..." : "Verifikasi & Aktifkan Akun"}</span>
+                <span>
+                  {otpLoading
+                    ? "Memverifikasi..."
+                    : "Verifikasi & Aktifkan Akun"}
+                </span>
                 <CheckCircle2 className="w-4 h-4" />
               </button>
 

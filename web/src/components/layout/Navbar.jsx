@@ -245,19 +245,16 @@ export function Navbar() {
         <div className="h-16 flex items-center justify-between">
           {/* 1. Left Section: Logo & Desktop Navigation */}
           <div className="flex items-center gap-7">
-            {/* Brand Logo with Official Icon + Modern Typography */}
+            {/* Brand Logo with Official Logo WebP */}
             <Link
               to={getHomeTarget()}
-              className="flex items-center gap-2.5 group select-none shrink-0"
+              className="flex items-center group select-none shrink-0"
             >
               <img
-                src="/logo-icon.svg"
-                alt="Makarya Logo"
-                className="w-8 h-8 object-contain transition-transform group-hover:scale-105"
+                src="/logo.webp"
+                alt="Makarya"
+                className="h-7 sm:h-7.5 w-auto object-contain transition-transform group-hover:scale-105"
               />
-              <span className="text-xl font-black tracking-tight text-slate-900">
-                Makarya
-              </span>
             </Link>
 
             {/* Center Desktop Navigation for Guests */}
@@ -322,7 +319,8 @@ export function Navbar() {
                           onClick={() => setCategoryDropdownOpen(false)}
                           className="text-xs font-bold text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
                         >
-                          Lihat Semua Proyek <ArrowRight className="w-3.5 h-3.5" />
+                          Lihat Semua Proyek{" "}
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       </div>
 

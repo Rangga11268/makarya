@@ -27,7 +27,17 @@ import {
   X,
   Sparkles,
   Activity,
+  Star,
+  ArrowUpRight,
 } from "lucide-react";
+import {
+  CategoryDesignSvg,
+  CategoryUiUxSvg,
+  CategoryCodeSvg,
+  CategoryVideoSvg,
+  CategoryCopySvg,
+  CategoryDataSvg,
+} from "../../components/ui/CategorySvgIcons";
 
 export function LandingPage() {
   const { user, isAuthenticated } = useAuthStore();
@@ -60,6 +70,9 @@ export function LandingPage() {
 
   // Floating Brief Toast State
   const [showFloatingToast, setShowFloatingToast] = useState(true);
+
+  // Freelancer Services Category Filter
+  const [selectedServiceCategory, setSelectedServiceCategory] = useState("ALL");
 
   useEffect(() => {
     async function loadData() {
@@ -201,6 +214,124 @@ export function LandingPage() {
     {
       q: "Apa yang terjadi jika hasil pekerjaan tidak sesuai atau ada kendala?",
       a: "UMKM berhak mengajukan revisi berbobot langsung melalui Workroom. Jika terjadi kebuntuan yang tidak dapat diselesaikan secara bilateral, kedua belah pihak dapat mengajukan eskalasi sengketa (dispute) ke Admin Makarya untuk mediasi dan klaim escrow yang adil.",
+    },
+  ];
+
+  // Comprehensive Freelancer Services & Categories Data
+  const freelancerServices = [
+    {
+      code: "PEMROGRAMAN",
+      title: "Website & Pemrograman",
+      badge: "Paling Diminati",
+      tagline: "Landing page modern, e-commerce, & aplikasi web responsif",
+      svgIcon: CategoryCodeSvg,
+      startPrice: "Rp 450.000",
+      estimatedDays: "3 - 7 Hari",
+      rating: "4.95",
+      completedCount: "410+ Proyek",
+      deliverables: [
+        "Landing Page Bisnis Modern & Super Cepat",
+        "Toko Online / E-Commerce Payment Gateway",
+        "Dashboard Admin & Sistem Kasir (POS)",
+        "Integrasi REST API Laravel / React / Vue",
+      ],
+      popularSkills: ["React", "Vue", "Laravel", "Tailwind CSS", "Next.js"],
+      categoryParam: "PEMROGRAMAN",
+    },
+    {
+      code: "DESAIN",
+      title: "Desain Grafis & Brand Identity",
+      badge: "Terpopuler",
+      tagline: "Logo visual berkarakter, kemasan produk, & materi promosi",
+      svgIcon: CategoryDesignSvg,
+      startPrice: "Rp 150.000",
+      estimatedDays: "2 - 4 Hari",
+      rating: "4.90",
+      completedCount: "320+ Proyek",
+      deliverables: [
+        "Master Logo Vector (.SVG, .AI, .PNG Transparan)",
+        "Buku Panduan Warna & Tipografi Brand",
+        "Banner Iklan & Feed Medsos Penjualan",
+        "Desain Label & Kemasan Produk (Packaging)",
+      ],
+      popularSkills: ["Adobe Illustrator", "Photoshop", "Brand Book", "Canva Pro"],
+      categoryParam: "DESAIN",
+    },
+    {
+      code: "UIUX",
+      title: "UI/UX & Desain Prototipe Figma",
+      badge: "Kualitas Industri",
+      tagline: "Wireframing interaktif & antarmuka aplikasi siap koding",
+      svgIcon: CategoryUiUxSvg,
+      startPrice: "Rp 350.000",
+      estimatedDays: "3 - 5 Hari",
+      rating: "4.92",
+      completedCount: "215+ Proyek",
+      deliverables: [
+        "Design System & Komponen Auto-Layout",
+        "Prototipe Interaktif Siap Demo Investor",
+        "Riset User Journey & Alur Navigasi Aplikasi",
+        "Export Aset Visual Siap Handoff Developer",
+      ],
+      popularSkills: ["Figma", "Auto-Layout", "Mobile UI", "Web UX Flow"],
+      categoryParam: "UIUX",
+    },
+    {
+      code: "VIDEO",
+      title: "Video Editing & Motion Graphics",
+      badge: "Viral & Engagement",
+      tagline: "Video reels promosi, animasi logo, & short-form video ads",
+      svgIcon: CategoryVideoSvg,
+      startPrice: "Rp 200.000",
+      estimatedDays: "1 - 3 Hari",
+      rating: "4.88",
+      completedCount: "180+ Proyek",
+      deliverables: [
+        "Reels Instagram & TikTok Ads Berkonversi",
+        "Video Company Profile & Showreel Produk UMKM",
+        "Animasi Logo Intro / Outro Motion Graphics",
+        "Color Grading Sinematik, Sound FX & Subtitle",
+      ],
+      popularSkills: ["Premiere Pro", "After Effects", "CapCut Pro", "Motion Design"],
+      categoryParam: "VIDEO",
+    },
+    {
+      code: "COPYWRITING",
+      title: "Copywriting & Artikel SEO",
+      badge: "Konversi Tinggi",
+      tagline: "Naskah jualan persuasif & artikel ramah mesin pencari",
+      svgIcon: CategoryCopySvg,
+      startPrice: "Rp 100.000",
+      estimatedDays: "1 - 2 Hari",
+      rating: "4.91",
+      completedCount: "260+ Proyek",
+      deliverables: [
+        "Sales Letter & Headline Landing Page Penjualan",
+        "Artikel Blog Teroptimasi Riset Kata Kunci SEO",
+        "Naskah Script Video Iklan & Voiceover UMKM",
+        "Company Profile & Copy Katalog Brosur Usaha",
+      ],
+      popularSkills: ["SEO Content", "Direct Response", "Social Copy", "Storytelling"],
+      categoryParam: "COPYWRITING",
+    },
+    {
+      code: "ADMIN_DATA",
+      title: "Administrasi Bisnis & Olah Data",
+      badge: "Akurat & Cepat",
+      tagline: "Rekap keuangan rapi, spreadsheet otomatis, & data entry",
+      svgIcon: CategoryDataSvg,
+      startPrice: "Rp 150.000",
+      estimatedDays: "2 - 3 Hari",
+      rating: "4.90",
+      completedCount: "140+ Proyek",
+      deliverables: [
+        "Rekapitulasi Laporan Keuangan & Laba Rugi",
+        "Dashboard Visualisasi Data Excel / Google Sheets",
+        "Entri Data Katalog Produk Masal Marketplace",
+        "Riset Analisa Kompetitor & Database Pelanggan",
+      ],
+      popularSkills: ["Excel Expert", "Google Sheets", "Data Entry", "Automasi Rumus"],
+      categoryParam: "ADMIN_DATA",
     },
   ];
 
@@ -1508,7 +1639,183 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 6. LIVE EXPLORER (Projects & Talents Real Data Showcase)                   */}
+      {/* 6. COMPREHENSIVE FREELANCER SERVICES & CATEGORY EXPLORER                  */}
+      {/* ========================================================================= */}
+      <section className="py-24 bg-[#F8FAFC] border-t border-slate-200/80 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="max-w-2xl">
+              <span className="text-xs font-bold text-cyan-700 bg-cyan-50 px-3.5 py-1.5 rounded-full border border-cyan-200 uppercase tracking-wider inline-flex items-center gap-1.5 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-600" />
+                KATALOG JASA & KEAHLIAN MAHASISWA
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-3 leading-tight">
+                Temukan Jasa Digital Berkualitas untuk Kebutuhan Bisnis Anda
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                Dikerjakan langsung oleh mahasiswa bertalenta dengan standar industri, estimasi waktu transparan, dan garansi keamanan rekening bersama (Escrow).
+              </p>
+            </div>
+
+            {/* Category Quick Filter Pills (Apple Style) */}
+            <div className="flex flex-wrap gap-1.5 bg-slate-200/70 p-1.5 rounded-full border border-slate-300/80 self-start md:self-auto shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setSelectedServiceCategory("ALL")}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-[0.98] cursor-pointer select-none ${
+                  selectedServiceCategory === "ALL"
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "text-slate-700 hover:text-slate-950 hover:bg-white/60"
+                }`}
+              >
+                Semua Jasa
+              </button>
+              {freelancerServices.map((svc) => (
+                <button
+                  key={svc.code}
+                  type="button"
+                  onClick={() => setSelectedServiceCategory(svc.code)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-[0.98] cursor-pointer select-none ${
+                    selectedServiceCategory === svc.code
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-700 hover:text-slate-950 hover:bg-white/60"
+                  }`}
+                >
+                  {svc.title.split(" ")[0]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 6 Services Grid Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {freelancerServices
+              .filter(
+                (s) =>
+                  selectedServiceCategory === "ALL" ||
+                  selectedServiceCategory === s.code,
+              )
+              .map((service) => {
+                const SvgIcon = service.svgIcon;
+                return (
+                  <div
+                    key={service.code}
+                    className="group bg-white rounded-3xl border border-slate-200/90 hover:border-cyan-300 p-6 sm:p-7 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 relative"
+                  >
+                    <div>
+                      {/* Top Header Card: SVG Icon & Badge */}
+                      <div className="flex items-start justify-between gap-4 mb-5">
+                        <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                          <SvgIcon size={46} />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-800 bg-cyan-50 border border-cyan-200 px-2.5 py-1 rounded-full shadow-2xs">
+                          {service.badge}
+                        </span>
+                      </div>
+
+                      {/* Title & Tagline */}
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-cyan-600 transition-colors leading-snug">
+                        {service.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                        {service.tagline}
+                      </p>
+
+                      {/* Pricing & Duration Bar */}
+                      <div className="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-400 block font-medium">Mulai dari:</span>
+                          <span className="font-extrabold text-slate-900 text-sm font-mono">
+                            {service.startPrice}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-400 block font-medium">Estimasi:</span>
+                          <span className="font-bold text-slate-700 font-mono">
+                            {service.estimatedDays}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Deliverables Checklist */}
+                      <div className="mt-5 space-y-2">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                          Output Deliverable:
+                        </span>
+                        {service.deliverables.map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                            <span className="leading-tight">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Popular Skills Pills */}
+                      <div className="mt-5 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
+                        {service.popularSkills.map((skill, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[10px] font-mono font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Apple Style CTA Button */}
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
+                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                        <span className="font-bold text-slate-900">{service.rating}</span>
+                        <span className="text-slate-400">({service.completedCount})</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/projects?category=${service.categoryParam}`)}
+                        className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm hover:shadow flex items-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer"
+                      >
+                        <span>Cari Jasa Ini</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Bottom Banner Notice */}
+          <div className="mt-12 p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-cyan-600/20">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Butuh Kombinasi Beberapa Jasa Sekaligus?
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Gunakan fitur <b>Proyek Tim</b> untuk merekrut desainer, programmer, dan copywriter dalam satu alur terkoordinasi.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate("/register?role=UMKM")}
+              className="shrink-0 px-6 py-3 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>Pasang Kebutuhan Proyek</span>
+              <ArrowRight className="w-4 h-4 text-cyan-400" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 7. LIVE EXPLORER (Projects & Talents Real Data Showcase)                   */}
       {/* ========================================================================= */}
       <section className="py-20 bg-white border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
