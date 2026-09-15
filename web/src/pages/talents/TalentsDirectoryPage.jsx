@@ -28,12 +28,12 @@ import {
   Quote,
   Star,
   ShieldCheck,
-  Briefcase,
   SlidersHorizontal,
   ArrowUpDown,
   Layers,
   ChevronRight,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 export function TalentsDirectoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -112,7 +112,7 @@ export function TalentsDirectoryPage() {
           to="/projects"
           className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors text-center border border-border sm:border-transparent"
         >
-          <Briefcase className="w-3.5 h-3.5 shrink-0" />
+          <ProjectBriefVectorIcon size={14} className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">Katalog Proyek</span>
         </Link>
         <Link
@@ -128,7 +128,7 @@ export function TalentsDirectoryPage() {
       <div className="bg-surface border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold uppercase tracking-wider border border-brand-indigo/15">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-indigo-light text-brand-indigo text-xs font-semibold tracking-tight border border-brand-indigo/15">
               <Award className="w-3.5 h-3.5" />
               <span>Direktori Talenta Terkurasi</span>
             </div>
@@ -177,7 +177,10 @@ export function TalentsDirectoryPage() {
 
           <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
-              <Briefcase className="w-3.5 h-3.5 text-slate-700 shrink-0" />
+              <ProjectBriefVectorIcon
+                size={14}
+                className="w-3.5 h-3.5 text-slate-700 shrink-0"
+              />
               <span className="truncate">Deliverable Tuntas</span>
             </div>
             <span className="text-[10px] sm:text-[11px] text-muted block mt-0.5 truncate">
@@ -213,7 +216,7 @@ export function TalentsDirectoryPage() {
             {keyword && (
               <button
                 onClick={() => setKeyword("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-dark-900 p-0.5 rounded-full cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-dark-900 p-0.5 rounded-md cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -317,7 +320,7 @@ export function TalentsDirectoryPage() {
               <span className="text-xs">Hanya yang selesai proyek</span>
             </label>
 
-            <span className="text-muted text-[11px] font-medium bg-canvas px-2.5 py-1 rounded-full border border-border w-fit">
+            <span className="text-muted text-[11px] font-medium bg-canvas px-2 py-0.5 rounded-md border border-border w-fit">
               Ditemukan: <b className="text-dark-900">{talents.length}</b>{" "}
               talenta
             </span>
@@ -413,7 +416,7 @@ export function TalentsDirectoryPage() {
 
                   {/* Badge & University Tag */}
                   <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15 flex items-center gap-1">
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15 flex items-center gap-1">
                       <Award className="w-3 h-3" />
                       {talent.status_badge || "Talenta Terverifikasi"}
                     </span>
@@ -556,7 +559,7 @@ export function TalentsDirectoryPage() {
                       {talent.skills.slice(0, 4).map((skill, idx) => (
                         <span
                           key={idx}
-                          className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo border border-brand-indigo/10"
+                          className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200/80"
                         >
                           {skill}
                         </span>

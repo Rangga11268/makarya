@@ -24,7 +24,6 @@ import {
   Award,
   Star,
   ShieldCheck,
-  Briefcase,
   MessageSquare,
   Mail,
   ExternalLink,
@@ -259,8 +258,8 @@ export function TalentDetailPage() {
               <h1 className="text-xl sm:text-2xl font-bold text-dark-900">
                 {talent.nama_lengkap}
               </h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Terverifikasi Kampus
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Terverifikasi Kampus
               </span>
             </div>
 
@@ -272,7 +271,7 @@ export function TalentDetailPage() {
                 />
                 <span>{talent.prodi || "Belum Memilih Prodi"}</span>
               </span>
-              <span>•</span>
+              <span className="text-slate-300 font-light">/</span>
               <span className="flex items-center gap-1">
                 <CampusVectorIcon
                   size={14}

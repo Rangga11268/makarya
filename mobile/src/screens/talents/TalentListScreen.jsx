@@ -50,7 +50,6 @@ import {
   Compass,
   SlidersHorizontal,
   ChevronRight,
-  Briefcase,
   Layers,
 } from "lucide-react-native";
 
@@ -260,32 +259,26 @@ export function TalentListScreen({ navigation }) {
     setIsDetailModalOpen(true);
   };
 
-  const handleOpenContact = async (talent) => {
-    setSelectedTalent(talent);
-    setIsContactModalOpen(true);
-    try {
-      setLoadingProjects(true);
-      const res = await projectApi.getMyProjects();
-      const list = Array.isArray(res.data) ? res.data : [];
-      setMyProjects(list);
-      if (list.length > 0) {
-        setSelectedProjectId(list[0].id);
-      }
-    } catch (err) {
-      setMyProjects([]);
-    } finally {
-      setLoadingProjects(false);
-    }
+  const handleOpenContact = (talent) => {
+    setIsDetailModalOpen(false);
+    setIsContactModalOpen(false);
+    navigation.navigate("Chat", {
+      talentId: talent.id,
+      partnerName: talent.nama_lengkap,
+      partnerPhoto: talent.url_foto || null,
+      partnerRole: "MHS",
+    });
   };
 
-  const handleInviteToProject = () => {
-    if (!selectedProjectId) {
+  const handleInviteToProject = (projectId, slotId) => {
+    const projId = projectId || selectedProjectId;
+    if (!projId) {
       setIsContactModalOpen(false);
       navigation.navigate("PostProject");
       return;
     }
     setIsContactModalOpen(false);
-    navigation.navigate("ProjectDetail", { id: selectedProjectId });
+    navigation.navigate("ProjectDetail", { id: projId, slotId });
   };
 
   const openUrl = (url) => {
@@ -307,9 +300,9 @@ export function TalentListScreen({ navigation }) {
     (selectedMinProjects !== "ALL" ? 1 : 0);
 
   const segmentedTabs = [
-    { id: "MATCH", label: "Best Match" },
-    { id: "RECENT", label: "Recent" },
-    { id: "TOP_RATED", label: "Top Rated" },
+    { id: "MATCH", label: "Paling Sesuai" },
+    { id: "RECENT", label: "Terbaru" },
+    { id: "TOP_RATED", label: "Rating Tertinggi" },
   ];
 
   // Sorting based on active tab
@@ -476,6 +469,7 @@ export function TalentListScreen({ navigation }) {
         title="Eksplorasi Mahasiswa"
         subtitle="100% Terverifikasi Kampus"
         showBell={true}
+        showChat={true}
         onBellPress={() => setIsNotificationOpen(true)}
         unreadCount={unreadNotifications}
       />
@@ -494,7 +488,7 @@ export function TalentListScreen({ navigation }) {
       </View>
 
       {/* 3. Apple Glass Capsule Segmented Navigation Tabs */}
-      <View style={[styles.segmentedContainer, responsiveContainerStyle]}>
+      <View style={styles.segmentedContainer}>
         {segmentedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -508,6 +502,7 @@ export function TalentListScreen({ navigation }) {
               activeOpacity={0.7}
             >
               <Text
+                numberOfLines={1}
                 style={[
                   styles.segmentedTabText,
                   isActive && styles.segmentedTabTextActive,
@@ -696,7 +691,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor:
       Platform.OS === "android" ? "#F1F5F9" : "rgba(15, 23, 42, 0.05)",
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 2,
     marginBottom: 6,
     borderRadius: 14,
@@ -709,7 +704,8 @@ const styles = StyleSheet.create({
   },
   segmentedTabItem: {
     flex: 1,
-    paddingVertical: 7,
+    paddingVertical: 6.5,
+    paddingHorizontal: 2,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 11,
@@ -725,6 +721,8 @@ const styles = StyleSheet.create({
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 12,
+    fontSize: 11.5,
+    letterSpacing: -0.1,
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
@@ -882,9 +880,11 @@ const styles = StyleSheet.create({
   },
   statusBadgePill: {
     backgroundColor: COLORS.brandCyanLight,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(6, 182, 212, 0.2)",
   },
   statusBadgeText: {
     fontFamily: FONTS.bodyBold,

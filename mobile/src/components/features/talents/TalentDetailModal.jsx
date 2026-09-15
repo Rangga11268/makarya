@@ -475,9 +475,9 @@ const styles = StyleSheet.create({
   },
   detailSkillPill: {
     backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
   detailSkillText: {
     fontFamily: FONTS.bodyMedium,

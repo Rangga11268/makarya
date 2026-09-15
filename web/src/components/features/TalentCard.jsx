@@ -55,7 +55,7 @@ export function TalentCard({
           {skills.map((skill, idx) => (
             <span
               key={idx}
-              className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo border border-brand-indigo/10 font-sans"
+              className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15 font-sans"
             >
               {skill}
             </span>

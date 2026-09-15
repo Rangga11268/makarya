@@ -12,7 +12,6 @@ import {
   MessageSquare,
   Mail,
   ExternalLink,
-  Briefcase,
   PlusCircle,
   CheckCircle2,
   GraduationCap,
@@ -26,6 +25,7 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
   const [myProjects, setMyProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
 
   const isUmkm = isAuthenticated && user?.role?.toUpperCase() === "UMKM";
 
@@ -43,6 +43,14 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
           setMyProjects(list);
           if (list.length > 0) {
             setSelectedProjectId(list[0].id);
+            if (list[0].slots && list[0].slots.length > 0) {
+              const openSlot = list[0].slots.find(
+                (s) => s.status === "OPEN" || (!s.status && !s.assigned_to),
+              );
+              setSelectedSlotId(openSlot ? openSlot.id : list[0].slots[0].id);
+            } else {
+              setSelectedSlotId(null);
+            }
           }
         } catch (err) {
           console.error("Gagal memuat proyek UMKM:", err);
@@ -56,10 +64,29 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
 
   if (!isOpen || !talent) return null;
 
+  const selectedProject = myProjects.find((p) => p.id === selectedProjectId);
+  const isTeamProject =
+    selectedProject?.tipe_kolaborasi === "TIM" ||
+    (Array.isArray(selectedProject?.slots) &&
+      selectedProject?.slots.length > 0);
+
+  const handleSelectProject = (project) => {
+    setSelectedProjectId(project.id);
+    if (project.slots && project.slots.length > 0) {
+      const openSlot = project.slots.find(
+        (s) => s.status === "OPEN" || (!s.status && !s.assigned_to),
+      );
+      setSelectedSlotId(openSlot ? openSlot.id : project.slots[0].id);
+    } else {
+      setSelectedSlotId(null);
+    }
+  };
+
   const handleOpenProjectChat = () => {
     if (!selectedProjectId) return;
     onClose();
-    navigate(`/proposals/${selectedProjectId}?tab=chat`);
+    const slotQuery = selectedSlotId ? `&slot_id=${selectedSlotId}` : "";
+    navigate(`/proposals/${selectedProjectId}?tab=chat${slotQuery}`);
   };
 
   return (
@@ -89,12 +116,13 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                 <h3 className="text-base font-bold text-dark-900 leading-tight">
                   {talent.nama_lengkap}
                 </h3>
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                {talent.verified && (
+                  <CheckCircle2 className="w-4 h-4 text-brand-indigo shrink-0" />
+                )}
               </div>
-              <p className="text-xs text-muted flex items-center gap-1 mt-0.5">
-                <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
+              <p className="text-xs text-muted mt-0.5 flex items-center gap-1.5">
                 <span>{talent.prodi}</span>
-                <span>•</span>
+                <span className="text-slate-300 font-normal">/</span>
                 <span className="font-semibold text-emerald-700">
                   Terverifikasi
                 </span>
@@ -104,7 +132,7 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-muted hover:text-dark-900 hover:bg-slate-200/50 transition-colors"
+            className="p-1.5 rounded-lg text-muted hover:text-dark-900 hover:bg-slate-200/50 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -160,7 +188,7 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                 {talent.skills.map((s, idx) => (
                   <span
                     key={idx}
-                    className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15"
+                    className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-brand-indigo-light text-brand-indigo border border-brand-indigo/15"
                   >
                     {s}
                   </span>
@@ -192,11 +220,14 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                         const isOpen =
                           p.status === "OPEN" || p.status === "BIDDING";
                         const isInProgress = p.status === "IN_PROGRESS";
+                        const isTeam =
+                          p.tipe_kolaborasi === "TIM" ||
+                          (Array.isArray(p.slots) && p.slots.length > 0);
 
                         return (
                           <div
                             key={p.id}
-                            onClick={() => setSelectedProjectId(p.id)}
+                            onClick={() => handleSelectProject(p)}
                             className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
                               isSelected
                                 ? "bg-white border-brand-indigo ring-1.5 ring-brand-indigo shadow-xs"
@@ -208,8 +239,13 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                                 <span className="font-bold text-dark-900 truncate block">
                                   {p.judul}
                                 </span>
+                                {isTeam && (
+                                  <span className="text-[9.5px] font-semibold px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 shrink-0">
+                                    Tim ({p.slots?.length || 0} Peran)
+                                  </span>
+                                )}
                                 <span
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-md shrink-0 ${
                                     isOpen
                                       ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                                       : isInProgress
@@ -224,7 +260,9 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                                 <span className="font-bold text-brand-indigo font-mono">
                                   {formatCurrency(p.budget_max)}
                                 </span>
-                                <span>•</span>
+                                <span className="text-slate-300 font-normal">
+                                  /
+                                </span>
                                 <span>{p.kategori || "UMKM Digital"}</span>
                               </div>
                             </div>
@@ -243,6 +281,99 @@ export function ContactTalentModal({ isOpen, onClose, talent }) {
                         );
                       })}
                     </div>
+
+                    {/* Team Slots Selection Sub-Panel */}
+                    {isTeamProject && selectedProject?.slots?.length > 0 && (
+                      <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-2 mt-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[11px] font-bold text-slate-800">
+                            Pilih Posisi / Slot Peran yang Ditawarkan:
+                          </label>
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            {
+                              selectedProject.slots.filter(
+                                (s) =>
+                                  s.status === "OPEN" ||
+                                  (!s.status && !s.assigned_to),
+                              ).length
+                            }{" "}
+                            slot terbuka
+                          </span>
+                        </div>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                          {selectedProject.slots.map((slot) => {
+                            const isFilled =
+                              slot.status === "IN_PROGRESS" ||
+                              slot.status === "COMPLETED" ||
+                              Boolean(slot.assigned_to);
+                            const isSlotSelected = selectedSlotId === slot.id;
+
+                            return (
+                              <div
+                                key={slot.id}
+                                onClick={() => {
+                                  if (!isFilled) {
+                                    setSelectedSlotId(slot.id);
+                                  }
+                                }}
+                                className={`p-2.5 rounded-lg border text-xs transition-all flex items-center justify-between gap-2 ${
+                                  isFilled
+                                    ? "bg-slate-100/70 border-slate-200 opacity-60 cursor-not-allowed"
+                                    : isSlotSelected
+                                      ? "bg-white border-brand-indigo ring-1 ring-brand-indigo shadow-2xs cursor-pointer"
+                                      : "bg-white border-slate-200 hover:border-slate-300 cursor-pointer"
+                                }`}
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-slate-900 truncate">
+                                      {slot.nama_peran}
+                                    </span>
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md border ${
+                                        isFilled
+                                          ? "bg-slate-200/80 text-slate-600 border-slate-300"
+                                          : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                      }`}
+                                    >
+                                      {isFilled ? "Sudah Terisi" : "Terbuka"}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
+                                    <span className="font-semibold text-brand-indigo font-mono">
+                                      {formatCurrency(slot.alokasi_budget)}
+                                    </span>
+                                    {slot.deskripsi_tugas && (
+                                      <>
+                                        <span className="text-slate-300">
+                                          /
+                                        </span>
+                                        <span className="truncate max-w-[150px]">
+                                          {slot.deskripsi_tugas}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                                {!isFilled && (
+                                  <div
+                                    className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
+                                      isSlotSelected
+                                        ? "border-brand-indigo bg-brand-indigo"
+                                        : "border-slate-300 bg-white"
+                                    }`}
+                                  >
+                                    {isSlotSelected && (
+                                      <div className="w-1 h-1 rounded-full bg-white" />
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     <Button
                       variant="brand"

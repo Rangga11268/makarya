@@ -15,8 +15,8 @@ import {
   CheckCircle2,
   Award,
   ShieldCheck,
-  Briefcase,
 } from "lucide-react-native";
+import { ProjectBriefVectorIcon } from "../icons/CategoryIcons";
 import { PebbleButton } from "../ui/PebbleButton";
 
 export function TalentBentoCard({
@@ -128,7 +128,7 @@ export function TalentBentoCard({
       <View style={styles.bottomRow}>
         <View style={styles.statsCol}>
           <View style={styles.statItemRow}>
-            <Briefcase size={12} color={COLORS.textMuted} />
+            <ProjectBriefVectorIcon size={13} color={COLORS.textMuted} />
             <Text style={styles.statItemText}>
               <Text style={styles.statItemNumber}>{completedJobs}</Text> Proyek
               Tuntas

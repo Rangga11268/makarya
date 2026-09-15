@@ -229,9 +229,9 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   modalOptionChip: {
-    paddingHorizontal: 13,
-    paddingVertical: 7,
-    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6.5,
+    borderRadius: 10,
     backgroundColor: "rgba(15, 23, 42, 0.04)",
     borderWidth: 1,
     borderColor: "rgba(15, 23, 42, 0.06)",

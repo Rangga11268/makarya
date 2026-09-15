@@ -9,12 +9,12 @@ import {
 } from "react-native";
 import {
   Star,
-  Briefcase,
   ShieldCheck,
   CheckCircle2,
   Heart,
   MessageSquare,
 } from "lucide-react-native";
+import { ProjectBriefVectorIcon } from "../icons/CategoryIcons";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { PebbleButton } from "../ui/PebbleButton";
@@ -147,7 +147,7 @@ export function TalentDeckCard({
             </View>
 
             <View style={styles.pillChip}>
-              <Briefcase size={11} color="#475569" />
+              <ProjectBriefVectorIcon size={12} color="#475569" />
               <Text style={styles.pillChipText}>
                 {completedProjects} Proyek Tuntas
               </Text>
@@ -316,9 +316,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 5,
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 10,
-    paddingVertical: 4.5,
-    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
