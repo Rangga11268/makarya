@@ -40,6 +40,7 @@ import {
   Radio,
   AlertTriangle,
   Clock,
+  Users,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
@@ -150,30 +151,40 @@ export function ChatScreen({ route, navigation }) {
     }
   }, [isUmkm, talentId]);
 
-  const handleSendProjectOffer = async (proj) => {
+  const handleSendProjectOffer = async (proj, selectedSlot = null) => {
     setCurrentProjectId(proj.id);
     setCurrentProjectTitle(proj.judul);
     setShowProjectModal(false);
 
     try {
+      const offeredRole =
+        selectedSlot?.nama_peran ||
+        proj.nama_peran ||
+        (proj.kategori ? `Spesialis ${proj.kategori}` : "Anggota Tim Kolaborasi");
+
       const offerData = {
         projectId: proj.id,
         projectTitle: proj.judul,
-        budget: proj.budget_max,
+        budget: selectedSlot?.alokasi_budget || proj.budget_max,
         deadline: proj.deadline,
         kategori: proj.kategori,
+        tipe_kolaborasi:
+          proj.tipe_kolaborasi || (proj.slots?.length > 0 ? "TIM" : "INDIVIDU"),
+        posisi: offeredRole,
+        slotId: selectedSlot?.id || null,
+        slots: proj.slots || [],
         status: "PENDING",
       };
 
       const payload = {
-        message: `Tawaran Proyek Resmi: ${proj.judul}`,
+        message: `Tawaran Proyek Resmi: ${proj.judul} (Posisi: ${offeredRole})`,
         attachment_url: JSON.stringify(offerData),
         attachment_type: "PROJECT_OFFER",
         recipient_id: targetRecipientId,
       };
 
       await chatApi.sendMessage(proj.id, payload);
-      showToast("Tawaran proyek berhasil diajukan kepada talenta!", "success");
+      showToast("Tawaran proyek & posisi berhasil diajukan kepada talenta!", "success");
       loadHistory(proj.id);
     } catch (err) {
       console.warn("Gagal mengirim tawaran:", err);
@@ -441,8 +452,12 @@ export function ChatScreen({ route, navigation }) {
           style={[
             styles.bubbleBox,
             isOffer
-              ? (isMe ? styles.bubbleBoxOfferMe : styles.bubbleBoxOfferPartner)
-              : (isMe ? styles.bubbleBoxMe : styles.bubbleBoxPartner),
+              ? isMe
+                ? styles.bubbleBoxOfferMe
+                : styles.bubbleBoxOfferPartner
+              : isMe
+                ? styles.bubbleBoxMe
+                : styles.bubbleBoxPartner,
           ]}
         >
           {/* Sender Header if Partner (only on regular text messages) */}
@@ -555,6 +570,40 @@ export function ChatScreen({ route, navigation }) {
                     {offer.projectTitle || "Proyek Kolaborasi"}
                   </Text>
 
+                  {/* Position / Role Highlight Pill */}
+                  <View
+                    style={[
+                      styles.offerPositionPill,
+                      isMe
+                        ? styles.offerPositionPillMe
+                        : styles.offerPositionPillPartner,
+                    ]}
+                  >
+                    <Users
+                      size={12}
+                      color={isMe ? "#FFFFFF" : COLORS.brandIndigo}
+                    />
+                    <Text
+                      style={[
+                        styles.offerPositionText,
+                        isMe
+                          ? { color: "#FFFFFF" }
+                          : { color: COLORS.brandIndigo },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      Posisi Ditawarkan:{" "}
+                      <Text style={{ fontWeight: "700" }}>
+                        {offer.posisi ||
+                          offer.nama_peran ||
+                          (offer.kategori
+                            ? `Spesialis ${offer.kategori}`
+                            : "Anggota Tim Kolaborasi")}
+                      </Text>
+                      {offer.tipe_kolaborasi === "TIM" ? " (Tim)" : ""}
+                    </Text>
+                  </View>
+
                   {/* Budget & Deadline Section (Clean, Airy, Minimal) */}
                   <View
                     style={[
@@ -571,7 +620,7 @@ export function ChatScreen({ route, navigation }) {
                           isMe && { color: "rgba(255,255,255,0.7)" },
                         ]}
                       >
-                        Nilai Proyek
+                        {offer.posisi ? "Alokasi Posisi" : "Nilai Proyek"}
                       </Text>
                       <Text
                         style={[
@@ -609,9 +658,7 @@ export function ChatScreen({ route, navigation }) {
                         >
                           <Clock
                             size={11}
-                            color={
-                              isMe ? "rgba(255,255,255,0.85)" : "#64748B"
-                            }
+                            color={isMe ? "rgba(255,255,255,0.85)" : "#64748B"}
                           />
                           <Text
                             style={[
@@ -625,6 +672,114 @@ export function ChatScreen({ route, navigation }) {
                       </View>
                     ) : null}
                   </View>
+
+                  {/* Formasi Peran Tim (If Team Project with Slots) */}
+                  {offer.slots && offer.slots.length > 0 && (
+                    <View
+                      style={[
+                        styles.offerTeamSlotsContainer,
+                        isMe
+                          ? styles.offerTeamSlotsContainerMe
+                          : styles.offerTeamSlotsContainerPartner,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.offerTeamSlotsHeading,
+                          isMe
+                            ? { color: "rgba(255, 255, 255, 0.85)" }
+                            : { color: "#64748B" },
+                        ]}
+                      >
+                        FORMASI PERAN TIM ({offer.slots.length} POSISI):
+                      </Text>
+                      <View style={{ gap: 6 }}>
+                        {offer.slots.map((s, sIdx) => {
+                          const isThisRole =
+                            (offer.slotId &&
+                              String(s.id) === String(offer.slotId)) ||
+                            s.nama_peran === offer.posisi;
+                          return (
+                            <View
+                              key={s.id || sIdx}
+                              style={[
+                                styles.offerTeamSlotRow,
+                                isThisRole
+                                  ? isMe
+                                    ? styles.offerTeamSlotRowSelectedMe
+                                    : styles.offerTeamSlotRowSelectedPartner
+                                  : isMe
+                                    ? styles.offerTeamSlotRowMe
+                                    : styles.offerTeamSlotRowPartner,
+                              ]}
+                            >
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: 6,
+                                  flex: 1,
+                                }}
+                              >
+                                <Text
+                                  style={[
+                                    styles.offerTeamSlotRoleName,
+                                    isThisRole && { fontWeight: "700" },
+                                    isMe
+                                      ? { color: "#FFFFFF" }
+                                      : isThisRole
+                                        ? { color: COLORS.brandIndigo }
+                                        : { color: "#1E293B" },
+                                  ]}
+                                  numberOfLines={1}
+                                >
+                                  {s.nama_peran}
+                                </Text>
+                                {isThisRole && (
+                                  <View
+                                    style={[
+                                      styles.offerTeamSlotTag,
+                                      isMe
+                                        ? {
+                                            backgroundColor:
+                                              "rgba(255, 255, 255, 0.25)",
+                                          }
+                                        : {
+                                            backgroundColor:
+                                              COLORS.brandIndigo,
+                                          },
+                                    ]}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "#FFFFFF",
+                                        fontSize: 9,
+                                        fontWeight: "700",
+                                      }}
+                                    >
+                                      Ditawarkan
+                                    </Text>
+                                  </View>
+                                )}
+                              </View>
+                              <Text
+                                style={[
+                                  styles.offerTeamSlotBudget,
+                                  isMe
+                                    ? { color: "rgba(255, 255, 255, 0.9)" }
+                                    : { color: "#059669" },
+                                ]}
+                              >
+                                {s.alokasi_budget
+                                  ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
+                                  : "Sesuai Proyek"}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  )}
 
                   {/* Action Buttons for Mahasiswa */}
                   {offerStatus === "PENDING" ? (
@@ -1235,36 +1390,74 @@ export function ChatScreen({ route, navigation }) {
             <FlatList
               data={myProjects}
               keyExtractor={(item) => String(item.id)}
-              style={{ maxHeight: 320 }}
+              style={{ maxHeight: 360 }}
               renderItem={({ item }) => {
                 const isSelected = item.id === currentProjectId;
+                const isTeam = item.tipe_kolaborasi === "TIM" || (item.slots && item.slots.length > 0);
+                const hasSlots = item.slots && item.slots.length > 0;
+
                 return (
-                  <TouchableOpacity
-                    style={[
-                      styles.projectOptionItem,
-                      isSelected && styles.projectOptionItemSelected,
-                    ]}
-                    onPress={() => handleSendProjectOffer(item)}
-                    activeOpacity={0.7}
-                  >
-                    <View style={{ flex: 1, marginRight: 8 }}>
-                      <Text
-                        style={[
-                          styles.projectOptionTitle,
-                          isSelected && { color: COLORS.brandIndigo },
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {item.judul}
-                      </Text>
-                      <Text style={styles.projectOptionStatus}>
-                        Status: {item.status || "OPEN"}
-                      </Text>
-                    </View>
-                    {isSelected && (
-                      <CheckCircle2 size={16} color={COLORS.brandIndigo} />
+                  <View style={styles.projectOptionCard}>
+                    <TouchableOpacity
+                      style={[
+                        styles.projectOptionItem,
+                        isSelected && styles.projectOptionItemSelected,
+                      ]}
+                      onPress={() => handleSendProjectOffer(item)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={{ flex: 1, marginRight: 8 }}>
+                        <Text
+                          style={[
+                            styles.projectOptionTitle,
+                            isSelected && { color: COLORS.brandIndigo },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {item.judul}
+                        </Text>
+                        <Text style={styles.projectOptionStatus}>
+                          {isTeam ? "Proyek Tim" : "Proyek Individu"} • Anggaran: Rp {Number(item.budget_max).toLocaleString("id-ID")}
+                        </Text>
+                      </View>
+                      <View style={styles.projectOptionTag}>
+                        <Text style={styles.projectOptionTagText}>
+                          {hasSlots ? "Pilih Posisi ▾" : "Tawarkan"}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+
+                    {/* Jika proyek memiliki rincian posisi slot tim */}
+                    {hasSlots && (
+                      <View style={styles.projectSlotsWrap}>
+                        <Text style={styles.projectSlotsHeading}>
+                          Pilih Posisi Tim yang Ditawarkan:
+                        </Text>
+                        {item.slots.map((slot) => (
+                          <TouchableOpacity
+                            key={slot.id}
+                            style={styles.projectSlotItem}
+                            onPress={() => handleSendProjectOffer(item, slot)}
+                            activeOpacity={0.75}
+                          >
+                            <View style={{ flex: 1 }}>
+                              <Text style={styles.projectSlotTitle}>
+                                {slot.nama_peran}
+                              </Text>
+                              <Text style={styles.projectSlotBudget}>
+                                Alokasi: Rp {Number(slot.alokasi_budget || item.budget_max).toLocaleString("id-ID")}
+                              </Text>
+                            </View>
+                            <View style={styles.projectSlotOfferBtn}>
+                              <Text style={styles.projectSlotOfferBtnText}>
+                                Ajukan Posisi
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
                     )}
-                  </TouchableOpacity>
+                  </View>
                 );
               }}
             />
@@ -1858,26 +2051,28 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.textDark,
   },
+  projectOptionCard: {
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
   projectOptionItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-    backgroundColor: COLORS.canvasSoft,
-    marginBottom: 8,
   },
   projectOptionItemSelected: {
-    borderColor: COLORS.brandIndigo,
     backgroundColor: COLORS.brandIndigoLight,
   },
   projectOptionTitle: {
     fontFamily: FONTS.bodyBold,
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: "700",
     color: COLORS.textDark,
     marginBottom: 2,
   },
@@ -1885,6 +2080,66 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 11,
     color: COLORS.textMuted,
+  },
+  projectOptionTag: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(203, 213, 225, 0.8)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  projectOptionTagText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: COLORS.brandIndigo,
+  },
+  projectSlotsWrap: {
+    borderTopWidth: 1,
+    borderTopColor: "rgba(226, 232, 240, 0.8)",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 6,
+  },
+  projectSlotsHeading: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#64748B",
+    marginBottom: 2,
+  },
+  projectSlotItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  projectSlotTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: "#0F172A",
+  },
+  projectSlotBudget: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10.5,
+    color: "#059669",
+    marginTop: 1,
+  },
+  projectSlotOfferBtn: {
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  projectSlotOfferBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10.5,
+    color: "#FFFFFF",
   },
 
   // Project Offer Attachment Card (Apple-style / Clean & Modern)
@@ -1966,7 +2221,26 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     lineHeight: 21,
     marginTop: 6,
+    marginBottom: 6,
+  },
+  offerPositionPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
     marginBottom: 10,
+  },
+  offerPositionPillPartner: {
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  offerPositionPillMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+  },
+  offerPositionText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11,
   },
   offerDetailsBox: {
     borderRadius: 14,
@@ -2002,6 +2276,67 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
+    fontWeight: "600",
+  },
+  offerTeamSlotsContainer: {
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+  },
+  offerTeamSlotsContainerPartner: {
+    backgroundColor: "#F8FAFC",
+    borderColor: "#E2E8F0",
+  },
+  offerTeamSlotsContainerMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  offerTeamSlotsHeading: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  offerTeamSlotRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  offerTeamSlotRowPartner: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+  },
+  offerTeamSlotRowMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+  },
+  offerTeamSlotRowSelectedPartner: {
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#C7D2FE",
+  },
+  offerTeamSlotRowSelectedMe: {
+    backgroundColor: "rgba(255, 255, 255, 0.22)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.35)",
+  },
+  offerTeamSlotRoleName: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyMedium,
+  },
+  offerTeamSlotTag: {
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 4,
+  },
+  offerTeamSlotBudget: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
     fontWeight: "600",
   },
   offerActionRow: {
