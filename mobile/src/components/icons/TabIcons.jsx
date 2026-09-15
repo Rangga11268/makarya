@@ -187,7 +187,12 @@ export function ProfileTabIcon({ focused, size = 22 }) {
 }
 
 // 6. Minimalist Speech Bubble & Chat Icon (Chat / Diskusi)
-export function ChatTabIcon({ focused, size = 22, hasUnread = false, unreadCount = 0 }) {
+export function ChatTabIcon({
+  focused,
+  size = 22,
+  hasUnread = false,
+  unreadCount = 0,
+}) {
   const activeColor = "#2563EB";
   const inactiveColor = "#94A3B8";
   const strokeColor = focused ? activeColor : inactiveColor;

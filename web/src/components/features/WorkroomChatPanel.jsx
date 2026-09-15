@@ -307,14 +307,20 @@ export function WorkroomChatPanel({
                 }
               />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
+            <p className="text-[10px] sm:text-[11px] flex items-center gap-1.5 mt-0.5">
               <span
                 className={`w-2 h-2 rounded-full shrink-0 ${
-                  wsConnected ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
+                  wsConnected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
                 }`}
               />
-              <span className="text-[10px] truncate">
-                {wsConnected ? "Koneksi Realtime Aktif" : "Menghubungkan..."}
+              <span
+                className={`text-[10px] truncate ${
+                  wsConnected
+                    ? "text-emerald-600 font-medium"
+                    : "text-rose-500 font-medium"
+                }`}
+              >
+                {wsConnected ? "Online" : "Offline"}
               </span>
             </p>
           </div>
@@ -357,7 +363,7 @@ export function WorkroomChatPanel({
             return (
               <div
                 key={m.id || idx}
-                className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+                className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
               >
                 {!isMe &&
                   ((
@@ -372,10 +378,10 @@ export function WorkroomChatPanel({
                       alt={
                         partnerId ? partnerName : m.sender_name || partnerName
                       }
-                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
+                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
+                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
                       {(partnerId
                         ? partnerName
                         : m.sender_name || partnerName || "P"
@@ -398,7 +404,8 @@ export function WorkroomChatPanel({
                     </span>
                   )}
 
-                  {m.message && (
+                  {/* Text Message (Deduplicate if PROJECT_OFFER) */}
+                  {m.message && m.attachment_type !== "PROJECT_OFFER" && (
                     <p className="whitespace-pre-wrap leading-relaxed">
                       {m.message}
                     </p>
@@ -463,17 +470,33 @@ export function WorkroomChatPanel({
                             {offer.projectTitle || "Proyek Kolaborasi"}
                           </h5>
 
-                          {/* Meta Row */}
+                          {/* Meta Row with Micro-Pills */}
                           <div
-                            className={`flex items-center justify-between text-[10px] pt-1.5 border-t mb-2.5 ${
-                              isMe
-                                ? "border-white/15 text-white/80"
-                                : "border-slate-100 text-slate-500"
+                            className={`flex items-center justify-between gap-2 text-[10px] pt-2 border-t mb-2.5 ${
+                              isMe ? "border-white/15" : "border-slate-100"
                             }`}
                           >
-                            <span>Garansi Pembayaran Escrow</span>
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium ${
+                                isMe
+                                  ? "bg-white/20 text-white"
+                                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              }`}
+                            >
+                              <ShieldCheck className="w-3 h-3" />
+                              100% Escrow
+                            </span>
                             {offer.deadline && (
-                              <span>Tenggat: {offer.deadline}</span>
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${
+                                  isMe
+                                    ? "bg-white/10 text-white/80"
+                                    : "bg-slate-100 text-slate-600 border border-slate-200"
+                                }`}
+                              >
+                                <Clock className="w-3 h-3" />
+                                Tenggat: {offer.deadline}
+                              </span>
                             )}
                           </div>
 
@@ -487,7 +510,7 @@ export function WorkroomChatPanel({
                                     handleRespondOffer(m.id, "ACCEPT")
                                   }
                                   disabled={isResponding}
-                                  className="flex-1 py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                                  className="flex-1 py-1.5 px-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
                                 >
                                   {isResponding ? (
                                     <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -504,7 +527,7 @@ export function WorkroomChatPanel({
                                     handleRespondOffer(m.id, "REJECT")
                                   }
                                   disabled={isResponding}
-                                  className="py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                                  className="py-1.5 px-3.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
                                 >
                                   <X className="w-3.5 h-3.5" />
                                   <span>Tolak</span>
@@ -572,7 +595,7 @@ export function WorkroomChatPanel({
                     </a>
                   ) : null}
 
-                  {/* Timestamp & Read Receipt */}
+                  {/* Timestamp & WhatsApp Read Receipt */}
                   <div
                     className={`flex items-center justify-end gap-1 mt-1 text-[9px] ${
                       isMe ? "text-white/70" : "text-muted"
@@ -580,11 +603,22 @@ export function WorkroomChatPanel({
                   >
                     <span>{formatTime(m.created_at)}</span>
                     {isMe && (
-                      <span>
+                      <span
+                        className="inline-flex items-center ml-0.5"
+                        title={
+                          m.is_read
+                            ? "Dibaca (Centang 2 Biru)"
+                            : m.id
+                              ? "Tersampaikan (Centang 2)"
+                              : "Terkirim (Centang 1)"
+                        }
+                      >
                         {m.is_read ? (
-                          <CheckCheck className="w-3 h-3 text-emerald-300" />
+                          <CheckCheck className="w-3.5 h-3.5 text-sky-400" />
+                        ) : m.id ? (
+                          <CheckCheck className="w-3.5 h-3.5 text-white/70" />
                         ) : (
-                          <Check className="w-3 h-3" />
+                          <Check className="w-3.5 h-3.5 text-white/70" />
                         )}
                       </span>
                     )}
@@ -596,10 +630,10 @@ export function WorkroomChatPanel({
                     <img
                       src={user.url_foto}
                       alt="Me"
-                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
+                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
+                    <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
                       {(
                         user?.nama_lengkap ||
                         user?.nama_usaha ||

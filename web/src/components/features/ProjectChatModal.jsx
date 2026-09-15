@@ -225,13 +225,15 @@ export function ProjectChatModal({
               </div>
               <p className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
                 <span
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-2 h-2 rounded-full shrink-0 ${
                     wsConnected
                       ? "bg-emerald-500 animate-pulse"
-                      : "bg-slate-400"
+                      : "bg-rose-500"
                   }`}
                 />
-                <span className="truncate max-w-xs">{projectTitle}</span>
+                <span className="truncate max-w-xs">
+                  {wsConnected ? "Online" : "Offline"} • {projectTitle}
+                </span>
               </p>
             </div>
           </div>
@@ -280,17 +282,17 @@ export function ProjectChatModal({
               return (
                 <div
                   key={m.id || idx}
-                  className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+                  className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
                 >
                   {!isMe &&
                     (m.sender_photo || partnerPhoto ? (
                       <img
                         src={m.sender_photo || partnerPhoto}
                         alt={m.sender_name || partnerName}
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
+                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
+                      <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
                         {(m.sender_name || partnerName || "P")
                           .charAt(0)
                           .toUpperCase()}
@@ -345,7 +347,7 @@ export function ProjectChatModal({
                       </a>
                     )}
 
-                    {/* Timestamp & Read Receipt */}
+                    {/* Timestamp & WhatsApp Read Receipt */}
                     <div
                       className={`flex items-center justify-end gap-1 mt-1 text-[9px] ${
                         isMe ? "text-white/70" : "text-muted"
@@ -358,11 +360,22 @@ export function ProjectChatModal({
                         })}
                       </span>
                       {isMe && (
-                        <span>
+                        <span
+                          className="inline-flex items-center ml-0.5"
+                          title={
+                            m.is_read
+                              ? "Dibaca (Centang 2 Biru)"
+                              : m.id
+                                ? "Tersampaikan (Centang 2)"
+                                : "Terkirim (Centang 1)"
+                          }
+                        >
                           {m.is_read ? (
-                            <CheckCheck className="w-3 h-3 text-emerald-300" />
+                            <CheckCheck className="w-3.5 h-3.5 text-sky-400" />
+                          ) : m.id ? (
+                            <CheckCheck className="w-3.5 h-3.5 text-white/70" />
                           ) : (
-                            <Check className="w-3 h-3" />
+                            <Check className="w-3.5 h-3.5 text-white/70" />
                           )}
                         </span>
                       )}

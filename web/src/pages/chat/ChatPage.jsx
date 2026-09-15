@@ -476,9 +476,12 @@ export function ChatPage() {
                         {(conv.partner_name || "M").charAt(0).toUpperCase()}
                       </div>
                     )}
-                    {conv.is_online && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white ring-1 ring-emerald-400/20" />
-                    )}
+                    <span
+                      className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
+                        conv.is_online ? "bg-emerald-500" : "bg-rose-500"
+                      }`}
+                      title={conv.is_online ? "Online" : "Offline"}
+                    />
                   </div>
 
                   {/* Info Column */}

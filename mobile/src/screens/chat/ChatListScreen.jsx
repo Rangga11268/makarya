@@ -210,7 +210,7 @@ export function ChatListScreen({ navigation }) {
           })
         }
       >
-        {/* Partner Avatar with Online/Verified Indicator */}
+        {/* Partner Avatar with Online/Offline Status Indicator */}
         <View style={styles.avatarContainer}>
           {item.partner_photo ? (
             <Image
@@ -228,9 +228,14 @@ export function ChatListScreen({ navigation }) {
               <Text style={styles.avatarInitial}>{initial}</Text>
             </View>
           )}
-          <View style={styles.verifiedDot}>
-            <CheckCircle2 size={12} color="#FFFFFF" fill="#059669" />
-          </View>
+          <View
+            style={[
+              styles.statusDotBadge,
+              {
+                backgroundColor: item.is_online ? "#10B981" : "#EF4444",
+              },
+            ]}
+          />
         </View>
 
         {/* Conversation Details */}
@@ -541,12 +546,15 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold || "Inter-Bold",
     color: "#0F172A",
   },
-  verifiedDot: {
+  statusDotBadge: {
     position: "absolute",
-    bottom: -2,
-    right: -2,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
+    bottom: -1,
+    right: -1,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   convInfo: {
     flex: 1,

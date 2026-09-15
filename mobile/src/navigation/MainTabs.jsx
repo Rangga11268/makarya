@@ -51,10 +51,7 @@ export function MainTabs() {
           : Array.isArray(res)
             ? res
             : [];
-        const unread = list.reduce(
-          (acc, c) => acc + (c.unread_count || 0),
-          0,
-        );
+        const unread = list.reduce((acc, c) => acc + (c.unread_count || 0), 0);
         setUnreadChatCount(unread);
       } catch (_) {}
     };
