@@ -32,6 +32,9 @@ export function WorkroomChatPanel({
   initialDraft = "",
   className = "",
   onOpenOfferModal = null,
+  activeProject = null,
+  myProjects = [],
+  projectSlots = [],
 }) {
   const { user, accessToken } = useAuthStore();
   const { addToast } = useToastStore();
@@ -256,18 +259,35 @@ export function WorkroomChatPanel({
   };
 
   const getCleanRoleName = (offer) => {
+    // Cari daftar slots proyek dari offer.slots, activeProject, atau myProjects
+    const matchedProject =
+      activeProject?.id === offer.projectId
+        ? activeProject
+        : myProjects.find((p) => p.id === offer.projectId);
+
+    const availableSlots =
+      offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0
+        ? offer.slots
+        : matchedProject?.slots &&
+            Array.isArray(matchedProject.slots) &&
+            matchedProject.slots.length > 0
+          ? matchedProject.slots
+          : projectSlots && Array.isArray(projectSlots) && projectSlots.length > 0
+            ? projectSlots
+            : [];
+
     // 1. Jika ada slots spesifik dari brief proyek:
-    if (offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
+    if (availableSlots.length > 0) {
       // Cocokkan by slotId jika ada
       if (offer.slotId) {
-        const found = offer.slots.find(
+        const found = availableSlots.find(
           (s) => String(s.id) === String(offer.slotId),
         );
         if (found && found.nama_peran) return found.nama_peran;
       }
       // Cocokkan jika budget tawaran sesuai alokasi slot tertentu
       if (offer.budget) {
-        const matchSlot = offer.slots.find(
+        const matchSlot = availableSlots.find(
           (s) => Number(s.alokasi_budget) === Number(offer.budget),
         );
         if (matchSlot && matchSlot.nama_peran) return matchSlot.nama_peran;
@@ -298,8 +318,8 @@ export function WorkroomChatPanel({
       (typeof role === "string" && role.startsWith("Spesialis "));
 
     // Jika generic tapi ada slots, gunakan daftar peran dari brief
-    if (isGeneric && offer.slots && Array.isArray(offer.slots) && offer.slots.length > 0) {
-      return offer.slots.map((s) => s.nama_peran).join(" / ");
+    if (isGeneric && availableSlots.length > 0) {
+      return availableSlots.map((s) => s.nama_peran).join(" & ");
     }
 
     const catMap = {
@@ -602,67 +622,99 @@ export function WorkroomChatPanel({
                           </div>
 
                           {/* Formasi Peran Tim List (If Team Project) */}
-                          {offer.slots && offer.slots.length > 0 && (
-                            <div
-                              className={`p-2.5 rounded-xl mb-3 border text-left ${
-                                isMe
-                                  ? "bg-white/10 border-white/15"
-                                  : "bg-slate-50 border-slate-200"
-                              }`}
-                            >
-                              <span
-                                className={`text-[10px] font-bold block mb-1.5 uppercase ${
-                                  isMe ? "text-white/80" : "text-slate-500"
+                          {(() => {
+                            const matchedProject =
+                              activeProject?.id === offer.projectId
+                                ? activeProject
+                                : myProjects.find(
+                                    (p) => p.id === offer.projectId,
+                                  );
+
+                            const effectiveSlots =
+                              offer.slots &&
+                              Array.isArray(offer.slots) &&
+                              offer.slots.length > 0
+                                ? offer.slots
+                                : matchedProject?.slots &&
+                                    Array.isArray(matchedProject.slots) &&
+                                    matchedProject.slots.length > 0
+                                  ? matchedProject.slots
+                                  : projectSlots &&
+                                      Array.isArray(projectSlots) &&
+                                      projectSlots.length > 0
+                                    ? projectSlots
+                                    : [];
+
+                            if (!effectiveSlots || effectiveSlots.length === 0)
+                              return null;
+
+                            return (
+                              <div
+                                className={`p-2.5 rounded-xl mb-3 border text-left ${
+                                  isMe
+                                    ? "bg-white/10 border-white/15"
+                                    : "bg-slate-50 border-slate-200"
                                 }`}
                               >
-                                Formasi Peran Tim ({offer.slots.length} Posisi):
-                              </span>
-                              <div className="space-y-1">
-                                {offer.slots.map((s, idx) => {
-                                  const isThisSlot =
-                                    (offer.slotId &&
-                                      String(s.id) === String(offer.slotId)) ||
-                                    s.nama_peran === offer.posisi;
-                                  return (
-                                    <div
-                                      key={s.id || idx}
-                                      className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
-                                        isThisSlot
-                                          ? isMe
-                                            ? "bg-white/20 text-white font-bold border border-white/30"
-                                            : "bg-indigo-50 text-brand-indigo font-bold border border-indigo-200"
-                                          : isMe
-                                            ? "text-white/70"
-                                            : "text-slate-600 bg-white border border-slate-100"
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-1.5 min-w-0">
-                                        <span className="truncate">
-                                          {s.nama_peran}
-                                        </span>
-                                        {isThisSlot && (
-                                          <span
-                                            className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
-                                              isMe
-                                                ? "bg-white/20 text-white"
-                                                : "bg-brand-indigo text-white"
-                                            }`}
-                                          >
-                                            Ditawarkan
+                                <span
+                                  className={`text-[10px] font-bold block mb-1.5 uppercase ${
+                                    isMe ? "text-white/80" : "text-slate-500"
+                                  }`}
+                                >
+                                  Formasi Peran Tim ({effectiveSlots.length}{" "}
+                                  Posisi):
+                                </span>
+                                <div className="space-y-1">
+                                  {effectiveSlots.map((s, idx) => {
+                                    const isThisSlot =
+                                      (offer.slotId &&
+                                        String(s.id) ===
+                                          String(offer.slotId)) ||
+                                      s.nama_peran === offer.posisi ||
+                                      (offer.budget &&
+                                        Number(s.alokasi_budget) ===
+                                          Number(offer.budget));
+                                    return (
+                                      <div
+                                        key={s.id || idx}
+                                        className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
+                                          isThisSlot
+                                            ? isMe
+                                              ? "bg-white/20 text-white font-bold border border-white/30"
+                                              : "bg-indigo-50 text-brand-indigo font-bold border border-indigo-200"
+                                            : isMe
+                                              ? "text-white/70"
+                                              : "text-slate-600 bg-white border border-slate-100"
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <span className="truncate">
+                                            {s.nama_peran}
                                           </span>
-                                        )}
+                                          {isThisSlot && (
+                                            <span
+                                              className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                                                isMe
+                                                  ? "bg-white/20 text-white"
+                                                  : "bg-brand-indigo text-white"
+                                              }`}
+                                            >
+                                              Ditawarkan
+                                            </span>
+                                          )}
+                                        </div>
+                                        <span className="shrink-0 text-[10px] font-semibold ml-2">
+                                          {s.alokasi_budget
+                                            ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
+                                            : "Sesuai Proyek"}
+                                        </span>
                                       </div>
-                                      <span className="shrink-0 text-[10px] font-semibold ml-2">
-                                        {s.alokasi_budget
-                                          ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
-                                          : "Sesuai Proyek"}
-                                      </span>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  })}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            );
+                          })()}
 
                           {/* Actions for Student / Status for UMKM */}
                           {offerStatus === "PENDING" ? (

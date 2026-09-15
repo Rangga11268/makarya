@@ -570,6 +570,9 @@ export function ChatPage() {
             className="h-full w-full rounded-none border-0 shadow-none"
             initialDraft=""
             onOpenOfferModal={() => setShowOfferModal(true)}
+            activeProject={activeProject}
+            myProjects={myProjects}
+            projectSlots={activeProject?.slots || []}
           />
         ) : (
           <div className="hidden md:flex flex-col items-center justify-center h-full text-center p-8 bg-slate-50/60">
