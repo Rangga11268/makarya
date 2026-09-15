@@ -20,7 +20,7 @@ export function AuthArtwork({
 
       {/* Top Header Badge */}
       <div className="relative z-10 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-xs font-semibold text-sky-300">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-xs font-semibold text-sky-300">
           <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />
           <span>Platform Micro-freelancing Kampus Resmi</span>
         </div>
@@ -49,11 +49,11 @@ export function AuthArtwork({
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                 </div>
                 <p className="text-[11px] text-slate-300 font-sans">
-                  Sistem Informasi • Talenta Terverifikasi
+                  Sistem Informasi / Talenta Terverifikasi
                 </p>
               </div>
             </div>
-            <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+            <div className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
               Honor Cair
             </div>
           </div>

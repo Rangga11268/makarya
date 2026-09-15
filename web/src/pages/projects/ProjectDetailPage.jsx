@@ -207,7 +207,7 @@ export function ProjectDetailPage() {
 
         <button
           onClick={handleShare}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-canvas border border-border text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors w-fit"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-canvas border border-border text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors w-fit"
         >
           <Share2 className="w-3.5 h-3.5" />
           Bagikan Peluang Ini
@@ -223,7 +223,7 @@ export function ProjectDetailPage() {
           <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-2xl shadow-xs">
             <div className="space-y-4">
               <div className="flex flex-wrap items-center gap-2.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-canvas border border-border text-xs font-bold text-dark-900">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-canvas border border-border text-xs font-bold text-dark-900">
                   {getCategorySvg(project.kategori)}
                   <span>{project.kategori}</span>
                 </div>
@@ -242,9 +242,9 @@ export function ProjectDetailPage() {
 
                 {project.match_score && user?.role === "MHS" && (
                   <div
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800"
                     title={
-                      project.match_reasons?.join(" • ") || "Kecocokan Keahlian"
+                      project.match_reasons?.join(" / ") || "Kecocokan Keahlian"
                     }
                   >
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -391,7 +391,7 @@ export function ProjectDetailPage() {
                   </div>
 
                   <div className="flex items-center gap-1.5 self-start sm:self-auto">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-slate-200 text-dark-900">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white border border-slate-200 text-dark-900">
                       Inisiator:{" "}
                       {project.cancelled_by_role === "UMKM"
                         ? "Klien UMKM"
@@ -401,7 +401,7 @@ export function ProjectDetailPage() {
                             ? "Sistem (Kedaluwarsa)"
                             : "Pihak Terkait"}
                     </span>
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                       Escrow Aman
                     </span>
@@ -431,7 +431,7 @@ export function ProjectDetailPage() {
                       Dibuka)
                     </h3>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-brand-indigo">
                     Mode Tim Multi-Talenta
                   </span>
                 </div>
@@ -451,7 +451,7 @@ export function ProjectDetailPage() {
                             {slot.nama_peran}
                           </span>
                           <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                            className={`text-[9.5px] font-semibold px-2 py-0.5 rounded-md border shrink-0 ${
                               isFilled
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : "bg-amber-50 text-amber-800 border-amber-200"

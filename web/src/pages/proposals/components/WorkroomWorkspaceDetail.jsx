@@ -4,8 +4,8 @@ import { Button } from "../../../components/ui/Button";
 import { WorkroomChatPanel } from "../../../components/features/WorkroomChatPanel";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
+import { ProjectBriefVectorIcon } from "../../../components/icons/ProjectVectorIcon";
 import {
-  Briefcase,
   ShieldCheck,
   ExternalLink,
   MessageSquare,
@@ -51,7 +51,7 @@ function RevisionChecklistInteractive({ items = [], isMhs = false }) {
             Daftar Periksa Poin Revisi
           </span>
         </div>
-        <span className="text-[11px] font-bold text-dark-900 bg-canvas px-2.5 py-0.5 rounded-full border border-border">
+        <span className="text-[11px] font-semibold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
           {completed} dari {total} selesai ({percent}%)
         </span>
       </div>
@@ -119,6 +119,7 @@ export function WorkroomWorkspaceDetail({
   onBack,
   activeProjectId,
   activeProjectTitle,
+  activePartnerId,
   activePartnerName,
   activePartnerRole,
   activePartnerPhoto,
@@ -180,7 +181,10 @@ export function WorkroomWorkspaceDetail({
     return (
       <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
         <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-indigo mx-auto shadow-xs">
-          <Briefcase className="w-7 h-7" />
+          <ProjectBriefVectorIcon
+            size={28}
+            className="w-7 h-7 text-brand-indigo"
+          />
         </div>
         <h3 className="text-base font-bold text-dark-900">
           Pilih Proyek di Sisi Kiri
@@ -232,20 +236,26 @@ export function WorkroomWorkspaceDetail({
               {allProjects.length > 1 && (
                 <div className="relative max-w-[180px] sm:max-w-xs">
                   <select
-                    value={activeProjectId}
+                    value={activeProjectId || ""}
                     onChange={(e) => {
                       const proj = allProjects.find(
-                        (p) => p.id === e.target.value,
+                        (p) =>
+                          String(p.id) === e.target.value ||
+                          String(p.project_id) === e.target.value,
                       );
                       if (proj && onSelectProject) onSelectProject(proj);
                     }}
                     className="w-full text-xs font-bold py-1 px-2.5 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo truncate"
                   >
-                    {allProjects.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.judul || p.project_judul}
-                      </option>
-                    ))}
+                    {allProjects.map((p) => {
+                      const optVal = p.project_id || p.id;
+                      const optTitle = p.judul || p.project_judul || "Proyek";
+                      return (
+                        <option key={p.id} value={optVal}>
+                          {optTitle}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               )}
@@ -254,7 +264,7 @@ export function WorkroomWorkspaceDetail({
             <div className="flex flex-wrap items-center gap-2 shrink-0">
               {isProjectCompleted ? (
                 <>
-                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
                     <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />
                     <span>Proyek Selesai (Lunas)</span>
                   </div>
@@ -272,7 +282,7 @@ export function WorkroomWorkspaceDetail({
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span>Garansi Escrow Aman</span>
                   </div>
@@ -280,7 +290,7 @@ export function WorkroomWorkspaceDetail({
                     <button
                       type="button"
                       onClick={onOpenFileDisputeModal}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold transition-colors"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold transition-colors"
                       title="Laporkan kendala ke admin mediasi Makarya"
                     >
                       <Scale className="w-3 h-3 text-rose-600" />
@@ -293,7 +303,7 @@ export function WorkroomWorkspaceDetail({
               {!isProjectCompleted &&
                 selectedProject?.deadline &&
                 isExpired(selectedProject.deadline) && (
-                  <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
                     <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                     <span>
                       Lewat Tenggat ({formatDate(selectedProject.deadline)})
@@ -423,13 +433,13 @@ export function WorkroomWorkspaceDetail({
               </div>
 
               <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white border border-slate-200 text-dark-900">
+                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white border border-slate-200 text-dark-900">
                   Status:{" "}
                   {selectedProject?.status === "CANCELLED"
                     ? "Dibatalkan"
                     : "Mundur (Withdrawn)"}
                 </span>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
+                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   Escrow Dikembalikan 100%
                 </span>
@@ -505,7 +515,7 @@ export function WorkroomWorkspaceDetail({
                     Formasi Tim Proyek ({selectedProject.slots.length} Peran)
                   </span>
                 </div>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo uppercase tracking-wider">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-brand-indigo uppercase tracking-wider">
                   Proyek Tim
                 </span>
               </div>
@@ -529,7 +539,7 @@ export function WorkroomWorkspaceDetail({
                           {slot.nama_peran}
                         </span>
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                          className={`text-[9.5px] font-semibold px-2 py-0.5 rounded-md border ${
                             isFilled
                               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                               : "bg-amber-50 text-amber-800 border-amber-200"
@@ -662,7 +672,7 @@ export function WorkroomWorkspaceDetail({
             {hasAcceptedApplicant ? (
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             ) : (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-muted font-semibold border border-border">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-muted font-semibold border border-border">
                 Terkunci
               </span>
             )}
@@ -681,7 +691,7 @@ export function WorkroomWorkspaceDetail({
             <span>Deliverable</span>
             {activeDeliverable && (
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${
                   activeStageTab === "deliverable"
                     ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                     : "bg-emerald-100 text-emerald-800"
@@ -757,6 +767,7 @@ export function WorkroomWorkspaceDetail({
             <WorkroomChatPanel
               projectId={activeProjectId}
               projectTitle={activeProjectTitle}
+              partnerId={activePartnerId}
               partnerName={activePartnerName}
               partnerRole={activePartnerRole}
               partnerPhoto={activePartnerPhoto}
@@ -992,16 +1003,27 @@ export function WorkroomWorkspaceDetail({
                               "Mahasiswa Pelamar"}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            className={`inline-flex items-center gap-1.5 text-[10.5px] font-semibold px-2 py-0.5 rounded-md border ${
                               isAccepted
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                 : isRejected
                                   ? "bg-rose-50 text-rose-800 border-rose-200"
                                   : isWithdrawn
-                                    ? "bg-amber-50 text-amber-800 border-amber-200"
-                                    : "bg-surface text-muted border-border"
+                                    ? "bg-slate-100 text-slate-700 border-slate-200"
+                                    : "bg-amber-50 text-amber-800 border-amber-200"
                             }`}
                           >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isAccepted
+                                  ? "bg-emerald-500"
+                                  : isRejected
+                                    ? "bg-rose-500"
+                                    : isWithdrawn
+                                      ? "bg-slate-400"
+                                      : "bg-amber-500"
+                              }`}
+                            />
                             {isAccepted
                               ? "Disetujui"
                               : isRejected
@@ -1011,11 +1033,16 @@ export function WorkroomWorkspaceDetail({
                                   : "Menunggu Seleksi"}
                           </span>
                         </div>
-                        <p className="text-[11px] text-muted mt-0.5">
-                          {prop.mhs_profile?.asal_kampus ||
-                            "Perguruan Tinggi Terakreditasi"}{" "}
-                          • Estimasi: {prop.estimasi_hari} Hari
-                        </p>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <span className="text-[11px] text-muted font-medium">
+                            {prop.mhs_profile?.asal_kampus ||
+                              "Perguruan Tinggi Terakreditasi"}
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 text-[10.5px] font-medium text-slate-700">
+                            <Clock className="w-2.5 h-2.5 text-slate-400" />
+                            {prop.estimasi_hari} Hari Kerja
+                          </span>
+                        </div>
                       </div>
 
                       <div className="text-left sm:text-right">

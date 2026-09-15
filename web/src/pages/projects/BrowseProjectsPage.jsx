@@ -18,8 +18,8 @@ import {
   ArrowUpDown,
   Layers,
   GraduationCap,
-  Briefcase,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 export function BrowseProjectsPage() {
   const { user } = useAuthStore();
@@ -203,7 +203,10 @@ export function BrowseProjectsPage() {
           to="/projects"
           className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center"
         >
-          <Briefcase className="w-3.5 h-3.5 shrink-0" />
+          <ProjectBriefVectorIcon
+            size={14}
+            className="w-3.5 h-3.5 shrink-0 text-white"
+          />
           <span className="truncate">Katalog Proyek</span>
         </Link>
         <Link

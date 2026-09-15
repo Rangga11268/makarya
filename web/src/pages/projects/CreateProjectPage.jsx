@@ -603,7 +603,7 @@ export function CreateProjectPage() {
       {currentStep === 2 && (
         <Card className="p-6 sm:p-8 space-y-6 animate-in fade-in">
           <div className="border-b border-border pb-4 space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-indigo-light text-brand-indigo text-xs font-bold mb-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-indigo-light text-brand-indigo text-xs font-bold mb-1">
               <Cpu className="w-3.5 h-3.5" />
               AI Requirement Engineering
             </div>
@@ -1113,7 +1113,7 @@ export function CreateProjectPage() {
                         Formasi Slot Tim Proyek ({formData.slots.length} Peran):
                       </h4>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-brand-indigo">
                       Mode Tim Multi-Talenta
                     </span>
                   </div>

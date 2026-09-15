@@ -46,7 +46,7 @@ export function MahasiswaProfileForm({
               mahasiswa di platform.
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-xs font-bold border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Kampus Terakreditasi
           </div>
@@ -178,7 +178,7 @@ export function MahasiswaProfileForm({
             {mhsData.skills.map((skill) => (
               <span
                 key={skill}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20"
               >
                 {skill}
                 <button
@@ -335,7 +335,7 @@ export function MahasiswaProfileForm({
               bank ini.
             </p>
           </div>
-          <div className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200">
+          <div className="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-xs font-bold border border-emerald-200">
             <Check className="w-3 h-3" /> Rekening Terverifikasi
           </div>
         </div>

@@ -220,25 +220,25 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => fillTestAccount("darell@ubsi.ac.id")}
-                className="px-2.5 py-1 rounded-full bg-surface hover:bg-brand-indigo hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-brand-indigo hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
               >
-                <GraduationCap className="w-3 h-3 text-brand-indigo" />
+                <GraduationCap className="w-3.5 h-3.5 text-brand-indigo" />
                 Mahasiswa (Darell)
               </button>
               <button
                 type="button"
                 onClick={() => fillTestAccount("admin@makarya.id")}
-                className="px-2.5 py-1 rounded-full bg-surface hover:bg-dark-900 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-dark-900 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
               >
-                <ShieldCheck className="w-3 h-3 text-rose-600" />
+                <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
                 Admin Platform
               </button>
               <button
                 type="button"
                 onClick={() => fillTestAccount("kopi.nusantara@gmail.com")}
-                className="px-2.5 py-1 rounded-full bg-surface hover:bg-emerald-700 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg bg-surface hover:bg-emerald-700 hover:text-white text-dark-900 text-xs font-semibold border border-border transition-all flex items-center gap-1.5 shadow-2xs"
               >
-                <UserCheck className="w-3 h-3 text-emerald-600" />
+                <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
                 Klien UMKM (Kopi)
               </button>
             </div>

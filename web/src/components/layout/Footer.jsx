@@ -35,7 +35,7 @@ export function Footer() {
         {!isAuthenticated && (
           <div className="mb-14 p-8 sm:p-10 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-float relative overflow-hidden border border-slate-800">
             <div className="space-y-2 max-w-xl text-center md:text-left">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-semibold">
+              <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-semibold">
                 <GraduationCap className="w-3.5 h-3.5 text-sky-400" />
                 Mulai Karir Freelance Kampus
               </span>

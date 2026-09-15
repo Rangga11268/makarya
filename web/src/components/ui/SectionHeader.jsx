@@ -19,7 +19,7 @@ export function SectionHeader({
     >
       <div className={cn("space-y-1.5 max-w-2xl", centered && "mx-auto")}>
         {badgeText && (
-          <span className="inline-flex items-center px-3 py-0.5 rounded-full bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-brand-indigo-light text-brand-indigo text-[11px] font-bold tracking-wider uppercase border border-brand-indigo/15">
             {badgeText}
           </span>
         )}

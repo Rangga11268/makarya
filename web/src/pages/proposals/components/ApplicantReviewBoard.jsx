@@ -5,7 +5,6 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import {
   ArrowLeft,
-  Briefcase,
   Users,
   Clock,
   ShieldCheck,
@@ -85,7 +84,7 @@ export function ApplicantReviewBoard({
             </Button>
             <div className="h-4 w-px bg-border hidden sm:block" />
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-1">
+              <span className="text-[11px] font-semibold tracking-tight px-2 py-0.5 rounded-md bg-amber-50/80 border border-amber-200/80 text-amber-800 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                 Tahap Seleksi Pelamar
               </span>
@@ -251,7 +250,7 @@ export function ApplicantReviewBoard({
               }`}
             >
               <span>Semua Pelamar</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">
+              <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-semibold">
                 {counts.all}
               </span>
             </button>
@@ -265,7 +264,7 @@ export function ApplicantReviewBoard({
               }`}
             >
               <span>Menunggu Seleksi</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">
+              <span className="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-semibold">
                 {counts.pending}
               </span>
             </button>
@@ -280,7 +279,7 @@ export function ApplicantReviewBoard({
                 }`}
               >
                 <span>Ditolak / Ditarik</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">
+                <span className="px-1.5 py-0.5 rounded-md bg-white/20 text-[10px] font-semibold">
                   {counts.rejected}
                 </span>
               </button>
@@ -367,16 +366,27 @@ export function ApplicantReviewBoard({
                               "Mahasiswa Talenta"}
                           </h3>
                           <span
-                            className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                            className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
                               isAccepted
-                                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                                ? "bg-emerald-50/80 text-emerald-800 border-emerald-200/80"
                                 : isRejected
-                                  ? "bg-rose-50 text-rose-800 border-rose-200"
+                                  ? "bg-rose-50/80 text-rose-800 border-rose-200/80"
                                   : isWithdrawn
-                                    ? "bg-amber-50 text-amber-800 border-amber-200"
-                                    : "bg-amber-50 text-amber-800 border-amber-200"
+                                    ? "bg-slate-100 text-slate-700 border-slate-200"
+                                    : "bg-amber-50/80 text-amber-800 border-amber-200/80"
                             }`}
                           >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isAccepted
+                                  ? "bg-emerald-500"
+                                  : isRejected
+                                    ? "bg-rose-500"
+                                    : isWithdrawn
+                                      ? "bg-slate-400"
+                                      : "bg-amber-500"
+                              }`}
+                            />
                             {isAccepted
                               ? "Disetujui"
                               : isRejected

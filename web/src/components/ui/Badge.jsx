@@ -3,21 +3,21 @@ import { cn } from "../../utils/cn";
 
 export function Badge({ children, variant = "default", className }) {
   const variants = {
-    default: "bg-surface text-dark-900 border-border",
-    lime: "bg-lime-soft text-dark-900 border-lime-dark/30 font-bold",
-    success: "bg-emerald-50 text-emerald-800 border-emerald-200",
-    warning: "bg-amber-50 text-amber-800 border-amber-200",
+    default: "bg-surface text-slate-800 border-border",
+    lime: "bg-lime-50 text-lime-900 border-lime-300 font-bold",
+    success: "bg-emerald-50/80 text-emerald-800 border-emerald-200/80",
+    warning: "bg-amber-50/90 text-amber-900 border-amber-300/80",
     danger: "bg-rose-50 text-rose-800 border-rose-200",
-    dark: "bg-dark-900 text-white border-dark-900",
-    outline: "bg-transparent text-muted border-border",
+    dark: "bg-slate-900 text-white border-slate-900",
+    outline: "bg-transparent text-slate-600 border-slate-200",
   };
 
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border tracking-tight",
+        "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border tracking-tight",
         variants[variant],
-        className
+        className,
       )}
     >
       {children}

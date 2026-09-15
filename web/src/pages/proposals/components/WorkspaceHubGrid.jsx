@@ -9,12 +9,12 @@ import {
   Search,
   Plus,
   ArrowRight,
-  Briefcase,
   Users,
   Clock,
   Building2,
   CheckCircle2,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../../components/icons/ProjectVectorIcon";
 
 export function WorkspaceHubGrid({
   isUmkm,
@@ -200,7 +200,7 @@ export function WorkspaceHubGrid({
                 <span className="hidden sm:inline">{tab.fullLabel}</span>
                 {tab.count > 0 && (
                   <span
-                    className={`text-[10px] px-1 sm:px-1.5 py-0.2 rounded-full tabular-nums ${
+                    className={`text-[10px] px-1.5 py-0.5 rounded-md tabular-nums font-semibold ${
                       activeFilter === tab.key
                         ? "bg-white/20 text-white"
                         : "bg-surface text-muted"
@@ -254,7 +254,7 @@ export function WorkspaceHubGrid({
       ) : items.length === 0 ? (
         <div className="bg-surface rounded-3xl border border-dashed border-border p-12 text-center space-y-3">
           <div className="w-12 h-12 rounded-2xl bg-canvas border border-border flex items-center justify-center text-muted mx-auto">
-            <Briefcase className="w-6 h-6" />
+            <ProjectBriefVectorIcon size={24} className="w-6 h-6 text-muted" />
           </div>
           <h3 className="text-base font-bold text-dark-900">
             {isUmkm
@@ -307,16 +307,27 @@ function UmkmProjectGridCard({ project, onOpen }) {
             {project.kategori || "UMKM Digital"}
           </span>
           <span
-            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+            className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
               isDone
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                ? "bg-emerald-50/80 text-emerald-800 border-emerald-200/80"
                 : overdue
-                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  ? "bg-rose-50/80 text-rose-700 border-rose-200/80"
                   : isInProgress
-                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
-                    : "bg-amber-50 text-amber-800 border-amber-200"
+                    ? "bg-indigo-50/80 text-indigo-700 border-indigo-200/80"
+                    : "bg-amber-50/80 text-amber-800 border-amber-200/80"
             }`}
           >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isDone
+                  ? "bg-emerald-500"
+                  : overdue
+                    ? "bg-rose-500"
+                    : isInProgress
+                      ? "bg-indigo-600"
+                      : "bg-amber-500"
+              }`}
+            />
             {isDone
               ? "Selesai"
               : overdue
@@ -419,7 +430,7 @@ function UmkmProjectGridCard({ project, onOpen }) {
             </span>
           ) : isDone ? (
             <span className="flex items-center gap-1.5 text-slate-700 group-hover:text-white">
-              <Briefcase className="w-3.5 h-3.5" />
+              <ProjectBriefVectorIcon size={14} className="w-3.5 h-3.5" />
               <span>Arsip & Faktur Escrow</span>
             </span>
           ) : (
@@ -449,18 +460,31 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
             {proposal.project_kategori || "Proyek Kolaborasi"}
           </span>
           <span
-            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+            className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
               isDone
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                ? "bg-emerald-50/80 text-emerald-800 border-emerald-200/80"
                 : overdue
-                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  ? "bg-rose-50/80 text-rose-700 border-rose-200/80"
                   : isAccepted
-                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
+                    ? "bg-indigo-50/80 text-indigo-700 border-indigo-200/80"
                     : proposal.status === "REJECTED"
-                      ? "bg-rose-50 text-rose-800 border-rose-200"
-                      : "bg-amber-50 text-amber-800 border-amber-200"
+                      ? "bg-rose-50/80 text-rose-800 border-rose-200/80"
+                      : "bg-amber-50/80 text-amber-800 border-amber-200/80"
             }`}
           >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isDone
+                  ? "bg-emerald-500"
+                  : overdue
+                    ? "bg-rose-500"
+                    : isAccepted
+                      ? "bg-indigo-600"
+                      : proposal.status === "REJECTED"
+                        ? "bg-rose-500"
+                        : "bg-amber-500"
+              }`}
+            />
             {isDone
               ? "Selesai"
               : overdue

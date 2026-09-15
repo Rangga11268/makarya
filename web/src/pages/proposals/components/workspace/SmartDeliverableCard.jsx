@@ -147,7 +147,7 @@ export function SmartDeliverableCard({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
         <div className="flex items-center gap-2.5">
           <span
-            className={`px-2.5 py-1 rounded-full text-xs font-extrabold ${
+            className={`px-2 py-0.5 rounded-md text-xs font-bold ${
               isApproved
                 ? "bg-emerald-600 text-white"
                 : isLatest
@@ -162,20 +162,20 @@ export function SmartDeliverableCard({
           </span>
         </div>
 
-        {/* Status Indicator Pill */}
+        {/* Status Indicator Badge */}
         <div>
           {isApproved ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               Telah Disetujui (Lunas)
             </span>
           ) : isRevisionRequested ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
               <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
               Menunggu Revisi ({submission.jumlah_revisi || 1}/2)
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-800 text-xs font-semibold">
               <Clock className="w-3.5 h-3.5 text-blue-600" />
               Siap Diverifikasi Klien
             </span>
@@ -198,7 +198,7 @@ export function SmartDeliverableCard({
                   {linkMeta.title}
                 </span>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${linkMeta.badgeBg}`}
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${linkMeta.badgeBg}`}
                 >
                   {linkMeta.badge}
                 </span>

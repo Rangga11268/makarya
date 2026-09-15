@@ -11,7 +11,6 @@ import {
   ArrowRight,
   ChevronDown,
   HelpCircle,
-  Briefcase,
   GraduationCap,
   Building2,
   Lock,
@@ -20,6 +19,7 @@ import {
   CheckCircle2,
   ShieldCheck,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 // Premium Line-Art Icons (Fiverr Screenshot 1 & 2 Standard, Monochrome, Stroke 1.5px)
 function IconProgramming() {
@@ -479,7 +479,7 @@ export function LandingPage() {
                 key={tag}
                 type="button"
                 onClick={() => handleTagClick(tag)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-slate-200 hover:text-white transition-colors cursor-pointer text-xs font-medium backdrop-blur-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/20 bg-white/5 hover:bg-white/15 text-slate-200 hover:text-white transition-colors cursor-pointer text-xs font-medium backdrop-blur-xs"
               >
                 <span>{tag}</span>
                 <span className="text-slate-400 font-sans">→</span>
@@ -644,7 +644,10 @@ export function LandingPage() {
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                <Briefcase className="w-4 h-4" />
+                <ProjectBriefVectorIcon
+                  size={16}
+                  className="w-4 h-4 shrink-0"
+                />
                 <span>Proyek Terbuka ({latestProjects.length})</span>
               </button>
               <button
@@ -682,7 +685,10 @@ export function LandingPage() {
                 </div>
               ) : (
                 <div className="text-center py-12 px-4 rounded-2xl bg-white border border-dashed border-slate-300">
-                  <Briefcase className="w-10 h-10 text-slate-400 mx-auto mb-3" />
+                  <ProjectBriefVectorIcon
+                    size={40}
+                    className="w-10 h-10 text-slate-400 mx-auto mb-3"
+                  />
                   <p className="text-sm font-bold text-slate-800">
                     Belum ada proyek terbuka saat ini
                   </p>
@@ -771,7 +777,7 @@ export function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold tracking-wide">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Garansi Keamanan Rekening Bersama (Escrow)
               </div>
@@ -886,7 +892,7 @@ export function LandingPage() {
                       Rp 450.000
                     </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-md">
                     ✓ Rekening Bersama
                   </span>
                 </div>
@@ -982,7 +988,7 @@ export function LandingPage() {
           {/* UMKM Card */}
           <div className="bg-gradient-to-br from-white via-slate-50/70 to-emerald-50/30 border border-slate-200/90 rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all group relative overflow-hidden">
             <div className="space-y-4 relative z-10">
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider">
                 <Building2 className="w-3.5 h-3.5 text-emerald-600" />
                 Untuk Pemilik Usaha / UMKM
               </span>
@@ -1011,7 +1017,7 @@ export function LandingPage() {
           {/* Mahasiswa Card */}
           <div className="bg-gradient-to-br from-white via-slate-50/70 to-blue-50/30 border border-slate-200/90 rounded-3xl p-8 sm:p-10 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md hover:border-slate-300 transition-all group relative overflow-hidden">
             <div className="space-y-4 relative z-10">
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-bold uppercase tracking-wider">
                 <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
                 Untuk Mahasiswa Bertalenta
               </span>

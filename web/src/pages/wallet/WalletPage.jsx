@@ -210,17 +210,47 @@ export function WalletPage() {
   const getBadgeType = (type) => {
     switch (type) {
       case "TOPUP":
-        return <Badge variant="success">Top-Up Saldo</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
+            Top-Up Saldo
+          </span>
+        );
       case "HOLD":
-        return <Badge variant="warning">Escrow Lock</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 ring-2 ring-amber-100" />
+            Escrow Lock
+          </span>
+        );
       case "RELEASE":
-        return <Badge variant="brand">Pencairan Honor</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 ring-2 ring-indigo-100" />
+            Pencairan Honor
+          </span>
+        );
       case "WITHDRAW":
-        return <Badge variant="neutral">Penarikan Bank</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 ring-2 ring-slate-100" />
+            Penarikan Bank
+          </span>
+        );
       case "REFUND":
-        return <Badge variant="danger">Pengembalian Dana</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-800">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 ring-2 ring-rose-100" />
+            Pengembalian Dana
+          </span>
+        );
       default:
-        return <Badge variant="neutral">{type}</Badge>;
+        return (
+          <span className="inline-flex items-center gap-1.5 font-medium text-xs text-slate-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+            {type}
+          </span>
+        );
     }
   };
 
@@ -246,7 +276,7 @@ export function WalletPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700 mb-2">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-2">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>Sistem Keuangan & Escrow 100% Terproteksi</span>
           </div>
@@ -399,14 +429,14 @@ export function WalletPage() {
             <ReceiptText className="w-5 h-5 text-brand-indigo" />
             Riwayat Mutasi Saldo & Bukti Transaksi
           </h2>
-          <span className="text-xs font-bold text-muted bg-surface border border-border px-3 py-1 rounded-full w-fit">
+          <span className="text-xs font-bold text-muted bg-surface border border-border px-2.5 py-1 rounded-md w-fit">
             {history.length} Transaksi Tercatat
           </span>
         </div>
 
         {/* Search & Filter Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-2xl border border-border">
-          <div className="grid grid-cols-5 sm:flex sm:flex-wrap items-center gap-1 text-xs w-full sm:w-auto">
+          <div className="grid grid-cols-5 sm:flex sm:flex-wrap items-center gap-1 text-xs w-full sm:w-auto p-1 bg-slate-100/80 rounded-lg">
             {[
               { id: "ALL", label: "Semua" },
               { id: "TOPUP", label: "Topup" },
@@ -421,10 +451,10 @@ export function WalletPage() {
                   setTxTypeFilter(tab.id);
                   setTxPage(1);
                 }}
-                className={`py-1.5 px-1 sm:px-3 rounded-xl font-bold transition-all text-center cursor-pointer ${
+                className={`py-1.5 px-2 sm:px-3 rounded-md font-semibold text-xs transition-all text-center cursor-pointer ${
                   txTypeFilter === tab.id
-                    ? "bg-dark-900 text-white shadow-xs"
-                    : "text-muted hover:text-dark-900 hover:bg-canvas"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {tab.label}

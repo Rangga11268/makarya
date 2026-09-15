@@ -15,13 +15,13 @@ import {
   GraduationCap,
   CheckCircle2,
   Building2,
-  Briefcase,
   PlusCircle,
   Compass,
   ArrowRight,
   ExternalLink,
   ShieldCheck,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 export function PortfolioPage() {
   const { user, fetchProfile } = useAuthStore();
@@ -202,7 +202,10 @@ export function PortfolioPage() {
             </div>
           ) : myProjects.length === 0 ? (
             <Card className="text-center py-12 space-y-3 bg-surface border-border">
-              <Briefcase className="w-10 h-10 text-muted mx-auto opacity-40" />
+              <ProjectBriefVectorIcon
+                size={40}
+                className="w-10 h-10 text-muted mx-auto opacity-40"
+              />
               <h3 className="text-sm font-bold text-dark-900">
                 Belum Ada Proyek yang Dipasang
               </h3>

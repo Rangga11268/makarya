@@ -287,7 +287,7 @@ export function AdminDashboardPage() {
       <div className="bg-dark-900 text-white rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-slate-800 shadow-sm">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-brand-cyan text-xs font-bold border border-white/10">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 text-brand-cyan text-xs font-semibold border border-white/10">
               <ShieldCheck className="w-4 h-4" />
               Makarya Operations & Oversight Control
             </div>
@@ -323,10 +323,10 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Navigation Tab Bar */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-border text-xs font-bold">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-border text-xs font-semibold">
         <button
           onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
             activeTab === "overview"
               ? "bg-dark-900 text-white shadow-xs"
               : "text-muted hover:text-dark-900 hover:bg-surface"
@@ -338,7 +338,7 @@ export function AdminDashboardPage() {
 
         <button
           onClick={() => setActiveTab("escrow")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
             activeTab === "escrow"
               ? "bg-dark-900 text-white shadow-xs"
               : "text-muted hover:text-dark-900 hover:bg-surface"
@@ -353,7 +353,7 @@ export function AdminDashboardPage() {
 
         <button
           onClick={() => setActiveTab("disputes")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
             activeTab === "disputes"
               ? "bg-dark-900 text-white shadow-xs"
               : "text-muted hover:text-dark-900 hover:bg-surface"
@@ -362,7 +362,7 @@ export function AdminDashboardPage() {
           <Scale className="w-4 h-4" />
           Pusat Mediasi Sengketa
           {openDisputes.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px]">
+            <span className="px-1.5 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold">
               {openDisputes.length}
             </span>
           )}
@@ -370,7 +370,7 @@ export function AdminDashboardPage() {
 
         <button
           onClick={() => setActiveTab("kyc")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
             activeTab === "kyc"
               ? "bg-dark-900 text-white shadow-xs"
               : "text-muted hover:text-dark-900 hover:bg-surface"
@@ -379,7 +379,7 @@ export function AdminDashboardPage() {
           <GraduationCap className="w-4 h-4" />
           Verifikasi Mahasiswa
           {students.filter((s) => s.status === "PENDING").length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-brand-indigo text-white text-[10px]">
+            <span className="px-1.5 py-0.5 rounded-md bg-brand-indigo text-white text-[10px] font-bold">
               {students.filter((s) => s.status === "PENDING").length}
             </span>
           )}
@@ -387,7 +387,7 @@ export function AdminDashboardPage() {
 
         <button
           onClick={() => setActiveTab("projects")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all shrink-0 cursor-pointer ${
             activeTab === "projects"
               ? "bg-dark-900 text-white shadow-xs"
               : "text-muted hover:text-dark-900 hover:bg-surface"

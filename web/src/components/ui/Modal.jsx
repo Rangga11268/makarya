@@ -2,7 +2,14 @@ import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { cn } from "../../utils/cn";
 
-export function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-lg", className }) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  maxWidth = "max-w-lg",
+  className,
+}) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
@@ -32,7 +39,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-lg",
         className={cn(
           "relative w-full bg-surface rounded-t-[32px] sm:rounded-3xl border-t sm:border border-border shadow-2xl z-10 p-6 sm:p-7 max-h-[90vh] sm:max-h-[85vh] overflow-y-auto font-sans animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-250 ease-out",
           maxWidth,
-          className
+          className,
         )}
       >
         {/* Mobile Drag Pill Indicator */}
@@ -46,7 +53,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-lg",
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-muted hover:text-dark-900 hover:bg-canvas transition-colors"
+            className="p-1.5 rounded-lg text-muted hover:text-dark-900 hover:bg-canvas transition-colors"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>

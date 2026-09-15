@@ -50,11 +50,11 @@ export function PendingProposalView({
             <div className="h-4 w-px bg-border hidden sm:block" />
             <div className="flex items-center gap-2">
               <span
-                className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
+                className={`text-[11px] font-semibold tracking-tight px-2 py-0.5 rounded-md border flex items-center gap-1.5 ${
                   isPending
-                    ? "bg-amber-50 border-amber-200 text-amber-800"
+                    ? "bg-amber-50/80 border-amber-200/80 text-amber-800"
                     : isRejected
-                      ? "bg-rose-50 border-rose-200 text-rose-800"
+                      ? "bg-rose-50/80 border-rose-200/80 text-rose-800"
                       : "bg-slate-100 border-slate-200 text-slate-700"
                 }`}
               >
@@ -227,7 +227,7 @@ export function PendingProposalView({
                   Rincian Proposal yang Anda Kirimkan
                 </h3>
               </div>
-              <span className="text-[11px] font-bold text-dark-900 bg-canvas px-3 py-1 rounded-full border border-border">
+              <span className="text-xs font-semibold text-dark-900 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
                 Tawaran: {formatCurrency(proposal.harga_tawar)}
               </span>
             </div>

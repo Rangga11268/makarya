@@ -8,10 +8,10 @@ import {
   ShieldCheck,
   Building2,
   Users,
-  Briefcase,
   Compass,
   Plus,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../../components/icons/ProjectVectorIcon";
 
 const FALLBACK_PROJECTS = [
   {
@@ -138,7 +138,10 @@ export function WorkspaceEmptyRecommendations({ isUmkm = false }) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-8 text-center max-w-2xl mx-auto space-y-4 shadow-xs">
         <div className="w-14 h-14 rounded-2xl bg-brand-indigo/10 border border-brand-indigo/20 flex items-center justify-center text-brand-indigo mx-auto">
-          <Briefcase className="w-7 h-7" />
+          <ProjectBriefVectorIcon
+            size={28}
+            className="w-7 h-7 text-brand-indigo"
+          />
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-bold text-dark-900">
@@ -214,7 +217,7 @@ export function WorkspaceEmptyRecommendations({ isUmkm = false }) {
         <div>
           <h3 className="text-base font-bold text-dark-900 flex items-center gap-2">
             <span>Rekomendasi Proyek Terpilih</span>
-            <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
               <ShieldCheck className="w-3 h-3" />
               <span>100% Escrow Aman</span>
             </span>

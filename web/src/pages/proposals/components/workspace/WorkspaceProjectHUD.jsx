@@ -95,9 +95,9 @@ export function WorkspaceProjectHUD({
       {/* Top HUD Row: Time Gauge, Escrow Badge & Ping Shortcut */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
         <div className="flex items-center gap-2.5">
-          {/* Urgency / Countdown Pill */}
+          {/* Urgency / Countdown Badge */}
           <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border transition-colors ${
               urgencyLevel === "completed"
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                 : urgencyLevel === "expired"

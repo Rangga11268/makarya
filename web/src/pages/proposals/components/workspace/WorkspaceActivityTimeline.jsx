@@ -138,7 +138,7 @@ export function WorkspaceActivityTimeline({
                   {evt.title}
                 </span>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${evt.badgeBg}`}
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${evt.badgeBg}`}
                 >
                   {evt.badge}
                 </span>

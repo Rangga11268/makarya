@@ -113,7 +113,7 @@ export function NotificationBell() {
                   Notifikasi
                 </h3>
                 {unreadCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-bold">
+                  <span className="px-1.5 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-bold">
                     {unreadCount} Baru
                   </span>
                 )}
@@ -129,7 +129,7 @@ export function NotificationBell() {
                 )}
                 <button
                   onClick={() => setOpen(false)}
-                  className="text-muted hover:text-dark-900 p-1 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+                  className="text-muted hover:text-dark-900 p-1 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                   aria-label="Tutup"
                 >
                   <X className="w-4 h-4" />

@@ -1,4 +1,4 @@
-﻿import React, { useRef } from "react";
+import React, { useRef } from "react";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { ShieldCheck, Printer, X, CheckCircle2, Download, Building2, GraduationCap } from "lucide-react";
@@ -63,7 +63,7 @@ export function InvoiceReceiptModal({
                 <span className="text-xl font-extrabold tracking-tight text-slate-950 font-display">
                   MAKARYA<span className="text-brand-indigo">.</span>
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold border border-slate-200">
                   OFFICIAL RECEIPT
                 </span>
               </div>
@@ -117,7 +117,7 @@ export function InvoiceReceiptModal({
 
             <div className="shrink-0 text-right">
               <span
-                className={`text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border ${
+                className={`text-[10.5px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider border ${
                   isCompleted
                     ? "bg-emerald-50 text-emerald-800 border-emerald-300"
                     : "bg-blue-50 text-blue-800 border-blue-300"

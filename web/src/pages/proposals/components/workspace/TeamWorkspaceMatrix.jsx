@@ -14,9 +14,9 @@ import {
   Sparkles,
   ArrowRight,
   UserCheck,
-  Briefcase,
   Share2,
 } from "lucide-react";
+import { ProjectBriefVectorIcon } from "../../../../components/icons/ProjectVectorIcon";
 import { formatCurrency } from "../../../../utils/formatCurrency";
 import { formatDate } from "../../../../utils/formatDate";
 import { Button } from "../../../../components/ui/Button";
@@ -159,10 +159,10 @@ export function TeamWorkspaceMatrix({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-700 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-2xs">
+            <span className="text-xs font-semibold text-slate-700 bg-white px-2.5 py-1 rounded-md border border-slate-200 shadow-2xs">
               {filledSlots} dari {totalSlots} Talenta Terisi
             </span>
-            <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+            <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
               {completedSlots} Selesai ({teamProgressPercent}%)
             </span>
           </div>
@@ -187,7 +187,10 @@ export function TeamWorkspaceMatrix({
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-indigo-600" />
+            <ProjectBriefVectorIcon
+              size={16}
+              className="w-4 h-4 text-indigo-600 shrink-0"
+            />
             <span>Matriks Pembagian Peran & Alokasi Escrow</span>
           </h4>
           <span className="text-xs text-slate-500">
@@ -217,7 +220,7 @@ export function TeamWorkspaceMatrix({
                   {/* Top: Role Badge & Budget */}
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${roleStyle.bg}`}
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold border ${roleStyle.bg}`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${roleStyle.dot}`}

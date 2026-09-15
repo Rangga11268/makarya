@@ -109,7 +109,7 @@ export default function App() {
         </Route>
 
         {/* ========================================================= */}
-        {/* 2. AUTHENTICATED PORTAL ROUTES (Modern Sidebar Navigation) */}
+        {/* 2. AUTHENTICATED PORTAL ROUTES */}
         {/* ========================================================= */}
         <Route
           element={
@@ -118,6 +118,10 @@ export default function App() {
             />
           }
         >
+          {/* Standalone Full-Screen Chat (Tanpa Navbar & Header / BottomNav) */}
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat/:projectId" element={<ChatPage />} />
+
           <Route element={<SidebarLayout />}>
             {/* Authenticated Explore Pages with Sidebar */}
             <Route path="/projects" element={<BrowseProjectsPage />} />
@@ -155,8 +159,6 @@ export default function App() {
               <Route path="/portfolio" element={<PortfolioPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/wallet" element={<WalletPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/chat/:projectId" element={<ChatPage />} />
             </Route>
 
             {/* Admin Exclusive */}

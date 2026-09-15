@@ -582,6 +582,13 @@ export function ProposalBoardPage() {
 
   const activePartnerRole = isUmkm ? "MHS" : "UMKM";
 
+  const activePartnerId = isUmkm
+    ? acceptedApplicant?.mhs_id ||
+      selectedProject?.slots?.find((s) => s.accepted_mhs_id)?.accepted_mhs_id ||
+      projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_id ||
+      null
+    : selectedProposal?.project?.umkm_id || selectedProject?.umkm_id || null;
+
   const activeDeliverable = isUmkm
     ? projectSubmissions[0]
     : mhsSubmissions[selectedProposal?.project_id];
@@ -628,10 +635,6 @@ export function ProposalBoardPage() {
                       ? "Ruang Kerja Klien UMKM"
                       : "Ruang Kerja Mahasiswa"}
                   </span>
-                </span>
-                <span className="text-muted/60 text-xs">•</span>
-                <span className="text-xs text-muted font-sans font-normal">
-                  Pusat Kolaborasi Real-Time & Garansi Escrow
                 </span>
               </div>
 
@@ -725,6 +728,7 @@ export function ProposalBoardPage() {
           onBack={handleBackToHub}
           activeProjectId={activeProjectId}
           activeProjectTitle={activeProjectTitle}
+          activePartnerId={activePartnerId}
           activePartnerName={activePartnerName}
           activePartnerRole={activePartnerRole}
           activePartnerPhoto={activePartnerPhoto}

@@ -4,10 +4,10 @@ import { useAuthStore } from "../../store/authStore";
 import { useAlertStore } from "../../store/alertStore";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
+import { ProjectBriefVectorIcon } from "../icons/ProjectVectorIcon";
 import {
   Compass,
   Layers,
-  Briefcase,
   Wallet as WalletIcon,
   ShieldCheck,
   LogOut,
@@ -179,7 +179,7 @@ export function Navbar() {
         {
           label: "Proyek & Pelamar",
           path: "/proposals",
-          icon: Briefcase,
+          icon: ProjectBriefVectorIcon,
         },
         { label: "Direktori Talenta", path: "/talents", icon: GraduationCap },
         { label: "Dompet Escrow", path: "/wallet", icon: WalletIcon },
@@ -190,7 +190,11 @@ export function Navbar() {
     return [
       { label: "Dashboard", path: "/dashboard", icon: Layers },
       { label: "Katalog Proyek", path: "/projects", icon: Compass },
-      { label: "Papan Kerja", path: "/proposals", icon: Briefcase },
+      {
+        label: "Papan Kerja",
+        path: "/proposals",
+        icon: ProjectBriefVectorIcon,
+      },
       { label: "Portofolio", path: "/portfolio", icon: UserCheck },
       { label: "Dompet", path: "/wallet", icon: WalletIcon },
     ];
@@ -245,7 +249,7 @@ export function Navbar() {
                 {/* A. Katalog Proyek */}
                 <Link
                   to="/projects"
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     isActive("/projects")
                       ? "bg-slate-100 text-slate-900 font-semibold border border-slate-200"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
@@ -258,7 +262,7 @@ export function Navbar() {
                 {/* B. Direktori Talenta */}
                 <Link
                   to="/talents"
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     isActive("/talents")
                       ? "bg-slate-100 text-slate-900 font-semibold border border-slate-200"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
@@ -275,7 +279,7 @@ export function Navbar() {
                       setCategoryDropdownOpen(!categoryDropdownOpen);
                       setGuideDropdownOpen(false);
                     }}
-                    className={`flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer select-none ${
+                    className={`flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${
                       categoryDropdownOpen
                         ? "bg-slate-100 text-slate-900 font-bold"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
@@ -341,7 +345,7 @@ export function Navbar() {
                       setGuideDropdownOpen(!guideDropdownOpen);
                       setCategoryDropdownOpen(false);
                     }}
-                    className={`flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer select-none ${
+                    className={`flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer select-none ${
                       guideDropdownOpen
                         ? "bg-slate-100 text-slate-900 font-bold"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
@@ -398,7 +402,7 @@ export function Navbar() {
 
             {/* Authenticated Nav Dock */}
             {isAuthenticated && (
-              <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/80">
+              <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
                 {authNavLinks.map((link) => {
                   const Icon = link.icon;
                   const active = isActive(link.path);
@@ -406,7 +410,7 @@ export function Navbar() {
                     <Link
                       key={link.path}
                       to={link.path}
-                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs transition-all select-none ${
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs transition-all select-none ${
                         active
                           ? "bg-white text-slate-900 font-bold shadow-xs border border-slate-200/60"
                           : "text-slate-600 hover:text-slate-900 hover:bg-white/60 font-semibold"
@@ -548,7 +552,7 @@ export function Navbar() {
                 {/* Mobile Menu Toggle for Auth */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden p-1.5 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-100"
+                  className="lg:hidden p-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100"
                   aria-label="Menu"
                 >
                   {mobileMenuOpen ? (
@@ -572,7 +576,7 @@ export function Navbar() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs font-semibold border-slate-200 hover:border-slate-800 text-slate-800 rounded-full px-3.5 py-1.5 bg-slate-50/50"
+                    className="text-xs font-semibold border-slate-200 hover:border-slate-800 text-slate-800 rounded-xl px-3.5 py-1.5 bg-slate-50/50"
                   >
                     Pasang Proyek
                   </Button>
@@ -582,7 +586,7 @@ export function Navbar() {
                   <Button
                     variant="brand"
                     size="sm"
-                    className="text-xs font-bold rounded-full px-4 py-1.5 shadow-sm"
+                    className="text-xs font-bold rounded-xl px-4 py-1.5 shadow-sm"
                   >
                     Daftar Sekarang
                   </Button>
@@ -591,7 +595,7 @@ export function Navbar() {
                 {/* Mobile Menu Toggle for Guests */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden p-1.5 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-100 ml-0.5"
+                  className="lg:hidden p-1.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 ml-0.5"
                   aria-label="Menu"
                 >
                   {mobileMenuOpen ? (
@@ -650,7 +654,7 @@ export function Navbar() {
                     <Button
                       variant="brand"
                       size="md"
-                      className="w-full text-xs font-bold justify-center rounded-full"
+                      className="w-full text-xs font-bold justify-center rounded-xl"
                     >
                       Daftar Akun Baru
                       <ArrowRight className="w-4 h-4 ml-1" />
@@ -660,7 +664,7 @@ export function Navbar() {
                     <Button
                       variant="outline"
                       size="md"
-                      className="w-full text-xs font-semibold justify-center rounded-full border-slate-200"
+                      className="w-full text-xs font-semibold justify-center rounded-xl border-slate-200"
                     >
                       Masuk ke Akun
                     </Button>

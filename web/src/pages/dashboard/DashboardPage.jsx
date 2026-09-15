@@ -8,8 +8,8 @@ import { Button } from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
+import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 import {
-  Briefcase,
   Wallet as WalletIcon,
   PlusCircle,
   ArrowRight,
@@ -122,7 +122,7 @@ export function DashboardPage() {
           label: "Proyek Sedang Berjalan",
           value: myProjects.filter((p) => p.status === "IN_PROGRESS").length,
           subtext: "Dikerjakan mahasiswa aktif",
-          icon: Briefcase,
+          icon: ProjectBriefVectorIcon,
           colorText: "text-blue-600",
           colorBg: "bg-blue-50 border-blue-200/80",
           link: "/proposals",
@@ -162,7 +162,7 @@ export function DashboardPage() {
           label: "Kontrak Tugas Aktif",
           value: myProposals.filter((p) => p.status === "ACCEPTED").length,
           subtext: "Deliverable sedang diproses",
-          icon: Briefcase,
+          icon: ProjectBriefVectorIcon,
           colorText: "text-blue-600",
           colorBg: "bg-blue-50 border-blue-200/80",
           link: "/proposals",
@@ -230,10 +230,6 @@ export function DashboardPage() {
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   {isUmkm ? "Mitra UMKM Kampus" : "Talenta Mahasiswa"}
                 </span>
-                <span className="text-slate-300 text-xs">•</span>
-                <span className="text-[11px] font-semibold text-slate-500">
-                  Status: Terverifikasi
-                </span>
               </div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                 Halo, {userDisplayName}
@@ -247,26 +243,27 @@ export function DashboardPage() {
           </div>
 
           {/* Action Button: Non-redundant in desktop (already in navbar), shown only when helpful */}
-          <div className="flex items-center gap-2.5 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+          {/* Action Button: Matched heights, clean alignment, no awkward wrapping */}
+          <div className="flex items-center gap-2.5 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 w-full sm:w-auto">
             {isUmkm ? (
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Link to="/projects/new" className="sm:hidden flex-1">
+                <Link to="/projects/new" className="flex-1 sm:flex-initial">
                   <Button
                     variant="brand"
                     size="sm"
-                    className="w-full text-xs font-bold shadow-brand"
+                    className="w-full sm:w-auto h-10 px-4 rounded-xl text-xs font-bold shadow-brand whitespace-nowrap"
                   >
-                    <PlusCircle className="w-4 h-4 mr-1.5" />
-                    Pasang Proyek
+                    <PlusCircle className="w-4 h-4 mr-1.5 shrink-0" />
+                    <span>Pasang Proyek</span>
                   </Button>
                 </Link>
                 <Link to="/proposals" className="flex-1 sm:flex-initial">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
-                    className="w-full text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-50"
+                    className="w-full sm:w-auto h-10 px-4 rounded-xl text-xs font-bold border border-slate-200 text-slate-800 hover:bg-slate-50 whitespace-nowrap"
                   >
-                    <FolderKanban className="w-4 h-4 mr-1.5 text-slate-600" />
+                    <FolderKanban className="w-4 h-4 mr-1.5 text-slate-600 shrink-0" />
                     <span>Ruang Kerja Proyek</span>
                   </Button>
                 </Link>
@@ -276,9 +273,9 @@ export function DashboardPage() {
                 <Button
                   variant="brand"
                   size="sm"
-                  className="w-full text-xs font-bold shadow-brand"
+                  className="w-full sm:w-auto h-10 px-4 rounded-xl text-xs font-bold shadow-brand whitespace-nowrap"
                 >
-                  <Compass className="w-4 h-4 mr-1.5" />
+                  <Compass className="w-4 h-4 mr-1.5 shrink-0" />
                   <span>Jelajahi Proyek Tersedia</span>
                 </Button>
               </Link>
@@ -409,20 +406,23 @@ export function DashboardPage() {
       {!isUmkm && activeJob && (
         <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl shadow-sm border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-semibold">
               <Clock className="w-3 h-3" />
               <span>Proyek Sedang Dikerjakan</span>
             </div>
             <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
               {activeJob.project_judul || "Proyek Kolaborasi Aktif"}
             </h2>
-            <p className="text-xs text-slate-300">
-              Imbalan Escrow:{" "}
-              <span className="font-bold text-emerald-300">
-                {formatCurrency(activeJob.harga_tawar)}
-              </span>{" "}
-              • Estimasi: {activeJob.estimasi_hari} Hari
-            </p>
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                Escrow: {formatCurrency(activeJob.harga_tawar)}
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">
+                <Clock className="w-3 h-3 text-slate-400" />
+                {activeJob.estimasi_hari} Hari Kerja
+              </span>
+            </div>
           </div>
 
           <Link to={`/proposals/${activeJob.project_id}`} className="shrink-0">
@@ -496,11 +496,11 @@ export function DashboardPage() {
                       >
                         <div className="space-y-2">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700">
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
                               {p.kategori}
                             </span>
                             {isTeam ? (
-                              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200 flex items-center gap-1">
+                              <span className="text-[10px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200 flex items-center gap-1">
                                 <Users className="w-3 h-3" /> Tim
                               </span>
                             ) : (
@@ -576,7 +576,7 @@ export function DashboardPage() {
               {myProjects.length === 0 ? (
                 <div className="py-12 text-center space-y-3">
                   <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mx-auto">
-                    <Briefcase className="w-6 h-6" />
+                    <ProjectBriefVectorIcon className="w-6 h-6 text-slate-400" />
                   </div>
                   <h4 className="text-sm font-bold text-slate-900">
                     Belum Ada Proyek yang Dipasang
@@ -601,36 +601,39 @@ export function DashboardPage() {
                   {myProjects.slice(0, 5).map((project) => (
                     <div
                       key={project.id}
-                      className="p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
                             {project.kategori}
                           </span>
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80">
                             {formatStatus(project.status)}
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-slate-900 truncate">
+                        <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2 break-words">
                           {project.judul}
                         </h4>
-                        <p className="text-xs text-slate-500">
-                          Alokasi Honor:{" "}
-                          <span className="font-bold text-slate-800">
-                            {formatCurrency(project.budget_max)}
-                          </span>
-                        </p>
+                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500 pt-0.5">
+                          <p>
+                            Alokasi Honor:{" "}
+                            <span className="font-bold text-slate-900">
+                              {formatCurrency(project.budget_max)}
+                            </span>
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex items-center justify-end shrink-0">
-                        <Link to="/proposals">
+                      <div className="pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex items-center justify-end shrink-0">
+                        <Link to="/proposals" className="w-full sm:w-auto">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white"
+                            className="w-full sm:w-auto h-9 px-4 text-xs font-bold rounded-xl border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white"
                           >
-                            Kelola Pelamar →
+                            <span>Kelola Pelamar</span>
+                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
                           </Button>
                         </Link>
                       </div>
@@ -685,9 +688,12 @@ export function DashboardPage() {
                         <h4 className="text-xs font-bold text-slate-900 truncate">
                           {t.nama_lengkap}
                         </h4>
-                        <p className="text-[11px] text-slate-500 truncate">
-                          {t.prodi || "Mahasiswa"} • Smt {t.semester || 4}
-                        </p>
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-500 truncate">
+                          <span>{t.prodi || "Mahasiswa"}</span>
+                          <span className="px-1.5 py-0.2 rounded bg-slate-100 text-[10px] font-medium text-slate-600">
+                            Smt {t.semester || 4}
+                          </span>
+                        </div>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
                           <span className="text-[10px] font-bold text-slate-700">

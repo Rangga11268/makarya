@@ -29,7 +29,7 @@ export function ProposalSidebarItem({
             {proj.kategori}
           </span>
           <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+            className={`inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-md border ${
               isDone
                 ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                 : overdue
@@ -39,6 +39,17 @@ export function ProposalSidebarItem({
                     : "bg-amber-50 text-amber-800 border-amber-200"
             }`}
           >
+            <span
+              className={`w-1 h-1 rounded-full ${
+                isDone
+                  ? "bg-emerald-500"
+                  : overdue
+                    ? "bg-rose-500"
+                    : proj.status === "IN_PROGRESS"
+                      ? "bg-indigo-600"
+                      : "bg-amber-500"
+              }`}
+            />
             {isDone
               ? "Selesai"
               : overdue
@@ -101,7 +112,7 @@ export function ProposalSidebarItem({
           {prop.project_kategori || "Proyek UMKM"}
         </span>
         <span
-          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+          className={`inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-md border ${
             isDone
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : isAccepted
@@ -113,6 +124,19 @@ export function ProposalSidebarItem({
                   : "bg-amber-50 text-amber-800 border-amber-200"
           }`}
         >
+          <span
+            className={`w-1 h-1 rounded-full ${
+              isDone
+                ? "bg-emerald-500"
+                : isAccepted
+                  ? isExpired(prop.project_deadline || prop.deadline)
+                    ? "bg-rose-500"
+                    : "bg-indigo-600"
+                  : prop.status === "REJECTED"
+                    ? "bg-rose-500"
+                    : "bg-amber-500"
+            }`}
+          />
           {isDone
             ? "Selesai"
             : isAccepted

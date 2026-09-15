@@ -15,7 +15,6 @@ import { extractIdFromSlug } from "../../utils/slugify";
 import { formatStatus } from "../../utils/formatStatus";
 import {
   ArrowLeft,
-  Briefcase,
   Clock,
   Send,
   DollarSign,
@@ -338,7 +337,7 @@ export function ApplyProposalPage() {
                           Pilih Slot Peran yang Ingin Anda Lamar
                         </span>
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-brand-indigo">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-brand-indigo">
                         Proyek Tim
                       </span>
                     </div>
@@ -366,7 +365,7 @@ export function ApplyProposalPage() {
                                 {slot.nama_peran}
                               </span>
                               <span
-                                className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${
+                                className={`text-[9.5px] font-semibold px-2 py-0.5 rounded-md border ${
                                   isOpen
                                     ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                                     : "bg-slate-200 text-slate-600 border-slate-300"
