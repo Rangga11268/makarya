@@ -157,10 +157,24 @@ export function ChatScreen({ route, navigation }) {
     setShowProjectModal(false);
 
     try {
+      const catMap = {
+        PEMROGRAMAN: "Programmer / Developer",
+        DESAIN: "Desainer / UI/UX",
+        MARKETING: "Digital Marketer",
+        PENULISAN: "Content Writer",
+        MULTIMEDIA: "Multimedia & Video",
+        BISNIS: "Konsultan Bisnis",
+        DATA: "Data Analyst",
+      };
+
       const offeredRole =
         selectedSlot?.nama_peran ||
         proj.nama_peran ||
-        (proj.kategori ? `Spesialis ${proj.kategori}` : "Anggota Tim Kolaborasi");
+        (proj.tipe_kolaborasi === "TIM" && proj.slots && proj.slots.length > 0
+          ? proj.slots[0].nama_peran
+          : proj.kategori
+            ? catMap[String(proj.kategori).toUpperCase()] || proj.kategori
+            : "Pelaksana Proyek");
 
       const offerData = {
         projectId: proj.id,
@@ -177,14 +191,17 @@ export function ChatScreen({ route, navigation }) {
       };
 
       const payload = {
-        message: `Tawaran Proyek Resmi: ${proj.judul} (Posisi: ${offeredRole})`,
+        message: `Tawaran Proyek Resmi: ${proj.judul} (${offeredRole})`,
         attachment_url: JSON.stringify(offerData),
         attachment_type: "PROJECT_OFFER",
         recipient_id: targetRecipientId,
       };
 
       await chatApi.sendMessage(proj.id, payload);
-      showToast("Tawaran proyek & posisi berhasil diajukan kepada talenta!", "success");
+      showToast(
+        "Tawaran proyek & posisi berhasil diajukan kepada talenta!",
+        "success",
+      );
       loadHistory(proj.id);
     } catch (err) {
       console.warn("Gagal mengirim tawaran:", err);
@@ -409,6 +426,27 @@ export function ChatScreen({ route, navigation }) {
     }
   };
 
+  const getCleanRoleName = (offer) => {
+    let role = offer.posisi || offer.nama_peran;
+    const catMap = {
+      PEMROGRAMAN: "Programmer / Developer",
+      DESAIN: "Desainer / UI/UX",
+      MARKETING: "Digital Marketer",
+      PENULISAN: "Content Writer",
+      MULTIMEDIA: "Multimedia & Video",
+      BISNIS: "Konsultan Bisnis",
+      DATA: "Data Analyst",
+    };
+    if (!role && offer.kategori) {
+      role = catMap[String(offer.kategori).toUpperCase()] || offer.kategori;
+    }
+    if (role && typeof role === "string" && role.startsWith("Spesialis ")) {
+      const clean = role.replace(/^Spesialis\s+/i, "");
+      role = catMap[clean.toUpperCase()] || clean;
+    }
+    return role || (offer.tipe_kolaborasi === "TIM" ? "Anggota Tim" : "Pelaksana Proyek");
+  };
+
   const renderMessageItem = ({ item }) => {
     const isMe = item.sender_id === user?.id;
     const isOffer = item.attachment_type === "PROJECT_OFFER";
@@ -590,17 +628,11 @@ export function ChatScreen({ route, navigation }) {
                           ? { color: "#FFFFFF" }
                           : { color: COLORS.brandIndigo },
                       ]}
-                      numberOfLines={1}
                     >
-                      Posisi Ditawarkan:{" "}
                       <Text style={{ fontWeight: "700" }}>
-                        {offer.posisi ||
-                          offer.nama_peran ||
-                          (offer.kategori
-                            ? `Spesialis ${offer.kategori}`
-                            : "Anggota Tim Kolaborasi")}
+                        {getCleanRoleName(offer)}
                       </Text>
-                      {offer.tipe_kolaborasi === "TIM" ? " (Tim)" : ""}
+                      {offer.tipe_kolaborasi === "TIM" ? " • Proyek Tim" : ""}
                     </Text>
                   </View>
 
@@ -745,8 +777,7 @@ export function ChatScreen({ route, navigation }) {
                                               "rgba(255, 255, 255, 0.25)",
                                           }
                                         : {
-                                            backgroundColor:
-                                              COLORS.brandIndigo,
+                                            backgroundColor: COLORS.brandIndigo,
                                           },
                                     ]}
                                   >
@@ -1393,7 +1424,9 @@ export function ChatScreen({ route, navigation }) {
               style={{ maxHeight: 360 }}
               renderItem={({ item }) => {
                 const isSelected = item.id === currentProjectId;
-                const isTeam = item.tipe_kolaborasi === "TIM" || (item.slots && item.slots.length > 0);
+                const isTeam =
+                  item.tipe_kolaborasi === "TIM" ||
+                  (item.slots && item.slots.length > 0);
                 const hasSlots = item.slots && item.slots.length > 0;
 
                 return (
@@ -1417,7 +1450,9 @@ export function ChatScreen({ route, navigation }) {
                           {item.judul}
                         </Text>
                         <Text style={styles.projectOptionStatus}>
-                          {isTeam ? "Proyek Tim" : "Proyek Individu"} • Anggaran: Rp {Number(item.budget_max).toLocaleString("id-ID")}
+                          {isTeam ? "Proyek Tim" : "Proyek Individu"} •
+                          Anggaran: Rp{" "}
+                          {Number(item.budget_max).toLocaleString("id-ID")}
                         </Text>
                       </View>
                       <View style={styles.projectOptionTag}>
@@ -1445,7 +1480,10 @@ export function ChatScreen({ route, navigation }) {
                                 {slot.nama_peran}
                               </Text>
                               <Text style={styles.projectSlotBudget}>
-                                Alokasi: Rp {Number(slot.alokasi_budget || item.budget_max).toLocaleString("id-ID")}
+                                Alokasi: Rp{" "}
+                                {Number(
+                                  slot.alokasi_budget || item.budget_max,
+                                ).toLocaleString("id-ID")}
                               </Text>
                             </View>
                             <View style={styles.projectSlotOfferBtn}>
