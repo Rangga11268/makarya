@@ -980,7 +980,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 9,
-    borderRadius: 12,
+    borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.borderDark,
     backgroundColor: COLORS.bgSurface,
@@ -998,7 +998,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     paddingVertical: 9,
-    borderRadius: 12,
+    borderRadius: 100,
     backgroundColor: COLORS.brandIndigo,
   },
   contactBtnText: {

@@ -250,7 +250,7 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12, // Modern iOS/Stripe button radius
+    borderRadius: 999, // Smooth pebble/pill button shape
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

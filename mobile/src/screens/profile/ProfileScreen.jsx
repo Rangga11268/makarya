@@ -1009,7 +1009,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     backgroundColor: COLORS.brandIndigo,
-    borderRadius: 12,
+    borderRadius: 100,
     paddingVertical: 10,
     paddingHorizontal: 18,
     width: "100%",

@@ -1831,7 +1831,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
     paddingVertical: 9,
-    borderRadius: 12,
+    borderRadius: 100,
   },
   ongoingChatBtnText: {
     fontFamily: FONTS.bodyMedium,
@@ -1846,7 +1846,7 @@ const styles = StyleSheet.create({
     gap: 5,
     backgroundColor: "#0F172A",
     paddingVertical: 9,
-    borderRadius: 12,
+    borderRadius: 100,
   },
   ongoingWorkspaceBtnText: {
     fontFamily: FONTS.bodyMedium,
