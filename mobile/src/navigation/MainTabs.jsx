@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Platform } from "react-native";
 import { FONTS } from "../theme/fonts";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -10,6 +10,8 @@ import { WalletScreen } from "../screens/wallet/WalletScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { ChatListScreen } from "../screens/chat/ChatListScreen";
 import { useAuthStore } from "../store/authStore";
+import { useNotificationStore } from "../store/notificationStore";
+import { chatApi } from "../api";
 import { COLORS } from "../theme/colors";
 import {
   HomeTabIcon,
@@ -26,6 +28,9 @@ const Tab = createBottomTabNavigator();
 
 export function MainTabs() {
   const { user } = useAuthStore();
+  const { fetchNotifications, notifications } = useNotificationStore();
+  const [unreadChatCount, setUnreadChatCount] = useState(0);
+
   const { width, height, isTablet, isLandscape, isLandscapePhone } =
     useResponsiveLayout();
 
@@ -34,6 +39,39 @@ export function MainTabs() {
     user?.role === "MAHASISWA" ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
+
+  // Polling ringan untuk notifikasi & badge unread chat realtime
+  useEffect(() => {
+    fetchNotifications();
+    const pollUnread = async () => {
+      try {
+        const res = await chatApi.getConversations();
+        const list = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
+        const unread = list.reduce(
+          (acc, c) => acc + (c.unread_count || 0),
+          0,
+        );
+        setUnreadChatCount(unread);
+      } catch (_) {}
+    };
+
+    pollUnread();
+    const interval = setInterval(() => {
+      fetchNotifications();
+      pollUnread();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const hasUnreadChat =
+    unreadChatCount > 0 ||
+    notifications.some(
+      (n) => !n.isRead && (n.type === "SYSTEM" || n.title?.includes("Pesan")),
+    );
 
   const tabWidth =
     isTablet || isLandscape ? Math.min(width - 32, 600) : width - 32;
@@ -91,7 +129,12 @@ export function MainTabs() {
         options={{
           tabBarLabel: "Chat",
           tabBarIcon: ({ focused }) => (
-            <ChatTabIcon focused={focused} size={21} />
+            <ChatTabIcon
+              focused={focused}
+              size={21}
+              hasUnread={hasUnreadChat}
+              unreadCount={unreadChatCount}
+            />
           ),
         }}
       />

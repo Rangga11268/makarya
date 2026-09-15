@@ -29,6 +29,7 @@ import {
   ArrowRight,
   Shield,
   Zap,
+  MessageSquare,
 } from "lucide-react";
 
 import { NotificationBell } from "../features/NotificationBell";
@@ -181,6 +182,7 @@ export function Navbar() {
           path: "/proposals",
           icon: ProjectBriefVectorIcon,
         },
+        { label: "Chat Kolaborasi", path: "/chat", icon: MessageSquare },
         { label: "Direktori Talenta", path: "/talents", icon: GraduationCap },
         { label: "Dompet Escrow", path: "/wallet", icon: WalletIcon },
         { label: "Profil Usaha", path: "/profile", icon: UserCheck },
@@ -195,6 +197,7 @@ export function Navbar() {
         path: "/proposals",
         icon: ProjectBriefVectorIcon,
       },
+      { label: "Chat Kolaborasi", path: "/chat", icon: MessageSquare },
       { label: "Portofolio", path: "/portfolio", icon: UserCheck },
       { label: "Dompet", path: "/wallet", icon: WalletIcon },
     ];

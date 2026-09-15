@@ -23,6 +23,7 @@ from app.models.proposal import Proposal, ProposalStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.escrow import Escrow, EscrowStatus
 from app.models.chat import ChatMessage
+from app.models.notification import Notification, NotificationType
 from app.schemas.chat import ChatMessageCreate, ChatMessageResponse, ConversationItemResponse
 from pydantic import BaseModel
 
@@ -159,6 +160,44 @@ def verify_project_participation(project_id: UUID, user: User, db: Session) -> P
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Anda tidak memiliki akses ke ruang obrolan proyek ini.",
     )
+
+
+def create_chat_notification(
+    db: Session,
+    project_id: UUID,
+    sender: User,
+    sender_name: str,
+    message_text: str,
+    recipient_id: Optional[UUID] = None,
+):
+    """Membuat notifikasi sistem untuk lawan bicara ketika ada pesan chat masuk."""
+    try:
+        target_user_ids = []
+        if recipient_id and recipient_id != sender.id:
+            target_user_ids.append(recipient_id)
+        else:
+            project = db.query(Project).filter(Project.id == project_id).first()
+            if project:
+                if project.umkm_id and project.umkm_id != sender.id:
+                    target_user_ids.append(project.umkm_id)
+                proposals = db.query(Proposal).filter(Proposal.project_id == project_id).all()
+                for p in proposals:
+                    if p.mhs_id and p.mhs_id != sender.id and p.mhs_id not in target_user_ids:
+                        target_user_ids.append(p.mhs_id)
+
+        clean_preview = (message_text[:80] + "...") if len(message_text) > 80 else message_text
+        for uid in target_user_ids:
+            notif = Notification(
+                user_id=uid,
+                judul=f"Pesan Baru dari {sender_name}",
+                pesan=clean_preview or "Mengirimkan pesan kolaborasi baru",
+                tipe=NotificationType.SYSTEM,
+                url_referensi=f"/chat?project={project_id}",
+            )
+            db.add(notif)
+        db.commit()
+    except Exception:
+        pass
 
 
 # ============================================================================
@@ -569,6 +608,16 @@ async def send_chat_message(
     broadcast_payload = json.loads(msg_response.model_dump_json())
     await manager.broadcast(str(project_id), broadcast_payload)
 
+    # Buat notifikasi tersimpan untuk penerima pesan
+    create_chat_notification(
+        db=db,
+        project_id=project_id,
+        sender=current_user,
+        sender_name=sender_name,
+        message_text=new_msg.message,
+        recipient_id=body.recipient_id,
+    )
+
     return msg_response
 
 
@@ -872,6 +921,16 @@ async def websocket_chat_endpoint(
 
                 # Broadcast ke seluruh peserta yang sedang membuka chat room ini
                 await manager.broadcast(room_id, broadcast_data)
+
+                # Simpan notifikasi ke database untuk lawan bicara
+                create_chat_notification(
+                    db=db,
+                    project_id=project_id,
+                    sender=current_user,
+                    sender_name=sender_name,
+                    message_text=new_msg.message,
+                    recipient_id=recip_id,
+                )
 
             except json.JSONDecodeError:
                 pass

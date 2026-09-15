@@ -231,10 +231,7 @@ export function ChatScreen({ route, navigation }) {
     if (!targetId) return;
     try {
       setLoading(true);
-      const res = await chatApi.getMessages(
-        targetId,
-        targetRecipientId,
-      );
+      const res = await chatApi.getMessages(targetId, targetRecipientId);
       setMessages(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.warn("Gagal memuat riwayat pesan:", err);
