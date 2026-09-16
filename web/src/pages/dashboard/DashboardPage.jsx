@@ -41,6 +41,7 @@ import {
   Zap,
   GraduationCap,
   X,
+  Camera,
 } from "lucide-react";
 
 function getCategoryVisual(category) {
@@ -300,6 +301,106 @@ export function DashboardPage() {
         },
       ];
 
+  // =========================================================================
+  // DYNAMIC ACCOUNT SETUP RECOMMENDATIONS (Based on real user profile state)
+  // =========================================================================
+  const setupRecommendations = [];
+
+  if (isUmkm) {
+    if (!user?.url_foto) {
+      setupRecommendations.push({
+        id: "photo",
+        title: "Unggah Logo Usaha",
+        desc: "Tingkatkan kredibilitas di mata mahasiswa pelamar.",
+        link: "/profile",
+        cta: "Unggah Logo",
+        icon: Camera,
+      });
+    }
+    if (!user?.bidang_industri || !user?.kota || !user?.no_kontak) {
+      setupRecommendations.push({
+        id: "profile",
+        title: "Lengkapi Profil Usaha",
+        desc: "Tambahkan bidang industri, kota & WhatsApp aktif.",
+        link: "/profile",
+        cta: "Lengkapi Data",
+        icon: User,
+      });
+    }
+    if (!user?.nomor_rekening || !user?.nama_bank) {
+      setupRecommendations.push({
+        id: "bank",
+        title: "Atur Rekening Pencairan",
+        desc: "Penting untuk transaksi & penarikan saldo dompet.",
+        link: "/profile",
+        cta: "Atur Rekening",
+        icon: WalletIcon,
+      });
+    }
+    if (myProjects.length === 0) {
+      setupRecommendations.push({
+        id: "first_project",
+        title: "Pasang Proyek Pertama",
+        desc: "Buka proyek kolaborasi ke talenta kampus terkurasi.",
+        link: "/projects/new",
+        cta: "Pasang Proyek",
+        icon: PlusCircle,
+      });
+    }
+  } else {
+    // Mahasiswa
+    if (!user?.url_foto) {
+      setupRecommendations.push({
+        id: "photo",
+        title: "Unggah Foto Profil",
+        desc: "Profil berfoto mendapat lebih banyak perhatian mitra UMKM.",
+        link: "/profile",
+        cta: "Unggah Foto",
+        icon: Camera,
+      });
+    }
+    const hasPortfolio =
+      user?.github_url ||
+      user?.figma_url ||
+      user?.website_url ||
+      user?.linkedin_url;
+    const hasSkills = Array.isArray(user?.skills) && user.skills.length > 0;
+    if (!hasSkills || !hasPortfolio) {
+      setupRecommendations.push({
+        id: "skills_portfolio",
+        title: "Keahlian & Portofolio",
+        desc: "Tambahkan keahlian utama & link Figma/GitHub Anda.",
+        link: "/profile",
+        cta: "Isi Portofolio",
+        icon: Award,
+      });
+    }
+    if (!user?.nomor_rekening || !user?.nama_bank) {
+      setupRecommendations.push({
+        id: "bank",
+        title: "Rekening Bank Pencairan",
+        desc: "Diperlukan untuk pencairan honor garansi escrow.",
+        link: "/profile",
+        cta: "Atur Rekening",
+        icon: WalletIcon,
+      });
+    }
+    if (myProposals.length === 0) {
+      setupRecommendations.push({
+        id: "first_proposal",
+        title: "Kirim Proposal Pertama",
+        desc: "Jelajahi proyek terbuka yang sesuai keahlian Anda.",
+        link: "/projects",
+        cta: "Cari Proyek",
+        icon: Compass,
+      });
+    }
+  }
+
+  const primaryPending =
+    setupRecommendations.length > 0 ? setupRecommendations[0] : null;
+  const PendingIcon = primaryPending?.icon || User;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-7 font-sans">
       {/* ========================================================================= */}
@@ -395,6 +496,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* Card A: Welcome & Mission Canvas (Left ~65%) */}
         <div className="lg:col-span-7 xl:col-span-8 bg-[#F8F9FA] border border-slate-200/70 rounded-[28px] sm:rounded-[32px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+        <div className="lg:col-span-7 xl:col-span-8 bg-[#F8FAFC] border border-slate-200/80 rounded-[28px] sm:rounded-[32px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
           <div className="space-y-3">
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-[1.15]">
               Selamat Datang, {userDisplayName}!
@@ -415,6 +517,7 @@ export function DashboardPage() {
                   <button
                     type="button"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
                     <span>Pasang Proyek Baru</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -436,6 +539,7 @@ export function DashboardPage() {
                   <button
                     type="button"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
                     <Compass className="w-3.5 h-3.5" />
                     <span>Jelajahi Katalog Proyek</span>
@@ -447,6 +551,7 @@ export function DashboardPage() {
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
                   >
                     <Award className="w-3.5 h-3.5 text-brand-indigo" />
+                    <Award className="w-3.5 h-3.5 text-brand-cyan" />
                     <span>Portofolio Karya Saya</span>
                   </button>
                 </Link>
@@ -466,15 +571,30 @@ export function DashboardPage() {
           >
             <path d="M0 0 C50 20 80 50 100 100 L100 0 Z" />
           </svg>
+        {/* Card B: Account Setup & Status Widget (Right ~35% - Makarya Brand Dark Card with 3D Stack) */}
+        <div className="lg:col-span-5 xl:col-span-4 bg-[#0F172A] border border-slate-800 rounded-[28px] sm:rounded-[32px] p-6 flex flex-col justify-between gap-4 shadow-md relative overflow-hidden text-white">
+          {/* Subtle Makarya Cyan Glow Aura */}
+          <div className="absolute -top-12 -right-12 w-44 h-44 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-xl pointer-events-none" />
 
           {/* Header */}
           <div className="flex items-start justify-between gap-3 relative z-10">
             <div>
               <h2 className="text-base sm:text-lg font-extrabold text-slate-950 tracking-tight">
                 {isUmkm ? "Kelengkapan Akun Anda" : "Kelengkapan Profil"}
+              <h2 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+                {setupRecommendations.length > 0
+                  ? isUmkm
+                    ? "Kelengkapan Akun Anda"
+                    : "Kelengkapan Profil"
+                  : "Akun Siap Berkolaborasi"}
               </h2>
               <p className="text-xs text-slate-800/80 mt-1 max-w-[220px] leading-snug font-medium">
                 3 saran untuk memaksimalkan profil & kolaborasi Makarya.
+              <p className="text-xs text-slate-400 mt-1 max-w-[230px] leading-snug font-medium">
+                {setupRecommendations.length > 0
+                  ? `${setupRecommendations.length} saran untuk mengoptimalkan akun Makarya Anda.`
+                  : "Profil dan akun Anda sudah 100% lengkap dan terverifikasi."}
               </p>
             </div>
             <button
@@ -484,26 +604,43 @@ export function DashboardPage() {
             >
               <X className="w-3.5 h-3.5" />
             </button>
+
+            {setupRecommendations.length > 0 ? (
+              <span className="w-6 h-6 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center justify-center text-xs font-bold shrink-0">
+                {setupRecommendations.length}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold shrink-0">
+                <BadgeCheck className="w-3.5 h-3.5" />
+                <span>100% Siap</span>
+              </span>
+            )}
           </div>
 
           {/* 3D Stacked Overlapping Mini-Cards */}
           <div className="relative pt-4 pb-1">
             {/* Card 1: Background Layer (Emerald Green) */}
             <div className="w-[88%] mx-auto bg-[#22C55E] text-white rounded-2xl px-4 py-2 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-10 select-none">
+            <div className="w-[88%] mx-auto bg-[#10B981] text-white rounded-2xl px-4 py-2 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-10 select-none">
               <div className="flex items-center gap-2 truncate">
                 <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">Rekening Escrow Siap</span>
+                <span className="truncate">Garansi Escrow 100% Aktif</span>
               </div>
               <Check className="w-3.5 h-3.5 shrink-0" />
             </div>
 
             {/* Card 2: Middle Layer (Royal Indigo/Purple) */}
             <div className="w-[94%] mx-auto bg-[#6366F1] text-white rounded-2xl px-4 py-2.5 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-20 select-none">
+            {/* Card 2: Middle Layer (Makarya Brand Cyan) */}
+            <div className="w-[94%] mx-auto bg-[#38BDF8] text-slate-950 rounded-2xl px-4 py-2.5 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-20 select-none">
               <div className="flex items-center gap-2 truncate">
                 <Users className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">Formasi Tim Multi-Role</span>
+                <span className="truncate">Kolaborasi Talenta & UMKM</span>
               </div>
               <span className="text-[9px] bg-white/25 px-2 py-0.5 rounded-full font-bold">
+              <span className="text-[9px] bg-slate-950/15 px-2 py-0.5 rounded-full font-bold">
                 Aktif
               </span>
             </div>
@@ -513,6 +650,20 @@ export function DashboardPage() {
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100/80 text-amber-600 flex items-center justify-center shrink-0 shadow-2xs">
                   <User className="w-5 h-5" />
+            {primaryPending ? (
+              <div className="w-full bg-white text-slate-900 rounded-2xl p-3.5 sm:p-4 shadow-[0_8px_24px_rgba(0,0,0,0.18)] border border-white flex items-center justify-between gap-3 relative z-30">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-2xl bg-sky-50 border border-sky-100 text-sky-600 flex items-center justify-center shrink-0 shadow-2xs">
+                    <PendingIcon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-extrabold text-slate-900 truncate">
+                      {primaryPending.title}
+                    </h4>
+                    <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                      {primaryPending.desc}
+                    </p>
+                  </div>
                 </div>
                 <div className="min-w-0">
                   <h4 className="text-xs font-extrabold text-slate-900 truncate">
@@ -523,6 +674,32 @@ export function DashboardPage() {
                       ? "Tambahkan logo & deskripsi bisnis"
                       : "Unggah karya & keahlian utama"}
                   </p>
+
+                <Link to={primaryPending.link} className="shrink-0">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-full bg-[#0F172A] hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  >
+                    {primaryPending.cta}
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="w-full bg-white text-slate-900 rounded-2xl p-3.5 sm:p-4 shadow-[0_8px_24px_rgba(0,0,0,0.18)] border border-white flex items-center justify-between gap-3 relative z-30">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-xs font-extrabold text-slate-900 truncate">
+                      Profil 100% Lengkap
+                    </h4>
+                    <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                      {isUmkm
+                        ? "Siap pasang proyek & pilih talenta."
+                        : "Siap kirim proposal & mulai bekerja."}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -530,11 +707,23 @@ export function DashboardPage() {
                 <button
                   type="button"
                   className="px-4 py-2 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                <Link
+                  to={isUmkm ? "/projects/new" : "/projects"}
+                  className="shrink-0"
                 >
                   Perbarui
                 </button>
               </Link>
             </div>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-full bg-[#0F172A] hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  >
+                    {isUmkm ? "Pasang Proyek" : "Cari Proyek"}
+                  </button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -548,10 +737,13 @@ export function DashboardPage() {
           <div className="space-y-1">
             <span className="inline-block px-3 py-1 rounded-full bg-[#FEE066] text-slate-950 text-[10px] font-extrabold tracking-wider uppercase">
               {isUmkm ? "Jobs" : "Katalog Proyek"}
+            <span className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-900 text-[10px] font-extrabold tracking-wider uppercase border border-sky-200/80">
+              {isUmkm ? "Pekerjaan" : "Katalog Proyek"}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {isUmkm
                 ? "Jobs you posted on Makarya"
+                ? "Proyek yang Anda Kelola di Makarya"
                 : "Peluang Proyek Terkurasi"}
             </h2>
           </div>
