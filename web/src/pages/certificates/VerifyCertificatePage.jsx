@@ -41,7 +41,7 @@ export function VerifyCertificatePage() {
         console.error("Gagal memverifikasi sertifikat:", err);
         setError(
           err.response?.data?.detail ||
-            "Sertifikat dengan ID kredensial ini tidak ditemukan atau belum terdaftar resmi."
+            "Sertifikat dengan ID kredensial ini tidak ditemukan atau belum terdaftar resmi.",
         );
       } finally {
         setLoading(false);
@@ -129,7 +129,11 @@ export function VerifyCertificatePage() {
           </p>
           <div className="pt-2">
             <Link to="/talents">
-              <Button variant="secondary" size="sm" className="text-xs font-bold">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="text-xs font-bold"
+              >
                 Jelajahi Direktori Talenta
               </Button>
             </Link>
@@ -148,7 +152,8 @@ export function VerifyCertificatePage() {
                   Sertifikat Resmi Terverifikasi
                 </h3>
                 <p className="text-xs text-emerald-700 font-medium">
-                  Kredensial ini valid dan diterbitkan oleh platform Makarya untuk portofolio industri & konversi SKS MBKM.
+                  Kredensial ini valid dan diterbitkan oleh platform Makarya
+                  untuk portofolio industri & konversi SKS MBKM.
                 </p>
               </div>
             </div>
@@ -203,28 +208,35 @@ export function VerifyCertificatePage() {
               </div>
 
               <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed pt-2">
-                Telah menuntaskan seluruh penugasan kerja secara profesional dan memenuhi standar kepuasan mitra industri dengan peran:
+                Telah menuntaskan seluruh penugasan kerja secara profesional dan
+                memenuhi standar kepuasan mitra industri dengan peran:
               </p>
 
               {/* Role & Project Summary */}
               <div className="bg-slate-50 border border-border/80 rounded-2xl p-5 max-w-lg mx-auto text-left space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-muted">Peran Penugasan</span>
+                  <span className="text-xs font-semibold text-muted">
+                    Peran Penugasan
+                  </span>
                   <Badge variant="brand" className="font-bold text-xs">
                     {cert.role_name}
                   </Badge>
                 </div>
                 <div className="border-t border-slate-200/80 pt-2 space-y-1">
-                  <span className="text-[11px] font-semibold text-muted block">Nama Proyek Kemitraan</span>
+                  <span className="text-[11px] font-semibold text-muted block">
+                    Nama Proyek Kemitraan
+                  </span>
                   <h4 className="text-sm sm:text-base font-bold text-dark-900">
                     {cert.project_title}
                   </h4>
                 </div>
-                
+
                 {/* Honor & Collaboration Type */}
                 <div className="border-t border-slate-200/80 pt-2 grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-[10px] font-semibold text-muted block">Honor Peran Terverifikasi</span>
+                    <span className="text-[10px] font-semibold text-muted block">
+                      Honor Peran Terverifikasi
+                    </span>
                     <span className="font-extrabold text-emerald-700 text-sm flex items-center gap-1 mt-0.5">
                       <Coins className="w-3.5 h-3.5 text-emerald-600" />
                       {cert.honor_amount || cert.slot_budget
@@ -233,10 +245,13 @@ export function VerifyCertificatePage() {
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-semibold text-muted block">Model Penugasan</span>
+                    <span className="text-[10px] font-semibold text-muted block">
+                      Model Penugasan
+                    </span>
                     <span className="font-bold text-slate-800 text-xs inline-flex items-center justify-end gap-1 mt-1">
                       <Users className="w-3.5 h-3.5 text-brand-indigo" />
-                      {cert.collaboration_type === "TIM" || (cert.team_breakdown && cert.team_breakdown.length > 0)
+                      {cert.collaboration_type === "TIM" ||
+                      (cert.team_breakdown && cert.team_breakdown.length > 0)
                         ? `Tim (${cert.team_breakdown?.length || 0} Peran)`
                         : "Individu"}
                     </span>
@@ -246,7 +261,10 @@ export function VerifyCertificatePage() {
                 <div className="border-t border-slate-200/80 pt-2 flex items-center justify-between text-xs text-slate-600">
                   <span className="flex items-center gap-1.5 font-medium">
                     <Building2 className="w-3.5 h-3.5 text-muted" />
-                    Klien Mitra UMKM: <strong className="text-dark-900">{cert.client_name}</strong>
+                    Klien Mitra UMKM:{" "}
+                    <strong className="text-dark-900">
+                      {cert.client_name}
+                    </strong>
                   </span>
                   {cert.project_category && (
                     <Badge variant="outline" className="text-[10px]">
@@ -271,12 +289,16 @@ export function VerifyCertificatePage() {
                     </div>
                     <div className="space-y-1.5 bg-white rounded-xl p-2.5 border border-slate-200/80 text-xs">
                       {cert.team_breakdown.map((member, mIdx) => {
-                        const isCurrentRecipientRole = member.nama_peran?.toLowerCase() === cert.role_name?.toLowerCase();
+                        const isCurrentRecipientRole =
+                          member.nama_peran?.toLowerCase() ===
+                          cert.role_name?.toLowerCase();
                         return (
                           <div
                             key={mIdx}
                             className={`flex items-center justify-between py-1 px-1.5 rounded-lg ${
-                              isCurrentRecipientRole ? "bg-brand-indigo/10 font-bold text-brand-indigo" : "text-slate-600"
+                              isCurrentRecipientRole
+                                ? "bg-brand-indigo/10 font-bold text-brand-indigo"
+                                : "text-slate-600"
                             }`}
                           >
                             <div className="flex items-center gap-1.5 min-w-0">
@@ -309,7 +331,8 @@ export function VerifyCertificatePage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-indigo hover:underline"
                   >
-                    Lihat Hasil Karya Terkait Proyek <ExternalLink className="w-3.5 h-3.5" />
+                    Lihat Hasil Karya Terkait Proyek{" "}
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
               )}

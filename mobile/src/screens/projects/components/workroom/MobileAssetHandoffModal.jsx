@@ -19,6 +19,8 @@ export function MobileAssetHandoffModal({
   onConfirm,
   projectTitle,
   budgetAmount = 0,
+  roleName,
+  submitterName,
   loading = false,
 }) {
   const [checklist, setChecklist] = useState({
@@ -123,13 +125,29 @@ export function MobileAssetHandoffModal({
               <Text style={styles.summaryTitle} numberOfLines={1}>
                 {projectTitle}
               </Text>
+              {(roleName || submitterName) && (
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
+                  {roleName ? (
+                    <View style={{ backgroundColor: "rgba(79, 70, 229, 0.08)", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                      <Text style={{ fontSize: 10, fontFamily: FONTS.displayBold, color: "#4F46E5" }}>
+                        Peran: {roleName}
+                      </Text>
+                    </View>
+                  ) : null}
+                  {submitterName ? (
+                    <Text style={{ fontSize: 10.5, fontFamily: FONTS.bodyMedium, color: "#334155" }}>
+                      Talenta: <Text style={{ fontFamily: FONTS.displayBold }}>{submitterName}</Text>
+                    </Text>
+                  ) : null}
+                </View>
+              )}
               <View style={styles.summaryDivider} />
               <View style={styles.summaryRow}>
                 <Text style={styles.summarySub}>
                   Total Honor yang Dicairkan:
                 </Text>
                 <Text style={styles.summaryAmount}>
-                  Rp {formatCurrency(budgetAmount)}
+                  {formatCurrency(budgetAmount)}
                 </Text>
               </View>
             </View>

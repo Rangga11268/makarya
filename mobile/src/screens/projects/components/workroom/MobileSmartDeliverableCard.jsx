@@ -201,14 +201,38 @@ export function MobileSmartDeliverableCard({
             <Text style={styles.campusText} numberOfLines={1}>
               {submitterKampus} / {submitterProdi}
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                marginTop: 2,
+              }}
+            >
               <Text style={styles.metaSubtext}>
                 {statusSubtext} ({formatDate(dateSubmitted)})
               </Text>
-              {(submission.honor_amount || submission.slot_budget) ? (
-                <View style={{ backgroundColor: "#ECFDF5", paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, borderWidth: 1, borderColor: "#A7F3D0" }}>
-                  <Text style={{ fontSize: 9, fontFamily: FONTS.displayBold, color: "#047857" }}>
-                    {formatCurrency(submission.honor_amount || submission.slot_budget)}
+              {submission.honor_amount || submission.slot_budget ? (
+                <View
+                  style={{
+                    backgroundColor: "#ECFDF5",
+                    paddingHorizontal: 5,
+                    paddingVertical: 1,
+                    borderRadius: 4,
+                    borderWidth: 1,
+                    borderColor: "#A7F3D0",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 9,
+                      fontFamily: FONTS.displayBold,
+                      color: "#047857",
+                    }}
+                  >
+                    {formatCurrency(
+                      submission.honor_amount || submission.slot_budget,
+                    )}
                   </Text>
                 </View>
               ) : null}

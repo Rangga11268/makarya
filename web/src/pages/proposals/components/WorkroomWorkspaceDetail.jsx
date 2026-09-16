@@ -652,7 +652,8 @@ export function WorkroomWorkspaceDetail({
             </div>
 
             {/* Formasi Peran & Alokasi Pagu Anggaran Awal Klien */}
-            {(selectedProject?.tipe_kolaborasi === "TIM" || (selectedProject?.slots && selectedProject.slots.length > 0)) ? (
+            {selectedProject?.tipe_kolaborasi === "TIM" ||
+            (selectedProject?.slots && selectedProject.slots.length > 0) ? (
               <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/80 pb-2.5">
                   <div className="flex items-center gap-2">
@@ -662,26 +663,39 @@ export function WorkroomWorkspaceDetail({
                         Alokasi Pagu & Honor Formasi Tim Awal Klien
                       </h4>
                       <p className="text-[10px] text-muted">
-                        Pembagian honor dan tanggung jawab spesifik per talenta sesuai rancangan awal proyek oleh Klien UMKM
+                        Pembagian honor dan tanggung jawab spesifik per talenta
+                        sesuai rancangan awal proyek oleh Klien UMKM
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-muted uppercase">Total Pagu:</span>
+                    <span className="text-[10px] font-bold text-muted uppercase">
+                      Total Pagu:
+                    </span>
                     <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">
-                      {formatCurrency(selectedProject?.budget_max || selectedProposal?.project_budget_max || 0)}
+                      {formatCurrency(
+                        selectedProject?.budget_max ||
+                          selectedProposal?.project_budget_max ||
+                          0,
+                      )}
                     </span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                   {(selectedProject?.slots || []).map((slot, sIdx) => {
-                    const isMySlot = !isUmkm && (
-                      (selectedProposal?.slot_id && slot.id === selectedProposal.slot_id) ||
-                      (assignedRoleName && slot.nama_peran?.toLowerCase() === assignedRoleName?.toLowerCase())
-                    );
+                    const isMySlot =
+                      !isUmkm &&
+                      ((selectedProposal?.slot_id &&
+                        slot.id === selectedProposal.slot_id) ||
+                        (assignedRoleName &&
+                          slot.nama_peran?.toLowerCase() ===
+                            assignedRoleName?.toLowerCase()));
                     const isCompleted = slot.status === "COMPLETED";
-                    const isFilled = slot.status === "IN_PROGRESS" || slot.status === "COMPLETED" || slot.accepted_mhs_id;
+                    const isFilled =
+                      slot.status === "IN_PROGRESS" ||
+                      slot.status === "COMPLETED" ||
+                      slot.accepted_mhs_id;
 
                     return (
                       <div
@@ -694,7 +708,9 @@ export function WorkroomWorkspaceDetail({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className={`w-2 h-2 rounded-full shrink-0 ${isCompleted ? "bg-emerald-500" : isFilled ? "bg-blue-500" : "bg-slate-300"}`} />
+                            <span
+                              className={`w-2 h-2 rounded-full shrink-0 ${isCompleted ? "bg-emerald-500" : isFilled ? "bg-blue-500" : "bg-slate-300"}`}
+                            />
                             <span className="text-xs font-bold text-dark-900 truncate">
                               {slot.nama_peran}
                             </span>
@@ -718,15 +734,23 @@ export function WorkroomWorkspaceDetail({
                         <div className="pt-1.5 border-t border-border/60 flex items-center justify-between text-[10px] text-slate-500">
                           <span>
                             {slot.accepted_mhs_nama ? (
-                              <strong className="text-dark-900 font-semibold">{slot.accepted_mhs_nama}</strong>
+                              <strong className="text-dark-900 font-semibold">
+                                {slot.accepted_mhs_nama}
+                              </strong>
                             ) : isFilled ? (
                               "Talenta Terpilih"
                             ) : (
                               "Menunggu Pelamar"
                             )}
                           </span>
-                          <span className={`font-semibold ${isCompleted ? "text-emerald-700" : isFilled ? "text-blue-700" : "text-slate-400"}`}>
-                            {isCompleted ? "Selesai & Lunas" : isFilled ? "Pengerjaan Aktif" : "Slot Terbuka"}
+                          <span
+                            className={`font-semibold ${isCompleted ? "text-emerald-700" : isFilled ? "text-blue-700" : "text-slate-400"}`}
+                          >
+                            {isCompleted
+                              ? "Selesai & Lunas"
+                              : isFilled
+                                ? "Pengerjaan Aktif"
+                                : "Slot Terbuka"}
                           </span>
                         </div>
                       </div>
@@ -747,12 +771,16 @@ export function WorkroomWorkspaceDetail({
                     {formatCurrency(
                       isUmkm
                         ? selectedProject?.budget_max
-                        : selectedProposal?.harga_tawar || selectedProject?.budget_max || 0
+                        : selectedProposal?.harga_tawar ||
+                            selectedProject?.budget_max ||
+                            0,
                     )}
                   </span>
                 </div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  Pengerjaan proyek berbasis individu dengan pagu kompensasi tunggal yang telah disetujui bersama antara Klien UMKM dan Mahasiswa Pelaksana.
+                  Pengerjaan proyek berbasis individu dengan pagu kompensasi
+                  tunggal yang telah disetujui bersama antara Klien UMKM dan
+                  Mahasiswa Pelaksana.
                 </p>
               </div>
             )}
@@ -1657,26 +1685,65 @@ export function WorkroomWorkspaceDetail({
       />
 
       {/* Official Asset Handoff Protocol Modal (Before Escrow Payout) */}
-      <AssetHandoffModal
-        isOpen={handoffModalOpen}
-        onClose={() => setHandoffModalOpen(false)}
-        onConfirm={async () => {
-          try {
-            setApprovalLoading(true);
-            if (handleApproveWork && pendingSubmissionId) {
-              await handleApproveWork(pendingSubmissionId);
-            }
-            setHandoffModalOpen(false);
-          } finally {
-            setApprovalLoading(false);
+      {(() => {
+        const targetSub = effectiveSubmissions.find(
+          (s) => s.id === pendingSubmissionId,
+        );
+        const resolvedRole = targetSub?.role_name || assignedRoleName;
+        const resolvedSubmitter =
+          targetSub?.submitter_name || (isUmkm ? activePartnerName : undefined);
+
+        let resolvedBudget = 0;
+        if (targetSub?.honor_amount || targetSub?.slot_budget) {
+          resolvedBudget = targetSub.honor_amount || targetSub.slot_budget;
+        } else if (resolvedRole && selectedProject?.slots) {
+          const matchedSlot = selectedProject.slots.find(
+            (s) => s.nama_peran?.toLowerCase() === resolvedRole?.toLowerCase(),
+          );
+          if (matchedSlot?.alokasi_budget) {
+            resolvedBudget = matchedSlot.alokasi_budget;
           }
-        }}
-        projectTitle={activeProjectTitle}
-        budgetAmount={
-          isUmkm ? selectedProject?.budget_max : selectedProposal?.harga_tawar
         }
-        loading={approvalLoading}
-      />
+
+        if (!resolvedBudget) {
+          if (isUmkm) {
+            if (
+              selectedProject?.tipe_kolaborasi === "TIM" &&
+              selectedProject?.slots?.length > 0
+            ) {
+              resolvedBudget = selectedProject.slots[0].alokasi_budget;
+            } else {
+              resolvedBudget = selectedProject?.budget_max || 0;
+            }
+          } else {
+            resolvedBudget =
+              selectedProposal?.harga_tawar || selectedProject?.budget_max || 0;
+          }
+        }
+
+        return (
+          <AssetHandoffModal
+            isOpen={handoffModalOpen}
+            onClose={() => setHandoffModalOpen(false)}
+            onConfirm={async () => {
+              try {
+                setApprovalLoading(true);
+                if (handleApproveWork && pendingSubmissionId) {
+                  await handleApproveWork(pendingSubmissionId);
+                }
+                setHandoffModalOpen(false);
+              } finally {
+                setApprovalLoading(false);
+              }
+            }}
+            projectTitle={activeProjectTitle}
+            roleName={resolvedRole}
+            submitterName={resolvedSubmitter}
+            budgetAmount={resolvedBudget}
+            loading={approvalLoading}
+          />
+        );
+      })()}
     </div>
   );
 }

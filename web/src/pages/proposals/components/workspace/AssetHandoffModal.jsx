@@ -16,6 +16,8 @@ export function AssetHandoffModal({
   onConfirm,
   projectTitle,
   budgetAmount = 0,
+  roleName,
+  submitterName,
   loading = false,
 }) {
   const [checklist, setChecklist] = useState({
@@ -84,6 +86,20 @@ export function AssetHandoffModal({
             <p className="text-sm font-bold text-slate-900 line-clamp-1">
               {projectTitle}
             </p>
+            {(roleName || submitterName) && (
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 pt-1">
+                {roleName && (
+                  <span className="px-2 py-0.5 rounded bg-brand-indigo/10 text-brand-indigo font-bold text-[11px] border border-brand-indigo/20">
+                    Peran: {roleName}
+                  </span>
+                )}
+                {submitterName && (
+                  <span className="font-medium text-slate-700">
+                    Talenta: <strong className="text-dark-900">{submitterName}</strong>
+                  </span>
+                )}
+              </div>
+            )}
             <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
               <span className="text-slate-600 font-medium">
                 Total Honor Escrow yang Dicairkan:
