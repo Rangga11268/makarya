@@ -337,28 +337,30 @@ export function SmartDeliverableCard({
 
       {/* UMKM Review Action Buttons (Available for any unapproved submission) */}
       {isUmkm && !isApproved && (
-        <div className="pt-2 flex flex-wrap items-center justify-end gap-2.5 border-t border-slate-100">
+        <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5 border-t border-slate-100">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onRequestRevision && onRequestRevision(submission)}
             disabled={submission.jumlah_revisi >= 2}
-            className="text-xs font-bold border-slate-200 text-slate-800 hover:bg-slate-100"
+            className="text-xs font-semibold border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shadow-2xs rounded-xl h-9 px-3.5 whitespace-nowrap"
           >
-            <RotateCcw className="w-3.5 h-3.5 mr-1 text-amber-600" />
-            {submission.jumlah_revisi >= 2
-              ? "Batas Revisi Habis (2/2)"
-              : `Minta Revisi (${roleName})`}
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-amber-600 shrink-0" />
+            <span>
+              {submission.jumlah_revisi >= 2
+                ? "Batas Revisi Habis"
+                : "Minta Revisi"}
+            </span>
           </Button>
 
           <Button
             variant="brand"
             size="sm"
             onClick={() => onApprove && onApprove(submission)}
-            className="text-xs font-bold shadow-brand bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0"
+            className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs rounded-xl h-9 px-4 whitespace-nowrap border-0 active:scale-98"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-            Setujui & Cairkan Honor ({roleName})
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+            <span>Setujui & Cairkan Honor</span>
           </Button>
         </div>
       )}
