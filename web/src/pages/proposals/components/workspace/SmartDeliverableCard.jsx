@@ -18,6 +18,7 @@ import {
   Eye,
 } from "lucide-react";
 import { formatDate } from "../../../../utils/formatDate";
+import { formatCurrency } from "../../../../utils/formatCurrency";
 import { Button } from "../../../../components/ui/Button";
 import { MediaPreviewModal } from "../../../../components/features/MediaPreviewModal";
 
@@ -219,9 +220,17 @@ export function SmartDeliverableCard({
           </div>
         </div>
 
-        <span className="hidden sm:inline-block text-[11px] font-medium text-slate-400 shrink-0">
-          Pelaksana Slot
-        </span>
+        <div className="flex items-center gap-2">
+          {(submission.honor_amount || submission.slot_budget) && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
+              <span>Alokasi Honor:</span>
+              <span className="text-emerald-950 font-extrabold">{formatCurrency(submission.honor_amount || submission.slot_budget)}</span>
+            </span>
+          )}
+          <span className="hidden sm:inline-block text-[11px] font-medium text-slate-400 shrink-0">
+            Pelaksana Slot
+          </span>
+        </div>
       </div>
 
       {/* Smart Link Card Feature */}
@@ -396,7 +405,12 @@ export function SmartDeliverableCard({
             className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs rounded-xl h-9 px-4 whitespace-nowrap border-0 active:scale-98"
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-            <span>Setujui & Cairkan Honor</span>
+            <span>
+              Setujui & Cairkan Honor{" "}
+              {submission.honor_amount || submission.slot_budget
+                ? `(${formatCurrency(submission.honor_amount || submission.slot_budget)})`
+                : ""}
+            </span>
           </Button>
         </div>
       )}

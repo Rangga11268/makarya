@@ -45,6 +45,8 @@ def format_submission_response(submission: Submission) -> dict:
             submitter_kampus = f"Kampus @{email_domain}"
 
     role_name = slot.nama_peran if slot and slot.nama_peran else "Pelaksana Utama"
+    honor_amount = proposal.harga_tawar if proposal else (slot.alokasi_budget if slot else None)
+    slot_budget = slot.alokasi_budget if slot else (proposal.harga_tawar if proposal else None)
 
     return {
         "id": submission.id,
@@ -61,6 +63,8 @@ def format_submission_response(submission: Submission) -> dict:
         "submitter_kampus": submitter_kampus,
         "submitter_prodi": submitter_prodi,
         "role_name": role_name,
+        "honor_amount": honor_amount,
+        "slot_budget": slot_budget,
     }
 
 

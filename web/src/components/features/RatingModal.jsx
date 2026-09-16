@@ -55,7 +55,10 @@ export function RatingModal({
           ? detail.msg || JSON.stringify(detail)
           : detail || "Gagal memberikan ulasan.";
 
-      if (typeof msg === "string" && msg.toLowerCase().includes("sudah memberikan rating")) {
+      if (
+        typeof msg === "string" &&
+        msg.toLowerCase().includes("sudah memberikan rating")
+      ) {
         addToast("Ulasan dan rating Anda sudah tersimpan.", "success");
         onSuccess?.();
         onClose();

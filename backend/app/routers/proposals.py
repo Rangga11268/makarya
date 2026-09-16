@@ -103,7 +103,12 @@ def submit_proposal(
         )
 
     # Validasi slot jika proyek tim
-    if proposal_request.slot_id:
+    if project.tipe_kolaborasi == "TIM":
+        if not proposal_request.slot_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Untuk proyek tim kolaborasi multi-talenta, Anda wajib memilih salah satu formasi peran (slot peran) yang tersedia."
+            )
         slot = db.query(ProjectSlot).filter(
             ProjectSlot.id == proposal_request.slot_id,
             ProjectSlot.project_id == project.id
@@ -115,12 +120,15 @@ def submit_proposal(
         if proposal_request.harga_tawar > slot.alokasi_budget:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Harga tawar (Rp {proposal_request.harga_tawar:,}) melebihi alokasi budget peran '{slot.nama_peran}' (Rp {slot.alokasi_budget:,})"
+                detail=f"Harga tawar (Rp {proposal_request.harga_tawar:,.0f}) melebihi alokasi budget peran '{slot.nama_peran}' (Rp {slot.alokasi_budget:,.0f})"
             )
     else:
-        # Validasi budget max proyek reguler
+        # Validasi budget max proyek reguler individu
         if proposal_request.harga_tawar > project.budget_max:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Harga tawar (Rp {proposal_request.harga_tawar}) melebihi budget proyek sebesar Rp {project.budget_max}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Harga tawar (Rp {proposal_request.harga_tawar:,.0f}) melebihi budget proyek sebesar Rp {project.budget_max:,.0f}"
+            )
 
     # Cegah lamaran ganda dari mahasiswa yang sama pada proyek/slot yang sama
     filter_expr = [Proposal.project_id == proposal_request.project_id, Proposal.mhs_id == current_user.id]
