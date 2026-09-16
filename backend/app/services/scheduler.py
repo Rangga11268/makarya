@@ -186,12 +186,27 @@ def run_escrow_auto_approval(db: Session):
             if not umkm_wallet or not mhs_wallet:
                 continue
 
-            if umkm_wallet.saldo_escrow < escrow.amount_total:
-                logger.warning(f"Saldo escrow UMKM ({umkm_wallet.saldo_escrow}) kurang dari {escrow.amount_total} untuk escrow {escrow.id}")
-                continue
+            from_escrow = min(umkm_wallet.saldo_escrow, escrow.amount_total)
+            deficit = escrow.amount_total - from_escrow
+
+            if deficit > 0:
+                if umkm_wallet.saldo_aktif < deficit:
+                    logger.warning(
+                        f"Saldo UMKM (Escrow {umkm_wallet.saldo_escrow}, Aktif {umkm_wallet.saldo_aktif}) kurang dari {escrow.amount_total} untuk escrow {escrow.id}"
+                    )
+                    continue
+                umkm_wallet.saldo_aktif -= deficit
+                log_hold = LedgerLog(
+                    wallet_id=umkm_wallet.id,
+                    project_id=project.id,
+                    tipe=TransactionType.HOLD,
+                    nominal=deficit,
+                    keterangan=f"Alokasi pelunasan otomatis dana proyek '{project.judul}' dari saldo aktif",
+                )
+                db.add(log_hold)
 
             # Mutasi saldo
-            umkm_wallet.saldo_escrow -= escrow.amount_total
+            umkm_wallet.saldo_escrow -= from_escrow
             mhs_wallet.saldo_aktif += escrow.amount_talent
 
             # Catat Ledger

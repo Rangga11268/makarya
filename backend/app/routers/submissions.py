@@ -278,14 +278,32 @@ def approve_submission(
         db.add(mhs_wallet)
         db.flush()
 
-    if umkm_wallet.saldo_escrow < honor_amount:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Saldo escrow UMKM ({umkm_wallet.saldo_escrow}) tidak mencukupi untuk mencairkan honor ({honor_amount})",
-        )
+    # Hitung kebutuhan dana pencairan
+    from_escrow = min(umkm_wallet.saldo_escrow, honor_amount)
+    deficit = honor_amount - from_escrow
 
-    # Pindahkan escrow dari UMKM ke saldo aktif Mahasiswa
-    umkm_wallet.saldo_escrow -= honor_amount
+    if deficit > 0:
+        if umkm_wallet.saldo_aktif < deficit:
+            total_tersedia = umkm_wallet.saldo_escrow + umkm_wallet.saldo_aktif
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Saldo Anda tidak mencukupi untuk mencairkan honor proyek (Kebutuhan: Rp {honor_amount:,.0f}, Saldo Escrow: Rp {umkm_wallet.saldo_escrow:,.0f}, Saldo Aktif: Rp {umkm_wallet.saldo_aktif:,.0f}). Silakan top-up saldo aktif Anda di menu Dompet.",
+            )
+        # Ambil sisa defisit langsung dari saldo aktif UMKM
+        umkm_wallet.saldo_aktif -= deficit
+        log_hold = LedgerLog(
+            wallet_id=umkm_wallet.id,
+            project_id=project.id,
+            tipe=TransactionType.HOLD,
+            nominal=deficit,
+            keterangan=f"Alokasi pelunasan dana proyek '{project.judul}' dari saldo aktif",
+        )
+        db.add(log_hold)
+
+    # Kurangi saldo_escrow sebesar yang diambil dari escrow
+    umkm_wallet.saldo_escrow -= from_escrow
+
+    # Tambahkan honor penuh ke saldo aktif Mahasiswa
     mhs_wallet.saldo_aktif += honor_amount
 
     # Catat audit trail transaksi di ledger_logs
