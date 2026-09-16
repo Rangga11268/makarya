@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, Circle, ListChecks, Sparkles, TrendingUp, Check } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  ListChecks,
+  Sparkles,
+  TrendingUp,
+  Check,
+} from "lucide-react";
 import { Badge } from "../../../../components/ui/Badge";
 
 const DEFAULT_MILESTONES = {
@@ -37,13 +44,29 @@ function getMilestonesForRole(roleName, category) {
   const r = (roleName || "").toUpperCase();
   const c = (category || "").toUpperCase();
 
-  if (r.includes("UI") || r.includes("UX") || r.includes("DESIGN") || c.includes("DESAIN")) {
+  if (
+    r.includes("UI") ||
+    r.includes("UX") ||
+    r.includes("DESIGN") ||
+    c.includes("DESAIN")
+  ) {
     return DEFAULT_MILESTONES["UI/UX"];
   }
-  if (r.includes("FRONTEND") || r.includes("WEB") || r.includes("MOBILE") || r.includes("REACT") || r.includes("FLUTTER")) {
+  if (
+    r.includes("FRONTEND") ||
+    r.includes("WEB") ||
+    r.includes("MOBILE") ||
+    r.includes("REACT") ||
+    r.includes("FLUTTER")
+  ) {
     return DEFAULT_MILESTONES.FRONTEND;
   }
-  if (r.includes("BACKEND") || r.includes("API") || r.includes("SERVER") || r.includes("DATABASE")) {
+  if (
+    r.includes("BACKEND") ||
+    r.includes("API") ||
+    r.includes("SERVER") ||
+    r.includes("DATABASE")
+  ) {
     return DEFAULT_MILESTONES.BACKEND;
   }
   return DEFAULT_MILESTONES.DEFAULT;
@@ -59,7 +82,7 @@ export function RoleMilestoneTracker({
   const milestoneKey = `makarya_milestones_${projectId}_${roleName || "default"}`;
   const milestoneList = React.useMemo(
     () => getMilestonesForRole(roleName, category),
-    [roleName, category]
+    [roleName, category],
   );
 
   const [completedIndices, setCompletedIndices] = useState(() => {
@@ -95,7 +118,7 @@ export function RoleMilestoneTracker({
   };
 
   const progressPercent = Math.round(
-    (completedIndices.length / milestoneList.length) * 100
+    (completedIndices.length / milestoneList.length) * 100,
   );
 
   return (
@@ -116,22 +139,20 @@ export function RoleMilestoneTracker({
           </p>
         </div>
 
-        {/* Progress Pill */}
-        <div className="flex items-center gap-3 self-start sm:self-auto bg-slate-50 border border-slate-200/80 px-3.5 py-1.5 rounded-xl">
-          <div className="text-right">
-            <span className="text-[10px] font-bold text-muted block uppercase tracking-wider">
+        {/* Progress Bar Container */}
+        <div className="w-full sm:w-auto min-w-[180px] bg-slate-50 border border-slate-200/80 p-3 sm:px-4 sm:py-2.5 rounded-xl space-y-1.5 self-stretch sm:self-auto shrink-0 shadow-2xs">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
               Progres Kerja
             </span>
-            <span className="text-sm font-black text-dark-900">
+            <span className="text-xs font-black text-dark-900">
               {progressPercent}%
             </span>
           </div>
-          <div className="w-16 h-2.5 bg-slate-200 rounded-full overflow-hidden">
+          <div className="w-full sm:w-36 h-2 bg-slate-200 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                progressPercent === 100
-                  ? "bg-emerald-500"
-                  : "bg-brand-indigo"
+                progressPercent === 100 ? "bg-emerald-500" : "bg-brand-indigo"
               }`}
               style={{ width: `${progressPercent}%` }}
             />
@@ -189,4 +210,3 @@ export function RoleMilestoneTracker({
     </div>
   );
 }
-
