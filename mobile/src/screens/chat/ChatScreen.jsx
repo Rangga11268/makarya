@@ -987,7 +987,7 @@ export function ChatScreen({ route, navigation }) {
                           isMe && { color: "#A7F3D0" },
                         ]}
                       >
-                        ✓ Tawaran Diterima (Proyek Dimulai)
+                        Tawaran Diterima (Proyek Dimulai)
                       </Text>
                     </View>
                   ) : (
@@ -1007,7 +1007,7 @@ export function ChatScreen({ route, navigation }) {
                           isMe && { color: "rgba(255,255,255,0.8)" },
                         ]}
                       >
-                        ✕ Tawaran Ditolak
+                        Tawaran Ditolak
                       </Text>
                     </View>
                   )}
@@ -1229,7 +1229,7 @@ export function ChatScreen({ route, navigation }) {
               <View style={styles.headerSubRow}>
                 <Users size={11} color={COLORS.brandIndigo} />
                 <Text style={styles.headerGroupSubtitle} numberOfLines={1}>
-                  {groupMembers?.length || 2} Anggota • Ketuk lihat roster
+                  {groupMembers?.length || 2} Anggota (Lihat Roster)
                 </Text>
               </View>
             </TouchableOpacity>

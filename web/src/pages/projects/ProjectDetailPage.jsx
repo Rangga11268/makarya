@@ -275,9 +275,10 @@ export function ProjectDetailPage() {
                       {project.match_reasons.map((reason, idx) => (
                         <span
                           key={idx}
-                          className="text-[11px] font-medium text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs"
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800 bg-white px-2.5 py-1 rounded-lg border border-emerald-200/80 shadow-2xs"
                         >
-                          ✓ {reason}
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                          <span>{reason}</span>
                         </span>
                       ))}
                     </div>

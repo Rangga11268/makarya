@@ -15,6 +15,7 @@ import {
   ArrowRight,
   UserCheck,
   Share2,
+  X,
 } from "lucide-react";
 import { ProjectBriefVectorIcon } from "../../../../components/icons/ProjectVectorIcon";
 import { formatCurrency } from "../../../../utils/formatCurrency";
@@ -412,9 +413,10 @@ export function TeamWorkspaceMatrix({
               <button
                 type="button"
                 onClick={() => setIsShareModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold"
+                className="w-7 h-7 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors flex items-center justify-center cursor-pointer"
+                aria-label="Tutup"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

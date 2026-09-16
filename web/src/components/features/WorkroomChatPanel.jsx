@@ -564,8 +564,7 @@ export function WorkroomChatPanel({
                 >
                   <Users className="w-3 h-3 text-brand-indigo shrink-0" />
                   <span className="truncate">
-                    {rosterMembers?.length || 2} Anggota Tim • Ketuk lihat
-                    daftar
+                    {rosterMembers?.length || 2} Anggota Tim (Lihat Roster)
                   </span>
                 </button>
               </div>
@@ -748,10 +747,10 @@ export function WorkroomChatPanel({
                       </span>
                       {m.sender_role_label && (
                         <span
-                          className={`text-[9px] px-1.5 py-0.2 rounded-md font-bold border ${
+                          className={`text-[10px] px-2 py-0.5 rounded-md font-semibold border ${
                             m.sender_role_label === "Project Owner" ||
                             m.sender_role === "UMKM"
-                              ? "bg-amber-50 text-amber-800 border-amber-200"
+                              ? "bg-slate-100 text-slate-700 border-slate-200"
                               : m.sender_role_label.includes("Desain") ||
                                   m.sender_role_label.includes("UI")
                                 ? "bg-purple-50 text-purple-800 border-purple-200"
@@ -762,7 +761,7 @@ export function WorkroomChatPanel({
                           }`}
                         >
                           {m.sender_role_label === "Project Owner"
-                            ? "👑 Owner"
+                            ? "Pemilik Proyek"
                             : m.sender_role_label}
                         </span>
                       )}
@@ -782,11 +781,8 @@ export function WorkroomChatPanel({
                       let offer = {};
                       try {
                         offer = JSON.parse(m.attachment_url || "{}");
-                      } catch (_) {
-                        offer = {
-                          projectTitle:
-                            m.message || "Tawaran Proyek Kolaborasi",
-                        };
+                      } catch {
+                        offer = {};
                       }
                       const offerStatus = (
                         offer.status || "PENDING"
@@ -1036,9 +1032,7 @@ export function WorkroomChatPanel({
                               }`}
                             >
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                              <span>
-                                ✓ Tawaran Diterima (Kolaborasi Dimulai)
-                              </span>
+                              <span>Tawaran Diterima (Kolaborasi Dimulai)</span>
                             </div>
                           ) : (
                             <div
@@ -1049,7 +1043,7 @@ export function WorkroomChatPanel({
                               }`}
                             >
                               <X className="w-3.5 h-3.5 opacity-70 shrink-0" />
-                              <span>✕ Tawaran Ditolak</span>
+                              <span>Tawaran Ditolak</span>
                             </div>
                           )}
                         </div>

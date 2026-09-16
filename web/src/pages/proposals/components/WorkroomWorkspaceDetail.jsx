@@ -337,7 +337,7 @@ export function WorkroomWorkspaceDetail({
               <span className="font-bold text-dark-900">
                 {clientData.namaUsaha}
               </span>
-              <span>•</span>
+              <span className="text-slate-300">/</span>
               <span className="font-extrabold text-emerald-700">
                 {formatCurrency(
                   isUmkm
@@ -346,7 +346,7 @@ export function WorkroomWorkspaceDetail({
                         selectedProject?.budget_max,
                 )}
               </span>
-              <span>•</span>
+              <span className="text-slate-300">/</span>
               <span>
                 {selectedProject?.tipe_kolaborasi === "TIM" ||
                 (selectedProject?.slots && selectedProject.slots.length > 0)
@@ -355,7 +355,7 @@ export function WorkroomWorkspaceDetail({
               </span>
               {isProjectCompleted && (
                 <>
-                  <span>•</span>
+                  <span className="text-slate-300">/</span>
                   <span className="font-bold text-emerald-700">
                     Lunas & Selesai
                   </span>
@@ -883,7 +883,9 @@ export function WorkroomWorkspaceDetail({
           <RoleMilestoneTracker
             projectId={activeProjectId}
             roleName={assignedRoleName}
-            category={selectedProject?.kategori || selectedProposal?.project_kategori}
+            category={
+              selectedProject?.kategori || selectedProposal?.project_kategori
+            }
             isUmkm={isUmkm}
             isProjectCompleted={isProjectCompleted}
           />
@@ -1036,7 +1038,7 @@ export function WorkroomWorkspaceDetail({
                               <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{clientData.bidang}</span>
                             </span>
-                            <span>•</span>
+                            <span className="text-slate-300">/</span>
                             <span className="inline-flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{clientData.kota}</span>
@@ -1108,7 +1110,7 @@ export function WorkroomWorkspaceDetail({
                               <GraduationCap className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{studentData.kampus}</span>
                             </span>
-                            <span>•</span>
+                            <span className="text-slate-300">/</span>
                             <span className="font-medium text-brand-indigo">
                               {studentData.prodi}
                             </span>

@@ -151,7 +151,7 @@ export function InvoiceReceiptModal({
                   "Klien UMKM Terdaftar"}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
-                {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} •{" "}
+                {project.umkm_profile?.bidang_industri || "Usaha Mandiri"},{" "}
                 {project.umkm_profile?.kota || "Indonesia"}
               </p>
             </div>
@@ -167,7 +167,7 @@ export function InvoiceReceiptModal({
                   "Mahasiswa Terverifikasi"}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
-                Pelaksana Proyek • Terverifikasi
+                Pelaksana Proyek (Terverifikasi)
               </p>
             </div>
           </div>

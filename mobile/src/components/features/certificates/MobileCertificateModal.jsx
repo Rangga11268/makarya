@@ -90,8 +90,12 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                 <Award size={32} color={COLORS.primary} />
               </View>
 
-              <Text style={styles.brandSubtitle}>PLATFORM MAKARYA INDONESIA</Text>
-              <Text style={styles.certTitle}>Sertifikat Penyelesaian Proyek</Text>
+              <Text style={styles.brandSubtitle}>
+                PLATFORM MAKARYA INDONESIA
+              </Text>
+              <Text style={styles.certTitle}>
+                Sertifikat Penyelesaian Proyek
+              </Text>
               <Text style={styles.certDescEnglish}>
                 Certificate of Project Completion
               </Text>
@@ -102,8 +106,10 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                 Dengan bangga menyatakan bahwa mahasiswa:
               </Text>
 
-              <Text style={styles.recipientName}>{certificate.recipient_name}</Text>
-              
+              <Text style={styles.recipientName}>
+                {certificate.recipient_name}
+              </Text>
+
               <View style={styles.campusRow}>
                 <GraduationCap size={14} color={COLORS.primary} />
                 <Text style={styles.campusText}>
@@ -112,19 +118,27 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
               </View>
 
               <Text style={styles.completionText}>
-                Telah menuntaskan seluruh penugasan kerja industri dengan standar profesional sebagai:
+                Telah menuntaskan seluruh penugasan kerja industri dengan
+                standar profesional sebagai:
               </Text>
 
               {/* Project & Role Info Box */}
               <View style={styles.infoBox}>
                 <View style={styles.roleTag}>
-                  <Text style={styles.roleTagText}>{certificate.role_name}</Text>
+                  <Text style={styles.roleTagText}>
+                    {certificate.role_name}
+                  </Text>
                 </View>
-                <Text style={styles.projectTitleText}>{certificate.project_title}</Text>
+                <Text style={styles.projectTitleText}>
+                  {certificate.project_title}
+                </Text>
                 <View style={styles.clientRow}>
                   <Building2 size={13} color={COLORS.textSecondary} />
                   <Text style={styles.clientText}>
-                    Mitra UMKM: <Text style={styles.boldText}>{certificate.client_name}</Text>
+                    Mitra UMKM:{" "}
+                    <Text style={styles.boldText}>
+                      {certificate.client_name}
+                    </Text>
                   </Text>
                 </View>
               </View>
