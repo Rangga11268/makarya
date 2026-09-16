@@ -49,6 +49,7 @@ import { SmartDeliverableCard } from "./workspace/SmartDeliverableCard";
 import { AssetHandoffModal } from "./workspace/AssetHandoffModal";
 import { WorkspaceActivityTimeline } from "./workspace/WorkspaceActivityTimeline";
 import { TeamWorkspaceMatrix } from "./workspace/TeamWorkspaceMatrix";
+import { RoleMilestoneTracker } from "./workspace/RoleMilestoneTracker";
 
 export function WorkroomWorkspaceDetail({
   onBack,
@@ -877,6 +878,15 @@ export function WorkroomWorkspaceDetail({
               </Button>
             )}
           </div>
+
+          {/* Interactive Role Milestone Tracker */}
+          <RoleMilestoneTracker
+            projectId={activeProjectId}
+            roleName={assignedRoleName}
+            category={selectedProject?.kategori || selectedProposal?.project_kategori}
+            isUmkm={isUmkm}
+            isProjectCompleted={isProjectCompleted}
+          />
 
           {effectiveSubmissions.length > 0 ? (
             <div className="space-y-4">

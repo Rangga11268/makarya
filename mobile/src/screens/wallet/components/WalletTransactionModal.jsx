@@ -124,19 +124,44 @@ export function WalletTransactionModal({
               </View>
             )}
 
-            {/* Deposit Escrow Badge Info */}
+            {/* Deposit Escrow Badge Info & Channel Selection */}
             {!isWithdraw && (
-              <View style={styles.escrowNoticeBox}>
-                <ShieldCheck size={18} color="#16A34A" />
-                <View style={{ flex: 1, marginLeft: 10 }}>
-                  <Text style={styles.escrowNoticeTitle}>
-                    Proteksi Escrow Penuh
-                  </Text>
-                  <Text style={styles.escrowNoticeText}>
-                    Dana ditahan di rekening penampung resmi Makarya dan hanya
-                    dicairkan ke mahasiswa jika milestone proyek selesai Anda
-                    setujui.
-                  </Text>
+              <View style={{ gap: 12 }}>
+                <View style={styles.escrowNoticeBox}>
+                  <ShieldCheck size={18} color="#16A34A" />
+                  <View style={{ flex: 1, marginLeft: 10 }}>
+                    <Text style={styles.escrowNoticeTitle}>
+                      Proteksi Escrow 100%
+                    </Text>
+                    <Text style={styles.escrowNoticeText}>
+                      Dana ditahan di rekening penampung resmi Makarya dan hanya
+                      dicairkan ke mahasiswa jika milestone proyek selesai Anda
+                      setujui.
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.bankSection}>
+                  <View style={styles.bankSectionHeader}>
+                    <Building2 size={16} color="#2563EB" />
+                    <Text style={styles.bankSectionTitle}>
+                      Saluran Pembayaran (Gateway Sandbox)
+                    </Text>
+                  </View>
+                  <SelectWithOther
+                    label="Metode Pembayaran"
+                    title="Pilih Metode Pembayaran"
+                    options={[
+                      { value: "BCA", label: "BCA Virtual Account" },
+                      { value: "MANDIRI", label: "Mandiri Bill Payment" },
+                      { value: "BRI", label: "BRI Virtual Account (BRIVA)" },
+                      { value: "BNI", label: "BNI Virtual Account" },
+                      { value: "QRIS", label: "QRIS (GoPay, OVO, ShopeePay, DANA)" },
+                    ]}
+                    value={destBank || "BCA"}
+                    onChangeText={setDestBank}
+                    placeholder="Pilih Metode"
+                  />
                 </View>
               </View>
             )}

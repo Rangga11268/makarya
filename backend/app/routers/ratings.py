@@ -31,10 +31,10 @@ def give_rating(body: RatingCreateRequest, db: Session = Depends(get_db), curren
     if project.status != ProjectStatus.DONE:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Rating hanya dapat diberikan untuk proyek yang sudah selesai (DONE)")
 
-    # Cari proposal yang di setujui untuk mengetahui siapa mahasiswa yang mengerjakan proyek
+    # Cari proposal yang disetujui / selesai untuk mengetahui siapa mahasiswa yang mengerjakan proyek
     accepted_proposal = db.query(Proposal).filter(
         Proposal.project_id == body.project_id,
-        Proposal.status == ProposalStatus.ACCEPTED
+        Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED])
     ).first()
     if not accepted_proposal:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal yang disetujui untuk proyek ini tidak ditemukan")

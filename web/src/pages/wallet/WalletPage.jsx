@@ -15,6 +15,8 @@ import { SelectWithOther } from "../../components/ui/SelectWithOther";
 import { BANK_OPTIONS } from "../../constants/formOptions";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { PaymentGatewayModal } from "../../components/features/PaymentGatewayModal";
+import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
 import {
   Wallet as WalletIcon,
   ArrowDownLeft,
@@ -25,6 +27,7 @@ import {
   ExternalLink,
   Search,
   Printer,
+  GraduationCap,
 } from "lucide-react";
 
 export function WalletPage() {
@@ -49,6 +52,8 @@ export function WalletPage() {
   // Modals
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
+  const [paymentGatewayOpen, setPaymentGatewayOpen] = useState(false);
+  const [susModalOpen, setSusModalOpen] = useState(false);
 
   // Top Up state (UMKM)
   const [topUpNominal, setTopUpNominal] = useState("500000");
@@ -102,9 +107,9 @@ export function WalletPage() {
       .catch(() => {});
   }, []);
 
-  // Handle UMKM Top-Up
-  const handleTopUp = async (e) => {
-    e.preventDefault();
+  // Handle UMKM Top-Up: Open Payment Gateway Modal
+  const handleOpenGateway = (e) => {
+    if (e) e.preventDefault();
     const nominal = parseInt(topUpNominal, 10);
     if (!nominal || nominal < 50000) {
       showError(
@@ -113,55 +118,24 @@ export function WalletPage() {
       );
       return;
     }
+    setTopUpModalOpen(false);
+    setPaymentGatewayOpen(true);
+  };
 
+  const handleGatewaySuccess = async (nominal) => {
     try {
-      setTopUpLoading(true);
-      const res = await walletApi.topUp(nominal);
-      const { snap_token, redirect_url, order_id } = res.data;
-
-      // Jika Midtrans Snap script terpasang di window
-      if (window.snap && snap_token) {
-        window.snap.pay(snap_token, {
-          onSuccess: function (result) {
-            setTopUpModalOpen(false);
-            showSuccess(
-              "Top-Up Berhasil Diproses",
-              `Deposit saldo ${formatCurrency(nominal)} berhasil masuk.`,
-            );
-            fetchWalletData();
-          },
-          onPending: function (result) {
-            setTopUpModalOpen(false);
-            showSuccess(
-              "Menunggu Pembayaran",
-              `Selesaikan pembayaran via VA/QRIS sebelum batas waktu.`,
-            );
-            fetchWalletData();
-          },
-          onError: function (result) {
-            showError("Top-Up Gagal", "Transaksi gagal diproses oleh gateway.");
-          },
-          onClose: function () {
-            addToast("Pembayaran dibatalkan atau popup ditutup.", "info");
-          },
-        });
-      } else {
-        // Fallback demo/sandbox tanpa script CDN snap aktif
-        setTopUpModalOpen(false);
-        showSuccess(
-          "Simulasi Top-Up Berhasil",
-          `Order ID ${order_id} sebesar ${formatCurrency(nominal)} berhasil diproses via simulasi.`,
-        );
-        fetchWalletData();
-      }
+      await walletApi.topUp(nominal);
+      showSuccess(
+        "Deposit Saldo Berhasil",
+        `Saldo sebesar ${formatCurrency(nominal)} berhasil ditambahkan ke akun Anda.`,
+      );
+      fetchWalletData();
     } catch (err) {
       showError(
-        "Gagal Memproses Top-Up",
-        err.response?.data?.detail ||
-          "Terjadi kendala pada gateway pembayaran.",
+        "Gagal Menyelesaikan Deposit",
+        err.response?.data?.detail || "Terjadi kesalahan saat memproses saldo.",
       );
-    } finally {
-      setTopUpLoading(false);
+      throw err;
     }
   };
 
@@ -293,6 +267,16 @@ export function WalletPage() {
 
         {/* Quick Action Button Header */}
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="md"
+            onClick={() => setSusModalOpen(true)}
+            className="text-xs font-semibold"
+          >
+            <GraduationCap className="w-4 h-4 mr-1.5 text-brand-indigo" />
+            Pengujian SUS (Skripsi)
+          </Button>
+
           {isUmkm ? (
             <Button
               variant="brand"
@@ -805,7 +789,7 @@ export function WalletPage() {
         onClose={() => setTopUpModalOpen(false)}
         title="Deposit Saldo Operasional UMKM"
       >
-        <form onSubmit={handleTopUp} className="space-y-4 font-sans">
+        <form onSubmit={handleOpenGateway} className="space-y-4 font-sans">
           <div className="p-3 bg-brand-indigo-light/30 border border-brand-indigo/20 rounded-xl text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-brand-indigo">
               <ShieldCheck className="w-4 h-4" />
@@ -858,14 +842,30 @@ export function WalletPage() {
               type="submit"
               variant="brand"
               size="md"
-              loading={topUpLoading}
               className="text-xs font-bold shadow-brand"
             >
-              Konfirmasi Top-Up
+              Lanjut ke Pembayaran Gateway
             </Button>
           </div>
         </form>
       </Modal>
+
+      {/* Payment Gateway Sandbox Simulator Modal */}
+      <PaymentGatewayModal
+        isOpen={paymentGatewayOpen}
+        onClose={() => setPaymentGatewayOpen(false)}
+        nominal={topUpNominal}
+        onSuccess={handleGatewaySuccess}
+        userName={user?.nama_lengkap || user?.nama_usaha || user?.email}
+      />
+
+      {/* Thesis SUS Evaluation Modal */}
+      <SystemUsabilityScaleModal
+        isOpen={susModalOpen}
+        onClose={() => setSusModalOpen(false)}
+        currentUserRole={user?.role || "Pengguna"}
+        currentUserName={user?.nama_lengkap || user?.email}
+      />
     </div>
   );
 }

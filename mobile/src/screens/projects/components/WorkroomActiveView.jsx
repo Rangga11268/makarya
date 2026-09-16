@@ -41,6 +41,7 @@ import { MobileSmartDeliverableCard } from "./workroom/MobileSmartDeliverableCar
 import { MobileAssetHandoffModal } from "./workroom/MobileAssetHandoffModal";
 import { MobileActivityTimeline } from "./workroom/MobileActivityTimeline";
 import { MobileTeamMatrix } from "./workroom/MobileTeamMatrix";
+import { MobileRoleMilestoneTracker } from "./workroom/MobileRoleMilestoneTracker";
 
 export function WorkroomActiveView({
   project,
@@ -406,6 +407,15 @@ export function WorkroomActiveView({
         {/* TAB 1: DELIVERABLE & REVISI */}
         {activeTab === "deliverable" && (
           <View style={styles.tabContentWrap}>
+            {/* Milestone Tracker per Role */}
+            <MobileRoleMilestoneTracker
+              projectId={project?.id}
+              roleName={myExistingProposal?.slot_nama_peran || project?.slots?.[0]?.nama_peran}
+              category={project?.kategori}
+              isUmkmOwner={isUmkmOwner}
+              isProjectCompleted={isProjectCompleted}
+            />
+
             {submissions.length === 0 ? (
               <View style={styles.emptySubmissionCard}>
                 {isProjectCompleted ? (

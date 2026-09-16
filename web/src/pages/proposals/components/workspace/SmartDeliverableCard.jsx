@@ -15,9 +15,11 @@ import {
   Building2,
   Sparkles,
   Award,
+  Eye,
 } from "lucide-react";
 import { formatDate } from "../../../../utils/formatDate";
 import { Button } from "../../../../components/ui/Button";
+import { MediaPreviewModal } from "../../../../components/features/MediaPreviewModal";
 
 /**
  * Detect URL service and provide Apple-styled metadata
@@ -129,6 +131,8 @@ export function SmartDeliverableCard({
     : isRevisionRequested
       ? `Revisi (${submission.jumlah_revisi || 1}/2)`
       : "Menunggu Review";
+
+  const [previewOpen, setPreviewOpen] = React.useState(false);
 
   const linkMeta = getSmartLinkMeta(fileUrl);
   const sourceLinkMeta = sourceUrl ? getSmartLinkMeta(sourceUrl) : null;
@@ -249,15 +253,26 @@ export function SmartDeliverableCard({
             </div>
           </div>
 
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
-          >
-            <span>{linkMeta.actionText}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setPreviewOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+            >
+              <Eye className="w-3.5 h-3.5 text-brand-indigo" />
+              <span>Pratinjau</span>
+            </button>
+
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
+            >
+              <span>{linkMeta.actionText}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
       )}
 
@@ -383,6 +398,15 @@ export function SmartDeliverableCard({
           </Button>
         </div>
       )}
+
+      {/* In-App Live Media Preview Modal */}
+      <MediaPreviewModal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        url={fileUrl}
+        title={linkMeta.title}
+        roleName={roleName}
+      />
     </div>
   );
 }

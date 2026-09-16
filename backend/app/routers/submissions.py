@@ -87,7 +87,7 @@ def submit_work(
         .filter(
             Proposal.project_id == project.id,
             Proposal.mhs_id == current_user.id,
-            Proposal.status == ProposalStatus.ACCEPTED,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
         )
         .first()
     )

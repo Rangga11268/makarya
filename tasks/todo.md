@@ -1,33 +1,30 @@
-# Task Breakdown: Portofolio Showcase & Sertifikat Digital Proyek
+# Task Breakdown: Bug Fix & Advanced Roadmap Features (Makarya)
 
-## Task 1: Backend Certificate Model & Schemas
-- [ ] Buat `backend/app/models/certificate.py` dengan field `credential_id`, `mhs_id`, `project_id`, `proposal_id`, `role_name`, `project_title`, `client_name`, `issued_at`, `is_showcase`, `showcase_description`, `showcase_url`.
-- [ ] Daftarkan model di `backend/app/models/__init__.py`.
-- [ ] Buat `backend/app/schemas/certificate.py` (`CertificateResponse`, `CertificateToggleShowcaseRequest`, `CertificateVerifyResponse`).
+## Task 1: Fix Deliverable Visibility Bug for Mahasiswa (Root Cause Fix)
+- [x] Backend: Update all proposal status queries across `submissions.py`, `projects.py`, `chat.py`, `auth.py`, `talents.py`, `ratings.py`, and `disputes.py` from `Proposal.status == ProposalStatus.ACCEPTED` to `Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED])`.
+- [x] Web: In `ProposalBoardPage.jsx`, ensure `accepted` filter includes `COMPLETED`, ensuring `mhsSubmissions[p.project_id]` is always populated.
+- [x] Mobile: In `ProjectDetailScreen.jsx` and `WorkroomActiveView.jsx`, use `getAllByProject` fallback to `getByProject` and render deliverable cards reliably for both active and completed states.
 
-## Task 2: Backend Certificate Router & Auto-Issuance
-- [ ] Buat `backend/app/routers/certificates.py` dengan endpoint:
-  - `GET /certificates/my` (Daftar sertifikat milik mahasiswa login)
-  - `PATCH /certificates/{id}/toggle-showcase` (Toggle tampil di portofolio publik & update deskripsi showcase)
-  - `GET /certificates/verify/{credential_id}` (Verifikasi keaslian sertifikat untuk publik/dosen)
-  - `GET /certificates/user/{user_id}/showcase` (Daftar sertifikat & portofolio publik milik seorang mahasiswa)
-- [ ] Tambahkan pemanggilan auto-issuance sertifikat di `approve_submission` (`backend/app/routers/submissions.py`).
-- [ ] Daftarkan router di `backend/app/main.py`.
+## Task 2: Role-based Kanban & Milestone Progress Tracker
+- [x] Web: Add interactive milestone tracker in `WorkroomWorkspaceDetail.jsx` allowing students to check off subtasks per role and UMKM to track real-time progress.
+- [x] Mobile: Add milestone checklist in `WorkroomActiveView.jsx` (Mobile).
 
-## Task 3: Web Frontend API & Certificate Viewer Modal
-- [ ] Tambahkan `certificateApi` di `web/src/api/index.js`.
-- [ ] Buat `web/src/components/features/CertificateViewModal.jsx` dengan desain sertifikat resmi, credential ID, QR Code verifikasi, tombol Cetak/Unduh PDF, dan salin link verifikasi.
+## Task 3: Live In-App Document & Media Previewer
+- [x] Web: Create `MediaPreviewModal.jsx` for instant in-app viewing of image deliverables, PDF documents, video walkthroughs, and embedded Figma/live links.
+- [x] Mobile: In-app preview trigger in deliverable card.
 
-## Task 4: Web Portfolio & Talent Showcase UI
-- [ ] Perbarui `web/src/pages/portfolio/PortfolioPage.jsx` untuk menampilkan daftar proyek selesai, sertifikat digital, tombol lihat sertifikat, dan switch toggle showcase publik.
-- [ ] Perbarui `web/src/pages/talents/TalentDetailPage.jsx` untuk menampilkan showcase proyek dan sertifikat terverifikasi dari talenta tersebut.
-- [ ] Tambahkan tautan/banner sertifikat di `WorkroomWorkspaceDetail.jsx` saat proyek berstatus selesai.
+## Task 4: Payment Gateway Sandbox Simulator (Midtrans / Xendit)
+- [x] Web: Create `PaymentGatewayModal.jsx` simulating Virtual Account (BCA, Mandiri, BNI, BRI), QRIS (with simulated scanner/pay button), and E-Wallet (GoPay/ShopeePay) for Wallet Top-Up and Withdrawal.
+- [x] Mobile: Integrate interactive payment gateway simulator in `WalletScreen.jsx` & `WalletTransactionModal.jsx`.
 
-## Task 5: Mobile App Certificate Integration
-- [ ] Tambahkan `certificateApi` di `mobile/src/api/index.js`.
-- [ ] Buat `mobile/src/components/features/certificates/MobileCertificateModal.jsx`.
-- [ ] Integrasikan akses sertifikat di `mobile/src/screens/projects/components/WorkroomActiveView.jsx`.
+## Task 5: Official PDF Invoice & Escrow Receipt Export
+- [x] Web: Official printable/PDF escrow voucher and transaction receipt in `WalletPage.jsx`.
 
-## Task 6: Build Verification & Deployment
-- [ ] Jalankan `npm run build` di `web/` untuk memastikan zero errors.
-- [ ] Commit dan push ke GitHub `main`.
+## Task 6: Thesis Usability (SUS Form) & Security Test Component
+- [x] Web: Create `SystemUsabilityScaleModal.jsx` (10 standard SUS questions with automatic score computation 0-100 & percentile grading) for thesis defense data collection.
+- [x] Add menu shortcut in footer & wallet header for respondents (UMKM and Mahasiswa) to test and generate SUS score reports.
+
+## Task 7: Full Verification & GitHub Deployment
+- [x] Verify Web build with `npm run build`.
+- [x] Verify Python backend compilation.
+- [x] Commit and push all updates to GitHub `main`.

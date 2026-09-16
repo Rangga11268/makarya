@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { SystemUsabilityScaleModal } from "../features/SystemUsabilityScaleModal";
 import {
   GraduationCap,
   ShieldCheck,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 export function Footer() {
+  const [susModalOpen, setSusModalOpen] = useState(false);
   return (
     <footer className="relative bg-[#090D16] text-white border-t border-slate-800/80 font-sans overflow-hidden">
       {/* Ambient Glows */}
@@ -178,6 +180,16 @@ export function Footer() {
                 </span>
               </li>
               <li>
+                <button
+                  type="button"
+                  onClick={() => setSusModalOpen(true)}
+                  className="hover:text-cyan-400 cursor-pointer transition-all inline-flex items-center gap-1.5 text-left text-cyan-300 font-medium hover:translate-x-0.5"
+                >
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>Kuesioner Pengujian SUS (Skripsi)</span>
+                </button>
+              </li>
+              <li>
                 <span className="hover:text-cyan-400 cursor-pointer transition-all inline-block hover:translate-x-0.5">
                   Mediasi Sengketa & Resolusi
                 </span>
@@ -246,6 +258,12 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      {/* SUS Modal */}
+      <SystemUsabilityScaleModal
+        isOpen={susModalOpen}
+        onClose={() => setSusModalOpen(false)}
+      />
     </footer>
   );
 }

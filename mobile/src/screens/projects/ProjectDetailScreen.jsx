@@ -187,7 +187,11 @@ export function ProjectDetailScreen({ route, navigation }) {
 
       // Submission hasil kerja
       promises.push(
-        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
+        submissionApi
+          .getAllByProject(projectId)
+          .catch(() =>
+            submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
+          ),
       );
 
       // Mahasiswa melihat proposal milik diri sendiri

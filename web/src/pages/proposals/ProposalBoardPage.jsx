@@ -181,14 +181,24 @@ export function ProposalBoardPage() {
         const propList = Array.isArray(res.data) ? res.data : [];
         setMyProposals(propList);
 
-        // Load submission for accepted proposals
-        const accepted = propList.filter((p) => p.status === "ACCEPTED");
+        // Load submission for accepted & completed proposals
+        const activeOrCompleted = propList.filter(
+          (p) => p.status === "ACCEPTED" || p.status === "COMPLETED",
+        );
         const subMap = {};
         await Promise.all(
-          accepted.map(async (p) => {
+          activeOrCompleted.map(async (p) => {
             try {
-              const subRes = await submissionApi.getByProject(p.project_id);
-              if (subRes.data) {
+              const subRes = await submissionApi
+                .getAllByProject(p.project_id)
+                .catch(() => submissionApi.getByProject(p.project_id));
+              if (Array.isArray(subRes.data) && subRes.data.length > 0) {
+                // Find submission belonging to this proposal or newest
+                const mySub =
+                  subRes.data.find((s) => s.proposal_id === p.id) ||
+                  subRes.data[0];
+                subMap[p.project_id] = mySub;
+              } else if (subRes.data && subRes.data.id) {
                 subMap[p.project_id] = subRes.data;
               }
             } catch (e) {

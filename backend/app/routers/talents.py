@@ -94,7 +94,7 @@ def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
         .join(Project, Proposal.project_id == Project.id)
         .filter(
             Proposal.mhs_id == mhs.user_id,
-            Proposal.status == ProposalStatus.ACCEPTED,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
             Project.status == ProjectStatus.DONE,
         )
         .count()

@@ -33,7 +33,10 @@ router = APIRouter(prefix="/projects", tags=["Projects"])
 def _resolve_accepted_mhs(proj_id: UUID, db: Session):
     accepted_prop = (
         db.query(Proposal)
-        .filter(Proposal.project_id == proj_id, Proposal.status == ProposalStatus.ACCEPTED)
+        .filter(
+            Proposal.project_id == proj_id,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+        )
         .first()
     )
     if accepted_prop:
@@ -83,7 +86,14 @@ def _build_project_response(
                     m_user = db.query(User).filter(User.id == resolved_mhs_id).first()
                     slot_mhs_nama = m_user.username if m_user and m_user.username else (m_user.email.split("@")[0] if m_user else "Mahasiswa Terpilih")
             else:
-                acc_prop = db.query(Proposal).filter(Proposal.slot_id == s.id, Proposal.status == ProposalStatus.ACCEPTED).first()
+                acc_prop = (
+                    db.query(Proposal)
+                    .filter(
+                        Proposal.slot_id == s.id,
+                        Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+                    )
+                    .first()
+                )
                 if acc_prop:
                     resolved_mhs_id = acc_prop.mhs_id
                     m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == acc_prop.mhs_id).first()
