@@ -39,6 +39,7 @@ import {
   Check,
   User,
   Zap,
+  GraduationCap,
 } from "lucide-react";
 
 function getCategoryVisual(category) {
@@ -634,11 +635,7 @@ export function DashboardPage() {
                   {/* Card Middle: Title & Scope Description */}
                   <div className="space-y-1.5">
                     <Link
-                      to={
-                        isUmkm
-                          ? `/proposals`
-                          : `/projects/${project.id}`
-                      }
+                      to={isUmkm ? `/proposals` : `/projects/${project.id}`}
                       className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-brand-indigo transition-colors line-clamp-2 leading-snug block"
                     >
                       {project.judul}
@@ -675,11 +672,7 @@ export function DashboardPage() {
                       </div>
 
                       <Link
-                        to={
-                          isUmkm
-                            ? `/proposals`
-                            : `/projects/${project.id}`
-                        }
+                        to={isUmkm ? `/proposals` : `/projects/${project.id}`}
                       >
                         <Button
                           variant="outline"
