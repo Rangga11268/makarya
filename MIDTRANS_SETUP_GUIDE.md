@@ -9,6 +9,7 @@ Anda hanya perlu menaruh API Key Midtrans ke dalam file environment `.env`.
 ## 🚀 Langkah Cepat Menaruh API Key
 
 ### 1. Dapatkan API Key dari Midtrans
+
 1. Buka dan masuk ke **[Midtrans Dashboard](https://dashboard.midtrans.com/)** (atau Sandbox: **[dashboard.sandbox.midtrans.com](https://dashboard.sandbox.midtrans.com/)**).
 2. Pastikan Anda berada di mode yang diinginkan (**Environment: Sandbox** untuk uji coba, atau **Production** untuk live).
 3. Buka menu **Settings** > **Access Keys**.
@@ -20,6 +21,7 @@ Anda hanya perlu menaruh API Key Midtrans ke dalam file environment `.env`.
 ---
 
 ### 2. Taruh Key di Backend (`backend/.env`)
+
 Buka file `backend/.env` dan perbarui nilai berikut:
 
 ```env
@@ -31,12 +33,14 @@ MIDTRANS_IS_PRODUCTION=False
 ```
 
 > **Catatan:**
+>
 > - Jika menggunakan mode **Sandbox**, set `MIDTRANS_IS_PRODUCTION=False`.
 > - Jika menggunakan mode **Production**, set `MIDTRANS_IS_PRODUCTION=True`.
 
 ---
 
 ### 3. Taruh Key di Frontend (`web/.env`)
+
 Buka file `web/.env` dan sesuaikan Client Key:
 
 ```env
@@ -66,6 +70,7 @@ Agar status pembayaran dari Midtrans langsung diteruskan secara otomatis ke serv
 ## 🧪 Simulator & Alat Uji Coba Pembayaran (Sandbox)
 
 Saat menguji di mode Sandbox, gunakan simulator resmi Midtrans untuk menyelesaikan pembayaran:
+
 - **Simulator Pembayaran Midtrans**: [https://simulator.sandbox.midtrans.com/](https://simulator.sandbox.midtrans.com/)
   - **BCA Virtual Account Simulator**: Masukkan nomor VA yang muncul di Snap popup untuk disimulasikan lunas.
   - **QRIS / GoPay Simulator**: Scan atau masukkan QR string untuk simulasi sukses.
@@ -74,6 +79,7 @@ Saat menguji di mode Sandbox, gunakan simulator resmi Midtrans untuk menyelesaik
 ---
 
 ## 🛡️ Fitur Keamanan & Anti-Fraud yang Terpasang
+
 - **SHA-512 Signature Hash Verification**: Memverifikasi keaslian setiap data webhook yang masuk menggunakan rumus `SHA512(order_id + status_code + gross_amount + MIDTRANS_SERVER_KEY)`.
-- **Idempotency Guard**: Mencegah penambahan saldo berulang (*double-credit*) untuk satu transaksi yang sama.
+- **Idempotency Guard**: Mencegah penambahan saldo berulang (_double-credit_) untuk satu transaksi yang sama.
 - **Pessimistic Row Lock (`with_for_update`)**: Memastikan konsistensi saldo di database tanpa race conditions.

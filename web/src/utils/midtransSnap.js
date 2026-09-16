@@ -41,13 +41,21 @@ export function loadMidtransSnap(clientKey, isProduction = false) {
       if (window.snap) {
         resolve(window.snap);
       } else {
-        reject(new Error("Midtrans Snap SDK script loaded but window.snap is undefined"));
+        reject(
+          new Error(
+            "Midtrans Snap SDK script loaded but window.snap is undefined",
+          ),
+        );
       }
     };
 
     script.onerror = (err) => {
       snapScriptPromise = null;
-      reject(new Error(`Gagal memuat Midtrans Snap SDK: ${err?.message || "Network Error"}`));
+      reject(
+        new Error(
+          `Gagal memuat Midtrans Snap SDK: ${err?.message || "Network Error"}`,
+        ),
+      );
     };
 
     document.body.appendChild(script);
@@ -63,7 +71,12 @@ export function loadMidtransSnap(clientKey, isProduction = false) {
  * @param {string} clientKey Midtrans Client Key
  * @param {boolean} isProduction Status environment
  */
-export async function payWithSnap(snapToken, callbacks = {}, clientKey = "", isProduction = false) {
+export async function payWithSnap(
+  snapToken,
+  callbacks = {},
+  clientKey = "",
+  isProduction = false,
+) {
   try {
     const snap = await loadMidtransSnap(clientKey, isProduction);
     if (!snap || typeof snap.pay !== "function") {

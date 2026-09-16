@@ -36,3 +36,4 @@ def test_order_id_user_hex_parsing():
     assert parts[0] == "TOPUP"
     parsed_uuid = uuid.UUID(hex=parts[1])
     assert parsed_uuid == original_uuid
+

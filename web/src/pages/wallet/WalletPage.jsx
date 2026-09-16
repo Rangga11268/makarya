@@ -124,7 +124,8 @@ export function WalletPage() {
       setTopUpLoading(true);
       // 1. Request Snap Token dari backend Makarya
       const res = await walletApi.requestTopUp({ nominal });
-      const { snap_token, order_id, client_key, is_production } = res.data || {};
+      const { snap_token, order_id, client_key, is_production } =
+        res.data || {};
 
       setTopUpModalOpen(false);
 
@@ -139,12 +140,12 @@ export function WalletPage() {
                 showSuccess(
                   "Pembayaran Berhasil!",
                   syncRes.data?.message ||
-                    `Saldo sebesar ${formatCurrency(nominal)} berhasil ditambahkan ke dompet Anda.`
+                    `Saldo sebesar ${formatCurrency(nominal)} berhasil ditambahkan ke dompet Anda.`,
                 );
               } catch (syncErr) {
                 showSuccess(
                   "Pembayaran Diterima",
-                  `Pembayaran Anda berhasil diverifikasi. Saldo dompet telah diperbarui.`
+                  `Pembayaran Anda berhasil diverifikasi. Saldo dompet telah diperbarui.`,
                 );
               } finally {
                 fetchWalletData();
@@ -156,7 +157,7 @@ export function WalletPage() {
               } catch (_) {}
               showSuccess(
                 "Menunggu Pembayaran",
-                "Silakan selesaikan pembayaran sesuai instruksi Midtrans."
+                "Silakan selesaikan pembayaran sesuai instruksi Midtrans.",
               );
               fetchWalletData();
             },
@@ -164,7 +165,7 @@ export function WalletPage() {
               showError(
                 "Pembayaran Gagal",
                 err?.status_message ||
-                  "Transaksi pembayaran tidak dapat diselesaikan."
+                  "Transaksi pembayaran tidak dapat diselesaikan.",
               );
             },
             onClose: () => {
@@ -172,7 +173,8 @@ export function WalletPage() {
             },
           },
           client_key || import.meta.env.VITE_MIDTRANS_CLIENT_KEY,
-          is_production ?? (import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === "true")
+          is_production ??
+            import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === "true",
         );
       } else {
         setPaymentGatewayOpen(true);
@@ -188,7 +190,7 @@ export function WalletPage() {
       ) {
         showError(
           "Kredensial Midtrans Belum Diisi",
-          "Silakan masukkan MIDTRANS_SERVER_KEY di backend/.env. Membuka mode simulasi sandbox."
+          "Silakan masukkan MIDTRANS_SERVER_KEY di backend/.env. Membuka mode simulasi sandbox.",
         );
         setTopUpModalOpen(false);
         setPaymentGatewayOpen(true);
