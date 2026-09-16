@@ -1963,34 +1963,34 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 9. BOTTOM CTA CONVERSION BANNER (Exact Axora Layout from Reference)        */}
+      {/* 9. BOTTOM CTA CONVERSION BANNER (Responsive Layout)                       */}
       {/* ========================================================================= */}
-      <section className="py-24 bg-white border-t border-slate-200/80 text-slate-900 relative overflow-hidden">
+      <section className="py-14 sm:py-20 lg:py-24 bg-white border-t border-slate-200/80 text-slate-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Left Content Side */}
-            <div className="lg:col-span-7 space-y-6">
+            <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-center lg:text-left">
               {/* CTA Section Badge */}
               <div className="inline-flex items-center px-3.5 py-1.5 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs font-bold shadow-2xs">
                 <span className="uppercase tracking-wider">MULAI SEKARANG</span>
               </div>
 
               {/* Main Headline */}
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
                 Dapatkan Proyek yang Cocok{" "}
                 <span className="text-cyan-600">
                   Hanya dalam Hitungan Menit.
                 </span>
               </h2>
 
-              <p className="text-sm sm:text-base text-slate-600 max-w-xl leading-relaxed">
+              <p className="text-xs sm:text-sm lg:text-base text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 Daftar dengan email kampus Anda dan segera ajukan penawaran
                 proposal ke berbagai UMKM lokal, atau pasang kebutuhan proyek
                 Anda dengan proteksi escrow 100%.
               </p>
 
               {/* Dual Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() =>
@@ -2002,29 +2002,29 @@ export function LandingPage() {
                         : "/register?role=UMKM",
                     )
                   }
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
+                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all cursor-pointer"
                 >
                   {isAuthenticated ? "Buka Dashboard" : "Mulai Pasang Proyek"}
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate("/projects")}
-                  className="bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-full border border-slate-300 shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
+                  className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-full border border-slate-300 shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer"
                 >
                   Jelajahi Proyek
                 </button>
               </div>
             </div>
 
-            {/* Right Side: Horizontal Stacked Fade Spectrum Gradient Bars (Axora Signature) */}
-            <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[320px] flex flex-col justify-center gap-2.5 overflow-hidden rounded-2xl p-4">
+            {/* Right Side: Horizontal Stacked Fade Spectrum Gradient Bars (Responsive & Hidden on XS to prevent overflow/cutoff) */}
+            <div className="hidden sm:flex lg:col-span-5 relative w-full h-[200px] sm:h-[250px] lg:h-[300px] flex-col justify-center gap-2 sm:gap-2.5 overflow-hidden rounded-2xl p-4 max-w-md mx-auto lg:max-w-none">
               {/* Stacked Horizontal Gradient Strips */}
-              <div className="w-full h-8 bg-gradient-to-r from-transparent via-cyan-100/60 to-cyan-400/80 rounded-full blur-[1px] animate-pulse-glow" />
-              <div className="w-5/6 ml-auto h-9 bg-gradient-to-r from-transparent via-amber-200/50 to-amber-400/80 rounded-full blur-[1px]" />
-              <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-200/60 via-cyan-300/80 to-blue-500/80 rounded-full blur-[1px]" />
-              <div className="w-4/5 ml-auto h-9 bg-gradient-to-r from-transparent via-cyan-200/70 to-teal-400/80 rounded-full blur-[1px]" />
-              <div className="w-full h-8 bg-gradient-to-r from-transparent via-blue-200/50 via-cyan-300/70 to-cyan-500/80 rounded-full blur-[1px] animate-pulse-glow" />
-              <div className="w-3/4 ml-auto h-7 bg-gradient-to-r from-transparent via-amber-200/40 to-amber-400/70 rounded-full blur-[1px]" />
+              <div className="w-full h-7 sm:h-8 bg-gradient-to-r from-transparent via-cyan-100/60 to-cyan-400/80 rounded-full blur-[1px] animate-pulse-glow" />
+              <div className="w-5/6 ml-auto h-8 sm:h-9 bg-gradient-to-r from-transparent via-amber-200/50 to-amber-400/80 rounded-full blur-[1px]" />
+              <div className="w-full h-9 sm:h-10 bg-gradient-to-r from-transparent via-teal-200/60 via-cyan-300/80 to-blue-500/80 rounded-full blur-[1px]" />
+              <div className="w-4/5 ml-auto h-8 sm:h-9 bg-gradient-to-r from-transparent via-cyan-200/70 to-teal-400/80 rounded-full blur-[1px]" />
+              <div className="w-full h-7 sm:h-8 bg-gradient-to-r from-transparent via-blue-200/50 via-cyan-300/70 to-cyan-500/80 rounded-full blur-[1px] animate-pulse-glow" />
+              <div className="w-3/4 ml-auto h-6 sm:h-7 bg-gradient-to-r from-transparent via-amber-200/40 to-amber-400/70 rounded-full blur-[1px]" />
             </div>
           </div>
         </div>
