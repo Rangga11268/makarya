@@ -91,7 +91,8 @@ export const notificationApi = {
 export const certificateApi = {
   getMy: () => api.get("/certificates/my"),
   getByProject: (projectId) => api.get(`/certificates/project/${projectId}`),
-  toggleShowcase: (id, data) => api.patch(`/certificates/${id}/toggle-showcase`, data),
+  toggleShowcase: (id, data) =>
+    api.patch(`/certificates/${id}/toggle-showcase`, data),
   verify: (credentialId) => api.get(`/certificates/verify/${credentialId}`),
   getUserShowcase: (userId) => api.get(`/certificates/user/${userId}/showcase`),
 };

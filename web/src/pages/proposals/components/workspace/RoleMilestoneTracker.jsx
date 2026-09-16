@@ -115,7 +115,10 @@ export function RoleMilestoneTracker({
 
   // Synchronize initialRole changes when props update
   useEffect(() => {
-    if (initialRole && (!selectedRole || !availableRoles.includes(selectedRole))) {
+    if (
+      initialRole &&
+      (!selectedRole || !availableRoles.includes(selectedRole))
+    ) {
       setSelectedRole(initialRole);
     }
   }, [initialRole, availableRoles]);

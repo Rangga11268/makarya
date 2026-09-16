@@ -243,7 +243,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-between">
           {/* 1. Left Section: Logo & Desktop Navigation */}
-          <div className="flex items-center gap-7">
+          <div className="flex items-center gap-4 sm:gap-7 shrink-0">
             {/* Brand Logo with Official Logo WebP */}
             <Link
               to={getHomeTarget()}
@@ -575,32 +575,33 @@ export function Navbar() {
               </div>
             ) : (
               /* Guest Actions */
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <Link
                   to="/login"
-                  className="text-xs font-bold text-slate-700 hover:text-slate-950 px-3.5 py-2 transition-colors select-none whitespace-nowrap min-h-[40px] inline-flex items-center active:scale-[0.98]"
+                  className="hidden md:inline-flex text-xs font-bold text-slate-700 hover:text-slate-950 px-3.5 py-2 transition-colors select-none whitespace-nowrap min-h-[38px] items-center active:scale-[0.98]"
                 >
                   Masuk
                 </Link>
 
                 <Link
                   to="/register?role=UMKM"
-                  className="hidden sm:inline-flex items-center justify-center min-h-[40px] px-5 py-2 rounded-full border border-slate-300 hover:border-slate-800 text-slate-800 text-xs font-bold transition-all bg-white hover:bg-slate-50 shadow-2xs hover:shadow-sm active:scale-[0.98] whitespace-nowrap shrink-0"
+                  className="hidden sm:inline-flex items-center justify-center min-h-[38px] px-4 sm:px-5 py-2 rounded-full border border-slate-300 hover:border-slate-800 text-slate-800 text-xs font-bold transition-all bg-white hover:bg-slate-50 shadow-2xs hover:shadow-sm active:scale-[0.98] whitespace-nowrap shrink-0"
                 >
                   Pasang Proyek
                 </Link>
 
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center min-h-[40px] px-5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+                  className="inline-flex items-center justify-center min-h-[38px] px-3.5 sm:px-5 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
                 >
-                  Daftar Sekarang
+                  <span className="sm:hidden">Daftar</span>
+                  <span className="hidden sm:inline">Daftar Sekarang</span>
                 </Link>
 
                 {/* Mobile Menu Toggle for Guests */}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 ml-0.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 min-h-[38px] min-w-[38px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer"
                   aria-label="Menu"
                 >
                   {mobileMenuOpen ? (

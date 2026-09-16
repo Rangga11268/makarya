@@ -112,7 +112,10 @@ export function MobileRoleMilestoneTracker({
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    if (initialRole && (!selectedRole || !availableRoles.includes(selectedRole))) {
+    if (
+      initialRole &&
+      (!selectedRole || !availableRoles.includes(selectedRole))
+    ) {
       setSelectedRole(initialRole);
     }
   }, [initialRole, availableRoles]);
