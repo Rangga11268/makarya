@@ -10,10 +10,13 @@ import {
   Building2,
   GraduationCap,
   Calendar,
+  Users,
+  Coins,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import { formatDate } from "../../utils/formatDate";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 export function CertificateViewModal({ certificate, isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -152,6 +155,29 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
                     {certificate.project_title}
                   </h4>
                 </div>
+
+                {/* Honor & Collaboration Type */}
+                <div className="border-t border-slate-200/80 pt-2 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-[10px] font-semibold text-muted block">Honor Peran Terverifikasi</span>
+                    <span className="font-extrabold text-emerald-700 text-sm flex items-center gap-1 mt-0.5">
+                      <Coins className="w-3.5 h-3.5 text-emerald-600" />
+                      {certificate.honor_amount || certificate.slot_budget
+                        ? formatCurrency(certificate.honor_amount || certificate.slot_budget)
+                        : "Sesuai Kontrak"}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-semibold text-muted block">Model Penugasan</span>
+                    <span className="font-bold text-slate-800 text-xs inline-flex items-center justify-end gap-1 mt-1">
+                      <Users className="w-3.5 h-3.5 text-brand-indigo" />
+                      {certificate.collaboration_type === "TIM" || (certificate.team_breakdown && certificate.team_breakdown.length > 0)
+                        ? `Tim (${certificate.team_breakdown?.length || 0} Peran)`
+                        : "Individu"}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="border-t border-slate-200/80 pt-2 flex items-center justify-between text-xs text-slate-600">
                   <span className="flex items-center gap-1.5 font-medium">
                     <Building2 className="w-3.5 h-3.5 text-muted" />

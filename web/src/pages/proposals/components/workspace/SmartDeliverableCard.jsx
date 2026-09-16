@@ -224,7 +224,11 @@ export function SmartDeliverableCard({
           {(submission.honor_amount || submission.slot_budget) && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
               <span>Alokasi Honor:</span>
-              <span className="text-emerald-950 font-extrabold">{formatCurrency(submission.honor_amount || submission.slot_budget)}</span>
+              <span className="text-emerald-950 font-extrabold">
+                {formatCurrency(
+                  submission.honor_amount || submission.slot_budget,
+                )}
+              </span>
             </span>
           )}
           <span className="hidden sm:inline-block text-[11px] font-medium text-slate-400 shrink-0">

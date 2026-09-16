@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 class CertificateToggleShowcaseRequest(BaseModel):
@@ -27,6 +28,10 @@ class CertificateResponse(BaseModel):
     showcase_description: Optional[str] = None
     showcase_url: Optional[str] = None
     deliverable_url: Optional[str] = None
+    honor_amount: Optional[Decimal] = None
+    slot_budget: Optional[Decimal] = None
+    total_project_budget: Optional[Decimal] = None
+    collaboration_type: Optional[str] = None
     issued_at: datetime
     created_at: datetime
 
@@ -45,6 +50,11 @@ class CertificateVerifyResponse(BaseModel):
     project_category: Optional[str] = None
     issued_at: datetime
     deliverable_url: Optional[str] = None
+    honor_amount: Optional[Decimal] = None
+    slot_budget: Optional[Decimal] = None
+    total_project_budget: Optional[Decimal] = None
+    collaboration_type: Optional[str] = None
+    team_breakdown: Optional[List[Dict[str, Any]]] = None
     status_text: str = "Resmi Terverifikasi oleh Makarya"
 
     model_config = ConfigDict(from_attributes=True)

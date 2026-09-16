@@ -41,6 +41,7 @@ import {
   Mail,
   Send,
   HelpCircle,
+  Coins,
 } from "lucide-react";
 
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
@@ -649,6 +650,112 @@ export function WorkroomWorkspaceDetail({
                   "Brief kebutuhan proyek resmi yang diterbitkan oleh klien UMKM."}
               </p>
             </div>
+
+            {/* Formasi Peran & Alokasi Pagu Anggaran Awal Klien */}
+            {(selectedProject?.tipe_kolaborasi === "TIM" || (selectedProject?.slots && selectedProject.slots.length > 0)) ? (
+              <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/80 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-brand-indigo" />
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-900">
+                        Alokasi Pagu & Honor Formasi Tim Awal Klien
+                      </h4>
+                      <p className="text-[10px] text-muted">
+                        Pembagian honor dan tanggung jawab spesifik per talenta sesuai rancangan awal proyek oleh Klien UMKM
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-muted uppercase">Total Pagu:</span>
+                    <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">
+                      {formatCurrency(selectedProject?.budget_max || selectedProposal?.project_budget_max || 0)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                  {(selectedProject?.slots || []).map((slot, sIdx) => {
+                    const isMySlot = !isUmkm && (
+                      (selectedProposal?.slot_id && slot.id === selectedProposal.slot_id) ||
+                      (assignedRoleName && slot.nama_peran?.toLowerCase() === assignedRoleName?.toLowerCase())
+                    );
+                    const isCompleted = slot.status === "COMPLETED";
+                    const isFilled = slot.status === "IN_PROGRESS" || slot.status === "COMPLETED" || slot.accepted_mhs_id;
+
+                    return (
+                      <div
+                        key={slot.id || sIdx}
+                        className={`p-3.5 rounded-xl border space-y-2 transition-all ${
+                          isMySlot
+                            ? "bg-brand-indigo/5 border-brand-indigo/40 ring-1 ring-brand-indigo/20"
+                            : "bg-surface border-border"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${isCompleted ? "bg-emerald-500" : isFilled ? "bg-blue-500" : "bg-slate-300"}`} />
+                            <span className="text-xs font-bold text-dark-900 truncate">
+                              {slot.nama_peran}
+                            </span>
+                            {isMySlot && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-brand-indigo text-white shrink-0">
+                                Peran Anda
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs font-extrabold text-emerald-700 font-mono shrink-0">
+                            {formatCurrency(slot.alokasi_budget)}
+                          </span>
+                        </div>
+
+                        {slot.deskripsi_tugas && (
+                          <p className="text-[11px] text-muted leading-relaxed line-clamp-2">
+                            {slot.deskripsi_tugas}
+                          </p>
+                        )}
+
+                        <div className="pt-1.5 border-t border-border/60 flex items-center justify-between text-[10px] text-slate-500">
+                          <span>
+                            {slot.accepted_mhs_nama ? (
+                              <strong className="text-dark-900 font-semibold">{slot.accepted_mhs_nama}</strong>
+                            ) : isFilled ? (
+                              "Talenta Terpilih"
+                            ) : (
+                              "Menunggu Pelamar"
+                            )}
+                          </span>
+                          <span className={`font-semibold ${isCompleted ? "text-emerald-700" : isFilled ? "text-blue-700" : "text-slate-400"}`}>
+                            {isCompleted ? "Selesai & Lunas" : isFilled ? "Pengerjaan Aktif" : "Slot Terbuka"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-2">
+                <div className="flex items-center justify-between border-b border-border/80 pb-2">
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-bold text-dark-900">
+                      Pagu Anggaran & Honor Pelaksana Proyek
+                    </span>
+                  </div>
+                  <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-lg">
+                    {formatCurrency(
+                      isUmkm
+                        ? selectedProject?.budget_max
+                        : selectedProposal?.harga_tawar || selectedProject?.budget_max || 0
+                    )}
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Pengerjaan proyek berbasis individu dengan pagu kompensasi tunggal yang telah disetujui bersama antara Klien UMKM dan Mahasiswa Pelaksana.
+                </p>
+              </div>
+            )}
 
             {/* Quality Standard & Intellectual Property Protection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">

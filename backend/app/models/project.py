@@ -71,6 +71,14 @@ class ProjectSlot(Base):
     project = relationship("Project", back_populates="slots")
     accepted_mhs = relationship("User", foreign_keys=[accepted_mhs_id])
 
+    @property
+    def accepted_mhs_nama(self):
+        if self.accepted_mhs:
+            if self.accepted_mhs.profile_mhs and self.accepted_mhs.profile_mhs.nama_lengkap:
+                return self.accepted_mhs.profile_mhs.nama_lengkap
+            return self.accepted_mhs.username
+        return None
+
 
 class ProjectMilestone(Base):
     __tablename__ = "project_milestones"

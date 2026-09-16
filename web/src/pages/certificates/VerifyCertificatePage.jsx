@@ -5,6 +5,7 @@ import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { formatDate } from "../../utils/formatDate";
+import { formatCurrency } from "../../utils/formatCurrency";
 import {
   ShieldCheck,
   Award,
@@ -17,6 +18,8 @@ import {
   Printer,
   ArrowLeft,
   Copy,
+  Users,
+  Coins,
 } from "lucide-react";
 
 export function VerifyCertificatePage() {
@@ -217,6 +220,29 @@ export function VerifyCertificatePage() {
                     {cert.project_title}
                   </h4>
                 </div>
+                
+                {/* Honor & Collaboration Type */}
+                <div className="border-t border-slate-200/80 pt-2 grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-[10px] font-semibold text-muted block">Honor Peran Terverifikasi</span>
+                    <span className="font-extrabold text-emerald-700 text-sm flex items-center gap-1 mt-0.5">
+                      <Coins className="w-3.5 h-3.5 text-emerald-600" />
+                      {cert.honor_amount || cert.slot_budget
+                        ? formatCurrency(cert.honor_amount || cert.slot_budget)
+                        : "Sesuai Kontrak"}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-semibold text-muted block">Model Penugasan</span>
+                    <span className="font-bold text-slate-800 text-xs inline-flex items-center justify-end gap-1 mt-1">
+                      <Users className="w-3.5 h-3.5 text-brand-indigo" />
+                      {cert.collaboration_type === "TIM" || (cert.team_breakdown && cert.team_breakdown.length > 0)
+                        ? `Tim (${cert.team_breakdown?.length || 0} Peran)`
+                        : "Individu"}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="border-t border-slate-200/80 pt-2 flex items-center justify-between text-xs text-slate-600">
                   <span className="flex items-center gap-1.5 font-medium">
                     <Building2 className="w-3.5 h-3.5 text-muted" />
@@ -228,6 +254,51 @@ export function VerifyCertificatePage() {
                     </Badge>
                   )}
                 </div>
+
+                {/* Team Breakdown Accordion/Card if Team Collaboration */}
+                {cert.team_breakdown && cert.team_breakdown.length > 0 && (
+                  <div className="border-t border-slate-200/80 pt-2 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
+                      <span className="flex items-center gap-1 text-brand-indigo">
+                        <Users className="w-3.5 h-3.5" />
+                        Alokasi Pagu Tim Awal Klien:
+                      </span>
+                      {cert.total_project_budget && (
+                        <span className="text-slate-900 font-extrabold">
+                          Total {formatCurrency(cert.total_project_budget)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-1.5 bg-white rounded-xl p-2.5 border border-slate-200/80 text-xs">
+                      {cert.team_breakdown.map((member, mIdx) => {
+                        const isCurrentRecipientRole = member.nama_peran?.toLowerCase() === cert.role_name?.toLowerCase();
+                        return (
+                          <div
+                            key={mIdx}
+                            className={`flex items-center justify-between py-1 px-1.5 rounded-lg ${
+                              isCurrentRecipientRole ? "bg-brand-indigo/10 font-bold text-brand-indigo" : "text-slate-600"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-brand-indigo shrink-0" />
+                              <span className="truncate">
+                                {member.nama_peran}
+                                {member.mhs_nama && (
+                                  <span className="text-[10px] text-muted font-normal ml-1">
+                                    ({member.mhs_nama})
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <span className="font-mono text-xs shrink-0 font-bold">
+                              {formatCurrency(member.alokasi_budget)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {cert.deliverable_url && (

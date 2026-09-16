@@ -39,3 +39,24 @@ class Certificate(Base):
     mhs = relationship("User", foreign_keys=[mhs_id], backref="certificates")
     project = relationship("Project", backref="certificates")
     proposal = relationship("Proposal", backref="certificate")
+
+    @property
+    def honor_amount(self):
+        if self.proposal:
+            return self.proposal.harga_tawar or (self.proposal.slot.alokasi_budget if self.proposal.slot else None)
+        return self.project.budget_max if self.project else None
+
+    @property
+    def slot_budget(self):
+        if self.proposal and self.proposal.slot:
+            return self.proposal.slot.alokasi_budget
+        return None
+
+    @property
+    def total_project_budget(self):
+        return self.project.budget_max if self.project else None
+
+    @property
+    def collaboration_type(self):
+        return self.project.tipe_kolaborasi if self.project else "INDIVIDU"
+

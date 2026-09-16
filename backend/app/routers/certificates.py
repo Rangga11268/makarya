@@ -212,6 +212,36 @@ def verify_certificate(credential_id: str, db: Session = Depends(get_db)):
             detail=f"Sertifikat dengan ID kredensial '{credential_id}' tidak ditemukan di database resmi Makarya.",
         )
 
+    project = cert.project
+    proposal = cert.proposal
+
+    team_breakdown = None
+    if project and (project.tipe_kolaborasi == "TIM" or (project.slots and len(project.slots) > 0)):
+        team_breakdown = []
+        for s in project.slots:
+            assigned_name = None
+            if s.accepted_mhs_id:
+                mhs_user = db.query(User).filter(User.id == s.accepted_mhs_id).first()
+                if mhs_user:
+                    assigned_name = (
+                        mhs_user.profile_mhs.nama_lengkap
+                        if (mhs_user.profile_mhs and mhs_user.profile_mhs.nama_lengkap)
+                        else mhs_user.username
+                    )
+            team_breakdown.append({
+                "nama_peran": s.nama_peran,
+                "alokasi_budget": s.alokasi_budget,
+                "status": s.status,
+                "mhs_nama": assigned_name,
+            })
+
+    honor = proposal.harga_tawar if proposal and proposal.harga_tawar is not None else (
+        proposal.slot.alokasi_budget if (proposal and proposal.slot) else (project.budget_max if project else None)
+    )
+    slot_budget = proposal.slot.alokasi_budget if (proposal and proposal.slot) else None
+    total_budget = project.budget_max if project else None
+    collab_type = project.tipe_kolaborasi if project else "INDIVIDU"
+
     return {
         "is_valid": True,
         "credential_id": cert.credential_id,
@@ -224,6 +254,11 @@ def verify_certificate(credential_id: str, db: Session = Depends(get_db)):
         "project_category": cert.project_category,
         "issued_at": cert.issued_at,
         "deliverable_url": cert.deliverable_url if cert.is_showcase else None,
+        "honor_amount": honor,
+        "slot_budget": slot_budget,
+        "total_project_budget": total_budget,
+        "collaboration_type": collab_type,
+        "team_breakdown": team_breakdown,
         "status_text": "Resmi Terverifikasi oleh Makarya",
     }
 
