@@ -496,9 +496,6 @@ export function WorkroomActiveView({
                       file_url: sub.url_berkas || sub.file_url,
                       catatan: sub.catatan_pengiriman || sub.catatan,
                     }}
-                    isLatest={idx === 0}
-                    index={idx}
-                    totalSubmissions={submissions.length}
                     isUmkmOwner={isUmkmOwner}
                     isProjectCompleted={isProjectCompleted}
                     onRequestRevision={(item) =>
@@ -513,7 +510,15 @@ export function WorkroomActiveView({
                     <PebbleButton
                       variant="sapphire"
                       size="md"
-                      label="Perbarui Tautan Deliverable"
+                      label={
+                        submissions.some(
+                          (s) =>
+                            s.proposal_id === myExistingProposal?.id ||
+                            s.submitter_name === user?.nama,
+                        )
+                          ? "Perbarui Tautan Deliverable"
+                          : "Unggah Deliverable Peran Anda"
+                      }
                       icon={UploadCloud}
                       onPress={onOpenSubmissionModal}
                     />

@@ -860,15 +860,19 @@ export function WorkroomWorkspaceDetail({
                 variant="brand"
                 size="sm"
                 onClick={() =>
-                  handleOpenSubmission(selectedProposal.project_id)
+                  handleOpenSubmission(selectedProposal?.project_id)
                 }
                 className="text-xs font-bold shadow-brand"
               >
                 <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
                 <span>
-                  {effectiveSubmissions.length > 0
-                    ? "Perbarui Berkas"
-                    : "Unggah Deliverable"}
+                  {effectiveSubmissions.some(
+                    (s) =>
+                      s.proposal_id === selectedProposal?.id ||
+                      s.submitter_name === user?.nama,
+                  )
+                    ? `Perbarui Berkas (${assignedRoleName || "Saya"})`
+                    : `Unggah Deliverable (${assignedRoleName || "Saya"})`}
                 </span>
               </Button>
             )}
@@ -881,17 +885,14 @@ export function WorkroomWorkspaceDetail({
                   key={sub.id || idx}
                   submission={sub}
                   escrow={projectEscrow}
-                  isLatest={idx === 0}
-                  index={idx}
-                  totalSubmissions={effectiveSubmissions.length}
                   isUmkm={isUmkm}
                   isProjectCompleted={isProjectCompleted}
                   onRequestRevision={(item) => {
-                    setSelectedSubmissionForRevision(item || activeDeliverable);
+                    setSelectedSubmissionForRevision(item || sub);
                     setRevisionModalOpen(true);
                   }}
                   onApprove={(item) => {
-                    setPendingSubmissionId(item?.id || activeDeliverable?.id);
+                    setPendingSubmissionId(item?.id || sub?.id);
                     setHandoffModalOpen(true);
                   }}
                 />

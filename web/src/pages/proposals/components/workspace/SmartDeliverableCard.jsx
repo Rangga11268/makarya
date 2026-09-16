@@ -100,9 +100,6 @@ export function getSmartLinkMeta(url) {
 export function SmartDeliverableCard({
   submission,
   escrow,
-  isLatest = true,
-  index = 0,
-  totalSubmissions = 1,
   onApprove,
   onRequestRevision,
   isUmkm = false,
@@ -121,11 +118,15 @@ export function SmartDeliverableCard({
   const submitterProdi = submission.submitter_prodi || "Talenta Digital";
   const roleName = submission.role_name || "Pelaksana Proyek";
 
-  const versionNumber = totalSubmissions - index;
-  const versionLabel =
-    isLatest && isProjectCompleted
-      ? "Versi Final (Disetujui)"
-      : `Deliverable v${versionNumber}${isLatest ? " (Terkini)" : ""}`;
+  const isApproved =
+    submission.status === "APPROVED" || submission.status === "COMPLETED";
+  const isRevisionRequested = submission.status === "REVISION_REQUESTED";
+
+  const statusTag = isApproved
+    ? "Disetujui (Lunas)"
+    : isRevisionRequested
+      ? `Revisi (${submission.jumlah_revisi || 1}/2)`
+      : "Menunggu Review";
 
   const linkMeta = getSmartLinkMeta(fileUrl);
   const sourceLinkMeta = sourceUrl ? getSmartLinkMeta(sourceUrl) : null;
@@ -146,34 +147,16 @@ export function SmartDeliverableCard({
     .join("\n")
     .trim();
 
-  const isApproved =
-    submission.status === "APPROVED" || submission.status === "COMPLETED";
-  const isRevisionRequested = submission.status === "REVISION_REQUESTED";
-
   return (
-    <div
-      className={`rounded-2xl sm:rounded-3xl border transition-all ${
-        isLatest
-          ? "bg-white border-slate-200 shadow-[0_4px_24px_rgba(15,23,42,0.04)] p-4 sm:p-6 space-y-4"
-          : "bg-slate-50/70 border-slate-200/70 p-4 space-y-3 opacity-80 hover:opacity-100"
-      }`}
-    >
-      {/* Top Header Row */}
+    <div className="rounded-2xl sm:rounded-3xl border transition-all bg-white border-slate-200 shadow-[0_4px_24px_rgba(15,23,42,0.04)] p-4 sm:p-6 space-y-4">
+      {/* Top Header Row: Role Slot & Status */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <span
-            className={`px-2 py-0.5 rounded-md text-xs font-bold ${
-              isApproved
-                ? "bg-emerald-600 text-white"
-                : isLatest
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-200 text-slate-700"
-            }`}
-          >
-            {versionLabel}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+            Peran: {roleName}
           </span>
           <span className="text-[11px] font-medium text-slate-500">
-            {formatDate(dateSubmitted)}
+            Diserahkan {formatDate(dateSubmitted)}
           </span>
         </div>
 
@@ -198,7 +181,7 @@ export function SmartDeliverableCard({
         </div>
       </div>
 
-      {/* Submitter Identity & Role In Team */}
+      {/* Submitter Identity Banner */}
       <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           {submitterPhoto ? (
@@ -218,14 +201,12 @@ export function SmartDeliverableCard({
               <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                 {submitterName}
               </span>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white text-slate-700 border border-slate-200 shrink-0">
                 {roleName}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
             <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5 truncate">
               <span className="truncate">{submitterKampus}</span>
-              <span>•</span>
               <span className="text-slate-300">/</span>
               <span className="truncate">{submitterProdi}</span>
             </div>
@@ -233,14 +214,14 @@ export function SmartDeliverableCard({
         </div>
 
         <span className="hidden sm:inline-block text-[11px] font-medium text-slate-400 shrink-0">
-          Pengirim Deliverable
+          Pelaksana Slot
         </span>
       </div>
 
       {/* Smart Link Card Feature */}
       {linkMeta && fileUrl && (
         <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-white border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3 min-w-0">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${linkMeta.iconBg}`}
             >
@@ -339,7 +320,7 @@ export function SmartDeliverableCard({
       )}
 
       {/* Escrow Auto-Approval Protection Banner */}
-      {isLatest && !isApproved && !isRevisionRequested && (
+      {!isApproved && !isRevisionRequested && (
         <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/50 border border-blue-200/80 text-xs space-y-1.5 shadow-2xs">
           <div className="flex items-center gap-2 text-blue-900 font-bold">
             <Clock className="w-4 h-4 text-blue-600 shrink-0" />
@@ -347,14 +328,15 @@ export function SmartDeliverableCard({
           </div>
           <p className="text-slate-600 leading-relaxed text-[11px]">
             Klien UMKM memiliki tenggat 7 hari untuk meninjau atau meminta
-            perbaikan berkas ini. Jika waktu toleransi habis tanpa tanggapan,
-            sistem otomatis mencairkan dana escrow kepada mahasiswa pekerja.
+            perbaikan berkas deliverable untuk peran {roleName} ini. Jika waktu
+            toleransi habis tanpa tanggapan, sistem otomatis mencairkan dana
+            escrow untuk peran ini kepada mahasiswa pekerja.
           </p>
         </div>
       )}
 
-      {/* UMKM Review Action Buttons (Only for Latest and unapproved submission) */}
-      {isUmkm && isLatest && !isApproved && (
+      {/* UMKM Review Action Buttons (Available for any unapproved submission) */}
+      {isUmkm && !isApproved && (
         <div className="pt-2 flex flex-wrap items-center justify-end gap-2.5 border-t border-slate-100">
           <Button
             variant="outline"
@@ -366,7 +348,7 @@ export function SmartDeliverableCard({
             <RotateCcw className="w-3.5 h-3.5 mr-1 text-amber-600" />
             {submission.jumlah_revisi >= 2
               ? "Batas Revisi Habis (2/2)"
-              : "Minta Revisi"}
+              : `Minta Revisi (${roleName})`}
           </Button>
 
           <Button
@@ -376,7 +358,7 @@ export function SmartDeliverableCard({
             className="text-xs font-bold shadow-brand bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0"
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-            Verifikasi & Cairkan Honor
+            Setujui & Cairkan Honor ({roleName})
           </Button>
         </div>
       )}

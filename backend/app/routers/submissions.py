@@ -137,12 +137,12 @@ def get_submission_by_project(
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
-    # Cari semua proposal yang disetujui pada proyek ini
+    # Cari semua proposal yang disetujui / selesai pada proyek ini
     accepted_proposals = (
         db.query(Proposal)
         .filter(
             Proposal.project_id == project_id,
-            Proposal.status == ProposalStatus.ACCEPTED,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
         )
         .all()
     )
@@ -165,13 +165,23 @@ def get_submission_by_project(
             detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini",
         )
 
-    accepted_proposal_ids = [p.id for p in accepted_proposals]
-    submission = (
-        db.query(Submission)
-        .filter(Submission.proposal_id.in_(accepted_proposal_ids))
-        .order_by(Submission.submitted_at.desc())
-        .first()
-    )
+    # Jika pemanggil adalah mahasiswa anggota tim, cari submisi miliknya terlebih dahulu
+    submission = None
+    if current_user.role == UserRole.MHS:
+        my_prop = next((p for p in accepted_proposals if p.mhs_id == current_user.id), None)
+        if my_prop:
+            submission = db.query(Submission).filter(Submission.proposal_id == my_prop.id).first()
+
+    # Jika tidak ada submisi milik sendiri atau pemanggil adalah UMKM, cari submisi terkini dari proyek
+    if not submission:
+        accepted_proposal_ids = [p.id for p in accepted_proposals]
+        submission = (
+            db.query(Submission)
+            .filter(Submission.proposal_id.in_(accepted_proposal_ids))
+            .order_by(Submission.submitted_at.desc())
+            .first()
+        )
+
     if not submission:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -196,7 +206,7 @@ def get_all_submissions_by_project(
         db.query(Proposal)
         .filter(
             Proposal.project_id == project_id,
-            Proposal.status == ProposalStatus.ACCEPTED,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
         )
         .all()
     )
@@ -304,9 +314,34 @@ def approve_submission(
     db.add(log_umkm)
     db.add(log_mhs)
 
-    # Update status proyek dan submission
+    # Update status submission, proposal, dan slot
     submission.status = SubmissionStatus.APPROVED
-    project.status = ProjectStatus.DONE
+    accepted_proposal.status = ProposalStatus.COMPLETED
+
+    if accepted_proposal.slot:
+        accepted_proposal.slot.status = "COMPLETED"
+
+    # Cek apakah seluruh proposal yang diterima di proyek ini sudah selesai/disetujui
+    all_accepted_proposals = (
+        db.query(Proposal)
+        .filter(
+            Proposal.project_id == project.id,
+            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+        )
+        .all()
+    )
+
+    all_proposals_approved = True
+    for p in all_accepted_proposals:
+        p_sub = db.query(Submission).filter(Submission.proposal_id == p.id).first()
+        if not p_sub or p_sub.status != SubmissionStatus.APPROVED:
+            all_proposals_approved = False
+            break
+
+    if all_proposals_approved:
+        project.status = ProjectStatus.DONE
+    else:
+        project.status = ProjectStatus.IN_PROGRESS
 
     # Sinkronisasi status Escrow ke RELEASED
     escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
