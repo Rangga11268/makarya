@@ -223,8 +223,10 @@ export function SmartDeliverableCard({
               </span>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5 truncate">
               <span className="truncate">{submitterKampus}</span>
               <span>•</span>
+              <span className="text-slate-300">/</span>
               <span className="truncate">{submitterProdi}</span>
             </div>
           </div>
