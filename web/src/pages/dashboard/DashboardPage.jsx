@@ -40,6 +40,7 @@ import {
   User,
   Zap,
   GraduationCap,
+  X,
 } from "lucide-react";
 
 function getCategoryVisual(category) {
@@ -47,48 +48,54 @@ function getCategoryVisual(category) {
   if (c.includes("UI") || c.includes("UX")) {
     return {
       icon: CategoryUiUxSvg,
-      bg: "bg-sky-50 text-sky-600 border-sky-100",
+      bg: "bg-[#E0F2FE] text-[#0284C7] border-[#BAE6FD]",
       pillBg: "bg-sky-50 text-sky-700 border-sky-200/80",
       name: "UI/UX & Prototipe",
+      tag: "UI/UX",
     };
   }
   if (c.includes("DESAIN") || c.includes("DESIGN") || c.includes("BRAND")) {
     return {
       icon: CategoryDesignSvg,
-      bg: "bg-indigo-50 text-indigo-600 border-indigo-100",
-      pillBg: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+      bg: "bg-[#FCE7F3] text-[#DB2777] border-[#FBCFE8]",
+      pillBg: "bg-pink-50 text-pink-700 border-pink-200/80",
       name: "Desain Grafis",
+      tag: "Visual Design",
     };
   }
   if (c.includes("WEB") || c.includes("PEMROGRAMAN") || c.includes("CODE")) {
     return {
       icon: CategoryCodeSvg,
-      bg: "bg-blue-50 text-blue-600 border-blue-100",
-      pillBg: "bg-blue-50 text-blue-700 border-blue-200/80",
+      bg: "bg-[#EDE9FE] text-[#7C3AED] border-[#DDD6FE]",
+      pillBg: "bg-purple-50 text-purple-700 border-purple-200/80",
       name: "Web & Koding",
+      tag: "Development",
     };
   }
   if (c.includes("VIDEO") || c.includes("ANIMASI")) {
     return {
       icon: CategoryVideoSvg,
-      bg: "bg-rose-50 text-rose-600 border-rose-100",
+      bg: "bg-[#FFE4E6] text-[#E11D48] border-[#FECDD3]",
       pillBg: "bg-rose-50 text-rose-700 border-rose-200/80",
       name: "Video & Animasi",
+      tag: "Motion & Media",
     };
   }
   if (c.includes("COPY") || c.includes("TULIS") || c.includes("KONTEN")) {
     return {
       icon: CategoryCopySvg,
-      bg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-      pillBg: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+      bg: "bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]",
+      pillBg: "bg-amber-50 text-amber-700 border-amber-200/80",
       name: "Copywriting & SEO",
+      tag: "Content & Copy",
     };
   }
   return {
     icon: CategoryDataSvg,
-    bg: "bg-amber-50 text-amber-600 border-amber-100",
-    pillBg: "bg-amber-50 text-amber-700 border-amber-200/80",
+    bg: "bg-[#ECFCCB] text-[#4D7C0F] border-[#D9F99D]",
+    pillBg: "bg-lime-50 text-lime-700 border-lime-200/80",
     name: "Administrasi & Data",
+    tag: "Data & Admin",
   };
 }
 
@@ -386,21 +393,14 @@ export function DashboardPage() {
       {/* 2. HERO ROW: TWO BALANCED CARDS (Welcome Banner + Setup Widget)           */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-        {/* Card A: Welcome & Mission Canvas (Left ~62%) */}
-        <div className="lg:col-span-7 xl:col-span-8 bg-slate-100/70 border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-2xs">
+        {/* Card A: Welcome & Mission Canvas (Left ~65%) */}
+        <div className="lg:col-span-7 xl:col-span-8 bg-[#F8F9FA] border border-slate-200/70 rounded-[28px] sm:rounded-[32px] p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200/80 text-[11px] font-bold text-slate-700 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-brand-indigo" />
-              <span>
-                {isUmkm ? "Ruang Kolaborasi UMKM" : "Pusat Karier Mahasiswa"}
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-[1.15]">
               Selamat Datang, {userDisplayName}!
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-xl">
               {isUmkm
                 ? "Platform kolaborasi digital terkurasi untuk UMKM & talenta kampus. Pasang kebutuhan proyek digital, tinjau portofolio mahasiswa, dan amankan pembayaran dengan garansi rekening bersama (escrow) 100%."
                 : "Pusat kerja & portofolio digital terverifikasi. Jelajahi peluang proyek riil dari mitra UMKM, kirim penawaran proposal, dan selesaikan deliverable untuk membangun reputasi profesional Anda."}
@@ -414,7 +414,7 @@ export function DashboardPage() {
                 <Link to="/projects/new">
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
                     <span>Pasang Proyek Baru</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -423,7 +423,7 @@ export function DashboardPage() {
                 <Link to="/talents">
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
                   >
                     <Users className="w-3.5 h-3.5 text-slate-600" />
                     <span>Cari Talenta Kampus</span>
@@ -435,7 +435,7 @@ export function DashboardPage() {
                 <Link to="/projects">
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
                   >
                     <Compass className="w-3.5 h-3.5" />
                     <span>Jelajahi Katalog Proyek</span>
@@ -444,7 +444,7 @@ export function DashboardPage() {
                 <Link to="/portfolio">
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
                   >
                     <Award className="w-3.5 h-3.5 text-brand-indigo" />
                     <span>Portofolio Karya Saya</span>
@@ -455,59 +455,73 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Card B: Account Setup & Recommendations Widget (Right ~38% - Kuubiik Amber Deck) */}
-        <div className="lg:col-span-5 xl:col-span-4 bg-gradient-to-br from-amber-200/70 via-amber-100/80 to-yellow-200/60 border border-amber-300/80 rounded-3xl p-5 sm:p-6 flex flex-col justify-between gap-4 shadow-2xs relative overflow-hidden">
+        {/* Card B: Account Setup & Recommendations Widget (Right ~35% - Kuubiik 3D Stacked Deck) */}
+        <div className="lg:col-span-5 xl:col-span-4 bg-[#FEE066] border border-[#F5D040] rounded-[28px] sm:rounded-[32px] p-6 flex flex-col justify-between gap-4 shadow-2xs relative overflow-hidden">
+          {/* Subtle Organic Wave Aura in Background */}
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-amber-300/60 to-yellow-400/40 rounded-full blur-2xl pointer-events-none" />
+          <svg
+            className="absolute top-0 right-0 w-36 h-36 text-amber-300/40 pointer-events-none"
+            viewBox="0 0 100 100"
+            fill="currentColor"
+          >
+            <path d="M0 0 C50 20 80 50 100 100 L100 0 Z" />
+          </svg>
+
           {/* Header */}
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start justify-between gap-3 relative z-10">
             <div>
-              <h2 className="text-base sm:text-lg font-black text-amber-950 tracking-tight">
-                Kelengkapan Akun Anda
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-950 tracking-tight">
+                {isUmkm ? "Kelengkapan Akun Anda" : "Kelengkapan Profil"}
               </h2>
-              <p className="text-xs text-amber-900/80 mt-0.5 leading-snug">
-                3 rekomendasi untuk memaksimalkan kolaborasi Anda di Makarya.
+              <p className="text-xs text-slate-800/80 mt-1 max-w-[220px] leading-snug font-medium">
+                3 saran untuk memaksimalkan profil & kolaborasi Makarya.
               </p>
             </div>
-            <div className="w-6 h-6 rounded-full bg-white/70 border border-amber-300 flex items-center justify-center text-amber-900 text-xs font-bold shrink-0">
-              3
-            </div>
+            <button
+              type="button"
+              className="w-7 h-7 rounded-full bg-white/90 hover:bg-white text-slate-800 font-bold flex items-center justify-center text-xs shadow-2xs shrink-0 transition-all cursor-pointer"
+              aria-label="Tutup rekomendasi"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Layered Interactive Card Deck */}
-          <div className="space-y-2 pt-1">
-            {/* Layer 1: Top mini badge */}
-            <div className="mx-3 p-2 bg-emerald-500 text-white rounded-xl shadow-xs flex items-center justify-between text-[11px] font-bold">
-              <span className="flex items-center gap-1.5 truncate">
+          {/* 3D Stacked Overlapping Mini-Cards */}
+          <div className="relative pt-4 pb-1">
+            {/* Card 1: Background Layer (Emerald Green) */}
+            <div className="w-[88%] mx-auto bg-[#22C55E] text-white rounded-2xl px-4 py-2 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-10 select-none">
+              <div className="flex items-center gap-2 truncate">
                 <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                <span>Rekening Escrow Siap</span>
-              </span>
+                <span className="truncate">Rekening Escrow Siap</span>
+              </div>
               <Check className="w-3.5 h-3.5 shrink-0" />
             </div>
 
-            {/* Layer 2: Middle mini badge */}
-            <div className="mx-1.5 p-2 bg-indigo-500 text-white rounded-xl shadow-xs flex items-center justify-between text-[11px] font-bold">
-              <span className="flex items-center gap-1.5 truncate">
+            {/* Card 2: Middle Layer (Royal Indigo/Purple) */}
+            <div className="w-[94%] mx-auto bg-[#6366F1] text-white rounded-2xl px-4 py-2.5 text-xs font-bold flex items-center justify-between shadow-xs -mb-5 relative z-20 select-none">
+              <div className="flex items-center gap-2 truncate">
                 <Users className="w-3.5 h-3.5 shrink-0" />
-                <span>Formasi Tim Multi-Role</span>
-              </span>
-              <span className="text-[9px] bg-white/20 px-1.5 py-0.5 rounded">
+                <span className="truncate">Formasi Tim Multi-Role</span>
+              </div>
+              <span className="text-[9px] bg-white/25 px-2 py-0.5 rounded-full font-bold">
                 Aktif
               </span>
             </div>
 
-            {/* Layer 3: Foreground Main Setup Card */}
-            <div className="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-sm flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-2xs">
-                  <User className="w-4 h-4" />
+            {/* Card 3: Foreground Main Active Card (White Elevation) */}
+            <div className="w-full bg-white rounded-2xl p-3.5 sm:p-4 shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-white flex items-center justify-between gap-3 relative z-30">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100/80 text-amber-600 flex items-center justify-center shrink-0 shadow-2xs">
+                  <User className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-slate-900 truncate">
+                  <h4 className="text-xs font-extrabold text-slate-900 truncate">
                     {isUmkm ? "Lengkapi Profil Usaha" : "Lengkapi Portofolio"}
                   </h4>
-                  <p className="text-[10.5px] text-slate-500 truncate">
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">
                     {isUmkm
-                      ? "Tambahkan deskripsi & logo usaha"
-                      : "Unggah karya & tautan GitHub/Figma"}
+                      ? "Tambahkan logo & deskripsi bisnis"
+                      : "Unggah karya & keahlian utama"}
                   </p>
                 </div>
               </div>
@@ -515,7 +529,7 @@ export function DashboardPage() {
               <Link to="/profile" className="shrink-0">
                 <button
                   type="button"
-                  className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-[#0B1528] hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
                 >
                   Perbarui
                 </button>
@@ -532,20 +546,20 @@ export function DashboardPage() {
         {/* Section Header with Pill & Navigation Arrows */}
         <div className="flex items-end justify-between gap-4">
           <div className="space-y-1">
-            <span className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-extrabold tracking-wide uppercase border border-amber-200/80">
-              {isUmkm ? "Pekerjaan" : "Katalog Proyek"}
+            <span className="inline-block px-3 py-1 rounded-full bg-[#FEE066] text-slate-950 text-[10px] font-extrabold tracking-wider uppercase">
+              {isUmkm ? "Jobs" : "Katalog Proyek"}
             </span>
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {isUmkm
-                ? "Proyek yang Anda Kelola di Makarya"
-                : "Peluang Proyek Terkurasi untuk Anda"}
+                ? "Jobs you posted on Makarya"
+                : "Peluang Proyek Terkurasi"}
             </h2>
           </div>
 
           <div className="flex items-center gap-2">
             <Link
               to={isUmkm ? "/proposals" : "/projects"}
-              className="text-xs font-bold text-brand-indigo hover:text-brand-indigo-dark hidden sm:inline-flex items-center gap-1 mr-2"
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 hidden sm:inline-flex items-center gap-1 mr-2"
             >
               <span>Lihat Semua</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -555,7 +569,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={() => scrollCarousel("left")}
-              className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all shadow-2xs cursor-pointer active:scale-95"
               aria-label="Geser ke kiri"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -563,7 +577,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={() => scrollCarousel("right")}
-              className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all shadow-2xs cursor-pointer active:scale-95"
               aria-label="Geser ke kanan"
             >
               <ChevronRight className="w-4 h-4" />
@@ -599,7 +613,7 @@ export function DashboardPage() {
         ) : (
           <div
             ref={carouselRef}
-            className="flex items-stretch gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none snap-x snap-mandatory"
+            className="flex items-stretch gap-4 overflow-x-auto pb-4 pt-1 scrollbar-none snap-x snap-mandatory"
           >
             {filteredShowcase.map((project) => {
               const visual = getCategoryVisual(project.kategori);
@@ -611,62 +625,74 @@ export function DashboardPage() {
               return (
                 <div
                   key={project.id}
-                  className="w-[290px] sm:w-[320px] bg-white border border-slate-200/90 rounded-3xl p-5 hover:border-slate-300 hover:shadow-md transition-all flex flex-col justify-between gap-4 shrink-0 snap-start group select-none"
+                  className="w-[280px] sm:w-[310px] bg-white border border-slate-100 rounded-[24px] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.07)] hover:border-slate-200/90 transition-all flex flex-col justify-between gap-4 shrink-0 snap-start select-none group"
                 >
-                  {/* Card Top Row: Icon Squircle + Status Pill + Action */}
+                  {/* Card Top Row: Icon Squircle + Status Pill + 3-dots */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                      <SvgIcon size={32} />
+                    <div
+                      className={`w-11 h-11 rounded-2xl ${visual.bg} border flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform`}
+                    >
+                      <SvgIcon size={26} />
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                      <span className="text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-200/80 px-2.5 py-0.5 rounded-full">
                         {formatStatus(project.status)}
                       </span>
-                      {isTeam && (
-                        <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-1 rounded-full border border-purple-200 flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span>Tim</span>
-                        </span>
-                      )}
+                      <button
+                        type="button"
+                        className="w-7 h-7 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors"
+                        title="Opsi Proyek"
+                      >
+                        <MoreHorizontal className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
 
                   {/* Card Middle: Title & Scope Description */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Link
                       to={isUmkm ? `/proposals` : `/projects/${project.id}`}
-                      className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-brand-indigo transition-colors line-clamp-2 leading-snug block"
+                      className="text-sm font-extrabold text-slate-900 group-hover:text-brand-indigo transition-colors line-clamp-1 leading-snug block"
                     >
                       {project.judul}
                     </Link>
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
                       {project.deskripsi_raw ||
                         "Proyek kolaborasi terstruktur dengan garansi perlindungan honor rekening bersama 100%."}
                     </p>
                   </div>
 
                   {/* Card Bottom: Tags & Budget/CTA */}
-                  <div className="pt-3 border-t border-slate-100 space-y-3">
-                    {/* Tags Pills (Kuubiik Style) */}
+                  <div className="pt-3 border-t border-slate-100/90 space-y-3">
+                    {/* Tags Pills (Kuubiik Style: SaaS, Web app, UI) */}
                     <div className="flex flex-wrap gap-1.5">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                        {visual.name}
+                      <span className="text-[10px] font-medium px-2.5 py-0.5 rounded-md bg-slate-50 text-slate-600 border border-slate-100">
+                        {visual.tag}
                       </span>
+                      {isTeam ? (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-100">
+                          Tim Multi-Role
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-50 text-slate-500 border border-slate-100">
+                          Individu
+                        </span>
+                      )}
                       {project.deadline && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-50 text-slate-500 border border-slate-200/60">
-                          {daysRemaining(project.deadline)} Hari Lagi
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-50 text-slate-400">
+                          {daysRemaining(project.deadline)} Hari
                         </span>
                       )}
                     </div>
 
                     {/* Honor Escrow & Action Button */}
-                    <div className="flex items-center justify-between gap-2 pt-1">
+                    <div className="flex items-center justify-between gap-2 pt-0.5">
                       <div>
                         <span className="text-[10px] text-slate-400 block font-medium">
                           Batas Honor Escrow
                         </span>
-                        <span className="text-xs sm:text-sm font-black text-slate-900">
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-900">
                           {formatCurrency(project.budget_max)}
                         </span>
                       </div>
@@ -674,13 +700,12 @@ export function DashboardPage() {
                       <Link
                         to={isUmkm ? `/proposals` : `/projects/${project.id}`}
                       >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-[11px] font-bold rounded-xl border-slate-200 text-slate-800 hover:bg-slate-900 hover:text-white"
+                        <button
+                          type="button"
+                          className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95 cursor-pointer"
                         >
                           {isUmkm ? "Kelola" : "Lamar"}
-                        </Button>
+                        </button>
                       </Link>
                     </div>
                   </div>
