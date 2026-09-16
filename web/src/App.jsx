@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   Outlet,
+  useLocation,
 } from "react-router-dom";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
@@ -34,6 +35,16 @@ import { TalentDetailPage } from "./pages/talents/TalentDetailPage";
 import { ChatPage } from "./pages/chat/ChatPage";
 import { VerifyCertificatePage } from "./pages/certificates/VerifyCertificatePage";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+
+  return null;
+}
+
 // Public Layout with Standard Top Navbar and Footer
 function PublicLayout() {
   return (
@@ -53,6 +64,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ========================================================= */}
         {/* 1. PUBLIC GUEST ROUTES (Standard Navbar + Footer) */}
