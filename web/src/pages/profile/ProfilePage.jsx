@@ -287,9 +287,11 @@ export function ProfilePage() {
               src={user.url_foto}
               alt="Foto Profil"
               className="w-16 h-16 sm:w-18 sm:h-18 rounded-full object-cover shadow-xs border-2 border-slate-200"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-xs border-2 border-slate-200"
             />
           ) : (
             <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-xs select-none">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-xs select-none">
               {initial}
             </div>
           )}
