@@ -16,6 +16,14 @@ import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { Input } from "../../ui/Input";
 import { Button } from "../../ui/Button";
+import { SelectWithOther } from "../../ui/SelectWithOther";
+import {
+  PRODI_OPTIONS,
+  SEMESTER_OPTIONS,
+  BANK_OPTIONS,
+  INDUSTRI_OPTIONS,
+  KOTA_OPTIONS,
+} from "../../../constants/formOptions";
 
 export function EditProfileModal({
   visible,
@@ -86,29 +94,38 @@ export function EditProfileModal({
                   />
                 </View>
 
-                <View style={{ flexDirection: "row", gap: 10 }}>
-                  <View style={{ flex: 2 }}>
-                    <Input
-                      label="Program Studi"
-                      value={editForm.prodi}
-                      onChangeText={(v) =>
-                        setEditForm((prev) => ({ ...prev, prodi: v }))
-                      }
-                      placeholder="Cth: Sistem Informasi"
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Input
-                      label="Semester"
-                      value={editForm.semester}
-                      onChangeText={(v) =>
-                        setEditForm((prev) => ({ ...prev, semester: v }))
-                      }
-                      keyboardType="numeric"
-                      placeholder="6"
-                    />
-                  </View>
-                </View>
+                <SelectWithOther
+                  label="Program Studi"
+                  title="Pilih Program Studi"
+                  options={PRODI_OPTIONS}
+                  value={editForm.prodi}
+                  onChangeText={(v) =>
+                    setEditForm((prev) => ({ ...prev, prodi: v }))
+                  }
+                  placeholder="Pilih Program Studi"
+                  otherPlaceholder="Ketik nama Program Studi..."
+                />
+
+                <SelectWithOther
+                  label="Semester Aktif"
+                  title="Pilih Semester"
+                  options={SEMESTER_OPTIONS}
+                  value={
+                    editForm.semester
+                      ? editForm.semester.toString().startsWith("Semester")
+                        ? editForm.semester
+                        : `Semester ${editForm.semester}`
+                      : ""
+                  }
+                  onChangeText={(v) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      semester: v.replace(/^Semester\s*/i, ""),
+                    }))
+                  }
+                  placeholder="Pilih Semester"
+                  otherPlaceholder="Cth: Semester 9"
+                />
 
                 <Input
                   label="NIM (Nomor Induk Mahasiswa)"
@@ -180,13 +197,17 @@ export function EditProfileModal({
                   </Text>
                 </View>
 
-                <Input
-                  label="Nama Bank"
+                <SelectWithOther
+                  label="Nama Bank / E-Wallet"
+                  title="Pilih Bank / E-Wallet"
+                  options={BANK_OPTIONS}
                   value={editForm.nama_bank}
                   onChangeText={(v) =>
                     setEditForm((prev) => ({ ...prev, nama_bank: v }))
                   }
-                  placeholder="Contoh: Bank Central Asia (BCA) / Mandiri"
+                  placeholder="Pilih Bank / E-Wallet"
+                  otherPlaceholder="Ketik nama bank/e-wallet..."
+                  otherLabel="Bank Lainnya (Ketik Manual)"
                 />
 
                 <Input
@@ -222,22 +243,29 @@ export function EditProfileModal({
                   placeholder="Contoh: Kopi Senja Nusantara"
                 />
 
-                <Input
+                <SelectWithOther
                   label="Bidang Industri"
+                  title="Pilih Bidang Industri"
+                  options={INDUSTRI_OPTIONS}
                   value={editForm.bidang_industri}
                   onChangeText={(v) =>
                     setEditForm((prev) => ({ ...prev, bidang_industri: v }))
                   }
-                  placeholder="Contoh: Food & Beverage, Fashion, Jasa"
+                  placeholder="Pilih Bidang Industri"
+                  otherPlaceholder="Ketik bidang industri..."
                 />
 
-                <Input
+                <SelectWithOther
                   label="Kota / Lokasi Operasional"
+                  title="Pilih Kota / Lokasi"
+                  options={KOTA_OPTIONS}
                   value={editForm.kota}
                   onChangeText={(v) =>
                     setEditForm((prev) => ({ ...prev, kota: v }))
                   }
-                  placeholder="Contoh: Jakarta Selatan"
+                  placeholder="Pilih Kota"
+                  otherPlaceholder="Ketik nama kota..."
+                  otherLabel="Kota Lainnya (Ketik Manual)"
                 />
 
                 <Input

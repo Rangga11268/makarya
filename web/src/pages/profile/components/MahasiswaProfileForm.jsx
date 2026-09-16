@@ -1,5 +1,7 @@
 import React from "react";
 import { Card } from "../../../components/ui/Card";
+import { SelectWithOther } from "../../../components/ui/SelectWithOther";
+import { PRODI_OPTIONS, BANK_OPTIONS } from "../../../constants/formOptions";
 import {
   CampusVectorIcon,
   AcademicStatusVectorIcon,
@@ -87,41 +89,40 @@ export function MahasiswaProfileForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="sm:col-span-2 space-y-1.5">
-            <label className="text-xs font-bold text-dark-900 flex items-center gap-1.5">
-              <ProdiVectorIcon size={16} className="text-sky-500" />
-              Program Studi & Jenjang
-            </label>
-            <select
-              value={mhsData.prodi}
-              onChange={(e) =>
-                setMhsData({ ...mhsData, prodi: e.target.value })
-              }
-              className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
-            >
-              {prodiList.map((p, idx) => (
-                <option key={idx} value={p}>
-                  {p} (S1)
-                </option>
-              ))}
-            </select>
-          </div>
+          <SelectWithOther
+            label="Program Studi & Jenjang"
+            icon={ProdiVectorIcon}
+            options={
+              prodiList && prodiList.length > 0 ? prodiList : PRODI_OPTIONS
+            }
+            value={mhsData.prodi}
+            onChange={(val) => setMhsData({ ...mhsData, prodi: val })}
+            placeholder="Pilih Program Studi"
+            otherPlaceholder="Ketik nama Program Studi Anda..."
+            className="sm:col-span-2"
+          />
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-dark-900">
               Semester Aktif
             </label>
-            <input
-              type="number"
-              min={1}
-              max={14}
+            <select
               value={mhsData.semester}
               onChange={(e) =>
                 setMhsData({ ...mhsData, semester: e.target.value })
               }
-              className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo font-mono"
-              placeholder="6"
-            />
+              className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo cursor-pointer"
+            >
+              <option value="" disabled>
+                Pilih Semester
+              </option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                <option key={s} value={String(s)}>
+                  Semester {s}
+                </option>
+              ))}
+              <option value="8+">Semester 8+ (Tingkat Akhir / Skripsi)</option>
+            </select>
           </div>
         </div>
 
@@ -341,19 +342,15 @@ export function MahasiswaProfileForm({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-dark-900">Nama Bank</label>
-            <input
-              type="text"
-              required
-              value={mhsData.nama_bank}
-              onChange={(e) =>
-                setMhsData({ ...mhsData, nama_bank: e.target.value })
-              }
-              className="w-full px-4 py-2.5 rounded-xl border border-border bg-canvas text-xs sm:text-sm font-sans focus:outline-none focus:border-brand-indigo"
-              placeholder="Contoh: Bank Central Asia (BCA)"
-            />
-          </div>
+          <SelectWithOther
+            label="Nama Bank / E-Wallet"
+            options={BANK_OPTIONS}
+            value={mhsData.nama_bank}
+            onChange={(val) => setMhsData({ ...mhsData, nama_bank: val })}
+            placeholder="Pilih Bank / E-Wallet"
+            otherPlaceholder="Ketik nama bank/e-wallet..."
+            otherLabel="Bank Lainnya (Ketik Manual)"
+          />
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-dark-900">

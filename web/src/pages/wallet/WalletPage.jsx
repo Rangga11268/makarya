@@ -11,6 +11,8 @@ import { Input } from "../../components/ui/Input";
 import { CurrencyInput } from "../../components/ui/CurrencyInput";
 import { Modal } from "../../components/ui/Modal";
 import { Pagination } from "../../components/ui/Pagination";
+import { SelectWithOther } from "../../components/ui/SelectWithOther";
+import { BANK_OPTIONS } from "../../constants/formOptions";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import {
@@ -740,26 +742,18 @@ export function WalletPage() {
             required
           />
 
-          <div className="w-full space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
-              Bank Tujuan
-            </label>
-            <select
-              value={withdrawForm.nama_bank}
-              onChange={(e) =>
-                setWithdrawForm({ ...withdrawForm, nama_bank: e.target.value })
-              }
-              className="w-full px-3.5 py-2.5 text-sm bg-surface border border-border rounded-xl text-dark-900 focus:outline-none focus:border-dark-800"
-            >
-              <option value="BCA">BCA (Bank Central Asia)</option>
-              <option value="Mandiri">Bank Mandiri</option>
-              <option value="BRI">BRI (Bank Rakyat Indonesia)</option>
-              <option value="BNI">BNI (Bank Negara Indonesia)</option>
-              <option value="BSI">BSI (Bank Syariah Indonesia)</option>
-              <option value="Jago">Bank Jago</option>
-              <option value="SeaBank">SeaBank</option>
-            </select>
-          </div>
+          <SelectWithOther
+            label="Bank / E-Wallet Tujuan"
+            options={BANK_OPTIONS}
+            value={withdrawForm.nama_bank}
+            onChange={(val) =>
+              setWithdrawForm({ ...withdrawForm, nama_bank: val })
+            }
+            placeholder="Pilih Bank / E-Wallet"
+            otherPlaceholder="Ketik nama bank/e-wallet..."
+            otherLabel="Bank Lainnya (Ketik Manual)"
+            required
+          />
 
           <Input
             label="Nomor Rekening"

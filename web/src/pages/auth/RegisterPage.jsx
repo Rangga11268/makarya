@@ -5,6 +5,8 @@ import { useToastStore } from "../../store/toastStore";
 import { authApi } from "../../api";
 import { GoogleVectorIcon } from "../../components/icons/ProfileVectorIcons";
 import { initiateGoogleWebSignIn } from "../../services/googleAuth";
+import { SelectWithOther } from "../../components/ui/SelectWithOther";
+import { INDUSTRI_OPTIONS, KOTA_OPTIONS } from "../../constants/formOptions";
 import {
   User,
   Mail,
@@ -555,42 +557,30 @@ export function RegisterPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Bidang Industri
-                        </label>
-                        <select
-                          value={umkmForm.bidang_industri}
-                          onChange={(e) =>
-                            setUmkmForm({
-                              ...umkmForm,
-                              bidang_industri: e.target.value,
-                            })
-                          }
-                          className="w-full min-h-[44px] px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
-                        >
-                          {industriOptions.map((ind, i) => (
-                            <option key={i} value={ind}>
-                              {ind}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Kota Lokasi
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={umkmForm.kota}
-                          onChange={(e) =>
-                            setUmkmForm({ ...umkmForm, kota: e.target.value })
-                          }
-                          placeholder="Jakarta Selatan"
-                          className="w-full min-h-[44px] px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 shadow-2xs transition-all"
-                        />
-                      </div>
+                      <SelectWithOther
+                        label="Bidang Industri"
+                        options={INDUSTRI_OPTIONS}
+                        value={umkmForm.bidang_industri}
+                        onChange={(val) =>
+                          setUmkmForm({
+                            ...umkmForm,
+                            bidang_industri: val,
+                          })
+                        }
+                        placeholder="Pilih Bidang Industri"
+                        otherPlaceholder="Ketik bidang industri..."
+                      />
+                      <SelectWithOther
+                        label="Kota Lokasi"
+                        options={KOTA_OPTIONS}
+                        value={umkmForm.kota}
+                        onChange={(val) =>
+                          setUmkmForm({ ...umkmForm, kota: val })
+                        }
+                        placeholder="Pilih Kota"
+                        otherPlaceholder="Ketik nama kota..."
+                        otherLabel="Kota Lainnya (Ketik Manual)"
+                      />
                     </div>
                   </>
                 )}

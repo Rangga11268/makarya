@@ -31,6 +31,8 @@ import {
 } from "lucide-react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { PebbleButton } from "../../components/ui/PebbleButton";
+import { SelectWithOther } from "../../components/ui/SelectWithOther";
+import { INDUSTRI_OPTIONS, KOTA_OPTIONS } from "../../constants/formOptions";
 import { GoogleIcon } from "../../components/icons/GoogleIcon";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
@@ -46,7 +48,8 @@ export function RegisterScreen({ route, navigation }) {
   const [fullName, setFullName] = useState("");
   const [nim, setNim] = useState("");
   const [namaUsaha, setNamaUsaha] = useState("");
-  const [bidangIndustri, setBidangIndustri] = useState("Kuliner & F&B");
+  const [bidangIndustri, setBidangIndustri] = useState("F&B / Kuliner");
+  const [kota, setKota] = useState("Jakarta Selatan");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -140,7 +143,7 @@ export function RegisterScreen({ route, navigation }) {
         await registerUmkm({
           nama_usaha: name,
           bidang_industri: bidangIndustri,
-          kota: "Bekasi",
+          kota: kota.trim() || "Jakarta Selatan",
           no_kontak: "081234567890",
           email: email.trim(),
           password,
@@ -259,17 +262,21 @@ export function RegisterScreen({ route, navigation }) {
         </Svg>
       </View>
 
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={{ flex: 1 }}
         >
           <ScrollView
-            contentContainerStyle={[styles.scrollContent, authContainerStyle]}
-            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContent,
+              authContainerStyle,
+              { paddingTop: STATUSBAR_OFFSET },
+            ]}
             keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            {/* Top Bar with Logo & Back */}
+            {/* Top Bar: Logo & Back Button */}
             <View style={styles.topBar}>
               <View style={styles.logoRow}>
                 <Image
@@ -346,6 +353,31 @@ export function RegisterScreen({ route, navigation }) {
                   />
                 </View>
               </View>
+
+              {/* UMKM Extra Fields */}
+              {role === "UMKM" && (
+                <>
+                  <SelectWithOther
+                    label="Bidang Industri Usaha *"
+                    title="Pilih Bidang Industri"
+                    options={INDUSTRI_OPTIONS}
+                    value={bidangIndustri}
+                    onChangeText={setBidangIndustri}
+                    placeholder="Pilih Bidang Industri"
+                    otherPlaceholder="Ketik bidang industri usaha..."
+                  />
+                  <SelectWithOther
+                    label="Kota / Lokasi Operasional *"
+                    title="Pilih Kota"
+                    options={KOTA_OPTIONS}
+                    value={kota}
+                    onChangeText={setKota}
+                    placeholder="Pilih Kota Operasional"
+                    otherPlaceholder="Ketik nama kota..."
+                    otherLabel="Kota Lainnya (Ketik Manual)"
+                  />
+                </>
+              )}
 
               {/* NIM (for Mahasiswa) */}
               {role === "MAHASISWA" && (

@@ -14,6 +14,8 @@ import { COLORS } from "../../../theme/colors";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import { CurrencyInput } from "../../../components/ui/CurrencyInput";
+import { SelectWithOther } from "../../../components/ui/SelectWithOther";
+import { BANK_OPTIONS } from "../../../constants/formOptions";
 import { X, Building2, ShieldCheck } from "lucide-react-native";
 
 export function WalletTransactionModal({
@@ -95,11 +97,15 @@ export function WalletTransactionModal({
                 </View>
 
                 <View style={styles.bankInputsGroup}>
-                  <Input
-                    label="Nama Bank"
+                  <SelectWithOther
+                    label="Nama Bank / E-Wallet"
+                    title="Pilih Bank / E-Wallet Tujuan"
+                    options={BANK_OPTIONS}
                     value={destBank}
                     onChangeText={setDestBank}
-                    placeholder="Contoh: BCA / Mandiri / BNI / BRI"
+                    placeholder="Pilih Bank / E-Wallet"
+                    otherPlaceholder="Ketik nama bank/e-wallet..."
+                    otherLabel="Bank Lainnya (Ketik Manual)"
                   />
                   <Input
                     label="Nomor Rekening"
