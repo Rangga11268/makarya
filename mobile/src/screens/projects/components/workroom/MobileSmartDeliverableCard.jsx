@@ -11,7 +11,7 @@ import {
 import { FONTS } from "../../../../theme/fonts";
 import { formatDate } from "../../../../utils/formatDate";
 import { AppleGlossyCard } from "../../../../components/ui/AppleGlossyCard";
-import { PebbleButton } from "../../../../components/ui/PebbleButton";
+import { formatCurrency } from "../../../../utils/formatCurrency";
 import {
   ExternalLink,
   CheckCircle2,
@@ -23,6 +23,7 @@ import {
   Palette,
   FileText,
   Check,
+  Coins,
 } from "lucide-react-native";
 
 export function getMobileSmartLinkMeta(url) {
@@ -200,9 +201,18 @@ export function MobileSmartDeliverableCard({
             <Text style={styles.campusText} numberOfLines={1}>
               {submitterKampus} / {submitterProdi}
             </Text>
-            <Text style={styles.metaSubtext}>
-              {statusSubtext} ({formatDate(dateSubmitted)})
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
+              <Text style={styles.metaSubtext}>
+                {statusSubtext} ({formatDate(dateSubmitted)})
+              </Text>
+              {(submission.honor_amount || submission.slot_budget) ? (
+                <View style={{ backgroundColor: "#ECFDF5", paddingHorizontal: 5, paddingVertical: 1, borderRadius: 4, borderWidth: 1, borderColor: "#A7F3D0" }}>
+                  <Text style={{ fontSize: 9, fontFamily: FONTS.displayBold, color: "#047857" }}>
+                    {formatCurrency(submission.honor_amount || submission.slot_budget)}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
 

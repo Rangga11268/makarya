@@ -14,6 +14,7 @@ import { COLORS } from "../../theme/colors";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { Header, HeaderCircleButton } from "../../components/ui/Header";
 import { walletApi } from "../../api";
+import * as WebBrowser from "expo-web-browser";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -133,7 +134,19 @@ export function WalletScreen({ navigation }) {
           "success",
         );
       } else {
-        await walletApi.topUp(num);
+        const topUpRes = await walletApi.requestTopUp({ nominal: num });
+        const resData = topUpRes.data;
+        if (resData?.redirect_url) {
+          showToast("Membuka gerbang pembayaran Midtrans...", "info");
+          try {
+            await WebBrowser.openBrowserAsync(resData.redirect_url);
+            if (resData.order_id) {
+              await walletApi.syncStatus(resData.order_id).catch(() => {});
+            }
+          } catch (browserErr) {
+            console.log("Browser flow note:", browserErr);
+          }
+        }
         showToast(
           `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
           "success",

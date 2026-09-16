@@ -21,7 +21,10 @@ import {
   GraduationCap,
   Building2,
   Calendar,
+  Users,
+  Coins,
 } from "lucide-react-native";
+import { formatCurrency } from "../../../utils/formatCurrency";
 import { useToastStore } from "../../../store/toastStore";
 
 export function MobileCertificateModal({ visible, certificate, onClose }) {
@@ -124,14 +127,36 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
 
               {/* Project & Role Info Box */}
               <View style={styles.infoBox}>
-                <View style={styles.roleTag}>
-                  <Text style={styles.roleTagText}>
-                    {certificate.role_name}
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={styles.roleTag}>
+                    <Text style={styles.roleTagText}>
+                      {certificate.role_name}
+                    </Text>
+                  </View>
+                  <Text style={styles.collabTypeText}>
+                    {certificate.collaboration_type === "TIM" || (certificate.team_breakdown && certificate.team_breakdown.length > 0)
+                      ? `Tim (${certificate.team_breakdown?.length || 0} Peran)`
+                      : "Individu"}
                   </Text>
                 </View>
+
                 <Text style={styles.projectTitleText}>
                   {certificate.project_title}
                 </Text>
+
+                {/* Verified Honor Amount */}
+                <View style={styles.honorRow}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <Coins size={13} color="#059669" />
+                    <Text style={styles.honorLabel}>Honor Terverifikasi:</Text>
+                  </View>
+                  <Text style={styles.honorValue}>
+                    {certificate.honor_amount || certificate.slot_budget
+                      ? formatCurrency(certificate.honor_amount || certificate.slot_budget)
+                      : "Sesuai Kontrak"}
+                  </Text>
+                </View>
+
                 <View style={styles.clientRow}>
                   <Building2 size={13} color={COLORS.textSecondary} />
                   <Text style={styles.clientText}>
@@ -141,6 +166,66 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                     </Text>
                   </Text>
                 </View>
+
+                {/* Team Breakdown if team project */}
+                {certificate.team_breakdown && certificate.team_breakdown.length > 0 && (
+                  <View style={styles.teamBreakdownContainer}>
+                    <View style={styles.teamBreakdownHeader}>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                        <Users size={12} color={COLORS.primary} />
+                        <Text style={styles.teamBreakdownTitle}>Pagu Formasi Tim Klien:</Text>
+                      </View>
+                      {certificate.total_project_budget ? (
+                        <Text style={styles.teamTotalBudget}>
+                          Total {formatCurrency(certificate.total_project_budget)}
+                        </Text>
+                      ) : null}
+                    </View>
+
+                    <View style={styles.teamSlotsList}>
+                      {certificate.team_breakdown.map((member, mIdx) => {
+                        const isCurrentRole =
+                          member.nama_peran?.toLowerCase() === certificate.role_name?.toLowerCase();
+                        return (
+                          <View
+                            key={mIdx}
+                            style={[
+                              styles.teamSlotItem,
+                              isCurrentRole && styles.teamSlotItemActive,
+                            ]}
+                          >
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flex: 1 }}>
+                              <View
+                                style={[
+                                  styles.teamSlotDot,
+                                  isCurrentRole && { backgroundColor: COLORS.primary },
+                                ]}
+                              />
+                              <Text
+                                style={[
+                                  styles.teamSlotRoleName,
+                                  isCurrentRole && styles.teamSlotRoleNameActive,
+                                ]}
+                                numberOfLines={1}
+                              >
+                                {member.nama_peran}
+                                {member.mhs_nama ? ` (${member.mhs_nama})` : ""}
+                              </Text>
+                            </View>
+                            <Text
+                              style={[
+                                styles.teamSlotBudget,
+                                isCurrentRole && styles.teamSlotBudgetActive,
+                              ]}
+                            >
+                              {formatCurrency(member.alokasi_budget)}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
               </View>
 
               {/* Credential ID and Date */}
@@ -317,6 +402,100 @@ const styles = StyleSheet.create({
   roleTagText: {
     fontSize: 11,
     fontFamily: FONTS.bold,
+    color: COLORS.primary,
+  },
+  collabTypeText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  honorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  honorLabel: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bold,
+    color: "#065F46",
+  },
+  honorValue: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bold,
+    color: "#047857",
+  },
+  teamBreakdownContainer: {
+    marginTop: 4,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    gap: 6,
+  },
+  teamBreakdownHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  teamBreakdownTitle: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bold,
+    color: COLORS.text,
+  },
+  teamTotalBudget: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+  },
+  teamSlotsList: {
+    gap: 4,
+    backgroundColor: "#F8FAFC",
+    padding: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  teamSlotItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 3,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  teamSlotItemActive: {
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+  },
+  teamSlotDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#94A3B8",
+  },
+  teamSlotRoleName: {
+    fontSize: 10,
+    fontFamily: FONTS.regular,
+    color: COLORS.textSecondary,
+  },
+  teamSlotRoleNameActive: {
+    fontFamily: FONTS.bold,
+    color: COLORS.primary,
+  },
+  teamSlotBudget: {
+    fontSize: 10,
+    fontFamily: FONTS.bold,
+    color: COLORS.text,
+  },
+  teamSlotBudgetActive: {
     color: COLORS.primary,
   },
   projectTitleText: {

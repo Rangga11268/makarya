@@ -34,6 +34,7 @@ import {
   ExternalLink,
   ChevronRight,
   Users,
+  Coins,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../../hooks/useResponsiveLayout";
 import { WorkroomProjectHUD } from "./workroom/WorkroomProjectHUD";
@@ -627,66 +628,126 @@ export function WorkroomActiveView({
                 </View>
               )}
 
-            {/* Komposisi Tim (jika proyek TIM) */}
-            {project.tipe_kolaborasi === "TIM" &&
-              Array.isArray(project.slots) &&
-              project.slots.length > 0 && (
-                <View style={{ marginTop: 14 }}>
-                  <Text style={styles.subSectionTitle}>
-                    Formasi Peran Tim Proyek ({project.slots.length} Posisi)
+            {/* Formasi Peran & Alokasi Pagu Anggaran Awal Klien (jika proyek TIM atau ada slots) */}
+            {(project.tipe_kolaborasi === "TIM" || (Array.isArray(project.slots) && project.slots.length > 0)) ? (
+              <View style={{ marginTop: 14 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <Users size={15} color="#4F46E5" />
+                    <Text style={styles.subSectionTitle}>
+                      Alokasi Pagu & Formasi Tim Klien ({project.slots?.length || 0} Posisi)
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 11, fontFamily: FONTS.displayBold, color: "#047857" }}>
+                    Total {formatCurrency(project.budget_max)}
                   </Text>
-                  {project.slots.map((slot) => {
-                    const isSlotFilled =
-                      slot.status !== "OPEN" || Boolean(slot.accepted_mhs_id);
-                    const talentName =
-                      slot.accepted_mhs_nama || slot.mahasiswa_nama;
+                </View>
 
-                    return (
-                      <View key={slot.id} style={styles.slotRow}>
-                        <View style={{ flex: 1 }}>
-                          <Text style={styles.slotRoleName}>
+                {(project.slots || []).map((slot) => {
+                  const isMySlot = isMahasiswa && (
+                    (myExistingProposal?.slot_id && slot.id === myExistingProposal.slot_id) ||
+                    (myExistingProposal?.slot_nama_peran && slot.nama_peran?.toLowerCase() === myExistingProposal.slot_nama_peran?.toLowerCase())
+                  );
+                  const isSlotCompleted = slot.status === "COMPLETED";
+                  const isSlotFilled = slot.status !== "OPEN" || Boolean(slot.accepted_mhs_id);
+                  const talentName = slot.accepted_mhs_nama || slot.mahasiswa_nama;
+
+                  return (
+                    <View
+                      key={slot.id}
+                      style={[
+                        styles.slotRow,
+                        isMySlot && { borderColor: "#A5B4FC", backgroundColor: "#EEF2FF" },
+                      ]}
+                    >
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                          <Text style={[styles.slotRoleName, isMySlot && { color: "#3730A3" }]}>
                             {slot.nama_peran}
                           </Text>
-                          <Text style={styles.slotBudget}>
-                            Alokasi: {formatCurrency(slot.alokasi_budget)}
-                          </Text>
-                          {talentName ? (
-                            <Text
-                              style={{
-                                fontSize: 10.5,
-                                fontFamily: FONTS.bodyMedium,
-                                color: "#0F172A",
-                                marginTop: 2,
-                              }}
-                            >
-                              Talenta: {talentName}
-                            </Text>
-                          ) : null}
+                          {isMySlot && (
+                            <View style={{ backgroundColor: "#4F46E5", paddingHorizontal: 6, paddingVertical: 1.5, borderRadius: 4 }}>
+                              <Text style={{ fontSize: 9, fontFamily: FONTS.displayBold, color: "#FFF" }}>
+                                Peran Anda
+                              </Text>
+                            </View>
+                          )}
                         </View>
-                        <View
-                          style={[
-                            styles.slotBadge,
-                            isSlotFilled
+                        <Text style={styles.slotBudget}>
+                          Alokasi Pagu: {formatCurrency(slot.alokasi_budget)}
+                        </Text>
+                        {slot.deskripsi_tugas ? (
+                          <Text style={{ fontSize: 10, fontFamily: FONTS.bodyRegular, color: "#64748B", marginTop: 1 }}>
+                            {slot.deskripsi_tugas}
+                          </Text>
+                        ) : null}
+                        {talentName ? (
+                          <Text
+                            style={{
+                              fontSize: 10.5,
+                              fontFamily: FONTS.bodyMedium,
+                              color: "#0F172A",
+                              marginTop: 2,
+                            }}
+                          >
+                            Talenta: <Text style={{ fontFamily: FONTS.displayBold }}>{talentName}</Text>
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View
+                        style={[
+                          styles.slotBadge,
+                          isSlotCompleted
+                            ? { backgroundColor: "#ECFDF5", borderColor: "#A7F3D0" }
+                            : isSlotFilled
                               ? styles.slotBadgeTaken
                               : { backgroundColor: "#F1F5F9" },
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.slotBadgeText,
-                              isSlotFilled
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.slotBadgeText,
+                            isSlotCompleted
+                              ? { color: "#065F46" }
+                              : isSlotFilled
                                 ? { color: "#047857" }
                                 : { color: "#64748B" },
-                            ]}
-                          >
-                            {isSlotFilled ? "Terisi" : "Terbuka"}
-                          </Text>
-                        </View>
+                          ]}
+                        >
+                          {isSlotCompleted ? "Lunas" : isSlotFilled ? "Aktif" : "Terbuka"}
+                        </Text>
                       </View>
-                    );
-                  })}
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View
+                style={{
+                  marginTop: 14,
+                  backgroundColor: "#F8FAFC",
+                  borderRadius: 14,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: "#E2E8F0",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                    <Coins size={14} color="#059669" />
+                    <Text style={{ fontSize: 11.5, fontFamily: FONTS.displayBold, color: "#0F172A" }}>
+                      Pagu Anggaran & Honor Pelaksana
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 12, fontFamily: FONTS.displayBold, color: "#047857" }}>
+                    {formatCurrency(myExistingProposal?.harga_tawar || project.budget_max)}
+                  </Text>
                 </View>
-              )}
+                <Text style={{ fontSize: 10.5, fontFamily: FONTS.bodyRegular, color: "#64748B", marginTop: 4 }}>
+                  Pengerjaan penugasan individu dengan alokasi honor tunggal yang disepakati bersama klien UMKM.
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
