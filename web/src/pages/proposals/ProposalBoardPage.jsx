@@ -786,7 +786,7 @@ export function ProposalBoardPage() {
           setActiveStageTab={setActiveStageTab}
           activeDeliverable={activeDeliverable}
           projectSubmissions={
-            isUmkm
+            projectSubmissions && projectSubmissions.length > 0
               ? projectSubmissions
               : activeDeliverable
                 ? [activeDeliverable]
@@ -813,7 +813,12 @@ export function ProposalBoardPage() {
         isOpen={submissionModalOpen}
         onClose={() => setSubmissionModalOpen(false)}
         projectId={selectedProjectId}
-        onSuccess={() => loadData()}
+        onSuccess={async () => {
+          await loadData();
+          if (activeProjectId) {
+            await loadProjectDetails(activeProjectId);
+          }
+        }}
       />
 
       <RevisionModal
