@@ -10,7 +10,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from app.core.config import settings
 from app.core.database import get_db, SessionLocal
 from app.core.limiter import limiter
-from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat, talents
+from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat, talents, certificates
 from app.routers.notifications import router as notifications_router
 from app.services.scheduler import run_project_deadline_check, run_escrow_auto_approval
 
@@ -78,6 +78,7 @@ app.include_router(ratings.router, prefix=settings.API_V1_STR, tags=["Ratings & 
 app.include_router(disputes.router, prefix=settings.API_V1_STR, tags=["Dispute Resolution"])
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["Realtime Collaboration Chat"])
 app.include_router(talents.router, prefix=settings.API_V1_STR, tags=["Talents & Directory"])
+app.include_router(certificates.router, prefix=settings.API_V1_STR, tags=["Certificates & Portfolio Showcase"])
 app.include_router(notifications_router, prefix=settings.API_V1_STR, tags=["Notifications"])
 
 

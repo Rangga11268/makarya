@@ -14,6 +14,7 @@ from app.models.submission import Submission, SubmissionStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.escrow import Escrow, EscrowStatus
 from app.schemas.submission import SubmissionCreateRequest, RevisionRequest, SubmissionResponse
+from app.routers.certificates import issue_certificate_for_proposal
 
 
 router = APIRouter(prefix="/submissions", tags=["Submissions & Revision Control"])
@@ -349,6 +350,13 @@ def approve_submission(
         escrow.status = EscrowStatus.RELEASED
         escrow.released_at = func.now()
         escrow.auto_approve_at = None
+
+    # Terbitkan Sertifikat Digital & Portfolio Otomatis
+    try:
+        issue_certificate_for_proposal(db, accepted_proposal, submission)
+    except Exception as e:
+        # Jangan gagalkan approval jika penerbitan cert menemui kendala minor
+        pass
 
     db.commit()
     db.refresh(submission)

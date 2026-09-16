@@ -27,7 +27,8 @@ import { AddSkillModal } from "../../components/features/profile/AddSkillModal";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { showConfirm } from "../../store/dialogStore";
-import { authApi } from "../../api";
+import { authApi, certificateApi } from "../../api";
+import { MobileCertificateModal } from "../../components/features/certificates/MobileCertificateModal";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -57,6 +58,10 @@ import {
   MapPin,
   Building,
   Camera,
+  Award,
+  Eye,
+  EyeOff,
+  Sparkles,
 } from "lucide-react-native";
 
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
@@ -147,6 +152,45 @@ export function ProfileScreen({ navigation }) {
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
+  // Certificates State
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [certModalVisible, setCertModalVisible] = useState(false);
+  const [loadingCerts, setLoadingCerts] = useState(false);
+
+  const fetchCertificates = async () => {
+    if (!isMahasiswa) return;
+    try {
+      setLoadingCerts(true);
+      const res = await certificateApi.getMy();
+      setCertificates(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Gagal memuat sertifikat mobile:", err);
+    } finally {
+      setLoadingCerts(false);
+    }
+  };
+
+  const handleToggleCertShowcase = async (cert) => {
+    try {
+      const updatedStatus = !cert.is_showcase;
+      const res = await certificateApi.toggleShowcase(cert.id, {
+        is_showcase: updatedStatus,
+      });
+      setCertificates((prev) =>
+        prev.map((c) => (c.id === cert.id ? res.data : c))
+      );
+      showToast(
+        updatedStatus
+          ? "Sertifikat kini tampil di portofolio publik"
+          : "Sertifikat disembunyikan dari publik",
+        "success"
+      );
+    } catch (err) {
+      showToast("Gagal memperbarui status showcase", "danger");
+    }
+  };
+
   // Sinkronisasi data awal dari database saat mount
   useEffect(() => {
     authApi
@@ -160,6 +204,8 @@ export function ProfileScreen({ navigation }) {
         }
       })
       .catch(() => {});
+
+    fetchCertificates();
   }, []);
 
   // Update skillsList jika user di store berubah
@@ -690,7 +736,90 @@ export function ProfileScreen({ navigation }) {
           </View>
         )}
 
-        {/* 6. Rekening Pencairan Honor Terdaftar */}
+        {/* 6. Showcase Karya & Sertifikat Terverifikasi (Mahasiswa Only) */}
+        {isMahasiswa && (
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Award size={16} color={COLORS.primary} />
+                <Text style={styles.sectionTitle}>Sertifikat & Portofolio</Text>
+              </View>
+              {certificates.length > 0 && (
+                <Text style={styles.certCountBadge}>
+                  {certificates.filter((c) => c.is_showcase).length}/{certificates.length} Tampil
+                </Text>
+              )}
+            </View>
+
+            {loadingCerts ? (
+              <View style={{ paddingVertical: 16, alignItems: "center" }}>
+                <ActivityIndicator size="small" color={COLORS.primary} />
+              </View>
+            ) : certificates.length === 0 ? (
+              <View style={styles.certEmptyBox}>
+                <Award size={24} color={COLORS.textSecondary} />
+                <Text style={styles.certEmptyText}>
+                  Belum ada sertifikat proyek selesai. Selesaikan proyek pertama Anda untuk mendapatkan sertifikat digital resmi.
+                </Text>
+              </View>
+            ) : (
+              <View style={{ gap: 10 }}>
+                {certificates.map((cert) => (
+                  <View key={cert.id} style={styles.certItemCard}>
+                    <View style={styles.certItemHeader}>
+                      <View style={styles.certRoleTag}>
+                        <Text style={styles.certRoleTagText}>{cert.role_name}</Text>
+                      </View>
+                      <Text style={styles.certCredText}>{cert.credential_id}</Text>
+                    </View>
+
+                    <Text style={styles.certProjectTitle}>{cert.project_title}</Text>
+                    <Text style={styles.certClientText}>
+                      Mitra UMKM: <Text style={styles.boldText}>{cert.client_name}</Text>
+                    </Text>
+
+                    <View style={styles.certBottomRow}>
+                      <TouchableOpacity
+                        onPress={() => handleToggleCertShowcase(cert)}
+                        style={[
+                          styles.toggleShowcaseBtn,
+                          cert.is_showcase ? styles.showcaseActive : styles.showcaseInactive,
+                        ]}
+                        activeOpacity={0.8}
+                      >
+                        {cert.is_showcase ? (
+                          <>
+                            <Eye size={12} color={COLORS.success} />
+                            <Text style={styles.showcaseActiveText}>Tampil Publik</Text>
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={12} color={COLORS.textSecondary} />
+                            <Text style={styles.showcaseInactiveText}>Disembunyikan</Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedCert(cert);
+                          setCertModalVisible(true);
+                        }}
+                        style={styles.viewCertBtn}
+                        activeOpacity={0.8}
+                      >
+                        <Award size={12} color="#FFF" />
+                        <Text style={styles.viewCertBtnText}>Lihat Sertifikat</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* 7. Rekening Pencairan Honor Terdaftar */}
         <View style={styles.sectionBox}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Rekening Pencairan Honor</Text>
@@ -855,6 +984,16 @@ export function ProfileScreen({ navigation }) {
         newSkill={newSkill}
         setNewSkill={setNewSkill}
         onAdd={handleAddSkill}
+      />
+
+      {/* MODAL LIHAT SERTIFIKAT VERIFIKASI */}
+      <MobileCertificateModal
+        visible={certModalVisible}
+        certificate={selectedCert}
+        onClose={() => {
+          setCertModalVisible(false);
+          setSelectedCert(null);
+        }}
       />
     </View>
   );
@@ -1299,5 +1438,119 @@ const styles = StyleSheet.create({
   logoutBtn: {
     marginTop: 6,
     marginBottom: 20,
+  },
+
+  // Certificates Showcase Styles
+  certCountBadge: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.primary,
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  certEmptyBox: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    gap: 6,
+  },
+  certEmptyText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    lineHeight: 16,
+  },
+  certItemCard: {
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: "#FFF",
+    gap: 6,
+  },
+  certItemHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  certRoleTag: {
+    backgroundColor: "rgba(79, 70, 229, 0.1)",
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  certRoleTagText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.primary,
+  },
+  certCredText: {
+    fontSize: 10,
+    fontFamily: FONTS.mono,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+  },
+  certProjectTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+  },
+  certClientText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+  },
+  certBottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderTopColor: COLORS.borderSubtle,
+    paddingTop: 8,
+    marginTop: 2,
+  },
+  toggleShowcaseBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  showcaseActive: {
+    backgroundColor: "#ECFDF5",
+  },
+  showcaseInactive: {
+    backgroundColor: "#F1F5F9",
+  },
+  showcaseActiveText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+  },
+  showcaseInactiveText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+  },
+  viewCertBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  viewCertBtnText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFF",
   },
 });

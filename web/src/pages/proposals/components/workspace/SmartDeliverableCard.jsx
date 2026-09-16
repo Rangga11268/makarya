@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   ExternalLink,
   CheckCircle2,
@@ -13,6 +14,7 @@ import {
   GraduationCap,
   Building2,
   Sparkles,
+  Award,
 } from "lucide-react";
 import { formatDate } from "../../../../utils/formatDate";
 import { Button } from "../../../../components/ui/Button";
@@ -332,6 +334,23 @@ export function SmartDeliverableCard({
             toleransi habis tanpa tanggapan, sistem otomatis mencairkan dana
             escrow untuk peran ini kepada mahasiswa pekerja.
           </p>
+        </div>
+      )}
+
+      {/* Approved Status & Certificate Access */}
+      {isApproved && (
+        <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-emerald-900 font-semibold">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Hasil kerja telah disetujui & sertifikat resmi diterbitkan.</span>
+          </div>
+          <Link
+            to="/portfolio"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors shadow-2xs"
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>Lihat di Portofolio & Sertifikat</span>
+          </Link>
         </div>
       )}
 

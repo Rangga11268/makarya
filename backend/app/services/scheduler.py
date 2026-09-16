@@ -7,6 +7,7 @@ from app.models.submission import Submission, SubmissionStatus
 from app.models.escrow import Escrow, EscrowStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.notification import Notification, NotificationType
+from app.routers.certificates import issue_certificate_for_proposal
 
 
 logger = logging.getLogger(__name__)
@@ -215,6 +216,12 @@ def run_escrow_auto_approval(db: Session):
             submission = db.query(Submission).filter(Submission.proposal_id == proposal.id).first()
             if submission:
                 submission.status = SubmissionStatus.APPROVED
+
+            # Terbitkan Sertifikat Digital & Portfolio Otomatis
+            try:
+                issue_certificate_for_proposal(db, proposal, submission)
+            except Exception as cert_err:
+                logger.warning(f"Gagal menerbitkan sertifikat otomatis pada scheduler: {cert_err}")
 
             # Update Project & Escrow
             project.status = ProjectStatus.DONE

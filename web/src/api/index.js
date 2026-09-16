@@ -94,6 +94,14 @@ export const notificationApi = {
   markAsRead: (id) => api.patch(`/notifications/${id}/read`),
 };
 
+export const certificateApi = {
+  getMy: () => api.get("/certificates/my"),
+  getByProject: (projectId) => api.get(`/certificates/project/${projectId}`),
+  toggleShowcase: (id, data) => api.patch(`/certificates/${id}/toggle-showcase`, data),
+  verify: (credentialId) => api.get(`/certificates/verify/${credentialId}`),
+  getUserShowcase: (userId) => api.get(`/certificates/user/${userId}/showcase`),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   const isHttps = window.location.protocol === "https:";
   const wsProto = isHttps ? "wss:" : "ws:";

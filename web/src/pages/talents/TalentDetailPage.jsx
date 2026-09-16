@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { talentApi, projectApi } from "../../api";
+import { talentApi, projectApi, certificateApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
+import { Badge } from "../../components/ui/Badge";
 import { StarRating } from "../../components/ui/StarRating";
+import { CertificateViewModal } from "../../components/features/CertificateViewModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatStatus } from "../../utils/formatStatus";
 import { formatDate } from "../../utils/formatDate";
@@ -46,6 +48,9 @@ export function TalentDetailPage() {
   const [talent, setTalent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showcaseCerts, setShowcaseCerts] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
   // UMKM project selection states
   const isUmkm = isAuthenticated && user?.role?.toUpperCase() === "UMKM";
@@ -53,13 +58,17 @@ export function TalentDetailPage() {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
-  // 1. Fetch Talent Detail
+  // 1. Fetch Talent Detail & Showcase Certificates
   const fetchTalent = async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await talentApi.getTalentDetail(id);
-      setTalent(res?.data || res);
+      const [resTalent, resCerts] = await Promise.all([
+        talentApi.getTalentDetail(id),
+        certificateApi.getUserShowcase(id).catch(() => ({ data: [] })),
+      ]);
+      setTalent(resTalent?.data || resTalent);
+      setShowcaseCerts(resCerts?.data || []);
     } catch (err) {
       console.error("Gagal memuat detail talenta:", err);
       setError("Profil talenta tidak ditemukan atau terjadi kendala jaringan.");
@@ -479,6 +488,86 @@ export function TalentDetailPage() {
             </div>
           )}
 
+          {/* Showcase Karya & Sertifikat Terverifikasi */}
+          {showcaseCerts && showcaseCerts.length > 0 && (
+            <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-brand-indigo" />
+                  <h2 className="text-sm font-bold text-dark-900 uppercase tracking-wider text-slate-500">
+                    Karya Terverifikasi & Sertifikat Resmi
+                  </h2>
+                </div>
+                <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                  {showcaseCerts.length} Sertifikat Valid
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {showcaseCerts.map((cert) => (
+                  <div
+                    key={cert.id}
+                    className="p-4 rounded-xl border border-border bg-canvas hover:border-brand-indigo/30 transition-all flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <Badge variant="brand" className="text-[11px] font-bold">
+                          {cert.role_name}
+                        </Badge>
+                        <span className="font-mono text-[10px] text-muted font-semibold">
+                          {cert.credential_id}
+                        </span>
+                      </div>
+                      <h3 className="text-xs sm:text-sm font-bold text-dark-900 line-clamp-1">
+                        {cert.project_title}
+                      </h3>
+                      <p className="text-[11px] text-slate-500">
+                        Mitra UMKM: <strong className="text-dark-900">{cert.client_name}</strong>
+                      </p>
+                      {cert.showcase_description && (
+                        <p className="text-xs text-slate-600 line-clamp-2 italic">
+                          "{cert.showcase_description}"
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t border-border flex items-center justify-between gap-2">
+                      {cert.deliverable_url ? (
+                        <a
+                          href={cert.deliverable_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-bold text-brand-indigo hover:underline inline-flex items-center gap-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          Hasil Karya
+                        </a>
+                      ) : (
+                        <span className="text-[10px] text-emerald-700 font-semibold inline-flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          Terverifikasi
+                        </span>
+                      )}
+
+                      <Button
+                        variant="brand"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCert(cert);
+                          setIsCertModalOpen(true);
+                        }}
+                        className="text-[11px] font-semibold h-7 px-2.5 shadow-xs"
+                      >
+                        <Award className="w-3 h-3 mr-1" />
+                        Lihat Sertifikat
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Client Reviews Section */}
           <div className="bg-surface rounded-2xl border border-border p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
@@ -739,6 +828,16 @@ export function TalentDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Interactive Certificate View Modal */}
+      <CertificateViewModal
+        certificate={selectedCert}
+        isOpen={isCertModalOpen}
+        onClose={() => {
+          setIsCertModalOpen(false);
+          setSelectedCert(null);
+        }}
+      />
     </div>
   );
 }

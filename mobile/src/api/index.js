@@ -85,6 +85,14 @@ export const notificationApi = {
   markAsRead: (id) => api.patch(`/notifications/${id}/read`),
 };
 
+export const certificateApi = {
+  getMy: () => api.get("/certificates/my"),
+  getByProject: (projectId) => api.get(`/certificates/project/${projectId}`),
+  toggleShowcase: (id, data) => api.patch(`/certificates/${id}/toggle-showcase`, data),
+  verify: (credentialId) => api.get(`/certificates/verify/${credentialId}`),
+  getUserShowcase: (userId) => api.get(`/certificates/user/${userId}/showcase`),
+};
+
 export const getChatWsUrl = (projectId, token) => {
   let host = Platform.OS === "android" ? "10.0.2.2:8000" : "localhost:8000";
   const debuggerHost =

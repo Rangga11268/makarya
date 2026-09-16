@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ratingApi, projectApi } from "../../api";
+import { ratingApi, projectApi, certificateApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { Card } from "../../components/ui/Card";
 import { Badge } from "../../components/ui/Badge";
@@ -10,25 +10,36 @@ import { EmptyState } from "../../components/ui/EmptyState";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
+import { CertificateViewModal } from "../../components/features/CertificateViewModal";
+import { useToastStore } from "../../store/toastStore";
 import {
   Award,
   GraduationCap,
   CheckCircle2,
   Building2,
   PlusCircle,
-  Compass,
   ArrowRight,
   ExternalLink,
   ShieldCheck,
+  Eye,
+  EyeOff,
+  Sparkles,
+  Layers,
+  FileCheck2,
 } from "lucide-react";
 import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 export function PortfolioPage() {
   const { user, fetchProfile } = useAuthStore();
+  const { addToast } = useToastStore();
   const isUmkm = user?.role === "UMKM";
 
   const [ratings, setRatings] = useState([]);
   const [myProjects, setMyProjects] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,8 +58,12 @@ export function PortfolioPage() {
           setMyProjects(projectsRes.data);
           setRatings(ratingsRes.data);
         } else {
-          const res = await ratingApi.getByUser(user.id);
-          setRatings(res.data);
+          const [ratingsRes, certsRes] = await Promise.all([
+            ratingApi.getByUser(user.id).catch(() => ({ data: [] })),
+            certificateApi.getMy().catch(() => ({ data: [] })),
+          ]);
+          setRatings(ratingsRes.data);
+          setCertificates(certsRes.data);
         }
       } catch (err) {
         console.error("Gagal memuat portofolio:", err);
@@ -59,6 +74,40 @@ export function PortfolioPage() {
     loadData();
   }, [user?.id, isUmkm]);
 
+  const handleToggleShowcase = async (cert) => {
+    try {
+      setTogglingId(cert.id);
+      const updatedStatus = !cert.is_showcase;
+      const res = await certificateApi.toggleShowcase(cert.id, {
+        is_showcase: updatedStatus,
+      });
+      setCertificates((prev) =>
+        prev.map((c) => (c.id === cert.id ? res.data : c))
+      );
+      addToast({
+        type: "success",
+        title: "Showcase Diperbarui",
+        message: updatedStatus
+          ? "Karya & sertifikat kini ditampilkan di profil publik Anda."
+          : "Karya disembunyikan dari profil publik.",
+      });
+    } catch (err) {
+      console.error("Gagal mengubah visibilitas showcase:", err);
+      addToast({
+        type: "error",
+        title: "Gagal Mengubah Visibilitas",
+        message: "Gagal memperbarui status showcase. Silakan coba lagi.",
+      });
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const handleViewCert = (cert) => {
+    setSelectedCert(cert);
+    setIsModalOpen(true);
+  };
+
   const avgRating =
     ratings.length > 0
       ? (
@@ -66,23 +115,21 @@ export function PortfolioPage() {
         ).toFixed(1)
       : null;
 
-  const initial = user?.email ? user.email.charAt(0).toUpperCase() : "U";
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 font-sans">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            {isUmkm ? "Profil & Riwayat Kemitraan" : "Reputasi & Kinerja Kerja"}
+            {isUmkm ? "Profil & Riwayat Kemitraan" : "Portofolio Karya & Sertifikasi"}
           </span>
           <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm ? "Rekam Jejak Usaha UMKM" : "Portofolio Karya Mahasiswa"}
+            {isUmkm ? "Rekam Jejak Usaha UMKM" : "Karya Terverifikasi & Sertifikat Resmi"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
               ? "Informasi profil usaha, rekam jejak proyek yang Anda pasang, dan ulasan kepuasan dari talenta mahasiswa."
-              : "Kumpulan ulasan terverifikasi dan hasil kerja nyata dari proyek UMKM yang telah Anda selesaikan."}
+              : "Pamerkan hasil karya proyek industri Anda dan peroleh sertifikat digital resmi untuk portofolio & konversi MBKM."}
           </p>
         </div>
 
@@ -144,7 +191,7 @@ export function PortfolioPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-8 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-8">
+        <div className="flex items-center gap-6 sm:gap-8 border-t sm:border-t-0 sm:border-l border-border pt-4 sm:pt-0 sm:pl-8">
           <div className="text-center sm:text-left">
             <span className="text-xs text-muted block font-medium">
               Rating Rata-rata
@@ -165,6 +212,17 @@ export function PortfolioPage() {
             </div>
           </div>
 
+          {!isUmkm && (
+            <div className="text-center sm:text-left">
+              <span className="text-xs text-muted block font-medium">
+                Sertifikat Resmi
+              </span>
+              <span className="text-2xl font-black text-brand-indigo font-sans">
+                {certificates.length}
+              </span>
+            </div>
+          )}
+
           <div className="text-center sm:text-left">
             <span className="text-xs text-muted block font-medium">
               {isUmkm ? "Total Proyek Dipasang" : "Proyek Selesai"}
@@ -175,6 +233,151 @@ export function PortfolioPage() {
           </div>
         </div>
       </div>
+
+      {/* MAHASISWA ONLY: Showcase Karya & Sertifikat Terverifikasi */}
+      {!isUmkm && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-brand-indigo" />
+                <h2 className="text-xl font-serif text-dark-900">
+                  Showcase Karya & Sertifikat Terverifikasi
+                </h2>
+              </div>
+              <p className="text-xs text-muted mt-0.5">
+                Setiap proyek selesai secara otomatis menghasilkan sertifikat resmi dan dapat Anda tampilkan di profil publik talenta.
+              </p>
+            </div>
+            {certificates.length > 0 && (
+              <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full w-fit">
+                {certificates.filter((c) => c.is_showcase).length} dari {certificates.length} tampil publik
+              </span>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[1, 2].map((n) => (
+                <div
+                  key={n}
+                  className="h-48 bg-surface rounded-3xl border border-border animate-pulse"
+                />
+              ))}
+            </div>
+          ) : certificates.length === 0 ? (
+            <Card className="text-center py-10 px-4 space-y-3 bg-surface border-border">
+              <div className="w-12 h-12 rounded-2xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center mx-auto">
+                <Award className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm font-bold text-dark-900">
+                Belum Ada Sertifikat Proyek
+              </h3>
+              <p className="text-xs text-muted max-w-md mx-auto">
+                Selesaikan penugasan proyek UMKM pertama Anda hingga disetujui klien untuk secara otomatis memperoleh sertifikat digital resmi dan showcase portofolio.
+              </p>
+              <Link to="/projects">
+                <Button variant="brand" size="sm" className="text-xs font-bold shadow-xs">
+                  Cari Lowongan Proyek UMKM
+                </Button>
+              </Link>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {certificates.map((cert) => (
+                <Card
+                  key={cert.id}
+                  className="p-5 sm:p-6 space-y-4 bg-surface border border-border hover:border-brand-indigo/40 transition-all rounded-3xl shadow-xs flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="brand" className="text-xs font-bold">
+                          {cert.role_name}
+                        </Badge>
+                        {cert.project_category && (
+                          <Badge variant="outline" className="text-[10px]">
+                            {cert.project_category}
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="font-mono text-[11px] text-muted font-bold tracking-wider">
+                        {cert.credential_id}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-base font-bold text-dark-900 line-clamp-1">
+                        {cert.project_title}
+                      </h3>
+                      <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-0.5">
+                        <Building2 className="w-3.5 h-3.5 text-muted" />
+                        Klien: <strong className="text-dark-900">{cert.client_name}</strong>
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-muted leading-relaxed font-sans line-clamp-2">
+                      {cert.showcase_description ||
+                        `Penyelesaian penugasan ${cert.role_name} untuk proyek ${cert.project_title}.`}
+                    </p>
+
+                    {cert.deliverable_url && (
+                      <div className="pt-1">
+                        <a
+                          href={cert.deliverable_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-indigo hover:underline"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          Buka Berkas Hasil Karya (Figma/GitHub/Live)
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2 text-xs">
+                    {/* Toggle Showcase Button */}
+                    <button
+                      type="button"
+                      disabled={togglingId === cert.id}
+                      onClick={() => handleToggleShowcase(cert)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium transition-all text-xs ${
+                        cert.is_showcase
+                          ? "bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
+                          : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
+                      }`}
+                    >
+                      {cert.is_showcase ? (
+                        <>
+                          <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Tampil di Publik</span>
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Disembunyikan</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* View Certificate Action */}
+                    <Button
+                      variant="brand"
+                      size="sm"
+                      onClick={() => handleViewCert(cert)}
+                      className="text-xs font-semibold shadow-xs"
+                    >
+                      <Award className="w-3.5 h-3.5 mr-1.5" />
+                      Lihat Sertifikat
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* UMKM ONLY: Published Projects Section */}
       {isUmkm && (
@@ -234,7 +437,7 @@ export function PortfolioPage() {
                     <Badge variant="dark">{proj.kategori}</Badge>
                     <Badge
                       variant={
-                        proj.status === "COMPLETED"
+                        proj.status === "COMPLETED" || proj.status === "DONE"
                           ? "success"
                           : proj.status === "IN_PROGRESS"
                             ? "brand"
@@ -333,7 +536,7 @@ export function PortfolioPage() {
                     <Building2 className="w-3.5 h-3.5 text-muted" />
                     <span>Proyek Terverifikasi:</span>
                     <span className="font-mono text-dark-900 font-semibold">
-                      #{r.project_id.slice(0, 8)}
+                      #{r.project_id ? r.project_id.slice(0, 8) : "PROYEK"}
                     </span>
                   </div>
                   {r.dari_nama && (
@@ -347,6 +550,16 @@ export function PortfolioPage() {
           </div>
         )}
       </div>
+
+      {/* Interactive Certificate View Modal */}
+      <CertificateViewModal
+        certificate={selectedCert}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedCert(null);
+        }}
+      />
     </div>
   );
 }

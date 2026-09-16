@@ -32,6 +32,7 @@ import { AdminDisputePage } from "./pages/admin/AdminDisputePage";
 import { TalentsDirectoryPage } from "./pages/talents/TalentsDirectoryPage";
 import { TalentDetailPage } from "./pages/talents/TalentDetailPage";
 import { ChatPage } from "./pages/chat/ChatPage";
+import { VerifyCertificatePage } from "./pages/certificates/VerifyCertificatePage";
 
 // Public Layout with Standard Top Navbar and Footer
 function PublicLayout() {
@@ -95,6 +96,11 @@ export default function App() {
                 <RegisterPage />
               )
             }
+          />
+
+          <Route
+            path="/certificates/verify/:credentialId"
+            element={<VerifyCertificatePage />}
           />
 
           {/* Guest Explore Access */}

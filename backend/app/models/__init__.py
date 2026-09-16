@@ -12,6 +12,7 @@ from app.models.rating import Rating
 from app.models.dispute import Dispute, DisputeStatus
 from app.models.notification import Notification, NotificationType
 from app.models.chat import ChatMessage
+from app.models.certificate import Certificate
 
 __all__ = [
     "User",
@@ -42,4 +43,5 @@ __all__ = [
     "Notification",
     "NotificationType",
     "ChatMessage",
+    "Certificate",
 ]
