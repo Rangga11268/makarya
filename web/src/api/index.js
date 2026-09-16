@@ -52,6 +52,8 @@ export const walletApi = {
   getHistory: () => api.get("/wallet/history"),
   topUp: (nominal) => api.post("/wallet/topup", { nominal }),
   requestTopUp: (data) => api.post("/wallet/topup", data),
+  syncStatus: (orderId) => api.post(`/wallet/sync-status/${orderId}`),
+  getMidtransConfig: () => api.get("/wallet/config"),
   withdraw: (data) => api.post("/wallet/withdraw", data),
 };
 

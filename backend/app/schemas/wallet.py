@@ -5,6 +5,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field, ConfigDict
 from app.models.wallet import TransactionType
 
+
 # Schema respon dompet
 class WalletResponse(BaseModel):
     id: UUID
@@ -13,12 +14,19 @@ class WalletResponse(BaseModel):
     saldo_escrow: Decimal
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
-# Schema request topup saldo(Khusus UMKM)
+
+# Schema request topup saldo (Khusus UMKM)
 class TopUpRequest(BaseModel):
-    nominal: Decimal = Field(..., ge=10000, le=10000000, description="Nominal topup saldo (Rp. 10.000 - Rp. 10.000.000)")
+    nominal: Decimal = Field(
+        ...,
+        ge=10000,
+        le=50000000,
+        description="Nominal topup saldo (Rp. 10.000 - Rp. 50.000.000)",
+    )
+
 
 # Schema respon topup saldo (mengembalikan snap token untuk popup midtrans)
 class TopUpResponse(BaseModel):
@@ -26,24 +34,55 @@ class TopUpResponse(BaseModel):
     snap_token: str
     redirect_url: str
     nominal: Decimal
+    client_key: Optional[str] = None
+    is_production: Optional[bool] = False
 
-# Schema request penarikan saldo (Widraw ke bank)
+
+# Schema respon konfigurasi publik Midtrans
+class MidtransConfigResponse(BaseModel):
+    client_key: str
+    is_production: bool
+    is_configured: bool
+
+
+# Schema respon sinkronisasi status pembayaran Midtrans
+class SyncStatusResponse(BaseModel):
+    order_id: str
+    transaction_status: str
+    is_settled: bool
+    credited_amount: Optional[Decimal] = None
+    saldo_aktif_sekarang: Decimal
+    message: str
+
+
+# Schema request penarikan saldo (Withdraw ke bank)
 class WithdrawRequest(BaseModel):
-    nominal: Decimal = Field(..., ge=25000, description="Nominal penarikan saldo minimal Rp. 25.000")
-    nama_bank: str = Field(..., min_length=2, max_length=50, description="Nama bank tujuan")
-    nomor_rekening: str = Field(..., min_length=5, max_length=30, description="Nomor rekening tujuan")
-    nama_pemilik: str = Field(..., min_length=2, max_length=100, description="Nama pemilik rekening tujuan")
+    nominal: Decimal = Field(
+        ..., ge=25000, description="Nominal penarikan saldo minimal Rp. 25.000"
+    )
+    nama_bank: str = Field(
+        ..., min_length=2, max_length=50, description="Nama bank tujuan"
+    )
+    nomor_rekening: str = Field(
+        ..., min_length=5, max_length=30, description="Nomor rekening tujuan"
+    )
+    nama_pemilik: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        description="Nama pemilik rekening tujuan",
+    )
 
-# Schema respon riwayat mutasi / buku besar(Ledger log)
+
+# Schema respon riwayat mutasi / buku besar (Ledger log)
 class LedgerLogResponse(BaseModel):
     id: UUID
     wallet_id: UUID
     project_id: Optional[UUID] = None
     tipe: TransactionType
     nominal: Decimal
+    referensi_gateway: Optional[str] = None
     keterangan: Optional[str] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-

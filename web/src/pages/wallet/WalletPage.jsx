@@ -15,6 +15,7 @@ import { SelectWithOther } from "../../components/ui/SelectWithOther";
 import { BANK_OPTIONS } from "../../constants/formOptions";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
+import { payWithSnap } from "../../utils/midtransSnap";
 import { PaymentGatewayModal } from "../../components/features/PaymentGatewayModal";
 import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
 import {
@@ -107,19 +108,96 @@ export function WalletPage() {
       .catch(() => {});
   }, []);
 
-  // Handle UMKM Top-Up: Open Payment Gateway Modal
-  const handleOpenGateway = (e) => {
+  // Handle UMKM Top-Up: Initiate Midtrans Snap or Fallback Modal
+  const handleOpenGateway = async (e) => {
     if (e) e.preventDefault();
     const nominal = parseInt(topUpNominal, 10);
-    if (!nominal || nominal < 50000) {
+    if (!nominal || nominal < 10000) {
       showError(
         "Nominal Tidak Valid",
-        "Minimal top-up saldo dompet adalah Rp 50.000.",
+        "Minimal top-up saldo dompet adalah Rp 10.000.",
       );
       return;
     }
-    setTopUpModalOpen(false);
-    setPaymentGatewayOpen(true);
+
+    try {
+      setTopUpLoading(true);
+      // 1. Request Snap Token dari backend Makarya
+      const res = await walletApi.requestTopUp({ nominal });
+      const { snap_token, order_id, client_key, is_production } = res.data || {};
+
+      setTopUpModalOpen(false);
+
+      if (snap_token) {
+        // 2. Tampilkan Pop-Up Resmi Midtrans Snap
+        await payWithSnap(
+          snap_token,
+          {
+            onSuccess: async (result) => {
+              try {
+                const syncRes = await walletApi.syncStatus(order_id);
+                showSuccess(
+                  "Pembayaran Berhasil!",
+                  syncRes.data?.message ||
+                    `Saldo sebesar ${formatCurrency(nominal)} berhasil ditambahkan ke dompet Anda.`
+                );
+              } catch (syncErr) {
+                showSuccess(
+                  "Pembayaran Diterima",
+                  `Pembayaran Anda berhasil diverifikasi. Saldo dompet telah diperbarui.`
+                );
+              } finally {
+                fetchWalletData();
+              }
+            },
+            onPending: async (result) => {
+              try {
+                await walletApi.syncStatus(order_id);
+              } catch (_) {}
+              showSuccess(
+                "Menunggu Pembayaran",
+                "Silakan selesaikan pembayaran sesuai instruksi Midtrans."
+              );
+              fetchWalletData();
+            },
+            onError: (err) => {
+              showError(
+                "Pembayaran Gagal",
+                err?.status_message ||
+                  "Transaksi pembayaran tidak dapat diselesaikan."
+              );
+            },
+            onClose: () => {
+              addToast("info", "Jendela pembayaran Midtrans ditutup.");
+            },
+          },
+          client_key || import.meta.env.VITE_MIDTRANS_CLIENT_KEY,
+          is_production ?? (import.meta.env.VITE_MIDTRANS_IS_PRODUCTION === "true")
+        );
+      } else {
+        setPaymentGatewayOpen(true);
+      }
+    } catch (err) {
+      console.error("Top-Up Error:", err);
+      const errMsg =
+        err.response?.data?.detail || "Gagal menghubungi layanan pembayaran.";
+
+      if (
+        errMsg.toLowerCase().includes("midtrans_server_key") ||
+        errMsg.toLowerCase().includes("belum dikonfigurasi")
+      ) {
+        showError(
+          "Kredensial Midtrans Belum Diisi",
+          "Silakan masukkan MIDTRANS_SERVER_KEY di backend/.env. Membuka mode simulasi sandbox."
+        );
+        setTopUpModalOpen(false);
+        setPaymentGatewayOpen(true);
+      } else {
+        showError("Gagal Memulai Deposit", errMsg);
+      }
+    } finally {
+      setTopUpLoading(false);
+    }
   };
 
   const handleGatewaySuccess = async (nominal) => {
@@ -810,7 +888,7 @@ export function WalletPage() {
             value={topUpNominal}
             onChange={(val) => setTopUpNominal(val)}
             quickNominals={[100000, 250000, 500000, 1000000]}
-            helperText="Minimal top-up saldo Rp 50.000"
+            helperText="Minimal top-up saldo Rp 10.000"
             required
           />
 
@@ -837,6 +915,7 @@ export function WalletPage() {
               variant="outline"
               size="md"
               onClick={() => setTopUpModalOpen(false)}
+              disabled={topUpLoading}
               className="text-xs font-bold"
             >
               Batal
@@ -845,9 +924,10 @@ export function WalletPage() {
               type="submit"
               variant="brand"
               size="md"
+              loading={topUpLoading}
               className="text-xs font-bold shadow-brand"
             >
-              Lanjut ke Pembayaran Gateway
+              Lanjut ke Pembayaran Midtrans
             </Button>
           </div>
         </form>
