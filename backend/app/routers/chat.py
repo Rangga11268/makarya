@@ -24,7 +24,12 @@ from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.escrow import Escrow, EscrowStatus
 from app.models.chat import ChatMessage
 from app.models.notification import Notification, NotificationType
-from app.schemas.chat import ChatMessageCreate, ChatMessageResponse, ConversationItemResponse
+from app.schemas.chat import (
+    ChatMessageCreate,
+    ChatMessageResponse,
+    ConversationItemResponse,
+    GroupMemberItem,
+)
 from pydantic import BaseModel
 
 class OfferRespondRequest(BaseModel):
@@ -181,6 +186,99 @@ def resolve_user_sub_display(user: User) -> Optional[str]:
     return None
 
 
+def resolve_project_member_role(user: User, project: Optional[Project]) -> str:
+    """Mendapatkan label peran spesifik anggota dalam konteks proyek (e.g. Project Owner, UI/UX Designer, Frontend Dev)."""
+    if not user:
+        return "Pengguna"
+    if not project:
+        role_str = user.role.value if hasattr(user.role, "value") else str(user.role)
+        return "Project Owner" if role_str.upper() == "UMKM" else "Mahasiswa"
+
+    if project.umkm_id == user.id:
+        return "Project Owner"
+
+    # Cek apakah user mengisi salah satu slot posisi tim proyek
+    if project.slots:
+        for slot in project.slots:
+            if slot.accepted_mhs_id == user.id:
+                return slot.nama_peran or "Pelaksana Proyek"
+
+    # Fallback ke nama program studi atau label umum
+    if hasattr(user, "profile_mhs") and user.profile_mhs and user.profile_mhs.prodi:
+        prodi_obj = user.profile_mhs.prodi
+        prodi_name = getattr(prodi_obj, "nama_prodi", str(prodi_obj))
+        if prodi_name:
+            return prodi_name
+
+    role_str = user.role.value if hasattr(user.role, "value") else str(user.role)
+    return "Project Owner" if role_str.upper() == "UMKM" else "Pelaksana Proyek"
+
+
+def get_project_members_list(project: Project, db: Session, manager_inst) -> List[dict]:
+    """Mengumpulkan seluruh anggota resmi proyek (Klien Owner + Seluruh Mahasiswa Pelaksana yang Diterima)."""
+    members = []
+    seen_ids = set()
+
+    # 1. Klien / Project Owner
+    if project.umkm_id:
+        seen_ids.add(str(project.umkm_id))
+        owner_user = db.query(User).filter(User.id == project.umkm_id).first()
+        if owner_user:
+            owner_name, owner_role, owner_photo = resolve_sender_display(owner_user)
+            members.append({
+                "user_id": project.umkm_id,
+                "nama_lengkap": owner_name,
+                "role_label": "Project Owner",
+                "url_foto": owner_photo,
+                "is_online": manager_inst.is_user_online(str(project.umkm_id)),
+                "is_owner": True,
+            })
+
+    # 2. Mahasiswa pelaksana dari slots
+    if project.slots:
+        for slot in project.slots:
+            if slot.accepted_mhs_id and str(slot.accepted_mhs_id) not in seen_ids:
+                seen_ids.add(str(slot.accepted_mhs_id))
+                mhs_user = db.query(User).filter(User.id == slot.accepted_mhs_id).first()
+                if mhs_user:
+                    m_name, m_role, m_photo = resolve_sender_display(mhs_user)
+                    members.append({
+                        "user_id": slot.accepted_mhs_id,
+                        "nama_lengkap": m_name,
+                        "role_label": slot.nama_peran or "Pelaksana Proyek",
+                        "url_foto": m_photo,
+                        "is_online": manager_inst.is_user_online(str(slot.accepted_mhs_id)),
+                        "is_owner": False,
+                    })
+
+    # 3. Mahasiswa dari proposal yang ACCEPTED
+    accepted_proposals = (
+        db.query(Proposal)
+        .filter(
+            Proposal.project_id == project.id,
+            Proposal.status == ProposalStatus.ACCEPTED,
+        )
+        .all()
+    )
+    for prop in accepted_proposals:
+        if prop.mhs_id and str(prop.mhs_id) not in seen_ids:
+            seen_ids.add(str(prop.mhs_id))
+            mhs_user = db.query(User).filter(User.id == prop.mhs_id).first()
+            if mhs_user:
+                m_name, m_role, m_photo = resolve_sender_display(mhs_user)
+                role_label = prop.slot.nama_peran if prop.slot else (project.kategori or "Pelaksana Proyek")
+                members.append({
+                    "user_id": prop.mhs_id,
+                    "nama_lengkap": m_name,
+                    "role_label": role_label,
+                    "url_foto": m_photo,
+                    "is_online": manager_inst.is_user_online(str(prop.mhs_id)),
+                    "is_owner": False,
+                })
+
+    return members
+
+
 def verify_project_participation(project_id: UUID, user: User, db: Session) -> Project:
     """
     Memastikan hanya Pemilik Proyek (UMKM) atau Mahasiswa Pelamar/Pekerja (atau Admin)
@@ -267,18 +365,109 @@ def get_user_conversations(
 ):
     """
     Mengambil daftar seluruh percakapan aktif pengguna (inbox chat),
-    baik komunikasi UMKM ↔ Mahasiswa maupun Mahasiswa ↔ Mahasiswa (tim proyek).
+    mencakup Grup Obrolan Proyek resmi (Project Group Chat) dan Percakapan Langsung (1-on-1).
     """
     conversations_map: Dict[str, dict] = {}
+    user_role_str = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
 
-    # 1. Temukan seluruh lawan bicara dari riwayat pesan ChatMessage
+    # -------------------------------------------------------------------------
+    # A. DAFTAR GRUP OBROLAN PROYEK RESMI (PROJECT WORKROOM GROUP CHAT)
+    # -------------------------------------------------------------------------
+    participating_projects = []
+
+    if user_role_str.upper() == "UMKM":
+        participating_projects = (
+            db.query(Project)
+            .filter(Project.umkm_id == current_user.id)
+            .order_by(Project.created_at.desc())
+            .all()
+        )
+    else:
+        # Mahasiswa: cari proyek tempat mahasiswa diterima di slot atau proposalnya diterima
+        accepted_slots = (
+            db.query(ProjectSlot)
+            .filter(ProjectSlot.accepted_mhs_id == current_user.id)
+            .all()
+        )
+        for s in accepted_slots:
+            if s.project and s.project not in participating_projects:
+                participating_projects.append(s.project)
+
+        accepted_props = (
+            db.query(Proposal)
+            .filter(
+                Proposal.mhs_id == current_user.id,
+                Proposal.status == ProposalStatus.ACCEPTED,
+            )
+            .all()
+        )
+        for p in accepted_props:
+            if p.project and p.project not in participating_projects:
+                participating_projects.append(p.project)
+
+    for proj in participating_projects:
+        group_key = f"group_{proj.id}"
+        members = get_project_members_list(proj, db, manager)
+
+        # Ambil pesan terakhir grup (pesan umum proyek tanpa recipient_id)
+        last_grp_msg = (
+            db.query(ChatMessage)
+            .filter(
+                ChatMessage.project_id == proj.id,
+                ChatMessage.recipient_id.is_(None),
+            )
+            .order_by(ChatMessage.created_at.desc())
+            .first()
+        )
+
+        unread_grp_count = (
+            db.query(ChatMessage)
+            .filter(
+                ChatMessage.project_id == proj.id,
+                ChatMessage.recipient_id.is_(None),
+                ChatMessage.sender_id != current_user.id,
+                ChatMessage.is_read == False,
+            )
+            .count()
+        )
+
+        other_online = any(
+            m["is_online"] for m in members if str(m["user_id"]) != str(current_user.id)
+        )
+
+        is_done = str(proj.status).upper() in ["DONE", "SELESAI", "CLOSED"]
+        status_sub = " • Arsip Selesai" if is_done else ""
+
+        conversations_map[group_key] = {
+            "id": group_key,
+            "partner_id": None,
+            "partner_name": f"Grup: {proj.judul}",
+            "partner_role": "GROUP",
+            "partner_photo": None,
+            "partner_sub": f"{len(members)} Anggota Proyek{status_sub}",
+            "project_id": proj.id,
+            "project_title": proj.judul,
+            "project_status": proj.status,
+            "last_message": last_grp_msg.message if last_grp_msg else "Ruang obrolan tim proyek telah siap.",
+            "last_message_time": last_grp_msg.created_at if last_grp_msg else proj.created_at,
+            "unread_count": unread_grp_count,
+            "is_online": other_online,
+            "is_group": True,
+            "member_count": len(members),
+            "members": members,
+        }
+
+    # -------------------------------------------------------------------------
+    # B. DAFTAR PERCAKAPAN LANGSUNG (1-ON-1 DIRECT CHATS)
+    # -------------------------------------------------------------------------
     user_messages = (
         db.query(ChatMessage)
         .filter(
             or_(
                 ChatMessage.sender_id == current_user.id,
                 ChatMessage.recipient_id == current_user.id,
-            )
+            ),
+            ChatMessage.recipient_id.isnot(None),
         )
         .order_by(ChatMessage.created_at.desc())
         .all()
@@ -301,7 +490,6 @@ def get_user_conversations(
             project_title = m.project.judul if m.project else None
             project_status = m.project.status if m.project else None
 
-            # Hitung unread count dari partner_id ke current_user
             unread_count = (
                 db.query(ChatMessage)
                 .filter(
@@ -329,11 +517,14 @@ def get_user_conversations(
                 "last_message_time": m.created_at,
                 "unread_count": unread_count,
                 "is_online": is_online,
+                "is_group": False,
+                "member_count": 1,
+                "members": None,
             }
 
-    # 2. Sertakan juga partner proyek aktif yang belum memiliki riwayat pesan (misal mahasiswa yang baru diterima atau klien proyek)
-    # 2a. Jika pengguna adalah UMKM: ambil seluruh accepted mahasiswa di proyek-proyeknya
-    user_role_str = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
+    # -------------------------------------------------------------------------
+    # C. PARTNER DARI SLOT TERISI / PROPOSAL AKTIF
+    # -------------------------------------------------------------------------
     if user_role_str.upper() == "UMKM":
         my_projects = db.query(Project).filter(Project.umkm_id == current_user.id).all()
         for proj in my_projects:
@@ -344,14 +535,14 @@ def get_user_conversations(
                         mhs_user = db.query(User).filter(User.id == slot.accepted_mhs_id).first()
                         if mhs_user:
                             p_name, p_role, p_photo = resolve_sender_display(mhs_user)
-                            p_sub = resolve_user_sub_display(mhs_user)
+                            p_sub = slot.nama_peran or resolve_user_sub_display(mhs_user)
                             conversations_map[conv_key] = {
                                 "id": conv_key,
                                 "partner_id": slot.accepted_mhs_id,
                                 "partner_name": p_name,
                                 "partner_role": p_role,
                                 "partner_photo": p_photo,
-                                "partner_sub": p_sub,
+                                "partner_sub": f"Pelaksana ({p_sub})",
                                 "project_id": proj.id,
                                 "project_title": proj.judul,
                                 "project_status": proj.status,
@@ -359,8 +550,11 @@ def get_user_conversations(
                                 "last_message_time": slot.created_at,
                                 "unread_count": 0,
                                 "is_online": manager.is_user_online(str(slot.accepted_mhs_id)),
+                                "is_group": False,
+                                "member_count": 1,
+                                "members": None,
                             }
-        # Sertakan juga pelamar proposal yang masuk
+        # Pelamar proposal yang masuk
         my_proposals = db.query(Proposal).join(Project, Proposal.project_id == Project.id).filter(Project.umkm_id == current_user.id).all()
         for prop in my_proposals:
             if prop.mhs_id and prop.mhs_id != current_user.id:
@@ -384,9 +578,12 @@ def get_user_conversations(
                             "last_message_time": prop.created_at,
                             "unread_count": 0,
                             "is_online": manager.is_user_online(str(prop.mhs_id)),
+                            "is_group": False,
+                            "member_count": 1,
+                            "members": None,
                         }
-    # 2b. Jika pengguna adalah Mahasiswa: ambil klien pemilik proyek & sesama mahasiswa anggota tim
     else:
+        # Mahasiswa: rekan tim & klien proyek
         accepted_slots = db.query(ProjectSlot).filter(ProjectSlot.accepted_mhs_id == current_user.id).all()
         for s in accepted_slots:
             proj = s.project
@@ -415,9 +612,12 @@ def get_user_conversations(
                             "last_message_time": s.created_at,
                             "unread_count": 0,
                             "is_online": manager.is_user_online(str(proj.umkm_id)),
+                            "is_group": False,
+                            "member_count": 1,
+                            "members": None,
                         }
 
-            # Sesama rekan mahasiswa dalam proyek yang sama (MHS ↔ MHS)
+            # Rekan sesama tim
             for other_slot in proj.slots:
                 if other_slot.accepted_mhs_id and other_slot.accepted_mhs_id != current_user.id:
                     peer_key = f"{other_slot.accepted_mhs_id}_{proj.id}"
@@ -425,14 +625,14 @@ def get_user_conversations(
                         peer_user = db.query(User).filter(User.id == other_slot.accepted_mhs_id).first()
                         if peer_user:
                             peer_name, peer_role, peer_photo = resolve_sender_display(peer_user)
-                            peer_sub = resolve_user_sub_display(peer_user) or other_slot.nama_peran
+                            peer_sub = other_slot.nama_peran or "Rekan Tim"
                             conversations_map[peer_key] = {
                                 "id": peer_key,
                                 "partner_id": other_slot.accepted_mhs_id,
                                 "partner_name": peer_name,
                                 "partner_role": peer_role,
                                 "partner_photo": peer_photo,
-                                "partner_sub": f"Rekan Tim ({other_slot.nama_peran})",
+                                "partner_sub": f"Rekan Tim ({peer_sub})",
                                 "project_id": proj.id,
                                 "project_title": proj.judul,
                                 "project_status": proj.status,
@@ -440,38 +640,16 @@ def get_user_conversations(
                                 "last_message_time": other_slot.created_at,
                                 "unread_count": 0,
                                 "is_online": manager.is_user_online(str(other_slot.accepted_mhs_id)),
+                                "is_group": False,
+                                "member_count": 1,
+                                "members": None,
                             }
 
-        # Sertakan juga proposal yang pernah dilamar oleh mahasiswa ke UMKM
-        my_proposals = db.query(Proposal).filter(Proposal.mhs_id == current_user.id).all()
-        for prop in my_proposals:
-            if prop.project and prop.project.umkm_id and prop.project.umkm_id != current_user.id:
-                conv_key = f"{prop.project.umkm_id}_{prop.project_id}"
-                if conv_key not in conversations_map:
-                    klien_user = db.query(User).filter(User.id == prop.project.umkm_id).first()
-                    if klien_user:
-                        k_name, k_role, k_photo = resolve_sender_display(klien_user)
-                        k_sub = resolve_user_sub_display(klien_user)
-                        conversations_map[conv_key] = {
-                            "id": conv_key,
-                            "partner_id": prop.project.umkm_id,
-                            "partner_name": k_name,
-                            "partner_role": k_role,
-                            "partner_photo": k_photo,
-                            "partner_sub": k_sub,
-                            "project_id": prop.project_id,
-                            "project_title": prop.project.judul,
-                            "project_status": prop.project.status,
-                            "last_message": f"Lamaran terkirim: {prop.cover_letter[:60]}..." if prop.cover_letter else "Diskusi proposal proyek.",
-                            "last_message_time": prop.created_at,
-                            "unread_count": 0,
-                            "is_online": manager.is_user_online(str(prop.project.umkm_id)),
-                        }
-
-    # 3. Fallback: Pastikan inbox TIDAK PERNAH kosong untuk demo/evaluasi
+    # -------------------------------------------------------------------------
+    # D. FALLBACK UNTUK DEMO JIKA BENAR-BENAR KOSONG
+    # -------------------------------------------------------------------------
     if not conversations_map:
         if user_role_str.upper() == "UMKM":
-            # Hubungkan dengan mahasiswa teladan sistem (Bima Arya)
             bima_user = db.query(User).filter(User.email.ilike("%bima%")).first()
             if not bima_user:
                 bima_user = db.query(User).filter(User.role == UserRole.MHS).first()
@@ -499,9 +677,11 @@ def get_user_conversations(
                     "last_message_time": datetime.now(),
                     "unread_count": 0,
                     "is_online": True,
+                    "is_group": False,
+                    "member_count": 1,
+                    "members": None,
                 }
         else:
-            # Mahasiswa: hubungkan dengan klien UMKM aktif
             umkm_user = db.query(User).filter(User.role == UserRole.UMKM).first()
             if umkm_user:
                 sample_proj = db.query(Project).filter(Project.umkm_id == umkm_user.id).first()
@@ -525,6 +705,9 @@ def get_user_conversations(
                     "last_message_time": datetime.now(),
                     "unread_count": 0,
                     "is_online": True,
+                    "is_group": False,
+                    "member_count": 1,
+                    "members": None,
                 }
 
     result = list(conversations_map.values())
@@ -538,41 +721,30 @@ def get_user_conversations(
 @router.get("/project/{project_id}/messages", response_model=List[ChatMessageResponse])
 def get_chat_messages(
     project_id: UUID,
-    partner_id: Optional[UUID] = Query(None, description="Filter pesan spesifik dengan lawan bicara tertentu"),
+    partner_id: Optional[UUID] = Query(None, description="Filter pesan spesifik dengan lawan bicara tertentu (kosongkan untuk obrolan grup proyek)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
-    Mengambil riwayat percakapan chat proyek dan menandai pesan lawan bicara sudah dibaca.
-    Mendukung isolasi pesan jika partner_id diberikan.
+    Mengambil riwayat percakapan chat proyek.
+    Jika partner_id diberikan: mengambil percakapan personal (1-on-1).
+    Jika partner_id kosong: mengambil percakapan grup proyek (recipient_id is None).
     """
-    verify_project_participation(project_id, current_user, db)
+    project = verify_project_participation(project_id, current_user, db)
 
     query = db.query(ChatMessage).filter(ChatMessage.project_id == project_id)
 
     if partner_id:
         query = query.filter(
             or_(
-                # Pesan langsung antara current_user dan partner_id
                 (ChatMessage.sender_id == current_user.id) & (ChatMessage.recipient_id == partner_id),
                 (ChatMessage.sender_id == partner_id) & (ChatMessage.recipient_id == current_user.id),
-                # Pesan ke ruang umum proyek
-                (ChatMessage.sender_id == partner_id) & (ChatMessage.recipient_id.is_(None)),
-                (ChatMessage.sender_id == current_user.id) & (ChatMessage.recipient_id.is_(None)),
             )
         )
     else:
-        # Jika partner_id tidak diberikan, hanya izinkan pesan yang melibatkan current_user
-        # atau pesan broadcast proyek umum. Pesan orang lain (recipient_id != current_user.id) tidak boleh bocor!
-        query = query.filter(
-            or_(
-                ChatMessage.sender_id == current_user.id,
-                ChatMessage.recipient_id == current_user.id,
-                ChatMessage.recipient_id.is_(None),
-            )
-        )
+        # Obrolan Grup Proyek
+        query = query.filter(ChatMessage.recipient_id.is_(None))
 
-    # Ambil pesan terurut dari yang terlama ke terbaru
     messages = query.order_by(ChatMessage.created_at.asc()).all()
 
     # Otomatis tandai pesan masuk yang belum dibaca sebagai sudah dibaca
@@ -584,7 +756,6 @@ def get_chat_messages(
             m.is_read = True
         db.commit()
 
-        # Broadcast READ_RECEIPT realtime via WebSocket ke room & partner
         read_payload = {
             "type": "READ_RECEIPT",
             "project_id": str(project_id),
@@ -597,10 +768,10 @@ def get_chat_messages(
         if partner_id:
             asyncio.create_task(manager.send_to_user(str(partner_id), read_payload))
 
-    # Format response dengan nama, role, dan foto pengirim
     response_list = []
     for m in messages:
         sender_name, sender_role, sender_photo = resolve_sender_display(m.sender)
+        sender_role_label = resolve_project_member_role(m.sender, project)
 
         response_list.append(
             ChatMessageResponse(
@@ -611,6 +782,7 @@ def get_chat_messages(
                 sender_name=sender_name,
                 sender_role=sender_role,
                 sender_photo=sender_photo,
+                sender_role_label=sender_role_label,
                 message=m.message,
                 attachment_url=m.attachment_url,
                 attachment_type=m.attachment_type,
@@ -620,6 +792,21 @@ def get_chat_messages(
         )
 
     return response_list
+
+
+
+@router.get("/projects/{project_id}/roster", response_model=List[GroupMemberItem])
+def get_project_chat_roster(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Mengambil daftar seluruh anggota resmi proyek (Owner UMKM + Mahasiswa Pelaksana),
+    beserta foto profil, role pengerjaan, dan status online terkini.
+    """
+    project = verify_project_participation(project_id, current_user, db)
+    return get_project_members_list(project, db, manager)
 
 
 # ============================================================================
@@ -635,7 +822,14 @@ async def send_chat_message(
     """
     Kirim pesan chat melalui REST API (juga membroadcast ke WebSocket aktif).
     """
-    verify_project_participation(project_id, current_user, db)
+    project = verify_project_participation(project_id, current_user, db)
+
+    # Validasi jika proyek sudah selesai / diarsipkan (read-only workroom)
+    if str(project.status).upper() in ["DONE", "SELESAI", "CLOSED", "CANCELLED"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Proyek ini telah selesai/diarsipkan secara resmi. Ruang obrolan berstatus hanya-baca (read-only).",
+        )
 
     msg_content = body.message or (body.attachment_url and "Lampiran tautan berkas")
     if not msg_content and not body.attachment_url:
@@ -658,6 +852,7 @@ async def send_chat_message(
     db.refresh(new_msg)
 
     sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
+    sender_role_label = resolve_project_member_role(current_user, project)
 
     msg_response = ChatMessageResponse(
         id=new_msg.id,
@@ -667,6 +862,7 @@ async def send_chat_message(
         sender_name=sender_name,
         sender_role=sender_role,
         sender_photo=sender_photo,
+        sender_role_label=sender_role_label,
         message=new_msg.message,
         attachment_url=new_msg.attachment_url,
         attachment_type=new_msg.attachment_type,
@@ -674,17 +870,19 @@ async def send_chat_message(
         created_at=new_msg.created_at,
     )
 
-    # Broadcast instan ke siapapun yang sedang online di room proyek ini
     broadcast_payload = json.loads(msg_response.model_dump_json())
     broadcast_payload["type"] = "CHAT_MESSAGE"
     await manager.broadcast(str(project_id), broadcast_payload)
 
-    # Kirim juga ke user socket penerima agar inbox / sidebar langsung terupdate
     if body.recipient_id:
         await manager.send_to_user(str(body.recipient_id), broadcast_payload)
+    else:
+        # Kirim ke seluruh anggota proyek jika pesan grup
+        members = get_project_members_list(project, db, manager)
+        for mem in members:
+            await manager.send_to_user(str(mem["user_id"]), broadcast_payload)
     await manager.send_to_user(str(current_user.id), broadcast_payload)
 
-    # Buat notifikasi tersimpan untuk penerima pesan
     create_chat_notification(
         db=db,
         project_id=project_id,
@@ -1040,6 +1238,14 @@ async def websocket_chat_endpoint(
                 if att_type:
                     att_type = str(att_type).strip().upper()
 
+                proj_obj = db.query(Project).filter(Project.id == project_id).first()
+                if proj_obj and str(proj_obj.status).upper() in ["DONE", "SELESAI", "CLOSED", "CANCELLED"]:
+                    await websocket.send_json({
+                        "type": "ERROR",
+                        "message": "Proyek ini telah selesai/diarsipkan. Obrolan dalam mode hanya-baca (read-only)."
+                    })
+                    continue
+
                 final_msg = msg_text or "Lampiran tautan berkas"
 
                 # Simpan pesan ke database
@@ -1057,6 +1263,7 @@ async def websocket_chat_endpoint(
                 db.refresh(new_msg)
 
                 sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
+                sender_role_label = resolve_project_member_role(current_user, proj_obj)
 
                 broadcast_data = {
                     "type": "CHAT_MESSAGE",
@@ -1067,6 +1274,7 @@ async def websocket_chat_endpoint(
                     "sender_name": sender_name,
                     "sender_role": sender_role,
                     "sender_photo": sender_photo,
+                    "sender_role_label": sender_role_label,
                     "message": new_msg.message,
                     "attachment_url": new_msg.attachment_url,
                     "attachment_type": new_msg.attachment_type,
@@ -1077,9 +1285,13 @@ async def websocket_chat_endpoint(
                 # Broadcast ke seluruh peserta yang sedang membuka chat room ini
                 await manager.broadcast(room_id, broadcast_data)
 
-                # Kirim juga ke socket pengguna penerima (untuk live inbox & update sidebar)
+                # Kirim juga ke socket pengguna penerima / seluruh anggota grup (untuk live inbox & update sidebar)
                 if recip_id:
                     await manager.send_to_user(str(recip_id), broadcast_data)
+                elif proj_obj:
+                    members = get_project_members_list(proj_obj, db, manager)
+                    for mem in members:
+                        await manager.send_to_user(str(mem["user_id"]), broadcast_data)
                 await manager.send_to_user(user_id_str, broadcast_data)
 
                 # Simpan notifikasi ke database untuk lawan bicara

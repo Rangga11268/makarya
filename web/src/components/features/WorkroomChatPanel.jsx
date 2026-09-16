@@ -17,6 +17,13 @@ import {
   Clock,
   X,
   Users,
+  Lock,
+  ChevronUp,
+  ChevronDown,
+  Info,
+  Crown,
+  FileText,
+  Copy,
 } from "lucide-react";
 
 export function WorkroomChatPanel({
@@ -27,6 +34,10 @@ export function WorkroomChatPanel({
   partnerRole = "USER",
   partnerPhoto = null,
   initialPartnerOnline = false,
+  isGroup = false,
+  groupMembers = [],
+  projectStatus = "OPEN",
+  onSelectPartner = null,
   onBack = null,
   headerExtra = null,
   projectContextBar = null,
@@ -43,6 +54,9 @@ export function WorkroomChatPanel({
   const { addToast } = useToastStore();
 
   const isUmkm = user?.role?.toUpperCase() === "UMKM";
+  const isProjectDone = ["DONE", "SELESAI", "CLOSED", "CANCELLED"].includes(
+    String(projectStatus || "").toUpperCase(),
+  );
 
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
@@ -50,8 +64,11 @@ export function WorkroomChatPanel({
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
   const [partnerOnline, setPartnerOnline] = useState(initialPartnerOnline);
+  const [rosterMembers, setRosterMembers] = useState(groupMembers || []);
   const [showDraftPrompt, setShowDraftPrompt] = useState(true);
   const [respondingOfferId, setRespondingOfferId] = useState(null);
+  const [showRosterModal, setShowRosterModal] = useState(false);
+  const [showBriefPinned, setShowBriefPinned] = useState(true);
 
   // Quick Attachment State
   const [showAttachInput, setShowAttachInput] = useState(false);
@@ -68,6 +85,32 @@ export function WorkroomChatPanel({
   useEffect(() => {
     setPartnerOnline(initialPartnerOnline);
   }, [initialPartnerOnline, partnerId]);
+
+  useEffect(() => {
+    if (groupMembers && groupMembers.length > 0) {
+      setRosterMembers(groupMembers);
+    }
+  }, [groupMembers]);
+
+  // Muat daftar anggota proyek resmi jika mode grup
+  useEffect(() => {
+    if (isGroup && projectId) {
+      let isMounted = true;
+      (async () => {
+        try {
+          const res = await chatApi.getProjectRoster(projectId);
+          if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
+            setRosterMembers(res.data);
+          }
+        } catch (err) {
+          console.warn("Gagal memuat roster anggota:", err);
+        }
+      })();
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [isGroup, projectId]);
 
   // 1. Muat riwayat chat lama via REST
   const loadHistory = async () => {
@@ -444,7 +487,7 @@ export function WorkroomChatPanel({
     >
       {/* 1. Chat Header Bar */}
       <div className="px-3.5 sm:px-5 py-3 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0 gap-2">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
           {onBack && (
             <button
               type="button"
@@ -455,69 +498,184 @@ export function WorkroomChatPanel({
               <ArrowLeft className="w-4 h-4" />
             </button>
           )}
-          {partnerPhoto ? (
-            <img
-              src={partnerPhoto}
-              alt={partnerName}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
+
+          {isGroup ? (
+            /* GROUP CHAT AVATAR STACK & HEADER */
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              <div
+                onClick={() => setShowRosterModal(true)}
+                className="flex items-center -space-x-2 shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+                title="Klik untuk melihat detail seluruh anggota tim"
+              >
+                {rosterMembers && rosterMembers.length > 0 ? (
+                  rosterMembers.slice(0, 3).map((mem, i) => (
+                    <div key={mem.user_id || i} className="relative">
+                      {mem.url_foto ? (
+                        <img
+                          src={mem.url_foto}
+                          alt={mem.nama_lengkap}
+                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border-2 border-white shadow-2xs"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs border-2 border-white shadow-2xs ${
+                            mem.is_owner
+                              ? "bg-amber-100 text-amber-900"
+                              : "bg-brand-indigo text-white"
+                          }`}
+                        >
+                          {(mem.nama_lengkap || "A").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span
+                        className={`absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border border-white ${
+                          mem.is_online ? "bg-emerald-500" : "bg-slate-300"
+                        }`}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-xs shadow-2xs border-2 border-white">
+                    <Users className="w-4 h-4" />
+                  </div>
+                )}
+                {rosterMembers && rosterMembers.length > 3 && (
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-slate-700 border-2 border-white flex items-center justify-center text-[10px] font-bold shadow-2xs">
+                    +{rosterMembers.length - 3}
+                  </div>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h4
+                  className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate"
+                  title={projectTitle || "Ruang Obrolan Grup Proyek"}
+                >
+                  {projectTitle || "Ruang Obrolan Grup Proyek"}
+                </h4>
+
+                <button
+                  type="button"
+                  onClick={() => setShowRosterModal(true)}
+                  className="text-[10px] sm:text-[11px] text-slate-500 hover:text-brand-indigo transition-colors flex items-center gap-1 mt-0.5 cursor-pointer font-medium truncate max-w-full text-left"
+                >
+                  <Users className="w-3 h-3 text-brand-indigo shrink-0" />
+                  <span className="truncate">
+                    {rosterMembers?.length || 2} Anggota Tim • Ketuk lihat
+                    daftar
+                  </span>
+                </button>
+              </div>
+            </div>
           ) : (
-            <div
-              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
-                partnerRole === "UMKM"
-                  ? "bg-amber-100 text-amber-900 border-amber-200"
-                  : "bg-brand-indigo text-white border-brand-indigo"
-              }`}
-            >
-              {(partnerName || "M").charAt(0).toUpperCase()}
+            /* 1-ON-1 DIRECT CHAT HEADER */
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              {partnerPhoto ? (
+                <img
+                  src={partnerPhoto}
+                  alt={partnerName}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div
+                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
+                    partnerRole === "UMKM"
+                      ? "bg-amber-100 text-amber-900 border-amber-200"
+                      : "bg-brand-indigo text-white border-brand-indigo"
+                  }`}
+                >
+                  {(partnerName || "M").charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate">
+                    {partnerName}
+                  </h4>
+                  <CheckCircle2
+                    className="w-3.5 h-3.5 text-emerald-600 shrink-0"
+                    title={
+                      partnerRole === "UMKM"
+                        ? "Klien Terverifikasi"
+                        : "Mahasiswa Terverifikasi"
+                    }
+                  />
+                </div>
+                <p className="text-[10px] sm:text-[11px] flex items-center gap-1.5 mt-0.5">
+                  <span
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      partnerOnline ? "bg-emerald-500" : "bg-slate-300"
+                    }`}
+                  />
+                  <span
+                    className={`text-[10px] truncate font-medium ${
+                      partnerOnline
+                        ? "text-emerald-600 font-semibold"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    {partnerOnline ? "Online" : "Offline"}
+                  </span>
+                </p>
+              </div>
             </div>
           )}
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate max-w-[160px] sm:max-w-xs">
-                {partnerName}
-              </h4>
-              <CheckCircle2
-                className="w-3.5 h-3.5 text-emerald-600 shrink-0"
-                title={
-                  partnerRole === "UMKM"
-                    ? "Klien Terverifikasi"
-                    : "Mahasiswa Terverifikasi"
-                }
-              />
-            </div>
-            <p className="text-[10px] sm:text-[11px] flex items-center gap-1.5 mt-0.5">
-              <span
-                className={`w-2 h-2 rounded-full shrink-0 ${
-                  partnerOnline
-                    ? "bg-emerald-500 ring-2 ring-emerald-500/20 animate-pulse"
-                    : "bg-slate-300"
-                }`}
-              />
-              <span
-                className={`text-[10px] truncate font-medium ${
-                  partnerOnline
-                    ? "text-emerald-600 font-semibold"
-                    : "text-slate-400"
-                }`}
-              >
-                {partnerOnline ? "Online" : "Offline"}
-              </span>
-            </p>
-          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {headerExtra}
-          <div className="hidden md:flex items-center gap-1 text-[11px] text-emerald-700 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Audit Escrow Makarya</span>
+        {headerExtra && (
+          <div className="flex items-center gap-2 shrink-0">{headerExtra}</div>
+        )}
+      </div>
+
+      {/* Pinned Project Brief Announcement Card */}
+      {showBriefPinned && (
+        <div className="px-4 py-2 bg-slate-50/90 border-b border-slate-200 text-xs flex items-center justify-between gap-3 text-slate-700">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1 rounded-lg bg-indigo-50 text-brand-indigo shrink-0">
+              <ProjectBriefVectorIcon size={14} color="#2563EB" />
+            </div>
+            <span className="font-semibold truncate text-[11px]">
+              {isGroup ? "Brief Kerja Grup:" : "Konteks Kerja:"}{" "}
+              <span className="text-slate-900 font-bold">
+                {activeProject?.judul || projectTitle}
+              </span>
+            </span>
+            {activeProject?.deadline && (
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                <Clock className="w-3 h-3" />
+                Tenggat: {activeProject.deadline}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isGroup && (
+              <button
+                type="button"
+                onClick={() => setShowRosterModal(true)}
+                className="px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 text-brand-indigo font-bold text-[10px] border border-slate-200 transition-colors cursor-pointer flex items-center gap-1"
+              >
+                <Users className="w-3 h-3" />
+                <span>Roster ({groupMembers?.length || 0})</span>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowBriefPinned(false)}
+              className="text-slate-400 hover:text-slate-600 p-1 rounded-md transition-colors"
+              title="Tutup banner brief"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 2. Chat Scrollable Thread */}
       <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 bg-canvas/30">
@@ -532,12 +690,14 @@ export function WorkroomChatPanel({
               <ProjectBriefVectorIcon size={22} color="#2563EB" />
             </div>
             <h5 className="text-xs sm:text-sm font-bold text-dark-900">
-              Mulai Diskusi Pengerjaan Proyek
+              {isGroup
+                ? "Ruang Obrolan Tim Proyek Siap"
+                : "Mulai Diskusi Pengerjaan Proyek"}
             </h5>
             <p className="text-[11px] text-muted max-w-sm mt-1 leading-relaxed">
-              Bahas rincian brief, tanyakan klarifikasi teknis, atau bagikan
-              tautan Figma. Seluruh percakapan terlindungi dalam audit garansi
-              Escrow Makarya.
+              {isGroup
+                ? "Bahas pembagian tugas, koordinasi brief, dan progres milestone bersama seluruh anggota tim dan klien."
+                : "Bahas rincian brief, tanyakan klarifikasi teknis, atau bagikan tautan Figma. Seluruh percakapan terlindungi dalam audit garansi Escrow Makarya."}
             </p>
           </div>
         ) : (
@@ -550,26 +710,24 @@ export function WorkroomChatPanel({
                 className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
               >
                 {!isMe &&
-                  ((
-                    partnerId ? partnerPhoto : m.sender_photo || partnerPhoto
-                  ) ? (
+                  (m.sender_photo || partnerPhoto ? (
                     <img
-                      src={
-                        partnerId
-                          ? partnerPhoto
-                          : m.sender_photo || partnerPhoto
-                      }
-                      alt={
-                        partnerId ? partnerName : m.sender_name || partnerName
-                      }
+                      src={m.sender_photo || partnerPhoto}
+                      alt={m.sender_name || partnerName}
                       className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
-                      {(partnerId
-                        ? partnerName
-                        : m.sender_name || partnerName || "P"
-                      )
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none ${
+                        m.sender_role === "UMKM"
+                          ? "bg-amber-100 text-amber-900"
+                          : "bg-brand-indigo text-white"
+                      }`}
+                    >
+                      {(m.sender_name || partnerName || "P")
                         .charAt(0)
                         .toUpperCase()}
                     </div>
@@ -582,10 +740,33 @@ export function WorkroomChatPanel({
                       : "bg-surface border border-border text-dark-900 rounded-bl-xs"
                   }`}
                 >
+                  {/* SENDER NAME & ROLE LABEL BADGE */}
                   {!isMe && (
-                    <span className="block text-[10px] font-bold text-brand-indigo mb-1">
-                      {partnerId ? partnerName : m.sender_name || partnerName}
-                    </span>
+                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                      <span className="font-bold text-[11px] text-slate-900">
+                        {m.sender_name || partnerName}
+                      </span>
+                      {m.sender_role_label && (
+                        <span
+                          className={`text-[9px] px-1.5 py-0.2 rounded-md font-bold border ${
+                            m.sender_role_label === "Project Owner" ||
+                            m.sender_role === "UMKM"
+                              ? "bg-amber-50 text-amber-800 border-amber-200"
+                              : m.sender_role_label.includes("Desain") ||
+                                  m.sender_role_label.includes("UI")
+                                ? "bg-purple-50 text-purple-800 border-purple-200"
+                                : m.sender_role_label.includes("Programmer") ||
+                                    m.sender_role_label.includes("Dev")
+                                  ? "bg-sky-50 text-sky-800 border-sky-200"
+                                  : "bg-indigo-50 text-brand-indigo border-indigo-100"
+                          }`}
+                        >
+                          {m.sender_role_label === "Project Owner"
+                            ? "👑 Owner"
+                            : m.sender_role_label}
+                        </span>
+                      )}
+                    </div>
                   )}
 
                   {/* Text Message (Deduplicate if PROJECT_OFFER) */}
@@ -1044,53 +1225,199 @@ export function WorkroomChatPanel({
         </div>
       )}
 
-      {/* 4. Bottom Input Bar */}
-      <form
-        onSubmit={handleSendMessage}
-        className="p-3 sm:p-3.5 border-t border-border bg-surface flex items-center gap-2 shrink-0"
-      >
-        <button
-          type="button"
-          onClick={() => setShowAttachInput(!showAttachInput)}
-          className={`p-2 rounded-xl border transition-colors ${
-            showAttachInput
-              ? "bg-brand-indigo text-white border-brand-indigo"
-              : "bg-canvas text-muted border-border hover:text-dark-900"
-          }`}
-          title="Sisipkan tautan berkas Figma / Drive"
+      {/* 4. Bottom Action Area (Read-Only Archived Workroom OR Active Input Bar) */}
+      {isProjectDone ? (
+        <div className="p-4 border-t border-slate-200 bg-slate-50/95 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-emerald-100 text-emerald-700 border border-emerald-200 shrink-0">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <h5 className="text-xs font-bold text-slate-900 flex items-center gap-1.5 justify-center sm:justify-start">
+                <span>Ruang Kolaborasi Selesai & Diarsipkan</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                  Escrow Tuntas
+                </span>
+              </h5>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                Pengerjaan proyek ini telah selesai secara resmi. Seluruh
+                riwayat obrolan dan berkas kerja diarsipkan permanen untuk
+                portofolio digital.
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSendMessage}
+          className="p-3 sm:p-3.5 border-t border-border bg-surface flex items-center gap-2 shrink-0"
         >
-          <Link2 className="w-4 h-4" />
-        </button>
-
-        {isUmkm && onOpenOfferModal && (
           <button
             type="button"
-            onClick={onOpenOfferModal}
-            className="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
-            title="Tawarkan Proyek Resmi kepada Talenta"
+            onClick={() => setShowAttachInput(!showAttachInput)}
+            className={`p-2 rounded-xl border transition-colors ${
+              showAttachInput
+                ? "bg-brand-indigo text-white border-brand-indigo"
+                : "bg-canvas text-muted border-border hover:text-dark-900"
+            }`}
+            title="Sisipkan tautan berkas Figma / Drive"
           >
-            <ProjectBriefVectorIcon size={14} color="#0F172A" />
-            <span className="hidden sm:inline">Tawarkan Proyek</span>
+            <Link2 className="w-4 h-4" />
           </button>
-        )}
 
-        <input
-          type="text"
-          placeholder="Tulis pesan atau tanggapan pengerjaan..."
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          className="flex-1 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
-        />
+          {isUmkm && onOpenOfferModal && (
+            <button
+              type="button"
+              onClick={onOpenOfferModal}
+              className="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+              title="Tawarkan Proyek Resmi kepada Talenta"
+            >
+              <ProjectBriefVectorIcon size={14} color="#0F172A" />
+              <span className="hidden sm:inline">Tawarkan Proyek</span>
+            </button>
+          )}
 
-        <button
-          type="submit"
-          disabled={(!inputText.trim() && !attachUrl.trim()) || sending}
-          className="px-3.5 py-2 rounded-xl bg-brand-indigo text-white font-bold text-xs flex items-center gap-1.5 shadow-brand disabled:opacity-40 hover:bg-brand-indigo-dark transition-colors shrink-0"
-        >
-          <span>Kirim</span>
-          <Send className="w-3.5 h-3.5" />
-        </button>
-      </form>
+          <input
+            type="text"
+            placeholder="Tulis pesan atau koordinasi tugas..."
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            className="flex-1 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+          />
+
+          <button
+            type="submit"
+            disabled={(!inputText.trim() && !attachUrl.trim()) || sending}
+            className="px-3.5 py-2 rounded-xl bg-brand-indigo text-white font-bold text-xs flex items-center gap-1.5 shadow-brand disabled:opacity-40 hover:bg-brand-indigo-dark transition-colors shrink-0"
+          >
+            <span>Kirim</span>
+            <Send className="w-3.5 h-3.5" />
+          </button>
+        </form>
+      )}
+
+      {/* 5. Team Roster Modal (Grup Anggota Tim Popover) */}
+      {showRosterModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-xl bg-brand-indigo/10 text-brand-indigo">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Anggota Grup Proyek
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    {rosterMembers?.length || 0} personil terdaftar resmi
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRosterModal(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-2.5 divide-y divide-slate-100">
+              {rosterMembers && rosterMembers.length > 0 ? (
+                rosterMembers.map((mem) => {
+                  const isCurrent = String(mem.user_id) === String(user?.id);
+                  return (
+                    <div
+                      key={mem.user_id}
+                      className="pt-2.5 first:pt-0 flex items-center justify-between gap-3"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="relative shrink-0">
+                          {mem.url_foto ? (
+                            <img
+                              src={mem.url_foto}
+                              alt={mem.nama_lengkap}
+                              className="w-9 h-9 rounded-xl object-cover border border-slate-200"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
+                                mem.is_owner
+                                  ? "bg-amber-100 text-amber-900"
+                                  : "bg-brand-indigo text-white"
+                              }`}
+                            >
+                              {(mem.nama_lengkap || "A")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </div>
+                          )}
+                          <span
+                            className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${
+                              mem.is_online ? "bg-emerald-500" : "bg-slate-300"
+                            }`}
+                          />
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-900 truncate">
+                              {mem.nama_lengkap}
+                              {isCurrent && " (Anda)"}
+                            </span>
+                            {mem.is_owner && (
+                              <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            )}
+                          </div>
+                          <span className="text-[10px] text-slate-500 block truncate font-medium">
+                            {mem.role_label ||
+                              (mem.is_owner ? "Project Owner" : "Pelaksana")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {!isCurrent && onSelectPartner && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowRosterModal(false);
+                            onSelectPartner(mem.user_id);
+                          }}
+                          className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-brand-indigo hover:text-white text-slate-700 font-bold text-[11px] transition-colors cursor-pointer shrink-0"
+                        >
+                          Chat Pribadi
+                        </button>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-xs text-slate-400 text-center py-4">
+                  Belum ada anggota tim tambahan yang terdaftar.
+                </p>
+              )}
+            </div>
+
+            <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between text-[11px] text-slate-500">
+              <span className="flex items-center gap-1 text-emerald-700 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                Proteksi Escrow Aktif
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowRosterModal(false)}
+                className="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -59,6 +59,8 @@ export const ratingApi = {
 
 export const chatApi = {
   getConversations: () => api.get("/chat/conversations"),
+  getProjectRoster: (projectId) =>
+    api.get(`/chat/projects/${projectId}/roster`),
   getMessages: (projectId, partnerId = null) =>
     api.get(`/chat/project/${projectId}/messages`, {
       params: partnerId ? { partner_id: partnerId } : {},

@@ -103,7 +103,7 @@ export function WorkspaceProjectHUD({
                 : urgencyLevel === "expired"
                   ? "bg-rose-50 border-rose-200 text-rose-700"
                   : urgencyLevel === "urgent"
-                    ? "bg-amber-50 border-amber-300 text-amber-900 animate-pulse"
+                    ? "bg-amber-50 border-amber-300 text-amber-900"
                     : urgencyLevel === "warning"
                       ? "bg-amber-50 border-amber-200 text-amber-800"
                       : "bg-blue-50/80 border-blue-200 text-blue-800"
@@ -176,7 +176,7 @@ export function WorkspaceProjectHUD({
                 </div>
                 {autoApproveRemainingText && (
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold animate-pulse"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold"
                     title="Dana escrow otomatis dicairkan ke mahasiswa jika klien UMKM tidak mereview dalam 7 hari"
                   >
                     <Clock className="w-3 h-3 text-blue-600" />

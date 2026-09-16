@@ -151,16 +151,21 @@ export function ProposalBoardPage() {
             const requestedTab = searchParams.get("tab");
             if (
               requestedTab &&
-              ["chat", "deliverable", "brief", "applicants"].includes(
-                requestedTab,
-              )
+              [
+                "deliverable",
+                "brief",
+                "applicants",
+                "team",
+                "timeline",
+              ].includes(requestedTab)
             ) {
               setActiveStageTab(requestedTab);
-            } else if (isCompleted) {
+            } else if (
+              isCompleted ||
+              (details.submissions && details.submissions.length > 0)
+            ) {
               setActiveStageTab("deliverable");
-            } else if (hasAccepted) {
-              setActiveStageTab("chat");
-            } else if (details.proposals.length > 0) {
+            } else if (!hasAccepted && details.proposals.length > 0) {
               setActiveStageTab("applicants");
             } else {
               setActiveStageTab("brief");
@@ -217,15 +222,17 @@ export function ProposalBoardPage() {
             const requestedTab = searchParams.get("tab");
             if (
               requestedTab &&
-              ["chat", "deliverable", "brief", "applicants"].includes(
-                requestedTab,
-              )
+              [
+                "deliverable",
+                "brief",
+                "applicants",
+                "team",
+                "timeline",
+              ].includes(requestedTab)
             ) {
               setActiveStageTab(requestedTab);
-            } else if (isCompleted) {
+            } else if (isCompleted || subMap[found.project_id]) {
               setActiveStageTab("deliverable");
-            } else if (found.status === "ACCEPTED") {
-              setActiveStageTab("chat");
             } else {
               setActiveStageTab("brief");
             }
@@ -282,7 +289,9 @@ export function ProposalBoardPage() {
     const requestedTab = searchParams.get("tab");
     if (
       requestedTab &&
-      ["chat", "deliverable", "brief", "applicants"].includes(requestedTab)
+      ["deliverable", "brief", "applicants", "team", "timeline"].includes(
+        requestedTab,
+      )
     ) {
       setActiveStageTab(requestedTab);
     }
@@ -305,11 +314,12 @@ export function ProposalBoardPage() {
     setDetailsLoading(false);
 
     const hasAccepted = details.proposals.some((p) => p.status === "ACCEPTED");
-    if (isCompleted) {
+    if (
+      isCompleted ||
+      (details.submissions && details.submissions.length > 0)
+    ) {
       setActiveStageTab("deliverable");
-    } else if (hasAccepted) {
-      setActiveStageTab("chat");
-    } else if (details.proposals.length > 0) {
+    } else if (!hasAccepted && details.proposals.length > 0) {
       setActiveStageTab("applicants");
     } else {
       setActiveStageTab("brief");
@@ -340,10 +350,8 @@ export function ProposalBoardPage() {
       proposal.project_status === "DONE" ||
       proposal.project_status === "COMPLETED";
 
-    if (isCompleted) {
+    if (isCompleted || mhsSubmissions[proposal.project_id]) {
       setActiveStageTab("deliverable");
-    } else if (proposal.status === "ACCEPTED") {
-      setActiveStageTab("chat");
     } else {
       setActiveStageTab("brief");
     }
@@ -374,7 +382,7 @@ export function ProposalBoardPage() {
             "Proyek kini beralih ke status Dalam Pengerjaan (IN_PROGRESS).",
           );
           await loadData();
-          setActiveStageTab("chat");
+          setActiveStageTab("brief");
         } catch (err) {
           const msg = err.response?.data?.detail || "Gagal menerima proposal.";
           showError("Gagal Menerima Proposal", msg);

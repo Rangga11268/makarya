@@ -425,7 +425,7 @@ function UmkmProjectGridCard({ project, onOpen }) {
             </span>
           ) : isInProgress ? (
             <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse group-hover:bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 group-hover:bg-emerald-400" />
               <span>Masuk Ruang Kerja</span>
             </span>
           ) : isDone ? (
@@ -570,7 +570,7 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
         >
           {isAccepted ? (
             <span className="flex items-center gap-1.5 text-emerald-700 group-hover:text-white">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse group-hover:bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 group-hover:bg-emerald-400" />
               <span>Masuk Ruang Kerja</span>
             </span>
           ) : isDone ? (

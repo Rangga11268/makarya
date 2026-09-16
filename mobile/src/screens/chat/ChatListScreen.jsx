@@ -194,6 +194,7 @@ export function ChatListScreen({ navigation }) {
     const isPartnerMhs =
       item.partner_role === "MHS" || item.partner_role === "MAHASISWA";
     const initial = (item.partner_name || "M").charAt(0).toUpperCase();
+    const isGroup = Boolean(item.is_group);
 
     return (
       <TouchableOpacity
@@ -207,12 +208,78 @@ export function ChatListScreen({ navigation }) {
             partnerPhoto: item.partner_photo,
             partnerRole: item.partner_role,
             projectTitle: item.project_title,
+            isGroup: isGroup,
+            members: item.members || [],
           })
         }
       >
         {/* Partner Avatar with Online/Offline Status Indicator */}
         <View style={styles.avatarContainer}>
-          {item.partner_photo ? (
+          {isGroup ? (
+            item.members && item.members.length > 0 ? (
+              <View
+                style={[
+                  styles.avatarFallback,
+                  {
+                    backgroundColor: "#F1F5F9",
+                    flexDirection: "row",
+                    paddingHorizontal: 2,
+                  },
+                ]}
+              >
+                {item.members.slice(0, 2).map((m, mIdx) =>
+                  m.url_foto ? (
+                    <Image
+                      key={m.user_id || mIdx}
+                      source={{ uri: m.url_foto }}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        borderWidth: 1,
+                        borderColor: "#FFFFFF",
+                        marginLeft: mIdx > 0 ? -6 : 0,
+                      }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View
+                      key={m.user_id || mIdx}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: m.is_owner
+                          ? "#FEF3C7"
+                          : COLORS.brandIndigo,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderWidth: 1,
+                        borderColor: "#FFFFFF",
+                        marginLeft: mIdx > 0 ? -6 : 0,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 9,
+                          fontFamily: FONTS.bodyBold,
+                          color: m.is_owner ? "#92400E" : "#FFFFFF",
+                        }}
+                      >
+                        {(m.nama_lengkap || "A").charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                  ),
+                )}
+              </View>
+            ) : (
+              <View
+                style={[styles.avatarFallback, { backgroundColor: "#EEF2FF" }]}
+              >
+                <Users size={20} color={COLORS.brandIndigo} />
+              </View>
+            )
+          ) : item.partner_photo ? (
             <Image
               source={{ uri: item.partner_photo }}
               style={styles.avatarImg}
@@ -232,7 +299,7 @@ export function ChatListScreen({ navigation }) {
             style={[
               styles.statusDotBadge,
               {
-                backgroundColor: item.is_online ? "#10B981" : "#EF4444",
+                backgroundColor: item.is_online ? "#10B981" : "#94A3B8",
               },
             ]}
           />
@@ -251,28 +318,30 @@ export function ChatListScreen({ navigation }) {
 
           {/* Role & Context Row */}
           <View style={styles.roleRow}>
-            <View
-              style={[
-                styles.roleBadge,
-                isPartnerMhs ? styles.roleBadgeMhs : styles.roleBadgeUmkm,
-              ]}
-            >
-              {isPartnerMhs ? (
-                <GraduationCap size={10} color="#2563EB" />
-              ) : (
-                <Building2 size={10} color="#D97706" />
-              )}
-              <Text
+            {!isGroup && (
+              <View
                 style={[
-                  styles.roleBadgeText,
-                  isPartnerMhs
-                    ? styles.roleBadgeTextMhs
-                    : styles.roleBadgeTextUmkm,
+                  styles.roleBadge,
+                  isPartnerMhs ? styles.roleBadgeMhs : styles.roleBadgeUmkm,
                 ]}
               >
-                {isPartnerMhs ? "Mahasiswa" : "Klien UMKM"}
-              </Text>
-            </View>
+                {isPartnerMhs ? (
+                  <GraduationCap size={10} color="#2563EB" />
+                ) : (
+                  <Building2 size={10} color="#D97706" />
+                )}
+                <Text
+                  style={[
+                    styles.roleBadgeText,
+                    isPartnerMhs
+                      ? styles.roleBadgeTextMhs
+                      : styles.roleBadgeTextUmkm,
+                  ]}
+                >
+                  {isPartnerMhs ? "Mahasiswa" : "Klien UMKM"}
+                </Text>
+              </View>
+            )}
 
             {item.project_title ? (
               <View style={styles.projectPill}>

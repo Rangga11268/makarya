@@ -1,7 +1,7 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../../store/authStore";
 import { Button } from "../../../components/ui/Button";
-import { WorkroomChatPanel } from "../../../components/features/WorkroomChatPanel";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import { ProjectBriefVectorIcon } from "../../../components/icons/ProjectVectorIcon";
@@ -19,94 +19,29 @@ import {
   AlertCircle,
   XCircle,
   ListChecks,
-  Lock,
-  MessageSquareOff,
   Maximize2,
   Minimize2,
   ArrowLeft,
+  ChevronRight,
   Star,
   Scale,
+  Briefcase,
+  Layers,
+  Sparkles,
+  Link2,
+  Share2,
+  Shield,
+  FileCode,
+  FolderArchive,
+  Palette,
+  Check,
+  Building2,
+  GraduationCap,
+  MapPin,
+  Mail,
+  Send,
+  HelpCircle,
 } from "lucide-react";
-
-function RevisionChecklistInteractive({ items = [], isMhs = false }) {
-  const [checkedIndices, setCheckedIndices] = React.useState({});
-
-  const toggleCheck = (idx) => {
-    setCheckedIndices((prev) => ({
-      ...prev,
-      [idx]: !prev[idx],
-    }));
-  };
-
-  const total = items.length;
-  const completed = Object.values(checkedIndices).filter(Boolean).length;
-  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-  return (
-    <div className="p-4 rounded-2xl bg-surface border border-border shadow-xs space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <ListChecks className="w-4 h-4 text-brand-indigo" />
-          <span className="text-xs font-bold text-dark-900">
-            Daftar Periksa Poin Revisi
-          </span>
-        </div>
-        <span className="text-[11px] font-semibold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
-          {completed} dari {total} selesai ({percent}%)
-        </span>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-emerald-600 transition-all duration-300 rounded-full"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-
-      <div className="space-y-1.5 pt-1">
-        {items.map((item, idx) => {
-          const isDone = !!checkedIndices[idx];
-          return (
-            <label
-              key={idx}
-              onClick={() => toggleCheck(idx)}
-              className={`flex items-start gap-2.5 p-2 rounded-xl border transition-colors cursor-pointer select-none ${
-                isDone
-                  ? "bg-emerald-50/50 border-emerald-200/80 text-muted"
-                  : "bg-canvas border-border text-dark-900 hover:bg-slate-50"
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={isDone}
-                onChange={() => {}}
-                className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-              />
-              <span
-                className={`text-xs flex-1 leading-relaxed ${
-                  isDone ? "line-through text-slate-500" : "font-medium"
-                }`}
-              >
-                {item}
-              </span>
-            </label>
-          );
-        })}
-      </div>
-
-      {isMhs && percent === 100 && (
-        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 font-semibold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            Semua poin perbaikan telah dicentang. Silakan unggah berkas hasil
-            revisi Anda.
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
 import { WorkspaceProjectHUD } from "./workspace/WorkspaceProjectHUD";
@@ -133,8 +68,7 @@ export function WorkroomWorkspaceDetail({
   selectedProposal,
   projectEscrow,
   detailsLoading = false,
-  activeStageTab,
-
+  activeStageTab = "brief",
   setActiveStageTab,
   activeDeliverable,
   projectSubmissions = [],
@@ -152,6 +86,8 @@ export function WorkroomWorkspaceDetail({
   onOpenRatingModal,
   onOpenFileDisputeModal,
 }) {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [invoiceModalOpen, setInvoiceModalOpen] = React.useState(false);
   const [handoffModalOpen, setHandoffModalOpen] = React.useState(false);
   const [pendingSubmissionId, setPendingSubmissionId] = React.useState(null);
@@ -203,6 +139,92 @@ export function WorkroomWorkspaceDetail({
     return null;
   }, [selectedProposal, selectedProject, isUmkm]);
 
+  // Client UMKM profile data resolver
+  const clientData = React.useMemo(() => {
+    const umkmProfile =
+      selectedProject?.umkm_profile ||
+      selectedProposal?.umkm_profile ||
+      selectedProposal?.project?.umkm_profile ||
+      {};
+    const namaUsaha =
+      umkmProfile.nama_usaha ||
+      selectedProposal?.project_umkm_nama ||
+      selectedProposal?.umkm_nama ||
+      (isUmkm ? user?.nama : "Klien UMKM Terdaftar");
+    const fotoUsaha =
+      umkmProfile.url_foto_usaha ||
+      umkmProfile.url_foto ||
+      (isUmkm ? user?.url_foto : activePartnerPhoto) ||
+      null;
+    const kota = umkmProfile.kota || "Indonesia";
+    const bidang =
+      umkmProfile.bidang_industri ||
+      selectedProject?.kategori ||
+      "Usaha Mandiri / UMKM";
+    const deskripsi =
+      umkmProfile.deskripsi_usaha ||
+      "Unit usaha mitra UMKM terverifikasi di platform Makarya.";
+
+    return {
+      namaUsaha,
+      fotoUsaha,
+      kota,
+      bidang,
+      deskripsi,
+    };
+  }, [selectedProject, selectedProposal, isUmkm, user, activePartnerPhoto]);
+
+  // Student Mahasiswa profile data resolver
+  const studentData = React.useMemo(() => {
+    const mhsProfile =
+      selectedProposal?.mhs_profile ||
+      projectProposals.find((p) => p.status === "ACCEPTED")?.mhs_profile ||
+      {};
+    const parsed = parseCoverLetter
+      ? parseCoverLetter(selectedProposal?.cover_letter || "")
+      : { tools: [], portfolio: null, text: "" };
+
+    const namaLengkap = isUmkm
+      ? mhsProfile.nama_lengkap ||
+        selectedProject?.accepted_mhs_nama ||
+        activePartnerName ||
+        "Mahasiswa Talenta"
+      : user?.nama || "Anda (Mahasiswa Pelaksana)";
+    const foto = isUmkm
+      ? mhsProfile.url_foto ||
+        selectedProject?.accepted_mhs_foto ||
+        activePartnerPhoto
+      : user?.url_foto || null;
+    const kampus = mhsProfile.asal_kampus || "Perguruan Tinggi Terakreditasi";
+    const prodi = mhsProfile.program_studi || "Talenta Digital";
+    const tools =
+      parsed.tools.length > 0
+        ? parsed.tools
+        : ["Figma", "React", "UI/UX", "Tailwind CSS"];
+    const portfolio = parsed.portfolio || null;
+    const estimasiHari =
+      selectedProposal?.estimasi_hari || selectedProject?.estimasi_hari || 14;
+
+    return {
+      namaLengkap,
+      foto,
+      kampus,
+      prodi,
+      tools,
+      portfolio,
+      estimasiHari,
+    };
+  }, [
+    selectedProject,
+    selectedProposal,
+    projectProposals,
+    isUmkm,
+    user,
+    activePartnerName,
+    activePartnerPhoto,
+    parseCoverLetter,
+  ]);
+
   if (!activeProjectId) {
     return (
       <div className="bg-surface rounded-3xl border border-border p-12 text-center space-y-3 shadow-xs">
@@ -216,568 +238,292 @@ export function WorkroomWorkspaceDetail({
           Pilih Proyek di Sisi Kiri
         </h3>
         <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
-          Pilih salah satu proyek atau proposal pada daftar navigator untuk
-          langsung membuka ruang obrolan, memverifikasi berkas kerja, dan
-          mengelola garansi escrow.
+          Pilih salah satu proyek pada daftar navigator untuk membuka ruang
+          kerja proyek, memverifikasi berkas deliverable, dan mengelola garansi
+          escrow.
         </p>
       </div>
     );
   }
 
+  const handleOpenChat = () => {
+    navigate(`/chat/${activeProjectId}`);
+  };
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate("/proposals");
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      {/* 1. Real-time Project Health & Pipeline HUD */}
+    <div className="space-y-4 font-sans">
+      {/* 1. Dedicated Top Navigation & Breadcrumbs Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+        {/* Left: Mini Navigasi / Breadcrumbs & Tombol Kembali */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-muted min-w-0">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface border border-border text-dark-900 font-bold hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Kembali</span>
+          </button>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <span className="text-brand-indigo font-bold shrink-0">
+            {selectedProject?.kategori ||
+              selectedProposal?.project_kategori ||
+              "Papan Kerja"}
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:inline" />
+          <span className="text-slate-600 truncate max-w-[200px] sm:max-w-md hidden sm:inline">
+            {activeProjectTitle}
+          </span>
+        </div>
+
+        {/* Right: Project Switcher Dropdown (If multiple projects) */}
+        {allProjects.length > 1 && (
+          <div className="relative max-w-full sm:max-w-xs">
+            <select
+              value={activeProjectId || ""}
+              onChange={(e) => {
+                const proj = allProjects.find(
+                  (p) =>
+                    String(p.id) === e.target.value ||
+                    String(p.project_id) === e.target.value,
+                );
+                if (proj && onSelectProject) onSelectProject(proj);
+              }}
+              className="w-full text-xs font-bold py-1.5 px-3 rounded-xl bg-surface border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo truncate shadow-2xs cursor-pointer"
+            >
+              {allProjects.map((p) => {
+                const optVal = p.project_id || p.id;
+                const optTitle = p.judul || p.project_judul || "Proyek";
+                return (
+                  <option key={p.id} value={optVal}>
+                    {optTitle}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
+      </div>
+
+      {/* 2. Real-time Project Health & Pipeline HUD */}
       <WorkspaceProjectHUD
         project={selectedProject || selectedProposal}
         projectEscrow={projectEscrow}
         activeDeliverable={activeDeliverable}
         isUmkm={isUmkm}
-        onPingProgress={() => setActiveStageTab("chat")}
+        onPingProgress={handleOpenChat}
         isProjectCompleted={isProjectCompleted}
       />
 
-      {/* Stage Top Bar (Project Card Summary) */}
-      <div className="bg-surface rounded-3xl border border-border p-4 sm:p-6 shadow-xs space-y-3.5">
-        {/* Unified Responsive Stage Top Bar */}
-        <div className="border-b border-border pb-3.5 space-y-3">
-          {/* Top row: Navigation Back Button, Project Switcher & Status Badges */}
-          <div className="flex flex-wrap items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2">
-              {onBack ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onBack}
-                  className="text-xs font-bold text-dark-900 border-border hover:bg-slate-100 flex items-center gap-1.5 px-3 py-1.5 rounded-xl shadow-2xs shrink-0"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Semua Proyek</span>
-                </Button>
-              ) : (
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
-                  Proyek Aktif
-                </span>
-              )}
-
-              {allProjects.length > 1 && (
-                <div className="relative max-w-[180px] sm:max-w-xs">
-                  <select
-                    value={activeProjectId || ""}
-                    onChange={(e) => {
-                      const proj = allProjects.find(
-                        (p) =>
-                          String(p.id) === e.target.value ||
-                          String(p.project_id) === e.target.value,
-                      );
-                      if (proj && onSelectProject) onSelectProject(proj);
-                    }}
-                    className="w-full text-xs font-bold py-1 px-2.5 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo truncate"
-                  >
-                    {allProjects.map((p) => {
-                      const optVal = p.project_id || p.id;
-                      const optTitle = p.judul || p.project_judul || "Proyek";
-                      return (
-                        <option key={p.id} value={optVal}>
-                          {optTitle}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
-              {isProjectCompleted ? (
-                <>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-emerald-600 text-white text-[11px] sm:text-xs font-bold shadow-xs">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" />
-                    <span>Proyek Selesai (Lunas)</span>
-                  </div>
-                  {onOpenRatingModal && (
-                    <Button
-                      variant="brand"
-                      size="sm"
-                      onClick={onOpenRatingModal}
-                      className="text-xs font-bold shadow-xs py-1 px-3"
-                    >
-                      <Star className="w-3.5 h-3.5 mr-1 text-amber-300 fill-amber-300" />
-                      <span>Beri Ulasan</span>
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Garansi Escrow Aman</span>
-                  </div>
-                  {onOpenFileDisputeModal && hasAcceptedApplicant && (
-                    <button
-                      type="button"
-                      onClick={onOpenFileDisputeModal}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold transition-colors"
-                      title="Laporkan kendala ke admin mediasi Makarya"
-                    >
-                      <Scale className="w-3 h-3 text-rose-600" />
-                      <span>Laporkan Kendala</span>
-                    </button>
-                  )}
-                </>
-              )}
-
-              {!isProjectCompleted &&
-                selectedProject?.deadline &&
-                isExpired(selectedProject.deadline) && (
-                  <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-rose-50 border border-rose-200 text-rose-700 text-[11px] sm:text-xs font-bold">
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-                    <span>
-                      Lewat Tenggat ({formatDate(selectedProject.deadline)})
-                    </span>
-                  </div>
+      {/* 3. Sleek, Apple-inspired Main Workspace Dashboard Card */}
+      <div className="bg-surface rounded-3xl border border-border p-4 sm:p-6 shadow-xs space-y-4">
+        {/* Row 1: Clean Project Title & Actions Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
+          {/* Left: Project Title & Contextual Meta */}
+          <div className="space-y-1 min-w-0">
+            <h2 className="text-base sm:text-xl font-extrabold text-dark-900 leading-snug break-words">
+              {activeProjectTitle}
+            </h2>
+            <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
+              <span className="font-bold text-dark-900">
+                {clientData.namaUsaha}
+              </span>
+              <span>•</span>
+              <span className="font-extrabold text-emerald-700">
+                {formatCurrency(
+                  isUmkm
+                    ? selectedProject?.budget_max
+                    : selectedProposal?.harga_tawar ||
+                        selectedProject?.budget_max,
                 )}
-
-              {setIsFocusMode && (
-                <button
-                  type="button"
-                  onClick={() => setIsFocusMode(!isFocusMode)}
-                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
-                    isFocusMode
-                      ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                      : "bg-canvas border-border text-dark-900 hover:bg-slate-100"
-                  }`}
-                  title={
-                    isFocusMode
-                      ? "Kembalikan Tampilan Split"
-                      : "Buka Mode Fokus Layar Penuh (12 Kolom)"
-                  }
-                >
-                  {isFocusMode ? (
-                    <>
-                      <Minimize2 className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Keluar Fokus</span>
-                    </>
-                  ) : (
-                    <>
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Mode Fokus</span>
-                    </>
-                  )}
-                </button>
+              </span>
+              <span>•</span>
+              <span>
+                {selectedProject?.tipe_kolaborasi === "TIM" ||
+                (selectedProject?.slots && selectedProject.slots.length > 0)
+                  ? `Tim (${selectedProject?.slots?.length || 0} Peran)`
+                  : "Individu"}
+              </span>
+              {isProjectCompleted && (
+                <>
+                  <span>•</span>
+                  <span className="font-bold text-emerald-700">
+                    Lunas & Selesai
+                  </span>
+                </>
               )}
             </div>
           </div>
 
-          {/* Bottom row: Category badge & Full Project Title */}
-          <div className="space-y-1 min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
-              {isFocusMode ? "Mode Fokus Ruang Kerja" : "Proyek Aktif"}
-            </span>
-            <h2 className="text-base sm:text-xl font-bold text-dark-900 leading-snug break-words">
-              {activeProjectTitle}
-            </h2>
+          {/* Right: Primary Chat CTA & Secondary Actions */}
+          <div className="flex items-center gap-2 shrink-0 self-start md:self-auto">
+            {/* Direct Obrolan Button */}
+            <Button
+              variant="brand"
+              size="sm"
+              onClick={handleOpenChat}
+              className="text-xs font-bold shadow-brand py-1.5 px-3.5 flex items-center gap-2"
+              title="Buka Ruang Obrolan Realtime Proyek"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Buka Obrolan</span>
+            </Button>
+
+            {/* Faktur Escrow */}
+            <button
+              type="button"
+              onClick={() => setInvoiceModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-dark-900 font-bold text-xs hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer"
+              title="Cetak Faktur Bukti Transaksi Escrow Resmi"
+            >
+              <FileText className="w-3.5 h-3.5 text-brand-indigo" />
+              <span>Faktur</span>
+            </button>
+
+            {/* Mediasi Sengketa */}
+            {onOpenFileDisputeModal &&
+              hasAcceptedApplicant &&
+              !isProjectCompleted && (
+                <button
+                  type="button"
+                  onClick={onOpenFileDisputeModal}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-canvas border border-border text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                  title="Laporkan Kendala ke Mediasi Makarya"
+                >
+                  <Scale className="w-3.5 h-3.5" />
+                </button>
+              )}
+
+            {/* Mode Fokus */}
+            {setIsFocusMode && (
+              <button
+                type="button"
+                onClick={() => setIsFocusMode(!isFocusMode)}
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-xl border text-xs font-bold transition-all ${
+                  isFocusMode
+                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                    : "bg-canvas border-border text-dark-900 hover:bg-slate-100"
+                }`}
+                title={
+                  isFocusMode ? "Keluar Mode Fokus" : "Mode Fokus Layar Penuh"
+                }
+              >
+                {isFocusMode ? (
+                  <Minimize2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Maximize2 className="w-3.5 h-3.5" />
+                )}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Overdue Warning Callout (Only if NOT completed) */}
+        {/* Overdue Warning Callout */}
         {!isProjectCompleted &&
           selectedProject?.deadline &&
           isExpired(selectedProject.deadline) && (
             <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-xs flex flex-col gap-2 text-rose-900">
-              <div className="flex items-start gap-2.5">
+              <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-0.5">
                   <span className="font-bold block">
-                    Peringatan Tenggat Waktu Terlewati
+                    Peringatan Tenggat Waktu (
+                    {formatDate(selectedProject.deadline)})
                   </span>
                   <p className="text-[11px] text-rose-700 leading-relaxed">
                     {isUmkm
-                      ? "Pengerjaan proyek oleh mahasiswa telah melewati batas tenggat waktu yang ditentukan. Anda dapat mendiskusikan kelanjutan via obrolan, membatalkan kontrak untuk membuka kembali proyek ke eksplorasi (escrow dikembalikan), atau membatalkan proyek."
-                      : "Batas waktu pengerjaan proyek telah terlewati. Harap segera kirimkan hasil kerja final (deliverable) atau ajukan pengunduran diri jika Anda berhalangan melanjutkan."}
+                      ? "Pengerjaan proyek oleh mahasiswa telah melewati batas tenggat waktu. Anda dapat berdiskusi via obrolan atau membatalkan penugasan."
+                      : "Batas waktu pengerjaan telah terlewati. Harap segera serahkan berkas deliverable Anda."}
                   </p>
                 </div>
               </div>
-
-              {isUmkm && selectedProject?.status === "IN_PROGRESS" && (
-                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-rose-200/60 pl-6.5">
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    onClick={onOpenReopenModal}
-                    className="text-xs font-bold shadow-brand"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                    Ganti Mahasiswa & Buka ke Eksplorasi
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onOpenTerminateModal}
-                    className="text-xs font-bold text-rose-700 border-rose-300 hover:bg-rose-100"
-                  >
-                    <XCircle className="w-3.5 h-3.5 mr-1" />
-                    Batalkan Proyek
-                  </Button>
-                </div>
-              )}
-
-              {!isUmkm && selectedProposal?.status === "ACCEPTED" && (
-                <div className="flex items-center gap-2 pt-2 border-t border-rose-200/60 pl-6.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onOpenResignModal}
-                    className="text-xs font-bold text-rose-700 border-rose-300 hover:bg-rose-100"
-                  >
-                    <XCircle className="w-3.5 h-3.5 mr-1" />
-                    Ajukan Pengunduran Diri
-                  </Button>
-                </div>
-              )}
             </div>
           )}
 
-        {/* Cancellation / Termination Audit Banner */}
-        {(selectedProject?.status === "CANCELLED" ||
-          selectedProposal?.status === "WITHDRAWN") && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-rose-200 text-xs space-y-3.5 text-dark-900">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
-                  <XCircle className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">
-                    Audit Pembatalan Kontrak
-                  </span>
-                  <span className="font-bold text-dark-900 text-sm">
-                    {selectedProject?.status === "CANCELLED"
-                      ? "Proyek Telah Dibatalkan Secara Permanen"
-                      : "Penugasan Mahasiswa Ditarik / Mundur"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
-                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-white border border-slate-200 text-dark-900">
-                  Status:{" "}
-                  {selectedProject?.status === "CANCELLED"
-                    ? "Dibatalkan"
-                    : "Mundur (Withdrawn)"}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  Escrow Dikembalikan 100%
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                <span className="text-[10px] text-muted block font-semibold">
-                  Pihak Inisiator
-                </span>
-                <p className="font-bold text-dark-900">
-                  {selectedProject?.cancelled_by_role === "UMKM"
-                    ? "Klien UMKM"
-                    : selectedProject?.cancelled_by_role === "MAHASISWA"
-                      ? "Mahasiswa Terpilih"
-                      : selectedProject?.cancelled_by_role === "SYSTEM_EXPIRED"
-                        ? "Sistem (Tenggat Kedaluwarsa)"
-                        : selectedProposal?.status === "WITHDRAWN"
-                          ? "Pengunduran Diri Mahasiswa"
-                          : "Pihak Pengelola"}
-                </p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                <span className="text-[10px] text-muted block font-semibold">
-                  Waktu Tercatat
-                </span>
-                <p className="font-bold text-dark-900">
-                  {selectedProject?.cancelled_at
-                    ? formatDate(selectedProject.cancelled_at)
-                    : selectedProposal?.withdrawn_at
-                      ? formatDate(selectedProposal.withdrawn_at)
-                      : "Terekam di sistem"}
-                </p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
-                <span className="text-[10px] text-emerald-800 block font-semibold">
-                  Jaminan Escrow
-                </span>
-                <p className="font-bold text-emerald-950">
-                  Dana aman 100% di Saldo Aktif Klien
-                </p>
-              </div>
-            </div>
-
-            {/* Kotak Transparansi Alasan */}
-            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-[11px] text-dark-900">
-                <FileText className="w-3.5 h-3.5 text-slate-500" />
-                <span>Alasan Resmi:</span>
-              </div>
-              <p className="text-xs text-dark-900 italic font-medium leading-relaxed">
-                "
-                {selectedProject?.cancel_reason ||
-                  selectedProposal?.withdraw_reason ||
-                  "Tidak ada catatan alasan tambahan."}
-                "
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Team Project Slots (If Multi-Talent Project) */}
-        {selectedProject?.tipe_kolaborasi === "TIM" &&
-          selectedProject?.slots?.length > 0 && (
-            <div className="p-4 rounded-2xl bg-indigo-50/40 border border-indigo-200/70 space-y-3">
-              <div className="flex items-center justify-between gap-2 border-b border-indigo-200/50 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-brand-indigo shrink-0" />
-                  <span className="font-bold text-xs text-dark-900">
-                    Formasi Tim Proyek ({selectedProject.slots.length} Peran)
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-indigo-200 text-brand-indigo uppercase tracking-wider">
-                  Proyek Tim
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                {selectedProject.slots.map((slot) => {
-                  const isFilled =
-                    slot.status === "IN_PROGRESS" ||
-                    slot.status === "COMPLETED";
-                  return (
-                    <div
-                      key={slot.id}
-                      className={`p-3 rounded-xl border text-xs ${
-                        isFilled
-                          ? "bg-white border-emerald-200"
-                          : "bg-white border-slate-200"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-1.5 mb-1">
-                        <span className="font-bold text-dark-900 truncate">
-                          {slot.nama_peran}
-                        </span>
-                        <span
-                          className={`text-[9.5px] font-semibold px-2 py-0.5 rounded-md border ${
-                            isFilled
-                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                              : "bg-amber-50 text-amber-800 border-amber-200"
-                          }`}
-                        >
-                          {isFilled ? "Terisi" : "Terbuka"}
-                        </span>
-                      </div>
-                      {slot.deskripsi_tugas && (
-                        <p className="text-[11px] text-muted line-clamp-1 mb-1.5">
-                          {slot.deskripsi_tugas}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-100">
-                        <span className="font-bold text-dark-900">
-                          {formatCurrency(slot.alokasi_budget)}
-                        </span>
-                        <span className="text-[10px] text-muted truncate max-w-[100px]">
-                          {slot.accepted_mhs_nama || "Mencari talenta"}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-        {/* Partner Info & Quick Metas */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-1">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {hasAcceptedApplicant ? (
-              <>
-                {activePartnerPhoto ? (
-                  <img
-                    src={activePartnerPhoto}
-                    alt={activePartnerName || "Mitra"}
-                    className="w-8 h-8 rounded-full object-cover border border-border shrink-0 shadow-xs"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-xs shrink-0">
-                    {activePartnerName
-                      ? activePartnerName.charAt(0).toUpperCase()
-                      : "M"}
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <span className="font-bold text-dark-900 block leading-tight truncate">
-                    {activePartnerName}
-                  </span>
-                  <span className="text-[10px] text-muted block truncate">
-                    {activePartnerRole === "UMKM"
-                      ? "Klien Usaha UMKM"
-                      : "Mahasiswa Talenta (Terpilih)"}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2.5 py-0.5">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-muted shrink-0">
-                  <Users className="w-4 h-4 text-slate-500" />
-                </div>
-                <div>
-                  <span className="font-bold text-dark-900 block leading-tight">
-                    {projectProposals.length > 0
-                      ? `${projectProposals.length} Proposal Masuk`
-                      : "Menunggu Pelamar Pertama"}
-                  </span>
-                  <span className="text-[10px] text-muted">
-                    {projectProposals.length > 0
-                      ? "Silakan tinjau pelamar pada tab di bawah"
-                      : "Tayang di Katalog Eksplorasi Kampus"}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-end gap-4 text-muted text-[11px] pt-2 sm:pt-0 border-t sm:border-t-0 border-border/60">
-            <div>
-              <span className="block text-[10px]">Nilai Kontrak:</span>
-              <span className="font-extrabold text-dark-900 text-xs">
-                {formatCurrency(
-                  isUmkm
-                    ? selectedProject?.budget_max
-                    : selectedProposal?.harga_tawar,
-                )}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setInvoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-canvas border border-border text-dark-900 font-bold text-[11px] hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer shrink-0"
-              title="Cetak Faktur Bukti Transaksi Escrow Resmi"
-            >
-              <FileText className="w-3.5 h-3.5 text-brand-indigo" />
-              <span>Faktur Escrow</span>
-            </button>
-
-            {isUmkm && (
-              <Link
-                to={`/projects/${selectedProject?.id}`}
-                className="text-brand-indigo hover:underline flex items-center gap-1 font-bold text-[11px]"
-              >
-                <span>Lihat Brief Lengkap</span>
-                <ExternalLink className="w-3 h-3" />
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Sub-Nav Segmented Tabs for the Active Workroom - Responsive flex-wrap, NO horizontal slider */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 pb-1 pt-2.5 border-t border-border w-full">
+        {/* Row 2: Modern Compact Segmented Stage Tabs Capsule */}
+        <div className="bg-slate-100/90 p-1 rounded-2xl grid grid-cols-2 sm:grid-cols-3 md:flex md:items-center gap-1 w-full">
+          {/* Tab 1: Brief */}
           <button
             type="button"
-            onClick={() => setActiveStageTab("chat")}
-            className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-              activeStageTab === "chat"
-                ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+            onClick={() => setActiveStageTab("brief")}
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeStageTab === "brief"
+                ? "bg-white text-dark-900 shadow-2xs"
+                : "text-slate-600 hover:text-dark-900"
             }`}
           >
-            {hasAcceptedApplicant ? (
-              <MessageSquare className="w-3.5 h-3.5" />
-            ) : (
-              <Lock className="w-3.5 h-3.5 text-muted" />
-            )}
-            <span>Obrolan</span>
-            {hasAcceptedApplicant ? (
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            ) : (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-muted font-semibold border border-border">
-                Terkunci
-              </span>
-            )}
+            <FileText className="w-3.5 h-3.5" />
+            <span>Spesifikasi & Brief</span>
           </button>
 
+          {/* Tab 2: Deliverable */}
           <button
             type="button"
             onClick={() => setActiveStageTab("deliverable")}
-            className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
               activeStageTab === "deliverable"
-                ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+                ? "bg-white text-dark-900 shadow-2xs"
+                : "text-slate-600 hover:text-dark-900"
             }`}
           >
             <FileCheck2 className="w-3.5 h-3.5" />
             <span>Deliverable</span>
             {activeDeliverable && (
-              <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${
-                  activeStageTab === "deliverable"
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                    : "bg-emerald-100 text-emerald-800"
-                }`}
-              >
-                Ada
-              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             )}
           </button>
 
+          {/* Tab 3: Team / Collaboration */}
+          <button
+            type="button"
+            onClick={() => setActiveStageTab("team")}
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeStageTab === "team"
+                ? "bg-white text-dark-900 shadow-2xs"
+                : "text-slate-600 hover:text-dark-900"
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>
+              {selectedProject?.tipe_kolaborasi === "TIM" ||
+              (selectedProject?.slots && selectedProject.slots.length > 0)
+                ? `Formasi Tim (${selectedProject?.slots?.length || 0})`
+                : "Profil Kolaborasi"}
+            </span>
+          </button>
+
+          {/* Tab 4: Applicants (For UMKM) */}
           {isUmkm && (
             <button
               type="button"
               onClick={() => setActiveStageTab("applicants")}
-              className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeStageTab === "applicants"
-                  ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+                  ? "bg-white text-dark-900 shadow-2xs"
+                  : "text-slate-600 hover:text-dark-900"
               }`}
             >
-              <Users className="w-3.5 h-3.5" />
+              <Briefcase className="w-3.5 h-3.5" />
               <span>Pelamar ({projectProposals.length})</span>
             </button>
           )}
 
-          {selectedProject?.tipe_kolaborasi === "TIM" && (
-            <button
-              type="button"
-              onClick={() => setActiveStageTab("team")}
-              className={`flex-1 sm:flex-initial min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeStageTab === "team"
-                  ? "bg-dark-900 text-white shadow-xs"
-                  : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Tim ({selectedProject?.slots?.length || 0})</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setActiveStageTab("brief")}
-            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-              activeStageTab === "brief"
-                ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Brief & Kontrak</span>
-          </button>
-
+          {/* Tab 5: Audit Timeline */}
           <button
             type="button"
             onClick={() => setActiveStageTab("timeline")}
-            className={`shrink-0 min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`col-span-2 sm:col-span-1 px-3 py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer ${
               activeStageTab === "timeline"
-                ? "bg-dark-900 text-white shadow-xs"
-                : "bg-canvas border border-border text-muted hover:text-dark-900 hover:bg-slate-100"
+                ? "bg-white text-dark-900 shadow-2xs"
+                : "text-slate-600 hover:text-dark-900"
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -786,88 +532,346 @@ export function WorkroomWorkspaceDetail({
         </div>
       </div>
 
-      {/* STAGE TAB 1: INTEGRATED REAL-TIME CHAT PANEL OR INFORMATIVE WAITING STATE */}
-      {activeStageTab === "chat" && (
-        <div className="animate-in fade-in duration-200">
-          {hasAcceptedApplicant ? (
-            <WorkroomChatPanel
-              projectId={activeProjectId}
-              projectTitle={activeProjectTitle}
-              partnerId={activePartnerId}
-              partnerName={activePartnerName}
-              partnerRole={activePartnerRole}
-              partnerPhoto={activePartnerPhoto}
-            />
-          ) : (
-            <div className="bg-surface rounded-3xl border border-border p-8 sm:p-12 text-center space-y-4 shadow-xs">
-              <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 mx-auto shadow-2xs">
-                <MessageSquareOff className="w-8 h-8 text-slate-400" />
+      {/* ========================================================================= */}
+      {/* STAGE TAB: BRIEF & SPESIFIKASI PROYEK */}
+      {/* ========================================================================= */}
+      {activeStageTab === "brief" && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Metric Summary Overview Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="bg-surface p-4 rounded-2xl border border-border shadow-2xs space-y-1">
+              <div className="flex items-center justify-between text-muted">
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Kategori & Bidang
+                </span>
+                <Layers className="w-4 h-4 text-brand-indigo" />
               </div>
-              <div className="max-w-md mx-auto space-y-1.5">
-                <h3 className="text-base sm:text-lg font-bold text-dark-900">
-                  Ruang Obrolan Belum Terbuka
+              <p className="font-bold text-dark-900 text-sm truncate">
+                {selectedProject?.kategori ||
+                  selectedProposal?.project_kategori ||
+                  "Desain Kreatif"}
+              </p>
+              <span className="text-[10px] text-muted block">
+                Target industri UMKM
+              </span>
+            </div>
+
+            <div className="bg-surface p-4 rounded-2xl border border-border shadow-2xs space-y-1">
+              <div className="flex items-center justify-between text-muted">
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Posisi Kontrak
+                </span>
+                <Briefcase className="w-4 h-4 text-brand-indigo" />
+              </div>
+              <p className="font-bold text-brand-indigo text-sm truncate">
+                {assignedRoleName ||
+                  (selectedProject?.tipe_kolaborasi === "TIM"
+                    ? "Anggota Tim Proyek"
+                    : "Pelaksana Utama")}
+              </p>
+              <span className="text-[10px] text-muted block">
+                {selectedProject?.tipe_kolaborasi === "TIM"
+                  ? "Multi-Talenta Tim"
+                  : "Pengerjaan Individu"}
+              </span>
+            </div>
+
+            <div className="bg-surface p-4 rounded-2xl border border-border shadow-2xs space-y-1">
+              <div className="flex items-center justify-between text-muted">
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Garansi Escrow
+                </span>
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              </div>
+              <p className="font-extrabold text-dark-900 text-sm">
+                {formatCurrency(
+                  isUmkm
+                    ? selectedProject?.budget_max
+                    : selectedProposal?.harga_tawar ||
+                        selectedProject?.budget_max,
+                )}
+              </p>
+              <span className="text-[10px] text-emerald-700 font-semibold block">
+                100% Saldo Diamankan
+              </span>
+            </div>
+
+            <div className="bg-surface p-4 rounded-2xl border border-border shadow-2xs space-y-1">
+              <div className="flex items-center justify-between text-muted">
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Tenggat Pengerjaan
+                </span>
+                <Clock className="w-4 h-4 text-brand-indigo" />
+              </div>
+              <p className="font-bold text-dark-900 text-sm">
+                {selectedProject?.deadline
+                  ? formatDate(selectedProject.deadline)
+                  : "Ditentukan Klien"}
+              </p>
+              <span className="text-[10px] text-muted block">
+                Durasi waktu kerja
+              </span>
+            </div>
+          </div>
+
+          {/* Full Project Brief Requirements */}
+          <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4">
+            <div className="border-b border-border pb-3 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-brand-indigo" />
+                  <span>Brief & Spesifikasi Kebutuhan Klien UMKM</span>
                 </h3>
-                <p className="text-xs sm:text-sm text-muted leading-relaxed">
-                  {projectProposals.length === 0
-                    ? "Proyek ini belum memiliki pelamar mahasiswa. Obrolan kerja langsung, koordinasi pengerjaan, dan pertukaran berkas deliverable akan otomatis aktif setelah Anda memilih dan menyetujui salah satu proposal mahasiswa."
-                    : `Ada ${projectProposals.length} mahasiswa yang telah mengajukan proposal untuk proyek ini. Silakan tinjau dan setujui salah satu proposal untuk membuka ruang obrolan kerja dan mengamankan garansi escrow.`}
+                <p className="text-xs text-muted mt-0.5">
+                  Panduan acuan pengerjaan yang disepakati untuk deliverable
+                  proyek
+                </p>
+              </div>
+              {isUmkm && (
+                <Link
+                  to={`/projects/${selectedProject?.id}`}
+                  className="text-xs font-bold text-brand-indigo hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <span>Halaman Eksplorasi</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              )}
+            </div>
+
+            <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3">
+              <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
+                Deskripsi Lengkap Kebutuhan
+              </span>
+              <p className="text-xs text-dark-900 leading-relaxed whitespace-pre-wrap">
+                {selectedProject?.deskripsi_raw ||
+                  selectedProposal?.project_deskripsi ||
+                  "Brief kebutuhan proyek resmi yang diterbitkan oleh klien UMKM."}
+              </p>
+            </div>
+
+            {/* Quality Standard & Intellectual Property Protection */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="p-4 rounded-2xl bg-canvas border border-border space-y-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-xs font-bold text-dark-900">
+                    Peralihan Hak Cipta (IP Transfer)
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Seluruh hak cipta dan kepemilikan intelektual atas deliverable
+                  karya beralih secara penuh dan eksklusif kepada Klien UMKM
+                  setelah pelunasan dana escrow disetujui.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                {projectProposals.length > 0 ? (
+              <div className="p-4 rounded-2xl bg-canvas border border-border space-y-2">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-brand-indigo shrink-0" />
+                  <span className="text-xs font-bold text-dark-900">
+                    Ketentuan Garansi & Revisi
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Klien berhak mengajukan revisi terstruktur sesuai brief awal.
+                  Jika klien tidak memberikan tinjauan dalam 7 hari setelah
+                  submisi, escrow akan otomatis dicairkan sistem demi kepastian
+                  talenta.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Proposal Cover Letter if Student view */}
+          {!isUmkm &&
+            selectedProposal &&
+            (() => {
+              const parsed = parseCoverLetter(selectedProposal.cover_letter);
+              return (
+                <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-3.5">
+                  <div className="border-b border-border pb-3">
+                    <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-brand-indigo" />
+                      <span>Surat Lamaran & Rencana Pengerjaan Anda</span>
+                    </h3>
+                    <p className="text-xs text-muted mt-0.5">
+                      Proposal penawaran yang telah disetujui oleh Klien UMKM
+                    </p>
+                  </div>
+
+                  <div className="bg-canvas p-4 rounded-2xl border border-border space-y-3 text-xs">
+                    <div>
+                      <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">
+                        Penjelasan Pendekatan Pengerjaan
+                      </span>
+                      <p className="text-dark-900/90 whitespace-pre-wrap leading-relaxed">
+                        {parsed.text}
+                      </p>
+                    </div>
+
+                    {parsed.tools.length > 0 && (
+                      <div className="pt-2 border-t border-border/60">
+                        <span className="text-[10px] font-bold text-muted uppercase block mb-1.5">
+                          Perangkat & Keahlian yang Diajukan:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {parsed.tools.map((tool) => (
+                            <span
+                              key={tool}
+                              className="px-2.5 py-0.5 rounded-lg bg-brand-indigo/10 text-brand-indigo font-bold text-[10px] border border-brand-indigo/20"
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {parsed.portfolio && (
+                      <div className="pt-2 border-t border-border/60 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-muted uppercase">
+                          Tautan Portofolio Pendukung:
+                        </span>
+                        <a
+                          href={parsed.portfolio}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 font-bold text-xs text-brand-indigo hover:underline"
+                        >
+                          <span>Buka Tautan Portofolio</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+          {/* Contract & Escrow Management Actions */}
+          <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h3 className="text-sm font-bold text-dark-900">
+                  Manajemen Kontrak & Garansi Escrow
+                </h3>
+                <p className="text-xs text-muted mt-0.5">
+                  Opsi pengelolaan kelanjutan penugasan dan jaminan saldo escrow
+                </p>
+              </div>
+              <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            </div>
+
+            {isUmkm && selectedProject?.status === "IN_PROGRESS" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-4 rounded-2xl bg-canvas border border-border flex flex-col justify-between gap-3">
+                  <div>
+                    <span className="font-bold text-dark-900 block text-xs mb-1">
+                      Ganti Mahasiswa (Buka ke Eksplorasi)
+                    </span>
+                    <p className="text-[11px] text-muted leading-relaxed">
+                      Jika mahasiswa tidak merespons atau berhalangan
+                      melanjutkan, batalkan penugasan ini. Dana escrow otomatis
+                      kembali ke Saldo Aktif Anda dan proyek dibuka kembali
+                      untuk pelamar baru.
+                    </p>
+                  </div>
                   <Button
                     variant="brand"
                     size="sm"
-                    onClick={() => setActiveStageTab("applicants")}
-                    className="text-xs font-bold shadow-brand"
+                    onClick={onOpenReopenModal}
+                    className="text-xs font-bold w-full shadow-brand"
                   >
-                    <Users className="w-3.5 h-3.5 mr-1.5" />
-                    <span>Tinjau {projectProposals.length} Pelamar Masuk</span>
+                    <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                    Buka Kembali ke Eksplorasi
                   </Button>
-                ) : (
+                </div>
+
+                <div className="p-4 rounded-2xl bg-canvas border border-border flex flex-col justify-between gap-3">
+                  <div>
+                    <span className="font-bold text-dark-900 block text-xs mb-1">
+                      Batalkan Proyek Permanen
+                    </span>
+                    <p className="text-[11px] text-muted leading-relaxed">
+                      Hentikan seluruh pengerjaan proyek. Status proyek akan
+                      menjadi Dibatalkan (CANCELLED) dan 100% saldo escrow
+                      dikembalikan ke Saldo Aktif Anda.
+                    </p>
+                  </div>
                   <Button
-                    variant="brand"
+                    variant="outline"
                     size="sm"
-                    onClick={() => setActiveStageTab("brief")}
-                    className="text-xs font-bold shadow-brand"
+                    onClick={onOpenTerminateModal}
+                    className="text-xs font-bold w-full text-rose-600 border-rose-200 hover:bg-rose-50"
                   >
-                    <FileText className="w-3.5 h-3.5 mr-1.5" />
-                    <span>Lihat Spesifikasi & Brief Proyek</span>
+                    <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                    Batalkan Proyek
                   </Button>
-                )}
+                </div>
+              </div>
+            )}
+
+            {!isUmkm && selectedProposal?.status === "ACCEPTED" && (
+              <div className="p-4 rounded-2xl bg-canvas border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="font-bold text-dark-900 block text-xs mb-0.5">
+                    Ajukan Pengunduran Diri dari Proyek
+                  </span>
+                  <p className="text-[11px] text-muted leading-relaxed">
+                    Jika Anda menghadapi kendala tak terduga yang menghalangi
+                    penyelesaian proyek, Anda dapat mengajukan pengunduran diri
+                    secara resmi. Dana escrow akan dikembalikan utuh ke klien
+                    UMKM.
+                  </p>
+                </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
-                    if (navigator.clipboard) {
-                      navigator.clipboard.writeText(
-                        `${window.location.origin}/projects/${activeProjectId}`,
-                      );
-                    }
-                  }}
-                  className="text-xs font-bold border-border hover:bg-slate-50"
+                  onClick={onOpenResignModal}
+                  className="text-xs font-bold shrink-0 text-rose-600 border-rose-200 hover:bg-rose-50"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                  <span>Salin Tautan Proyek</span>
+                  <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                  Pengunduran Diri
                 </Button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
-      {/* STAGE TAB 2: DELIVERABLE SUBMISSION & REVIEW */}
+      {/* ========================================================================= */}
+      {/* STAGE TAB: DELIVERABLE & BERKAS HASIL KERJA */}
+      {/* ========================================================================= */}
       {activeStageTab === "deliverable" && (
         <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between border-b border-border pb-3">
-            <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
-              <FileCheck2 className="w-4 h-4 text-brand-indigo" />
-              <span>Berkas Hasil Pekerjaan (Deliverable)</span>
-            </h3>
-            <span className="text-xs text-muted">
-              Garansi Escrow Cair setelah disetujui
-            </span>
+            <div>
+              <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                <FileCheck2 className="w-4 h-4 text-brand-indigo" />
+                <span>Pusat Deliverable & Submisi Hasil Kerja</span>
+              </h3>
+              <p className="text-xs text-muted mt-0.5">
+                Tinjau berkas pengerjaan, beri catatan revisi, atau setujui
+                untuk mencairkan honor escrow
+              </p>
+            </div>
+            {!isUmkm && !isProjectCompleted && (
+              <Button
+                variant="brand"
+                size="sm"
+                onClick={() =>
+                  handleOpenSubmission(selectedProposal.project_id)
+                }
+                className="text-xs font-bold shadow-brand"
+              >
+                <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
+                <span>
+                  {effectiveSubmissions.length > 0
+                    ? "Perbarui Berkas"
+                    : "Unggah Deliverable"}
+                </span>
+              </Button>
+            )}
           </div>
 
           {effectiveSubmissions.length > 0 ? (
@@ -892,23 +896,6 @@ export function WorkroomWorkspaceDetail({
                   }}
                 />
               ))}
-
-              {/* Mahasiswa Update Deliverable Action Button */}
-              {!isUmkm && !isProjectCompleted && (
-                <div className="pt-2 flex justify-end">
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    onClick={() =>
-                      handleOpenSubmission(selectedProposal.project_id)
-                    }
-                    className="text-xs font-bold shadow-brand"
-                  >
-                    <UploadCloud className="w-3.5 h-3.5 mr-1" />
-                    Perbarui Berkas Deliverable
-                  </Button>
-                </div>
-              )}
             </div>
           ) : detailsLoading ? (
             <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-3 animate-pulse">
@@ -940,10 +927,10 @@ export function WorkroomWorkspaceDetail({
                     ? "Mahasiswa Sedang Mengerjakan Proyek"
                     : "Belum Ada Berkas Deliverable"}
                 </h4>
-                <p className="text-[11px] text-muted max-w-sm mx-auto mt-1">
+                <p className="text-[11px] text-muted max-w-sm mx-auto mt-1 leading-relaxed">
                   {isUmkm
-                    ? "Begitu mahasiswa mengunggah tautan hasil kerja (Figma, GitHub, atau Drive), berkas akan otomatis muncul di sini untuk Anda verifikasi."
-                    : "Setelah pekerjaan selesai sesuai brief, unggah tautan hasil kerja Anda agar dapat diperiksa klien dan honor escrow dicairkan."}
+                    ? "Begitu mahasiswa mengunggah tautan hasil kerja (Figma, GitHub, atau Google Drive), berkas akan otomatis muncul di sini untuk Anda verifikasi."
+                    : "Setelah pengerjaan selesai sesuai brief, serahkan tautan hasil kerja Anda agar dapat diperiksa klien dan honor escrow dicairkan."}
                 </p>
               </div>
 
@@ -965,29 +952,383 @@ export function WorkroomWorkspaceDetail({
         </div>
       )}
 
-      {/* STAGE TAB 3: APPLICANTS PROPOSALS (FOR UMKM) */}
+      {/* ========================================================================= */}
+      {/* STAGE TAB: PROFIL KOLABORASI & FORMASI TIM */}
+      {/* ========================================================================= */}
+      {activeStageTab === "team" && (
+        <div className="animate-in fade-in duration-200">
+          {selectedProject?.tipe_kolaborasi === "TIM" ||
+          (selectedProject?.slots && selectedProject.slots.length > 0) ? (
+            <TeamWorkspaceMatrix
+              project={selectedProject}
+              isUmkm={isUmkm}
+              onApproveSlot={(slot) => {
+                setPendingSubmissionId(activeDeliverable?.id);
+                setHandoffModalOpen(true);
+              }}
+            />
+          ) : (
+            /* Comprehensive Duo Collaboration View (UMKM Client + Student Talent) */
+            <div className="space-y-4">
+              {/* Header Card */}
+              <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-brand-indigo" />
+                      <span>Formasi Kemitraan Proyek (Duo Kolaborasi)</span>
+                    </h3>
+                    <p className="text-xs text-muted mt-0.5">
+                      Rincian identitas dan peran kerja antara Klien Pemberi
+                      Kerja dan Mahasiswa Pelaksana
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Kolaborasi Terproteksi Escrow</span>
+                  </div>
+                </div>
+
+                {/* Two Rich Profile Cards (Client & Student) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  {/* Card 1: Klien Pemberi Kerja (UMKM) */}
+                  <div className="p-5 rounded-2xl bg-canvas border border-border space-y-4 flex flex-col justify-between">
+                    <div className="space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                          Pemberi Kerja / Klien Usaha
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-md text-[10.5px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                          Klien Terverifikasi
+                        </span>
+                      </div>
+
+                      <div className="flex items-start gap-3.5">
+                        {clientData.fotoUsaha ? (
+                          <img
+                            src={clientData.fotoUsaha}
+                            alt={clientData.namaUsaha}
+                            className="w-13 h-13 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
+                          />
+                        ) : (
+                          <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
+                            {clientData.namaUsaha.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+
+                        <div className="min-w-0 space-y-1">
+                          <h4 className="font-extrabold text-dark-900 text-sm sm:text-base leading-tight">
+                            {clientData.namaUsaha}
+                          </h4>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
+                            <span className="inline-flex items-center gap-1">
+                              <Building2 className="w-3 h-3 text-slate-400" />
+                              {clientData.bidang}
+                            </span>
+                            <span>•</span>
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="w-3 h-3 text-slate-400" />
+                              {clientData.kota}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-muted leading-relaxed line-clamp-2 bg-surface p-3 rounded-xl border border-border/70">
+                        {clientData.deskripsi}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-border/80 flex flex-wrap items-center justify-between gap-3">
+                      <div className="text-[11px]">
+                        <span className="text-muted block">
+                          Peran dalam Proyek:
+                        </span>
+                        <span className="font-bold text-dark-900">
+                          Penanggung Jawab Brief & Owner
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleOpenChat}
+                        className="text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 flex items-center gap-1.5"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Kirim Pesan</span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Mahasiswa Pelaksana (Talenta) */}
+                  <div className="p-5 rounded-2xl bg-canvas border border-border space-y-4 flex flex-col justify-between">
+                    <div className="space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-muted uppercase tracking-wider">
+                          Pelaksana Kerja Terpilih
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-md text-[10.5px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          Talenta Ditugaskan
+                        </span>
+                      </div>
+
+                      <div className="flex items-start gap-3.5">
+                        {studentData.foto ? (
+                          <img
+                            src={studentData.foto}
+                            alt={studentData.namaLengkap}
+                            className="w-13 h-13 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
+                          />
+                        ) : (
+                          <div className="w-13 h-13 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
+                            {studentData.namaLengkap.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+
+                        <div className="min-w-0 space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-extrabold text-dark-900 text-sm sm:text-base leading-tight">
+                              {studentData.namaLengkap}
+                            </h4>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
+                            <span className="inline-flex items-center gap-1">
+                              <GraduationCap className="w-3 h-3 text-slate-400" />
+                              {studentData.kampus}
+                            </span>
+                            <span>•</span>
+                            <span className="font-medium text-brand-indigo">
+                              {studentData.prodi}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Keahlian & Tools */}
+                      <div className="space-y-1.5 bg-surface p-3 rounded-xl border border-border/70">
+                        <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
+                          Posisi:{" "}
+                          <strong className="text-dark-900">
+                            {assignedRoleName || "Pelaksana Utama"}
+                          </strong>
+                        </span>
+                        <div className="flex flex-wrap gap-1.5 pt-0.5">
+                          {studentData.tools.map((tool, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 rounded-md bg-brand-indigo/10 text-brand-indigo font-bold text-[10.5px] border border-brand-indigo/20"
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-border/80 flex flex-wrap items-center justify-between gap-3">
+                      <div className="text-[11px]">
+                        <span className="text-muted block">Honor & Waktu:</span>
+                        <span className="font-extrabold text-emerald-700">
+                          {formatCurrency(
+                            isUmkm
+                              ? selectedProject?.budget_max
+                              : selectedProposal?.harga_tawar,
+                          )}
+                          <span className="text-muted font-normal">
+                            {" "}
+                            ({studentData.estimasiHari} Hari)
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {studentData.portfolio && (
+                          <a
+                            href={studentData.portfolio}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-border text-dark-900 font-bold text-xs hover:bg-slate-50 transition-colors shadow-2xs"
+                          >
+                            <span>Portofolio</span>
+                            <ExternalLink className="w-3 h-3 text-muted" />
+                          </a>
+                        )}
+                        <Button
+                          variant="brand"
+                          size="sm"
+                          onClick={handleOpenChat}
+                          className="text-xs font-bold shadow-brand flex items-center gap-1.5"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Buka Chat</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hub Saluran Kolaborasi & Aset Bersama */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
+                        Saluran Kolaborasi & Tautan Kerja Bersama
+                      </h4>
+                      <p className="text-[11px] text-muted">
+                        Akses repositori, kanvas desain, dan folder berkas
+                        proyek
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                    {/* Figma */}
+                    <div className="p-4 rounded-2xl bg-canvas border border-border hover:border-purple-300 transition-colors space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 text-purple-600 flex items-center justify-center">
+                          <Palette className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                          Desain UI/UX
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-dark-900 block text-xs">
+                          Kanvas Figma Proyek
+                        </span>
+                        <p className="text-[11px] text-muted line-clamp-1">
+                          File mockups, wireframe & aset desain
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleOpenChat}
+                        className="text-[11px] font-bold text-brand-indigo hover:underline inline-flex items-center gap-1 pt-1"
+                      >
+                        <span>Minta Tautan di Chat</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* GitHub Repo */}
+                    <div className="p-4 rounded-2xl bg-canvas border border-border hover:border-blue-300 transition-colors space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
+                          <FileCode className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                          Source Code
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-dark-900 block text-xs">
+                          GitHub / Codebase
+                        </span>
+                        <p className="text-[11px] text-muted line-clamp-1">
+                          Repositori kode sumber & pull request
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleOpenChat}
+                        className="text-[11px] font-bold text-brand-indigo hover:underline inline-flex items-center gap-1 pt-1"
+                      >
+                        <span>Minta Tautan di Chat</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* Google Drive */}
+                    <div className="p-4 rounded-2xl bg-canvas border border-border hover:border-amber-300 transition-colors space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
+                          <FolderArchive className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          Penyimpanan
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-dark-900 block text-xs">
+                          Google Drive Assets
+                        </span>
+                        <p className="text-[11px] text-muted line-clamp-1">
+                          Logo resolusi tinggi & materi mentah
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleOpenChat}
+                        className="text-[11px] font-bold text-brand-indigo hover:underline inline-flex items-center gap-1 pt-1"
+                      >
+                        <span>Minta Tautan di Chat</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Standar Respon & Komunikasi */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <span className="font-bold text-dark-900 block">
+                        Standar Kerja Sama & Garansi Keamanan
+                      </span>
+                      <span className="text-[11px] text-muted">
+                        Kedua belah pihak wajib merespons pesan dalam 1x24 jam
+                        kerja dan transaksi diawasi oleh sistem Escrow Makarya.
+                      </span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    onClick={handleOpenChat}
+                    className="text-xs font-bold shrink-0 shadow-brand"
+                  >
+                    Mulai Diskusi di Chat
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* STAGE TAB: PELAMAR MASUK (KHUSUS UMKM) */}
+      {/* ========================================================================= */}
       {activeStageTab === "applicants" && isUmkm && (
         <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between border-b border-border pb-3">
-            <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
-              <Users className="w-4 h-4 text-brand-indigo" />
-              <span>
-                Pelamar Mahasiswa yang Masuk ({projectProposals.length})
-              </span>
-            </h3>
+            <div>
+              <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-brand-indigo" />
+                <span>
+                  Pelamar Mahasiswa yang Masuk ({projectProposals.length})
+                </span>
+              </h3>
+              <p className="text-xs text-muted mt-0.5">
+                Tinjau penawaran harga, estimasi waktu, dan portofolio kandidat
+                mahasiswa
+              </p>
+            </div>
             <span className="text-xs text-muted">
-              Evaluasi & pilih kandidat terbaik
+              Escrow dikunci setelah memilih kandidat
             </span>
           </div>
 
           {projectProposals.length === 0 ? (
-            <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-1">
+            <div className="p-8 text-center bg-canvas rounded-2xl border border-border space-y-2">
               <Users className="w-8 h-8 text-muted mx-auto opacity-40" />
               <p className="text-xs font-bold text-dark-900">
                 Belum Ada Pelamar Masuk
               </p>
-              <p className="text-[11px] text-muted">
-                Proyek Anda sedang aktif tayang di katalog terbuka mahasiswa.
+              <p className="text-[11px] text-muted max-w-xs mx-auto">
+                Proyek Anda sedang tayang di katalog eksplorasi terbuka untuk
+                mahasiswa.
               </p>
             </div>
           ) : (
@@ -1122,36 +1463,24 @@ export function WorkroomWorkspaceDetail({
                       );
                     })()}
 
-                    {/* Withdrawn Notice & Reason */}
-                    {isWithdrawn && (
-                      <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/80 text-xs text-amber-900 mb-3 space-y-1">
-                        <div className="flex items-center gap-1.5 font-bold text-amber-800 text-[11px]">
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>Proposal Ditarik Mahasiswa:</span>
-                        </div>
-                        <p className="italic text-[11px] text-amber-950 leading-relaxed font-medium">
-                          "
-                          {prop.withdraw_reason ||
-                            "Mahasiswa membatalkan pengajuan proposal ini."}
-                          "
-                        </p>
-                      </div>
-                    )}
-
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center justify-end gap-2 pt-1 border-t border-border/60">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setActiveStageTab("chat")}
+                        onClick={() =>
+                          navigate(
+                            `/chat?talent=${prop.mhs_id}&project=${activeProjectId}`,
+                          )
+                        }
                         className="text-xs font-bold border-brand-indigo/30 text-brand-indigo hover:bg-brand-indigo/5 flex items-center gap-1.5"
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
-                        <span>Buka Obrolan</span>
+                        <span>Kirim Pesan</span>
                       </Button>
 
-                      {(selectedProject.status === "OPEN" ||
-                        selectedProject.status === "BIDDING") &&
+                      {(selectedProject?.status === "OPEN" ||
+                        selectedProject?.status === "BIDDING") &&
                         prop.status === "PENDING" && (
                           <>
                             <Button
@@ -1182,320 +1511,9 @@ export function WorkroomWorkspaceDetail({
         </div>
       )}
 
-      {/* STAGE TAB 4: CONTRACT & BRIEF DETAILS */}
-      {activeStageTab === "brief" && (
-        <div className="bg-surface rounded-3xl border border-border p-6 shadow-xs space-y-4 animate-in fade-in duration-200">
-          <div className="border-b border-border pb-3">
-            <h3 className="text-sm font-bold text-dark-900">
-              Rincian Brief & Kesepakatan Kontrak
-            </h3>
-            <p className="text-xs text-muted mt-0.5">
-              Spesifikasi pengerjaan yang disepakati kedua belah pihak
-            </p>
-          </div>
-
-          {/* Metric Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
-              <span className="text-[10px] font-bold text-muted uppercase">
-                Kategori & Bidang
-              </span>
-              <p className="font-bold text-dark-900 text-sm">
-                {isUmkm
-                  ? selectedProject?.kategori
-                  : selectedProposal?.project_kategori || "Desain Kreatif"}
-              </p>
-            </div>
-
-            <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
-              <span className="text-[10px] font-bold text-muted uppercase">
-                Posisi / Peran Kontrak
-              </span>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <p className="font-extrabold text-brand-indigo text-sm">
-                  {assignedRoleName ||
-                    (selectedProject?.tipe_kolaborasi === "TIM" ||
-                    (selectedProject?.slots && selectedProject.slots.length > 0)
-                      ? "Anggota Tim Proyek"
-                      : "Pelaksana Utama (Individu)")}
-                </p>
-                {assignedRoleName ? (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-brand-indigo border border-indigo-200">
-                    Posisi Terpilih
-                  </span>
-                ) : (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                    {selectedProject?.tipe_kolaborasi === "TIM"
-                      ? "Multi-Talenta"
-                      : "Individu"}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-canvas p-4 rounded-2xl border border-border space-y-1.5">
-              <span className="text-[10px] font-bold text-muted uppercase">
-                Batas Honor Disepakati
-              </span>
-              <p className="font-bold text-dark-900 text-sm">
-                {formatCurrency(
-                  isUmkm
-                    ? selectedProject?.budget_max
-                    : selectedProposal?.harga_tawar ||
-                        selectedProject?.budget_max,
-                )}
-              </p>
-            </div>
-          </div>
-
-          {/* Brief Kebutuhan Proyek dari Klien UMKM */}
-          <div className="bg-canvas p-4 rounded-2xl border border-border space-y-2 text-xs">
-            <span className="text-[10px] font-bold text-muted uppercase tracking-wider block">
-              Brief & Kebutuhan Proyek Klien
-            </span>
-            <p className="text-dark-900 leading-relaxed whitespace-pre-wrap">
-              {isUmkm
-                ? selectedProject?.deskripsi_raw || "Rincian brief proyek UMKM."
-                : selectedProposal?.project_deskripsi ||
-                  selectedProject?.deskripsi_raw ||
-                  "Brief kebutuhan proyek yang telah diterbitkan oleh klien UMKM."}
-            </p>
-          </div>
-
-          {/* Rincian Formasi Tim Proyek (Jika Proyek Tim / Memiliki Slot Peran) */}
-          {selectedProject?.slots && selectedProject.slots.length > 0 && (
-            <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3 text-xs">
-              <div className="flex items-center justify-between border-b border-border pb-2.5">
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-brand-indigo" />
-                  <div>
-                    <span className="font-bold text-dark-900 block text-xs">
-                      Formasi & Pembagian Peran Tim (
-                      {selectedProject.slots.length} Posisi)
-                    </span>
-                    <span className="text-[11px] text-muted">
-                      Rincian peran kerja dan alokasi honor masing-masing posisi
-                      tim
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                {selectedProject.slots.map((slot) => {
-                  const isSlotFilled =
-                    slot.status !== "OPEN" || Boolean(slot.accepted_mhs_id);
-                  const isCurrentSlot =
-                    (selectedProposal?.slot_id &&
-                      selectedProposal.slot_id === slot.id) ||
-                    (assignedRoleName && assignedRoleName === slot.nama_peran);
-
-                  return (
-                    <div
-                      key={slot.id}
-                      className={`p-3.5 rounded-xl border transition-all ${
-                        isCurrentSlot
-                          ? "bg-indigo-50/60 border-indigo-200 ring-1 ring-brand-indigo/30"
-                          : "bg-surface border-border"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-bold text-xs text-dark-900">
-                              {slot.nama_peran}
-                            </span>
-                            {isCurrentSlot && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-indigo text-white">
-                                Posisi Anda
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-[11px] font-bold text-emerald-600 block mt-0.5">
-                            {formatCurrency(slot.alokasi_budget)}
-                          </span>
-                        </div>
-
-                        {isSlotFilled ? (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 shrink-0">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            <span>Terisi</span>
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                            Mencari Talenta
-                          </span>
-                        )}
-                      </div>
-
-                      {slot.deskripsi_tugas && (
-                        <p className="text-[11px] text-muted line-clamp-2 mt-1 mb-2">
-                          {slot.deskripsi_tugas}
-                        </p>
-                      )}
-
-                      <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[10px]">
-                        <span className="text-muted">Pelaksana:</span>
-                        <span className="font-bold text-dark-900 truncate max-w-[150px]">
-                          {slot.accepted_mhs_nama ||
-                            (isSlotFilled
-                              ? "Mahasiswa Terpilih"
-                              : "Belum Ditugaskan")}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Proposal Cover Letter if Student view */}
-          {!isUmkm &&
-            selectedProposal &&
-            (() => {
-              const parsed = parseCoverLetter(selectedProposal.cover_letter);
-              return (
-                <div className="bg-canvas p-4 rounded-2xl border border-border space-y-3 text-xs">
-                  <div>
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">
-                      Surat Lamaran & Rencana Pengerjaan Anda
-                    </span>
-                    <p className="text-dark-900/90 whitespace-pre-wrap leading-relaxed">
-                      {parsed.text}
-                    </p>
-                  </div>
-
-                  {parsed.tools.length > 0 && (
-                    <div className="pt-2 border-t border-border/60">
-                      <span className="text-[10px] font-bold text-muted uppercase block mb-1.5">
-                        Perangkat & Keahlian yang Diajukan:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {parsed.tools.map((tool) => (
-                          <span
-                            key={tool}
-                            className="px-2.5 py-0.5 rounded-lg bg-brand-indigo/10 text-brand-indigo font-bold text-[10px] border border-brand-indigo/20"
-                          >
-                            {tool}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {parsed.portfolio && (
-                    <div className="pt-2 border-t border-border/60 flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-muted uppercase">
-                        Tautan Portofolio Pendukung:
-                      </span>
-                      <a
-                        href={parsed.portfolio}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 font-bold text-xs text-brand-indigo hover:underline"
-                      >
-                        <span>Buka Tautan Portofolio</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-
-          {/* Contract & Escrow Management Section */}
-          <div className="bg-canvas p-4 sm:p-5 rounded-2xl border border-border space-y-3 text-xs">
-            <div className="flex items-center justify-between border-b border-border/80 pb-2.5">
-              <div>
-                <span className="font-bold text-dark-900 block text-xs">
-                  Manajemen Kontrak & Garansi Escrow
-                </span>
-                <span className="text-[11px] text-muted">
-                  Opsi pengelolaan kelanjutan penugasan dan pengembalian saldo
-                  escrow
-                </span>
-              </div>
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            </div>
-
-            {isUmkm && selectedProject?.status === "IN_PROGRESS" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col justify-between gap-3">
-                  <div>
-                    <span className="font-bold text-dark-900 block text-xs mb-1">
-                      Ganti Mahasiswa (Buka ke Eksplorasi)
-                    </span>
-                    <p className="text-[11px] text-muted leading-relaxed">
-                      Jika mahasiswa tidak merespons atau tidak dapat
-                      melanjutkan, batalkan kontrak ini. Dana escrow otomatis
-                      kembali ke Saldo Aktif Anda dan proyek dibuka kembali
-                      untuk pelamar baru.
-                    </p>
-                  </div>
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    onClick={onOpenReopenModal}
-                    className="text-xs font-bold w-full shadow-brand"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
-                    Buka Kembali ke Eksplorasi
-                  </Button>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col justify-between gap-3">
-                  <div>
-                    <span className="font-bold text-dark-900 block text-xs mb-1">
-                      Batalkan Proyek Permanen
-                    </span>
-                    <p className="text-[11px] text-muted leading-relaxed">
-                      Hentikan seluruh pengerjaan proyek. Status proyek akan
-                      menjadi Dibatalkan (CANCELLED) dan 100% saldo escrow
-                      dikembalikan ke Saldo Aktif.
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onOpenTerminateModal}
-                    className="text-xs font-bold w-full text-rose-600 border-rose-200 hover:bg-rose-50"
-                  >
-                    <XCircle className="w-3.5 h-3.5 mr-1.5" />
-                    Batalkan Proyek
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {!isUmkm && selectedProposal?.status === "ACCEPTED" && (
-              <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="font-bold text-dark-900 block text-xs mb-0.5">
-                    Ajukan Pengunduran Diri dari Proyek
-                  </span>
-                  <p className="text-[11px] text-muted leading-relaxed">
-                    Jika Anda menghadapi kendala tak terduga yang menghalangi
-                    penyelesaian proyek, Anda dapat mengajukan pengunduran diri
-                    secara resmi. Dana escrow akan dikembalikan ke klien UMKM.
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onOpenResignModal}
-                  className="text-xs font-bold shrink-0 text-rose-600 border-rose-200 hover:bg-rose-50"
-                >
-                  <XCircle className="w-3.5 h-3.5 mr-1.5" />
-                  Pengunduran Diri
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* STAGE TAB 5: AUDIT ACTIVITY TIMELINE */}
+      {/* ========================================================================= */}
+      {/* STAGE TAB: LINIMASA AUDIT & MILESTONES */}
+      {/* ========================================================================= */}
       {activeStageTab === "timeline" && (
         <div className="animate-in fade-in duration-200">
           <WorkspaceActivityTimeline
@@ -1503,20 +1521,6 @@ export function WorkroomWorkspaceDetail({
             submissions={effectiveSubmissions}
             selectedProposal={selectedProposal}
             isUmkm={isUmkm}
-          />
-        </div>
-      )}
-
-      {/* STAGE TAB 6: MULTI-STUDENT TEAM MATRIX & ESTAFET ASET */}
-      {activeStageTab === "team" && (
-        <div className="animate-in fade-in duration-200">
-          <TeamWorkspaceMatrix
-            project={selectedProject}
-            isUmkm={isUmkm}
-            onApproveSlot={(slot) => {
-              setPendingSubmissionId(activeDeliverable?.id);
-              setHandoffModalOpen(true);
-            }}
           />
         </div>
       )}

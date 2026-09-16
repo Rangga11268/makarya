@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Any
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 
@@ -56,6 +56,7 @@ class ChatMessageResponse(BaseModel):
     sender_name: Optional[str] = None
     sender_role: Optional[str] = None
     sender_photo: Optional[str] = None
+    sender_role_label: Optional[str] = None
     message: str
     attachment_url: Optional[str] = None
     attachment_type: Optional[str] = None
@@ -65,9 +66,20 @@ class ChatMessageResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GroupMemberItem(BaseModel):
+    user_id: UUID
+    nama_lengkap: str
+    role_label: str
+    url_foto: Optional[str] = None
+    is_online: bool = False
+    is_owner: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ConversationItemResponse(BaseModel):
     id: str
-    partner_id: UUID
+    partner_id: Optional[UUID] = None
     partner_name: str
     partner_role: str
     partner_photo: Optional[str] = None
@@ -79,5 +91,8 @@ class ConversationItemResponse(BaseModel):
     last_message_time: Optional[datetime] = None
     unread_count: int = 0
     is_online: bool = False
+    is_group: bool = False
+    member_count: int = 1
+    members: Optional[List[GroupMemberItem]] = None
 
     model_config = ConfigDict(from_attributes=True)

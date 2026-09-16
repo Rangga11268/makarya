@@ -85,20 +85,25 @@ export function ChatPage() {
       const sId = String(incomingMsg.sender_id || "");
       const rId = String(incomingMsg.recipient_id || "");
       const myId = String(user?.id || "");
+      const isGroupMsg = !incomingMsg.recipient_id;
 
       const idx = prev.findIndex((c) => {
         const cProj = String(c.project_id || "");
+        if (cProj !== pId) return false;
+        if (isGroupMsg) {
+          return c.is_group === true;
+        }
         const cPart = String(c.partner_id || "");
-        return (
-          cProj === pId && (cPart === sId || cPart === rId || (!cPart && !rId))
-        );
+        return cPart === sId || cPart === rId;
       });
 
       const isCurrentSelected =
         selectedConv &&
         String(selectedConv.project_id || "") === pId &&
-        (String(selectedConv.partner_id || "") === sId ||
-          String(selectedConv.partner_id || "") === rId);
+        (isGroupMsg
+          ? selectedConv.is_group === true
+          : String(selectedConv.partner_id || "") === sId ||
+            String(selectedConv.partner_id || "") === rId);
 
       const isFromOther = sId !== myId;
 
@@ -210,7 +215,6 @@ export function ChatPage() {
           : Array.isArray(res)
             ? res
             : [];
-        // Proyek yang sudah selesai (DONE/SELESAI/CLOSED/CANCELLED) TIDAK BISA ditawarkan lagi
         const activeList = list.filter(
           (p) => p.status === "OPEN" || p.status === "BIDDING",
         );
@@ -232,15 +236,15 @@ export function ChatPage() {
         const data = res?.data || res;
         setTalentPartner(data);
 
-        // Atur selectedConv otomatis untuk talenta yang diajak kolaborasi
         if (data) {
           const matchingConv = conversations.find(
-            (c) => String(c.partner_id) === String(data.user_id || data.id),
+            (c) =>
+              !c.is_group &&
+              String(c.partner_id) === String(data.user_id || data.id),
           );
           if (matchingConv) {
             setSelectedConv(matchingConv);
           } else {
-            // Virtual item untuk penawaran baru
             setSelectedConv({
               id: `virtual_${data.id}`,
               partner_id: data.user_id || data.id,
@@ -257,6 +261,8 @@ export function ChatPage() {
               last_message: null,
               last_message_time: null,
               unread_count: 0,
+              is_group: false,
+              member_count: 1,
             });
           }
           setMobileViewChat(true);
@@ -272,11 +278,15 @@ export function ChatPage() {
     if (talentId) return;
     if (conversations.length > 0 && !selectedConv) {
       if (routeProjectId) {
-        const target = conversations.find(
-          (c) =>
-            String(c.project_id) === String(routeProjectId) &&
-            (!urlPartnerId || String(c.partner_id) === String(urlPartnerId)),
-        );
+        // Cari grup proyek atau 1-on-1 yang sesuai
+        const target = conversations.find((c) => {
+          if (String(c.project_id) !== String(routeProjectId)) return false;
+          if (urlPartnerId) {
+            return String(c.partner_id) === String(urlPartnerId);
+          }
+          return c.is_group === true;
+        });
+
         if (target) {
           setSelectedConv(target);
           setMobileViewChat(true);
@@ -285,19 +295,20 @@ export function ChatPage() {
           setSelectedConv({
             id: `proj_${routeProjectId}`,
             partner_id: urlPartnerId || null,
-            partner_name: "Mitra Kolaborasi",
-            partner_role: isUmkm ? "MHS" : "UMKM",
+            partner_name: urlPartnerId ? "Mitra Kolaborasi" : "Grup Proyek",
+            partner_role: urlPartnerId ? (isUmkm ? "MHS" : "UMKM") : "GROUP",
             partner_photo: null,
             project_id: routeProjectId,
             project_title: "Diskusi Proyek",
             last_message: null,
             last_message_time: null,
             unread_count: 0,
+            is_group: !urlPartnerId,
+            member_count: 2,
           });
           setMobileViewChat(true);
         }
       } else if (window.innerWidth >= 768) {
-        // Desktop default: pilih percakapan pertama
         setSelectedConv(conversations[0]);
       }
     }
@@ -325,86 +336,42 @@ export function ChatPage() {
     }
   };
 
-  // Switch project saat mengobrol dengan talenta (Khusus UMKM)
-  const handleSwitchProject = (newProjId) => {
-    const proj = myProjects.find((p) => p.id === newProjId);
-    if (!proj) return;
-    setSelectedConv((prev) => ({
-      ...prev,
-      project_id: proj.id,
-      project_title: proj.judul,
-      project_status: proj.status,
-    }));
-    const pId = selectedConv?.partner_id || talentId || urlPartnerId;
-    const searchPart = pId ? `?partner=${pId}` : "";
-    navigate(`/chat/${proj.id}${searchPart}`, { replace: true });
-  };
-
-  // Kirim tawaran proyek resmi interaktif ke chat (Khusus UMKM)
-  const handleSendProjectOffer = async (proj, selectedSlot = null) => {
-    try {
-      const targetPartnerId =
-        selectedConv?.partner_id || talentId || urlPartnerId;
-      const catMap = {
-        PEMROGRAMAN: "Programmer / Developer",
-        DESAIN: "Desainer / UI/UX",
-        MARKETING: "Digital Marketer",
-        PENULISAN: "Content Writer",
-        MULTIMEDIA: "Multimedia & Video",
-        BISNIS: "Konsultan Bisnis",
-        DATA: "Data Analyst",
-      };
-
-      const roleName = selectedSlot
-        ? selectedSlot.nama_peran
-        : proj.tipe_kolaborasi === "TIM" && proj.slots && proj.slots.length > 0
-          ? proj.slots[0].nama_peran
-          : proj.kategori
-            ? catMap[String(proj.kategori).toUpperCase()] || proj.kategori
-            : "Pelaksana Proyek";
-
-      const offerData = {
-        projectId: proj.id,
-        projectTitle: proj.judul,
-        posisi: roleName,
-        slotId: selectedSlot ? selectedSlot.id : null,
-        tipe_kolaborasi: proj.tipe_kolaborasi || "INDIVIDU",
-        budget: selectedSlot?.alokasi_budget || proj.budget_max,
-        deadline: proj.deadline,
-        kategori: proj.kategori,
-        slots: proj.slots || [],
-        status: "PENDING",
-      };
-      const payload = {
-        message: `Tawaran Proyek Resmi: ${proj.judul}${selectedSlot ? ` (${selectedSlot.nama_peran})` : ""}`,
-        attachment_url: JSON.stringify(offerData),
-        attachment_type: "PROJECT_OFFER",
-        recipient_id: targetPartnerId,
-      };
-
-      await chatApi.sendMessage(proj.id, payload);
-      addToast(
-        "Tawaran proyek resmi berhasil diajukan kepada talenta!",
-        "success",
+  // Navigasi ke chat personal dengan anggota tim dari roster
+  const handleSelectPartnerFromRoster = (targetPartnerId) => {
+    if (!targetPartnerId) return;
+    const existing = conversations.find(
+      (c) =>
+        !c.is_group &&
+        String(c.partner_id) === String(targetPartnerId) &&
+        String(c.project_id) === String(selectedConv?.project_id),
+    );
+    if (existing) {
+      handleSelectConversation(existing);
+    } else {
+      const memObj = selectedConv?.members?.find(
+        (m) => String(m.user_id) === String(targetPartnerId),
       );
-      setShowOfferModal(false);
-
-      setSelectedConv((prev) => ({
-        ...prev,
-        project_id: proj.id,
-        project_title: proj.judul,
-        project_status: proj.status,
-      }));
-
-      const searchPart = targetPartnerId ? `?partner=${targetPartnerId}` : "";
-      navigate(`/chat/${proj.id}${searchPart}`, { replace: true });
-      loadConversations();
-    } catch (err) {
-      console.error("Gagal mengirim tawaran:", err);
-      addToast(
-        err?.response?.data?.detail || "Gagal mengajukan tawaran proyek",
-        "danger",
-      );
+      const newDirect = {
+        id: `${targetPartnerId}_${selectedConv?.project_id}`,
+        partner_id: targetPartnerId,
+        partner_name: memObj?.nama_lengkap || "Rekan Tim",
+        partner_role: memObj?.is_owner ? "UMKM" : "MHS",
+        partner_photo: memObj?.url_foto || null,
+        partner_sub: memObj?.role_label || "Rekan Kolaborasi",
+        project_id: selectedConv?.project_id,
+        project_title: selectedConv?.project_title,
+        project_status: selectedConv?.project_status,
+        last_message: null,
+        last_message_time: null,
+        unread_count: 0,
+        is_online: Boolean(memObj?.is_online),
+        is_group: false,
+        member_count: 1,
+      };
+      setSelectedConv(newDirect);
+      navigate(`/chat/${selectedConv?.project_id}?partner=${targetPartnerId}`, {
+        replace: true,
+      });
     }
   };
 
@@ -419,11 +386,11 @@ export function ChatPage() {
 
       if (!matchSearch) return false;
 
-      if (activeTab === "PROJECT") {
-        return Boolean(c.project_id);
+      if (activeTab === "GROUP") {
+        return c.is_group === true;
       }
-      if (activeTab === "TEAM") {
-        return c.partner_role === "MHS";
+      if (activeTab === "DIRECT") {
+        return c.is_group !== true;
       }
       return true;
     });
@@ -432,9 +399,6 @@ export function ChatPage() {
   const activeProject = myProjects.find(
     (p) => p.id === selectedConv?.project_id,
   );
-
-  // Pre-chat pitch message syncs with selected project and talent
-  const preChatMessage = `Halo ${selectedConv?.partner_name || "Rekan Mahasiswa"}, kami tertarik mengajak Anda berkolaborasi untuk proyek "${activeProject?.judul || selectedConv?.project_title || "proyek kami"}". Apakah Anda bersedia mendiskusikan brief dan ketersediaan waktu untuk pengerjaan proyek ini?`;
 
   const formatRelativeTime = (isoString) => {
     if (!isoString) return "";
@@ -499,14 +463,14 @@ export function ChatPage() {
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Cari nama mitra atau judul proyek..."
+              placeholder="Cari grup proyek atau mitra..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-brand-indigo focus:border-brand-indigo text-slate-800 placeholder:text-slate-400"
             />
           </div>
 
-          {/* Quick Segment Filter */}
+          {/* Quick Segment Filter (Semua, Grup Proyek, Pesan Pribadi) */}
           <div className="flex items-center gap-1 mt-2.5">
             <button
               onClick={() => setActiveTab("ALL")}
@@ -519,24 +483,25 @@ export function ChatPage() {
               Semua
             </button>
             <button
-              onClick={() => setActiveTab("PROJECT")}
-              className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer text-center ${
-                activeTab === "PROJECT"
+              onClick={() => setActiveTab("GROUP")}
+              className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer text-center flex items-center justify-center gap-1 ${
+                activeTab === "GROUP"
                   ? "bg-slate-900 text-white shadow-2xs"
                   : "text-slate-600 hover:bg-slate-200/60"
               }`}
             >
-              Proyek
+              <Users className="w-3 h-3" />
+              <span>Grup</span>
             </button>
             <button
-              onClick={() => setActiveTab("TEAM")}
+              onClick={() => setActiveTab("DIRECT")}
               className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer text-center ${
-                activeTab === "TEAM"
+                activeTab === "DIRECT"
                   ? "bg-slate-900 text-white shadow-2xs"
                   : "text-slate-600 hover:bg-slate-200/60"
               }`}
             >
-              {isUmkm ? "Talenta" : "Kolega MHS"}
+              Pribadi
             </button>
           </div>
         </div>
@@ -558,37 +523,23 @@ export function ChatPage() {
               </p>
               <p className="text-[11px] text-slate-400 max-w-xs mx-auto leading-relaxed">
                 {isUmkm
-                  ? "Mulai ajak mahasiswa berkolaborasi dari halaman Direktori Talenta."
+                  ? "Mulai ajak mahasiswa berkolaborasi dari Direktori Talenta atau kelola grup proyek Anda."
                   : "Lamar proyek yang tersedia untuk membuka ruang diskusi kerja."}
               </p>
-              {isUmkm ? (
-                <Link to="/talents">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="text-xs mt-2"
-                  >
-                    Eksplorasi Mahasiswa
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/projects">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="text-xs mt-2"
-                  >
-                    Jelajah Proyek
-                  </Button>
-                </Link>
-              )}
             </div>
           ) : (
             filteredConversations.map((conv) => {
               const isSelected =
                 selectedConv &&
-                String(selectedConv.partner_id) === String(conv.partner_id) &&
-                String(selectedConv.project_id) === String(conv.project_id);
+                ((conv.is_group &&
+                  selectedConv.is_group &&
+                  String(selectedConv.project_id) ===
+                    String(conv.project_id)) ||
+                  (!conv.is_group &&
+                    String(selectedConv.partner_id) ===
+                      String(conv.partner_id) &&
+                    String(selectedConv.project_id) ===
+                      String(conv.project_id)));
 
               return (
                 <button
@@ -600,9 +551,51 @@ export function ChatPage() {
                       : ""
                   }`}
                 >
-                  {/* Partner Avatar with status dot */}
+                  {/* Avatar (Group vs Direct) */}
                   <div className="relative shrink-0 mt-0.5">
-                    {conv.partner_photo ? (
+                    {conv.is_group ? (
+                      conv.members && conv.members.length > 0 ? (
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 relative overflow-hidden flex items-center justify-center p-0.5 shadow-2xs">
+                          <div className="flex items-center -space-x-1.5">
+                            {conv.members.slice(0, 2).map((mem, idx) =>
+                              mem.url_foto ? (
+                                <img
+                                  key={mem.user_id || idx}
+                                  src={mem.url_foto}
+                                  alt={mem.nama_lengkap}
+                                  className="w-5 h-5 rounded-full object-cover border border-white"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <div
+                                  key={mem.user_id || idx}
+                                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border border-white ${
+                                    mem.is_owner
+                                      ? "bg-amber-100 text-amber-900"
+                                      : "bg-brand-indigo text-white"
+                                  }`}
+                                >
+                                  {(mem.nama_lengkap || "A")
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </div>
+                              ),
+                            )}
+                            {conv.members.length > 2 && (
+                              <div className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 border border-white flex items-center justify-center text-[7px] font-bold">
+                                +{conv.members.length - 2}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 text-brand-indigo flex items-center justify-center shadow-2xs">
+                          <Users className="w-5 h-5" />
+                        </div>
+                      )
+                    ) : conv.partner_photo ? (
                       <img
                         src={conv.partner_photo}
                         alt={conv.partner_name}
@@ -624,9 +617,9 @@ export function ChatPage() {
                     )}
                     <span
                       className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${
-                        conv.is_online ? "bg-emerald-500" : "bg-rose-500"
+                        conv.is_online ? "bg-emerald-500" : "bg-slate-300"
                       }`}
-                      title={conv.is_online ? "Online" : "Offline"}
+                      title={conv.is_online ? "Aktif Online" : "Offline"}
                     />
                   </div>
 
@@ -637,22 +630,22 @@ export function ChatPage() {
                         <span className="text-xs font-bold text-slate-900 truncate">
                           {conv.partner_name}
                         </span>
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                        {!conv.is_group && (
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                        )}
                       </div>
                       <span className="text-[10px] text-slate-400 shrink-0">
                         {formatRelativeTime(conv.last_message_time)}
                       </span>
                     </div>
 
-                    {/* Project context badge */}
-                    {conv.project_title && (
-                      <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 truncate">
-                        <ProjectBriefVectorIcon size={11} color="#2563EB" />
-                        <span className="truncate max-w-[180px]">
-                          {conv.project_title}
-                        </span>
-                      </div>
-                    )}
+                    {/* Sub Info / Project context */}
+                    <div className="flex items-center gap-1 mt-0.5 text-[10px] text-slate-500 truncate">
+                      <ProjectBriefVectorIcon size={11} color="#2563EB" />
+                      <span className="truncate">
+                        {conv.partner_sub || conv.project_title || "Kolaborasi"}
+                      </span>
+                    </div>
 
                     {/* Last message snippet & unread counter */}
                     <div className="flex items-center justify-between gap-2 mt-1">
@@ -674,7 +667,7 @@ export function ChatPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. RIGHT PANE: ACTIVE CHAT PANEL (OR EMPTY STATE ON DESKTOP) */}
+      {/* 2. RIGHT PANE: ACTIVE CHAT PANEL */}
       {/* ========================================================================= */}
       <div
         className={`flex-1 h-full flex flex-col bg-white overflow-hidden ${
@@ -683,7 +676,7 @@ export function ChatPage() {
       >
         {selectedConv ? (
           <WorkroomChatPanel
-            key={`${selectedConv.project_id || "none"}-${selectedConv.partner_id || "direct"}`}
+            key={`${selectedConv.project_id || "none"}-${selectedConv.is_group ? "group" : selectedConv.partner_id || "direct"}`}
             projectId={selectedConv.project_id}
             projectTitle={selectedConv.project_title || "Ruang Kolaborasi"}
             partnerId={selectedConv.partner_id}
@@ -691,6 +684,10 @@ export function ChatPage() {
             partnerRole={selectedConv.partner_role || (isUmkm ? "MHS" : "UMKM")}
             partnerPhoto={selectedConv.partner_photo || null}
             initialPartnerOnline={Boolean(selectedConv.is_online)}
+            isGroup={Boolean(selectedConv.is_group)}
+            groupMembers={selectedConv.members || []}
+            projectStatus={selectedConv.project_status || "OPEN"}
+            onSelectPartner={handleSelectPartnerFromRoster}
             onBack={() => setMobileViewChat(false)}
             className="h-full w-full rounded-none border-0 shadow-none"
             initialDraft=""
@@ -710,8 +707,9 @@ export function ChatPage() {
               Pilih Percakapan untuk Memulai Diskusi
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
-              Pilih salah satu mitra kolaborasi di daftar sebelah kiri untuk
-              membuka ruang obrolan kerja terproteksi garansi Escrow Makarya.
+              Pilih grup proyek atau mitra kolaborasi di daftar sebelah kiri
+              untuk membuka ruang obrolan kerja terproteksi garansi Escrow
+              Makarya.
             </p>
           </div>
         )}

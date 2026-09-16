@@ -72,11 +72,40 @@ export function ChatScreen({ route, navigation }) {
     route.params?.photoUrl ||
     route.params?.url_foto;
 
+  const isGroup = Boolean(
+    route.params?.isGroup ||
+    (!route.params?.partnerId &&
+      !talentId &&
+      (initialProjectId || route.params?.projectId)),
+  );
+  const [groupMembers, setGroupMembers] = useState(route.params?.members || []);
+  const [showRosterModal, setShowRosterModal] = useState(false);
+
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
+
+  // Muat data seluruh anggota resmi proyek jika mode grup
+  useEffect(() => {
+    if (isGroup && currentProjectId) {
+      let isMounted = true;
+      (async () => {
+        try {
+          const res = await chatApi.getProjectRoster(currentProjectId);
+          if (isMounted && Array.isArray(res.data) && res.data.length > 0) {
+            setGroupMembers(res.data);
+          }
+        } catch (err) {
+          console.warn("Gagal memuat roster proyek di mobile:", err);
+        }
+      })();
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [isGroup, currentProjectId]);
 
   // Derive verified partner name dynamically if partnerName is generic or literal 'string'
   const partnerMsg = messages.find(
@@ -1119,55 +1148,137 @@ export function ChatScreen({ route, navigation }) {
       <Header
         onBack={() => navigation.goBack()}
         centerContent={
-          <View style={styles.headerCenterWrap}>
-            <View style={styles.headerCenterNameRow}>
-              {resolvedPartnerPhoto ? (
-                <Image
-                  source={{ uri: resolvedPartnerPhoto }}
-                  style={styles.headerPartnerAvatarSmall}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.headerPartnerAvatarPlaceholderSmall}>
-                  <Text style={styles.headerPartnerAvatarTextSmall}>
-                    {(resolvedPartnerName || "M").charAt(0).toUpperCase()}
-                  </Text>
+          isGroup ? (
+            <TouchableOpacity
+              onPress={() => setShowRosterModal(true)}
+              activeOpacity={0.75}
+              style={styles.headerGroupCenterWrap}
+            >
+              <View style={styles.headerGroupRow}>
+                {/* Avatar Cluster / Stack */}
+                <View style={styles.headerAvatarStack}>
+                  {groupMembers && groupMembers.length > 0 ? (
+                    groupMembers.slice(0, 3).map((mem, idx) => (
+                      <View
+                        key={mem.user_id || idx}
+                        style={[
+                          styles.headerAvatarStackItem,
+                          idx > 0 && { marginLeft: -7 },
+                        ]}
+                      >
+                        {mem.url_foto ? (
+                          <Image
+                            source={{ uri: mem.url_foto }}
+                            style={styles.headerStackAvatarImg}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.headerStackAvatarFallback,
+                              mem.is_owner
+                                ? { backgroundColor: "#FEF3C7" }
+                                : { backgroundColor: COLORS.brandIndigo },
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.headerStackAvatarText,
+                                mem.is_owner
+                                  ? { color: "#92400E" }
+                                  : { color: "#FFFFFF" },
+                              ]}
+                            >
+                              {(mem.nama_lengkap || "A")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </Text>
+                          </View>
+                        )}
+                        <View
+                          style={[
+                            styles.headerStackOnlineDot,
+                            {
+                              backgroundColor: mem.is_online
+                                ? "#10B981"
+                                : "#94A3B8",
+                            },
+                          ]}
+                        />
+                      </View>
+                    ))
+                  ) : (
+                    <View style={styles.headerGroupSingleFallback}>
+                      <Users size={14} color={COLORS.brandIndigo} />
+                    </View>
+                  )}
+                  {groupMembers && groupMembers.length > 3 && (
+                    <View style={styles.headerAvatarPlusBadge}>
+                      <Text style={styles.headerAvatarPlusText}>
+                        +{groupMembers.length - 3}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              )}
-              <Text style={styles.headerName} numberOfLines={1}>
-                {resolvedPartnerName}
-              </Text>
-              <CheckCircle2 size={13} color="#059669" />
+
+                <Text style={styles.headerGroupName} numberOfLines={1}>
+                  {currentProjectTitle || "Ruang Obrolan Proyek"}
+                </Text>
+              </View>
+
+              <View style={styles.headerSubRow}>
+                <Users size={11} color={COLORS.brandIndigo} />
+                <Text style={styles.headerGroupSubtitle} numberOfLines={1}>
+                  {groupMembers?.length || 2} Anggota • Ketuk lihat roster
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.headerCenterWrap}>
+              <View style={styles.headerCenterNameRow}>
+                {resolvedPartnerPhoto ? (
+                  <Image
+                    source={{ uri: resolvedPartnerPhoto }}
+                    style={styles.headerPartnerAvatarSmall}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={styles.headerPartnerAvatarPlaceholderSmall}>
+                    <Text style={styles.headerPartnerAvatarTextSmall}>
+                      {(resolvedPartnerName || "M").charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+                <Text style={styles.headerName} numberOfLines={1}>
+                  {resolvedPartnerName}
+                </Text>
+                <CheckCircle2 size={13} color="#059669" />
+              </View>
+              <View style={styles.headerSubRow}>
+                <View
+                  style={[
+                    styles.onlineDot,
+                    wsConnected
+                      ? styles.onlineDotActive
+                      : styles.onlineDotInactive,
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.headerStatusText,
+                    wsConnected
+                      ? styles.headerStatusTextActive
+                      : styles.headerStatusTextInactive,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {wsConnected ? "Online" : "Offline"}
+                </Text>
+              </View>
             </View>
-            <View style={styles.headerSubRow}>
-              <View
-                style={[
-                  styles.onlineDot,
-                  wsConnected
-                    ? styles.onlineDotActive
-                    : styles.onlineDotInactive,
-                ]}
-              />
-              <Text
-                style={[
-                  styles.headerStatusText,
-                  wsConnected
-                    ? styles.headerStatusTextActive
-                    : styles.headerStatusTextInactive,
-                ]}
-                numberOfLines={1}
-              >
-                {wsConnected ? "Online" : "Offline"}
-              </Text>
-            </View>
-          </View>
+          )
         }
-        rightAction={
-          <View style={styles.headerEscrowBadge}>
-            <ShieldCheck size={12} color="#059669" />
-            <Text style={styles.headerEscrowBadgeText}>Escrow</Text>
-          </View>
-        }
+        rightAction={null}
       />
 
       {/* 2. Messages List */}
@@ -1642,6 +1753,132 @@ export function ChatScreen({ route, navigation }) {
                           );
                         })}
                       </View>
+                    )}
+                  </View>
+                );
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* 6. Modal Anggota Tim (Roster Grup Proyek) */}
+      <Modal
+        visible={showRosterModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowRosterModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setShowRosterModal(false)}
+          />
+          <View style={styles.rosterModalSheet}>
+            <View style={styles.projectModalHeader}>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <Text style={styles.projectModalTitle}>
+                  Anggota Grup Proyek
+                </Text>
+                <Text style={styles.modalSub}>
+                  {groupMembers?.length || 0} personil terdaftar resmi
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowRosterModal(false)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <X size={20} color={COLORS.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={groupMembers}
+              keyExtractor={(item) => String(item.user_id)}
+              style={{ maxHeight: 380 }}
+              renderItem={({ item: mem }) => {
+                const isCurrent = String(mem.user_id) === String(user?.id);
+                return (
+                  <View style={styles.rosterMemberCard}>
+                    <View style={styles.rosterMemberLeft}>
+                      <View style={{ position: "relative" }}>
+                        {mem.url_foto ? (
+                          <Image
+                            source={{ uri: mem.url_foto }}
+                            style={styles.rosterMemberAvatar}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.rosterMemberAvatar,
+                              mem.is_owner
+                                ? { backgroundColor: "#FEF3C7" }
+                                : { backgroundColor: COLORS.brandIndigo },
+                              {
+                                alignItems: "center",
+                                justifyContent: "center",
+                              },
+                            ]}
+                          >
+                            <Text
+                              style={{
+                                fontFamily: FONTS.bodyBold,
+                                fontSize: 13,
+                                color: mem.is_owner ? "#92400E" : "#FFFFFF",
+                              }}
+                            >
+                              {(mem.nama_lengkap || "A")
+                                .charAt(0)
+                                .toUpperCase()}
+                            </Text>
+                          </View>
+                        )}
+                        <View
+                          style={[
+                            styles.rosterOnlineDot,
+                            {
+                              backgroundColor: mem.is_online
+                                ? "#10B981"
+                                : "#94A3B8",
+                            },
+                          ]}
+                        />
+                      </View>
+
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.rosterMemberName} numberOfLines={1}>
+                          {mem.nama_lengkap} {isCurrent && "(Anda)"}
+                        </Text>
+                        <Text style={styles.rosterMemberRole} numberOfLines={1}>
+                          {mem.role_label ||
+                            (mem.is_owner ? "Project Owner" : "Pelaksana")}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {!isCurrent && (
+                      <TouchableOpacity
+                        style={styles.rosterDirectChatBtn}
+                        onPress={() => {
+                          setShowRosterModal(false);
+                          navigation.push("Chat", {
+                            projectId: currentProjectId,
+                            partnerId: mem.user_id,
+                            partnerName: mem.nama_lengkap,
+                            partnerPhoto: mem.url_foto,
+                            partnerRole: mem.is_owner ? "UMKM" : "MHS",
+                            projectTitle: currentProjectTitle,
+                            isGroup: false,
+                          });
+                        }}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.rosterDirectChatBtnText}>
+                          Pesan
+                        </Text>
+                      </TouchableOpacity>
                     )}
                   </View>
                 );
@@ -2665,5 +2902,157 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     fontWeight: "600",
     color: "#0F172A",
+  },
+  headerGroupCenterWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    maxWidth: 240,
+  },
+  headerGroupRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  headerGroupName: {
+    fontSize: 13,
+    fontFamily: FONTS.displayBold,
+    fontWeight: "700",
+    color: "#0F172A",
+    maxWidth: 160,
+  },
+  headerGroupSubtitle: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.brandIndigo,
+  },
+  headerAvatarStack: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerAvatarStackItem: {
+    position: "relative",
+  },
+  headerStackAvatarImg: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+  headerStackAvatarFallback: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerStackAvatarText: {
+    fontSize: 9,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+  },
+  headerStackOnlineDot: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  headerGroupSingleFallback: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerAvatarPlusBadge: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: -5,
+  },
+  headerAvatarPlusText: {
+    fontSize: 8,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: "#475569",
+  },
+  rosterModalSheet: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+  rosterMemberCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+    gap: 12,
+  },
+  rosterMemberLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+  },
+  rosterMemberAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  rosterOnlineDot: {
+    position: "absolute",
+    bottom: -1,
+    right: -1,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+  rosterMemberName: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  rosterMemberRole: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyMedium,
+    color: "#64748B",
+    marginTop: 1,
+  },
+  rosterDirectChatBtn: {
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#C7D2FE",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 100,
+  },
+  rosterDirectChatBtnText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+    color: COLORS.brandIndigo,
   },
 });
