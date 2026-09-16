@@ -204,16 +204,16 @@ export function ProposalBoardPage() {
           );
           if (found) {
             setSelectedProposal(found);
+            setDetailsLoading(true);
             projectApi
               .getById(found.project_id)
               .then((res) => {
                 if (res.data) setSelectedProject(res.data);
               })
               .catch(() => {});
-            escrowApi
-              .getByProject(found.project_id)
-              .then((res) => setProjectEscrow(res.data || null))
-              .catch(() => setProjectEscrow(null));
+            loadProjectDetails(found.project_id).finally(() => {
+              setDetailsLoading(false);
+            });
             const isCompleted =
               found.status === "COMPLETED" ||
               subMap[found.project_id]?.status === "APPROVED" ||
@@ -257,17 +257,20 @@ export function ProposalBoardPage() {
     try {
       const [propRes, subRes, escrowRes] = await Promise.all([
         proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
-        submissionApi.getByProject(projectId).catch(() => ({ data: null })),
+        submissionApi
+          .getAllByProject(projectId)
+          .catch(() =>
+            submissionApi.getByProject(projectId).catch(() => ({ data: null })),
+          ),
         escrowApi.getByProject(projectId).catch(() => ({ data: null })),
       ]);
       const props = Array.isArray(propRes.data) ? propRes.data : [];
       setProjectProposals(props);
-      const subs =
-        subRes.data && subRes.data.id
+      const subs = Array.isArray(subRes?.data)
+        ? subRes.data
+        : subRes?.data && subRes.data.id
           ? [subRes.data]
-          : Array.isArray(subRes.data)
-            ? subRes.data
-            : [];
+          : [];
       setProjectSubmissions(subs);
       setProjectEscrow(escrowRes.data || null);
       return {
@@ -327,11 +330,12 @@ export function ProposalBoardPage() {
   };
 
   // Handle Mahasiswa selecting a proposal to open dedicated workspace
-  const handleSelectProposal = (proposal) => {
+  const handleSelectProposal = async (proposal) => {
     setSelectedProposal(proposal);
     setSearchParams({ project: proposal.project_id });
     window.scrollTo({ top: 0, behavior: "smooth" });
 
+    setDetailsLoading(true);
     projectApi
       .getById(proposal.project_id)
       .then((res) => {
@@ -339,18 +343,20 @@ export function ProposalBoardPage() {
       })
       .catch(() => {});
 
-    escrowApi
-      .getByProject(proposal.project_id)
-      .then((res) => setProjectEscrow(res.data || null))
-      .catch(() => setProjectEscrow(null));
+    const details = await loadProjectDetails(proposal.project_id);
+    setDetailsLoading(false);
 
     const isCompleted =
       proposal.status === "COMPLETED" ||
-      mhsSubmissions[proposal.project_id]?.status === "APPROVED" ||
+      (details.submissions &&
+        details.submissions.some((s) => s.status === "APPROVED")) ||
       proposal.project_status === "DONE" ||
       proposal.project_status === "COMPLETED";
 
-    if (isCompleted || mhsSubmissions[proposal.project_id]) {
+    if (
+      isCompleted ||
+      (details.submissions && details.submissions.length > 0)
+    ) {
       setActiveStageTab("deliverable");
     } else {
       setActiveStageTab("brief");

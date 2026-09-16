@@ -48,9 +48,11 @@ export const walletApi = {
 export const submissionApi = {
   submitWork: (data) => api.post("/submissions", data),
   getByProject: (projectId) => api.get(`/submissions/project/${projectId}`),
-  requestRevision: (submissionId, data) =>
-    api.patch(`/submissions/${submissionId}/request-revision`, data),
-  approve: (submissionId) => api.patch(`/submissions/${submissionId}/approve`),
+  getAllByProject: (projectId) =>
+    api.get(`/submissions/project/${projectId}/all`),
+  approve: (id) => api.patch(`/submissions/${id}/approve`),
+  requestRevision: (id, data) =>
+    api.patch(`/submissions/${id}/request-revision`, data),
 };
 
 export const ratingApi = {

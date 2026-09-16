@@ -1008,32 +1008,25 @@ export function WorkroomWorkspaceDetail({
                           <img
                             src={clientData.fotoUsaha}
                             alt={clientData.namaUsaha}
-                            className="w-13 h-13 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
                             className="w-14 h-14 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
                           />
                         ) : (
-                          <div className="w-13 h-13 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
                           <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
                             {clientData.namaUsaha.charAt(0).toUpperCase()}
                           </div>
                         )}
 
-                        <div className="min-w-0 space-y-1">
                         <div className="flex-1 min-w-0 space-y-1">
                           <h4 className="font-extrabold text-dark-900 text-sm sm:text-base leading-tight">
                             {clientData.namaUsaha}
                           </h4>
                           <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
                             <span className="inline-flex items-center gap-1">
-                              <Building2 className="w-3 h-3 text-slate-400" />
-                              {clientData.bidang}
                               <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{clientData.bidang}</span>
                             </span>
                             <span>•</span>
                             <span className="inline-flex items-center gap-1">
-                              <MapPin className="w-3 h-3 text-slate-400" />
-                              {clientData.kota}
                               <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{clientData.kota}</span>
                             </span>
@@ -1085,17 +1078,14 @@ export function WorkroomWorkspaceDetail({
                           <img
                             src={studentData.foto}
                             alt={studentData.namaLengkap}
-                            className="w-13 h-13 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
                             className="w-14 h-14 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
                           />
                         ) : (
-                          <div className="w-13 h-13 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
                           <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
                             {studentData.namaLengkap.charAt(0).toUpperCase()}
                           </div>
                         )}
 
-                        <div className="min-w-0 space-y-1">
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-center gap-1.5">
                             <h4 className="font-extrabold text-dark-900 text-sm sm:text-base leading-tight">
@@ -1104,8 +1094,6 @@ export function WorkroomWorkspaceDetail({
                           </div>
                           <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
                             <span className="inline-flex items-center gap-1">
-                              <GraduationCap className="w-3 h-3 text-slate-400" />
-                              {studentData.kampus}
                               <GraduationCap className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>{studentData.kampus}</span>
                             </span>

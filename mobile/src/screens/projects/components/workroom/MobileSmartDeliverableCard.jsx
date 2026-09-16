@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
+  Image,
 } from "react-native";
 import { FONTS } from "../../../../theme/fonts";
 import { formatDate } from "../../../../utils/formatDate";
@@ -22,6 +23,7 @@ import {
   Palette,
   FileText,
   Check,
+  User,
 } from "lucide-react-native";
 
 export function getMobileSmartLinkMeta(url) {
@@ -125,16 +127,28 @@ export function MobileSmartDeliverableCard({
 }) {
   if (!submission) return null;
 
+  const fileUrl = submission.url_berkas || submission.file_url || "";
+  const sourceUrl = submission.url_source_file || null;
+  const rawNotes = submission.catatan_pengiriman || submission.catatan || "";
+  const dateSubmitted = submission.submitted_at || submission.created_at;
+
+  const submitterName = submission.submitter_name || "Mahasiswa Pelaksana";
+  const submitterPhoto = submission.submitter_photo || null;
+  const submitterKampus = submission.submitter_kampus || "Perguruan Tinggi";
+  const submitterProdi = submission.submitter_prodi || "Talenta Digital";
+  const roleName = submission.role_name || "Pelaksana Proyek";
+
   const versionNumber = totalSubmissions - index;
   const versionLabel =
     isLatest && isProjectCompleted
       ? "Versi Final (Disetujui)"
       : `Deliverable v${versionNumber}${isLatest ? " (Terkini)" : ""}`;
 
-  const linkMeta = getMobileSmartLinkMeta(submission.file_url);
+  const linkMeta = getMobileSmartLinkMeta(fileUrl);
+  const sourceLinkMeta = sourceUrl ? getMobileSmartLinkMeta(sourceUrl) : null;
 
   // Parse notes and checklist items
-  const noteLines = (submission.catatan || "").split("\n");
+  const noteLines = (rawNotes || "").split("\n");
   const checklistItems = noteLines
     .filter((l) => l.trim().startsWith("- [ ]") || l.trim().startsWith("- [x]"))
     .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
@@ -153,9 +167,9 @@ export function MobileSmartDeliverableCard({
     submission.status === "APPROVED" || submission.status === "COMPLETED";
   const isRevisionRequested = submission.status === "REVISION_REQUESTED";
 
-  const handleOpenLink = () => {
-    if (submission.file_url) {
-      Linking.openURL(submission.file_url).catch(() => {});
+  const handleOpenLink = (url) => {
+    if (url) {
+      Linking.openURL(url).catch(() => {});
     }
   };
 
@@ -181,9 +195,7 @@ export function MobileSmartDeliverableCard({
               {versionLabel}
             </Text>
           </View>
-          <Text style={styles.dateText}>
-            {formatDate(submission.created_at)}
-          </Text>
+          <Text style={styles.dateText}>{formatDate(dateSubmitted)}</Text>
         </View>
 
         {isApproved ? (
@@ -206,11 +218,42 @@ export function MobileSmartDeliverableCard({
         )}
       </View>
 
+      {/* Submitter & Team Role Identity Banner */}
+      <View style={styles.submitterBox}>
+        {submitterPhoto ? (
+          <Image
+            source={{ uri: submitterPhoto }}
+            style={styles.submitterAvatar}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.submitterAvatarFallback}>
+            <Text style={styles.submitterAvatarInitial}>
+              {submitterName.charAt(0).toUpperCase()}
+            </Text>
+          </View>
+        )}
+
+        <View style={{ flex: 1 }}>
+          <View style={styles.submitterNameRow}>
+            <Text style={styles.submitterNameText} numberOfLines={1}>
+              {submitterName}
+            </Text>
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleBadgeText}>{roleName}</Text>
+            </View>
+          </View>
+          <Text style={styles.submitterEduText} numberOfLines={1}>
+            {submitterKampus} • {submitterProdi}
+          </Text>
+        </View>
+      </View>
+
       {/* Smart Link Feature Inset */}
-      {linkMeta && submission.file_url && (
+      {linkMeta && fileUrl ? (
         <TouchableOpacity
           style={styles.linkBox}
-          onPress={handleOpenLink}
+          onPress={() => handleOpenLink(fileUrl)}
           activeOpacity={0.82}
         >
           <View style={styles.linkLeftRow}>
@@ -250,7 +293,7 @@ export function MobileSmartDeliverableCard({
                 {linkMeta.description}
               </Text>
               <Text style={styles.linkUrlText} numberOfLines={1}>
-                {submission.file_url}
+                {fileUrl}
               </Text>
             </View>
           </View>
@@ -260,7 +303,36 @@ export function MobileSmartDeliverableCard({
             <ExternalLink size={13} color="#2563EB" />
           </View>
         </TouchableOpacity>
-      )}
+      ) : null}
+
+      {/* Secondary Source Link (if present) */}
+      {sourceUrl && sourceLinkMeta ? (
+        <TouchableOpacity
+          style={styles.sourceBox}
+          onPress={() => handleOpenLink(sourceUrl)}
+          activeOpacity={0.82}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              flex: 1,
+            }}
+          >
+            <FileCode size={16} color="#475569" />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sourceTitleText} numberOfLines={1}>
+                Berkas Source / Lampiran
+              </Text>
+              <Text style={styles.sourceUrlText} numberOfLines={1}>
+                {sourceUrl}
+              </Text>
+            </View>
+          </View>
+          <ExternalLink size={12} color="#64748B" />
+        </TouchableOpacity>
+      ) : null}
 
       {/* Clean Note Box */}
       {cleanNote ? (
@@ -410,6 +482,67 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
     color: "#1E40AF",
   },
+  submitterBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  submitterAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#E2E8F0",
+  },
+  submitterAvatarFallback: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#DBEAFE",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  submitterAvatarInitial: {
+    fontSize: 14,
+    fontFamily: FONTS.bold,
+    color: "#1D4ED8",
+  },
+  submitterNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  submitterNameText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bold,
+    color: "#0F172A",
+  },
+  roleBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 6,
+    backgroundColor: "#EFF6FF",
+    borderWidth: 1,
+    borderColor: "#BFDBFE",
+  },
+  roleBadgeText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bold,
+    color: "#1D4ED8",
+  },
+  submitterEduText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.regular,
+    color: "#64748B",
+    marginTop: 2,
+  },
   linkBox: {
     backgroundColor: "#F8FAFC",
     borderRadius: 16,
@@ -476,6 +609,27 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: FONTS.bold,
     color: "#2563EB",
+  },
+  sourceBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F1F5F9",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  sourceTitleText: {
+    fontSize: 11,
+    fontFamily: FONTS.bold,
+    color: "#334155",
+  },
+  sourceUrlText: {
+    fontSize: 10,
+    fontFamily: FONTS.medium,
+    color: "#64748B",
   },
   noteBox: {
     backgroundColor: "#F8FAFC",

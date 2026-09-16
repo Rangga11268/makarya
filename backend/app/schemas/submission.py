@@ -21,10 +21,18 @@ class SubmissionResponse(BaseModel):
     id: UUID
     proposal_id: UUID
     url_berkas: str
+    url_source_file: Optional[str] = None
     catatan_pengiriman: Optional[str] = None
     jumlah_revisi: int
     status: SubmissionStatus
     submitted_at: datetime
     updated_at: datetime
+
+    # Submitter & Team Role Info
+    submitter_name: Optional[str] = None
+    submitter_photo: Optional[str] = None
+    submitter_kampus: Optional[str] = None
+    submitter_prodi: Optional[str] = None
+    role_name: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -36,6 +36,8 @@ export const proposalApi = {
 export const submissionApi = {
   submitWork: (data) => api.post("/submissions", data),
   getByProject: (projectId) => api.get(`/submissions/project/${projectId}`),
+  getAllByProject: (projectId) =>
+    api.get(`/submissions/project/${projectId}/all`),
   approve: (id) => api.patch(`/submissions/${id}/approve`),
   requestRevision: (id, data) =>
     api.patch(`/submissions/${id}/request-revision`, data),
@@ -67,7 +69,8 @@ export const disputeApi = {
 
 export const chatApi = {
   getConversations: () => api.get("/chat/conversations"),
-  getProjectRoster: (projectId) => api.get(`/chat/projects/${projectId}/roster`),
+  getProjectRoster: (projectId) =>
+    api.get(`/chat/projects/${projectId}/roster`),
   getMessages: (projectId, partnerId = null) =>
     api.get(`/chat/project/${projectId}/messages`, {
       params: partnerId ? { partner_id: partnerId } : {},

@@ -9,6 +9,9 @@ import {
   FolderArchive,
   Palette,
   FileText,
+  User,
+  GraduationCap,
+  Building2,
   Sparkles,
 } from "lucide-react";
 import { formatDate } from "../../../../utils/formatDate";
@@ -107,16 +110,28 @@ export function SmartDeliverableCard({
 }) {
   if (!submission) return null;
 
+  const fileUrl = submission.url_berkas || submission.file_url || "";
+  const sourceUrl = submission.url_source_file || null;
+  const rawNotes = submission.catatan_pengiriman || submission.catatan || "";
+  const dateSubmitted = submission.submitted_at || submission.created_at;
+
+  const submitterName = submission.submitter_name || "Mahasiswa Pelaksana";
+  const submitterPhoto = submission.submitter_photo || null;
+  const submitterKampus = submission.submitter_kampus || "Perguruan Tinggi";
+  const submitterProdi = submission.submitter_prodi || "Talenta Digital";
+  const roleName = submission.role_name || "Pelaksana Proyek";
+
   const versionNumber = totalSubmissions - index;
   const versionLabel =
     isLatest && isProjectCompleted
       ? "Versi Final (Disetujui)"
       : `Deliverable v${versionNumber}${isLatest ? " (Terkini)" : ""}`;
 
-  const linkMeta = getSmartLinkMeta(submission.file_url);
+  const linkMeta = getSmartLinkMeta(fileUrl);
+  const sourceLinkMeta = sourceUrl ? getSmartLinkMeta(sourceUrl) : null;
 
   // Parse notes and checklist items
-  const noteLines = (submission.catatan || "").split("\n");
+  const noteLines = (rawNotes || "").split("\n");
   const checklistItems = noteLines
     .filter((l) => l.trim().startsWith("- [ ]") || l.trim().startsWith("- [x]"))
     .map((l) => l.replace(/^-\s*\[[ x]\]\s*/i, "").trim());
@@ -158,7 +173,7 @@ export function SmartDeliverableCard({
             {versionLabel}
           </span>
           <span className="text-[11px] font-medium text-slate-500">
-            {formatDate(submission.created_at)}
+            {formatDate(dateSubmitted)}
           </span>
         </div>
 
@@ -183,17 +198,54 @@ export function SmartDeliverableCard({
         </div>
       </div>
 
+      {/* Submitter Identity & Role In Team */}
+      <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          {submitterPhoto ? (
+            <img
+              src={submitterPhoto}
+              alt={submitterName}
+              className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 font-bold text-sm shrink-0">
+              {submitterName.charAt(0).toUpperCase()}
+            </div>
+          )}
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                {submitterName}
+              </span>
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                {roleName}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5 truncate">
+              <span className="truncate">{submitterKampus}</span>
+              <span>•</span>
+              <span className="truncate">{submitterProdi}</span>
+            </div>
+          </div>
+        </div>
+
+        <span className="hidden sm:inline-block text-[11px] font-medium text-slate-400 shrink-0">
+          Pengirim Deliverable
+        </span>
+      </div>
+
       {/* Smart Link Card Feature */}
-      {linkMeta && submission.file_url && (
+      {linkMeta && fileUrl && (
         <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-white border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 min-w-0">
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${linkMeta.iconBg}`}
             >
               <linkMeta.icon className="w-5 h-5" />
             </div>
-            <div className="space-y-1 min-w-0">
-              <div className="flex items-center gap-2">
+            <div className="space-y-1 min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-bold text-slate-900 truncate">
                   {linkMeta.title}
                 </span>
@@ -207,13 +259,13 @@ export function SmartDeliverableCard({
                 {linkMeta.description}
               </p>
               <span className="text-[11px] font-mono text-blue-600 truncate block">
-                {submission.file_url}
+                {fileUrl}
               </span>
             </div>
           </div>
 
           <a
-            href={submission.file_url}
+            href={fileUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
@@ -224,11 +276,40 @@ export function SmartDeliverableCard({
         </div>
       )}
 
+      {/* Secondary Source File Link (if provided) */}
+      {sourceUrl && sourceLinkMeta && (
+        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center shrink-0">
+              <FileCode className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-slate-800 block truncate">
+                Berkas Kode Sumber / Lampiran Tambahan
+              </span>
+              <span className="text-[10.5px] font-mono text-slate-500 truncate block">
+                {sourceUrl}
+              </span>
+            </div>
+          </div>
+
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold shrink-0"
+          >
+            <span>Buka Source</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      )}
+
       {/* Clean Notes Section */}
       {cleanNote && (
         <div className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 text-xs space-y-1">
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-            Catatan Mahasiswa:
+            Catatan Pengiriman:
           </span>
           <p className="text-slate-800 leading-relaxed italic">"{cleanNote}"</p>
         </div>
@@ -256,7 +337,6 @@ export function SmartDeliverableCard({
       )}
 
       {/* Escrow Auto-Approval Protection Banner */}
-
       {isLatest && !isApproved && !isRevisionRequested && (
         <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/50 border border-blue-200/80 text-xs space-y-1.5 shadow-2xs">
           <div className="flex items-center gap-2 text-blue-900 font-bold">

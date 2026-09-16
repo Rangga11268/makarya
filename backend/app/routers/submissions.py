@@ -19,6 +19,50 @@ from app.schemas.submission import SubmissionCreateRequest, RevisionRequest, Sub
 router = APIRouter(prefix="/submissions", tags=["Submissions & Revision Control"])
 
 
+def format_submission_response(submission: Submission) -> dict:
+    proposal = submission.proposal
+    mhs = proposal.mahasiswa if proposal else None
+    profile = mhs.profile_mhs if mhs else None
+    slot = proposal.slot if proposal else None
+
+    submitter_name = (profile.nama_lengkap if profile and profile.nama_lengkap else (mhs.username if mhs else "Mahasiswa"))
+    submitter_photo = profile.url_foto if profile else None
+    submitter_prodi = profile.prodi.nama_prodi if (profile and profile.prodi) else "Informatika"
+
+    submitter_kampus = "Universitas Terdaftar"
+    if mhs and mhs.email:
+        email_domain = mhs.email.split("@")[-1].lower()
+        if "ubsi" in email_domain:
+            submitter_kampus = "Universitas Bina Sarana Informatika (UBSI)"
+        elif "ui.ac.id" in email_domain:
+            submitter_kampus = "Universitas Indonesia (UI)"
+        elif "itb.ac.id" in email_domain:
+            submitter_kampus = "Institut Teknologi Bandung (ITB)"
+        elif "ugm.ac.id" in email_domain:
+            submitter_kampus = "Universitas Gadjah Mada (UGM)"
+        else:
+            submitter_kampus = f"Kampus @{email_domain}"
+
+    role_name = slot.nama_peran if slot and slot.nama_peran else "Pelaksana Utama"
+
+    return {
+        "id": submission.id,
+        "proposal_id": submission.proposal_id,
+        "url_berkas": submission.url_berkas,
+        "url_source_file": submission.url_source_file,
+        "catatan_pengiriman": submission.catatan_pengiriman,
+        "jumlah_revisi": submission.jumlah_revisi,
+        "status": submission.status,
+        "submitted_at": submission.submitted_at,
+        "updated_at": submission.updated_at,
+        "submitter_name": submitter_name,
+        "submitter_photo": submitter_photo,
+        "submitter_kampus": submitter_kampus,
+        "submitter_prodi": submitter_prodi,
+        "role_name": role_name,
+    }
+
+
 @router.post("", response_model=SubmissionResponse, status_code=status.HTTP_201_CREATED)
 def submit_work(
     body: SubmissionCreateRequest,
@@ -72,7 +116,6 @@ def submit_work(
         db.add(submission)
 
     # Sinkronisasi status Escrow ke SUBMITTED & set timer auto-approval 7 hari
-
     escrow = db.query(Escrow).filter(Escrow.proposal_id == accepted_proposal.id).first()
     if escrow:
         escrow.status = EscrowStatus.SUBMITTED
@@ -80,8 +123,7 @@ def submit_work(
 
     db.commit()
     db.refresh(submission)
-    return submission
-
+    return format_submission_response(submission)
 
 
 @router.get("/project/{project_id}", response_model=SubmissionResponse)
@@ -90,45 +132,98 @@ def get_submission_by_project(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Melihat Hasil Kerja Proyek Berdasarkan ID Proyek"""
+    """Melihat Hasil Kerja Proyek Berdasarkan ID Proyek (Bisa diakses UMKM dan seluruh anggota tim)"""
     project = db.query(Project).filter(Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
-    # Cari proposal yang disetujui pada proyek ini
-    accepted_proposal = (
+    # Cari semua proposal yang disetujui pada proyek ini
+    accepted_proposals = (
         db.query(Proposal)
         .filter(
             Proposal.project_id == project_id,
             Proposal.status == ProposalStatus.ACCEPTED,
         )
-        .first()
+        .all()
     )
-    if not accepted_proposal:
+    if not accepted_proposals:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Belum ada proposal yang disetujui untuk proyek ini",
         )
 
-    submission = db.query(Submission).filter(Submission.proposal_id == accepted_proposal.id).first()
+    # BOLA guard: Pemilik proyek UMKM, Admin, ATAU Mahasiswa anggota tim yang proposalnya disetujui
+    accepted_mhs_ids = [p.mhs_id for p in accepted_proposals]
+    is_authorized = (
+        project.umkm_id == current_user.id
+        or current_user.id in accepted_mhs_ids
+        or current_user.role == UserRole.ADMIN
+    )
+    if not is_authorized:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini",
+        )
+
+    accepted_proposal_ids = [p.id for p in accepted_proposals]
+    submission = (
+        db.query(Submission)
+        .filter(Submission.proposal_id.in_(accepted_proposal_ids))
+        .order_by(Submission.submitted_at.desc())
+        .first()
+    )
     if not submission:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Hasil kerja belum dikirimkan untuk proyek ini",
         )
 
-    # BOLA guard : Hanya pemilik proyek UMKM, mahasiswa pekerja, atau admin yang berhak melihat
-    if (
-        project.umkm_id != current_user.id
-        and accepted_proposal.mhs_id != current_user.id
-        and current_user.role != UserRole.ADMIN
-    ):
+    return format_submission_response(submission)
+
+
+@router.get("/project/{project_id}/all", response_model=List[SubmissionResponse])
+def get_all_submissions_by_project(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Melihat Semua Submisi Hasil Kerja Proyek (Untuk UMKM dan Anggota Tim)"""
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
+
+    accepted_proposals = (
+        db.query(Proposal)
+        .filter(
+            Proposal.project_id == project_id,
+            Proposal.status == ProposalStatus.ACCEPTED,
+        )
+        .all()
+    )
+    if not accepted_proposals:
+        return []
+
+    accepted_mhs_ids = [p.mhs_id for p in accepted_proposals]
+    is_authorized = (
+        project.umkm_id == current_user.id
+        or current_user.id in accepted_mhs_ids
+        or current_user.role == UserRole.ADMIN
+    )
+    if not is_authorized:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini",
         )
 
-    return submission
+    accepted_proposal_ids = [p.id for p in accepted_proposals]
+    submissions = (
+        db.query(Submission)
+        .filter(Submission.proposal_id.in_(accepted_proposal_ids))
+        .order_by(Submission.submitted_at.desc())
+        .all()
+    )
+
+    return [format_submission_response(s) for s in submissions]
 
 
 @router.patch("/{id}/approve", response_model=SubmissionResponse)
@@ -222,7 +317,7 @@ def approve_submission(
 
     db.commit()
     db.refresh(submission)
-    return submission
+    return format_submission_response(submission)
 
 
 @router.patch("/{id}/request-revision", response_model=SubmissionResponse)
@@ -281,4 +376,4 @@ def request_revision(
 
     db.commit()
     db.refresh(submission)
-    return submission
+    return format_submission_response(submission)
