@@ -18,6 +18,7 @@ export const projectApi = {
   browse: (params) => api.get("/projects", { params }),
   getAll: (params) => api.get("/projects", { params }),
   getDetail: (id) => api.get(`/projects/${id}`),
+  getById: (id) => api.get(`/projects/${id}`),
   getMyProjects: () => api.get("/projects/my-projects"),
   reopen: (id, data) => api.post(`/projects/${id}/reopen`, data),
   terminateAndCancel: (id, data) =>

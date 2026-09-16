@@ -174,39 +174,19 @@ export function ProjectDetailScreen({ route, navigation }) {
       );
 
       // 2. Fetch proposal & submission secara terkontrol sesuai role & izin
-      const promises = [];
       const promises = [
         // Index 0: Proposal list for this project (Hanya UMKM pemilik yang boleh melihat seluruh pelamar)
         isProjectOwner
           ? proposalApi.getByProject(projectId).catch(() => ({ data: [] }))
           : Promise.resolve({ data: [] }),
 
-      // Hanya pemilik proyek yang boleh melihat seluruh daftar proposal masuk
-      if (isProjectOwner) {
-        promises.push(
-          proposalApi.getByProject(projectId).catch(() => ({ data: [] })),
-        );
-      } else {
-        promises.push(Promise.resolve({ data: [] }));
-      }
-
-      // Submission hasil kerja
-      promises.push(
-        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
         // Index 1: Submissions hasil deliverable kerja
         submissionApi
           .getAllByProject(projectId)
           .catch(() =>
             submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
           ),
-      );
 
-      // Mahasiswa melihat proposal milik diri sendiri
-      if (isMahasiswa) {
-        promises.push(proposalApi.getMyProposals().catch(() => ({ data: [] })));
-      } else {
-        promises.push(Promise.resolve({ data: [] }));
-      }
         // Index 2: Proposal milik user sendiri (Mahasiswa)
         isMahasiswa
           ? proposalApi.getMyProposals().catch(() => ({ data: [] }))
@@ -234,7 +214,6 @@ export function ProjectDetailScreen({ route, navigation }) {
       if (!foundProp && Array.isArray(propRes.data)) {
         foundProp = propRes.data.find(
           (p) =>
-            String(p.mhs_id || p.user_id) === String(user?.id) ||
             (p.mhs_id && String(p.mhs_id) === String(user?.id)) ||
             (p.user_id && String(p.user_id) === String(user?.id)) ||
             (p.mahasiswa_id && String(p.mahasiswa_id) === String(user?.id)) ||
@@ -272,34 +251,33 @@ export function ProjectDetailScreen({ route, navigation }) {
   const isProjectExpired =
     Boolean(project?.deadline && isExpired(project.deadline)) ||
     project?.status === "CANCELLED";
-  const isAcceptedProposal = myExistingProposal?.status === "ACCEPTED";
 
   const isAcceptedMember = Boolean(
     isMahasiswa &&
-      (myExistingProposal?.status === "ACCEPTED" ||
-        (project?.accepted_mhs_id &&
-          String(project.accepted_mhs_id) === String(user?.id)) ||
-        (project?.accepted_user_id &&
-          String(project.accepted_user_id) === String(user?.id)) ||
-        (project?.accepted_mhs_email &&
-          user?.email &&
-          project.accepted_mhs_email.toLowerCase() ===
-            user.email.toLowerCase()) ||
-        (project?.tipe_kolaborasi === "TIM" &&
-          Array.isArray(project?.slots) &&
-          project.slots.some(
-            (s) =>
-              (s.assigned_mhs_id &&
-                String(s.assigned_mhs_id) === String(user?.id)) ||
-              (s.assigned_user_id &&
-                String(s.assigned_user_id) === String(user?.id)) ||
-              (s.mhs_id && String(s.mhs_id) === String(user?.id)) ||
-              (s.accepted_mhs_id &&
-                String(s.accepted_mhs_id) === String(user?.id)) ||
-              (user?.email &&
-                s.mhs_email &&
-                s.mhs_email.toLowerCase() === user.email.toLowerCase()),
-          ))),
+    (myExistingProposal?.status === "ACCEPTED" ||
+      (project?.accepted_mhs_id &&
+        String(project.accepted_mhs_id) === String(user?.id)) ||
+      (project?.accepted_user_id &&
+        String(project.accepted_user_id) === String(user?.id)) ||
+      (project?.accepted_mhs_email &&
+        user?.email &&
+        project.accepted_mhs_email.toLowerCase() ===
+          user.email.toLowerCase()) ||
+      (project?.tipe_kolaborasi === "TIM" &&
+        Array.isArray(project?.slots) &&
+        project.slots.some(
+          (s) =>
+            (s.assigned_mhs_id &&
+              String(s.assigned_mhs_id) === String(user?.id)) ||
+            (s.assigned_user_id &&
+              String(s.assigned_user_id) === String(user?.id)) ||
+            (s.mhs_id && String(s.mhs_id) === String(user?.id)) ||
+            (s.accepted_mhs_id &&
+              String(s.accepted_mhs_id) === String(user?.id)) ||
+            (user?.email &&
+              s.mhs_email &&
+              s.mhs_email.toLowerCase() === user.email.toLowerCase()),
+        ))),
   );
 
   const isAcceptedProposal = Boolean(
@@ -316,7 +294,6 @@ export function ProjectDetailScreen({ route, navigation }) {
       hasOpenSlots) &&
     !isProjectExpired;
   const canApply =
-    isMahasiswa && isOpenForApply && !myExistingProposal && !isUmkmOwner;
     isMahasiswa &&
     isOpenForApply &&
     !myExistingProposal &&
@@ -383,15 +360,10 @@ export function ProjectDetailScreen({ route, navigation }) {
 
   // 1. Mode Ruang Kerja Terdedikasi: Kontrak sedang berjalan untuk pihak terlibat (Mahasiswa diterima / UMKM pemilik saat IN_PROGRESS)
   const isDedicatedWorkroom = Boolean(
-    isAcceptedProposal ||
-    (["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(project?.status) &&
-      (isUmkmOwner || isAcceptedProposal)),
     (isUmkmOwner || isAcceptedMember || isAcceptedProposal) &&
-      (["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(
-        project?.status,
-      ) ||
-        isAcceptedProposal ||
-        isAcceptedMember),
+    (["IN_PROGRESS", "REVIEW", "DONE", "COMPLETED"].includes(project?.status) ||
+      isAcceptedProposal ||
+      isAcceptedMember),
   );
 
   // 2. Mode Board Seleksi Pelamar: Khusus Klien UMKM pada proyek tahap OPEN/BIDDING (atau proyek tim dengan slot tersisa)
@@ -399,9 +371,8 @@ export function ProjectDetailScreen({ route, navigation }) {
     (project?.status === "OPEN" ||
       project?.status === "BIDDING" ||
       hasOpenSlots) &&
-    isUmkmOwner,
-      isUmkmOwner &&
-      !isDedicatedWorkroom,
+    isUmkmOwner &&
+    !isDedicatedWorkroom,
   );
 
   useFocusEffect(
