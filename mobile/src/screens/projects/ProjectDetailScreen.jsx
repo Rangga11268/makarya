@@ -187,6 +187,7 @@ export function ProjectDetailScreen({ route, navigation }) {
 
       // Submission hasil kerja
       promises.push(
+        submissionApi.getByProject(projectId).catch(() => ({ data: [] })),
         submissionApi
           .getAllByProject(projectId)
           .catch(() =>

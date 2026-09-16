@@ -9,7 +9,6 @@ import {
   Share,
   Platform,
 } from "react-native";
-import * as Clipboard from "expo-clipboard";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import {
@@ -35,12 +34,15 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
 
   const handleCopy = async () => {
     try {
-      await Clipboard.setStringAsync(verificationUrl);
+      await Share.share({
+        message: verificationUrl,
+        title: "Tautan Verifikasi Sertifikat",
+      });
       setCopied(true);
-      showToast("Tautan verifikasi berhasil disalin!", "success");
+      showToast("Tautan verifikasi dibuka untuk disalin!", "success");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      showToast("Gagal menyalin tautan", "error");
+      showToast("Gagal membagikan tautan", "error");
     }
   };
 

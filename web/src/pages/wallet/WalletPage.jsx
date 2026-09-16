@@ -124,6 +124,7 @@ export function WalletPage() {
 
   const handleGatewaySuccess = async (nominal) => {
     try {
+      setTopUpLoading(true);
       await walletApi.topUp(nominal);
       showSuccess(
         "Deposit Saldo Berhasil",
@@ -136,6 +137,8 @@ export function WalletPage() {
         err.response?.data?.detail || "Terjadi kesalahan saat memproses saldo.",
       );
       throw err;
+    } finally {
+      setTopUpLoading(false);
     }
   };
 

@@ -253,6 +253,15 @@ export function SmartDeliverableCard({
             </div>
           </div>
 
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
+          >
+            <span>{linkMeta.actionText}</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"

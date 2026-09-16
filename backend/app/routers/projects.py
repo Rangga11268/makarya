@@ -35,7 +35,7 @@ def _resolve_accepted_mhs(proj_id: UUID, db: Session):
         db.query(Proposal)
         .filter(
             Proposal.project_id == proj_id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .first()
     )
@@ -90,7 +90,7 @@ def _build_project_response(
                     db.query(Proposal)
                     .filter(
                         Proposal.slot_id == s.id,
-                        Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+                        Proposal.status == ProposalStatus.ACCEPTED,
                     )
                     .first()
                 )

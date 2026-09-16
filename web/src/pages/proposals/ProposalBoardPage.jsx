@@ -181,6 +181,7 @@ export function ProposalBoardPage() {
         const propList = Array.isArray(res.data) ? res.data : [];
         setMyProposals(propList);
 
+        // Load submission for accepted proposals
         // Load submission for accepted & completed proposals
         const activeOrCompleted = propList.filter(
           (p) => p.status === "ACCEPTED" || p.status === "COMPLETED",

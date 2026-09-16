@@ -116,7 +116,7 @@ def get_my_certificates(
         db.query(Proposal)
         .filter(
             Proposal.mhs_id == current_user.id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .all()
     )

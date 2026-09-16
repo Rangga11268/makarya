@@ -87,7 +87,7 @@ def submit_work(
         .filter(
             Proposal.project_id == project.id,
             Proposal.mhs_id == current_user.id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .first()
     )
@@ -138,12 +138,12 @@ def get_submission_by_project(
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 
-    # Cari semua proposal yang disetujui / selesai pada proyek ini
+    # Cari semua proposal yang disetujui pada proyek ini
     accepted_proposals = (
         db.query(Proposal)
         .filter(
             Proposal.project_id == project_id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .all()
     )
@@ -166,27 +166,18 @@ def get_submission_by_project(
             detail="Anda tidak memiliki izin untuk melihat hasil kerja proyek ini",
         )
 
-    # Jika pemanggil adalah mahasiswa anggota tim, cari submisi miliknya terlebih dahulu
-    submission = None
-    if current_user.role == UserRole.MHS:
-        my_prop = next((p for p in accepted_proposals if p.mhs_id == current_user.id), None)
-        if my_prop:
-            submission = db.query(Submission).filter(Submission.proposal_id == my_prop.id).first()
-
-    # Jika tidak ada submisi milik sendiri atau pemanggil adalah UMKM, cari submisi terkini dari proyek
-    if not submission:
-        accepted_proposal_ids = [p.id for p in accepted_proposals]
-        submission = (
-            db.query(Submission)
-            .filter(Submission.proposal_id.in_(accepted_proposal_ids))
-            .order_by(Submission.submitted_at.desc())
-            .first()
-        )
-
+    # Ambil submission terbaru
+    accepted_proposal_ids = [p.id for p in accepted_proposals]
+    submission = (
+        db.query(Submission)
+        .filter(Submission.proposal_id.in_(accepted_proposal_ids))
+        .order_by(Submission.submitted_at.desc())
+        .first()
+    )
     if not submission:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Hasil kerja belum dikirimkan untuk proyek ini",
+            detail="Belum ada hasil kerja yang dikirimkan untuk proyek ini",
         )
 
     return format_submission_response(submission)
@@ -207,7 +198,7 @@ def get_all_submissions_by_project(
         db.query(Proposal)
         .filter(
             Proposal.project_id == project_id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .all()
     )
@@ -315,9 +306,8 @@ def approve_submission(
     db.add(log_umkm)
     db.add(log_mhs)
 
-    # Update status submission, proposal, dan slot
+    # Update status submission dan slot
     submission.status = SubmissionStatus.APPROVED
-    accepted_proposal.status = ProposalStatus.COMPLETED
 
     if accepted_proposal.slot:
         accepted_proposal.slot.status = "COMPLETED"
@@ -327,7 +317,7 @@ def approve_submission(
         db.query(Proposal)
         .filter(
             Proposal.project_id == project.id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .all()
     )

@@ -265,10 +265,10 @@ def get_my_profile(
             if not skills_list:
                 skills_list = ["UI/UX Design", "Figma", "React Native", "FastAPI"]
 
-            # Hitung proyek tuntas secara presisi dari rekaman nyata di database (proposal ACCEPTED/COMPLETED & project DONE)
+            # Hitung proyek tuntas secara presisi dari rekaman nyata di database (proposal ACCEPTED & project DONE)
             done_proposals = db.query(Proposal).join(Project, Proposal.project_id == Project.id).filter(
                 Proposal.mhs_id == current_user.id,
-                Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+                Proposal.status == ProposalStatus.ACCEPTED,
                 Project.status == ProjectStatus.DONE
             ).count()
             total_selesai = done_proposals
@@ -291,7 +291,7 @@ def get_my_profile(
                 Proposal, Proposal.project_id == Project.id
             ).filter(
                 Proposal.mhs_id == current_user.id,
-                Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED])
+                Proposal.status == ProposalStatus.ACCEPTED,
             ).count()
             if total_selesai > 0:
                 escrow_rate = round((total_selesai / (total_selesai + disputed_mhs)) * 100)

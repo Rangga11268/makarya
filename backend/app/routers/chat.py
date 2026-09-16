@@ -251,12 +251,12 @@ def get_project_members_list(project: Project, db: Session, manager_inst) -> Lis
                         "is_owner": False,
                     })
 
-    # 3. Mahasiswa dari proposal yang ACCEPTED / COMPLETED
+    # 3. Mahasiswa dari proposal yang ACCEPTED
     accepted_proposals = (
         db.query(Proposal)
         .filter(
             Proposal.project_id == project.id,
-            Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+            Proposal.status == ProposalStatus.ACCEPTED,
         )
         .all()
     )
@@ -397,7 +397,7 @@ def get_user_conversations(
             db.query(Proposal)
             .filter(
                 Proposal.mhs_id == current_user.id,
-                Proposal.status.in_([ProposalStatus.ACCEPTED, ProposalStatus.COMPLETED]),
+                Proposal.status == ProposalStatus.ACCEPTED,
             )
             .all()
         )

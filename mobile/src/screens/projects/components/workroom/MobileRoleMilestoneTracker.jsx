@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import { COLORS } from "../../../../../theme/colors";
-import { FONTS } from "../../../../../theme/fonts";
+import { COLORS } from "../../../../theme/colors";
+import { FONTS } from "../../../../theme/fonts";
 import { ListChecks, Check, Award } from "lucide-react-native";
 
 const DEFAULT_MILESTONES = {
@@ -239,3 +239,4 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
 });
+
