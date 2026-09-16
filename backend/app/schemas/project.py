@@ -106,3 +106,8 @@ class ProjectResponse(BaseModel):
     slots: Optional[List[ProjectSlotResponse]] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MilestoneUpdateRequest(BaseModel):
+    role_name: str = Field(..., min_length=1, max_length=100)
+    completed_indices: List[int] = Field(default_factory=list)

@@ -8,7 +8,8 @@ from sqlalchemy import or_, and_
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role, get_optional_current_user
 from app.models.user import User, UserRole
-from app.models.project import Project, ProjectCategory, ProjectStatus, ProjectSlot
+import json
+from app.models.project import Project, ProjectCategory, ProjectStatus, ProjectSlot, ProjectMilestone
 from app.models.profile import ProfileUmkm, ProfileMhs
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
@@ -23,6 +24,7 @@ from app.schemas.project import (
     ProjectReopenRequest,
     ProjectTerminateRequest,
     ProjectSlotResponse,
+    MilestoneUpdateRequest,
 )
 from sqlalchemy.sql import func
 
@@ -578,3 +580,104 @@ def terminate_and_cancel_project(
 
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
     return _build_project_response(project, db, umkm_profile=profile)
+
+
+@router.get("/{id}/milestones")
+def get_project_milestones(
+    id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    project = db.query(Project).filter(Project.id == id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
+
+    milestone_records = db.query(ProjectMilestone).filter(ProjectMilestone.project_id == id).all()
+
+    milestones_map = {}
+    for m in milestone_records:
+        try:
+            completed_indices = json.loads(m.completed_indices) if m.completed_indices else []
+        except Exception:
+            completed_indices = []
+        milestones_map[m.role_name] = {
+            "completed_indices": completed_indices,
+            "updated_at": m.updated_at.isoformat() if m.updated_at else None,
+            "updated_by_id": str(m.updated_by_id) if m.updated_by_id else None,
+        }
+
+    return {
+        "project_id": str(project.id),
+        "milestones": milestones_map,
+    }
+
+
+@router.put("/{id}/milestones")
+def update_project_milestone(
+    id: UUID,
+    body: MilestoneUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    project = db.query(Project).filter(Project.id == id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
+
+    is_owner = (project.umkm_id == current_user.id)
+    is_accepted_mhs = False
+
+    accepted_prop = db.query(Proposal).filter(
+        Proposal.project_id == project.id,
+        Proposal.mhs_id == current_user.id,
+        Proposal.status == ProposalStatus.ACCEPTED,
+    ).first()
+    if accepted_prop:
+        is_accepted_mhs = True
+
+    if not is_accepted_mhs:
+        accepted_slot = db.query(ProjectSlot).filter(
+            ProjectSlot.project_id == project.id,
+            ProjectSlot.accepted_mhs_id == current_user.id,
+        ).first()
+        if accepted_slot:
+            is_accepted_mhs = True
+
+    if not (is_owner or is_accepted_mhs or current_user.role == UserRole.ADMIN):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Hanya mahasiswa anggota proyek atau klien yang dapat memperbarui milestone kerja",
+        )
+
+    cleaned_indices = sorted(list(set([int(x) for x in body.completed_indices if isinstance(x, int) and x >= 0])))
+    indices_json = json.dumps(cleaned_indices)
+
+    milestone = db.query(ProjectMilestone).filter(
+        ProjectMilestone.project_id == project.id,
+        ProjectMilestone.role_name == body.role_name,
+    ).first()
+
+    if not milestone:
+        milestone = ProjectMilestone(
+            project_id=project.id,
+            role_name=body.role_name,
+            completed_indices=indices_json,
+            updated_by_id=current_user.id,
+        )
+        db.add(milestone)
+    else:
+        milestone.completed_indices = indices_json
+        milestone.updated_by_id = current_user.id
+        milestone.updated_at = func.now()
+
+    db.commit()
+    db.refresh(milestone)
+
+    return {
+        "project_id": str(project.id),
+        "role_name": milestone.role_name,
+        "completed_indices": cleaned_indices,
+        "updated_at": milestone.updated_at.isoformat() if milestone.updated_at else None,
+        "updated_by_id": str(milestone.updated_by_id) if milestone.updated_by_id else None,
+        "message": "Milestone berhasil diperbarui",
+    }
+

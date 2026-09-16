@@ -253,21 +253,10 @@ export function SmartDeliverableCard({
             </div>
           </div>
 
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
-          >
-            <span>{linkMeta.actionText}</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-          <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
             <button
               type="button"
               onClick={() => setPreviewOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
               className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
             >
               <Eye className="w-3.5 h-3.5 text-brand-indigo" />
@@ -368,7 +357,9 @@ export function SmartDeliverableCard({
         <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-emerald-900 font-semibold">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Hasil kerja telah disetujui & sertifikat resmi diterbitkan.</span>
+            <span>
+              Hasil kerja telah disetujui & sertifikat resmi diterbitkan.
+            </span>
           </div>
           <Link
             to="/portfolio"

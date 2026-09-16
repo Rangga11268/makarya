@@ -410,7 +410,11 @@ export function WorkroomActiveView({
             {/* Milestone Tracker per Role */}
             <MobileRoleMilestoneTracker
               projectId={project?.id}
-              roleName={myExistingProposal?.slot_nama_peran || project?.slots?.[0]?.nama_peran}
+              roleName={
+                myExistingProposal?.slot_nama_peran ||
+                project?.slots?.[0]?.nama_peran
+              }
+              slots={project?.slots || []}
               category={project?.kategori}
               isUmkmOwner={isUmkmOwner}
               isProjectCompleted={isProjectCompleted}

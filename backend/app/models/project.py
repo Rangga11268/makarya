@@ -52,6 +52,7 @@ class Project(Base):
     proposals = relationship("Proposal", back_populates="project", cascade="all, delete-orphan")
     ai_requirements = relationship("AIRequirement", back_populates="project", cascade="all, delete-orphan")
     slots = relationship("ProjectSlot", back_populates="project", cascade="all, delete-orphan")
+    milestones = relationship("ProjectMilestone", back_populates="project", cascade="all, delete-orphan")
 
 
 class ProjectSlot(Base):
@@ -69,6 +70,22 @@ class ProjectSlot(Base):
     # Relationship
     project = relationship("Project", back_populates="slots")
     accepted_mhs = relationship("User", foreign_keys=[accepted_mhs_id])
+
+
+class ProjectMilestone(Base):
+    __tablename__ = "project_milestones"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    role_name = Column(String(100), nullable=False, index=True)
+    completed_indices = Column(Text, default="[]", nullable=False)  # JSON-encoded list of integer indices: "[0, 1, 2]"
+    updated_by_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    # Relationships
+    project = relationship("Project", back_populates="milestones")
+    updated_by = relationship("User")
 
 
 

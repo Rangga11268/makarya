@@ -883,6 +883,7 @@ export function WorkroomWorkspaceDetail({
           <RoleMilestoneTracker
             projectId={activeProjectId}
             roleName={assignedRoleName}
+            slots={selectedProject?.slots || []}
             category={
               selectedProject?.kategori || selectedProposal?.project_kategori
             }

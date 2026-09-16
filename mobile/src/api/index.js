@@ -27,6 +27,9 @@ export const projectApi = {
   reopen: (id, data) => api.post(`/projects/${id}/reopen`, data),
   terminateAndCancel: (id, data) =>
     api.post(`/projects/${id}/terminate-and-cancel`, data),
+  getMilestones: (projectId) => api.get(`/projects/${projectId}/milestones`),
+  updateMilestones: (projectId, data) =>
+    api.put(`/projects/${projectId}/milestones`, data),
 };
 
 export const proposalApi = {

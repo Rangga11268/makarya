@@ -2,7 +2,7 @@ from app.models.user import User, UserRole
 from app.models.master import MasterProdi, MasterSkill
 from app.models.profile import ProfileMhs, ProfileUmkm
 from app.models.skill import MhsSkill, SkillLevel
-from app.models.project import Project, ProjectStatus, ProjectCategory, ProjectSlot
+from app.models.project import Project, ProjectStatus, ProjectCategory, ProjectSlot, ProjectMilestone
 from app.models.ai_req import AIRequirement
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.submission import Submission, SubmissionStatus
@@ -27,6 +27,7 @@ __all__ = [
     "ProjectStatus",
     "ProjectCategory",
     "ProjectSlot",
+    "ProjectMilestone",
     "AIRequirement",
     "Proposal",
     "ProposalStatus",

@@ -23,6 +23,9 @@ export const projectApi = {
   reopen: (id, data) => api.post(`/projects/${id}/reopen`, data),
   terminateAndCancel: (id, data) =>
     api.post(`/projects/${id}/terminate-and-cancel`, data),
+  getMilestones: (projectId) => api.get(`/projects/${projectId}/milestones`),
+  updateMilestones: (projectId, data) =>
+    api.put(`/projects/${projectId}/milestones`, data),
 };
 
 export const proposalApi = {
@@ -98,7 +101,8 @@ export const notificationApi = {
 export const certificateApi = {
   getMy: () => api.get("/certificates/my"),
   getByProject: (projectId) => api.get(`/certificates/project/${projectId}`),
-  toggleShowcase: (id, data) => api.patch(`/certificates/${id}/toggle-showcase`, data),
+  toggleShowcase: (id, data) =>
+    api.patch(`/certificates/${id}/toggle-showcase`, data),
   verify: (credentialId) => api.get(`/certificates/verify/${credentialId}`),
   getUserShowcase: (userId) => api.get(`/certificates/user/${userId}/showcase`),
 };

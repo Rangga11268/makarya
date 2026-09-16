@@ -8,11 +8,12 @@ from slowapi.errors import RateLimitExceeded
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.core.config import settings
-from app.core.database import get_db, SessionLocal
+from app.core.database import get_db, SessionLocal, Base, engine
 from app.core.limiter import limiter
 from app.routers import auth, projects, proposals, wallet, submissions, ratings, disputes, chat, talents, certificates
 from app.routers.notifications import router as notifications_router
 from app.services.scheduler import run_project_deadline_check, run_escrow_auto_approval
+import app.models
 
 # Inisialisasi Scheduler Background
 scheduler = BackgroundScheduler()
@@ -29,6 +30,12 @@ def daily_project_check():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Dijalankan saat aplikasi startup:
+    # 0. Pastikan skema tabel terdaftar di database
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"[STARTUP] Gagal create_all metadata: {e}")
+
     # 1. Jalankan langsung pemeriksaan deadline saat server mulai
     try:
         daily_project_check()
