@@ -31,6 +31,7 @@ export function EditProfileModal({
   editForm,
   setEditForm,
   onSave,
+  onPickSignature,
   isSaving = false,
   isMahasiswa = false,
 }) {
@@ -277,6 +278,109 @@ export function EditProfileModal({
                   placeholder="Contoh: 081298765432"
                   keyboardType="phone-pad"
                 />
+
+                {/* Rekening Refund / Pencairan Section */}
+                <View style={styles.portfolioSectionHeader}>
+                  <Text style={styles.portfolioSectionTitle}>
+                    Rekening Pengembalian / Pencairan Dana
+                  </Text>
+                  <Text style={styles.portfolioSectionDesc}>
+                    Digunakan untuk refund proyek atau pencairan saldo aktif
+                    usaha
+                  </Text>
+                </View>
+
+                <SelectWithOther
+                  label="Nama Bank / E-Wallet"
+                  title="Pilih Bank / E-Wallet"
+                  options={BANK_OPTIONS}
+                  value={editForm.nama_bank}
+                  onChangeText={(v) =>
+                    setEditForm((prev) => ({ ...prev, nama_bank: v }))
+                  }
+                  placeholder="Pilih Bank / E-Wallet"
+                  otherPlaceholder="Ketik nama bank/e-wallet..."
+                  otherLabel="Bank Lainnya (Ketik Manual)"
+                />
+
+                <Input
+                  label="Nomor Rekening"
+                  value={editForm.nomor_rekening}
+                  onChangeText={(v) =>
+                    setEditForm((prev) => ({ ...prev, nomor_rekening: v }))
+                  }
+                  placeholder="Contoh: 8270-3491-8821"
+                  keyboardType="numeric"
+                />
+
+                <Input
+                  label="Nama Pemilik Rekening"
+                  value={editForm.nama_pemilik_rekening}
+                  onChangeText={(v) =>
+                    setEditForm((prev) => ({
+                      ...prev,
+                      nama_pemilik_rekening: v,
+                    }))
+                  }
+                  placeholder="Contoh: Nama Pemilik / Nama Usaha"
+                />
+
+                {/* Tanda Tangan Digital Resmi UMKM */}
+                <View style={styles.portfolioSectionHeader}>
+                  <Text style={styles.portfolioSectionTitle}>
+                    Tanda Tangan Digital Resmi (Otorisasi Sertifikat)
+                  </Text>
+                  <Text style={styles.portfolioSectionDesc}>
+                    Otomatis dicantumkan pada sertifikat mahasiswa yang
+                    menyelesaikan proyek Anda
+                  </Text>
+                </View>
+
+                <View style={styles.signatureCardBox}>
+                  {editForm.url_ttd ? (
+                    <View style={styles.signaturePreviewWrap}>
+                      <Image
+                        source={{ uri: editForm.url_ttd }}
+                        style={styles.signaturePreviewImg}
+                        resizeMode="contain"
+                      />
+                      <View style={styles.signatureActionsRow}>
+                        {onPickSignature && (
+                          <TouchableOpacity
+                            style={styles.changeSigBtn}
+                            onPress={onPickSignature}
+                          >
+                            <Text style={styles.changeSigBtnText}>
+                              Ganti TTD
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                        <TouchableOpacity
+                          style={styles.deleteSigBtn}
+                          onPress={() =>
+                            setEditForm((prev) => ({ ...prev, url_ttd: null }))
+                          }
+                        >
+                          <Text style={styles.deleteSigBtnText}>Hapus</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.uploadSigPlaceholder}
+                      onPress={onPickSignature}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.uploadSigTitle}>
+                        + Unggah Gambar Tanda Tangan
+                      </Text>
+                      <Text style={styles.uploadSigSubtitle}>
+                        Pilih foto atau hasil scan tanda tangan dari galeri
+                        ponsel Anda
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </>
             )}
 
@@ -393,5 +497,81 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
     marginTop: 14,
+  },
+  signatureCardBox: {
+    marginBottom: 16,
+    backgroundColor: COLORS.bgSurfaceSubtle,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    overflow: "hidden",
+  },
+  signaturePreviewWrap: {
+    padding: 14,
+    alignItems: "center",
+  },
+  signaturePreviewImg: {
+    width: "100%",
+    height: 70,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+    marginBottom: 10,
+  },
+  signatureActionsRow: {
+    flexDirection: "row",
+    gap: 8,
+    width: "100%",
+  },
+  changeSigBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    backgroundColor: COLORS.brandIndigo,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  changeSigBtnText: {
+    color: "#FFFFFF",
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  deleteSigBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: "#FEE2E2",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  deleteSigBtnText: {
+    color: "#DC2626",
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  uploadSigPlaceholder: {
+    padding: 16,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderColor: COLORS.brandIndigo,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EEF2FF",
+    margin: 8,
+  },
+  uploadSigTitle: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  uploadSigSubtitle: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+    textAlign: "center",
+    marginTop: 3,
   },
 });

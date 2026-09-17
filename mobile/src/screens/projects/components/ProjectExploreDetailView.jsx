@@ -5,53 +5,36 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Platform,
   Image,
 } from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
-import { Badge } from "../../../components/ui/Badge";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { Button } from "../../../components/ui/Button";
-import { AppleGlossyCard } from "../../../components/ui/AppleGlossyCard";
-import {
-  AppleMessageIcon,
-  AppleSourceAssetIcon,
-  AppleReadyDeliverableIcon,
-  AppleStructuredRevisionIcon,
-  AppleShieldVerifiedIcon,
-  AppleEscrowLockIcon,
-  AppleWalletPayIcon,
-  AppleCalendarDeadlineIcon,
-  AppleGlossyBadge,
-} from "../../../components/ui/AppleGlossyIcons";
 import { ProposalCard } from "../../../components/features/ProposalCard";
-import { ProjectStatusBar } from "../../../components/features/ProjectStatusBar";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
-import { ProjectBriefVectorIcon } from "../../../components/icons/CategoryIcons";
 import {
   ShieldCheck,
   Calendar,
   Building2,
   CheckCircle2,
   FileCheck,
-  UploadCloud,
   Link2,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
-  Check,
   MessageSquare,
   AlertTriangle,
-  RotateCcw,
-  XCircle,
   Users,
-  Palette,
-  Smartphone,
   Send,
   Clock,
+  MapPin,
+  Briefcase,
+  Coins,
+  Check,
+  FileText,
+  XCircle,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -66,8 +49,8 @@ export function ProjectExploreDetailView({
   activePartnerPhoto,
   isBriefExpanded,
   setIsBriefExpanded,
-  submissions,
-  proposals,
+  submissions = [],
+  proposals = [],
   myExistingProposal,
   isAcceptedProposal,
   isProjectExpired,
@@ -93,8 +76,30 @@ export function ProjectExploreDetailView({
   handleOpenApproveModal,
   renderSubmissionNote,
 }) {
+  if (!project) return null;
+
+  const isTeam = project.tipe_kolaborasi === "TIM";
+  const slots = Array.isArray(project.slots) ? project.slots : [];
+  const rawDescription =
+    project.deskripsi_formatted ||
+    project.deskripsi_raw ||
+    project.deskripsi ||
+    "";
+
+  const isLongDescription = rawDescription.length > 280;
+
+  const handleOpenChat = () => {
+    navigation.navigate("Chat", {
+      projectId: project.id,
+      projectTitle: project.judul,
+      partnerName: activePartnerName || clientDisplayName || "Mitra Klien UMKM",
+      partnerPhoto: activePartnerPhoto || clientPhoto,
+      partnerRole: isUmkmOwner ? "MHS" : "UMKM",
+    });
+  };
+
   return (
-    <>
+    <View style={styles.rootContainer}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -106,64 +111,133 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. APPLE GLOSSY HERO CARD                                        */}
-          {/* Unifies Meta, Title, Client Info, Metrics, & Escrow without clutter*/}
+          {/* 1. PROJECT HERO CARD (Spacious & Clean)                           */}
           {/* ================================================================= */}
-          <AppleGlossyCard variant="hero" style={styles.appleHeroCard}>
-            {/* Top Row: Meta Badges (Left) & Faktur Button (Right, only when completed) */}
-            <View style={styles.appleTopRow}>
-              <View style={styles.appleBadgeGroup}>
-                <View style={styles.categoryChip}>
-                  <Text style={styles.categoryChipText}>
-                    {project.kategori
-                      ? project.kategori.toUpperCase()
-                      : "UMKM DIGITAL"}
-                  </Text>
+          <View style={styles.headerCard}>
+            {/* Category & Recruitment Status Row */}
+            <View style={styles.badgeRow}>
+              <View style={styles.categoryPill}>
+                <Briefcase size={11} color="#475569" />
+                <Text style={styles.categoryPillText}>
+                  {project.kategori
+                    ? String(project.kategori).toUpperCase()
+                    : "UMKM DIGITAL"}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.statusPill,
+                  project.status === "IN_PROGRESS"
+                    ? styles.statusPillProgress
+                    : project.status === "COMPLETED" ||
+                        project.status === "DONE"
+                      ? styles.statusPillDone
+                      : styles.statusPillOpen,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.statusDot,
+                    project.status === "IN_PROGRESS"
+                      ? styles.statusDotProgress
+                      : project.status === "COMPLETED" ||
+                          project.status === "DONE"
+                        ? styles.statusDotDone
+                        : styles.statusDotOpen,
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.statusPillText,
+                    project.status === "IN_PROGRESS"
+                      ? styles.statusPillTextProgress
+                      : project.status === "COMPLETED" ||
+                          project.status === "DONE"
+                        ? styles.statusPillTextDone
+                        : styles.statusPillTextOpen,
+                  ]}
+                >
+                  {project.status === "OPEN" || project.status === "BIDDING"
+                    ? isTeam
+                      ? "Merekrut Tim"
+                      : "Merekrut Talenta"
+                    : formatStatus(project.status || "OPEN")}
+                </Text>
+              </View>
+            </View>
+
+            {/* Title */}
+            <Text style={styles.projectTitle}>{project.judul}</Text>
+
+            {/* Published meta */}
+            <View style={styles.publishedRow}>
+              <Calendar size={12} color="#64748B" />
+              <Text style={styles.publishedText}>
+                Diterbitkan {formatDate(project.created_at || new Date())}
+              </Text>
+            </View>
+
+            {/* Responsive Key Metrics Container */}
+            <View style={styles.metricsContainer}>
+              {/* Highlight Row: Budget */}
+              <View style={styles.metricHighlightRow}>
+                <View style={styles.metricIconWrapperEmerald}>
+                  <Coins size={15} color="#059669" />
                 </View>
-                <View style={styles.statusChip}>
-                  <View
-                    style={[
-                      styles.statusDot,
-                      {
-                        backgroundColor:
-                          project.status === "OPEN" ||
-                          project.status === "BIDDING"
-                            ? "#059669"
-                            : project.status === "IN_PROGRESS"
-                              ? "#2563EB"
-                              : "#64748B",
-                      },
-                    ]}
-                  />
-                  <Text style={styles.statusChipText}>
-                    {project.status === "OPEN" || project.status === "BIDDING"
-                      ? project.tipe_kolaborasi === "TIM"
-                        ? "Merekrut Tim"
-                        : "Merekrut Talenta"
-                      : formatStatus(project.status || "OPEN")}
+                <View style={styles.metricHighlightContent}>
+                  <Text style={styles.metricHighlightLabel}>PAGU ANGGARAN</Text>
+                  <Text style={styles.metricHighlightValue} numberOfLines={1}>
+                    {formatCurrency(project.budget_max)}
                   </Text>
                 </View>
               </View>
 
-              {/* Dedicated Faktur Action HANYA tampil jika proyek sudah COMPLETED / DONE */}
-              {(project.status === "COMPLETED" ||
-                project.status === "DONE") && (
-                <TouchableOpacity
-                  style={styles.appleInvoiceBtn}
-                  onPress={() => setInvoiceModal(true)}
-                  activeOpacity={0.75}
-                >
-                  <FileCheck size={13} color="#2563EB" />
-                  <Text style={styles.appleInvoiceBtnText}>Faktur</Text>
-                </TouchableOpacity>
-              )}
+              {/* Sub-row: Deadline & Collaboration */}
+              <View style={styles.metricSubRow}>
+                <View style={styles.metricSubItem}>
+                  <View style={styles.metricIconWrapperBlue}>
+                    <Calendar size={13} color="#2563EB" />
+                  </View>
+                  <View style={styles.metricSubTextWrap}>
+                    <Text style={styles.metricSubLabel}>TENGGAT WAKTU</Text>
+                    <Text style={styles.metricSubValue} numberOfLines={1}>
+                      {formatDate(project.deadline)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.metricSubDivider} />
+
+                <View style={styles.metricSubItem}>
+                  <View style={styles.metricIconWrapperSlate}>
+                    <Users size={13} color="#475569" />
+                  </View>
+                  <View style={styles.metricSubTextWrap}>
+                    <Text style={styles.metricSubLabel}>KOLABORASI</Text>
+                    <Text style={styles.metricSubValue} numberOfLines={1}>
+                      {isTeam ? `Tim (${slots.length})` : "Individu"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
             </View>
 
-            {/* Project Main Headline */}
-            <Text style={styles.projectHeadline}>{project.judul}</Text>
+            {/* Escrow Guarantee Banner */}
+            <View style={styles.escrowBanner}>
+              <ShieldCheck size={16} color="#059669" />
+              <Text style={styles.escrowBannerText}>
+                Garansi Escrow 100%. Dana honor tersimpan aman di rekening resmi
+                Makarya.
+              </Text>
+            </View>
+          </View>
 
-            {/* Client Profile Byline (Full Width, Safe from Overlap) */}
-            <View style={styles.clientBylineRow}>
+          {/* ================================================================= */}
+          {/* 2. CLIENT UMKM PROFILE CARD                                       */}
+          {/* ================================================================= */}
+          <View style={styles.sectionCard}>
+            <View style={styles.clientProfileRow}>
               {clientPhoto ? (
                 <Image
                   source={{ uri: clientPhoto }}
@@ -171,390 +245,185 @@ export function ProjectExploreDetailView({
                   resizeMode="cover"
                 />
               ) : (
-                <View style={styles.clientAvatarPlaceholder}>
-                  <Building2 size={18} color={COLORS.brandIndigo} />
+                <View style={styles.clientAvatarFallback}>
+                  <Building2
+                    size={20}
+                    color={COLORS.brandIndigo || "#2563EB"}
+                  />
                 </View>
               )}
+
               <View style={styles.clientInfoCol}>
-                <View style={styles.clientNameVerifiedRow}>
+                <Text
+                  style={styles.clientNameText}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {clientDisplayName}
+                </Text>
+                <View style={styles.clientMetaRow}>
+                  <View style={styles.verifiedTag}>
+                    <ShieldCheck size={10} color="#059669" strokeWidth={2.5} />
+                    <Text style={styles.verifiedTagText}>Terverifikasi</Text>
+                  </View>
+                  <Text style={styles.clientMetaDot}>•</Text>
                   <Text
-                    style={styles.clientNameText}
+                    style={styles.locationText}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {clientDisplayName}
+                    {project.lokasi || "Indonesia"}
                   </Text>
-                  <View style={styles.verifiedBadge}>
-                    <AppleShieldVerifiedIcon size={14} />
-                    <Text style={styles.verifiedBadgeText}>Terverifikasi</Text>
-                  </View>
                 </View>
-                <Text style={styles.clientLocationText}>
-                  {project.lokasi || "Indonesia"}, Mitra Klien UMKM
-                </Text>
               </View>
+
+              <PebbleButton
+                variant="ice"
+                size="sm"
+                label="Tanya"
+                icon={MessageSquare}
+                onPress={handleOpenChat}
+              />
             </View>
+          </View>
 
-            {/* Subtle Divider Inside Card */}
-            <View style={styles.cardInternalDivider} />
-
-            {/* Key Metrics: Budget & Deadline in 2-Column Apple Stat Display */}
-            <View style={styles.keyMetricsGrid}>
-              <View style={styles.metricColumn}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 5,
-                    marginBottom: 3,
-                  }}
-                >
-                  <AppleWalletPayIcon size={14} />
-                  <Text style={styles.metricLabel}>PAGU MAKSIMAL</Text>
-                </View>
-                <Text style={styles.metricValuePrimary}>
-                  {formatCurrency(project.budget_max)}
+          {/* ================================================================= */}
+          {/* 3. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
+          {/* ================================================================= */}
+          {isTeam && slots.length > 0 && (
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeaderRow}>
+                <Users size={16} color={COLORS.brandIndigo || "#2563EB"} />
+                <Text style={styles.sectionTitle}>
+                  Formasi Peran Tim ({slots.length} Posisi)
                 </Text>
               </View>
-              <View style={styles.metricDividerVertical} />
-              <View style={styles.metricColumn}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 5,
-                    marginBottom: 3,
-                  }}
-                >
-                  <AppleCalendarDeadlineIcon size={14} />
-                  <Text style={styles.metricLabel}>BATAS WAKTU</Text>
-                </View>
-                <Text style={styles.metricValueSecondary}>
-                  {formatDate(project.deadline)}
-                </Text>
-              </View>
-            </View>
-
-            {/* Escrow Guarantee Trust Banner (Integrated at bottom of hero) */}
-            <View style={styles.escrowTrustStrip}>
-              <AppleEscrowLockIcon size={16} />
-              <Text style={styles.escrowTrustText}>
-                Garansi Escrow 100% | Dana honor tersimpan aman di rekening
-                bersama
+              <Text style={styles.sectionSubtitle}>
+                Pilih peran spesifik yang sesuai dengan keahlian Anda:
               </Text>
-            </View>
 
-            {/* Match Score Indicator (For Mahasiswa) */}
-            {project.match_score && isMahasiswa ? (
-              <View style={styles.matchScoreRow}>
-                <CheckCircle2 size={13} color="#059669" />
-                <Text style={styles.matchScoreText}>
-                  <Text style={styles.matchScoreBold}>
-                    {project.match_score}% Cocok
-                  </Text>{" "}
-                  dengan keahlian profil Anda
-                </Text>
-              </View>
-            ) : null}
-          </AppleGlossyCard>
+              <View style={styles.slotsContainer}>
+                {slots.map((s, idx) => {
+                  const isSlotOpen = s.status === "OPEN";
+                  const isSlotDone = s.status === "COMPLETED";
 
-          {/* ================================================================= */}
-          {/* 2. ESCROW STEPPER (FLAT) - HANYA MUNCUL SAAT PROYEK BERJALAN/SELESAI */}
-          {/* ================================================================= */}
-          {(project.status === "IN_PROGRESS" ||
-            project.status === "REVIEW" ||
-            project.status === "COMPLETED" ||
-            project.status === "DONE") && (
-            <View style={styles.stepperWrapper}>
-              <ProjectStatusBar currentStatus={project.status} flat />
-            </View>
-          )}
-
-          {/* Cancellation / Expiry Notice (if cancelled) */}
-          {project.status === "CANCELLED" && (
-            <View style={styles.cancellationAuditCard}>
-              <View style={styles.cancellationAuditHeader}>
-                <View style={styles.cancellationAuditBadgeRow}>
-                  <View style={styles.cancellationBadge}>
-                    <XCircle size={14} color="#DC2626" />
-                    <Text style={styles.cancellationBadgeText}>
-                      {project.cancelled_by_role === "MAHASISWA"
-                        ? "Mahasiswa Mengundurkan Diri"
-                        : project.cancelled_by_role === "UMKM"
-                          ? "Dibatalkan Klien UMKM"
-                          : project.cancelled_by_role === "SYSTEM_EXPIRED"
-                            ? "Kedaluwarsa Otomatis"
-                            : "Proyek Dibatalkan"}
-                    </Text>
-                  </View>
-                  <View style={styles.refundEscrowBadge}>
-                    <ShieldCheck size={12} color="#059669" />
-                    <Text style={styles.refundEscrowBadgeText}>
-                      100% Escrow Dikembalikan
-                    </Text>
-                  </View>
-                </View>
-                {project.cancelled_at ? (
-                  <Text style={styles.cancellationTimeText}>
-                    Waktu: {formatDate(project.cancelled_at)}
-                  </Text>
-                ) : null}
-              </View>
-              <View style={styles.cancellationReasonBox}>
-                <Text style={styles.cancellationReasonLabel}>
-                  Alasan Pembatalan:
-                </Text>
-                <Text style={styles.cancellationReasonQuote}>
-                  "
-                  {project.cancel_reason ||
-                    "Tidak ada catatan alasan tertulis."}
-                  "
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {/* Team Collaboration Slots (If multi-role team) */}
-          {project.tipe_kolaborasi === "TIM" &&
-            Array.isArray(project.slots) &&
-            project.slots.length > 0 && (
-              <View style={styles.contentSection}>
-                <View style={styles.sectionHeaderWithIcon}>
-                  <Users size={16} color={COLORS.brandIndigo} />
-                  <Text style={styles.sectionHeading}>
-                    Formasi Tim Proyek ({project.slots.length} Talenta)
-                  </Text>
-                </View>
-                <Text style={styles.sectionSubHeading}>
-                  Alokasi peran & pagu anggaran independen tiap posisi.
-                </Text>
-                <View style={styles.teamSlotsList}>
-                  {project.slots.map((s, idx) => {
-                    const isSlotOpen = s.status === "OPEN";
-                    const isSlotDone = s.status === "COMPLETED";
-                    return (
-                      <View key={s.id || idx} style={styles.teamSlotItem}>
-                        <View style={styles.teamSlotItemTop}>
-                          <View style={{ flex: 1, marginRight: 8 }}>
-                            <Text style={styles.teamSlotItemRole}>
-                              {s.nama_peran}
-                            </Text>
-                            <Text style={styles.teamSlotItemBudget}>
-                              Pagu: {formatCurrency(s.alokasi_budget)}
-                            </Text>
-                          </View>
-                          <View
+                  return (
+                    <View key={s.id || idx} style={styles.slotCard}>
+                      <View style={styles.slotTopRow}>
+                        <View style={{ flex: 1, paddingRight: 8 }}>
+                          <Text style={styles.slotRoleName}>
+                            {s.nama_peran}
+                          </Text>
+                          <Text style={styles.slotBudgetText}>
+                            Alokasi Honor: {formatCurrency(s.alokasi_budget)}
+                          </Text>
+                        </View>
+                        <View
+                          style={[
+                            styles.slotStatusBadge,
+                            isSlotOpen
+                              ? styles.slotStatusBadgeOpen
+                              : isSlotDone
+                                ? styles.slotStatusBadgeDone
+                                : styles.slotStatusBadgeFilled,
+                          ]}
+                        >
+                          <Text
                             style={[
-                              styles.teamSlotStatusTag,
+                              styles.slotStatusText,
                               isSlotOpen
-                                ? styles.teamSlotStatusTagOpen
+                                ? styles.slotStatusTextOpen
                                 : isSlotDone
-                                  ? styles.teamSlotStatusTagDone
-                                  : styles.teamSlotStatusTagActive,
+                                  ? styles.slotStatusTextDone
+                                  : styles.slotStatusTextFilled,
                             ]}
                           >
-                            <Text
-                              style={[
-                                styles.teamSlotStatusText,
-                                isSlotOpen
-                                  ? styles.teamSlotStatusTextOpen
-                                  : isSlotDone
-                                    ? styles.teamSlotStatusTextDone
-                                    : styles.teamSlotStatusTextActive,
-                              ]}
-                            >
-                              {isSlotOpen
-                                ? "Mencari Talenta"
-                                : isSlotDone
-                                  ? "Selesai"
-                                  : "Dikerjakan"}
-                            </Text>
-                          </View>
-                        </View>
-                        {s.deskripsi_tugas ? (
-                          <Text style={styles.teamSlotItemDesc}>
-                            {s.deskripsi_tugas}
+                            {isSlotOpen
+                              ? "Posisi Terbuka"
+                              : isSlotDone
+                                ? "Selesai"
+                                : "Terisi"}
                           </Text>
-                        ) : null}
-                        {s.accepted_mhs_nama || s.mahasiswa_nama ? (
-                          <View style={styles.assignedMhsRow}>
-                            <CheckCircle2 size={12} color="#059669" />
-                            <Text style={styles.assignedMhsText}>
-                              Talenta: {s.accepted_mhs_nama || s.mahasiswa_nama}
-                            </Text>
-                          </View>
-                        ) : null}
+                        </View>
                       </View>
-                    );
-                  })}
-                </View>
-                <View style={styles.hairlineDivider} />
-              </View>
-            )}
 
-          {/* Active Chat Entry Point (Clean Action Strip) */}
-          {hasAcceptedStudent && (
-            <View style={{ marginBottom: 14 }}>
-              <TouchableOpacity
-                style={styles.openChatBar}
-                onPress={() =>
-                  navigation.navigate("Chat", {
-                    projectId: project.id,
-                    projectTitle: project.judul,
-                    partnerName: activePartnerName,
-                    partnerPhoto: activePartnerPhoto,
-                    partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-                  })
-                }
-                activeOpacity={0.85}
-              >
-                <View style={styles.openChatBarLeft}>
-                  {activePartnerPhoto ? (
-                    <Image
-                      source={{ uri: activePartnerPhoto }}
-                      style={styles.chatPartnerAvatar}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <AppleMessageIcon size={34} variant="blue" />
-                  )}
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.openChatTitle}>
-                      Ruang Diskusi & Kerja{" "}
-                      {activePartnerName ? `(${activePartnerName})` : ""}
-                    </Text>
-                    <Text style={styles.openChatSub}>
-                      Kirim pesan, feedback, dan koordinasi secara langsung
-                    </Text>
-                  </View>
-                </View>
-                <ChevronRight size={16} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-              <View style={styles.hairlineDivider} />
+                      {s.deskripsi ? (
+                        <Text style={styles.slotDescriptionText}>
+                          {s.deskripsi}
+                        </Text>
+                      ) : null}
+                    </View>
+                  );
+                })}
+              </View>
             </View>
           )}
 
           {/* ================================================================= */}
-          {/* 3. RINCIAN BRIEF KEBUTUHAN PROYEK (DOCUMENT FLOW)                 */}
+          {/* 4. PROJECT SCOPE & BRIEF INSTRUCTIONS                             */}
           {/* ================================================================= */}
-          <View style={styles.contentSection}>
-            <Text style={styles.sectionHeading}>Rincian Kebutuhan Proyek</Text>
-            <Text
-              style={styles.briefParagraph}
-              numberOfLines={
-                !isBriefExpanded && (project.deskripsi_raw?.length || 0) > 280
-                  ? 6
-                  : undefined
-              }
-            >
-              {project.deskripsi_raw}
-            </Text>
-            {(project.deskripsi_raw?.length || 0) > 280 ? (
-              <TouchableOpacity
-                style={styles.expandBriefBtn}
-                onPress={() => setIsBriefExpanded(!isBriefExpanded)}
-                activeOpacity={0.7}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <FileText size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Text style={styles.sectionTitle}>
+                Lingkup Pengerjaan & Brief
+              </Text>
+            </View>
+
+            <View style={styles.descriptionWrap}>
+              <Text
+                style={styles.descriptionText}
+                numberOfLines={
+                  isLongDescription && !isBriefExpanded ? 6 : undefined
+                }
               >
-                <Text style={styles.expandBriefBtnText}>
-                  {isBriefExpanded
-                    ? "Sembunyikan Sebagian"
-                    : "Baca Selengkapnya"}
-                </Text>
-                {isBriefExpanded ? (
-                  <ChevronUp size={14} color={COLORS.brandIndigo} />
-                ) : (
-                  <ChevronDown size={14} color={COLORS.brandIndigo} />
-                )}
-              </TouchableOpacity>
-            ) : null}
-          </View>
+                {rawDescription ||
+                  "Tidak ada rincian catatan tambahan dari klien."}
+              </Text>
 
-          {/* Deliverable Upload Section (If Mahasiswa is Accepted Worker) */}
-          {isMahasiswa && isAcceptedProposal && (
-            <View style={styles.contentSection}>
-              <View style={styles.submissionHeader}>
-                <View style={styles.submissionIconBox}>
-                  <UploadCloud size={20} color={COLORS.brandIndigo} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.submissionHeaderTitle}>
-                    Hasil Pekerjaan (Deliverable)
-                  </Text>
-                  <Text style={styles.submissionHeaderSub}>
-                    {submissions.length > 0
-                      ? "Berkas berhasil diunggah & sedang direview klien"
-                      : "Unggah tautan Figma, GitHub, atau Google Drive hasil karyamu"}
-                  </Text>
-                </View>
-              </View>
-
-              {submissions.length > 0 ? (
-                <View style={styles.submittedFileList}>
-                  {submissions.map((sub, idx) => (
-                    <View key={sub.id || idx} style={styles.submittedFileCard}>
-                      <View style={styles.fileCardTop}>
-                        <Link2 size={16} color={COLORS.brandIndigo} />
-                        <Text style={styles.fileUrlText} numberOfLines={1}>
-                          {sub.url_berkas || "Tautan Deliverable"}
-                        </Text>
-                        <View style={styles.subStatusBadge}>
-                          <Text style={styles.subStatusBadgeText}>
-                            {formatStatus(sub.status || "SUBMITTED")}
-                          </Text>
-                        </View>
-                      </View>
-                      {renderSubmissionNote(sub.catatan_pengiriman)}
-                    </View>
-                  ))}
-
-                  <TouchableOpacity
-                    style={styles.reuploadBtn}
-                    onPress={() => setSubmissionModal(true)}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.reuploadBtnText}>
-                      Perbarui Tautan Berkas
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
+              {isLongDescription && (
                 <TouchableOpacity
-                  style={styles.uploadCtaBox}
-                  onPress={() => setSubmissionModal(true)}
-                  activeOpacity={0.88}
+                  onPress={() => setIsBriefExpanded(!isBriefExpanded)}
+                  style={styles.expandBtn}
+                  activeOpacity={0.7}
                 >
-                  <UploadCloud size={24} color={COLORS.brandIndigo} />
-                  <Text style={styles.uploadCtaMain}>
-                    Unggah Berkas Deliverable Sekarang
+                  <Text style={styles.expandBtnText}>
+                    {isBriefExpanded
+                      ? "Tampilkan Lebih Sedikit"
+                      : "Baca Selengkapnya"}
                   </Text>
-                  <Text style={styles.uploadCtaSub}>
-                    Kirim hasil pengerjaan untuk membuka pencairan dana escrow
-                  </Text>
+                  {isBriefExpanded ? (
+                    <ChevronUp size={14} color="#2563EB" />
+                  ) : (
+                    <ChevronDown size={14} color="#2563EB" />
+                  )}
                 </TouchableOpacity>
               )}
-              <View style={styles.hairlineDivider} />
-            </View>
-          )}
-
-          {/* Escrow Protection Summary Footer Note */}
-          <View style={styles.escrowFooterCard}>
-            <ShieldCheck size={16} color="#059669" />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.escrowFooterTitle}>
-                Proteksi Rekening Bersama (Escrow)
-              </Text>
-              <Text style={styles.escrowFooterDesc}>
-                {isMahasiswa
-                  ? "Honor Anda dijamin 100% aman tersimpan di platform dan cair otomatis setelah deliverable disetujui."
-                  : "Dana Anda baru cair ke mahasiswa setelah hasil pengerjaan proyek disetujui."}
-              </Text>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 4. MANAGEMENT SECTIONS                                            */}
+          {/* 5. CANCELLATION DETAILS (IF CANCELLED)                            */}
           {/* ================================================================= */}
-          {/* UMKM Owner Management */}
+          {project.status === "CANCELLED" && (
+            <View style={styles.cancelledCard}>
+              <View style={styles.cancelledHeader}>
+                <XCircle size={16} color="#DC2626" />
+                <Text style={styles.cancelledTitle}>
+                  Proyek Telah Dibatalkan
+                </Text>
+              </View>
+              <Text style={styles.cancelledDesc}>
+                {project.cancel_reason
+                  ? `Catatan: "${project.cancel_reason}"`
+                  : "Proyek ini telah dibatalkan secara resmi dan 100% saldo escrow telah dikembalikan ke rekening pemilik."}
+              </Text>
+            </View>
+          )}
+
+          {/* ================================================================= */}
+          {/* 6. MANAGEMENT FOR UMKM OWNER                                      */}
+          {/* ================================================================= */}
           {isUmkmOwner && (
             <View style={styles.managementSection}>
               <View style={styles.tabContainer}>
@@ -590,22 +459,18 @@ export function ProjectExploreDetailView({
                       activeTab === "submission" && styles.tabTextActive,
                     ]}
                   >
-                    Hasil Deliverable ({submissions.length})
+                    Deliverable ({submissions.length})
                   </Text>
                 </TouchableOpacity>
               </View>
 
-              {/* Tab 1: Proposals List */}
               {activeTab === "proposals" && (
                 <View style={styles.tabContent}>
                   {proposals.length === 0 ? (
                     <View style={styles.emptyBox}>
-                      <ProjectBriefVectorIcon
-                        size={32}
-                        color={COLORS.textDim}
-                      />
+                      <Clock size={28} color="#94A3B8" />
                       <Text style={styles.emptyText}>
-                        Belum ada proposal masuk dari mahasiswa.
+                        Belum ada proposal lamaran yang masuk dari mahasiswa.
                       </Text>
                     </View>
                   ) : (
@@ -614,10 +479,7 @@ export function ProjectExploreDetailView({
                         key={prop.id}
                         proposal={prop}
                         projectSlots={project.slots}
-                        isMultiSlot={
-                          Boolean(project.slots && project.slots.length > 1) ||
-                          project.tipe_kolaborasi === "TIM"
-                        }
+                        isMultiSlot={isTeam}
                         onAccept={() => handleOpenAcceptModal(prop)}
                         onReject={() => handleRejectProposal(prop.id)}
                         loadingAccept={
@@ -631,69 +493,36 @@ export function ProjectExploreDetailView({
                 </View>
               )}
 
-              {/* Tab 2: Submission Deliverable */}
               {activeTab === "submission" && (
                 <View style={styles.tabContent}>
                   {submissions.length === 0 ? (
                     <View style={styles.emptyBox}>
-                      <FileCheck size={32} color={COLORS.textDim} />
+                      <FileCheck size={28} color="#94A3B8" />
                       <Text style={styles.emptyText}>
-                        Mahasiswa belum mengunggah hasil deliverable.
+                        Mahasiswa belum mengirimkan berkas deliverable
+                        pengerjaan.
                       </Text>
-                      {isProjectExpired && (
-                        <View style={styles.overdueCallout}>
-                          <AlertTriangle size={14} color="#BE123C" />
-                          <Text style={styles.overdueCalloutText}>
-                            Tenggat pengerjaan telah terlewati. Anda dapat
-                            mengganti mahasiswa dan membuka kembali proyek ke
-                            katalog eksplorasi, atau membatalkan proyek.
-                          </Text>
-                        </View>
-                      )}
-
-                      {project?.status === "IN_PROGRESS" && (
-                        <View style={{ marginTop: 14, width: "100%", gap: 8 }}>
-                          <Button
-                            title="Ganti Mahasiswa & Buka ke Eksplorasi"
-                            variant="brand"
-                            size="sm"
-                            icon={<RotateCcw size={14} color="#FFF" />}
-                            onPress={() => setReopenModal(true)}
-                          />
-                          <Button
-                            title="Batalkan Proyek (Refund Escrow)"
-                            variant="outline"
-                            size="sm"
-                            icon={<XCircle size={14} color="#BE123C" />}
-                            textStyle={{ color: "#BE123C" }}
-                            style={{ borderColor: "#FECACA" }}
-                            onPress={() => setTerminateModal(true)}
-                          />
-                        </View>
-                      )}
                     </View>
                   ) : (
                     submissions.map((sub) => (
                       <View key={sub.id} style={styles.submissionCard}>
                         <Text style={styles.submissionTitle}>
-                          File Deliverable Proyek
+                          Berkas Deliverable Proyek
                         </Text>
-                        <TouchableOpacity
-                          style={styles.submittedLinkBox}
-                          activeOpacity={0.7}
-                        >
-                          <Link2 size={15} color={COLORS.brandIndigo} />
+                        <View style={styles.submittedLinkBox}>
+                          <Link2 size={14} color="#2563EB" />
                           <Text
                             style={styles.submittedLinkText}
                             numberOfLines={1}
                           >
                             {sub.url_berkas}
                           </Text>
-                        </TouchableOpacity>
-                        {renderSubmissionNote(sub.catatan_pengiriman)}
+                        </View>
+                        {renderSubmissionNote &&
+                          renderSubmissionNote(sub.catatan_pengiriman)}
                         <PebbleButton
                           variant="emerald"
-                          size="md"
+                          size="sm"
                           label="Setujui & Lepas Escrow"
                           icon={CheckCircle2}
                           onPress={() => handleOpenApproveModal(sub)}
@@ -701,7 +530,7 @@ export function ProjectExploreDetailView({
                             actionLoading &&
                             selectedSubmissionToApprove?.id === sub.id
                           }
-                          style={{ marginTop: 12, width: "100%" }}
+                          style={{ marginTop: 10 }}
                         />
                       </View>
                     ))
@@ -711,183 +540,54 @@ export function ProjectExploreDetailView({
             </View>
           )}
 
-          {/* Mahasiswa's Own Proposal Status */}
+          {/* ================================================================= */}
+          {/* 7. MAHASISWA APPLIED STATUS BANNER                                */}
+          {/* ================================================================= */}
           {isMahasiswa && myExistingProposal && (
-            <View style={styles.managementSection}>
-              <View style={styles.tabContainer}>
-                <View style={[styles.tabButton, styles.tabButtonActive]}>
-                  <Text style={[styles.tabText, styles.tabTextActive]}>
-                    {isAcceptedProposal
-                      ? "Deliverable & Hasil Kerja"
-                      : "Status Lamaran Anda"}
-                  </Text>
-                </View>
+            <View style={styles.appliedStatusCard}>
+              <View style={styles.appliedStatusHeader}>
+                <CheckCircle2 size={16} color="#059669" />
+                <Text style={styles.appliedStatusTitle}>
+                  Status Lamaran Anda
+                </Text>
               </View>
 
-              <View style={styles.tabContent}>
-                {isAcceptedProposal ? (
-                  <View style={styles.submissionCard}>
-                    <Text style={styles.submissionTitle}>
-                      {submissions.length > 0
-                        ? "Berkas Deliverable Terkirim"
-                        : "Unggah Berkas Deliverable"}
-                    </Text>
-                    {submissions.length > 0 ? (
-                      <>
-                        <TouchableOpacity
-                          style={styles.submittedLinkBox}
-                          activeOpacity={0.7}
-                        >
-                          <Link2 size={15} color={COLORS.brandIndigo} />
-                          <Text
-                            style={styles.submittedLinkText}
-                            numberOfLines={1}
-                          >
-                            {submissions[0].url_berkas}
-                          </Text>
-                        </TouchableOpacity>
-                        {renderSubmissionNote(
-                          submissions[0].catatan_pengiriman,
-                        )}
-                        <View style={{ marginTop: 10, gap: 8 }}>
-                          <Button
-                            title="Perbarui Berkas Deliverable"
-                            variant="outline"
-                            size="sm"
-                            icon={
-                              <UploadCloud
-                                size={15}
-                                color={COLORS.brandIndigo}
-                              />
-                            }
-                            onPress={() => setSubmissionModal(true)}
-                          />
-                          <Button
-                            title="Ajukan Pengunduran Diri"
-                            variant="outline"
-                            size="sm"
-                            icon={<XCircle size={14} color="#BE123C" />}
-                            textStyle={{ color: "#BE123C" }}
-                            style={{ borderColor: "#FECACA" }}
-                            onPress={() => setResignModal(true)}
-                          />
-                        </View>
-                      </>
-                    ) : (
-                      <View style={styles.emptyBox}>
-                        <Clock size={28} color={COLORS.brandIndigo} />
-                        <Text style={styles.emptyText}>
-                          Proyek disetujui! Silakan kerjakan dan unggah tautan
-                          hasil kerja (Figma / Drive) Anda.
-                        </Text>
-                        {isProjectExpired && (
-                          <View style={styles.overdueCallout}>
-                            <AlertTriangle size={14} color="#BE123C" />
-                            <Text style={styles.overdueCalloutText}>
-                              Tenggat pengerjaan telah terlewati. Harap segera
-                              unggah hasil deliverable Anda atau ajukan
-                              pengunduran diri jika Anda berhalangan
-                              melanjutkan.
-                            </Text>
-                          </View>
-                        )}
-                        <Button
-                          title="Unggah Deliverable Sekarang"
-                          variant="brand"
-                          size="md"
-                          icon={<UploadCloud size={16} color="#FFF" />}
-                          onPress={() => setSubmissionModal(true)}
-                          style={{ marginTop: 12 }}
-                        />
-                        <Button
-                          title="Ajukan Pengunduran Diri"
-                          variant="outline"
-                          size="sm"
-                          icon={<XCircle size={14} color="#BE123C" />}
-                          textStyle={{ color: "#BE123C" }}
-                          style={{ borderColor: "#FECACA", marginTop: 8 }}
-                          onPress={() => setResignModal(true)}
-                        />
-                      </View>
-                    )}
-                  </View>
-                ) : (
-                  <View style={styles.submissionCard}>
-                    <Text style={styles.submissionTitle}>
-                      Rencana Kerja yang Diajukan
-                    </Text>
-                    <Text style={styles.submissionDesc}>
-                      "{myExistingProposal.cover_letter}"
-                    </Text>
-                    <View style={styles.proposalOfferRow}>
-                      <Text style={styles.proposalOfferLabel}>
-                        Tawaran Anda:
-                      </Text>
-                      <Text style={styles.proposalOfferValue}>
-                        {formatCurrency(myExistingProposal.harga_tawar)}
-                      </Text>
-                    </View>
-                    <View style={styles.proposalStatusRow}>
-                      <Text style={styles.proposalOfferLabel}>
-                        Status Seleksi:
-                      </Text>
-                      <Badge
-                        label={
-                          myExistingProposal.status === "PENDING"
-                            ? "Menunggu Keputusan Klien"
-                            : myExistingProposal.status === "WITHDRAWN"
-                              ? "Mengundurkan Diri (Batal)"
-                              : myExistingProposal.status === "REJECTED"
-                                ? "Lamaran Ditolak"
-                                : "Disetujui"
-                        }
-                        variant={
-                          myExistingProposal.status === "PENDING"
-                            ? "warning"
-                            : myExistingProposal.status === "WITHDRAWN"
-                              ? "neutral"
-                              : myExistingProposal.status === "REJECTED"
-                                ? "danger"
-                                : "success"
-                        }
-                      />
-                    </View>
-                    {myExistingProposal.status === "WITHDRAWN" &&
-                      myExistingProposal.withdraw_reason && (
-                        <View style={styles.withdrawnDetailBox}>
-                          <Text style={styles.withdrawnDetailLabel}>
-                            Alasan Pengunduran Diri:
-                          </Text>
-                          <Text style={styles.withdrawnDetailText}>
-                            "{myExistingProposal.withdraw_reason}"
-                          </Text>
-                        </View>
-                      )}
-                  </View>
-                )}
+              <Text style={styles.appliedCoverLetterText}>
+                "{myExistingProposal.cover_letter}"
+              </Text>
+
+              <View style={styles.appliedMetaRow}>
+                <Text style={styles.appliedMetaLabel}>Tawaran Harga:</Text>
+                <Text style={styles.appliedMetaValue}>
+                  {formatCurrency(myExistingProposal.harga_tawar)}
+                </Text>
+              </View>
+
+              <View style={styles.appliedMetaRow}>
+                <Text style={styles.appliedMetaLabel}>Status:</Text>
+                <Text style={styles.appliedStatusBadgeText}>
+                  {myExistingProposal.status === "PENDING"
+                    ? "Menunggu Keputusan Klien"
+                    : myExistingProposal.status === "ACCEPTED"
+                      ? "Lamaran Diterima"
+                      : myExistingProposal.status === "REJECTED"
+                        ? "Lamaran Ditolak"
+                        : formatStatus(myExistingProposal.status)}
+                </Text>
               </View>
             </View>
           )}
 
+          {/* Bottom spacer for sticky bar */}
           <View style={{ height: 110 }} />
         </View>
       </ScrollView>
 
-      {/* ================================================================= */}
-      {/* 5. PERSISTENT STICKY BOTTOM ACTION DOCK                           */}
-      {/* ================================================================= */}
+      {/* ===================================================================== */}
+      {/* 8. PERSISTENT STICKY BOTTOM ACTION BAR                                */}
+      {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
-        <View
-          style={[
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-            },
-            responsiveContainerStyle,
-          ]}
-        >
+        <View style={styles.stickyContentRow}>
           <View style={styles.stickyPriceCol}>
             <Text style={styles.stickyPriceLabel}>PAGU ANGGARAN</Text>
             <Text style={styles.stickyPriceValue}>
@@ -895,28 +595,11 @@ export function ProjectExploreDetailView({
             </Text>
           </View>
 
-          {hasAcceptedStudent && (
-            <TouchableOpacity
-              style={styles.stickyChatBtn}
-              onPress={() =>
-                navigation.navigate("Chat", {
-                  projectId: project.id,
-                  projectTitle: project.judul,
-                  partnerName: activePartnerName,
-                  partnerPhoto: activePartnerPhoto,
-                  partnerRole: isUmkmOwner ? "MHS" : "UMKM",
-                })
-              }
-              activeOpacity={0.8}
-            >
-              <AppleMessageIcon size={36} variant="green" />
-            </TouchableOpacity>
-          )}
-
           <View style={styles.stickyActionCol}>
             {canApply ? (
               <PebbleButton
                 variant="sapphire"
+                size="md"
                 label="Ajukan Lamaran"
                 icon={Send}
                 onPress={() => {
@@ -927,7 +610,7 @@ export function ProjectExploreDetailView({
                     showConfirm({
                       title: "Lengkapi Profil Anda",
                       message:
-                        "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau keabsahan dan keahlian Anda.",
+                        "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau data Anda.",
                       confirmText: "Lengkapi Sekarang",
                       cancelText: "Nanti Saja",
                       onConfirm: () => navigation.navigate("Profile"),
@@ -938,962 +621,675 @@ export function ProjectExploreDetailView({
                 }}
               />
             ) : myExistingProposal ? (
-              <View style={styles.alreadyAppliedPill}>
-                <CheckCircle2 size={15} color={COLORS.success} />
-                <Text style={styles.alreadyAppliedText}>
+              <View style={styles.appliedPill}>
+                <CheckCircle2 size={14} color="#059669" />
+                <Text style={styles.appliedPillText}>
                   {isAcceptedProposal
                     ? "Lamaran Disetujui"
-                    : myExistingProposal.status === "WITHDRAWN"
-                      ? "Lamaran Dibatalkan"
-                      : myExistingProposal.status === "REJECTED"
-                        ? "Lamaran Ditolak"
-                        : "Lamaran Terkirim"}
+                    : myExistingProposal.status === "REJECTED"
+                      ? "Lamaran Ditolak"
+                      : "Lamaran Terkirim"}
                 </Text>
               </View>
             ) : isUmkmOwner ? (
-              <TouchableOpacity
-                style={styles.umkmManageBtn}
+              <PebbleButton
+                variant="pearl"
+                size="sm"
+                label={`${proposals.length} Pelamar`}
+                icon={Users}
                 onPress={() => setActiveTab("proposals")}
-                activeOpacity={0.8}
-              >
-                <Users size={16} color="#FFFFFF" />
-                <Text style={styles.primaryApplyBtnText}>
-                  Kelola ({proposals.length})
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.closedStatusPill}>
-                <Clock size={14} color={COLORS.textMuted} />
-                <Text style={styles.closedStatusText}>
-                  {formatStatus(project.status || "CLOSED")}
-                </Text>
-              </View>
-            )}
+              />
+            ) : null}
           </View>
         </View>
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  rootContainer: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
   scrollView: {
-    backgroundColor: "#FFFFFF",
+    flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    paddingBottom: 20,
-    backgroundColor: "#FFFFFF",
+    padding: 16,
+    paddingBottom: 24,
   },
 
-  // Apple Glossy Hero Card
-  appleHeroCard: {
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.95)",
-    borderRadius: 22,
-    padding: 18,
+  /* 1. Header Card */
+  headerCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor:
-      Platform.OS === "android"
-        ? "rgba(226, 232, 240, 0.9)"
-        : "rgba(255, 255, 255, 0.95)",
+    borderColor: "#E2E8F0",
+    padding: 20,
     marginBottom: 16,
+    gap: 12,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.05,
-    shadowRadius: 16,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  appleTopRow: {
+  badgeRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  appleBadgeGroup: {
-    flexDirection: "row",
-    alignItems: "center",
     gap: 8,
-    flexWrap: "wrap",
-    flex: 1,
-    marginRight: 8,
   },
-  categoryChip: {
-    backgroundColor: "#EEF2FF",
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
-    borderRadius: 6,
-  },
-  categoryChipText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 10.5,
-    color: "#4338CA",
-    letterSpacing: 0.4,
-    fontWeight: "700",
-  },
-  statusChip: {
+  categoryPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5.5,
+    gap: 5,
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 8,
+  },
+  categoryPillText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#334155",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  statusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 8,
+  },
+  statusPillOpen: {
+    backgroundColor: "#ECFDF5",
+  },
+  statusPillProgress: {
+    backgroundColor: "#EFF6FF",
+  },
+  statusPillDone: {
+    backgroundColor: "#F1F5F9",
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  statusDotOpen: {
+    backgroundColor: "#059669",
+  },
+  statusDotProgress: {
+    backgroundColor: "#2563EB",
+  },
+  statusDotDone: {
+    backgroundColor: "#64748B",
+  },
+  statusPillText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "600",
+  },
+  statusPillTextOpen: {
+    color: "#059669",
+  },
+  statusPillTextProgress: {
+    color: "#2563EB",
+  },
+  statusPillTextDone: {
+    color: "#64748B",
+  },
+  projectTitle: {
+    fontSize: 19,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "800",
+    lineHeight: 26,
+    marginTop: 2,
+  },
+  publishedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  publishedText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+  },
+  metricsContainer: {
     backgroundColor: "#F8FAFC",
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
-    borderRadius: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 10,
+    gap: 8,
+    marginTop: 4,
+  },
+  metricHighlightRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 10,
+  },
+  metricIconWrapperEmerald: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#ECFDF5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  metricHighlightContent: {
+    flex: 1,
+  },
+  metricHighlightLabel: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#64748B",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  metricHighlightValue: {
+    fontSize: 16,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "800",
+    marginTop: 1,
+  },
+  metricSubRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
-  statusDot: {
-    width: 6.5,
-    height: 6.5,
-    borderRadius: 3.25,
-  },
-  statusChipText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    color: "#1E293B",
-    fontWeight: "700",
-  },
-  appleInvoiceBtn: {
+  metricSubItem: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 4.5,
+    gap: 8,
+    minWidth: 0,
+  },
+  metricIconWrapperBlue: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
     backgroundColor: "#EFF6FF",
-    paddingHorizontal: 11,
-    paddingVertical: 5.5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(37, 99, 235, 0.15)",
-    flexShrink: 0,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  appleInvoiceBtnText: {
+  metricIconWrapperSlate: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
+    backgroundColor: "#F1F5F9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  metricSubTextWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  metricSubLabel: {
+    fontSize: 9,
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: "#2563EB",
+    color: "#64748B",
     fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  metricSubValue: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: "#334155",
+    fontWeight: "700",
+    marginTop: 1,
+  },
+  metricSubDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: "#E2E8F0",
+    marginHorizontal: 8,
+  },
+  escrowBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#F0FDF4",
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#DCFCE7",
+  },
+  escrowBannerText: {
+    flex: 1,
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#166534",
+    lineHeight: 15,
   },
 
-  projectHeadline: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 21,
-    fontWeight: "800",
-    color: "#0F172A",
-    lineHeight: 29,
-    letterSpacing: -0.4,
-    marginBottom: 14,
+  /* 2. Section Card & Client Profile */
+  sectionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 16,
+    marginBottom: 16,
+    gap: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-
-  // Client Profile Byline
-  clientBylineRow: {
+  clientProfileRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
   },
   clientAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F1F5F9",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#E2E8F0",
   },
-  clientAvatarPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#EEF2FF",
+  clientAvatarFallback: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#E0E7FF",
   },
   clientInfoCol: {
     flex: 1,
-  },
-  clientNameVerifiedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+    minWidth: 0,
+    justifyContent: "center",
   },
   clientNameText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13.5,
-    fontWeight: "700",
+    fontSize: 14.5,
+    fontFamily: FONTS.displayBold,
     color: "#0F172A",
-    flexShrink: 1,
+    fontWeight: "700",
   },
-  verifiedBadge: {
+  clientMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 3,
+  },
+  verifiedTag: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6.5,
-    paddingVertical: 1.5,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
   },
-  verifiedBadgeText: {
+  verifiedTagText: {
+    fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
-    fontSize: 9,
     color: "#059669",
     fontWeight: "700",
   },
-  clientLocationText: {
+  clientMetaDot: {
+    fontSize: 10,
+    color: "#94A3B8",
+  },
+  locationText: {
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
     color: "#64748B",
-    marginTop: 2,
+    flexShrink: 1,
   },
 
-  cardInternalDivider: {
-    height: 1,
-    backgroundColor: "rgba(226, 232, 240, 0.7)",
-    marginVertical: 14,
-  },
-
-  keyMetricsGrid: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 2,
-  },
-  metricColumn: {
-    flex: 1,
-  },
-  metricDividerVertical: {
-    width: 1,
-    height: 36,
-    backgroundColor: "#E2E8F0",
-    marginHorizontal: 16,
-  },
-  metricLabel: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 9.5,
-    color: "#64748B",
-    letterSpacing: 0.6,
-    fontWeight: "700",
-    marginBottom: 4,
-  },
-  metricValuePrimary: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 19,
-    color: "#1E40AF",
-    fontWeight: "800",
-    letterSpacing: -0.3,
-  },
-  metricValueSecondary: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-  metricValueRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-
-  escrowTrustStrip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    marginTop: 14,
-    backgroundColor: "#F0FDF4",
-    paddingHorizontal: 11,
-    paddingVertical: 7.5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#DCFCE7",
-  },
-  escrowTrustText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    color: "#15803D",
-    flex: 1,
-    lineHeight: 16,
-  },
-  matchScoreRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    marginTop: 8,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 11,
-    paddingVertical: 7.5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  matchScoreText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
-    color: "#065F46",
-    flex: 1,
-  },
-  matchScoreBold: {
-    fontWeight: "700",
-    color: "#047857",
-  },
-
-  stepperWrapper: {
-    marginBottom: 12,
-  },
-
-  hairlineDivider: {
-    height: 1,
-    backgroundColor: "#F1F5F9",
-    marginVertical: 16,
-  },
-
-  contentSection: {
-    marginBottom: 12,
-  },
-  sectionHeading: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 15,
-    fontWeight: "800",
-    color: "#0F172A",
-    marginBottom: 9,
-    letterSpacing: -0.2,
-  },
-  sectionSubHeading: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
-    color: "#64748B",
-    marginBottom: 10,
-  },
-  sectionHeaderWithIcon: {
+  /* 3. Team Slots */
+  sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 4,
   },
-  briefParagraph: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 14,
-    color: "#334155",
-    lineHeight: 23,
-  },
-  expandBriefBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginTop: 8,
-    alignSelf: "flex-start",
-    paddingVertical: 5,
-  },
-  expandBriefBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
+  sectionTitle: {
+    fontSize: 14.5,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
     fontWeight: "700",
-    color: COLORS.brandIndigo,
   },
-
-  deliverablesSection: {
+  sectionSubtitle: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+    marginTop: -4,
+  },
+  slotsContainer: {
+    gap: 10,
     marginTop: 4,
   },
-  deliverablesSmallHeading: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 10,
-    color: "#64748B",
-    letterSpacing: 0.6,
-    fontWeight: "700",
-    marginBottom: 8,
+  slotCard: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 14,
+    gap: 6,
   },
-  deliverablePillsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 7,
-  },
-  specChip: {
+  slotTopRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5.5,
-    backgroundColor: "#F8FAFC",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 7,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  specChipText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    color: "#334155",
-    fontWeight: "600",
-  },
-
-  // Team Slots
-  teamSlotsList: {
-    gap: 8,
-  },
-  teamSlotItem: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  teamSlotItemTop: {
-    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 4,
   },
-  teamSlotItemRole: {
+  slotRoleName: {
+    fontSize: 13.5,
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    color: "#0F172A",
     fontWeight: "700",
-    color: COLORS.textDark,
   },
-  teamSlotItemBudget: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+  slotBudgetText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#059669",
     fontWeight: "600",
-    color: COLORS.brandIndigo,
-    marginTop: 1,
+    marginTop: 2,
   },
-  teamSlotStatusTag: {
+  slotStatusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
   },
-  teamSlotStatusTagOpen: {
+  slotStatusBadgeOpen: {
     backgroundColor: "#ECFDF5",
   },
-  teamSlotStatusTagActive: {
+  slotStatusBadgeFilled: {
     backgroundColor: "#EFF6FF",
   },
-  teamSlotStatusTagDone: {
+  slotStatusBadgeDone: {
     backgroundColor: "#F1F5F9",
   },
-  teamSlotStatusText: {
+  slotStatusText: {
     fontSize: 10,
+    fontFamily: FONTS.bodyBold,
     fontWeight: "700",
   },
-  teamSlotStatusTextOpen: {
+  slotStatusTextOpen: {
     color: "#059669",
   },
-  teamSlotStatusTextActive: {
+  slotStatusTextFilled: {
     color: "#2563EB",
   },
-  teamSlotStatusTextDone: {
+  slotStatusTextDone: {
     color: "#64748B",
   },
-  teamSlotItemDesc: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    lineHeight: 15,
-    marginTop: 2,
-  },
-  assignedMhsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    marginTop: 6,
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderSubtle,
-  },
-  assignedMhsText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#065F46",
-  },
-
-  // Open Chat Bar
-  openChatBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: COLORS.brandIndigoLight,
-    borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  openChatBarLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-  },
-  chatPartnerAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(79, 70, 229, 0.2)",
-  },
-  chatIconBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: COLORS.brandIndigo,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  openChatTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  openChatSub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 1,
-  },
-
-  // Deliverable Submissions
-  submissionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-  submissionIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: COLORS.brandIndigoLight,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  submissionHeaderTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  submissionHeaderSub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    marginTop: 1,
-  },
-  uploadCtaBox: {
-    borderWidth: 1.5,
-    borderColor: COLORS.brandIndigo,
-    borderStyle: "dashed",
-    borderRadius: 16,
-    padding: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.brandIndigoLight,
-  },
-  uploadCtaMain: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.brandIndigo,
-    marginTop: 6,
-  },
-  uploadCtaSub: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    textAlign: "center",
-    marginTop: 2,
-  },
-  submittedFileList: {
-    gap: 8,
-  },
-  submittedFileCard: {
-    backgroundColor: COLORS.canvasSoft,
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
-  },
-  fileCardTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  fileUrlText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12,
-    color: COLORS.brandIndigo,
-    flex: 1,
-  },
-  subStatusBadge: {
-    backgroundColor: COLORS.brandIndigoLight,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  subStatusBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: COLORS.brandIndigo,
-  },
-  reuploadBtn: {
-    paddingVertical: 8,
-    alignItems: "center",
-  },
-  reuploadBtnText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-  },
-
-  // Escrow Footer Card
-  escrowFooterCard: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    backgroundColor: "#F8FAFC",
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    marginBottom: 14,
-  },
-  escrowFooterTitle: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 12.5,
-    fontWeight: "700",
-    color: "#0F172A",
-    marginBottom: 3,
-  },
-  escrowFooterDesc: {
-    fontFamily: FONTS.bodyRegular,
+  slotDescriptionText: {
     fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
     color: "#475569",
     lineHeight: 17,
   },
 
-  // Cancellation Audit Card
-  cancellationAuditCard: {
-    backgroundColor: "#FEF2F2",
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#FECACA",
-    marginBottom: 14,
-    gap: 10,
-  },
-  cancellationAuditHeader: {
-    gap: 6,
-  },
-  cancellationAuditBadgeRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
+  /* 4. Description Wrap */
+  descriptionWrap: {
     gap: 8,
   },
-  cancellationBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    backgroundColor: "#FEE2E2",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  descriptionText: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyRegular,
+    color: "#334155",
+    lineHeight: 21,
   },
-  cancellationBadgeText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#991B1B",
-  },
-  refundEscrowBadge: {
+  expandBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
   },
-  refundEscrowBadgeText: {
-    fontFamily: FONTS.displaySemiBold,
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#065F46",
-  },
-  cancellationTimeText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: "#991B1B",
-  },
-  cancellationReasonBox: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#FCA5A5",
-  },
-  cancellationReasonLabel: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#7F1D1D",
-    marginBottom: 3,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  cancellationReasonQuote: {
-    fontFamily: FONTS.bodyRegular,
+  expandBtnText: {
     fontSize: 12,
-    color: "#450A0A",
-    fontStyle: "italic",
+    fontFamily: FONTS.bodyBold,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+
+  /* 5. Cancelled Card */
+  cancelledCard: {
+    backgroundColor: "#FEF2F2",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#FEE2E2",
+    padding: 16,
+    marginBottom: 16,
+    gap: 6,
+  },
+  cancelledHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  cancelledTitle: {
+    fontSize: 13.5,
+    fontFamily: FONTS.displayBold,
+    color: "#991B1B",
+    fontWeight: "700",
+  },
+  cancelledDesc: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyRegular,
+    color: "#B91C1C",
     lineHeight: 17,
   },
 
-  // Management Section
+  /* 6. Management Sections */
   managementSection: {
-    marginTop: 8,
+    gap: 12,
+    marginBottom: 16,
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: COLORS.bgSurfaceSubtle,
+    backgroundColor: "#E2E8F0",
     borderRadius: 14,
     padding: 3,
-    marginBottom: 14,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 9,
     alignItems: "center",
     borderRadius: 11,
   },
   tabButtonActive: {
-    backgroundColor: COLORS.bgSurface,
-    shadowColor: "#000",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowRadius: 3,
     elevation: 1,
   },
   tabText: {
-    fontFamily: FONTS.bodyMedium,
     fontSize: 12,
-    fontWeight: "500",
-    color: COLORS.textMuted,
+    fontFamily: FONTS.bodyBold,
+    color: "#64748B",
+    fontWeight: "600",
   },
   tabTextActive: {
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textDark,
+    color: "#0F172A",
     fontWeight: "700",
   },
   tabContent: {
     gap: 10,
   },
   emptyBox: {
-    padding: 24,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 28,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    gap: 8,
   },
   emptyText: {
+    fontSize: 12.5,
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 8,
+    color: "#64748B",
     textAlign: "center",
   },
   submissionCard: {
-    backgroundColor: COLORS.bgSurface,
-    borderRadius: 16,
-    padding: 14,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
+    borderColor: "#E2E8F0",
+    padding: 16,
+    gap: 10,
   },
   submissionTitle: {
+    fontSize: 13.5,
     fontFamily: FONTS.displayBold,
-    fontSize: 13,
+    color: "#0F172A",
     fontWeight: "700",
-    color: COLORS.textDark,
-    marginBottom: 6,
-  },
-  submissionDesc: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    lineHeight: 18,
   },
   submittedLinkBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: COLORS.canvasSoft,
-    padding: 8,
-    borderRadius: 8,
-    marginBottom: 6,
-  },
-  submittedLinkText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-    flex: 1,
-  },
-  proposalOfferRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.borderDark,
-  },
-  proposalOfferLabel: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-  },
-  proposalOfferValue: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: COLORS.textDark,
-  },
-  proposalStatusRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
-  },
-  withdrawnDetailBox: {
-    marginTop: 8,
-    padding: 8,
     backgroundColor: "#F8FAFC",
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
-  withdrawnDetailLabel: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#64748B",
-    marginBottom: 2,
-  },
-  withdrawnDetailText: {
-    fontSize: 11,
-    fontStyle: "italic",
-    color: "#334155",
-  },
-  overdueCallout: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    backgroundColor: "#FFF1F2",
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#FECDD3",
-    marginTop: 10,
-    marginBottom: 6,
-    width: "100%",
-  },
-  overdueCalloutText: {
+  submittedLinkText: {
     flex: 1,
+    fontSize: 11.5,
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: "#9F1239",
-    lineHeight: 16,
+    color: "#2563EB",
   },
 
-  // Persistent Sticky Bottom Action Bar
+  /* 7. Applied Status Card */
+  appliedStatusCard: {
+    backgroundColor: "#F0FDF4",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#BBF7D0",
+    padding: 18,
+    marginBottom: 16,
+    gap: 10,
+  },
+  appliedStatusHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  appliedStatusTitle: {
+    fontSize: 14,
+    fontFamily: FONTS.displayBold,
+    color: "#166534",
+    fontWeight: "700",
+  },
+  appliedCoverLetterText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#15803D",
+    fontStyle: "italic",
+    lineHeight: 19,
+  },
+  appliedMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: "#DCFCE7",
+  },
+  appliedMetaLabel: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#166534",
+  },
+  appliedMetaValue: {
+    fontSize: 12.5,
+    fontFamily: FONTS.displayBold,
+    color: "#14532D",
+    fontWeight: "800",
+  },
+  appliedStatusBadgeText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#15803D",
+    fontWeight: "700",
+  },
+
+  /* 8. Sticky Bottom Action Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.97)",
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.85)",
+    borderTopColor: "#E2E8F0",
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: Platform.OS === "ios" ? 34 : 16,
+    paddingBottom: 16,
+    elevation: 10,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+  stickyContentRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 8,
   },
   stickyPriceCol: {
-    flex: 1,
+    gap: 2,
   },
   stickyPriceLabel: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 10,
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
     color: "#64748B",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
     fontWeight: "700",
+    letterSpacing: 0.5,
   },
   stickyPriceValue: {
+    fontSize: 17,
     fontFamily: FONTS.displayBold,
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#1E40AF",
-    letterSpacing: -0.3,
+    color: "#0F172A",
+    fontWeight: "900",
   },
   stickyActionCol: {
-    flex: 1.4,
-    alignItems: "flex-end",
-  },
-  stickyChatBtn: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 8,
-  },
-  alreadyAppliedPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    backgroundColor: COLORS.successBg,
-    borderWidth: 1,
-    borderColor: COLORS.successBorder,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
   },
-  alreadyAppliedText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.success,
-    fontWeight: "700",
-  },
-  umkmManageBtn: {
+  appliedPill: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     gap: 6,
-    backgroundColor: COLORS.brandIndigoDark,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 16,
     paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    width: "100%",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
-  primaryApplyBtnText: {
+  appliedPillText: {
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
-    fontSize: 12,
+    color: "#059669",
     fontWeight: "700",
-    color: "#FFFFFF",
-  },
-  closedStatusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: COLORS.canvasSoft,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 8,
-  },
-  closedStatusText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
-    color: COLORS.textMuted,
   },
 });

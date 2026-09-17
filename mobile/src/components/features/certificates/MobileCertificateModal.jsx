@@ -11,6 +11,7 @@ import {
   Image,
   Linking,
 } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import {
@@ -77,10 +78,14 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
     }
   };
 
-  const handleOpenWebPdf = () => {
-    Linking.openURL(verificationUrl).catch(() => {
-      showToast("Gagal membuka tautan browser", "error");
-    });
+  const handleOpenWebPdf = async () => {
+    try {
+      await WebBrowser.openBrowserAsync(verificationUrl);
+    } catch (err) {
+      Linking.openURL(verificationUrl).catch(() => {
+        showToast("Gagal membuka tautan browser", "error");
+      });
+    }
   };
 
   return (
@@ -122,6 +127,11 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                     resizeMode="contain"
                   />
                 </View>
+                <View style={styles.verifiedTopPill}>
+                  <ShieldCheck size={12} color="#059669" />
+                  <Text style={styles.verifiedTopPillText}>RESMI</Text>
+                </View>
+              </View>
 
               {/* Main Title */}
               <Text style={styles.certMainTitle}>SERTIFIKAT</Text>

@@ -158,46 +158,69 @@ export function ChatPage() {
 
     let ws = null;
     let pingInterval = null;
+    let reconnectTimer = null;
+    let isUnmounted = false;
 
-    try {
-      const url = getUserChatWsUrl(token);
-      ws = new WebSocket(url);
+    const connectWs = () => {
+      if (isUnmounted) return;
+      try {
+        const url = getUserChatWsUrl(token);
+        ws = new WebSocket(url);
 
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (!data) return;
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (!data) return;
 
-          if (data.type === "CHAT_MESSAGE") {
-            handleConversationMessageUpdate(data);
-          } else if (data.type === "READ_RECEIPT") {
-            if (String(data.reader_id) === String(user?.id)) {
-              setConversations((prev) =>
-                prev.map((c) =>
-                  String(c.project_id) === String(data.project_id) &&
-                  (!data.partner_id ||
-                    String(c.partner_id) === String(data.partner_id))
-                    ? { ...c, unread_count: 0 }
-                    : c,
-                ),
-              );
+            if (data.type === "CHAT_MESSAGE") {
+              handleConversationMessageUpdate(data);
+            } else if (data.type === "READ_RECEIPT") {
+              if (String(data.reader_id) === String(user?.id)) {
+                setConversations((prev) =>
+                  prev.map((c) =>
+                    String(c.project_id) === String(data.project_id) &&
+                    (!data.partner_id ||
+                      String(c.partner_id) === String(data.partner_id))
+                      ? { ...c, unread_count: 0 }
+                      : c,
+                  ),
+                );
+              }
             }
+          } catch (e) {
+            console.warn("Global chat WS message parse error:", e);
           }
-        } catch (e) {
-          console.warn("Global chat WS message parse error:", e);
-        }
-      };
+        };
 
-      pingInterval = setInterval(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: "PING" }));
+        ws.onclose = () => {
+          if (!isUnmounted) {
+            reconnectTimer = setTimeout(connectWs, 3500);
+          }
+        };
+
+        ws.onerror = () => {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.close();
+          }
+        };
+      } catch (err) {
+        if (!isUnmounted) {
+          reconnectTimer = setTimeout(connectWs, 3500);
         }
-      }, 30000);
-    } catch (err) {
-      console.warn("Failed to connect global user chat WS:", err);
-    }
+      }
+    };
+
+    connectWs();
+
+    pingInterval = setInterval(() => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "PING" }));
+      }
+    }, 25000);
 
     return () => {
+      isUnmounted = true;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
       if (pingInterval) clearInterval(pingInterval);
       if (ws) ws.close();
     };

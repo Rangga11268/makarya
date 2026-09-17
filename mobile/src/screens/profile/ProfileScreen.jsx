@@ -146,6 +146,7 @@ export function ProfileScreen({ navigation }) {
     bidang_industri: "",
     kota: "",
     no_kontak: "",
+    url_ttd: null,
   });
 
   const isMahasiswa =
@@ -241,8 +242,43 @@ export function ProfileScreen({ navigation }) {
       bidang_industri: user?.bidang_industri || "",
       kota: user?.kota || "",
       no_kontak: user?.no_kontak || "",
+      url_ttd: user?.url_ttd || null,
     });
     setEditModalVisible(true);
+  };
+
+  const handlePickSignature = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        showToast(
+          "Izin akses galeri diperlukan untuk memilih tanda tangan",
+          "error",
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        quality: 0.7,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
+        const base64Data = asset.base64
+          ? `data:image/png;base64,${asset.base64}`
+          : asset.uri;
+
+        setEditForm((prev) => ({ ...prev, url_ttd: base64Data }));
+        showToast("Gambar tanda tangan berhasil dipilih!", "success");
+      }
+    } catch (err) {
+      console.error("Gagal memilih tanda tangan:", err);
+      showToast("Gagal memilih file tanda tangan.", "error");
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -271,6 +307,7 @@ export function ProfileScreen({ navigation }) {
             nama_bank: editForm.nama_bank.trim(),
             nomor_rekening: editForm.nomor_rekening.trim(),
             nama_pemilik_rekening: editForm.nama_pemilik_rekening.trim(),
+            url_ttd: editForm.url_ttd || null,
           };
 
       const res = await authApi.updateProfile(payload);
@@ -622,6 +659,28 @@ export function ProfileScreen({ navigation }) {
                     ? "Tersimpan & Aktif Resmi"
                     : "Tanda Tangan Digital Otomatis"}
                 </Text>
+                {user?.url_ttd && (
+                  <View
+                    style={{
+                      marginTop: 6,
+                      width: 130,
+                      height: 40,
+                      backgroundColor: "#FFF",
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: COLORS.borderSubtle,
+                      padding: 4,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Image
+                      source={{ uri: user.url_ttd }}
+                      style={{ width: "100%", height: "100%" }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -1057,6 +1116,7 @@ export function ProfileScreen({ navigation }) {
         editForm={editForm}
         setEditForm={setEditForm}
         onSave={handleSaveProfile}
+        onPickSignature={handlePickSignature}
         isSaving={isSaving}
         isMahasiswa={isMahasiswa}
       />

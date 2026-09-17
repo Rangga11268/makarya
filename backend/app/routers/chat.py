@@ -719,7 +719,7 @@ def get_user_conversations(
 # 4. REST ENDPOINT: GET CHAT HISTORY
 # ============================================================================
 @router.get("/project/{project_id}/messages", response_model=List[ChatMessageResponse])
-def get_chat_messages(
+async def get_chat_messages(
     project_id: UUID,
     partner_id: Optional[UUID] = Query(None, description="Filter pesan spesifik dengan lawan bicara tertentu (kosongkan untuk obrolan grup proyek)"),
     db: Session = Depends(get_db),
@@ -763,10 +763,9 @@ def get_chat_messages(
             "partner_id": str(partner_id) if partner_id else None,
             "read_at": datetime.now().isoformat(),
         }
-        import asyncio
-        asyncio.create_task(manager.broadcast(str(project_id), read_payload))
+        await manager.broadcast(str(project_id), read_payload)
         if partner_id:
-            asyncio.create_task(manager.send_to_user(str(partner_id), read_payload))
+            await manager.send_to_user(str(partner_id), read_payload)
 
     response_list = []
     for m in messages:

@@ -710,13 +710,7 @@ export function ProjectDetailScreen({ route, navigation }) {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        !isDedicatedWorkroom &&
-          !isApplicantBoardMode && { backgroundColor: "#FFFFFF" },
-      ]}
-    >
+    <View style={styles.container}>
       <Header
         title={
           isDedicatedWorkroom

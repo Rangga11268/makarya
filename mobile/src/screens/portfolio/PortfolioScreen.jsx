@@ -35,6 +35,7 @@ import {
   MessageSquare,
   Coins,
   ArrowRight,
+  Star,
 } from "lucide-react-native";
 
 export function PortfolioScreen({ navigation }) {
@@ -226,7 +227,7 @@ export function PortfolioScreen({ navigation }) {
 
               <View style={styles.metricCol}>
                 <View style={styles.scoreRow}>
-                  <CheckCircle2 size={13} color={COLORS.success} />
+                  <Star size={13} color="#F59E0B" fill="#F59E0B" />
                   <Text style={[styles.metricVal, { color: "#0F172A" }]}>
                     {averageRating}
                   </Text>
@@ -553,7 +554,7 @@ export function PortfolioScreen({ navigation }) {
                       </View>
 
                       <View style={styles.scorePill}>
-                        <CheckCircle2 size={11} color="#059669" />
+                        <Star size={11} color="#F59E0B" fill="#F59E0B" />
                         <Text style={styles.scorePillText}>
                           {r.skor_bintang || 5}.0
                         </Text>

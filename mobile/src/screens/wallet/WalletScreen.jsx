@@ -104,7 +104,7 @@ export function WalletScreen({ navigation }) {
     const minNominal = txType === "WITHDRAW" ? 25000 : 50000;
     if (!num || num < minNominal) {
       showToast(
-        `Minimal transaksi adalah Rp ${formatCurrency(minNominal)}`,
+        `Minimal transaksi adalah ${formatCurrency(minNominal)}`,
         "danger",
       );
       return;
@@ -130,7 +130,7 @@ export function WalletScreen({ navigation }) {
           nama_pemilik: destOwner.trim(),
         });
         showToast(
-          `Pencairan honor Rp ${formatCurrency(num)} berhasil diajukan ke ${destBank} (${destAccount})!`,
+          `Pencairan honor ${formatCurrency(num)} berhasil diajukan ke ${destBank} (${destAccount})!`,
           "success",
         );
       } else {
@@ -141,16 +141,28 @@ export function WalletScreen({ navigation }) {
           try {
             await WebBrowser.openBrowserAsync(resData.redirect_url);
             if (resData.order_id) {
-              await walletApi.syncStatus(resData.order_id).catch(() => {});
+              const syncRes = await walletApi
+                .syncStatus(resData.order_id)
+                .catch(() => null);
+              if (
+                syncRes?.data?.status === "SETTLEMENT" ||
+                syncRes?.data?.status === "SUCCESS"
+              ) {
+                showToast(
+                  `Deposit saldo proyek ${formatCurrency(num)} berhasil masuk!`,
+                  "success",
+                );
+              } else {
+                showToast(
+                  "Transaksi diproses. Saldo akan otomatis bertambah setelah pembayaran selesai diverifikasi.",
+                  "info",
+                );
+              }
             }
           } catch (browserErr) {
             console.log("Browser flow note:", browserErr);
           }
         }
-        showToast(
-          `Deposit saldo proyek Rp ${formatCurrency(num)} berhasil!`,
-          "success",
-        );
       }
       setTxModal(false);
       loadWallet();
