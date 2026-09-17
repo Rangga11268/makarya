@@ -2,7 +2,6 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 /**
- * Exports an HTML element as an A4 Landscape PDF.
  * Exports an HTML certificate element as an ultra-crisp A4 Landscape PDF.
  * @param {HTMLElement} element - The DOM element to export
  * @param {string} filename - Output file name
@@ -17,7 +16,6 @@ export async function exportElementToPdf(
 
   try {
     const canvas = await html2canvas(element, {
-      scale: 2.5, // High resolution for crystal clear print & vectors
       scale: 3, // Ultra-high resolution for razor sharp text & vectors
       useCORS: true,
       allowTaint: true,
@@ -35,12 +33,9 @@ export async function exportElementToPdf(
       format: "a4",
     });
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
     const pdfWidth = pdf.internal.pageSize.getWidth(); // 297 mm
     const pdfHeight = pdf.internal.pageSize.getHeight(); // 210 mm
 
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
     const canvasRatio = canvasWidth / canvasHeight;
@@ -75,7 +70,6 @@ export async function exportElementToPdf(
     return true;
   } catch (error) {
     console.error("Gagal mengekspor PDF via html2canvas:", error);
-    // Fallback: window.print()
     window.print();
     return false;
   }
