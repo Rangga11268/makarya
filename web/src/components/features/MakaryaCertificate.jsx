@@ -59,7 +59,6 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
                 src="/logo.webp"
                 alt="Makarya"
                 crossOrigin="anonymous"
-                className="h-6.5 sm:h-7.5 w-auto object-contain"
                 className="h-7 sm:h-8 w-auto object-contain"
                 style={{ height: "30px", width: "auto", maxHeight: "32px" }}
               />
@@ -224,9 +223,13 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
                 src="/logo-icon.svg"
                 alt="Makarya"
                 crossOrigin="anonymous"
-                className="h-6.5 w-6.5 object-contain shrink-0"
                 className="h-6 w-6 object-contain shrink-0"
-                style={{ width: "24px", height: "24px", minWidth: "24px", minHeight: "24px" }}
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  minWidth: "24px",
+                  minHeight: "24px",
+                }}
               />
               <span className="text-lg font-black tracking-tight text-white font-sans">
                 Makarya<span className="text-emerald-400">.</span>
