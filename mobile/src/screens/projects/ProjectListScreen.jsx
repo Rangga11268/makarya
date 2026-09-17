@@ -21,16 +21,23 @@ import { PebbleButton } from "../../components/ui/PebbleButton";
 import { projectApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
-import { Compass, RotateCcw, X } from "lucide-react-native";
+import {
+  Compass,
+  RotateCcw,
+  X,
+  ChevronUp,
+  CheckCircle2,
+  SlidersHorizontal,
+} from "lucide-react-native";
 import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
-import { PromoBanner } from "../../components/features/PromoBanner";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
   const { responsiveContainerStyle, contentMaxWidth } = useResponsiveLayout();
+  const flatListRef = useRef(null);
 
   const isMahasiswa =
     user?.role === "MHS" ||
@@ -46,6 +53,7 @@ export function ProjectListScreen({ navigation, route }) {
   const [categoryFilter, setCategoryFilter] = useState(
     route?.params?.category || "ALL",
   );
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Modals
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -107,7 +115,7 @@ export function ProjectListScreen({ navigation, route }) {
   const segmentedTabs = [
     { id: "MATCH", label: "Terbaik" },
     { id: "RECENT", label: "Terbaru" },
-    { id: "NEW", label: "Baru" },
+    { id: "NEW", label: "Nilai Tertinggi" },
   ];
 
   const activeFilterCount =
@@ -119,6 +127,10 @@ export function ProjectListScreen({ navigation, route }) {
     setSelectedStatus("OPEN");
     setSelectedBudgetRange("ALL");
     setCategoryFilter("ALL");
+  };
+
+  const scrollToTop = () => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   };
 
   const filteredProjects = projects
@@ -162,6 +174,7 @@ export function ProjectListScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <OrganicRibbonBackground height={320} />
+
       {/* Header (Standar Desain Makarya Mobile) */}
       <Header
         category="KATALOG PROYEK"
@@ -186,13 +199,49 @@ export function ProjectListScreen({ navigation, route }) {
         />
       </View>
 
-      {/* Featured Guarantee & Collaboration Promo Banner */}
-      <View style={styles.bannerSection}>
-        <PromoBanner />
+      {/* 1. Quick Category Chips Scroll (Forensic Discovery Bar) */}
+      <View style={styles.categoryChipsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoryChipsScroll}
+        >
+          {CATEGORIES.map((cat) => {
+            const isSelected = categoryFilter === cat.id;
+            const IconComponent = cat.Icon;
+            return (
+              <TouchableOpacity
+                key={cat.id}
+                onPress={() => setCategoryFilter(cat.id)}
+                style={[
+                  styles.categoryChipItem,
+                  isSelected && styles.categoryChipItemActive,
+                ]}
+                activeOpacity={0.75}
+              >
+                {IconComponent ? (
+                  <IconComponent
+                    size={12.5}
+                    color={isSelected ? "#FFFFFF" : "#64748B"}
+                  />
+                ) : null}
+                <Text
+                  style={[
+                    styles.categoryChipText,
+                    isSelected && styles.categoryChipTextActive,
+                  ]}
+                >
+                  {cat.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
-      {/* Segmented Tabs */}
-      <View style={[styles.segmentedSection, responsiveContainerStyle]}>
+      {/* 2. Controls & Segmented Tabs Row */}
+      <View style={[styles.controlsSection, responsiveContainerStyle]}>
+        {/* Segmented Tabs */}
         <View style={styles.segmentedContainer}>
           {segmentedTabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -218,51 +267,28 @@ export function ProjectListScreen({ navigation, route }) {
             );
           })}
         </View>
-      </View>
 
-      {/* Active Filter Tag Bar */}
-      {activeFilterCount > 0 && (
-        <View style={[styles.activeFilterBar, responsiveContainerStyle]}>
-          <Text style={styles.activeFilterLabel}>Filter Aktif:</Text>
-          {categoryFilter !== "ALL" && (
-            <View style={styles.activeFilterPill}>
-              <Text style={styles.activeFilterPillText}>
-                {getCategoryLabel(categoryFilter)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setCategoryFilter("ALL")}
-                activeOpacity={0.7}
-              >
-                <X size={12} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-            </View>
+        {/* Counter Summary */}
+        <View style={styles.summaryCountRow}>
+          <Text style={styles.summaryCountText}>
+            Menampilkan{" "}
+            <Text style={styles.summaryCountNumber}>
+              {filteredProjects.length}
+            </Text>{" "}
+            proyek aktif
+          </Text>
+          {activeFilterCount > 0 && (
+            <TouchableOpacity
+              onPress={resetFilters}
+              style={styles.resetInlineBtn}
+              activeOpacity={0.7}
+            >
+              <RotateCcw size={10} color="#BE123C" />
+              <Text style={styles.resetInlineText}>Reset Filter</Text>
+            </TouchableOpacity>
           )}
-          {selectedBudgetRange !== "ALL" && (
-            <View style={styles.activeFilterPill}>
-              <Text style={styles.activeFilterPillText}>
-                {selectedBudgetRange === "UNDER_300K"
-                  ? "< Rp 300rb"
-                  : selectedBudgetRange === "300K_1M"
-                    ? "Rp 300rb - 1jt"
-                    : "> Rp 1jt"}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setSelectedBudgetRange("ALL")}
-                activeOpacity={0.7}
-              >
-                <X size={12} color={COLORS.brandIndigo} />
-              </TouchableOpacity>
-            </View>
-          )}
-          <TouchableOpacity
-            onPress={resetFilters}
-            style={styles.resetFilterTextBtn}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.resetFilterText}>Reset</Text>
-          </TouchableOpacity>
         </View>
-      )}
+      </View>
 
       {/* Error state */}
       {error && !loading && (
@@ -294,8 +320,18 @@ export function ProjectListScreen({ navigation, route }) {
         </ScrollView>
       ) : (
         <FlatList
+          ref={flatListRef}
           data={filteredProjects}
           keyExtractor={(item) => item.id}
+          onScroll={(e) => {
+            const offsetY = e.nativeEvent.contentOffset.y;
+            setShowScrollTop(offsetY > 360);
+          }}
+          scrollEventThrottle={16}
+          initialNumToRender={5}
+          maxToRenderPerBatch={6}
+          windowSize={5}
+          removeClippedSubviews={Platform.OS === "android"}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -336,6 +372,29 @@ export function ProjectListScreen({ navigation, route }) {
               </View>
             )
           }
+          ListFooterComponent={
+            filteredProjects.length > 0 ? (
+              <View style={styles.feedFooter}>
+                <View style={styles.feedFooterDivider} />
+                <View style={styles.feedFooterContent}>
+                  <CheckCircle2 size={15} color="#059669" />
+                  <Text style={styles.feedFooterText}>
+                    Semua {filteredProjects.length} proyek telah ditampilkan
+                  </Text>
+                  <TouchableOpacity
+                    onPress={scrollToTop}
+                    style={styles.feedFooterTopBtn}
+                    activeOpacity={0.7}
+                  >
+                    <ChevronUp size={13} color="#2563EB" />
+                    <Text style={styles.feedFooterTopBtnText}>
+                      Kembali ke Atas
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : null
+          }
           renderItem={({ item }) => (
             <View style={styles.projectCardWrapper}>
               <ProjectCard
@@ -350,6 +409,18 @@ export function ProjectListScreen({ navigation, route }) {
             </View>
           )}
         />
+      )}
+
+      {/* Floating Scroll to Top FAB */}
+      {showScrollTop && (
+        <TouchableOpacity
+          style={styles.floatingTopFab}
+          onPress={scrollToTop}
+          activeOpacity={0.88}
+        >
+          <ChevronUp size={16} color="#FFFFFF" strokeWidth={2.5} />
+          <Text style={styles.floatingTopFabText}>Atas</Text>
+        </TouchableOpacity>
       )}
 
       {/* Filter Bottom Sheet Modal */}
@@ -389,18 +460,53 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  // Promo Banner Section
-  bannerSection: {
-    paddingTop: 4,
-    paddingBottom: 6,
+  // 1. Horizontal Category Chips
+  categoryChipsContainer: {
+    paddingVertical: 6,
+  },
+  categoryChipsScroll: {
+    paddingHorizontal: 20,
+    gap: 8,
+    alignItems: "center",
+  },
+  categoryChipItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 100,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  categoryChipItemActive: {
+    backgroundColor: "#0F172A",
+    borderColor: "#0F172A",
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+  },
+  categoryChipText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    color: "#64748B",
+    fontWeight: "600",
+  },
+  categoryChipTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 
-  // Segmented Tabs Section
-  segmentedSection: {
+  // 2. Controls & Segmented Tabs
+  controlsSection: {
     paddingHorizontal: 20,
-    paddingTop: 2,
-    paddingBottom: 8,
-    backgroundColor: "transparent",
+    paddingTop: 4,
+    paddingBottom: 6,
   },
   segmentedContainer: {
     flexDirection: "row",
@@ -416,7 +522,7 @@ const styles = StyleSheet.create({
   },
   segmentedTabItem: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 7.5,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
@@ -431,7 +537,7 @@ const styles = StyleSheet.create({
   },
   segmentedTabText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 12.5,
+    fontSize: 12,
     color: COLORS.textMuted,
   },
   segmentedTabTextActive: {
@@ -440,55 +546,37 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // Active Filter Tag Bar
-  activeFilterBar: {
+  // Summary Row
+  summaryCountRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 6,
-    backgroundColor: "transparent",
-    gap: 8,
-    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: 8,
+    paddingHorizontal: 2,
   },
-  activeFilterLabel: {
+  summaryCountText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: "#64748B",
+  },
+  summaryCountNumber: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: "600",
+    color: "#0F172A",
+    fontWeight: "800",
   },
-  activeFilterPill: {
+  resetInlineBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    backgroundColor:
-      Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.90)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor:
-      Platform.OS === "android"
-        ? "rgba(226, 232, 240, 0.9)"
-        : "rgba(255, 255, 255, 0.95)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: Platform.OS === "android" ? 0 : 1,
+    gap: 4,
+    backgroundColor: "#FFF1F2",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
   },
-  activeFilterPillText: {
+  resetInlineText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.brandIndigo,
-    fontWeight: "600",
-  },
-  resetFilterTextBtn: {
-    marginLeft: "auto",
-  },
-  resetFilterText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 11,
-    color: COLORS.danger,
+    fontSize: 10.5,
+    color: "#BE123C",
     fontWeight: "700",
   },
 
@@ -531,10 +619,76 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
-    paddingBottom: 100,
+    paddingBottom: 110,
   },
   projectCardWrapper: {
     marginBottom: 10,
+  },
+
+  // Feed Footer
+  feedFooter: {
+    paddingVertical: 24,
+    alignItems: "center",
+  },
+  feedFooterDivider: {
+    height: 1,
+    width: "60%",
+    backgroundColor: "rgba(226, 232, 240, 0.8)",
+    marginBottom: 14,
+  },
+  feedFooterContent: {
+    alignItems: "center",
+    gap: 8,
+  },
+  feedFooterText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: "#94A3B8",
+    textAlign: "center",
+  },
+  feedFooterTopBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
+  },
+  feedFooterTopBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+
+  // Floating FAB
+  floatingTopFab: {
+    position: "absolute",
+    bottom: 24,
+    right: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#0F172A",
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 100,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+  },
+  floatingTopFabText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 
   // Empty State

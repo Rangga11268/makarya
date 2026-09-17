@@ -118,14 +118,10 @@ export function ProjectCard({ project, onPress }) {
 
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
       activeOpacity={0.88}
       onPress={onPress}
       style={[styles.card, isExpired && styles.cardExpired]}
     >
-      {/* 1. Header: Client Info & Status Accent */}
-      <View style={styles.headerRow}>
-        <View style={styles.clientGroup}>
       {/* 1. Cover Banner 16:9 Image with Overlays */}
       <View style={styles.bannerContainer}>
         <Image
@@ -213,28 +209,11 @@ export function ProjectCard({ project, onPress }) {
           ) : null}
         </View>
 
-        {isExpired ? (
-          <View style={styles.statusExpiredPill}>
-            <Text style={styles.statusExpiredText}>
-              {project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
-            </Text>
-          </View>
-        ) : project.match_score ? (
-          <View style={styles.matchBadge}>
-            <Check size={10} color="#059669" strokeWidth={2.5} />
-            <Text style={styles.matchBadgeText}>{project.match_score}%</Text>
-          </View>
-        ) : null}
-      </View>
         {/* Project Title */}
         <Text style={styles.title} numberOfLines={2}>
           {project.judul}
         </Text>
 
-      {/* 2. Project Title */}
-      <Text style={styles.title} numberOfLines={2}>
-        {project.judul}
-      </Text>
         {/* Spec Chips (Team/Individu, Escrow) */}
         <View style={styles.metadataRow}>
           {isTeam ? (
@@ -250,22 +229,11 @@ export function ProjectCard({ project, onPress }) {
             </View>
           )}
 
-      {/* 3. Metadata Inline Row (Category, Collab, Deadline as micro-chips) */}
-      <View style={styles.metadataRow}>
-        <View style={styles.categoryChip}>
-          <Text style={styles.categoryText}>
-            {getCategoryLabel(project.kategori)}
-          </Text>
           <View style={styles.escrowChip}>
             <Text style={styles.escrowChipText}>100% Escrow</Text>
           </View>
         </View>
 
-        {isTeam ? (
-          <View style={styles.teamChip}>
-            <Users size={11} color="#6D28D9" />
-            <Text style={styles.teamTagText}>
-              {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
         {/* Footer: Budget & Applicants */}
         <View style={styles.footerRow}>
           <View>
@@ -274,50 +242,13 @@ export function ProjectCard({ project, onPress }) {
               {formatCurrency(project.budget_max)}
             </Text>
           </View>
-        ) : (
-          <View style={styles.individuChip}>
-            <Text style={styles.metaSubtleText}>Individu</Text>
-          </View>
-        )}
 
-        {deadlineInfo ? (
-          <View
-            style={[
-              styles.deadlineChip,
-              deadlineInfo.isUrgent && styles.deadlineChipUrgent,
-            ]}
-          >
-            <Clock
-              size={11}
-              color={deadlineInfo.isUrgent ? "#E11D48" : COLORS.textMuted}
-            />
-            <Text
-              style={[
-                styles.deadlineText,
-                deadlineInfo.isUrgent && styles.deadlineTextUrgent,
-              ]}
-            >
-              {deadlineInfo.text}
           <View style={styles.footerRight}>
             <Text style={styles.applicantText}>
               {project.total_pelamar || 0} pelamar
             </Text>
             <ChevronRight size={14} color={COLORS.textMuted} />
           </View>
-        ) : null}
-      </View>
-
-      {/* 4. Footer: Budget & Applicants */}
-      <View style={styles.footerRow}>
-        <Text style={styles.budgetValue}>
-          {formatCurrency(project.budget_max)}
-        </Text>
-
-        <View style={styles.footerRight}>
-          <Text style={styles.applicantText}>
-            {project.total_pelamar || 0} pelamar
-          </Text>
-          <ChevronRight size={14} color={COLORS.textMuted} />
         </View>
       </View>
     </TouchableOpacity>
@@ -327,21 +258,12 @@ export function ProjectCard({ project, onPress }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 13,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(15, 23, 42, 0.08)",
-    marginBottom: 10,
     marginBottom: 14,
     overflow: "hidden",
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: Platform.OS === "android" ? 1 : 2,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -350,7 +272,6 @@ const styles = StyleSheet.create({
   cardExpired: {
     opacity: 0.75,
   },
-  headerRow: {
 
   // 1. Cover Banner
   bannerContainer: {
@@ -405,9 +326,6 @@ const styles = StyleSheet.create({
     right: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
-    gap: 8,
     gap: 3,
     backgroundColor: "rgba(255, 255, 255, 0.94)",
     paddingHorizontal: 7,
@@ -418,7 +336,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
-  clientGroup: {
   bannerMatchBadgeText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10,
@@ -431,7 +348,6 @@ const styles = StyleSheet.create({
     right: 10,
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
     gap: 3.5,
     backgroundColor: "rgba(15, 23, 42, 0.8)",
     paddingHorizontal: 7,
@@ -502,33 +418,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     fontSize: 10,
     color: "#CBD5E1",
-    marginHorizontal: 3,
     marginHorizontal: 2,
-  },
-  statusExpiredPill: {
-    backgroundColor: "#FFF1F2",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  statusExpiredText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 9.5,
-    color: "#E11D48",
-  },
-  matchBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 2.5,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 5,
-    paddingVertical: 1.5,
-    borderRadius: 5,
-  },
-  matchBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 9.5,
-    color: "#059669",
   },
   title: {
     fontFamily: FONTS.headingBold,
@@ -542,31 +432,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: 5,
     gap: 6,
     marginBottom: 12,
-  },
-  categoryChip: {
-    backgroundColor: "#EEF2FF",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#E0E7FF",
-  },
-  categoryText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
-    color: COLORS.brandIndigo,
   },
   teamChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
     backgroundColor: "#F5F3FF",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 5,
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
@@ -580,9 +453,6 @@ const styles = StyleSheet.create({
   },
   individuChip: {
     backgroundColor: "#F8FAFC",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 5,
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
@@ -594,49 +464,26 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     color: COLORS.textMuted,
   },
-  deadlineChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#F8FAFC",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 5,
   escrowChip: {
     backgroundColor: "#ECFDF5",
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     borderColor: "#D1FAE5",
   },
-  deadlineChipUrgent: {
-    backgroundColor: "#FFF1F2",
-    borderColor: "#FFE4E6",
-  },
-  deadlineText: {
-    fontFamily: FONTS.bodyRegular,
   escrowChipText: {
     fontFamily: FONTS.bodyBold,
     fontSize: 10.5,
-    color: COLORS.textMuted,
     color: "#059669",
     fontWeight: "700",
-  },
-  deadlineTextUrgent: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
-    color: "#E11D48",
   },
   footerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 9,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "rgba(15, 23, 42, 0.05)",
     borderTopColor: "rgba(15, 23, 42, 0.06)",
   },
   budgetLabel: {
@@ -647,13 +494,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   budgetValue: {
-    fontFamily: FONTS.headingBold,
-    fontSize: 14,
     fontFamily: FONTS.displayBold,
     fontSize: 15,
     color: COLORS.textDark,
-    letterSpacing: -0.2,
-    fontVariant: ["tabular-nums"],
     letterSpacing: -0.3,
     fontWeight: "800",
     marginTop: 1,
