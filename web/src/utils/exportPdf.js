@@ -22,6 +22,19 @@ export async function exportElementToPdf(
       backgroundColor: "#FFFFFF",
       logging: false,
       imageTimeout: 15000,
+      onclone: (clonedDoc) => {
+        const cert = clonedDoc.getElementById("makarya-official-certificate");
+        if (cert) {
+          cert.style.width = "1122px";
+          cert.style.height = "793px";
+          cert.style.minHeight = "793px";
+          cert.style.maxHeight = "793px";
+          cert.style.maxWidth = "none";
+          cert.style.borderRadius = "0px"; // Clean full-bleed edges for PDF
+          cert.style.boxShadow = "none";
+          cert.style.border = "none";
+        }
+      },
     });
 
     const imgData = canvas.toDataURL("image/png");
@@ -31,6 +44,7 @@ export async function exportElementToPdf(
       orientation: "landscape",
       unit: "mm",
       format: "a4",
+      compress: true,
     });
 
     const pdfWidth = pdf.internal.pageSize.getWidth(); // 297 mm
@@ -63,6 +77,10 @@ export async function exportElementToPdf(
       offsetY,
       printWidth,
       printHeight,
+      0,
+      0,
+      pdfWidth,
+      pdfHeight,
       undefined,
       "FAST",
     );
