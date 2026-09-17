@@ -468,18 +468,16 @@ export function ProjectExploreDetailView({
                 </View>
               </View>
 
-              {/* Apple-style Action Button */}
+              {/* Standard App PebbleButton */}
               {canApply ? (
-                <TouchableOpacity
-                  style={styles.appleCtaBtn}
+                <PebbleButton
+                  variant="sapphire"
+                  size="md"
+                  label={`Ajukan Lamaran (${formatCurrency(project.budget_max)})`}
+                  icon={Send}
                   onPress={handleApplyPress}
-                  activeOpacity={0.88}
-                >
-                  <Send size={15} color="#FFFFFF" />
-                  <Text style={styles.appleCtaText}>
-                    Ajukan Lamaran ({formatCurrency(project.budget_max)})
-                  </Text>
-                </TouchableOpacity>
+                  style={{ width: "100%", marginTop: 6 }}
+                />
               ) : myExistingProposal ? (
                 <View style={styles.appliedBannerPill}>
                   <CheckCircle2 size={16} color="#059669" />
@@ -674,7 +672,9 @@ export function ProjectExploreDetailView({
                 <Star size={17} color="#F59E0B" fill="#F59E0B" />
               </View>
               <Text style={styles.ratingHeroScore}>{ratingAvgScore}</Text>
-              <Text style={styles.ratingCountText}>({totalReviewsCount} Ulasan Talenta)</Text>
+              <Text style={styles.ratingCountText}>
+                ({totalReviewsCount} Ulasan Talenta)
+              </Text>
             </View>
 
             {/* Criteria Breakdown */}
@@ -1009,14 +1009,13 @@ export function ProjectExploreDetailView({
 
           <View style={styles.stickyActionCol}>
             {canApply ? (
-              <TouchableOpacity
-                style={styles.appleBottomCtaBtn}
+              <PebbleButton
+                variant="sapphire"
+                size="md"
+                label="Ajukan Lamaran"
+                icon={Send}
                 onPress={handleApplyPress}
-                activeOpacity={0.88}
-              >
-                <Send size={14} color="#FFFFFF" />
-                <Text style={styles.appleBottomCtaText}>Ajukan Lamaran</Text>
-              </TouchableOpacity>
+              />
             ) : myExistingProposal ? (
               <View style={styles.appliedPill}>
                 <CheckCircle2 size={13} color="#059669" />
@@ -1029,16 +1028,13 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
             ) : isUmkmOwner ? (
-              <TouchableOpacity
-                style={styles.appleBottomOwnerBtn}
+              <PebbleButton
+                variant="pearl"
+                size="sm"
+                label={`${proposals.length} Pelamar`}
+                icon={Users}
                 onPress={() => setActiveTab("proposals")}
-                activeOpacity={0.85}
-              >
-                <Users size={14} color="#0F172A" />
-                <Text style={styles.appleBottomOwnerText}>
-                  {proposals.length} Pelamar
-                </Text>
-              </TouchableOpacity>
+              />
             ) : null}
           </View>
         </View>
@@ -1347,30 +1343,6 @@ const styles = StyleSheet.create({
   specDivider: {
     height: 1,
     backgroundColor: "#F1F5F9",
-  },
-
-  /* Apple Style Primary CTA Button */
-  appleCtaBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "#0F172A",
-    paddingVertical: 13,
-    borderRadius: 14,
-    marginTop: 6,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  appleCtaText: {
-    fontSize: 14,
-    fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
-    fontWeight: "700",
-    letterSpacing: 0.2,
   },
   appliedBannerPill: {
     flexDirection: "row",
@@ -1981,45 +1953,6 @@ const styles = StyleSheet.create({
   },
   stickyActionCol: {
     flexShrink: 0,
-  },
-  appleBottomCtaBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 7,
-    backgroundColor: "#0F172A",
-    paddingVertical: 11,
-    paddingHorizontal: 18,
-    borderRadius: 14,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  appleBottomCtaText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-  appleBottomOwnerBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    backgroundColor: "#F1F5F9",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 14,
-  },
-  appleBottomOwnerText: {
-    fontSize: 12.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "700",
   },
   appliedPill: {
     flexDirection: "row",
