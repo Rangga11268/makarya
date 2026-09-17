@@ -618,7 +618,9 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.detailTextWrapper}>
                 <Text style={styles.detailLabel}>Tanda Tangan Sertifikat</Text>
                 <Text style={styles.detailValue}>
-                  {user?.url_ttd ? "Tersimpan & Aktif Resmi" : "Tanda Tangan Digital Otomatis"}
+                  {user?.url_ttd
+                    ? "Tersimpan & Aktif Resmi"
+                    : "Tanda Tangan Digital Otomatis"}
                 </Text>
               </View>
             </View>

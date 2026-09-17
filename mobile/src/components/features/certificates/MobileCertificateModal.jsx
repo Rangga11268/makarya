@@ -210,8 +210,6 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
               <View style={styles.signaturesSection}>
                 {/* Left: Mitra Signature */}
                 <View style={styles.signColumn}>
-                  <View style={styles.signVectorWrap}>
-                    <Text style={styles.signScriptText}>ttd digital</Text>
                   <View style={styles.signImageWrap}>
                     {certificate.client_signature_url ? (
                       <Image

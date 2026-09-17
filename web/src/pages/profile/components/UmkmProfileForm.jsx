@@ -6,7 +6,6 @@ import {
   KOTA_OPTIONS,
   BANK_OPTIONS,
 } from "../../../constants/formOptions";
-import { Building2, MapPin, Phone, CreditCard } from "lucide-react";
 import {
   Building2,
   MapPin,
@@ -189,8 +188,8 @@ export function UmkmProfileForm({ umkmData, setUmkmData, industriList }) {
                 Tanda Tangan Digital Resmi UMKM (Otorisasi Sertifikat)
               </h3>
               <p className="text-xs text-muted mt-0.5">
-                Tanda tangan ini akan otomatis disematkan pada sertifikat digital
-                setiap mahasiswa/talenta yang menyelesaikan proyek Anda.
+                Tanda tangan ini akan otomatis disematkan pada sertifikat
+                digital setiap mahasiswa/talenta yang menyelesaikan proyek Anda.
               </p>
             </div>
             {umkmData.url_ttd && (
