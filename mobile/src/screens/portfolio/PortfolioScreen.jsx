@@ -32,7 +32,7 @@ import {
   EyeOff,
   Building2,
   Share2,
-  Sparkles,
+  Briefcase,
   MessageSquare,
   FileCheck,
   Layers,
@@ -182,7 +182,7 @@ export function PortfolioScreen({ navigation }) {
           <View style={styles.heroCard}>
             <View style={styles.heroTopRow}>
               <View style={styles.heroBadge}>
-                <Sparkles size={13} color="#4338CA" />
+                <Award size={13} color="#4338CA" />
                 <Text style={styles.heroBadgeText}>
                   {isMahasiswa
                     ? "Kredensial Portofolio Resmi"
@@ -201,7 +201,10 @@ export function PortfolioScreen({ navigation }) {
             </View>
 
             <Text style={styles.heroTitle}>
-              {user?.nama_lengkap || user?.nama_usaha || user?.nama || "Talenta"}
+              {user?.nama_lengkap ||
+                user?.nama_usaha ||
+                user?.nama ||
+                "Talenta"}
             </Text>
             <Text style={styles.heroSubtitle}>
               {isMahasiswa
@@ -261,7 +264,9 @@ export function PortfolioScreen({ navigation }) {
             >
               <Award
                 size={14}
-                color={activeTab === "certs" ? COLORS.primary : COLORS.textMuted}
+                color={
+                  activeTab === "certs" ? COLORS.primary : COLORS.textMuted
+                }
               />
               <Text
                 style={[
@@ -333,8 +338,9 @@ export function PortfolioScreen({ navigation }) {
                       Belum Ada Sertifikat Terbit
                     </Text>
                     <Text style={styles.emptyDesc}>
-                      Selesaikan penugasan proyek pertama Anda bersama mitra UMKM
-                      untuk mendapatkan sertifikat resmi dan portofolio industri.
+                      Selesaikan penugasan proyek pertama Anda bersama mitra
+                      UMKM untuk mendapatkan sertifikat resmi dan portofolio
+                      industri.
                     </Text>
                     <TouchableOpacity
                       style={styles.emptyCta}
@@ -354,20 +360,21 @@ export function PortfolioScreen({ navigation }) {
 
                     return (
                       <View key={cert.id} style={styles.certCard}>
-                        {/* Header: Role Tag + Credential ID */}
+                        {/* Header: Role Tag on left, Honor on right */}
                         <View style={styles.certCardHeader}>
                           <View style={styles.roleTag}>
                             <Text style={styles.roleTagText} numberOfLines={1}>
                               {cert.role_name}
                             </Text>
                           </View>
-                          <Text
-                            style={styles.credIdText}
-                            numberOfLines={1}
-                            ellipsizeMode="middle"
-                          >
-                            {cert.credential_id}
-                          </Text>
+                          <View style={styles.honorPill}>
+                            <Coins size={12} color="#059669" />
+                            <Text style={styles.honorPillText} numberOfLines={1}>
+                              {formatCurrency(
+                                cert.honor_amount || cert.slot_budget || 0,
+                              )}
+                            </Text>
+                          </View>
                         </View>
 
                         {/* Title & Client */}
@@ -385,22 +392,15 @@ export function PortfolioScreen({ navigation }) {
                           </Text>
                         </View>
 
-                        {/* Honor & Project Meta Bar */}
-                        <View style={styles.honorBadgeBar}>
-                          <View style={styles.honorPill}>
-                            <Coins size={12} color="#059669" />
-                            <Text style={styles.honorPillText}>
-                              Honor:{" "}
-                              {formatCurrency(
-                                cert.honor_amount || cert.slot_budget || 0,
-                              )}
-                            </Text>
-                          </View>
-
+                        {/* Credential ID & Team Meta Bar */}
+                        <View style={styles.certMetaRow}>
+                          <Text style={styles.credIdText} numberOfLines={1}>
+                            No. Kredensial: {cert.credential_id}
+                          </Text>
                           {cert.collaboration_type === "TIM" && (
                             <View style={styles.teamTypePill}>
                               <Text style={styles.teamTypePillText}>
-                                Formasi Tim
+                                Tim
                               </Text>
                             </View>
                           )}
@@ -410,7 +410,9 @@ export function PortfolioScreen({ navigation }) {
                         {hasDeliverable && (
                           <TouchableOpacity
                             style={styles.deliverableLinkBtn}
-                            onPress={() => Linking.openURL(cert.deliverable_url)}
+                            onPress={() =>
+                              Linking.openURL(cert.deliverable_url)
+                            }
                             activeOpacity={0.7}
                           >
                             <ExternalLink size={12} color={COLORS.primary} />
@@ -476,41 +478,39 @@ export function PortfolioScreen({ navigation }) {
                     );
                   })
                 )
+              ) : /* UMKM: Riwayat Proyek */
+              myProjects.length === 0 ? (
+                <View style={styles.emptyCard}>
+                  <Text style={styles.emptyTitle}>
+                    Belum Ada Proyek Diterbitkan
+                  </Text>
+                  <Text style={styles.emptyDesc}>
+                    Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
+                    dengan talenta mahasiswa terpilih.
+                  </Text>
+                </View>
               ) : (
-                /* UMKM: Riwayat Proyek */
-                myProjects.length === 0 ? (
-                  <View style={styles.emptyCard}>
-                    <Text style={styles.emptyTitle}>
-                      Belum Ada Proyek Diterbitkan
-                    </Text>
-                    <Text style={styles.emptyDesc}>
-                      Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
-                      dengan talenta mahasiswa terpilih.
-                    </Text>
-                  </View>
-                ) : (
-                  myProjects.map((p) => (
-                    <View key={p.id} style={styles.certCard}>
-                      <View style={styles.certCardHeader}>
-                        <View style={styles.roleTag}>
-                          <Text style={styles.roleTagText}>{p.kategori}</Text>
-                        </View>
-                        <Text style={styles.credIdText}>
-                          {formatDate(p.created_at)}
+                myProjects.map((p) => (
+                  <View key={p.id} style={styles.certCard}>
+                    <View style={styles.certCardHeader}>
+                      <View style={styles.roleTag}>
+                        <Text style={styles.roleTagText}>{p.kategori}</Text>
+                      </View>
+                      <Text style={styles.credIdText}>
+                        {formatDate(p.created_at)}
+                      </Text>
+                    </View>
+                    <Text style={styles.certTitle}>{p.judul}</Text>
+                    <View style={styles.honorBadgeBar}>
+                      <View style={styles.honorPill}>
+                        <Coins size={12} color="#059669" />
+                        <Text style={styles.honorPillText}>
+                          Pagu: {formatCurrency(p.budget_max)}
                         </Text>
                       </View>
-                      <Text style={styles.certTitle}>{p.judul}</Text>
-                      <View style={styles.honorBadgeBar}>
-                        <View style={styles.honorPill}>
-                          <Coins size={12} color="#059669" />
-                          <Text style={styles.honorPillText}>
-                            Pagu: {formatCurrency(p.budget_max)}
-                          </Text>
-                        </View>
-                      </View>
                     </View>
-                  ))
-                )
+                  </View>
+                ))
               )}
             </View>
           ) : (
@@ -541,7 +541,10 @@ export function PortfolioScreen({ navigation }) {
                         <Text style={styles.reviewerName} numberOfLines={1}>
                           {r.reviewer_name || "Mitra Klien UMKM"}
                         </Text>
-                        <Text style={styles.reviewProjectName} numberOfLines={1}>
+                        <Text
+                          style={styles.reviewProjectName}
+                          numberOfLines={1}
+                        >
                           {r.project_title || "Proyek Kolaborasi Makarya"}
                         </Text>
                       </View>
@@ -788,12 +791,18 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.displayBold,
     color: COLORS.primary,
   },
+  certMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+    marginTop: 2,
+  },
   credIdText: {
     fontSize: 10,
     fontFamily: FONTS.mono,
     color: COLORS.textMuted,
-    maxWidth: "38%",
-    textAlign: "right",
+    flex: 1,
   },
   certTitle: {
     fontSize: 14,

@@ -62,7 +62,8 @@ import {
   Award,
   Eye,
   EyeOff,
-  Sparkles,
+  Briefcase,
+  Layers,
 } from "lucide-react-native";
 
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
@@ -179,13 +180,13 @@ export function ProfileScreen({ navigation }) {
         is_showcase: updatedStatus,
       });
       setCertificates((prev) =>
-        prev.map((c) => (c.id === cert.id ? res.data : c))
+        prev.map((c) => (c.id === cert.id ? res.data : c)),
       );
       showToast(
         updatedStatus
           ? "Sertifikat kini tampil di portofolio publik"
           : "Sertifikat disembunyikan dari publik",
-        "success"
+        "success",
       );
     } catch (err) {
       showToast("Gagal memperbarui status showcase", "danger");
@@ -741,9 +742,18 @@ export function ProfileScreen({ navigation }) {
         {isMahasiswa && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  flex: 1,
+                }}
+              >
                 <Award size={16} color={COLORS.primary} />
-                <Text style={styles.sectionTitle} numberOfLines={1}>Sertifikat & Portofolio</Text>
+                <Text style={styles.sectionTitle} numberOfLines={1}>
+                  Sertifikat & Portofolio
+                </Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Portfolio")}
@@ -763,14 +773,17 @@ export function ProfileScreen({ navigation }) {
               <View style={styles.certEmptyBox}>
                 <Award size={24} color={COLORS.textSecondary} />
                 <Text style={styles.certEmptyText}>
-                  Belum ada sertifikat proyek selesai. Selesaikan proyek pertama Anda untuk mendapatkan sertifikat digital resmi.
+                  Belum ada sertifikat proyek selesai. Selesaikan proyek pertama
+                  Anda untuk mendapatkan sertifikat digital resmi.
                 </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Portfolio")}
                   style={styles.openEmptyPortfolioBtn}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.openEmptyPortfolioText}>Buka Halaman Portofolio</Text>
+                  <Text style={styles.openEmptyPortfolioText}>
+                    Buka Halaman Portofolio
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -778,30 +791,34 @@ export function ProfileScreen({ navigation }) {
                 {certificates.slice(0, 3).map((cert) => (
                   <View key={cert.id} style={styles.certItemCard}>
                     <View style={styles.certItemHeader}>
-                      <View style={styles.certTagsLeft}>
-                        <View style={styles.certRoleTag}>
-                          <Text style={styles.certRoleTagText} numberOfLines={1}>
-                            {cert.role_name}
+                      <View style={styles.certRoleTag}>
+                        <Text
+                          style={styles.certRoleTagText}
+                          numberOfLines={1}
+                        >
+                          {cert.role_name}
+                        </Text>
+                      </View>
+                      {cert.honor_amount || cert.slot_budget ? (
+                        <View style={styles.certHonorTag}>
+                          <Text
+                            style={styles.certHonorTagText}
+                            numberOfLines={1}
+                          >
+                            {formatCurrency(
+                              cert.honor_amount || cert.slot_budget,
+                            )}
                           </Text>
                         </View>
-                        {(cert.honor_amount || cert.slot_budget) ? (
-                          <View style={styles.certHonorTag}>
-                            <Text style={styles.certHonorTagText} numberOfLines={1}>
-                              {formatCurrency(cert.honor_amount || cert.slot_budget)}
-                            </Text>
-                          </View>
-                        ) : null}
-                      </View>
-                      <Text style={styles.certCredText} numberOfLines={1} ellipsizeMode="middle">
-                        {cert.credential_id}
-                      </Text>
+                      ) : null}
                     </View>
 
                     <Text style={styles.certProjectTitle} numberOfLines={2}>
                       {cert.project_title}
                     </Text>
                     <Text style={styles.certClientText} numberOfLines={1}>
-                      Mitra UMKM: <Text style={styles.boldText}>{cert.client_name}</Text>
+                      Mitra UMKM:{" "}
+                      <Text style={styles.boldText}>{cert.client_name}</Text>
                     </Text>
 
                     <View style={styles.certBottomRow}>
@@ -809,19 +826,25 @@ export function ProfileScreen({ navigation }) {
                         onPress={() => handleToggleCertShowcase(cert)}
                         style={[
                           styles.toggleShowcaseBtn,
-                          cert.is_showcase ? styles.showcaseActive : styles.showcaseInactive,
+                          cert.is_showcase
+                            ? styles.showcaseActive
+                            : styles.showcaseInactive,
                         ]}
                         activeOpacity={0.8}
                       >
                         {cert.is_showcase ? (
                           <>
                             <Eye size={12} color={COLORS.success} />
-                            <Text style={styles.showcaseActiveText}>Tampil Publik</Text>
+                            <Text style={styles.showcaseActiveText}>
+                              Tampil Publik
+                            </Text>
                           </>
                         ) : (
                           <>
                             <EyeOff size={12} color={COLORS.textSecondary} />
-                            <Text style={styles.showcaseInactiveText}>Disembunyikan</Text>
+                            <Text style={styles.showcaseInactiveText}>
+                              Disembunyikan
+                            </Text>
                           </>
                         )}
                       </TouchableOpacity>
@@ -835,7 +858,9 @@ export function ProfileScreen({ navigation }) {
                         activeOpacity={0.8}
                       >
                         <Award size={12} color="#FFF" />
-                        <Text style={styles.viewCertBtnText}>Lihat Sertifikat</Text>
+                        <Text style={styles.viewCertBtnText}>
+                          Lihat Sertifikat
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -848,14 +873,15 @@ export function ProfileScreen({ navigation }) {
                   activeOpacity={0.85}
                 >
                   <View style={styles.portfolioBannerIconWrap}>
-                    <Sparkles size={16} color={COLORS.brandIndigo} />
+                    <Briefcase size={16} color={COLORS.brandIndigo} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.portfolioBannerTitle}>
                       Lihat Portofolio Digital & Ulasan Lengkap
                     </Text>
                     <Text style={styles.portfolioBannerSubtitle}>
-                      Kelola deliverable karya, ulasan klien & bagikan portofolio resmi
+                      Kelola deliverable karya, ulasan klien & bagikan
+                      portofolio resmi
                     </Text>
                   </View>
                   <ChevronRight size={16} color={COLORS.brandIndigo} />
@@ -1524,48 +1550,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8,
-  },
-  certTagsLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    flexShrink: 1,
   },
   certRoleTag: {
-    backgroundColor: "rgba(79, 70, 229, 0.1)",
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
+    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 6,
+    maxWidth: "60%",
   },
   certRoleTagText: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
     color: COLORS.primary,
     fontWeight: "700",
   },
   certHonorTag: {
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "rgba(16, 185, 129, 0.25)",
   },
   certHonorTagText: {
-    fontSize: 9.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: COLORS.success,
     fontWeight: "700",
-  },
-  certCredText: {
-    fontSize: 9.5,
-    fontFamily: FONTS.mono || FONTS.bodyRegular,
-    color: COLORS.textMuted,
-    fontWeight: "700",
-    maxWidth: 120,
-    flexShrink: 0,
-    textAlign: "right",
   },
   certProjectTitle: {
     fontSize: 12.5,
