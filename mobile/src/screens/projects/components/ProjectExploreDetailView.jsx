@@ -27,7 +27,6 @@ import {
   Users,
   Send,
   Clock,
-  MapPin,
   Briefcase,
   Coins,
   Check,
@@ -36,7 +35,6 @@ import {
   Sparkles,
   Award,
   Layers,
-  CheckCheck,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -322,42 +320,40 @@ export function ProjectExploreDetailView({
           {/* 2. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
           {/* ================================================================= */}
           {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
-            <View style={styles.aiMatchCard}>
-              <View style={styles.aiMatchHeader}>
-                <View style={styles.aiMatchTitleRow}>
-                  <Sparkles size={16} color="#7C3AED" />
-                  <Text style={styles.aiMatchTitle}>Kecocokan Profil Anda</Text>
-                </View>
+            <View style={styles.sectionCard}>
+              <View style={styles.sectionHeaderRow}>
+                <Sparkles size={16} color="#2563EB" />
+                <Text style={styles.sectionTitle}>Kecocokan Profil Anda</Text>
                 <View style={styles.aiScoreBadge}>
                   <Text style={styles.aiScoreText}>{matchScore || 85}% Cocok</Text>
                 </View>
               </View>
 
               <Text style={styles.aiMatchDesc}>
-                Sistem AI Makarya menganalisis bahwa profil dan rekam jejak Anda
-                sangat relevan dengan kriteria proyek ini:
+                Sistem analisis Makarya mencocokkan profil dan bidang keahlian Anda
+                dengan spesifikasi proyek ini:
               </Text>
 
               <View style={styles.aiReasonsList}>
                 {matchReasons.length > 0 ? (
                   matchReasons.map((reason, idx) => (
                     <View key={idx} style={styles.aiReasonItem}>
-                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
                       <Text style={styles.aiReasonText}>{reason}</Text>
                     </View>
                   ))
                 ) : (
                   <>
                     <View style={styles.aiReasonItem}>
-                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
                       <Text style={styles.aiReasonText}>
-                        Keahlian dan bidang program studi Anda selaras dengan kebutuhan proyek.
+                        Keahlian dan program studi Anda relevan dengan lingkup proyek ini.
                       </Text>
                     </View>
                     <View style={styles.aiReasonItem}>
-                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
                       <Text style={styles.aiReasonText}>
-                        Peluang besar terpilih sebagai mitra talenta digital klien UMKM ini.
+                        Peluang optimal diterima sebagai mitra talenta digital UMKM.
                       </Text>
                     </View>
                   </>
@@ -371,7 +367,7 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
-              <Layers size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Layers size={16} color="#2563EB" />
               <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
             </View>
             <Text style={styles.sectionSubtitle}>
@@ -393,7 +389,7 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
-              <FileText size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <FileText size={16} color="#2563EB" />
               <Text style={styles.sectionTitle}>
                 Deskripsi & Lingkup Pengerjaan
               </Text>
@@ -460,7 +456,7 @@ export function ProjectExploreDetailView({
           {isTeam && slots.length > 0 && (
             <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
-                <Users size={16} color={COLORS.brandIndigo || "#2563EB"} />
+                <Users size={16} color="#2563EB" />
                 <Text style={styles.sectionTitle}>
                   Formasi Peran Tim ({slots.length} Posisi)
                 </Text>
@@ -531,7 +527,7 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
-              <Building2 size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Building2 size={16} color="#2563EB" />
               <Text style={styles.sectionTitle}>Tentang Klien UMKM</Text>
             </View>
 
@@ -546,7 +542,7 @@ export function ProjectExploreDetailView({
                 <View style={styles.clientAvatarFallback}>
                   <Building2
                     size={20}
-                    color={COLORS.brandIndigo || "#2563EB"}
+                    color="#2563EB"
                   />
                 </View>
               )}
@@ -600,17 +596,17 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           {/* 7. TALENT BENEFITS & VERIFIED CERTIFICATION                       */}
           {/* ================================================================= */}
-          <View style={styles.benefitsCard}>
-            <View style={styles.benefitHeaderRow}>
-              <Award size={16} color="#D97706" />
-              <Text style={styles.benefitHeaderTitle}>
-                Keuntungan & Garansi Mahasiswa
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <Award size={16} color="#2563EB" />
+              <Text style={styles.sectionTitle}>
+                Jaminan & Keuntungan Mahasiswa
               </Text>
             </View>
 
             <View style={styles.benefitItemsWrap}>
               <View style={styles.benefitItem}>
-                <View style={styles.benefitIconBox}>
+                <View style={styles.benefitIconBoxEmerald}>
                   <ShieldCheck size={15} color="#059669" />
                 </View>
                 <View style={styles.benefitTextBox}>
@@ -622,8 +618,8 @@ export function ProjectExploreDetailView({
               </View>
 
               <View style={styles.benefitItem}>
-                <View style={styles.benefitIconBox}>
-                  <Award size={15} color="#D97706" />
+                <View style={styles.benefitIconBoxBlue}>
+                  <Award size={15} color="#2563EB" />
                 </View>
                 <View style={styles.benefitTextBox}>
                   <Text style={styles.benefitItemTitle}>E-Sertifikat Digital Resmi</Text>
@@ -1138,47 +1134,23 @@ const styles = StyleSheet.create({
   },
 
   /* 2. AI Match Card */
-  aiMatchCard: {
-    backgroundColor: "#FAF5FF",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#E9D5FF",
-    padding: 16,
-    marginBottom: 14,
-    gap: 10,
-  },
-  aiMatchHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  aiMatchTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  aiMatchTitle: {
-    fontSize: 13.5,
-    fontFamily: FONTS.displayBold,
-    color: "#6B21A8",
-    fontWeight: "700",
-  },
   aiScoreBadge: {
-    backgroundColor: "#7C3AED",
+    backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
+    marginLeft: "auto",
   },
   aiScoreText: {
     fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
+    color: "#2563EB",
     fontWeight: "800",
   },
   aiMatchDesc: {
     fontSize: 11.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#581C87",
+    color: "#475569",
     lineHeight: 17,
   },
   aiReasonsList: {
@@ -1194,7 +1166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#6B21A8",
+    color: "#334155",
     lineHeight: 16,
   },
 
@@ -1461,26 +1433,6 @@ const styles = StyleSheet.create({
   },
 
   /* 7. Benefits Card */
-  benefitsCard: {
-    backgroundColor: "#FFFBEB",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#FDE68A",
-    padding: 16,
-    marginBottom: 14,
-    gap: 12,
-  },
-  benefitHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  benefitHeaderTitle: {
-    fontSize: 13.5,
-    fontFamily: FONTS.displayBold,
-    color: "#92400E",
-    fontWeight: "700",
-  },
   benefitItemsWrap: {
     gap: 10,
   },
@@ -1489,29 +1441,39 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: 10,
   },
-  benefitIconBox: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
-    backgroundColor: "#FFFFFF",
+  benefitIconBoxEmerald: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: "#ECFDF5",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#FDE68A",
+    borderColor: "#DCFCE7",
+  },
+  benefitIconBoxBlue: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
   },
   benefitTextBox: {
     flex: 1,
   },
   benefitItemTitle: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
-    color: "#78350F",
+    color: "#0F172A",
     fontWeight: "700",
   },
   benefitItemDesc: {
     fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#92400E",
+    color: "#475569",
     lineHeight: 16,
     marginTop: 2,
   },
