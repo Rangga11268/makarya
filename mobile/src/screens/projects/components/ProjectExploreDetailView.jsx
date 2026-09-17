@@ -13,7 +13,11 @@ import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { ProposalCard } from "../../../components/features/ProposalCard";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { formatDate, daysRemaining, isExpired } from "../../../utils/formatDate";
+import {
+  formatDate,
+  daysRemaining,
+  isExpired,
+} from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
 import {
   ShieldCheck,
@@ -361,9 +365,7 @@ export function ProjectExploreDetailView({
 
                 <Text style={styles.sellerSubText} numberOfLines={1}>
                   {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} •{" "}
-                  {project.lokasi ||
-                    project.umkm_profile?.kota ||
-                    "Indonesia"}
+                  {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
                 </Text>
               </View>
             </View>
@@ -471,7 +473,9 @@ export function ProjectExploreDetailView({
                 ]}
                 numberOfLines={1}
               >
-                {daysLeft > 0 ? `${daysLeft} Hari Lagi` : formatDate(project.deadline)}
+                {daysLeft > 0
+                  ? `${daysLeft} Hari Lagi`
+                  : formatDate(project.deadline)}
               </Text>
             </View>
 
@@ -504,7 +508,8 @@ export function ProjectExploreDetailView({
                     Obrolan Langsung & Arahan Klien
                   </Text>
                   <Text style={styles.deliverableDesc}>
-                    Koordinasi real-time dengan mitra UMKM melalui ruang kerja digital terenkripsi.
+                    Koordinasi real-time dengan mitra UMKM melalui ruang kerja
+                    digital terenkripsi.
                   </Text>
                 </View>
               </View>
@@ -518,7 +523,8 @@ export function ProjectExploreDetailView({
                     Aset Mentah & Berkas Sumber
                   </Text>
                   <Text style={styles.deliverableDesc}>
-                    Pengiriman aset mentah (source files) rapi & siap pakai sesuai kebutuhan brief.
+                    Pengiriman aset mentah (source files) rapi & siap pakai
+                    sesuai kebutuhan brief.
                   </Text>
                 </View>
               </View>
@@ -532,7 +538,8 @@ export function ProjectExploreDetailView({
                     E-Sertifikat Portofolio Resmi (SKPI)
                   </Text>
                   <Text style={styles.deliverableDesc}>
-                    Sertifikat resmi ber-QR otomatis diterbitkan setelah deliverable disetujui klien.
+                    Sertifikat resmi ber-QR otomatis diterbitkan setelah
+                    deliverable disetujui klien.
                   </Text>
                 </View>
               </View>
@@ -546,7 +553,8 @@ export function ProjectExploreDetailView({
                     Garansi Pencairan Escrow 100%
                   </Text>
                   <Text style={styles.deliverableDesc}>
-                    Dana honor aman di escrow dan dicairkan 0% potongan komisi ke rekening Anda.
+                    Dana honor aman di escrow dan dicairkan 0% potongan komisi
+                    ke rekening Anda.
                   </Text>
                 </View>
               </View>
@@ -559,7 +567,9 @@ export function ProjectExploreDetailView({
           {isTeam && slots.length > 0 && (
             <View style={styles.sectionBox}>
               <View style={styles.sectionHeaderRow}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                >
                   <Users size={16} color={COLORS.brandIndigo} />
                   <Text style={styles.sectionTitle}>
                     Formasi Tim ({slots.length} Posisi)
@@ -576,9 +586,12 @@ export function ProjectExploreDetailView({
                     <View key={s.id || idx} style={styles.slotCardItem}>
                       <View style={styles.slotHeaderRow}>
                         <View style={{ flex: 1, paddingRight: 8 }}>
-                          <Text style={styles.slotItemTitle}>{s.nama_peran}</Text>
+                          <Text style={styles.slotItemTitle}>
+                            {s.nama_peran}
+                          </Text>
                           <Text style={styles.slotItemBudget}>
-                            Alokasi Honor: {formatCurrency(s.alokasi_budget || budgetMax)}
+                            Alokasi Honor:{" "}
+                            {formatCurrency(s.alokasi_budget || budgetMax)}
                           </Text>
                         </View>
 
@@ -602,7 +615,11 @@ export function ProjectExploreDetailView({
                                   : styles.slotBadgeTextFilled,
                             ]}
                           >
-                            {isSlotOpen ? "Terbuka" : isSlotDone ? "Selesai" : "Terisi"}
+                            {isSlotOpen
+                              ? "Terbuka"
+                              : isSlotDone
+                                ? "Selesai"
+                                : "Terisi"}
                           </Text>
                         </View>
                       </View>
@@ -625,17 +642,22 @@ export function ProjectExploreDetailView({
           {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
             <View style={styles.sectionBox}>
               <View style={styles.sectionHeaderRow}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                >
                   <Sparkles size={16} color={COLORS.brandIndigo} />
                   <Text style={styles.sectionTitle}>Kecocokan Profil Anda</Text>
                 </View>
                 <View style={styles.matchScorePill}>
-                  <Text style={styles.matchScoreText}>{matchScore || 85}% Cocok</Text>
+                  <Text style={styles.matchScoreText}>
+                    {matchScore || 85}% Cocok
+                  </Text>
                 </View>
               </View>
 
               <Text style={styles.matchIntroText}>
-                Sistem AI Makarya mendeteksi keahlian dan riwayat portofolio Anda sangat relevan dengan kebutuhan proyek ini:
+                Sistem AI Makarya mendeteksi keahlian dan riwayat portofolio
+                Anda sangat relevan dengan kebutuhan proyek ini:
               </Text>
 
               <View style={styles.bulletList}>
@@ -659,7 +681,8 @@ export function ProjectExploreDetailView({
                         style={{ marginTop: 2 }}
                       />
                       <Text style={styles.bulletText}>
-                        Keahlian dan bidang studi Anda relevan dengan kebutuhan proyek.
+                        Keahlian dan bidang studi Anda relevan dengan kebutuhan
+                        proyek.
                       </Text>
                     </View>
                     <View style={styles.bulletItem}>
@@ -669,7 +692,8 @@ export function ProjectExploreDetailView({
                         style={{ marginTop: 2 }}
                       />
                       <Text style={styles.bulletText}>
-                        Peluang tinggi untuk diterima dan mendapatkan portofolio terverifikasi.
+                        Peluang tinggi untuk diterima dan mendapatkan portofolio
+                        terverifikasi.
                       </Text>
                     </View>
                   </>
@@ -683,9 +707,13 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+              >
                 <Layers size={16} color={COLORS.textDark} />
-                <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
+                <Text style={styles.sectionTitle}>
+                  Keahlian yang Dibutuhkan
+                </Text>
               </View>
             </View>
 
@@ -704,11 +732,17 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+              >
                 <Star size={16} color="#F59E0B" fill="#F59E0B" />
-                <Text style={styles.sectionTitle}>Rating & Ulasan Kemitraan</Text>
+                <Text style={styles.sectionTitle}>
+                  Rating & Ulasan Kemitraan
+                </Text>
               </View>
-              <Text style={styles.reviewVerifiedBadge}>Terverifikasi Resmi</Text>
+              <Text style={styles.reviewVerifiedBadge}>
+                Terverifikasi Resmi
+              </Text>
             </View>
 
             {/* Big Score Hero Card */}
@@ -727,26 +761,38 @@ export function ProjectExploreDetailView({
 
               <View style={styles.criteriaBox}>
                 <View style={styles.criteriaRow}>
-                  <Text style={styles.criteriaLabel}>Kelancaran Komunikasi:</Text>
+                  <Text style={styles.criteriaLabel}>
+                    Kelancaran Komunikasi:
+                  </Text>
                   <View style={styles.criteriaScorePill}>
                     <Star size={10} color="#F59E0B" fill="#F59E0B" />
-                    <Text style={styles.criteriaScoreVal}>{ratingAvgScore}</Text>
+                    <Text style={styles.criteriaScoreVal}>
+                      {ratingAvgScore}
+                    </Text>
                   </View>
                 </View>
 
                 <View style={styles.criteriaRow}>
-                  <Text style={styles.criteriaLabel}>Kualitas Brief & Tugas:</Text>
+                  <Text style={styles.criteriaLabel}>
+                    Kualitas Brief & Tugas:
+                  </Text>
                   <View style={styles.criteriaScorePill}>
                     <Star size={10} color="#F59E0B" fill="#F59E0B" />
-                    <Text style={styles.criteriaScoreVal}>{ratingAvgScore}</Text>
+                    <Text style={styles.criteriaScoreVal}>
+                      {ratingAvgScore}
+                    </Text>
                   </View>
                 </View>
 
                 <View style={styles.criteriaRow}>
-                  <Text style={styles.criteriaLabel}>Ketepatan Pencairan Escrow:</Text>
+                  <Text style={styles.criteriaLabel}>
+                    Ketepatan Pencairan Escrow:
+                  </Text>
                   <View style={styles.criteriaScorePillEmerald}>
                     <ShieldCheck size={10} color={COLORS.success} />
-                    <Text style={styles.criteriaScoreValEmerald}>100% Aman</Text>
+                    <Text style={styles.criteriaScoreValEmerald}>
+                      100% Aman
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -926,7 +972,8 @@ export function ProjectExploreDetailView({
                     <View style={styles.emptyBox}>
                       <FileCheck size={28} color="#94A3B8" />
                       <Text style={styles.emptyText}>
-                        Mahasiswa belum mengirimkan berkas deliverable pengerjaan.
+                        Mahasiswa belum mengirimkan berkas deliverable
+                        pengerjaan.
                       </Text>
                     </View>
                   ) : (

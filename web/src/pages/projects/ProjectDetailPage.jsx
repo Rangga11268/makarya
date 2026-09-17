@@ -166,11 +166,11 @@ export function ProjectDetailPage() {
         setLoading(false);
         return;
       }
-      const [res, ratingsRes] = await Promise.all([
+      const [projRes, ratingsRes] = await Promise.all([
         projectApi.getDetail(projectId),
         ratingApi.getByProject(projectId).catch(() => ({ data: [] })),
       ]);
-      const proj = res.data;
+      const proj = projRes.data;
       setProject(proj);
       const revs = Array.isArray(ratingsRes.data) ? ratingsRes.data : [];
       setProjectReviews(revs);
@@ -764,6 +764,7 @@ export function ProjectDetailPage() {
                   Rating & Ulasan Kemitraan ({projectReviews.length} Ulasan)
                 </h3>
                 <p className="text-xs text-muted mt-0.5">
+                  Reputasi transparan dari talenta mahasiswa dan mitra UMKM yang telah berkolaborasi.
                   Reputasi transparan dari talenta mahasiswa dan mitra UMKM yang
                   telah berkolaborasi.
                 </p>
@@ -791,6 +792,7 @@ export function ProjectDetailPage() {
                 <div className="flex items-center gap-1.5 text-2xl font-black text-dark-900">
                   <Star className="w-6 h-6 fill-amber-400 text-amber-500" />
                   <span>
+                    {project.rating_avg ? Number(project.rating_avg).toFixed(1) : "5.0"}
                     {project.rating_avg
                       ? Number(project.rating_avg).toFixed(1)
                       : "5.0"}
@@ -803,6 +805,7 @@ export function ProjectDetailPage() {
 
               <div className="sm:col-span-2 p-4 bg-canvas rounded-2xl border border-border space-y-2 text-xs">
                 <div className="flex items-center justify-between">
+                  <span className="text-muted">Kelancaran Komunikasi Mitra:</span>
                   <span className="text-muted">
                     Kelancaran Komunikasi Mitra:
                   </span>
@@ -811,6 +814,7 @@ export function ProjectDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-muted">Kualitas Deliverables & Brief:</span>
                   <span className="text-muted">
                     Kualitas Deliverables & Brief:
                   </span>
@@ -819,10 +823,12 @@ export function ProjectDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-muted">Ketepatan Pencairan Escrow:</span>
                   <span className="text-muted">
                     Ketepatan Pencairan Escrow:
                   </span>
                   <span className="font-bold text-emerald-600 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" /> 100% Aman
                     <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" />{" "}
                     100% Aman
                   </span>
@@ -839,6 +845,7 @@ export function ProjectDetailPage() {
               {projectReviews.length === 0 ? (
                 <div className="p-6 text-center bg-canvas rounded-2xl border border-border space-y-1">
                   <p className="text-xs text-muted font-medium">
+                    Belum ada ulasan untuk proyek ini. Ulasan akan otomatis tampil setelah hasil kerja selesai & disetujui.
                     Belum ada ulasan untuk proyek ini. Ulasan akan otomatis
                     tampil setelah hasil kerja selesai & disetujui.
                   </p>
@@ -860,6 +867,7 @@ export function ProjectDetailPage() {
                               {rev.dari_nama || "Pengguna Terverifikasi"}
                             </span>
                             <span className="text-[10px] text-muted">
+                              {rev.created_at ? formatDate(rev.created_at) : "Baru saja"}
                               {rev.created_at
                                 ? formatDate(rev.created_at)
                                 : "Baru saja"}
@@ -869,6 +877,7 @@ export function ProjectDetailPage() {
 
                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs">
                           <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                          <span>{rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}</span>
                           <span>
                             {rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}
                           </span>
