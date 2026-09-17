@@ -199,47 +199,7 @@ export function ProjectListScreen({ navigation, route }) {
         />
       </View>
 
-      {/* 1. Quick Category Chips Scroll (Forensic Discovery Bar) */}
-      <View style={styles.categoryChipsContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryChipsScroll}
-        >
-          {CATEGORIES.map((cat) => {
-            const isSelected = categoryFilter === cat.id;
-            const IconComponent = cat.Icon;
-            return (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => setCategoryFilter(cat.id)}
-                style={[
-                  styles.categoryChipItem,
-                  isSelected && styles.categoryChipItemActive,
-                ]}
-                activeOpacity={0.75}
-              >
-                {IconComponent ? (
-                  <IconComponent
-                    size={12.5}
-                    color={isSelected ? "#FFFFFF" : "#64748B"}
-                  />
-                ) : null}
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    isSelected && styles.categoryChipTextActive,
-                  ]}
-                >
-                  {cat.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* 2. Controls & Segmented Tabs Row */}
+      {/* Controls & Segmented Tabs Row */}
       <View style={[styles.controlsSection, responsiveContainerStyle]}>
         {/* Segmented Tabs */}
         <View style={styles.segmentedContainer}>
@@ -460,49 +420,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
 
-  // 1. Horizontal Category Chips
-  categoryChipsContainer: {
-    paddingVertical: 6,
-  },
-  categoryChipsScroll: {
-    paddingHorizontal: 20,
-    gap: 8,
-    alignItems: "center",
-  },
-  categoryChipItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 100,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.9)",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  categoryChipItemActive: {
-    backgroundColor: "#0F172A",
-    borderColor: "#0F172A",
-    shadowOpacity: 0.12,
-    shadowRadius: 5,
-  },
-  categoryChipText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 12,
-    color: "#64748B",
-    fontWeight: "600",
-  },
-  categoryChipTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-
-  // 2. Controls & Segmented Tabs
+  // Controls & Segmented Tabs
   controlsSection: {
     paddingHorizontal: 20,
     paddingTop: 4,
