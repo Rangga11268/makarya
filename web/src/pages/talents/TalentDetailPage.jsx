@@ -52,7 +52,6 @@ export function TalentDetailPage() {
   const [selectedCert, setSelectedCert] = useState(null);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
-  // UMKM project selection states
   const isUmkm = isAuthenticated && user?.role?.toUpperCase() === "UMKM";
   const [myProjects, setMyProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
@@ -252,24 +251,6 @@ export function TalentDetailPage() {
         </button>
       </div>
 
-      {/* Main Profile Header Card */}
-      <div className="bg-surface rounded-2xl border border-border p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          {/* Avatar */}
-          {talent.url_foto ? (
-            <img
-              src={talent.url_foto}
-              alt={talent.nama_lengkap}
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shrink-0 shadow-sm border border-border"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shrink-0 shadow-sm">
-              {initial}
-            </div>
-          )}
       {/* Main Profile Header Card with Cover Banner */}
       <div className="bg-surface rounded-2xl border border-border shadow-xs overflow-hidden">
         {/* Cover Banner */}
@@ -303,99 +284,102 @@ export function TalentDetailPage() {
               </div>
             )}
 
-          {/* Identity Info */}
-          <div className="flex-1 text-center sm:text-left space-y-3 min-w-0">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-bold text-dark-900">
-                {talent.nama_lengkap}
-              </h1>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />{" "}
-                Terverifikasi Kampus
+            {/* Identity Info */}
+            <div className="flex-1 text-center sm:text-left space-y-3 min-w-0">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-bold text-dark-900">
+                  {talent.nama_lengkap}
+                </h1>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />{" "}
+                  Terverifikasi Kampus
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1.5 text-xs text-slate-600">
+                <span className="flex items-center gap-1 font-medium">
+                  <ProdiVectorIcon
+                    size={14}
+                    className="text-brand-indigo shrink-0"
+                  />
+                  <span>{talent.prodi || "Belum Memilih Prodi"}</span>
+                </span>
+                <span className="text-slate-300 font-light">/</span>
+                <span className="flex items-center gap-1">
+                  <CampusVectorIcon
+                    size={14}
+                    className="text-amber-500 shrink-0"
+                  />
+                  <span>
+                    {talent.universitas ||
+                      "Universitas Bina Sarana Informatika"}
+                  </span>
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                {talent.nim && (
+                  <span className="text-xs font-mono text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                    NIM {talent.nim}
+                  </span>
+                )}
+                <span className="text-xs font-semibold text-brand-indigo bg-brand-indigo-light px-2.5 py-1 rounded-lg border border-brand-indigo/15">
+                  Semester {talent.semester || 6}
+                </span>
+                <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 flex items-center gap-1">
+                  <Award className="w-3.5 h-3.5 text-amber-600" />
+                  <span>{talent.status_badge || "Talenta Terverifikasi"}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Core Trust Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
+            <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+              <span className="text-xs text-slate-500 block">
+                Rating Kepuasan
+              </span>
+              <div className="flex items-center justify-center gap-1.5 mt-1">
+                <StarRating rating={ratingScore} size="sm" />
+                <span className="text-sm font-bold text-dark-900">
+                  {hasRating ? ratingScore.toFixed(1) : "Belum Ada"}
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400 block mt-0.5">
+                {talent.reviews_count || 0} Ulasan Klien
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1.5 text-xs text-slate-600">
-              <span className="flex items-center gap-1 font-medium">
-                <ProdiVectorIcon
-                  size={14}
-                  className="text-brand-indigo shrink-0"
-                />
-                <span>{talent.prodi || "Belum Memilih Prodi"}</span>
+            <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+              <span className="text-xs text-slate-500 block">
+                Proyek Selesai
               </span>
-              <span className="text-slate-300 font-light">/</span>
-              <span className="flex items-center gap-1">
-                <CampusVectorIcon
-                  size={14}
-                  className="text-amber-500 shrink-0"
-                />
+              <span className="text-base font-extrabold text-dark-900 block mt-1">
+                {completedProjects} Proyek
+              </span>
+              <span className="text-[11px] text-slate-400 block mt-0.5">
+                Penyelesaian Tepat Waktu
+              </span>
+            </div>
+
+            <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
+              <span className="text-xs text-slate-500 block">
+                Proteksi Escrow
+              </span>
+              <div className="flex items-center justify-center gap-1 text-base font-extrabold text-emerald-700 mt-1">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span>
-                  {talent.universitas || "Universitas Bina Sarana Informatika"}
+                  {completedProjects > 0
+                    ? talent.escrow_success_rate || "100%"
+                    : "100% Aman"}
                 </span>
-              </span>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-              {talent.nim && (
-                <span className="text-xs font-mono text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
-                  NIM {talent.nim}
-                </span>
-              )}
-              <span className="text-xs font-semibold text-brand-indigo bg-brand-indigo-light px-2.5 py-1 rounded-lg border border-brand-indigo/15">
-                Semester {talent.semester || 6}
-              </span>
-              <span className="text-xs font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 text-amber-600" />
-                <span>{talent.status_badge || "Talenta Terverifikasi"}</span>
+              </div>
+              <span className="text-[11px] text-slate-400 block mt-0.5">
+                Dana Dijamin Sistem
               </span>
             </div>
           </div>
-        </div>
-
-        {/* 3 Core Trust Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-border">
-          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
-            <span className="text-xs text-slate-500 block">
-              Rating Kepuasan
-            </span>
-            <div className="flex items-center justify-center gap-1.5 mt-1">
-              <StarRating rating={ratingScore} size="sm" />
-              <span className="text-sm font-bold text-dark-900">
-                {hasRating ? ratingScore.toFixed(1) : "Belum Ada"}
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
-              {talent.reviews_count || 0} Ulasan Klien
-            </span>
-          </div>
-
-          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
-            <span className="text-xs text-slate-500 block">Proyek Selesai</span>
-            <span className="text-base font-extrabold text-dark-900 block mt-1">
-              {completedProjects} Proyek
-            </span>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
-              Penyelesaian Tepat Waktu
-            </span>
-          </div>
-
-          <div className="p-3.5 bg-canvas rounded-xl border border-border text-center">
-            <span className="text-xs text-slate-500 block">
-              Proteksi Escrow
-            </span>
-            <div className="flex items-center justify-center gap-1 text-base font-extrabold text-emerald-700 mt-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>
-                {completedProjects > 0
-                  ? talent.escrow_success_rate || "100%"
-                  : "100% Aman"}
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 block mt-0.5">
-              Dana Dijamin Sistem
-            </span>
-          </div>
-        </div>
         </div>
       </div>
 
@@ -554,7 +538,10 @@ export function TalentDetailPage() {
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <Badge variant="brand" className="text-[11px] font-bold">
+                        <Badge
+                          variant="brand"
+                          className="text-[11px] font-bold"
+                        >
                           {cert.role_name}
                         </Badge>
                         <span className="font-mono text-[10px] text-muted font-semibold">
@@ -565,7 +552,10 @@ export function TalentDetailPage() {
                         {cert.project_title}
                       </h3>
                       <p className="text-[11px] text-slate-500">
-                        Mitra UMKM: <strong className="text-dark-900">{cert.client_name}</strong>
+                        Mitra UMKM:{" "}
+                        <strong className="text-dark-900">
+                          {cert.client_name}
+                        </strong>
                       </p>
                       {cert.showcase_description && (
                         <p className="text-xs text-slate-600 line-clamp-2 italic">
@@ -721,11 +711,11 @@ export function TalentDetailPage() {
                                 <span className="font-bold text-brand-indigo font-mono">
                                   {formatCurrency(p.budget_max)}
                                 </span>
-                                <span>|</span>
-                                <span>{p.kategori || "UMKM Digital"}</span>
                                 <span>•</span>
                                 <span className="font-medium text-slate-600">
-                                  {categoryLabels[p.kategori] || p.kategori || "Proyek Digital"}
+                                  {categoryLabels[p.kategori] ||
+                                    p.kategori ||
+                                    "Proyek Digital"}
                                 </span>
                               </div>
                             </div>

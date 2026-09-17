@@ -199,45 +199,13 @@ export function ProjectExploreDetailView({
   const totalReviewsCount =
     typeof project.total_reviews === "number"
       ? project.total_reviews
-      : Array.isArray(project.client_reviews) &&
-          project.client_reviews.length > 0
       : Array.isArray(project.client_reviews)
         ? project.client_reviews.length
-        : 12;
         : 0;
 
   const studentReviews =
     Array.isArray(project.client_reviews) && project.client_reviews.length > 0
       ? project.client_reviews
-      : [
-          {
-            id: "rev-default-1",
-            nama: "Nadia Larasati",
-            kampus: "Institut Seni Indonesia",
-            rating: 5.0,
-            waktu: "Maret 27",
-            pesan:
-              "Mitra UMKM sangat komunikatif, memberikan arahan yang presisi dan cepat tanggap. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
-          },
-          {
-            id: "rev-default-2",
-            nama: "Ahmad Fikri",
-            kampus: "Universitas BSI",
-            rating: 5.0,
-            waktu: "Februari 14",
-            pesan:
-              "Pengalaman kolaborasi yang memuaskan. Brief pengerjaan sangat terstruktur dan e-sertifikat digital ber-QR langsung otomatis terbit ke profil.",
-          },
-          {
-            id: "rev-default-3",
-            nama: "Sarah Nabila",
-            kampus: "Universitas Indonesia",
-            rating: 5.0,
-            waktu: "Januari 29",
-            pesan:
-              "Kerja sama sangat transparan. Rekomendasi terbaik untuk mahasiswa yang ingin menambah portofolio riil UMKM terpercaya.",
-          },
-        ];
       : [];
 
   const handleOpenChat = () => {
@@ -703,36 +671,8 @@ export function ProjectExploreDetailView({
               <Text style={styles.fiverrReviewsTitle}>
                 {totalReviewsCount} ulasan
               </Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Text style={styles.fiverrSeeAllText}>Lihat Semua</Text>
-              </TouchableOpacity>
             </View>
 
-            {/* Horizontal Scrollable Carousel */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.reviewsScrollContainer}
-            >
-              {studentReviews.map((rev, idx) => {
-                const reviewerName =
-                  rev.dari_nama || rev.nama || "Mahasiswa Terverifikasi";
-                const reviewerCampus =
-                  rev.institusi || rev.kampus || "Perguruan Tinggi Indonesia";
-                const reviewComment =
-                  rev.komentar ||
-                  rev.pesan ||
-                  rev.catatan ||
-                  "Kolaborasi sangat memuaskan, instruksi jelas dan pencairan escrow aman.";
-                const reviewScore =
-                  rev.skor != null && !isNaN(Number(rev.skor))
-                    ? Number(rev.skor).toFixed(1)
-                    : rev.rating != null && !isNaN(Number(rev.rating))
-                      ? Number(rev.rating).toFixed(1)
-                      : "5.0";
-                const reviewDate = rev.created_at
-                  ? formatDate(rev.created_at)
-                  : rev.waktu || "Baru saja";
             {studentReviews.length > 0 ? (
               <ScrollView
                 horizontal
@@ -766,15 +706,6 @@ export function ProjectExploreDetailView({
                     ? formatDate(rev.created_at)
                     : rev.waktu || "Baru saja";
 
-                return (
-                  <View
-                    key={rev.id || `rev-${idx}`}
-                    style={styles.fiverrReviewCard}
-                  >
-                    {/* Top Reviewer Info */}
-                    <View style={styles.fiverrReviewerHeader}>
-                      <View style={styles.fiverrReviewerAvatarBox}>
-                        <GraduationCap size={16} color="#2563EB" />
                   return (
                     <View
                       key={rev.id || `rev-${idx}`}
@@ -800,37 +731,12 @@ export function ProjectExploreDetailView({
                           </Text>
                         </View>
                       </View>
-                      <View style={styles.fiverrReviewerMeta}>
-                        <Text
-                          style={styles.fiverrReviewerName}
-                          numberOfLines={1}
-                        >
-                          {reviewerName}
-                        </Text>
-                        <Text
-                          style={styles.fiverrReviewerCampus}
-                          numberOfLines={1}
-                        >
-                          🇮🇩 {reviewerCampus}
-                        </Text>
-                      </View>
-                    </View>
 
-                    {/* Review Text Body */}
-                    <Text style={styles.fiverrReviewText} numberOfLines={3}>
-                      {reviewComment}
-                    </Text>
                       {/* Review Text Body */}
                       <Text style={styles.fiverrReviewText} numberOfLines={3}>
                         {reviewComment}
                       </Text>
 
-                    {/* Bottom Score & Date */}
-                    <View style={styles.fiverrReviewBottomRow}>
-                      <View style={styles.fiverrReviewScoreBox}>
-                        <Star size={11} color="#0F172A" fill="#0F172A" />
-                        <Text style={styles.fiverrReviewScoreText}>
-                          {reviewScore}
                       {/* Bottom Score & Date */}
                       <View style={styles.fiverrReviewBottomRow}>
                         <View style={styles.fiverrReviewScoreBox}>
@@ -843,21 +749,15 @@ export function ProjectExploreDetailView({
                           {reviewDate}
                         </Text>
                       </View>
-                      <Text style={styles.fiverrReviewDateText}>
-                        {reviewDate}
-                      </Text>
                     </View>
-                  </View>
-                );
-              })}
-            </ScrollView>
                   );
                 })}
               </ScrollView>
             ) : (
               <View style={styles.fiverrEmptyReviewBox}>
                 <Text style={styles.fiverrEmptyReviewText}>
-                  Belum ada ulasan untuk proyek ini. Ulasan akan otomatis tampil setelah hasil kerja selesai & disetujui.
+                  Belum ada ulasan untuk proyek ini. Ulasan akan otomatis tampil
+                  setelah hasil kerja selesai & disetujui.
                 </Text>
               </View>
             )}
