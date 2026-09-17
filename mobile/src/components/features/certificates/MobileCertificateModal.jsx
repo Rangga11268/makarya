@@ -116,15 +116,6 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
               {/* Top Banner with Makarya Accents */}
               <View style={styles.certTopAccentRow}>
                 <View style={styles.certBrandRow}>
-                  <View style={styles.certLogoSquare}>
-                    <Award size={18} color="#FFFFFF" />
-                  </View>
-                  <View>
-                    <Text style={styles.brandTitleText}>MAKARYA</Text>
-                    <Text style={styles.brandSubtitleText}>
-                      PLATFORM KOLABORASI INDUSTRI
-                    </Text>
-                  </View>
                   <Image
                     source={require("../../../../assets/logo.webp")}
                     style={styles.brandLogoImg}
@@ -221,6 +212,16 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                 <View style={styles.signColumn}>
                   <View style={styles.signVectorWrap}>
                     <Text style={styles.signScriptText}>ttd digital</Text>
+                  <View style={styles.signImageWrap}>
+                    {certificate.client_signature_url ? (
+                      <Image
+                        source={{ uri: certificate.client_signature_url }}
+                        style={styles.signatureImg}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <Text style={styles.signScriptText}>ttd digital</Text>
+                    )}
                   </View>
                   <View style={styles.signLine} />
                   <Text style={styles.signNameText} numberOfLines={1}>
@@ -376,31 +377,10 @@ const styles = StyleSheet.create({
   certBrandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
   },
-  certLogoSquare: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#0F172A",
-    alignItems: "center",
-    justifyContent: "center",
   brandLogoImg: {
     width: 110,
     height: 26,
-  },
-  brandTitleText: {
-    fontSize: 13,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
-  brandSubtitleText: {
-    fontSize: 8,
-    fontFamily: FONTS.bodyMedium,
-    color: COLORS.textMuted,
-    letterSpacing: 0.5,
   },
   verifiedTopPill: {
     flexDirection: "row",

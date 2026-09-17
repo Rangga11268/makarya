@@ -60,3 +60,9 @@ class Certificate(Base):
     def collaboration_type(self):
         return self.project.tipe_kolaborasi if self.project else "INDIVIDU"
 
+    @property
+    def client_signature_url(self):
+        if self.project and self.project.umkm and self.project.umkm.profile_umkm:
+            return self.project.umkm.profile_umkm.url_ttd
+        return None
+

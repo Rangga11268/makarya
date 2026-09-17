@@ -32,6 +32,7 @@ class CertificateResponse(BaseModel):
     slot_budget: Optional[Decimal] = None
     total_project_budget: Optional[Decimal] = None
     collaboration_type: Optional[str] = None
+    client_signature_url: Optional[str] = None
     issued_at: datetime
     created_at: datetime
 
@@ -47,6 +48,7 @@ class CertificateVerifyResponse(BaseModel):
     role_name: str
     project_title: str
     client_name: str
+    client_signature_url: Optional[str] = None
     project_category: Optional[str] = None
     issued_at: datetime
     deliverable_url: Optional[str] = None

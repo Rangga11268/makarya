@@ -104,3 +104,5 @@ class ProfileUpdateRequest(BaseModel):
     nama_bank: Optional[str] = None
     nomor_rekening: Optional[str] = None
     nama_pemilik_rekening: Optional[str] = None
+    url_ttd: Optional[str] = None
+    signature_url: Optional[str] = None

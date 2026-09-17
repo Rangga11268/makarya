@@ -251,6 +251,7 @@ def verify_certificate(credential_id: str, db: Session = Depends(get_db)):
         "role_name": cert.role_name,
         "project_title": cert.project_title,
         "client_name": cert.client_name,
+        "client_signature_url": cert.client_signature_url,
         "project_category": cert.project_category,
         "issued_at": cert.issued_at,
         "deliverable_url": cert.deliverable_url if cert.is_showcase else None,

@@ -610,6 +610,18 @@ export function ProfileScreen({ navigation }) {
                 </Text>
               </View>
             </View>
+
+            <View style={styles.detailRow}>
+              <View style={styles.vectorIconFrame}>
+                <Award size={18} color={COLORS.brandIndigo} />
+              </View>
+              <View style={styles.detailTextWrapper}>
+                <Text style={styles.detailLabel}>Tanda Tangan Sertifikat</Text>
+                <Text style={styles.detailValue}>
+                  {user?.url_ttd ? "Tersimpan & Aktif Resmi" : "Tanda Tangan Digital Otomatis"}
+                </Text>
+              </View>
+            </View>
           </View>
         )}
 

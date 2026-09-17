@@ -34,6 +34,7 @@ class ProfileUmkm(Base):
     kota = Column(String(100), nullable=True)
     no_kontak = Column(String(20), nullable=True)
     url_foto_usaha = Column(Text, nullable=True)
+    url_ttd = Column(Text, nullable=True)
 
     # Relationship
     user = relationship("User", back_populates="profile_umkm")

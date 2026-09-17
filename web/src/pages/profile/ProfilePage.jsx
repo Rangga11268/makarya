@@ -132,6 +132,7 @@ export function ProfilePage() {
               nomor_rekening: d.nomor_rekening || "",
               nama_pemilik_rekening:
                 d.nama_pemilik_rekening || d.nama_usaha || "",
+              url_ttd: d.url_ttd || "",
             });
           } else {
             setMhsData({
@@ -197,6 +198,7 @@ export function ProfilePage() {
             nama_bank: umkmData.nama_bank.trim(),
             nomor_rekening: umkmData.nomor_rekening.trim(),
             nama_pemilik_rekening: umkmData.nama_pemilik_rekening.trim(),
+            url_ttd: umkmData.url_ttd || null,
           }
         : {
             nama_lengkap: mhsData.nama_lengkap.trim(),
