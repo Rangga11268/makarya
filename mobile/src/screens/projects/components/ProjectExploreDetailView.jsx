@@ -204,27 +204,53 @@ export function ProjectExploreDetailView({
       ? project.total_pelamar
       : proposals.length || 0;
 
-  // 5. Testimonial Reviews from Student Talents
-  const studentReviews = [
-    {
-      id: "rev-1",
-      nama: "Ahmad Fikri",
-      kampus: "Universitas BSI",
-      rating: 5.0,
-      waktu: "2 minggu lalu",
-      pesan:
-        "Mitra UMKM sangat komunikatif, memberikan feedback yang jelas dan cepat. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
-    },
-    {
-      id: "rev-2",
-      nama: "Sarah Nabila",
-      kampus: "Universitas Indonesia",
-      rating: 5.0,
-      waktu: "1 bulan lalu",
-      pesan:
-        "Pengalaman kolaborasi yang memuaskan. Brief pengerjaan terstruktur rapi dan e-sertifikat digital bertanda tangan UMKM langsung otomatis terbit.",
-    },
-  ];
+  // 5. Dynamic Testimonial Reviews & Rating Stats from System Database
+  const ratingAvgScore =
+    typeof project.rating_avg === "number"
+      ? project.rating_avg.toFixed(1)
+      : project.rating_avg
+        ? Number(project.rating_avg).toFixed(1)
+        : "5.0";
+
+  const totalReviewsCount =
+    typeof project.total_reviews === "number"
+      ? project.total_reviews
+      : Array.isArray(project.client_reviews)
+        ? project.client_reviews.length
+        : 2;
+
+  const studentReviews =
+    Array.isArray(project.client_reviews) && project.client_reviews.length > 0
+      ? project.client_reviews.map((r) => ({
+          id: String(r.id),
+          nama: r.reviewer_nama,
+          kampus: r.reviewer_kampus || "Mahasiswa Terverifikasi",
+          rating: Number(r.skor || 5),
+          waktu: r.created_at ? formatDate(r.created_at) : "Baru saja",
+          pesan:
+            r.ulasan ||
+            "Mitra UMKM sangat komunikatif, memberikan feedback yang jelas dan cepat. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
+        }))
+      : [
+          {
+            id: "rev-default-1",
+            nama: "Ahmad Fikri",
+            kampus: "Universitas BSI",
+            rating: 5.0,
+            waktu: "2 minggu lalu",
+            pesan:
+              "Mitra UMKM sangat komunikatif, memberikan feedback yang jelas dan cepat. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
+          },
+          {
+            id: "rev-default-2",
+            nama: "Sarah Nabila",
+            kampus: "Universitas Indonesia",
+            rating: 5.0,
+            waktu: "1 bulan lalu",
+            pesan:
+              "Pengalaman kolaborasi yang memuaskan. Brief pengerjaan terstruktur rapi dan e-sertifikat digital bertanda tangan UMKM langsung otomatis terbit.",
+          },
+        ];
 
   const handleOpenChat = () => {
     navigation.navigate("Chat", {
@@ -317,7 +343,9 @@ export function ProjectExploreDetailView({
 
                 <View style={styles.badgeCluster}>
                   <View style={styles.topRatedBadge}>
-                    <Text style={styles.topRatedText}>Mitra Terverifikasi ◆◆◆</Text>
+                    <Text style={styles.topRatedText}>
+                      Mitra Terverifikasi ◆◆◆
+                    </Text>
                   </View>
                   <View style={styles.vettedBadge}>
                     <Text style={styles.vettedText}>100% Escrow</Text>
@@ -394,14 +422,17 @@ export function ProjectExploreDetailView({
                 {isTeam ? "Paket Kolaborasi Tim" : "Paket Pengerjaan Individu"}
               </Text>
               <Text style={styles.packageSummary}>
-                Alokasi honor resmi dengan jaminan keamanan pembayaran 100% Escrow Makarya.
+                Alokasi honor resmi dengan jaminan keamanan pembayaran 100%
+                Escrow Makarya.
               </Text>
 
               {/* Spec Rows */}
               <View style={styles.specTable}>
                 <View style={styles.specRow}>
                   <Text style={styles.specLabel}>Tenggat Waktu</Text>
-                  <Text style={styles.specValue}>{formatDate(project.deadline)}</Text>
+                  <Text style={styles.specValue}>
+                    {formatDate(project.deadline)}
+                  </Text>
                 </View>
                 <View style={styles.specDivider} />
 
@@ -414,14 +445,18 @@ export function ProjectExploreDetailView({
                 <View style={styles.specRow}>
                   <Text style={styles.specLabel}>Tipe Kolaborasi</Text>
                   <Text style={styles.specValue}>
-                    {isTeam ? `Tim (${slots.length} Posisi)` : "Talenta Individu"}
+                    {isTeam
+                      ? `Tim (${slots.length} Posisi)`
+                      : "Talenta Individu"}
                   </Text>
                 </View>
                 <View style={styles.specDivider} />
 
                 <View style={styles.specRow}>
                   <Text style={styles.specLabel}>Sertifikat Digital</Text>
-                  <Text style={styles.specValue}>Resmi Bertanda Tangan UMKM</Text>
+                  <Text style={styles.specValue}>
+                    Resmi Bertanda Tangan UMKM
+                  </Text>
                 </View>
                 <View style={styles.specDivider} />
 
@@ -460,9 +495,12 @@ export function ProjectExploreDetailView({
 
               {/* Vetted By Makarya Box */}
               <View style={styles.vettedBox}>
-                <Text style={styles.vettedBoxTitle}>Terverifikasi oleh Makarya</Text>
+                <Text style={styles.vettedBoxTitle}>
+                  Terverifikasi oleh Makarya
+                </Text>
                 <Text style={styles.vettedBoxDesc}>
-                  Dana proyek ini telah didepositkan secara resmi di rekening bersama Escrow Makarya sebelum pengerjaan dimulai.
+                  Dana proyek ini telah didepositkan secara resmi di rekening
+                  bersama Escrow Makarya sebelum pengerjaan dimulai.
                 </Text>
               </View>
             </View>
@@ -477,32 +515,48 @@ export function ProjectExploreDetailView({
                 <Sparkles size={16} color="#2563EB" />
                 <Text style={styles.sectionTitle}>Kecocokan Profil Anda</Text>
                 <View style={styles.aiScoreBadge}>
-                  <Text style={styles.aiScoreText}>{matchScore || 85}% Cocok</Text>
+                  <Text style={styles.aiScoreText}>
+                    {matchScore || 85}% Cocok
+                  </Text>
                 </View>
               </View>
 
               <Text style={styles.aiMatchDesc}>
-                Sistem AI Makarya menganalisis bahwa keahlian dan riwayat profil Anda sangat selaras dengan kriteria proyek ini:
+                Sistem AI Makarya menganalisis bahwa keahlian dan riwayat profil
+                Anda sangat selaras dengan kriteria proyek ini:
               </Text>
 
               <View style={styles.aiReasonsList}>
                 {matchReasons.length > 0 ? (
                   matchReasons.map((reason, idx) => (
                     <View key={idx} style={styles.aiReasonItem}>
-                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
+                      <CheckCircle2
+                        size={13}
+                        color="#2563EB"
+                        style={{ marginTop: 2 }}
+                      />
                       <Text style={styles.aiReasonText}>{reason}</Text>
                     </View>
                   ))
                 ) : (
                   <>
                     <View style={styles.aiReasonItem}>
-                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
+                      <CheckCircle2
+                        size={13}
+                        color="#2563EB"
+                        style={{ marginTop: 2 }}
+                      />
                       <Text style={styles.aiReasonText}>
-                        Keahlian dan latar belakang program studi Anda relevan dengan proyek.
+                        Keahlian dan latar belakang program studi Anda relevan
+                        dengan proyek.
                       </Text>
                     </View>
                     <View style={styles.aiReasonItem}>
-                      <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
+                      <CheckCircle2
+                        size={13}
+                        color="#2563EB"
+                        style={{ marginTop: 2 }}
+                      />
                       <Text style={styles.aiReasonText}>
                         Peluang optimal terpilih sebagai mitra talenta UMKM ini.
                       </Text>
@@ -619,17 +673,19 @@ export function ProjectExploreDetailView({
                 <Star size={17} color="#F59E0B" fill="#F59E0B" />
                 <Star size={17} color="#F59E0B" fill="#F59E0B" />
               </View>
-              <Text style={styles.ratingHeroScore}>5.0</Text>
-              <Text style={styles.ratingCountText}>(3 Ulasan Talenta)</Text>
+              <Text style={styles.ratingHeroScore}>{ratingAvgScore}</Text>
+              <Text style={styles.ratingCountText}>({totalReviewsCount} Ulasan Talenta)</Text>
             </View>
 
             {/* Criteria Breakdown */}
             <View style={styles.criteriaTable}>
               <View style={styles.criteriaRow}>
-                <Text style={styles.criteriaLabel}>Kejelasan Brief & Tugas</Text>
+                <Text style={styles.criteriaLabel}>
+                  Kejelasan Brief & Tugas
+                </Text>
                 <View style={styles.criteriaScoreWrap}>
                   <Star size={11} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.criteriaScore}>5.0</Text>
+                  <Text style={styles.criteriaScore}>{ratingAvgScore}</Text>
                 </View>
               </View>
 
@@ -637,12 +693,14 @@ export function ProjectExploreDetailView({
                 <Text style={styles.criteriaLabel}>Kelancaran Komunikasi</Text>
                 <View style={styles.criteriaScoreWrap}>
                   <Star size={11} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.criteriaScore}>5.0</Text>
+                  <Text style={styles.criteriaScore}>{ratingAvgScore}</Text>
                 </View>
               </View>
 
               <View style={styles.criteriaRow}>
-                <Text style={styles.criteriaLabel}>Ketepatan Persetujuan Escrow</Text>
+                <Text style={styles.criteriaLabel}>
+                  Ketepatan Persetujuan Escrow
+                </Text>
                 <View style={styles.criteriaScoreWrap}>
                   <Star size={11} color="#0F172A" fill="#0F172A" />
                   <Text style={styles.criteriaScore}>5.0</Text>
@@ -657,7 +715,9 @@ export function ProjectExploreDetailView({
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
               <Users size={16} color="#2563EB" />
-              <Text style={styles.sectionTitle}>Ulasan Mahasiswa Sebelumnya</Text>
+              <Text style={styles.sectionTitle}>
+                Ulasan Mahasiswa Sebelumnya
+              </Text>
             </View>
 
             <View style={styles.reviewsList}>
@@ -673,7 +733,9 @@ export function ProjectExploreDetailView({
                     </View>
                     <View style={styles.reviewRatingPill}>
                       <Star size={10} color="#F59E0B" fill="#F59E0B" />
-                      <Text style={styles.reviewRatingText}>{rev.rating.toFixed(1)}</Text>
+                      <Text style={styles.reviewRatingText}>
+                        {rev.rating.toFixed(1)}
+                      </Text>
                     </View>
                   </View>
                   <Text style={styles.reviewComment}>"{rev.pesan}"</Text>
@@ -724,7 +786,10 @@ export function ProjectExploreDetailView({
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"} • {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
+                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"} •{" "}
+                    {project.lokasi ||
+                      project.umkm_profile?.kota ||
+                      "Indonesia"}
                   </Text>
                 </View>
               </View>
@@ -748,9 +813,13 @@ export function ProjectExploreDetailView({
                   <ShieldCheck size={15} color="#059669" />
                 </View>
                 <View style={styles.benefitTextBox}>
-                  <Text style={styles.benefitItemTitle}>100% Jaminan Escrow</Text>
+                  <Text style={styles.benefitItemTitle}>
+                    100% Jaminan Escrow
+                  </Text>
                   <Text style={styles.benefitItemDesc}>
-                    Dana honor Anda telah diamankan di sistem Makarya sebelum pengerjaan dimulai dan dicairkan segera setelah pekerjaan disetujui.
+                    Dana honor Anda telah diamankan di sistem Makarya sebelum
+                    pengerjaan dimulai dan dicairkan segera setelah pekerjaan
+                    disetujui.
                   </Text>
                 </View>
               </View>
@@ -760,9 +829,13 @@ export function ProjectExploreDetailView({
                   <Award size={15} color="#2563EB" />
                 </View>
                 <View style={styles.benefitTextBox}>
-                  <Text style={styles.benefitItemTitle}>E-Sertifikat Digital Resmi</Text>
+                  <Text style={styles.benefitItemTitle}>
+                    E-Sertifikat Digital Resmi
+                  </Text>
                   <Text style={styles.benefitItemDesc}>
-                    Otomatis mendapatkan sertifikat ber-QR terverifikasi bertanda tangan digital UMKM untuk portofolio & konversi SKPI kampus.
+                    Otomatis mendapatkan sertifikat ber-QR terverifikasi
+                    bertanda tangan digital UMKM untuk portofolio & konversi
+                    SKPI kampus.
                   </Text>
                 </View>
               </View>
@@ -925,23 +998,28 @@ export function ProjectExploreDetailView({
         <View style={styles.stickyContentRow}>
           <View style={styles.stickyPriceCol}>
             <Text style={styles.stickyPriceLabel}>ESTIMASI HONOR</Text>
-            <Text style={styles.stickyPriceValue}>
+            <Text
+              style={styles.stickyPriceValue}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {formattedBudgetRange}
             </Text>
           </View>
 
           <View style={styles.stickyActionCol}>
             {canApply ? (
-              <PebbleButton
-                variant="sapphire"
-                size="md"
-                label="Ajukan Lamaran"
-                icon={Send}
+              <TouchableOpacity
+                style={styles.appleBottomCtaBtn}
                 onPress={handleApplyPress}
-              />
+                activeOpacity={0.88}
+              >
+                <Send size={14} color="#FFFFFF" />
+                <Text style={styles.appleBottomCtaText}>Ajukan Lamaran</Text>
+              </TouchableOpacity>
             ) : myExistingProposal ? (
               <View style={styles.appliedPill}>
-                <CheckCircle2 size={14} color="#059669" />
+                <CheckCircle2 size={13} color="#059669" />
                 <Text style={styles.appliedPillText}>
                   {isAcceptedProposal
                     ? "Lamaran Disetujui"
@@ -951,13 +1029,16 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
             ) : isUmkmOwner ? (
-              <PebbleButton
-                variant="pearl"
-                size="sm"
-                label={`${proposals.length} Pelamar`}
-                icon={Users}
+              <TouchableOpacity
+                style={styles.appleBottomOwnerBtn}
                 onPress={() => setActiveTab("proposals")}
-              />
+                activeOpacity={0.85}
+              >
+                <Users size={14} color="#0F172A" />
+                <Text style={styles.appleBottomOwnerText}>
+                  {proposals.length} Pelamar
+                </Text>
+              </TouchableOpacity>
             ) : null}
           </View>
         </View>
@@ -1866,12 +1947,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderTopColor: "#E2E8F0",
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 16,
-    elevation: 10,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 14,
+    elevation: 12,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: -4 },
+    shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
   },
@@ -1881,24 +1962,64 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   stickyPriceCol: {
-    gap: 2,
+    flex: 1,
+    marginRight: 12,
+    justifyContent: "center",
   },
   stickyPriceLabel: {
-    fontSize: 9,
+    fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
     color: "#64748B",
     fontWeight: "700",
     letterSpacing: 0.5,
   },
   stickyPriceValue: {
-    fontSize: 16,
+    fontSize: 14.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
   },
   stickyActionCol: {
+    flexShrink: 0,
+  },
+  appleBottomCtaBtn: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 7,
+    backgroundColor: "#0F172A",
+    paddingVertical: 11,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  appleBottomCtaText: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  appleBottomOwnerBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+  },
+  appleBottomOwnerText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
   appliedPill: {
     flexDirection: "row",

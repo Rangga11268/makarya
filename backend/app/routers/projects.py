@@ -15,6 +15,7 @@ from app.models.proposal import Proposal, ProposalStatus
 from app.models.wallet import Wallet, LedgerLog, TransactionType
 from app.models.escrow import Escrow, EscrowStatus
 from app.models.notification import Notification, NotificationType
+from app.models.rating import Rating
 
 from app.schemas.project import (
     ProjectCreateRequest,
@@ -25,6 +26,7 @@ from app.schemas.project import (
     ProjectTerminateRequest,
     ProjectSlotResponse,
     MilestoneUpdateRequest,
+    ClientReviewItem,
 )
 from sqlalchemy.sql import func
 
@@ -117,15 +119,43 @@ def _build_project_response(
                 created_at=s.created_at
             ))
 
+    # Ratings and reviews for UMKM
+    ratings_query = db.query(Rating).filter(Rating.ke_user_id == proj.umkm_id).order_by(Rating.created_at.desc()).all()
+    total_reviews = len(ratings_query)
+    if total_reviews > 0:
+        avg_score = sum(r.skor for r in ratings_query) / total_reviews
+        rating_avg = round(float(avg_score), 1)
+    else:
+        rating_avg = 5.0
+
+    client_reviews = []
+    for r in ratings_query[:5]:
+        mhs_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == r.dari_user_id).first()
+        mhs_u = db.query(User).filter(User.id == r.dari_user_id).first()
+        rev_nama = mhs_prof.nama_lengkap if (mhs_prof and mhs_prof.nama_lengkap) else (mhs_u.username if mhs_u and mhs_u.username else "Mahasiswa")
+        rev_kampus = mhs_prof.prodi.nama_prodi if (mhs_prof and mhs_prof.prodi) else None
+        client_reviews.append(
+            ClientReviewItem(
+                id=r.id,
+                reviewer_nama=rev_nama,
+                reviewer_kampus=rev_kampus,
+                skor=r.skor,
+                ulasan=r.ulasan,
+                created_at=r.created_at,
+            )
+        )
+
     return ProjectResponse(
         id=proj.id,
         umkm_id=proj.umkm_id,
         judul=proj.judul,
         deskripsi_raw=proj.deskripsi_raw,
         kategori=proj.kategori,
+        budget_min=proj.budget_min,
         budget_max=proj.budget_max,
         deadline=proj.deadline,
         status=proj.status,
+        banner_url=proj.banner_url,
         created_at=proj.created_at,
         updated_at=proj.updated_at,
         umkm_profile=umkm_summary,
@@ -135,6 +165,9 @@ def _build_project_response(
         total_pelamar=total_pelamar,
         match_score=match_score,
         match_reasons=match_reasons,
+        rating_avg=rating_avg,
+        total_reviews=total_reviews,
+        client_reviews=client_reviews if client_reviews else None,
         cancel_reason=proj.cancel_reason,
         cancelled_by_role=proj.cancelled_by_role,
         cancelled_at=proj.cancelled_at,
@@ -214,10 +247,12 @@ def create_project(
         judul=body.judul,
         deskripsi_raw=body.deskripsi_raw,
         kategori=body.kategori,
+        budget_min=body.budget_min,
         budget_max=body.budget_max,
         deadline=body.deadline,
         status=ProjectStatus.OPEN,
         tipe_kolaborasi=(body.tipe_kolaborasi or "INDIVIDU").upper(),
+        banner_url=body.banner_url,
     )
     db.add(new_project)
     db.flush()

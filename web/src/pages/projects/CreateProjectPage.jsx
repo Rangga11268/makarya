@@ -29,6 +29,10 @@ import {
   Cpu,
   Users,
   Info,
+  Camera,
+  UploadCloud,
+  Sparkles,
+  Image as ImageIcon,
 } from "lucide-react";
 
 export function CreateProjectPage() {
@@ -48,7 +52,9 @@ export function CreateProjectPage() {
     judul: "",
     kategori: "DESIGN",
     deskripsi_raw: "",
+    budget_min: 300000,
     budget_max: 500000,
+    banner_url: "",
     deadline: "",
     tipe_kolaborasi: "INDIVIDU", // "INDIVIDU" | "TIM"
     slots: [
@@ -351,7 +357,9 @@ export function CreateProjectPage() {
       const payload = {
         judul: formData.judul.trim(),
         kategori: formData.kategori,
+        budget_min: formData.budget_min ? parseFloat(formData.budget_min) : undefined,
         budget_max: parseFloat(formData.budget_max),
+        banner_url: formData.banner_url || undefined,
         deadline: formData.deadline,
         deskripsi_raw: fullDescription,
         tipe_kolaborasi: formData.tipe_kolaborasi,
@@ -570,6 +578,87 @@ export function CreateProjectPage() {
               </div>
             </div>
 
+            {/* Custom Cover Banner Section */}
+            <div className="space-y-2 text-left">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
+                  Cover Banner Proyek (Kustom)
+                </label>
+                {formData.banner_url && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, banner_url: "" })}
+                    className="text-xs text-rose-600 font-bold hover:underline"
+                  >
+                    Hapus Banner
+                  </button>
+                )}
+              </div>
+
+              <div className="relative w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-border bg-slate-100 flex items-center justify-center">
+                {formData.banner_url ? (
+                  <img
+                    src={formData.banner_url}
+                    alt="Cover Banner Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center p-4 space-y-2">
+                    <ImageIcon className="w-8 h-8 text-slate-400 mx-auto" />
+                    <p className="text-xs font-bold text-dark-900">Belum ada cover banner kustom</p>
+                    <p className="text-[11px] text-muted max-w-sm mx-auto">
+                      Unggah gambar cover banner menarik untuk meningkatkan daya tarik proyek Anda
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <label className="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all shadow-xs">
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>Unggah dari File</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormData({ ...formData, banner_url: reader.result });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+
+                <div className="flex items-center gap-1 text-[11px] text-muted overflow-x-auto py-1">
+                  <span className="font-medium mr-1">Preset:</span>
+                  {[
+                    { label: "Modern Tech", url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80" },
+                    { label: "Design Creative", url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80" },
+                    { label: "Kuliner & Usaha", url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80" },
+                    { label: "Video", url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80" },
+                  ].map((preset, idx) => (
+                    <button
+                      type="button"
+                      key={idx}
+                      onClick={() => setFormData({ ...formData, banner_url: preset.url })}
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-medium transition-all ${
+                        formData.banner_url === preset.url
+                          ? "bg-brand-indigo/10 border-brand-indigo text-brand-indigo font-bold"
+                          : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <TextArea
               label="Cerita Kebutuhan Usaha (Raw Brief)"
               rows={5}
@@ -751,21 +840,35 @@ export function CreateProjectPage() {
           </div>
 
           <form onSubmit={handleStep3Next} className="space-y-6">
-            {/* Budget Input & Recommendation */}
+            {/* Budget Range Input & Recommendation */}
             <div className="space-y-3">
-              <CurrencyInput
-                label="Maksimal Anggaran Honor (Budget Max)"
-                value={formData.budget_max}
-                onChange={(val) =>
-                  setFormData({
-                    ...formData,
-                    budget_max: val ? Math.min(2000000, Math.max(0, val)) : "",
-                  })
-                }
-                quickNominals={[100000, 250000, 500000, 1000000, 2000000]}
-                helperText={`Rekomendasi pasar kategori ${currentCatObj.label}: ${currentCatObj.recommendedBudget}`}
-                required
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <CurrencyInput
+                  label="Minimal Anggaran Honor (Opsional)"
+                  value={formData.budget_min}
+                  onChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      budget_min: val ? Math.min(2000000, Math.max(0, val)) : "",
+                    })
+                  }
+                  helperText="Batas bawah rentang tawaran"
+                />
+
+                <CurrencyInput
+                  label="Maksimal Anggaran Honor (Budget Max)"
+                  value={formData.budget_max}
+                  onChange={(val) =>
+                    setFormData({
+                      ...formData,
+                      budget_max: val ? Math.min(2000000, Math.max(0, val)) : "",
+                    })
+                  }
+                  quickNominals={[100000, 250000, 500000, 1000000, 2000000]}
+                  helperText={`Maksimal pagu Rp 2.000.000`}
+                  required
+                />
+              </div>
 
               <div className="pt-1">
                 <input

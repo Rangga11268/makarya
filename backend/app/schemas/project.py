@@ -5,14 +5,14 @@ from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from app.models.project import ProjectCategory, ProjectStatus
 
-# Schemas for Project Baru(KHUSUS UMKM) and Project Baru(KHUSUS UMKM) Update
 class ProjectCreateRequest(BaseModel):
     judul: str = Field(..., min_length=5, max_length=200, description="Judul project")
     deskripsi_raw: str = Field(..., min_length=15, description="Deskripsi kebutuhan project min 15 karakter")
     kategori: ProjectCategory
+    budget_min: Optional[Decimal] = Field(None, gt=0, le=2000000, description="Budget minimal project")
     budget_max: Decimal = Field(..., gt=0, le=2000000, description="Budget maksimal project Rp 2.000.000")
     deadline: date = Field(..., description="Tenggat waktu pengerjaan project")
-
+    banner_url: Optional[str] = Field(None, description="URL banner cover custom proyek")
     tipe_kolaborasi: Optional[str] = Field("INDIVIDU", description="INDIVIDU atau TIM")
     slots: Optional[List["ProjectSlotCreateRequest"]] = None
 
@@ -46,8 +46,10 @@ class ProjectUpdateRequest(BaseModel):
     judul: Optional[str] = Field(None, min_length=5, max_length=200, description="Judul project")
     deskripsi_raw: Optional[str] = Field(None, min_length=15, description="Deskripsi kebutuhan project min 15 karakter")
     kategori: Optional[ProjectCategory]
+    budget_min: Optional[Decimal] = Field(None, gt=0, le=2000000, description="Budget minimal project")
     budget_max: Optional[Decimal] = Field(None, gt=0, le=2000000, description="Budget maksimal project Rp 2.000.000")
     deadline: Optional[date] = Field(None, description="Tenggat waktu pengerjaan project")
+    banner_url: Optional[str] = Field(None, description="URL banner cover custom proyek")
 
     @field_validator('deadline')
     @classmethod
@@ -80,6 +82,15 @@ class UmkmSummary(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+# Review item schema
+class ClientReviewItem(BaseModel):
+    id: UUID
+    reviewer_nama: str
+    reviewer_kampus: Optional[str] = None
+    skor: int
+    ulasan: Optional[str] = None
+    created_at: datetime
+
 # Schema response proyek lengkap
 class ProjectResponse(BaseModel):
     id: UUID
@@ -87,9 +98,11 @@ class ProjectResponse(BaseModel):
     judul: str
     deskripsi_raw: str
     kategori: ProjectCategory
+    budget_min: Optional[Decimal] = None
     budget_max: Decimal
     deadline: date
     status: ProjectStatus
+    banner_url: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     umkm_profile: Optional[UmkmSummary] = None
@@ -99,6 +112,9 @@ class ProjectResponse(BaseModel):
     total_pelamar: int = 0
     match_score: Optional[int] = None
     match_reasons: Optional[List[str]] = None
+    rating_avg: float = 5.0
+    total_reviews: int = 0
+    client_reviews: Optional[List[ClientReviewItem]] = None
     cancel_reason: Optional[str] = None
     cancelled_by_role: Optional[str] = None
     cancelled_at: Optional[datetime] = None

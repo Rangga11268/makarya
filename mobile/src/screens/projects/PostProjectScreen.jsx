@@ -7,7 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Image,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { FONTS } from "../../theme/fonts";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { Button } from "../../components/ui/Button";
@@ -41,10 +43,13 @@ import {
   Check,
   Eye,
   DollarSign,
+  Camera,
+  Image as ImageIcon,
+  Sparkles,
 } from "lucide-react-native";
 
 const STEPS = [
-  { id: 1, title: "Brief Kebutuhan" },
+  { id: 1, title: "Brief & Cover" },
   { id: 2, title: "Anggaran & Tim" },
   { id: 3, title: "Pratinjau" },
 ];
@@ -65,6 +70,8 @@ export function PostProjectScreen({ navigation }) {
   const [judul, setJudul] = useState("");
   const [kategori, setKategori] = useState("DESIGN");
   const [deskripsi, setDeskripsi] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
+  const [budgetMin, setBudgetMin] = useState("200000");
   const [budgetMax, setBudgetMax] = useState("300000");
   const [deadline, setDeadline] = useState(
     new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
@@ -86,6 +93,59 @@ export function PostProjectScreen({ navigation }) {
   ]);
 
   const selectableCategories = CATEGORIES.filter((c) => c.id !== "ALL");
+
+  const PRESET_BANNERS = [
+    {
+      id: "b1",
+      label: "Modern Tech",
+      url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80",
+    },
+    {
+      id: "b2",
+      label: "Creative Design",
+      url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80",
+    },
+    {
+      id: "b3",
+      label: "Bisnis & Kuliner",
+      url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80",
+    },
+    {
+      id: "b4",
+      label: "Video Production",
+      url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80",
+    },
+  ];
+
+  const handlePickBanner = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        showToast("Izin akses galeri diperlukan untuk memilih foto cover banner", "danger");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.6,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
+        const base64Data = asset.base64
+          ? `data:image/jpeg;base64,${asset.base64}`
+          : asset.uri;
+        setBannerUrl(base64Data);
+        showToast("Cover banner proyek berhasil dipilih!", "success");
+      }
+    } catch (err) {
+      showToast("Gagal memilih gambar dari galeri", "danger");
+    }
+  };
 
   const handleAddSlot = () => {
     if (slots.length >= 5) {
@@ -118,6 +178,7 @@ export function PostProjectScreen({ navigation }) {
   );
 
   const numBudget = parseInt(budgetMax, 10) || 0;
+  const numBudgetMin = budgetMin ? parseInt(budgetMin, 10) || 0 : undefined;
 
   // Navigation between steps
   const goToStep = (step) => {
@@ -156,6 +217,10 @@ export function PostProjectScreen({ navigation }) {
     }
     if (numBudget > 2000000) {
       showToast("Batas maksimal anggaran proyek adalah Rp 2.000.000", "danger");
+      return;
+    }
+    if (numBudgetMin && numBudgetMin > numBudget) {
+      showToast("Estimasi honor minimal tidak boleh melebihi batas maksimal", "danger");
       return;
     }
     if (!deadline) {
@@ -215,8 +280,10 @@ export function PostProjectScreen({ navigation }) {
         judul: judul.trim(),
         deskripsi_raw: deskripsi.trim(),
         kategori,
+        budget_min: numBudgetMin || undefined,
         budget_max: numBudget,
         deadline,
+        banner_url: bannerUrl.trim() || undefined,
         tipe_kolaborasi: tipeKolaborasi,
         slots:
           tipeKolaborasi === "TIM"
@@ -246,7 +313,9 @@ export function PostProjectScreen({ navigation }) {
     judul: judul.trim() || "Judul Proyek UMKM Anda",
     kategori,
     deskripsi_raw: deskripsi.trim() || "Belum ada rincian brief.",
+    budget_min: numBudgetMin || undefined,
     budget_max: numBudget || 300000,
+    banner_url: bannerUrl || undefined,
     deadline,
     tipe_kolaborasi: tipeKolaborasi,
     total_slots: tipeKolaborasi === "TIM" ? slots.length : 1,
@@ -361,8 +430,8 @@ export function PostProjectScreen({ navigation }) {
                   Informasi & Brief Kebutuhan
                 </Text>
                 <Text style={styles.stepIntroSub}>
-                  Pilih bidang keahlian yang dibutuhkan serta jelaskan
-                  ekspektasi hasil kerja.
+                  Pilih bidang keahlian, unggah cover banner kustom, dan jelaskan
+                  ekspektasi hasil kerja proyek Anda.
                 </Text>
               </View>
             </View>
@@ -384,6 +453,73 @@ export function PostProjectScreen({ navigation }) {
                   />
                 ))}
               </ScrollView>
+            </View>
+
+            {/* Custom Cover Banner Section */}
+            <View style={styles.formSection}>
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <Text style={styles.sectionLabel}>Cover Banner Proyek (Kustom)</Text>
+                {bannerUrl ? (
+                  <TouchableOpacity onPress={() => setBannerUrl("")} activeOpacity={0.7}>
+                    <Text style={{ fontSize: 11, fontFamily: FONTS.bodyBold, color: "#DC2626" }}>Hapus Banner</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+
+              <View style={styles.bannerPreviewCard}>
+                {bannerUrl ? (
+                  <Image source={{ uri: bannerUrl }} style={styles.uploadedBannerImage} resizeMode="cover" />
+                ) : (
+                  <View style={styles.emptyBannerPlaceholder}>
+                    <ImageIcon size={32} color="#94A3B8" />
+                    <Text style={styles.emptyBannerTitle}>Belum ada cover banner kustom</Text>
+                    <Text style={styles.emptyBannerSub}>Gunakan banner menarik untuk meningkatkan minat lamaran mahasiswa</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Upload Button & Presets */}
+              <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+                <TouchableOpacity
+                  style={styles.pickBannerBtn}
+                  onPress={handlePickBanner}
+                  activeOpacity={0.8}
+                >
+                  <Camera size={14} color="#FFFFFF" />
+                  <Text style={styles.pickBannerBtnText}>
+                    {bannerUrl ? "Ganti dari Galeri" : "Unggah dari Galeri"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ marginTop: 10 }}>
+                <Text style={{ fontSize: 11, fontFamily: FONTS.bodyMedium, color: "#64748B", marginBottom: 6 }}>
+                  Atau pilih tema preset:
+                </Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                  {PRESET_BANNERS.map((preset) => (
+                    <TouchableOpacity
+                      key={preset.id}
+                      style={[
+                        styles.presetBannerChip,
+                        bannerUrl === preset.url && styles.presetBannerChipActive,
+                      ]}
+                      onPress={() => setBannerUrl(preset.url)}
+                      activeOpacity={0.75}
+                    >
+                      <Sparkles size={11} color={bannerUrl === preset.url ? "#2563EB" : "#64748B"} />
+                      <Text
+                        style={[
+                          styles.presetBannerText,
+                          bannerUrl === preset.url && styles.presetBannerTextActive,
+                        ]}
+                      >
+                        {preset.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
 
             {/* Judul Input */}
@@ -427,25 +563,37 @@ export function PostProjectScreen({ navigation }) {
               <DollarSign size={18} color={COLORS.brandIndigo} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.stepIntroTitle}>
-                  Alokasi Anggaran & Formasi Tim
+                  Rentang Anggaran & Formasi Tim
                 </Text>
                 <Text style={styles.stepIntroSub}>
-                  Tentukan pagu honor dan sesuaikan apakah proyek ini untuk 1
+                  Tentukan rentang honor (min - max) dan sesuaikan apakah proyek ini untuk 1
                   orang atau tim multi-talenta.
                 </Text>
               </View>
             </View>
 
-            {/* Currency Input */}
-            <CurrencyInput
-              label="Maksimal Anggaran Honor"
-              placeholder="300.000"
-              value={budgetMax}
-              onChangeValue={(val) => setBudgetMax(String(val))}
-              quickNominals={[100000, 250000, 500000, 1000000, 2000000]}
-              helperText="Pagu anggaran proyek platform: Rp 50.000 - Rp 2.000.000"
-              required
-            />
+            {/* Range Currency Inputs */}
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={{ flex: 1 }}>
+                <CurrencyInput
+                  label="Minimal Honor (Opsional)"
+                  placeholder="200.000"
+                  value={budgetMin}
+                  onChangeValue={(val) => setBudgetMin(String(val))}
+                  helperText="Batas bawah rentang"
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <CurrencyInput
+                  label="Maksimal Honor (Pagu)"
+                  placeholder="300.000"
+                  value={budgetMax}
+                  onChangeValue={(val) => setBudgetMax(String(val))}
+                  helperText="Maks. Rp 2.000.000"
+                  required
+                />
+              </View>
+            </View>
 
             {/* Smart Pricing Suggester */}
             <PricingSuggester category={kategori} budget={budgetMax} />
@@ -934,6 +1082,79 @@ const styles = StyleSheet.create({
   },
   categoriesRow: {
     flexDirection: "row",
+  },
+  bannerPreviewCard: {
+    width: "100%",
+    height: 140,
+    borderRadius: 14,
+    backgroundColor: COLORS.bgDark,
+    borderWidth: 1,
+    borderColor: COLORS.borderDark,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  uploadedBannerImage: {
+    width: "100%",
+    height: "100%",
+  },
+  emptyBannerPlaceholder: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    gap: 4,
+  },
+  emptyBannerTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+  },
+  emptyBannerSub: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    textAlign: "center",
+  },
+  pickBannerBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#0F172A",
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+  },
+  pickBannerBtnText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  presetBannerChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  presetBannerChipActive: {
+    backgroundColor: "#EFF6FF",
+    borderColor: "#93C5FD",
+  },
+  presetBannerText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyMedium,
+    color: "#475569",
+  },
+  presetBannerTextActive: {
+    color: "#2563EB",
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
   },
   stepNextBtn: {
     marginTop: 8,

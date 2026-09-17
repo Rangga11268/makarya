@@ -31,6 +31,7 @@ class Project(Base):
     judul = Column(String(255), nullable=False)
     deskripsi_raw = Column(Text, nullable=False)
     kategori = Column(SqlEnum(ProjectCategory, name="project_category_enum"), nullable=False, index=True)
+    budget_min = Column(Numeric(12, 2), nullable=True)
     budget_max = Column(Numeric(12, 2), nullable=False)
     deadline = Column(Date, nullable=False)
     status = Column(SqlEnum(ProjectStatus, name="project_status_enum"), default=ProjectStatus.OPEN, nullable=False, index=True)
@@ -41,6 +42,7 @@ class Project(Base):
     cancelled_by_role = Column(String(50), nullable=True)
     cancelled_at = Column(DateTime(timezone=True), nullable=True)
     tipe_kolaborasi = Column(String(20), default="INDIVIDU", nullable=False)
+    banner_url = Column(Text, nullable=True)
 
     #  Cek apakah bugdet_max nya tidak boleh lebih dari > 2 juta dan kurang dari 0
     __table_args__ = (
