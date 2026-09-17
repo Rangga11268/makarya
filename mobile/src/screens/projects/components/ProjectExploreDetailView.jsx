@@ -187,17 +187,12 @@ export function ProjectExploreDetailView({
 
   // 5. Rating & Reviews Data
   const ratingAvgScore =
-    typeof project.umkm_profile?.rating_avg === "number"
     project.umkm_profile?.rating_avg != null &&
     !isNaN(Number(project.umkm_profile.rating_avg))
       ? Number(project.umkm_profile.rating_avg).toFixed(1)
-      : typeof project.client_rating === "number"
-      : project.client_rating != null &&
-          !isNaN(Number(project.client_rating))
+      : project.client_rating != null && !isNaN(Number(project.client_rating))
         ? Number(project.client_rating).toFixed(1)
-        : "5.0";
-        : project.rating_avg != null &&
-            !isNaN(Number(project.rating_avg))
+        : project.rating_avg != null && !isNaN(Number(project.rating_avg))
           ? Number(project.rating_avg).toFixed(1)
           : "5.0";
 
@@ -716,12 +711,6 @@ export function ProjectExploreDetailView({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.reviewsScrollContainer}
             >
-              {studentReviews.map((rev) => (
-                <View key={rev.id} style={styles.fiverrReviewCard}>
-                  {/* Top Reviewer Info */}
-                  <View style={styles.fiverrReviewerHeader}>
-                    <View style={styles.fiverrReviewerAvatarBox}>
-                      <GraduationCap size={16} color="#2563EB" />
               {studentReviews.map((rev, idx) => {
                 const reviewerName =
                   rev.dari_nama || rev.nama || "Mahasiswa Terverifikasi";
@@ -767,34 +756,12 @@ export function ProjectExploreDetailView({
                         </Text>
                       </View>
                     </View>
-                    <View style={styles.fiverrReviewerMeta}>
-                      <Text style={styles.fiverrReviewerName} numberOfLines={1}>
-                        {rev.nama}
-                      </Text>
-                      <Text
-                        style={styles.fiverrReviewerCampus}
-                        numberOfLines={1}
-                      >
-                        🇮🇩 {rev.kampus}
-                      </Text>
-                    </View>
-                  </View>
 
-                  {/* Review Text Body */}
-                  <Text style={styles.fiverrReviewText} numberOfLines={3}>
-                    {rev.pesan}
-                  </Text>
                     {/* Review Text Body */}
                     <Text style={styles.fiverrReviewText} numberOfLines={3}>
                       {reviewComment}
                     </Text>
 
-                  {/* Bottom Score & Date */}
-                  <View style={styles.fiverrReviewBottomRow}>
-                    <View style={styles.fiverrReviewScoreBox}>
-                      <Star size={11} color="#0F172A" fill="#0F172A" />
-                      <Text style={styles.fiverrReviewScoreText}>
-                        {rev.rating.toFixed(1)}
                     {/* Bottom Score & Date */}
                     <View style={styles.fiverrReviewBottomRow}>
                       <View style={styles.fiverrReviewScoreBox}>
@@ -807,10 +774,7 @@ export function ProjectExploreDetailView({
                         {reviewDate}
                       </Text>
                     </View>
-                    <Text style={styles.fiverrReviewDateText}>{rev.waktu}</Text>
                   </View>
-                </View>
-              ))}
                 );
               })}
             </ScrollView>
