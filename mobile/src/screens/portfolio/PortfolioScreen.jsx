@@ -362,7 +362,6 @@ export function PortfolioScreen({ navigation }) {
 
                     return (
                       <View key={cert.id} style={styles.certCard}>
-                        {/* Header: Role Tag + Credential ID */}
                         {/* Header: Role Tag on left, Honor on right */}
                         <View style={styles.certCardHeader}>
                           <View style={styles.roleTag}>
@@ -370,13 +369,6 @@ export function PortfolioScreen({ navigation }) {
                               {cert.role_name}
                             </Text>
                           </View>
-                          <Text
-                            style={styles.credIdText}
-                            numberOfLines={1}
-                            ellipsizeMode="middle"
-                          >
-                            {cert.credential_id}
-                          </Text>
                           <View style={styles.honorPill}>
                             <Coins size={12} color="#059669" />
                             <Text style={styles.honorPillText} numberOfLines={1}>
@@ -402,18 +394,6 @@ export function PortfolioScreen({ navigation }) {
                           </Text>
                         </View>
 
-                        {/* Honor & Project Meta Bar */}
-                        <View style={styles.honorBadgeBar}>
-                          <View style={styles.honorPill}>
-                            <Coins size={12} color="#059669" />
-                            <Text style={styles.honorPillText}>
-                              Honor:{" "}
-                              {formatCurrency(
-                                cert.honor_amount || cert.slot_budget || 0,
-                              )}
-                            </Text>
-                          </View>
-
                         {/* Credential ID & Team Meta Bar */}
                         <View style={styles.certMetaRow}>
                           <Text style={styles.credIdText} numberOfLines={1}>
@@ -422,7 +402,6 @@ export function PortfolioScreen({ navigation }) {
                           {cert.collaboration_type === "TIM" && (
                             <View style={styles.teamTypePill}>
                               <Text style={styles.teamTypePillText}>
-                                Formasi Tim
                                 Tim
                               </Text>
                             </View>

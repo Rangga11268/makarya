@@ -793,10 +793,7 @@ export function ProfileScreen({ navigation }) {
                   <View key={cert.id} style={styles.certItemCard}>
                     <View style={styles.certItemHeader}>
                       <View style={styles.certRoleTag}>
-                        <Text
-                          style={styles.certRoleTagText}
-                          numberOfLines={1}
-                        >
+                        <Text style={styles.certRoleTagText} numberOfLines={1}>
                           {cert.role_name}
                         </Text>
                       </View>
