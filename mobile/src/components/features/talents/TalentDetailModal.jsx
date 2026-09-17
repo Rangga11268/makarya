@@ -69,6 +69,19 @@ export function TalentDetailModal({
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.detailScrollContent}
           >
+            {/* Talent Cover Banner */}
+            <View style={styles.bannerContainer}>
+              <Image
+                source={{
+                  uri:
+                    talent.banner_url ||
+                    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
+                }}
+                style={styles.bannerImage}
+                resizeMode="cover"
+              />
+            </View>
+
             <View style={styles.detailProfileTop}>
               {talent.url_foto ? (
                 <Image
@@ -369,31 +382,51 @@ const styles = StyleSheet.create({
   },
   detailScrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 14,
     paddingBottom: 24,
+  },
+  bannerContainer: {
+    width: "100%",
+    height: 96,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#0F172A",
+    marginBottom: 0,
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
   },
   detailProfileTop: {
     flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
+    alignItems: "flex-end",
+    gap: 12,
+    marginTop: -26,
     marginBottom: 16,
+    paddingHorizontal: 6,
   },
   detailAvatarBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 58,
+    height: 58,
+    borderRadius: 18,
     backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    elevation: 3,
   },
   detailAvatarImage: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 58,
+    height: 58,
+    borderRadius: 18,
     backgroundColor: COLORS.canvasSoft,
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    elevation: 3,
   },
   detailAvatarLetter: {
-    fontSize: 22,
+    fontSize: 24,
     fontFamily: FONTS.displayBold,
     fontWeight: "700",
     color: "#FFFFFF",

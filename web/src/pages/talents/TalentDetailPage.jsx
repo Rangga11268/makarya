@@ -266,26 +266,28 @@ export function TalentDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
         </div>
 
-        <div className="p-6 sm:p-8 -mt-12 relative z-10">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div className="px-6 pb-6 pt-0 sm:px-8 sm:pb-8 relative z-10">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {/* Avatar */}
-            {talent.url_foto ? (
-              <img
-                src={talent.url_foto}
-                alt={talent.nama_lengkap}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shrink-0 shadow-md border-4 border-white bg-white"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shrink-0 shadow-md border-4 border-white">
-                {initial}
-              </div>
-            )}
+            <div className="-mt-12 sm:-mt-14 shrink-0">
+              {talent.url_foto ? (
+                <img
+                  src={talent.url_foto}
+                  alt={talent.nama_lengkap}
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-md border-4 border-white bg-white"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shadow-md border-4 border-white">
+                  {initial}
+                </div>
+              )}
+            </div>
 
             {/* Identity Info */}
-            <div className="flex-1 text-center sm:text-left space-y-3 min-w-0">
+            <div className="flex-1 text-center sm:text-left space-y-2.5 pt-2 sm:pt-3 min-w-0">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
                 <h1 className="text-xl sm:text-2xl font-bold text-dark-900">
                   {talent.nama_lengkap}
@@ -686,7 +688,7 @@ export function TalentDetailPage() {
                     <label className="text-xs font-semibold text-slate-700 block">
                       Pilih Proyek UMKM Anda:
                     </label>
-                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <div className="flex flex-col gap-2.5 max-h-64 overflow-y-auto pr-1 py-1">
                       {myProjects.map((p) => {
                         const isSelected = selectedProjectId === p.id;
                         const isOpen =
