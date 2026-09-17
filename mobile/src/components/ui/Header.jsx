@@ -110,9 +110,9 @@ export function Header({
             {React.isValidElement(leftIcon)
               ? leftIcon
               : typeof leftIcon === "function" ||
-                (typeof leftIcon === "object" && leftIcon !== null)
-              ? React.createElement(leftIcon, { size: 18, color: "#0F172A" })
-              : null}
+                  (typeof leftIcon === "object" && leftIcon !== null)
+                ? React.createElement(leftIcon, { size: 18, color: "#0F172A" })
+                : null}
           </TouchableOpacity>
         ) : (
           <View style={styles.headerCircleBtnPlaceholder} />
@@ -212,9 +212,9 @@ export function Header({
             {React.isValidElement(rightIcon)
               ? rightIcon
               : typeof rightIcon === "function" ||
-                (typeof rightIcon === "object" && rightIcon !== null)
-              ? React.createElement(rightIcon, { size: 18, color: "#0F172A" })
-              : null}
+                  (typeof rightIcon === "object" && rightIcon !== null)
+                ? React.createElement(rightIcon, { size: 18, color: "#0F172A" })
+                : null}
           </TouchableOpacity>
         ) : userProfile && (userProfile.photoUrl || userProfile.url_foto) ? (
           <TouchableOpacity

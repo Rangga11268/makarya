@@ -792,8 +792,6 @@ export function ProfileScreen({ navigation }) {
                 {certificates.slice(0, 3).map((cert) => (
                   <View key={cert.id} style={styles.certItemCard}>
                     <View style={styles.certItemHeader}>
-                      <View style={styles.certTagsLeft}>
-                        <View style={styles.certRoleTag}>
                       <View style={styles.certRoleTag}>
                         <Text
                           style={styles.certRoleTagText}
@@ -805,36 +803,14 @@ export function ProfileScreen({ navigation }) {
                       {cert.honor_amount || cert.slot_budget ? (
                         <View style={styles.certHonorTag}>
                           <Text
-                            style={styles.certRoleTagText}
                             style={styles.certHonorTagText}
                             numberOfLines={1}
                           >
-                            {cert.role_name}
                             {formatCurrency(
                               cert.honor_amount || cert.slot_budget,
                             )}
                           </Text>
                         </View>
-                        {cert.honor_amount || cert.slot_budget ? (
-                          <View style={styles.certHonorTag}>
-                            <Text
-                              style={styles.certHonorTagText}
-                              numberOfLines={1}
-                            >
-                              {formatCurrency(
-                                cert.honor_amount || cert.slot_budget,
-                              )}
-                            </Text>
-                          </View>
-                        ) : null}
-                      </View>
-                      <Text
-                        style={styles.certCredText}
-                        numberOfLines={1}
-                        ellipsizeMode="middle"
-                      >
-                        {cert.credential_id}
-                      </Text>
                       ) : null}
                     </View>
 
@@ -898,7 +874,6 @@ export function ProfileScreen({ navigation }) {
                   activeOpacity={0.85}
                 >
                   <View style={styles.portfolioBannerIconWrap}>
-                    <Sparkles size={16} color={COLORS.brandIndigo} />
                     <Briefcase size={16} color={COLORS.brandIndigo} />
                   </View>
                   <View style={{ flex: 1 }}>
