@@ -134,6 +134,7 @@ def _format_talent(mhs: ProfileMhs, db: Session) -> TalentResponse:
         universitas=universitas_str,
         semester=6,
         url_foto=mhs.url_foto,
+        banner_url=mhs.banner_url,
         url_portofolio=display_url or None,
         github_url=portfolio_links.get("github") or "",
         figma_url=portfolio_links.get("figma") or "",

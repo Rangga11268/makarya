@@ -104,9 +104,13 @@ export function TalentDetailPage() {
             : Array.isArray(res)
               ? res
               : [];
-          setMyProjects(list);
-          if (list.length > 0) {
-            setSelectedProjectId(list[0].id);
+          // Filter hanya proyek yang masih terbuka untuk pendaftaran / rekrutmen talenta
+          const openProjects = list.filter(
+            (p) => p.status === "OPEN" || p.status === "BIDDING",
+          );
+          setMyProjects(openProjects);
+          if (openProjects.length > 0) {
+            setSelectedProjectId(openProjects[0].id);
           }
         } catch (err) {
           console.error("Gagal memuat daftar proyek UMKM:", err);
@@ -796,8 +800,8 @@ export function TalentDetailPage() {
                 ) : (
                   <div className="p-4 bg-canvas border border-border rounded-xl space-y-3 text-center">
                     <p className="text-xs text-slate-500">
-                      Anda belum memiliki proyek aktif untuk mengajak mahasiswa
-                      ini.
+                      Anda belum memiliki proyek dengan status Terbuka
+                      (Open/Bidding) untuk mengajak kolaborasi.
                     </p>
                     <Link to="/projects/new">
                       <Button

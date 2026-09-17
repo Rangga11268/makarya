@@ -24,6 +24,7 @@ class TalentResponse(BaseModel):
     universitas: Optional[str] = "Universitas Bina Sarana Informatika"
     semester: Optional[int] = 6
     url_foto: Optional[str] = None
+    banner_url: Optional[str] = None
     url_portofolio: Optional[str] = None
     github_url: Optional[str] = None
     figma_url: Optional[str] = None

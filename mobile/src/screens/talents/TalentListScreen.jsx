@@ -259,15 +259,39 @@ export function TalentListScreen({ navigation }) {
     setIsDetailModalOpen(true);
   };
 
-  const handleOpenContact = (talent) => {
+  const handleOpenContact = async (talent) => {
+    setSelectedTalent(talent);
     setIsDetailModalOpen(false);
-    setIsContactModalOpen(false);
-    navigation.navigate("Chat", {
-      talentId: talent.id,
-      partnerName: talent.nama_lengkap,
-      partnerPhoto: talent.url_foto || null,
-      partnerRole: "MHS",
-    });
+    if (user?.role?.toUpperCase() === "UMKM") {
+      setIsContactModalOpen(true);
+      try {
+        setLoadingProjects(true);
+        const res = await projectApi.getMyProjects();
+        const list = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
+        const openProjects = list.filter(
+          (p) => p.status === "OPEN" || p.status === "BIDDING",
+        );
+        setMyProjects(openProjects);
+        if (openProjects.length > 0) {
+          setSelectedProjectId(openProjects[0].id);
+        }
+      } catch (err) {
+        console.error("Gagal memuat proyek UMKM:", err);
+      } finally {
+        setLoadingProjects(false);
+      }
+    } else {
+      navigation.navigate("Chat", {
+        talentId: talent.id,
+        partnerName: talent.nama_lengkap,
+        partnerPhoto: talent.url_foto || null,
+        partnerRole: "MHS",
+      });
+    }
   };
 
   const handleInviteToProject = (projectId, slotId) => {
