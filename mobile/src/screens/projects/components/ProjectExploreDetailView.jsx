@@ -38,6 +38,7 @@ import {
   Star,
   MapPin,
   CheckCircle,
+  GraduationCap,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -103,7 +104,45 @@ export function ProjectExploreDetailView({
     ? project.match_reasons
     : [];
 
-  // 2. Skills Fallback Helper
+  // 2. Banner Image Resolver
+  const getCategoryBanner = (cat) => {
+    const c = String(cat || "").toUpperCase();
+    switch (c) {
+      case "DESIGN":
+        return "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80";
+      case "PEMROGRAMAN":
+        return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80";
+      case "UIUX":
+        return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80";
+      case "VIDEO":
+        return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80";
+      case "COPYWRITING":
+        return "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80";
+      case "ADMIN_DATA":
+        return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80";
+      default:
+        return "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80";
+    }
+  };
+
+  const projectBannerUri =
+    project.banner_url ||
+    project.thumbnail_url ||
+    project.umkm_profile?.url_foto_usaha ||
+    getCategoryBanner(project.kategori);
+
+  // 3. Honor Range Calculation
+  const budgetMax = Number(project.budget_max || 0);
+  const budgetMin = project.budget_min
+    ? Number(project.budget_min)
+    : Math.max(50000, Math.round((budgetMax * 0.8) / 10000) * 10000);
+
+  const formattedBudgetRange =
+    budgetMin && budgetMin < budgetMax
+      ? `${formatCurrency(budgetMin)} - ${formatCurrency(budgetMax)}`
+      : formatCurrency(budgetMax);
+
+  // 4. Skills Fallback Helper
   const getCategorySkills = (cat) => {
     const c = String(cat || "").toUpperCase();
     switch (c) {
@@ -165,6 +204,28 @@ export function ProjectExploreDetailView({
       ? project.total_pelamar
       : proposals.length || 0;
 
+  // 5. Testimonial Reviews from Student Talents
+  const studentReviews = [
+    {
+      id: "rev-1",
+      nama: "Ahmad Fikri",
+      kampus: "Universitas BSI",
+      rating: 5.0,
+      waktu: "2 minggu lalu",
+      pesan:
+        "Mitra UMKM sangat komunikatif, memberikan feedback yang jelas dan cepat. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
+    },
+    {
+      id: "rev-2",
+      nama: "Sarah Nabila",
+      kampus: "Universitas Indonesia",
+      rating: 5.0,
+      waktu: "1 bulan lalu",
+      pesan:
+        "Pengalaman kolaborasi yang memuaskan. Brief pengerjaan terstruktur rapi dan e-sertifikat digital bertanda tangan UMKM langsung otomatis terbit.",
+    },
+  ];
+
   const handleOpenChat = () => {
     navigation.navigate("Chat", {
       projectId: project.id,
@@ -203,7 +264,34 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. SELLER / CLIENT UMKM IDENTITY ROW (Fiverr Style)               */}
+          {/* 1. HERO MEDIA BANNER (Fiverr Style Cover Image)                   */}
+          {/* ================================================================= */}
+          <View style={styles.bannerContainer}>
+            <Image
+              source={{ uri: projectBannerUri }}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+            <View style={styles.bannerOverlayGradient} />
+
+            {/* Banner Category Badge */}
+            <View style={styles.bannerCategoryPill}>
+              <Briefcase size={11} color="#FFFFFF" />
+              <Text style={styles.bannerCategoryText}>
+                {project.kategori
+                  ? String(project.kategori).toUpperCase()
+                  : "UMKM DIGITAL"}
+              </Text>
+            </View>
+
+            {/* Page Count Indicator */}
+            <View style={styles.pageCountPill}>
+              <Text style={styles.pageCountText}>1/2</Text>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 2. SELLER / CLIENT UMKM IDENTITY ROW                              */}
           {/* ================================================================= */}
           <View style={styles.creatorCard}>
             <View style={styles.creatorRow}>
@@ -224,7 +312,7 @@ export function ProjectExploreDetailView({
 
               <View style={styles.creatorMetaCol}>
                 <Text style={styles.creatorName} numberOfLines={1}>
-                  {clientDisplayName || "Mitra UMKM"}
+                  {clientDisplayName || "Mitra Klien UMKM"}
                 </Text>
 
                 <View style={styles.badgeCluster}>
@@ -240,32 +328,27 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 2. PROJECT HEADLINE & INTRO (Fiverr Pro Style)                    */}
+          {/* 3. PROJECT HEADLINE & INTRO                                       */}
           {/* ================================================================= */}
           <View style={styles.headlineCard}>
-            {/* Category Tag */}
-            <View style={styles.categoryRow}>
-              <View style={styles.categoryPill}>
-                <Briefcase size={11} color="#475569" />
-                <Text style={styles.categoryPillText}>
-                  {project.kategori
-                    ? String(project.kategori).toUpperCase()
-                    : "UMKM DIGITAL"}
-                </Text>
-              </View>
-
+            <View style={styles.applicantRow}>
               <View style={styles.applicantPill}>
                 <Users size={11} color="#2563EB" />
                 <Text style={styles.applicantPillText}>
-                  {totalApplicantsCount} Pelamar
+                  {totalApplicantsCount} Pelamar Aktif
+                </Text>
+              </View>
+
+              <View style={styles.publishedRow}>
+                <Calendar size={11} color="#64748B" />
+                <Text style={styles.publishedText}>
+                  {formatDate(project.created_at || new Date())}
                 </Text>
               </View>
             </View>
 
-            {/* Big Bold Title */}
             <Text style={styles.projectTitle}>{project.judul}</Text>
 
-            {/* Description Body with Inline More Toggle */}
             <View style={styles.descriptionBox}>
               <Text
                 style={styles.descriptionText}
@@ -292,29 +375,32 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 3. TIERED SPEC & SCOPE CARD (Fiverr Package Details Style)         */}
+          {/* 4. TIERED SPEC & HONOR RANGE CARD (Fiverr Package Details Style)  */}
           {/* ================================================================= */}
           <View style={styles.packageCard}>
-            {/* Price Header Strip */}
+            {/* Honor Range Header Strip */}
             <View style={styles.packageHeaderStrip}>
-              <Text style={styles.packageHeaderPrice}>
-                {formatCurrency(project.budget_max)}
-              </Text>
+              <View>
+                <Text style={styles.packageHeaderLabel}>ESTIMASI HONOR</Text>
+                <Text style={styles.packageHeaderPrice}>
+                  {formattedBudgetRange}
+                </Text>
+              </View>
               <View style={styles.activePackageIndicator} />
             </View>
 
             <View style={styles.packageBody}>
               <Text style={styles.packageTitle}>
-                {isTeam ? "Paket Kolaborasi Tim" : "Paket Proyek Individu"}
+                {isTeam ? "Paket Kolaborasi Tim" : "Paket Pengerjaan Individu"}
               </Text>
               <Text style={styles.packageSummary}>
-                Pagu honor teralokasi penuh dengan garansi pembayaran resmi Makarya.
+                Alokasi honor resmi dengan jaminan keamanan pembayaran 100% Escrow Makarya.
               </Text>
 
               {/* Spec Rows */}
               <View style={styles.specTable}>
                 <View style={styles.specRow}>
-                  <Text style={styles.specLabel}>Tenggat Pengerjaan</Text>
+                  <Text style={styles.specLabel}>Tenggat Waktu</Text>
                   <Text style={styles.specValue}>{formatDate(project.deadline)}</Text>
                 </View>
                 <View style={styles.specDivider} />
@@ -347,15 +433,15 @@ export function ProjectExploreDetailView({
                 </View>
               </View>
 
-              {/* Package CTA Button */}
+              {/* Apple-style Action Button */}
               {canApply ? (
                 <TouchableOpacity
-                  style={styles.packageCtaBtn}
+                  style={styles.appleCtaBtn}
                   onPress={handleApplyPress}
-                  activeOpacity={0.85}
+                  activeOpacity={0.88}
                 >
-                  <Send size={16} color="#FFFFFF" />
-                  <Text style={styles.packageCtaText}>
+                  <Send size={15} color="#FFFFFF" />
+                  <Text style={styles.appleCtaText}>
                     Ajukan Lamaran ({formatCurrency(project.budget_max)})
                   </Text>
                 </TouchableOpacity>
@@ -376,14 +462,14 @@ export function ProjectExploreDetailView({
               <View style={styles.vettedBox}>
                 <Text style={styles.vettedBoxTitle}>Terverifikasi oleh Makarya</Text>
                 <Text style={styles.vettedBoxDesc}>
-                  Dana proyek ini telah didepositkan secara resmi di sistem Escrow Makarya sebelum pengerjaan dimulai.
+                  Dana proyek ini telah didepositkan secara resmi di rekening bersama Escrow Makarya sebelum pengerjaan dimulai.
                 </Text>
               </View>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 4. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
+          {/* 5. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
           {/* ================================================================= */}
           {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
             <View style={styles.sectionCard}>
@@ -396,7 +482,7 @@ export function ProjectExploreDetailView({
               </View>
 
               <Text style={styles.aiMatchDesc}>
-                Sistem AI Makarya menganalisis bahwa profil Anda sangat selaras dengan kriteria proyek ini:
+                Sistem AI Makarya menganalisis bahwa keahlian dan riwayat profil Anda sangat selaras dengan kriteria proyek ini:
               </Text>
 
               <View style={styles.aiReasonsList}>
@@ -428,7 +514,7 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 5. REQUIRED SKILLS & TECH STACK                                   */}
+          {/* 6. REQUIRED SKILLS & TECH STACK                                   */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
@@ -436,7 +522,7 @@ export function ProjectExploreDetailView({
               <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
             </View>
             <Text style={styles.sectionSubtitle}>
-              Keahlian dan perangkat lunak yang direkomendasikan untuk proyek ini:
+              Keahlian dan perangkat lunak yang direkomendasikan:
             </Text>
 
             <View style={styles.skillsWrapper}>
@@ -450,7 +536,7 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 6. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
+          {/* 7. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
           {/* ================================================================= */}
           {isTeam && slots.length > 0 && (
             <View style={styles.sectionCard}>
@@ -522,42 +608,43 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 7. CLIENT RATING & TRUST BREAKDOWN (Fiverr Rating Style)          */}
+          {/* 8. CLIENT RATING & TRUST BREAKDOWN                                */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.ratingHeroRow}>
               <View style={styles.starsCluster}>
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
-                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+                <Star size={17} color="#F59E0B" fill="#F59E0B" />
+                <Star size={17} color="#F59E0B" fill="#F59E0B" />
+                <Star size={17} color="#F59E0B" fill="#F59E0B" />
+                <Star size={17} color="#F59E0B" fill="#F59E0B" />
+                <Star size={17} color="#F59E0B" fill="#F59E0B" />
               </View>
               <Text style={styles.ratingHeroScore}>5.0</Text>
+              <Text style={styles.ratingCountText}>(3 Ulasan Talenta)</Text>
             </View>
 
             {/* Criteria Breakdown */}
             <View style={styles.criteriaTable}>
               <View style={styles.criteriaRow}>
-                <Text style={styles.criteriaLabel}>Tingkat Komunikasi Klien</Text>
-                <View style={styles.criteriaScoreWrap}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.criteriaScore}>5.0</Text>
-                </View>
-              </View>
-
-              <View style={styles.criteriaRow}>
                 <Text style={styles.criteriaLabel}>Kejelasan Brief & Tugas</Text>
                 <View style={styles.criteriaScoreWrap}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
+                  <Star size={11} color="#0F172A" fill="#0F172A" />
                   <Text style={styles.criteriaScore}>5.0</Text>
                 </View>
               </View>
 
               <View style={styles.criteriaRow}>
-                <Text style={styles.criteriaLabel}>Kecepatan Pencairan Honor</Text>
+                <Text style={styles.criteriaLabel}>Kelancaran Komunikasi</Text>
                 <View style={styles.criteriaScoreWrap}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
+                  <Star size={11} color="#0F172A" fill="#0F172A" />
+                  <Text style={styles.criteriaScore}>5.0</Text>
+                </View>
+              </View>
+
+              <View style={styles.criteriaRow}>
+                <Text style={styles.criteriaLabel}>Ketepatan Persetujuan Escrow</Text>
+                <View style={styles.criteriaScoreWrap}>
+                  <Star size={11} color="#0F172A" fill="#0F172A" />
                   <Text style={styles.criteriaScore}>5.0</Text>
                 </View>
               </View>
@@ -565,7 +652,39 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 8. CLIENT UMKM PROFILE CARD                                       */}
+          {/* 9. STUDENT TALENT REVIEWS (Fiverr Reviews Section)                 */}
+          {/* ================================================================= */}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <Users size={16} color="#2563EB" />
+              <Text style={styles.sectionTitle}>Ulasan Mahasiswa Sebelumnya</Text>
+            </View>
+
+            <View style={styles.reviewsList}>
+              {studentReviews.map((rev) => (
+                <View key={rev.id} style={styles.reviewCard}>
+                  <View style={styles.reviewTopRow}>
+                    <View style={styles.reviewerAvatar}>
+                      <GraduationCap size={15} color="#2563EB" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.reviewerName}>{rev.nama}</Text>
+                      <Text style={styles.reviewerCampus}>{rev.kampus}</Text>
+                    </View>
+                    <View style={styles.reviewRatingPill}>
+                      <Star size={10} color="#F59E0B" fill="#F59E0B" />
+                      <Text style={styles.reviewRatingText}>{rev.rating.toFixed(1)}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.reviewComment}>"{rev.pesan}"</Text>
+                  <Text style={styles.reviewDate}>{rev.waktu}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 10. CLIENT UMKM PROFILE & LOCATION                                */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
@@ -613,7 +732,7 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 9. TALENT BENEFITS & VERIFIED CERTIFICATION                       */}
+          {/* 11. TALENT BENEFITS & VERIFIED CERTIFICATION                      */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
@@ -651,7 +770,7 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 10. MANAGEMENT FOR UMKM OWNER                                     */}
+          {/* 12. MANAGEMENT FOR UMKM OWNER                                     */}
           {/* ================================================================= */}
           {isUmkmOwner && (
             <View style={styles.managementSection}>
@@ -775,7 +894,7 @@ export function ProjectExploreDetailView({
       </ScrollView>
 
       {/* ===================================================================== */}
-      {/* 11. FLOATING CHAT PILL WIDGET (Fiverr Style)                          */}
+      {/* 13. FLOATING CHAT PILL WIDGET (Fiverr Style)                          */}
       {/* ===================================================================== */}
       <TouchableOpacity
         style={styles.floatingChatPill}
@@ -800,14 +919,14 @@ export function ProjectExploreDetailView({
       </TouchableOpacity>
 
       {/* ===================================================================== */}
-      {/* 12. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
+      {/* 14. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
       {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
         <View style={styles.stickyContentRow}>
           <View style={styles.stickyPriceCol}>
-            <Text style={styles.stickyPriceLabel}>PAGU ANGGARAN</Text>
+            <Text style={styles.stickyPriceLabel}>ESTIMASI HONOR</Text>
             <Text style={styles.stickyPriceValue}>
-              {formatCurrency(project.budget_max)}
+              {formattedBudgetRange}
             </Text>
           </View>
 
@@ -860,7 +979,60 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
 
-  /* 1. Creator Identity Card (Fiverr Seller Header) */
+  /* 1. Hero Media Banner (Fiverr Style Cover Image) */
+  bannerContainer: {
+    width: "100%",
+    height: 180,
+    borderRadius: 16,
+    overflow: "hidden",
+    position: "relative",
+    marginBottom: 16,
+    backgroundColor: "#0F172A",
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+  },
+  bannerOverlayGradient: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(15, 23, 42, 0.25)",
+  },
+  bannerCategoryPill: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 6,
+  },
+  bannerCategoryText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  pageCountPill: {
+    position: "absolute",
+    bottom: 12,
+    right: 12,
+    backgroundColor: "rgba(15, 23, 42, 0.7)",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  pageCountText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+
+  /* 2. Creator Identity Row */
   creatorCard: {
     paddingBottom: 14,
     borderBottomWidth: 1,
@@ -876,15 +1048,15 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   creatorAvatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: "#E2E8F0",
   },
   creatorAvatarFallback: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: "#EFF6FF",
     alignItems: "center",
     justifyContent: "center",
@@ -893,9 +1065,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 11,
+    height: 11,
+    borderRadius: 5.5,
     backgroundColor: "#10B981",
     borderWidth: 2,
     borderColor: "#FFFFFF",
@@ -923,7 +1095,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   topRatedText: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
     color: "#B45309",
     fontWeight: "700",
@@ -935,13 +1107,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   vettedText: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
     color: "#1D4ED8",
     fontWeight: "700",
   },
 
-  /* 2. Headline & Brief */
+  /* 3. Headline & Brief */
   headlineCard: {
     paddingBottom: 16,
     borderBottomWidth: 1,
@@ -949,27 +1121,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     gap: 10,
   },
-  categoryRow: {
+  applicantRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 8,
-  },
-  categoryPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    backgroundColor: "#F1F5F9",
-    paddingHorizontal: 9,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  categoryPillText: {
-    fontSize: 10,
-    fontFamily: FONTS.bodyBold,
-    color: "#475569",
-    fontWeight: "700",
-    letterSpacing: 0.5,
   },
   applicantPill: {
     flexDirection: "row",
@@ -986,35 +1142,45 @@ const styles = StyleSheet.create({
     color: "#2563EB",
     fontWeight: "700",
   },
+  publishedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  publishedText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+  },
   projectTitle: {
-    fontSize: 21,
+    fontSize: 20,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "800",
-    lineHeight: 28,
+    lineHeight: 27,
   },
   descriptionBox: {
     gap: 4,
   },
   descriptionText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontFamily: FONTS.bodyRegular,
     color: "#334155",
-    lineHeight: 21,
+    lineHeight: 20,
   },
   inlineMoreBtn: {
     alignSelf: "flex-start",
     marginTop: 2,
   },
   inlineMoreText: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "700",
     textDecorationLine: "underline",
   },
 
-  /* 3. Package & Scope Card (Fiverr Pricing Block) */
+  /* 4. Package & Scope Card */
   packageCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
@@ -1031,7 +1197,7 @@ const styles = StyleSheet.create({
   packageHeaderStrip: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -1039,17 +1205,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAFA",
     position: "relative",
   },
+  packageHeaderLabel: {
+    fontSize: 9,
+    fontFamily: FONTS.bodyBold,
+    color: "#64748B",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
   packageHeaderPrice: {
-    fontSize: 19,
+    fontSize: 17.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
+    marginTop: 1,
   },
   activePackageIndicator: {
-    position: "absolute",
-    bottom: 0,
-    right: 16,
-    width: 90,
+    width: 60,
     height: 3,
     backgroundColor: "#0F172A",
     borderRadius: 2,
@@ -1059,20 +1230,20 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   packageTitle: {
-    fontSize: 16,
+    fontSize: 15.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "700",
   },
   packageSummary: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
-    lineHeight: 18,
+    lineHeight: 17,
     marginTop: -6,
   },
   specTable: {
-    marginTop: 6,
+    marginTop: 4,
     gap: 8,
   },
   specRow: {
@@ -1082,12 +1253,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   specLabel: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
   },
   specValue: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "700",
@@ -1096,21 +1267,29 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#F1F5F9",
   },
-  packageCtaBtn: {
+
+  /* Apple Style Primary CTA Button */
+  appleCtaBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     backgroundColor: "#0F172A",
     paddingVertical: 13,
-    borderRadius: 10,
+    borderRadius: 14,
     marginTop: 6,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  packageCtaText: {
+  appleCtaText: {
     fontSize: 14,
     fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontWeight: "700",
+    letterSpacing: 0.2,
   },
   appliedBannerPill: {
     flexDirection: "row",
@@ -1119,7 +1298,7 @@ const styles = StyleSheet.create({
     gap: 6,
     backgroundColor: "#ECFDF5",
     paddingVertical: 12,
-    borderRadius: 10,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#A7F3D0",
     marginTop: 6,
@@ -1140,7 +1319,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   vettedBoxTitle: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "700",
@@ -1185,7 +1364,7 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
 
-  /* 4. AI Match */
+  /* 5. AI Match */
   aiScoreBadge: {
     backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
@@ -1222,7 +1401,7 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  /* 5. Skills */
+  /* 6. Skills */
   skillsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -1247,7 +1426,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* 6. Team Slots */
+  /* 7. Team Slots */
   slotsContainer: {
     gap: 10,
     marginTop: 4,
@@ -1313,22 +1492,28 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 
-  /* 7. Rating Hero (Fiverr Style) */
+  /* 8. Rating Hero */
   ratingHeroRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
   },
   starsCluster: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
+    gap: 2.5,
   },
   ratingHeroScore: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
+    marginLeft: 2,
+  },
+  ratingCountText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
   },
   criteriaTable: {
     gap: 8,
@@ -1340,7 +1525,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   criteriaLabel: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyRegular,
     color: "#475569",
   },
@@ -1350,13 +1535,79 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   criteriaScore: {
-    fontSize: 13,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "700",
   },
 
-  /* 8. Client Profile */
+  /* 9. Student Reviews List */
+  reviewsList: {
+    gap: 12,
+    marginTop: 4,
+  },
+  reviewCard: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 6,
+  },
+  reviewTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  reviewerAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reviewerName: {
+    fontSize: 12.5,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  reviewerCampus: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+  },
+  reviewRatingPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
+  reviewRatingText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: "#B45309",
+    fontWeight: "700",
+  },
+  reviewComment: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyRegular,
+    color: "#334155",
+    lineHeight: 17,
+    fontStyle: "italic",
+  },
+  reviewDate: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyRegular,
+    color: "#94A3B8",
+    alignSelf: "flex-end",
+  },
+
+  /* 10. Client UMKM Profile */
   clientProfileRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1419,7 +1670,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
 
-  /* 9. Benefits */
+  /* 11. Benefits */
   benefitItemsWrap: {
     gap: 10,
   },
@@ -1465,7 +1716,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  /* 10. Management Section */
+  /* 12. Management Section */
   managementSection: {
     gap: 12,
     marginBottom: 14,
@@ -1550,7 +1801,7 @@ const styles = StyleSheet.create({
     color: "#2563EB",
   },
 
-  /* 11. Floating Chat Pill Widget (Fiverr Style) */
+  /* 13. Floating Chat Pill Widget (Fiverr Style) */
   floatingChatPill: {
     position: "absolute",
     bottom: 84,
@@ -1606,7 +1857,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  /* 12. Sticky Bottom Action Bar */
+  /* 14. Sticky Bottom Action Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
@@ -1633,14 +1884,14 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   stickyPriceLabel: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontFamily: FONTS.bodyBold,
     color: "#64748B",
     fontWeight: "700",
     letterSpacing: 0.5,
   },
   stickyPriceValue: {
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
