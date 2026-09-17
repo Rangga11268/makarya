@@ -1,5 +1,83 @@
 import React from "react";
-import { Award, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2 } from "lucide-react";
+
+/**
+ * Inline vector logo mark for Makarya so html2canvas renders it 100% reliably
+ */
+export function MakaryaLogoMark({ className = "w-7 h-7" }) {
+  return (
+    <svg viewBox="0 0 512 512" fill="none" className={className}>
+      <defs>
+        <linearGradient
+          id="certIndigoGrad"
+          x1="60"
+          y1="100"
+          x2="450"
+          y2="420"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#4F46E5" />
+          <stop offset="50%" stopColor="#4338CA" />
+          <stop offset="100%" stopColor="#3730A3" />
+        </linearGradient>
+        <linearGradient
+          id="certCyanGrad"
+          x1="120"
+          y1="200"
+          x2="390"
+          y2="340"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="#00F2FE" />
+          <stop offset="60%" stopColor="#4FACFE" />
+          <stop offset="100%" stopColor="#00C0FF" />
+        </linearGradient>
+        <filter
+          id="certSubtleShadow"
+          x="-10%"
+          y="-10%"
+          width="120%"
+          height="120%"
+        >
+          <feDropShadow
+            dx="0"
+            dy="3"
+            stdDeviation="4"
+            floodColor="#1E1B4B"
+            floodOpacity="0.15"
+          />
+        </filter>
+      </defs>
+
+      {/* Outer M Arch */}
+      <path
+        d="M 88 380 L 88 160 C 88 118, 140 100, 172 135 L 256 226 L 340 135 C 372 100, 424 118, 424 160 L 424 380"
+        stroke="url(#certIndigoGrad)"
+        strokeWidth="48"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#certSubtleShadow)"
+      />
+
+      {/* Inner Infinity Loop */}
+      <path
+        d="M 256 280 C 200 210, 120 210, 120 280 C 120 350, 200 350, 256 280 C 312 210, 392 210, 392 280 C 392 350, 312 350, 256 280 Z"
+        stroke="url(#certCyanGrad)"
+        strokeWidth="42"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Bottom Arch Support */}
+      <path
+        d="M 180 300 C 205 350, 307 350, 332 300"
+        stroke="url(#certIndigoGrad)"
+        strokeWidth="48"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export function MakaryaCertificate({ certificate, className = "", innerRef }) {
   if (!certificate) return null;
@@ -28,14 +106,14 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
       id="makarya-official-certificate"
       className={`relative w-full max-w-4xl mx-auto bg-[#FFFFFF] text-[#0F172A] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 select-none font-sans ${className}`}
       style={{
-        aspectRatio: "1.414 / 1", // Standard A4 Landscape Proportions
+        aspectRatio: "1.414 / 1", // Standar A4 Landscape Proportions
         minHeight: "560px",
       }}
     >
       {/* Container Grid: Left Main Content (68%) & Right Geometric Panel (32%) */}
       <div className="w-full h-full flex flex-col sm:flex-row relative">
         {/* ================= LEFT MAIN CONTENT ================= */}
-        <div className="flex-1 p-6 sm:p-10 lg:p-12 flex flex-col justify-between relative z-10">
+        <div className="flex-1 p-6 sm:p-9 lg:p-10 flex flex-col justify-between relative z-10">
           {/* Top Decorative Leaves / Accents */}
           <div className="absolute top-0 left-0 w-28 h-28 pointer-events-none opacity-80">
             <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
@@ -54,13 +132,14 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
           </div>
 
           {/* Top Brand Header & Badges */}
-          <div className="space-y-2.5 pl-6 sm:pl-8">
-            <div className="flex items-center justify-between pb-1">
-              <img
-                src="/logo.webp"
-                alt="Makarya"
-                className="h-7 sm:h-8 w-auto object-contain"
-              />
+          <div className="space-y-2 pl-6 sm:pl-8">
+            <div className="flex items-center justify-between pb-0.5">
+              <div className="flex items-center gap-2">
+                <MakaryaLogoMark className="w-7 h-7" />
+                <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-sans">
+                  Makarya<span className="text-[#4F46E5]">.</span>
+                </span>
+              </div>
               <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[#065F46] text-[10px] font-bold tracking-wide">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>ESCROW VERIFIED PLATFORM</span>
@@ -85,7 +164,7 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
           </div>
 
           {/* Center Recipient Name & Campus */}
-          <div className="my-auto py-4 pl-6 sm:pl-8 space-y-2">
+          <div className="my-auto py-3 pl-6 sm:pl-8 space-y-1.5">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0F172A] tracking-tight uppercase leading-tight font-sans">
               {recipientName}
             </h2>
@@ -94,7 +173,7 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
             </p>
 
             {/* Statement Text */}
-            <p className="text-[11px] sm:text-xs lg:text-[12.5px] text-slate-600 max-w-lg leading-relaxed pt-1 font-normal">
+            <p className="text-[11px] sm:text-xs lg:text-[12px] text-slate-600 max-w-lg leading-relaxed pt-0.5 font-normal">
               Sertifikat ini diberikan atas penyelesaian penugasan proyek
               industri bersama mitra{" "}
               <strong className="text-slate-900 font-bold">{clientName}</strong>{" "}
@@ -111,32 +190,19 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
           </div>
 
           {/* Bottom Signatures & Gold Seal Medal */}
-          <div className="grid grid-cols-3 items-end gap-2 pt-4 pl-6 sm:pl-8 border-t border-slate-200/80">
+          <div className="grid grid-cols-3 items-end gap-2 pt-3 pb-1 pl-6 sm:pl-8 border-t border-slate-200/80">
             {/* Left Signature: Mitra Klien UMKM */}
             <div className="text-center space-y-1">
-              <div className="h-12 sm:h-14 flex items-end justify-center">
-                <svg
-                  className="w-24 sm:w-28 h-10 text-slate-800"
-                  viewBox="0 0 120 40"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                >
-                  <path d="M10 28 C25 15, 35 32, 50 18 C65 6, 75 35, 95 22 C105 15, 110 25, 115 20" />
-                  <path
-                    d="M30 32 L85 30"
-                    strokeWidth="1"
-                    strokeDasharray="2 2"
+              <div className="h-12 sm:h-13 flex items-end justify-center">
                 {certificate.client_signature_url ? (
                   <img
                     src={certificate.client_signature_url}
                     alt="Tanda Tangan Mitra"
-                    className="max-h-12 sm:max-h-14 object-contain"
+                    className="max-h-12 sm:max-h-13 object-contain"
                   />
-                </svg>
                 ) : (
                   <svg
-                    className="w-24 sm:w-28 h-10 text-slate-800"
+                    className="w-24 sm:w-28 h-9 text-slate-800"
                     viewBox="0 0 120 40"
                     fill="none"
                     stroke="currentColor"
@@ -166,7 +232,7 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
               <div className="relative flex items-center justify-center">
                 {/* Gold Rosette SVG */}
                 <svg
-                  className="w-14 sm:w-16 h-14 sm:h-16 text-[#F59E0B]"
+                  className="w-13 sm:w-15 h-13 sm:h-15 text-[#F59E0B]"
                   viewBox="0 0 100 100"
                   fill="currentColor"
                 >
@@ -184,8 +250,8 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
                     fill="#B45309"
                   />
                 </svg>
-                <div className="absolute top-[18px] sm:top-[20px] text-center">
-                  <ShieldCheck className="w-5 sm:w-6 h-5 sm:h-6 text-[#92400E] mx-auto" />
+                <div className="absolute top-[16px] sm:top-[18px] text-center">
+                  <ShieldCheck className="w-5 sm:w-5.5 h-5 sm:h-5.5 text-[#92400E] mx-auto" />
                 </div>
               </div>
               <span className="text-[8px] sm:text-[9px] font-black text-[#92400E] uppercase tracking-widest mt-0.5">
@@ -195,11 +261,11 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
 
             {/* Right Signature: User Official Signature */}
             <div className="text-center space-y-1">
-              <div className="h-12 sm:h-14 flex items-end justify-center">
+              <div className="h-12 sm:h-13 flex items-end justify-center">
                 <img
                   src="/signature.png"
                   alt="Tanda Tangan Resmi"
-                  className="max-h-12 sm:max-h-14 object-contain"
+                  className="max-h-12 sm:max-h-13 object-contain"
                 />
               </div>
               <div className="border-t border-slate-900/60 pt-1">
@@ -215,7 +281,7 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
         </div>
 
         {/* ================= RIGHT GEOMETRIC SLICE ================= */}
-        <div className="w-full sm:w-[32%] bg-[#0F172A] p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden text-white">
+        <div className="w-full sm:w-[32%] bg-[#0F172A] p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden text-white">
           {/* Decorative Polygon / Floral Facets */}
           <div className="absolute -top-10 -right-10 w-48 h-48 opacity-20 pointer-events-none">
             <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
@@ -245,14 +311,10 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
             </div>
           </div>
 
-          {/* Top Brand Emblem */}
-          <div className="relative z-10 space-y-2 pt-2">
+          {/* Top Brand Emblem with Inline Vector Logo */}
+          <div className="relative z-10 space-y-2 pt-1">
             <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center p-2.5">
-              <img
-                src="/logo-icon.svg"
-                alt="Makarya"
-                className="w-full h-full object-contain"
-              />
+              <MakaryaLogoMark className="w-full h-full" />
             </div>
             <h3 className="text-xl font-black tracking-wider text-white uppercase font-sans">
               MAKARYA
@@ -262,19 +324,15 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
             </p>
           </div>
 
-          {/* Center Graphic Icon Motif */}
-          <div className="relative z-10 my-auto py-6 flex flex-col items-center justify-center opacity-85">
-            <div className="w-24 h-24 rounded-full border border-emerald-500/30 flex items-center justify-center bg-white/5 backdrop-blur-sm p-4">
-              <img
-                src="/logo-icon.svg"
-                alt="Makarya Verified"
-                className="w-14 h-14 object-contain opacity-90"
-              />
+          {/* Center Graphic Icon Motif with Inline Vector */}
+          <div className="relative z-10 my-auto py-4 flex flex-col items-center justify-center opacity-90">
+            <div className="w-20 h-20 rounded-full border border-emerald-500/30 flex items-center justify-center bg-white/5 backdrop-blur-sm p-4">
+              <MakaryaLogoMark className="w-12 h-12 opacity-95" />
             </div>
           </div>
 
           {/* Bottom Credential Barcode / Verification Badge */}
-          <div className="relative z-10 pt-4 border-t border-white/10 space-y-1">
+          <div className="relative z-10 pt-3 pb-1 border-t border-white/10 space-y-1">
             <div className="flex items-center justify-between text-[9px] font-mono text-emerald-400">
               <span>ID KREDENSIAL</span>
               <span className="flex items-center gap-1 font-bold text-white">
@@ -282,12 +340,11 @@ export function MakaryaCertificate({ certificate, className = "", innerRef }) {
                 TERCATAT
               </span>
             </div>
-            <p className="font-mono text-xs font-bold text-white tracking-widest truncate">
+            <p className="font-mono text-xs font-bold text-white tracking-wider truncate">
               {credentialId}
             </p>
-            <p className="text-[8.5px] text-slate-400">
-              Validasi keaslian via makarya.id/certificates/verify/
-              {credentialId}
+            <p className="text-[8.5px] text-slate-400 leading-tight">
+              Validasi: makarya.id/certificates/verify/{credentialId}
             </p>
           </div>
         </div>
