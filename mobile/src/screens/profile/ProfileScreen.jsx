@@ -62,6 +62,7 @@ import {
   Award,
   Eye,
   EyeOff,
+  Sparkles,
   Briefcase,
   Layers,
 } from "lucide-react-native";
@@ -791,6 +792,8 @@ export function ProfileScreen({ navigation }) {
                 {certificates.slice(0, 3).map((cert) => (
                   <View key={cert.id} style={styles.certItemCard}>
                     <View style={styles.certItemHeader}>
+                      <View style={styles.certTagsLeft}>
+                        <View style={styles.certRoleTag}>
                       <View style={styles.certRoleTag}>
                         <Text
                           style={styles.certRoleTagText}
@@ -802,14 +805,36 @@ export function ProfileScreen({ navigation }) {
                       {cert.honor_amount || cert.slot_budget ? (
                         <View style={styles.certHonorTag}>
                           <Text
+                            style={styles.certRoleTagText}
                             style={styles.certHonorTagText}
                             numberOfLines={1}
                           >
+                            {cert.role_name}
                             {formatCurrency(
                               cert.honor_amount || cert.slot_budget,
                             )}
                           </Text>
                         </View>
+                        {cert.honor_amount || cert.slot_budget ? (
+                          <View style={styles.certHonorTag}>
+                            <Text
+                              style={styles.certHonorTagText}
+                              numberOfLines={1}
+                            >
+                              {formatCurrency(
+                                cert.honor_amount || cert.slot_budget,
+                              )}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+                      <Text
+                        style={styles.certCredText}
+                        numberOfLines={1}
+                        ellipsizeMode="middle"
+                      >
+                        {cert.credential_id}
+                      </Text>
                       ) : null}
                     </View>
 
@@ -873,6 +898,7 @@ export function ProfileScreen({ navigation }) {
                   activeOpacity={0.85}
                 >
                   <View style={styles.portfolioBannerIconWrap}>
+                    <Sparkles size={16} color={COLORS.brandIndigo} />
                     <Briefcase size={16} color={COLORS.brandIndigo} />
                   </View>
                   <View style={{ flex: 1 }}>
@@ -1550,8 +1576,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 8,
+  },
+  certTagsLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexShrink: 1,
   },
   certRoleTag: {
+    backgroundColor: "rgba(79, 70, 229, 0.1)",
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
     backgroundColor: "rgba(79, 70, 229, 0.08)",
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -1559,6 +1595,7 @@ const styles = StyleSheet.create({
     maxWidth: "60%",
   },
   certRoleTagText: {
+    fontSize: 10,
     fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
     color: COLORS.primary,
@@ -1566,6 +1603,8 @@ const styles = StyleSheet.create({
   },
   certHonorTag: {
     backgroundColor: "#ECFDF5",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1573,10 +1612,20 @@ const styles = StyleSheet.create({
     borderColor: "rgba(16, 185, 129, 0.25)",
   },
   certHonorTagText: {
+    fontSize: 9.5,
     fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: COLORS.success,
     fontWeight: "700",
+  },
+  certCredText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.mono || FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+    maxWidth: 120,
+    flexShrink: 0,
+    textAlign: "right",
   },
   certProjectTitle: {
     fontSize: 12.5,

@@ -105,8 +105,14 @@ export function Header({
             onPress={onLeftPress}
             style={styles.headerCircleBtn}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            {leftIcon}
+            {React.isValidElement(leftIcon)
+              ? leftIcon
+              : typeof leftIcon === "function" ||
+                (typeof leftIcon === "object" && leftIcon !== null)
+              ? React.createElement(leftIcon, { size: 18, color: "#0F172A" })
+              : null}
           </TouchableOpacity>
         ) : (
           <View style={styles.headerCircleBtnPlaceholder} />
@@ -131,7 +137,15 @@ export function Header({
             {displaySubtitle ? (
               <View style={styles.escrowChip}>
                 {chipIcon ? (
-                  chipIcon
+                  React.isValidElement(chipIcon) ? (
+                    chipIcon
+                  ) : typeof chipIcon === "function" ||
+                    (typeof chipIcon === "object" && chipIcon !== null) ? (
+                    React.createElement(chipIcon, {
+                      size: 11,
+                      color: "#059669",
+                    })
+                  ) : null
                 ) : hasEscrowKeyword ? (
                   <ShieldCheck size={11} color="#059669" />
                 ) : null}
@@ -193,8 +207,14 @@ export function Header({
             onPress={onRightPress}
             style={styles.headerCircleBtn}
             activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            {rightIcon}
+            {React.isValidElement(rightIcon)
+              ? rightIcon
+              : typeof rightIcon === "function" ||
+                (typeof rightIcon === "object" && rightIcon !== null)
+              ? React.createElement(rightIcon, { size: 18, color: "#0F172A" })
+              : null}
           </TouchableOpacity>
         ) : userProfile && (userProfile.photoUrl || userProfile.url_foto) ? (
           <TouchableOpacity
