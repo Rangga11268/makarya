@@ -45,7 +45,6 @@ import {
   DollarSign,
   Camera,
   Image as ImageIcon,
-  Sparkles,
 } from "lucide-react-native";
 
 const STEPS = [
@@ -122,7 +121,10 @@ export function PostProjectScreen({ navigation }) {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        showToast("Izin akses galeri diperlukan untuk memilih foto cover banner", "danger");
+        showToast(
+          "Izin akses galeri diperlukan untuk memilih foto cover banner",
+          "danger",
+        );
         return;
       }
 
@@ -220,7 +222,10 @@ export function PostProjectScreen({ navigation }) {
       return;
     }
     if (numBudgetMin && numBudgetMin > numBudget) {
-      showToast("Estimasi honor minimal tidak boleh melebihi batas maksimal", "danger");
+      showToast(
+        "Estimasi honor minimal tidak boleh melebihi batas maksimal",
+        "danger",
+      );
       return;
     }
     if (!deadline) {
@@ -430,8 +435,8 @@ export function PostProjectScreen({ navigation }) {
                   Informasi & Brief Kebutuhan
                 </Text>
                 <Text style={styles.stepIntroSub}>
-                  Pilih bidang keahlian, unggah cover banner kustom, dan jelaskan
-                  ekspektasi hasil kerja proyek Anda.
+                  Pilih bidang keahlian, unggah cover banner kustom, dan
+                  jelaskan ekspektasi hasil kerja proyek Anda.
                 </Text>
               </View>
             </View>
@@ -457,23 +462,52 @@ export function PostProjectScreen({ navigation }) {
 
             {/* Custom Cover Banner Section */}
             <View style={styles.formSection}>
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <Text style={styles.sectionLabel}>Cover Banner Proyek (Kustom)</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                }}
+              >
+                <Text style={styles.sectionLabel}>
+                  Cover Banner Proyek (Kustom)
+                </Text>
                 {bannerUrl ? (
-                  <TouchableOpacity onPress={() => setBannerUrl("")} activeOpacity={0.7}>
-                    <Text style={{ fontSize: 11, fontFamily: FONTS.bodyBold, color: "#DC2626" }}>Hapus Banner</Text>
+                  <TouchableOpacity
+                    onPress={() => setBannerUrl("")}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        fontFamily: FONTS.bodyBold,
+                        color: "#DC2626",
+                      }}
+                    >
+                      Hapus Banner
+                    </Text>
                   </TouchableOpacity>
                 ) : null}
               </View>
 
               <View style={styles.bannerPreviewCard}>
                 {bannerUrl ? (
-                  <Image source={{ uri: bannerUrl }} style={styles.uploadedBannerImage} resizeMode="cover" />
+                  <Image
+                    source={{ uri: bannerUrl }}
+                    style={styles.uploadedBannerImage}
+                    resizeMode="cover"
+                  />
                 ) : (
                   <View style={styles.emptyBannerPlaceholder}>
                     <ImageIcon size={32} color="#94A3B8" />
-                    <Text style={styles.emptyBannerTitle}>Belum ada cover banner kustom</Text>
-                    <Text style={styles.emptyBannerSub}>Gunakan banner menarik untuk meningkatkan minat lamaran mahasiswa</Text>
+                    <Text style={styles.emptyBannerTitle}>
+                      Belum ada cover banner kustom
+                    </Text>
+                    <Text style={styles.emptyBannerSub}>
+                      Gunakan banner menarik untuk meningkatkan minat lamaran
+                      mahasiswa
+                    </Text>
                   </View>
                 )}
               </View>
@@ -493,25 +527,41 @@ export function PostProjectScreen({ navigation }) {
               </View>
 
               <View style={{ marginTop: 10 }}>
-                <Text style={{ fontSize: 11, fontFamily: FONTS.bodyMedium, color: "#64748B", marginBottom: 6 }}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontFamily: FONTS.bodyMedium,
+                    color: "#64748B",
+                    marginBottom: 6,
+                  }}
+                >
                   Atau pilih tema preset:
                 </Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 6 }}
+                >
                   {PRESET_BANNERS.map((preset) => (
                     <TouchableOpacity
                       key={preset.id}
                       style={[
                         styles.presetBannerChip,
-                        bannerUrl === preset.url && styles.presetBannerChipActive,
+                        bannerUrl === preset.url &&
+                          styles.presetBannerChipActive,
                       ]}
                       onPress={() => setBannerUrl(preset.url)}
                       activeOpacity={0.75}
                     >
-                      <Sparkles size={11} color={bannerUrl === preset.url ? "#2563EB" : "#64748B"} />
+                      <ImageIcon
+                        size={11}
+                        color={bannerUrl === preset.url ? "#2563EB" : "#64748B"}
+                      />
                       <Text
                         style={[
                           styles.presetBannerText,
-                          bannerUrl === preset.url && styles.presetBannerTextActive,
+                          bannerUrl === preset.url &&
+                            styles.presetBannerTextActive,
                         ]}
                       >
                         {preset.label}
@@ -566,8 +616,8 @@ export function PostProjectScreen({ navigation }) {
                   Rentang Anggaran & Formasi Tim
                 </Text>
                 <Text style={styles.stepIntroSub}>
-                  Tentukan rentang honor (min - max) dan sesuaikan apakah proyek ini untuk 1
-                  orang atau tim multi-talenta.
+                  Tentukan rentang honor (min - max) dan sesuaikan apakah proyek
+                  ini untuk 1 orang atau tim multi-talenta.
                 </Text>
               </View>
             </View>

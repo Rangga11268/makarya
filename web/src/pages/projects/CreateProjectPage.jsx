@@ -31,7 +31,6 @@ import {
   Info,
   Camera,
   UploadCloud,
-  Sparkles,
   Image as ImageIcon,
 } from "lucide-react";
 
@@ -357,7 +356,9 @@ export function CreateProjectPage() {
       const payload = {
         judul: formData.judul.trim(),
         kategori: formData.kategori,
-        budget_min: formData.budget_min ? parseFloat(formData.budget_min) : undefined,
+        budget_min: formData.budget_min
+          ? parseFloat(formData.budget_min)
+          : undefined,
         budget_max: parseFloat(formData.budget_max),
         banner_url: formData.banner_url || undefined,
         deadline: formData.deadline,
@@ -605,9 +606,12 @@ export function CreateProjectPage() {
                 ) : (
                   <div className="text-center p-4 space-y-2">
                     <ImageIcon className="w-8 h-8 text-slate-400 mx-auto" />
-                    <p className="text-xs font-bold text-dark-900">Belum ada cover banner kustom</p>
+                    <p className="text-xs font-bold text-dark-900">
+                      Belum ada cover banner kustom
+                    </p>
                     <p className="text-[11px] text-muted max-w-sm mx-auto">
-                      Unggah gambar cover banner menarik untuk meningkatkan daya tarik proyek Anda
+                      Unggah gambar cover banner menarik untuk meningkatkan daya
+                      tarik proyek Anda
                     </p>
                   </div>
                 )}
@@ -626,7 +630,10 @@ export function CreateProjectPage() {
                       if (file) {
                         const reader = new FileReader();
                         reader.onload = () => {
-                          setFormData({ ...formData, banner_url: reader.result });
+                          setFormData({
+                            ...formData,
+                            banner_url: reader.result,
+                          });
                         };
                         reader.readAsDataURL(file);
                       }
@@ -637,15 +644,29 @@ export function CreateProjectPage() {
                 <div className="flex items-center gap-1 text-[11px] text-muted overflow-x-auto py-1">
                   <span className="font-medium mr-1">Preset:</span>
                   {[
-                    { label: "Modern Tech", url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80" },
-                    { label: "Design Creative", url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80" },
-                    { label: "Kuliner & Usaha", url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80" },
-                    { label: "Video", url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80" },
+                    {
+                      label: "Modern Tech",
+                      url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80",
+                    },
+                    {
+                      label: "Design Creative",
+                      url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80",
+                    },
+                    {
+                      label: "Kuliner & Usaha",
+                      url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80",
+                    },
+                    {
+                      label: "Video",
+                      url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&q=80",
+                    },
                   ].map((preset, idx) => (
                     <button
                       type="button"
                       key={idx}
-                      onClick={() => setFormData({ ...formData, banner_url: preset.url })}
+                      onClick={() =>
+                        setFormData({ ...formData, banner_url: preset.url })
+                      }
                       className={`px-2.5 py-1 rounded-lg border text-[11px] font-medium transition-all ${
                         formData.banner_url === preset.url
                           ? "bg-brand-indigo/10 border-brand-indigo text-brand-indigo font-bold"
@@ -849,7 +870,9 @@ export function CreateProjectPage() {
                   onChange={(val) =>
                     setFormData({
                       ...formData,
-                      budget_min: val ? Math.min(2000000, Math.max(0, val)) : "",
+                      budget_min: val
+                        ? Math.min(2000000, Math.max(0, val))
+                        : "",
                     })
                   }
                   helperText="Batas bawah rentang tawaran"
@@ -861,7 +884,9 @@ export function CreateProjectPage() {
                   onChange={(val) =>
                     setFormData({
                       ...formData,
-                      budget_max: val ? Math.min(2000000, Math.max(0, val)) : "",
+                      budget_max: val
+                        ? Math.min(2000000, Math.max(0, val))
+                        : "",
                     })
                   }
                   quickNominals={[100000, 250000, 500000, 1000000, 2000000]}

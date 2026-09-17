@@ -32,7 +32,6 @@ import {
   Check,
   FileText,
   XCircle,
-  Sparkles,
   Award,
   Layers,
   Star,
@@ -309,11 +308,6 @@ export function ProjectExploreDetailView({
                   : "UMKM DIGITAL"}
               </Text>
             </View>
-
-            {/* Page Count Indicator */}
-            <View style={styles.pageCountPill}>
-              <Text style={styles.pageCountText}>1/2</Text>
-            </View>
           </View>
 
           {/* ================================================================= */}
@@ -343,8 +337,9 @@ export function ProjectExploreDetailView({
 
                 <View style={styles.badgeCluster}>
                   <View style={styles.topRatedBadge}>
+                    <ShieldCheck size={11} color="#059669" />
                     <Text style={styles.topRatedText}>
-                      Mitra Terverifikasi ◆◆◆
+                      Mitra Terverifikasi
                     </Text>
                   </View>
                   <View style={styles.vettedBadge}>
@@ -505,12 +500,12 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 5. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
+          {/* 5. PROFILE MATCH & COMPATIBILITY CARD (FOR MAHASISWA)           */}
           {/* ================================================================= */}
           {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
             <View style={styles.sectionCard}>
               <View style={styles.sectionHeaderRow}>
-                <Sparkles size={16} color="#2563EB" />
+                <Award size={16} color="#2563EB" />
                 <Text style={styles.sectionTitle}>Kecocokan Profil Anda</Text>
                 <View style={styles.aiScoreBadge}>
                   <Text style={styles.aiScoreText}>
