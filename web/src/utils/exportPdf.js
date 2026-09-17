@@ -6,7 +6,10 @@ import jsPDF from "jspdf";
  * @param {HTMLElement} element - The DOM element to export
  * @param {string} filename - Output file name
  */
-export async function exportElementToPdf(element, filename = "Sertifikat-Makarya.pdf") {
+export async function exportElementToPdf(
+  element,
+  filename = "Sertifikat-Makarya.pdf",
+) {
   if (!element) {
     throw new Error("Element tidak ditemukan untuk ekspor PDF");
   }

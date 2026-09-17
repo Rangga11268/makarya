@@ -125,11 +125,18 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                       PLATFORM KOLABORASI INDUSTRI
                     </Text>
                   </View>
+                  <Image
+                    source={require("../../../../assets/logo.webp")}
+                    style={styles.brandLogoImg}
+                    resizeMode="contain"
+                  />
                 </View>
 
                 <View style={styles.verifiedTopPill}>
                   <ShieldCheck size={12} color="#059669" />
-                  <Text style={styles.verifiedTopPillText}>ESCROW VERIFIED</Text>
+                  <Text style={styles.verifiedTopPillText}>
+                    ESCROW VERIFIED
+                  </Text>
                 </View>
               </View>
 
@@ -165,17 +172,22 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                 Sertifikat ini diberikan atas penyelesaian penugasan proyek
                 industri bersama mitra{" "}
                 <Text style={styles.boldDarkText}>{clientName}</Text> pada
-                proyek{" "}
-                <Text style={styles.boldDarkText}>"{projectTitle}"</Text> sebagai{" "}
-                <Text style={styles.roleHighlightText}>{roleName}</Text>, dan
-                membuktikan kompetensi profesional serta integritas kerja yang
-                telah terverifikasi resmi oleh Makarya Escrow Guarantee.
+                proyek <Text style={styles.boldDarkText}>"{projectTitle}"</Text>{" "}
+                sebagai <Text style={styles.roleHighlightText}>{roleName}</Text>
+                , dan membuktikan kompetensi profesional serta integritas kerja
+                yang telah terverifikasi resmi oleh Makarya Escrow Guarantee.
               </Text>
 
               {/* Project Meta Card */}
               <View style={styles.metaBox}>
                 <View style={styles.metaRow}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 5,
+                    }}
+                  >
                     <Coins size={13} color="#059669" />
                     <Text style={styles.metaLabel}>Honor Peran:</Text>
                   </View>
@@ -189,7 +201,13 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                 </View>
 
                 <View style={styles.metaRow}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 5,
+                    }}
+                  >
                     <Building2 size={13} color={COLORS.textMuted} />
                     <Text style={styles.metaLabel}>Mitra Klien UMKM:</Text>
                   </View>
@@ -367,6 +385,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#0F172A",
     alignItems: "center",
     justifyContent: "center",
+  brandLogoImg: {
+    width: 110,
+    height: 26,
   },
   brandTitleText: {
     fontSize: 13,

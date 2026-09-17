@@ -138,18 +138,26 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
             <div className="flex items-center gap-2">
               <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
               <div>
-                <span className="text-[10px] text-muted block">Mitra UMKM:</span>
-                <strong className="text-slate-900 font-bold">{certificate.client_name || "-"}</strong>
+                <span className="text-[10px] text-muted block">
+                  Mitra UMKM:
+                </span>
+                <strong className="text-slate-900 font-bold">
+                  {certificate.client_name || "-"}
+                </strong>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Coins className="w-4 h-4 text-emerald-600 shrink-0" />
               <div>
-                <span className="text-[10px] text-muted block">Honor Peran Terverifikasi:</span>
+                <span className="text-[10px] text-muted block">
+                  Honor Peran Terverifikasi:
+                </span>
                 <strong className="text-emerald-700 font-extrabold">
                   {certificate.honor_amount || certificate.slot_budget
-                    ? formatCurrency(certificate.honor_amount || certificate.slot_budget)
+                    ? formatCurrency(
+                        certificate.honor_amount || certificate.slot_budget,
+                      )
                     : "Sesuai Kontrak"}
                 </strong>
               </div>
@@ -158,10 +166,13 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-indigo-600 shrink-0" />
               <div>
-                <span className="text-[10px] text-muted block">Model Formasi:</span>
+                <span className="text-[10px] text-muted block">
+                  Model Formasi:
+                </span>
                 <strong className="text-slate-900 font-bold">
                   {certificate.collaboration_type === "TIM" ||
-                  (certificate.team_breakdown && certificate.team_breakdown.length > 0)
+                  (certificate.team_breakdown &&
+                    certificate.team_breakdown.length > 0)
                     ? `Tim (${certificate.team_breakdown?.length || 0} Peran)`
                     : "Individu"}
                 </strong>

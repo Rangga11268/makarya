@@ -194,7 +194,8 @@ export function VerifyCertificatePage() {
                   Sertifikat Resmi Terverifikasi
                 </h3>
                 <p className="text-xs text-emerald-700 font-medium">
-                  Kredensial ini valid dan tercatat resmi di buku besar Makarya untuk portofolio industri & konversi SKS MBKM.
+                  Kredensial ini valid dan tercatat resmi di buku besar Makarya
+                  untuk portofolio industri & konversi SKS MBKM.
                 </p>
               </div>
             </div>
@@ -219,27 +220,44 @@ export function VerifyCertificatePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] text-muted block uppercase font-bold">Mitra UMKM Pemberi Tugas</span>
-                <p className="font-bold text-slate-900 text-sm">{cert.client_name}</p>
-                <p className="text-[11px] text-slate-500">{cert.project_category || "Proyek Kemitraan"}</p>
+                <span className="text-[10px] text-muted block uppercase font-bold">
+                  Mitra UMKM Pemberi Tugas
+                </span>
+                <p className="font-bold text-slate-900 text-sm">
+                  {cert.client_name}
+                </p>
+                <p className="text-[11px] text-slate-500">
+                  {cert.project_category || "Proyek Kemitraan"}
+                </p>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] text-muted block uppercase font-bold">Honor Peran Terverifikasi</span>
+                <span className="text-[10px] text-muted block uppercase font-bold">
+                  Honor Peran Terverifikasi
+                </span>
                 <p className="font-extrabold text-emerald-700 text-sm">
                   {cert.honor_amount || cert.slot_budget
                     ? formatCurrency(cert.honor_amount || cert.slot_budget)
                     : "Sesuai Kontrak"}
                 </p>
                 <p className="text-[11px] text-slate-500">
-                  Model: {cert.collaboration_type === "TIM" ? "Formasi Tim" : "Individu"}
+                  Model:{" "}
+                  {cert.collaboration_type === "TIM"
+                    ? "Formasi Tim"
+                    : "Individu"}
                 </p>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-1">
-                <span className="text-[10px] text-muted block uppercase font-bold">Tanggal Penerbitan</span>
-                <p className="font-bold text-slate-900 text-sm">{formatDate(cert.issued_at)}</p>
-                <p className="text-[11px] text-emerald-600 font-medium">Garansi Escrow 100% Selesai</p>
+                <span className="text-[10px] text-muted block uppercase font-bold">
+                  Tanggal Penerbitan
+                </span>
+                <p className="font-bold text-slate-900 text-sm">
+                  {formatDate(cert.issued_at)}
+                </p>
+                <p className="text-[11px] text-emerald-600 font-medium">
+                  Garansi Escrow 100% Selesai
+                </p>
               </div>
             </div>
 
