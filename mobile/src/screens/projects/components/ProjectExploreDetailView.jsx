@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -35,6 +35,9 @@ import {
   Sparkles,
   Award,
   Layers,
+  Star,
+  MapPin,
+  CheckCircle,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -86,7 +89,7 @@ export function ProjectExploreDetailView({
     project.deskripsi ||
     "";
 
-  const isLongDescription = rawDescription.length > 280;
+  const isLongDescription = rawDescription.length > 240;
 
   // 1. AI Match Calculations & Reasons
   const matchScore =
@@ -172,6 +175,21 @@ export function ProjectExploreDetailView({
     });
   };
 
+  const handleApplyPress = () => {
+    if (isMahasiswa && (!user?.nim || (!user?.prodi_id && !user?.prodi))) {
+      showConfirm({
+        title: "Lengkapi Profil Anda",
+        message:
+          "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau data Anda.",
+        confirmText: "Lengkapi Sekarang",
+        cancelText: "Nanti Saja",
+        onConfirm: () => navigation.navigate("Profile"),
+      });
+      return;
+    }
+    setProposalModal(true);
+  };
+
   return (
     <View style={styles.rootContainer}>
       <ScrollView
@@ -185,11 +203,48 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. PROJECT HERO CARD                                              */}
+          {/* 1. SELLER / CLIENT UMKM IDENTITY ROW (Fiverr Style)               */}
           {/* ================================================================= */}
-          <View style={styles.headerCard}>
-            {/* Category & Status Badges */}
-            <View style={styles.badgeRow}>
+          <View style={styles.creatorCard}>
+            <View style={styles.creatorRow}>
+              <View style={styles.avatarWrapper}>
+                {clientPhoto ? (
+                  <Image
+                    source={{ uri: clientPhoto }}
+                    style={styles.creatorAvatar}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={styles.creatorAvatarFallback}>
+                    <Building2 size={22} color="#2563EB" />
+                  </View>
+                )}
+                <View style={styles.onlineDot} />
+              </View>
+
+              <View style={styles.creatorMetaCol}>
+                <Text style={styles.creatorName} numberOfLines={1}>
+                  {clientDisplayName || "Mitra UMKM"}
+                </Text>
+
+                <View style={styles.badgeCluster}>
+                  <View style={styles.topRatedBadge}>
+                    <Text style={styles.topRatedText}>Mitra Terverifikasi ◆◆◆</Text>
+                  </View>
+                  <View style={styles.vettedBadge}>
+                    <Text style={styles.vettedText}>100% Escrow</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 2. PROJECT HEADLINE & INTRO (Fiverr Pro Style)                    */}
+          {/* ================================================================= */}
+          <View style={styles.headlineCard}>
+            {/* Category Tag */}
+            <View style={styles.categoryRow}>
               <View style={styles.categoryPill}>
                 <Briefcase size={11} color="#475569" />
                 <Text style={styles.categoryPillText}>
@@ -199,125 +254,136 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
 
-              <View
-                style={[
-                  styles.statusPill,
-                  project.status === "IN_PROGRESS"
-                    ? styles.statusPillProgress
-                    : project.status === "COMPLETED" ||
-                        project.status === "DONE"
-                      ? styles.statusPillDone
-                      : styles.statusPillOpen,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.statusDot,
-                    project.status === "IN_PROGRESS"
-                      ? styles.statusDotProgress
-                      : project.status === "COMPLETED" ||
-                          project.status === "DONE"
-                        ? styles.statusDotDone
-                        : styles.statusDotOpen,
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.statusPillText,
-                    project.status === "IN_PROGRESS"
-                      ? styles.statusPillTextProgress
-                      : project.status === "COMPLETED" ||
-                          project.status === "DONE"
-                        ? styles.statusPillTextDone
-                        : styles.statusPillTextOpen,
-                  ]}
-                >
-                  {project.status === "OPEN" || project.status === "BIDDING"
-                    ? isTeam
-                      ? "Merekrut Tim"
-                      : "Merekrut Talenta"
-                    : formatStatus(project.status || "OPEN")}
-                </Text>
-              </View>
-            </View>
-
-            {/* Project Title */}
-            <Text style={styles.projectTitle}>{project.judul}</Text>
-
-            {/* Meta Row: Published Date & Total Applicants */}
-            <View style={styles.metaSubRow}>
-              <View style={styles.publishedRow}>
-                <Calendar size={12} color="#64748B" />
-                <Text style={styles.publishedText}>
-                  Diterbitkan {formatDate(project.created_at || new Date())}
-                </Text>
-              </View>
-
-              <View style={styles.applicantBadge}>
+              <View style={styles.applicantPill}>
                 <Users size={11} color="#2563EB" />
-                <Text style={styles.applicantBadgeText}>
+                <Text style={styles.applicantPillText}>
                   {totalApplicantsCount} Pelamar
                 </Text>
               </View>
             </View>
 
-            {/* Responsive 2-Row Key Metrics Container */}
-            <View style={styles.metricsContainer}>
-              {/* Highlight Row: Budget */}
-              <View style={styles.metricHighlightRow}>
-                <View style={styles.metricIconWrapperEmerald}>
-                  <Coins size={15} color="#059669" />
-                </View>
-                <View style={styles.metricHighlightContent}>
-                  <Text style={styles.metricHighlightLabel}>PAGU ANGGARAN</Text>
-                  <Text style={styles.metricHighlightValue} numberOfLines={1}>
-                    {formatCurrency(project.budget_max)}
-                  </Text>
-                </View>
-              </View>
+            {/* Big Bold Title */}
+            <Text style={styles.projectTitle}>{project.judul}</Text>
 
-              {/* Sub-row: Deadline & Collaboration */}
-              <View style={styles.metricSubRow}>
-                <View style={styles.metricSubItem}>
-                  <View style={styles.metricIconWrapperBlue}>
-                    <Calendar size={13} color="#2563EB" />
-                  </View>
-                  <View style={styles.metricSubTextWrap}>
-                    <Text style={styles.metricSubLabel}>TENGGAT WAKTU</Text>
-                    <Text style={styles.metricSubValue} numberOfLines={1}>
-                      {formatDate(project.deadline)}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.metricSubDivider} />
-
-                <View style={styles.metricSubItem}>
-                  <View style={styles.metricIconWrapperSlate}>
-                    <Users size={13} color="#475569" />
-                  </View>
-                  <View style={styles.metricSubTextWrap}>
-                    <Text style={styles.metricSubLabel}>KOLABORASI</Text>
-                    <Text style={styles.metricSubValue} numberOfLines={1}>
-                      {isTeam ? `Tim (${slots.length})` : "Individu"}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Escrow Guarantee Banner */}
-            <View style={styles.escrowBanner}>
-              <ShieldCheck size={16} color="#059669" />
-              <Text style={styles.escrowBannerText}>
-                Garansi Escrow 100%. Dana honor tersimpan aman di rekening resmi
-                Makarya.
+            {/* Description Body with Inline More Toggle */}
+            <View style={styles.descriptionBox}>
+              <Text
+                style={styles.descriptionText}
+                numberOfLines={
+                  isLongDescription && !isBriefExpanded ? 4 : undefined
+                }
+              >
+                {rawDescription ||
+                  "Deskripsi spesifikasi proyek belum diisi oleh mitra UMKM."}
               </Text>
+
+              {isLongDescription && (
+                <TouchableOpacity
+                  onPress={() => setIsBriefExpanded(!isBriefExpanded)}
+                  style={styles.inlineMoreBtn}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.inlineMoreText}>
+                    {isBriefExpanded ? "Tutup kembali" : "Baca selengkapnya..."}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 2. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
+          {/* 3. TIERED SPEC & SCOPE CARD (Fiverr Package Details Style)         */}
+          {/* ================================================================= */}
+          <View style={styles.packageCard}>
+            {/* Price Header Strip */}
+            <View style={styles.packageHeaderStrip}>
+              <Text style={styles.packageHeaderPrice}>
+                {formatCurrency(project.budget_max)}
+              </Text>
+              <View style={styles.activePackageIndicator} />
+            </View>
+
+            <View style={styles.packageBody}>
+              <Text style={styles.packageTitle}>
+                {isTeam ? "Paket Kolaborasi Tim" : "Paket Proyek Individu"}
+              </Text>
+              <Text style={styles.packageSummary}>
+                Pagu honor teralokasi penuh dengan garansi pembayaran resmi Makarya.
+              </Text>
+
+              {/* Spec Rows */}
+              <View style={styles.specTable}>
+                <View style={styles.specRow}>
+                  <Text style={styles.specLabel}>Tenggat Pengerjaan</Text>
+                  <Text style={styles.specValue}>{formatDate(project.deadline)}</Text>
+                </View>
+                <View style={styles.specDivider} />
+
+                <View style={styles.specRow}>
+                  <Text style={styles.specLabel}>Batas Revisi</Text>
+                  <Text style={styles.specValue}>Maksimal 2x Revisi Minor</Text>
+                </View>
+                <View style={styles.specDivider} />
+
+                <View style={styles.specRow}>
+                  <Text style={styles.specLabel}>Tipe Kolaborasi</Text>
+                  <Text style={styles.specValue}>
+                    {isTeam ? `Tim (${slots.length} Posisi)` : "Talenta Individu"}
+                  </Text>
+                </View>
+                <View style={styles.specDivider} />
+
+                <View style={styles.specRow}>
+                  <Text style={styles.specLabel}>Sertifikat Digital</Text>
+                  <Text style={styles.specValue}>Resmi Bertanda Tangan UMKM</Text>
+                </View>
+                <View style={styles.specDivider} />
+
+                <View style={styles.specRow}>
+                  <Text style={styles.specLabel}>Proteksi Pembayaran</Text>
+                  <Text style={[styles.specValue, { color: "#059669" }]}>
+                    Garansi Escrow 100%
+                  </Text>
+                </View>
+              </View>
+
+              {/* Package CTA Button */}
+              {canApply ? (
+                <TouchableOpacity
+                  style={styles.packageCtaBtn}
+                  onPress={handleApplyPress}
+                  activeOpacity={0.85}
+                >
+                  <Send size={16} color="#FFFFFF" />
+                  <Text style={styles.packageCtaText}>
+                    Ajukan Lamaran ({formatCurrency(project.budget_max)})
+                  </Text>
+                </TouchableOpacity>
+              ) : myExistingProposal ? (
+                <View style={styles.appliedBannerPill}>
+                  <CheckCircle2 size={16} color="#059669" />
+                  <Text style={styles.appliedBannerText}>
+                    {isAcceptedProposal
+                      ? "Lamaran Diterima Klien"
+                      : myExistingProposal.status === "REJECTED"
+                        ? "Lamaran Ditolak"
+                        : "Lamaran Terkirim"}
+                  </Text>
+                </View>
+              ) : null}
+
+              {/* Vetted By Makarya Box */}
+              <View style={styles.vettedBox}>
+                <Text style={styles.vettedBoxTitle}>Terverifikasi oleh Makarya</Text>
+                <Text style={styles.vettedBoxDesc}>
+                  Dana proyek ini telah didepositkan secara resmi di sistem Escrow Makarya sebelum pengerjaan dimulai.
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 4. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
           {/* ================================================================= */}
           {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
             <View style={styles.sectionCard}>
@@ -330,8 +396,7 @@ export function ProjectExploreDetailView({
               </View>
 
               <Text style={styles.aiMatchDesc}>
-                Sistem analisis Makarya mencocokkan profil dan bidang keahlian Anda
-                dengan spesifikasi proyek ini:
+                Sistem AI Makarya menganalisis bahwa profil Anda sangat selaras dengan kriteria proyek ini:
               </Text>
 
               <View style={styles.aiReasonsList}>
@@ -347,13 +412,13 @@ export function ProjectExploreDetailView({
                     <View style={styles.aiReasonItem}>
                       <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
                       <Text style={styles.aiReasonText}>
-                        Keahlian dan program studi Anda relevan dengan lingkup proyek ini.
+                        Keahlian dan latar belakang program studi Anda relevan dengan proyek.
                       </Text>
                     </View>
                     <View style={styles.aiReasonItem}>
                       <CheckCircle2 size={13} color="#2563EB" style={{ marginTop: 2 }} />
                       <Text style={styles.aiReasonText}>
-                        Peluang optimal diterima sebagai mitra talenta digital UMKM.
+                        Peluang optimal terpilih sebagai mitra talenta UMKM ini.
                       </Text>
                     </View>
                   </>
@@ -363,7 +428,7 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 3. REQUIRED SKILLS & TECH STACK                                   */}
+          {/* 5. REQUIRED SKILLS & TECH STACK                                   */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
@@ -371,7 +436,7 @@ export function ProjectExploreDetailView({
               <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
             </View>
             <Text style={styles.sectionSubtitle}>
-              Keahlian dan perangkat lunak pendukung yang direkomendasikan:
+              Keahlian dan perangkat lunak yang direkomendasikan untuk proyek ini:
             </Text>
 
             <View style={styles.skillsWrapper}>
@@ -385,73 +450,7 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 4. SCOPE OF WORK & EXPECTED DELIVERABLES                          */}
-          {/* ================================================================= */}
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeaderRow}>
-              <FileText size={16} color="#2563EB" />
-              <Text style={styles.sectionTitle}>
-                Deskripsi & Lingkup Pengerjaan
-              </Text>
-            </View>
-
-            <View style={styles.descriptionWrap}>
-              <Text
-                style={styles.descriptionText}
-                numberOfLines={
-                  isLongDescription && !isBriefExpanded ? 6 : undefined
-                }
-              >
-                {rawDescription ||
-                  "Tidak ada rincian catatan tambahan dari klien."}
-              </Text>
-
-              {isLongDescription && (
-                <TouchableOpacity
-                  onPress={() => setIsBriefExpanded(!isBriefExpanded)}
-                  style={styles.expandBtn}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.expandBtnText}>
-                    {isBriefExpanded
-                      ? "Tampilkan Lebih Sedikit"
-                      : "Baca Selengkapnya"}
-                  </Text>
-                  {isBriefExpanded ? (
-                    <ChevronUp size={14} color="#2563EB" />
-                  ) : (
-                    <ChevronDown size={14} color="#2563EB" />
-                  )}
-                </TouchableOpacity>
-              )}
-            </View>
-
-            {/* Expected Output & Collaboration Guidelines */}
-            <View style={styles.guidelineBox}>
-              <Text style={styles.guidelineTitle}>Ketentuan & Format Luaran:</Text>
-              <View style={styles.guidelineRow}>
-                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
-                <Text style={styles.guidelineText}>
-                  Format Berkas: Tautan Google Drive, Figma, GitHub, atau Dokumen resmi.
-                </Text>
-              </View>
-              <View style={styles.guidelineRow}>
-                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
-                <Text style={styles.guidelineText}>
-                  Batas Revisi: Maksimal 2x penyesuaian minor setelah draft pertama dikirim.
-                </Text>
-              </View>
-              <View style={styles.guidelineRow}>
-                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
-                <Text style={styles.guidelineText}>
-                  Komunikasi Terbuka: Koordinasi langsung melalui fitur Chat in-app Makarya.
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* ================================================================= */}
-          {/* 5. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
+          {/* 6. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
           {/* ================================================================= */}
           {isTeam && slots.length > 0 && (
             <View style={styles.sectionCard}>
@@ -523,12 +522,55 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 6. CLIENT UMKM PROFILE & REPUTATION CARD                          */}
+          {/* 7. CLIENT RATING & TRUST BREAKDOWN (Fiverr Rating Style)          */}
+          {/* ================================================================= */}
+          <View style={styles.sectionCard}>
+            <View style={styles.ratingHeroRow}>
+              <View style={styles.starsCluster}>
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+                <Star size={18} color="#F59E0B" fill="#F59E0B" />
+              </View>
+              <Text style={styles.ratingHeroScore}>5.0</Text>
+            </View>
+
+            {/* Criteria Breakdown */}
+            <View style={styles.criteriaTable}>
+              <View style={styles.criteriaRow}>
+                <Text style={styles.criteriaLabel}>Tingkat Komunikasi Klien</Text>
+                <View style={styles.criteriaScoreWrap}>
+                  <Star size={12} color="#0F172A" fill="#0F172A" />
+                  <Text style={styles.criteriaScore}>5.0</Text>
+                </View>
+              </View>
+
+              <View style={styles.criteriaRow}>
+                <Text style={styles.criteriaLabel}>Kejelasan Brief & Tugas</Text>
+                <View style={styles.criteriaScoreWrap}>
+                  <Star size={12} color="#0F172A" fill="#0F172A" />
+                  <Text style={styles.criteriaScore}>5.0</Text>
+                </View>
+              </View>
+
+              <View style={styles.criteriaRow}>
+                <Text style={styles.criteriaLabel}>Kecepatan Pencairan Honor</Text>
+                <View style={styles.criteriaScoreWrap}>
+                  <Star size={12} color="#0F172A" fill="#0F172A" />
+                  <Text style={styles.criteriaScore}>5.0</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 8. CLIENT UMKM PROFILE CARD                                       */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
               <Building2 size={16} color="#2563EB" />
-              <Text style={styles.sectionTitle}>Tentang Klien UMKM</Text>
+              <Text style={styles.sectionTitle}>Profil Usaha Klien</Text>
             </View>
 
             <View style={styles.clientProfileRow}>
@@ -540,10 +582,7 @@ export function ProjectExploreDetailView({
                 />
               ) : (
                 <View style={styles.clientAvatarFallback}>
-                  <Building2
-                    size={20}
-                    color="#2563EB"
-                  />
+                  <Building2 size={20} color="#2563EB" />
                 </View>
               )}
 
@@ -570,31 +609,11 @@ export function ProjectExploreDetailView({
                   </Text>
                 </View>
               </View>
-
-              <PebbleButton
-                variant="ice"
-                size="sm"
-                label="Tanya"
-                icon={MessageSquare}
-                onPress={handleOpenChat}
-              />
-            </View>
-
-            {/* Client Trust Indicator Pills */}
-            <View style={styles.clientTrustRow}>
-              <View style={styles.trustItem}>
-                <ShieldCheck size={12} color="#059669" />
-                <Text style={styles.trustItemText}>Dana Escrow 100% Didanai</Text>
-              </View>
-              <View style={styles.trustItem}>
-                <Clock size={12} color="#2563EB" />
-                <Text style={styles.trustItemText}>Komunikasi Responsif</Text>
-              </View>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 7. TALENT BENEFITS & VERIFIED CERTIFICATION                       */}
+          {/* 9. TALENT BENEFITS & VERIFIED CERTIFICATION                       */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
@@ -632,26 +651,7 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 8. CANCELLATION DETAILS (IF CANCELLED)                            */}
-          {/* ================================================================= */}
-          {project.status === "CANCELLED" && (
-            <View style={styles.cancelledCard}>
-              <View style={styles.cancelledHeader}>
-                <XCircle size={16} color="#DC2626" />
-                <Text style={styles.cancelledTitle}>
-                  Proyek Telah Dibatalkan
-                </Text>
-              </View>
-              <Text style={styles.cancelledDesc}>
-                {project.cancel_reason
-                  ? `Catatan: "${project.cancel_reason}"`
-                  : "Proyek ini telah dibatalkan secara resmi dan 100% saldo escrow telah dikembalikan ke rekening pemilik."}
-              </Text>
-            </View>
-          )}
-
-          {/* ================================================================= */}
-          {/* 9. MANAGEMENT FOR UMKM OWNER                                      */}
+          {/* 10. MANAGEMENT FOR UMKM OWNER                                     */}
           {/* ================================================================= */}
           {isUmkmOwner && (
             <View style={styles.managementSection}>
@@ -769,51 +769,38 @@ export function ProjectExploreDetailView({
             </View>
           )}
 
-          {/* ================================================================= */}
-          {/* 10. MAHASISWA APPLIED STATUS BANNER                               */}
-          {/* ================================================================= */}
-          {isMahasiswa && myExistingProposal && (
-            <View style={styles.appliedStatusCard}>
-              <View style={styles.appliedStatusHeader}>
-                <CheckCircle2 size={16} color="#059669" />
-                <Text style={styles.appliedStatusTitle}>
-                  Status Lamaran Anda
-                </Text>
-              </View>
-
-              <Text style={styles.appliedCoverLetterText}>
-                "{myExistingProposal.cover_letter}"
-              </Text>
-
-              <View style={styles.appliedMetaRow}>
-                <Text style={styles.appliedMetaLabel}>Tawaran Harga:</Text>
-                <Text style={styles.appliedMetaValue}>
-                  {formatCurrency(myExistingProposal.harga_tawar)}
-                </Text>
-              </View>
-
-              <View style={styles.appliedMetaRow}>
-                <Text style={styles.appliedMetaLabel}>Status:</Text>
-                <Text style={styles.appliedStatusBadgeText}>
-                  {myExistingProposal.status === "PENDING"
-                    ? "Menunggu Keputusan Klien"
-                    : myExistingProposal.status === "ACCEPTED"
-                      ? "Lamaran Diterima"
-                      : myExistingProposal.status === "REJECTED"
-                        ? "Lamaran Ditolak"
-                        : formatStatus(myExistingProposal.status)}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {/* Bottom spacer for sticky bar */}
+          {/* Bottom spacer for floating chat & sticky bar */}
           <View style={{ height: 110 }} />
         </View>
       </ScrollView>
 
       {/* ===================================================================== */}
-      {/* 11. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
+      {/* 11. FLOATING CHAT PILL WIDGET (Fiverr Style)                          */}
+      {/* ===================================================================== */}
+      <TouchableOpacity
+        style={styles.floatingChatPill}
+        onPress={handleOpenChat}
+        activeOpacity={0.85}
+      >
+        <View style={styles.floatingAvatarWrap}>
+          {clientPhoto ? (
+            <Image
+              source={{ uri: clientPhoto }}
+              style={styles.floatingAvatar}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.floatingAvatarFallback}>
+              <Building2 size={14} color="#2563EB" />
+            </View>
+          )}
+          <View style={styles.floatingOnlineDot} />
+        </View>
+        <Text style={styles.floatingChatText}>Chat</Text>
+      </TouchableOpacity>
+
+      {/* ===================================================================== */}
+      {/* 12. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
       {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
         <View style={styles.stickyContentRow}>
@@ -831,23 +818,7 @@ export function ProjectExploreDetailView({
                 size="md"
                 label="Ajukan Lamaran"
                 icon={Send}
-                onPress={() => {
-                  if (
-                    isMahasiswa &&
-                    (!user?.nim || (!user?.prodi_id && !user?.prodi))
-                  ) {
-                    showConfirm({
-                      title: "Lengkapi Profil Anda",
-                      message:
-                        "Tambahkan NIM dan Program Studi pada profil Anda terlebih dahulu agar klien UMKM dapat meninjau data Anda.",
-                      confirmText: "Lengkapi Sekarang",
-                      cancelText: "Nanti Saja",
-                      onConfirm: () => navigation.navigate("Profile"),
-                    });
-                    return;
-                  }
-                  setProposalModal(true);
-                }}
+                onPress={handleApplyPress}
               />
             ) : myExistingProposal ? (
               <View style={styles.appliedPill}>
@@ -879,7 +850,7 @@ export function ProjectExploreDetailView({
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#FFFFFF",
   },
   scrollView: {
     flex: 1,
@@ -889,22 +860,96 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
 
-  /* 1. Header Card */
-  headerCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 18,
+  /* 1. Creator Identity Card (Fiverr Seller Header) */
+  creatorCard: {
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
     marginBottom: 14,
-    gap: 12,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
   },
-  badgeRow: {
+  creatorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  avatarWrapper: {
+    position: "relative",
+  },
+  creatorAvatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "#E2E8F0",
+  },
+  creatorAvatarFallback: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  onlineDot: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#10B981",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+  },
+  creatorMetaCol: {
+    flex: 1,
+    gap: 4,
+  },
+  creatorName: {
+    fontSize: 15,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  badgeCluster: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexWrap: "wrap",
+  },
+  topRatedBadge: {
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  topRatedText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: "#B45309",
+    fontWeight: "700",
+  },
+  vettedBadge: {
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  vettedText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: "#1D4ED8",
+    fontWeight: "700",
+  },
+
+  /* 2. Headline & Brief */
+  headlineCard: {
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+    marginBottom: 16,
+    gap: 10,
+  },
+  categoryRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -915,225 +960,232 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 5,
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 10,
-    paddingVertical: 4.5,
-    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   categoryPillText: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
-    color: "#334155",
+    color: "#475569",
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-  statusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 4.5,
-    borderRadius: 8,
-  },
-  statusPillOpen: {
-    backgroundColor: "#ECFDF5",
-  },
-  statusPillProgress: {
-    backgroundColor: "#EFF6FF",
-  },
-  statusPillDone: {
-    backgroundColor: "#F1F5F9",
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  statusDotOpen: {
-    backgroundColor: "#059669",
-  },
-  statusDotProgress: {
-    backgroundColor: "#2563EB",
-  },
-  statusDotDone: {
-    backgroundColor: "#64748B",
-  },
-  statusPillText: {
-    fontSize: 11,
-    fontFamily: FONTS.bodyBold,
-    fontWeight: "600",
-  },
-  statusPillTextOpen: {
-    color: "#059669",
-  },
-  statusPillTextProgress: {
-    color: "#2563EB",
-  },
-  statusPillTextDone: {
-    color: "#64748B",
-  },
-  projectTitle: {
-    fontSize: 18.5,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
-    lineHeight: 25,
-    marginTop: 2,
-  },
-  metaSubRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  publishedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  publishedText: {
-    fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-  },
-  applicantBadge: {
+  applicantPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 3.5,
     borderRadius: 6,
   },
-  applicantBadgeText: {
+  applicantPillText: {
     fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
     color: "#2563EB",
     fontWeight: "700",
   },
-
-  /* Metrics Grid */
-  metricsContainer: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 10,
-    gap: 8,
-    marginTop: 2,
-  },
-  metricHighlightRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    gap: 10,
-  },
-  metricIconWrapperEmerald: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#ECFDF5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  metricHighlightContent: {
-    flex: 1,
-  },
-  metricHighlightLabel: {
-    fontSize: 9.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#64748B",
-    fontWeight: "700",
-    letterSpacing: 0.5,
-  },
-  metricHighlightValue: {
-    fontSize: 16,
+  projectTitle: {
+    fontSize: 21,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "800",
-    marginTop: 1,
+    lineHeight: 28,
   },
-  metricSubRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 10,
-    paddingVertical: 9,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+  descriptionBox: {
+    gap: 4,
   },
-  metricSubItem: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    minWidth: 0,
-  },
-  metricIconWrapperBlue: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  metricIconWrapperSlate: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
-    backgroundColor: "#F1F5F9",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  metricSubTextWrap: {
-    flex: 1,
-    minWidth: 0,
-  },
-  metricSubLabel: {
-    fontSize: 9,
-    fontFamily: FONTS.bodyBold,
-    color: "#64748B",
-    fontWeight: "700",
-    letterSpacing: 0.3,
-  },
-  metricSubValue: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyBold,
-    color: "#334155",
-    fontWeight: "700",
-    marginTop: 1,
-  },
-  metricSubDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: "#E2E8F0",
-    marginHorizontal: 8,
-  },
-  escrowBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "#F0FDF4",
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#DCFCE7",
-  },
-  escrowBannerText: {
-    flex: 1,
-    fontSize: 11,
+  descriptionText: {
+    fontSize: 13.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#166534",
-    lineHeight: 15,
+    color: "#334155",
+    lineHeight: 21,
+  },
+  inlineMoreBtn: {
+    alignSelf: "flex-start",
+    marginTop: 2,
+  },
+  inlineMoreText: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+    textDecorationLine: "underline",
   },
 
-  /* 2. AI Match Card */
+  /* 3. Package & Scope Card (Fiverr Pricing Block) */
+  packageCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    marginBottom: 16,
+    overflow: "hidden",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  packageHeaderStrip: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2E8F0",
+    backgroundColor: "#FAFAFA",
+    position: "relative",
+  },
+  packageHeaderPrice: {
+    fontSize: 19,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "900",
+  },
+  activePackageIndicator: {
+    position: "absolute",
+    bottom: 0,
+    right: 16,
+    width: 90,
+    height: 3,
+    backgroundColor: "#0F172A",
+    borderRadius: 2,
+  },
+  packageBody: {
+    padding: 16,
+    gap: 12,
+  },
+  packageTitle: {
+    fontSize: 16,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  packageSummary: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+    lineHeight: 18,
+    marginTop: -6,
+  },
+  specTable: {
+    marginTop: 6,
+    gap: 8,
+  },
+  specRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 2,
+  },
+  specLabel: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+  },
+  specValue: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  specDivider: {
+    height: 1,
+    backgroundColor: "#F1F5F9",
+  },
+  packageCtaBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#0F172A",
+    paddingVertical: 13,
+    borderRadius: 10,
+    marginTop: 6,
+  },
+  packageCtaText: {
+    fontSize: 14,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+  appliedBannerPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#ECFDF5",
+    paddingVertical: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+    marginTop: 6,
+  },
+  appliedBannerText: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: "#059669",
+    fontWeight: "700",
+  },
+  vettedBox: {
+    backgroundColor: "#F8FAFC",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 4,
+    marginTop: 4,
+  },
+  vettedBoxTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  vettedBoxDesc: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+    lineHeight: 16,
+  },
+
+  /* Common Section Card */
+  sectionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    padding: 16,
+    marginBottom: 14,
+    gap: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 14.5,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  sectionSubtitle: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
+    marginTop: -4,
+  },
+
+  /* 4. AI Match */
   aiScoreBadge: {
     backgroundColor: "#EFF6FF",
     paddingHorizontal: 8,
@@ -1148,10 +1200,10 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   aiMatchDesc: {
-    fontSize: 11.5,
+    fontSize: 12,
     fontFamily: FONTS.bodyRegular,
     color: "#475569",
-    lineHeight: 17,
+    lineHeight: 18,
   },
   aiReasonsList: {
     gap: 6,
@@ -1164,46 +1216,13 @@ const styles = StyleSheet.create({
   },
   aiReasonText: {
     flex: 1,
-    fontSize: 11,
+    fontSize: 11.5,
     fontFamily: FONTS.bodyRegular,
     color: "#334155",
-    lineHeight: 16,
+    lineHeight: 17,
   },
 
-  /* Common Section Card */
-  sectionCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 16,
-    marginBottom: 14,
-    gap: 12,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  sectionHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-  sectionSubtitle: {
-    fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    marginTop: -4,
-  },
-
-  /* 3. Skills Chips */
+  /* 5. Skills */
   skillsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -1228,69 +1247,17 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* 4. Description & Guidelines */
-  descriptionWrap: {
-    gap: 8,
-  },
-  descriptionText: {
-    fontSize: 12.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 20,
-  },
-  expandBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-  },
-  expandBtnText: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyBold,
-    color: "#2563EB",
-    fontWeight: "700",
-  },
-  guidelineBox: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    gap: 6,
-    marginTop: 4,
-  },
-  guidelineTitle: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "700",
-    marginBottom: 2,
-  },
-  guidelineRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 6,
-  },
-  guidelineText: {
-    flex: 1,
-    fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 16,
-  },
-
-  /* 5. Team Slots */
+  /* 6. Team Slots */
   slotsContainer: {
     gap: 10,
     marginTop: 4,
   },
   slotCard: {
     backgroundColor: "#F8FAFC",
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    padding: 14,
+    padding: 12,
     gap: 6,
   },
   slotTopRow: {
@@ -1299,7 +1266,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   slotRoleName: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "700",
@@ -1309,7 +1276,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     color: "#059669",
     fontWeight: "600",
-    marginTop: 2,
+    marginTop: 1,
   },
   slotStatusBadge: {
     paddingHorizontal: 8,
@@ -1340,13 +1307,56 @@ const styles = StyleSheet.create({
     color: "#64748B",
   },
   slotDescriptionText: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: "#475569",
-    lineHeight: 17,
+    lineHeight: 16,
   },
 
-  /* 6. Client UMKM Profile */
+  /* 7. Rating Hero (Fiverr Style) */
+  ratingHeroRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  starsCluster: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  ratingHeroScore: {
+    fontSize: 18,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "900",
+  },
+  criteriaTable: {
+    gap: 8,
+    marginTop: 4,
+  },
+  criteriaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  criteriaLabel: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyRegular,
+    color: "#475569",
+  },
+  criteriaScoreWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  criteriaScore: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+
+  /* 8. Client Profile */
   clientProfileRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1408,31 +1418,8 @@ const styles = StyleSheet.create({
     color: "#64748B",
     flexShrink: 1,
   },
-  clientTrustRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#F1F5F9",
-  },
-  trustItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#F8FAFC",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  trustItemText: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#475569",
-    fontWeight: "600",
-  },
 
-  /* 7. Benefits Card */
+  /* 9. Benefits */
   benefitItemsWrap: {
     gap: 10,
   },
@@ -1478,35 +1465,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  /* 8. Cancelled Card */
-  cancelledCard: {
-    backgroundColor: "#FEF2F2",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#FEE2E2",
-    padding: 16,
-    marginBottom: 14,
-    gap: 6,
-  },
-  cancelledHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  cancelledTitle: {
-    fontSize: 13.5,
-    fontFamily: FONTS.displayBold,
-    color: "#991B1B",
-    fontWeight: "700",
-  },
-  cancelledDesc: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyRegular,
-    color: "#B91C1C",
-    lineHeight: 17,
-  },
-
-  /* 9. Management Section */
+  /* 10. Management Section */
   managementSection: {
     gap: 12,
     marginBottom: 14,
@@ -1546,7 +1505,7 @@ const styles = StyleSheet.create({
   },
   emptyBox: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     padding: 28,
@@ -1562,7 +1521,7 @@ const styles = StyleSheet.create({
   },
   submissionCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     padding: 16,
@@ -1591,61 +1550,63 @@ const styles = StyleSheet.create({
     color: "#2563EB",
   },
 
-  /* 10. Applied Status Card */
-  appliedStatusCard: {
-    backgroundColor: "#F0FDF4",
-    borderRadius: 18,
+  /* 11. Floating Chat Pill Widget (Fiverr Style) */
+  floatingChatPill: {
+    position: "absolute",
+    bottom: 84,
+    right: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#BBF7D0",
-    padding: 18,
-    marginBottom: 14,
-    gap: 10,
+    borderColor: "#E2E8F0",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 8,
+    zIndex: 99,
   },
-  appliedStatusHeader: {
-    flexDirection: "row",
+  floatingAvatarWrap: {
+    position: "relative",
+  },
+  floatingAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#E2E8F0",
+  },
+  floatingAvatarFallback: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#EFF6FF",
     alignItems: "center",
-    gap: 6,
+    justifyContent: "center",
   },
-  appliedStatusTitle: {
-    fontSize: 14,
-    fontFamily: FONTS.displayBold,
-    color: "#166534",
-    fontWeight: "700",
+  floatingOnlineDot: {
+    position: "absolute",
+    bottom: -1,
+    right: -1,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: "#10B981",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
   },
-  appliedCoverLetterText: {
-    fontSize: 12.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#15803D",
-    fontStyle: "italic",
-    lineHeight: 19,
-  },
-  appliedMetaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: "#DCFCE7",
-  },
-  appliedMetaLabel: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#166534",
-  },
-  appliedMetaValue: {
-    fontSize: 12.5,
-    fontFamily: FONTS.displayBold,
-    color: "#14532D",
-    fontWeight: "800",
-  },
-  appliedStatusBadgeText: {
-    fontSize: 11.5,
+  floatingChatText: {
+    fontSize: 13,
     fontFamily: FONTS.bodyBold,
-    color: "#15803D",
+    color: "#0F172A",
     fontWeight: "700",
   },
 
-  /* 11. Sticky Bottom Action Bar */
+  /* 12. Sticky Bottom Action Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
