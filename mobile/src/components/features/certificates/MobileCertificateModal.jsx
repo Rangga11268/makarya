@@ -123,29 +123,17 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                   />
                 </View>
 
-                <View style={styles.verifiedTopPill}>
-                  <ShieldCheck size={12} color="#059669" />
-                  <Text style={styles.verifiedTopPillText}>
-                    ESCROW VERIFIED
-                  </Text>
-                </View>
-              </View>
-
               {/* Main Title */}
               <Text style={styles.certMainTitle}>SERTIFIKAT</Text>
 
-              {/* Badges */}
-              <View style={styles.badgePillAmber}>
-                <Text style={styles.badgePillAmberText}>
-                  PENGHARGAAN PRESTASI PROYEK INDUSTRI
-                </Text>
-              </View>
+              {/* Clean Subtitles without colored pills */}
+              <Text style={styles.certSubAward}>
+                PENGHARGAAN PRESTASI PROYEK INDUSTRI
+              </Text>
 
-              <View style={styles.badgePillSlate}>
-                <Text style={styles.badgePillSlateText}>
-                  SERTIFIKAT INI DENGAN BANGGA DISERAHKAN KEPADA
-                </Text>
-              </View>
+              <Text style={styles.certSubIntro}>
+                SERTIFIKAT INI DENGAN BANGGA DISERAHKAN KEPADA:
+              </Text>
 
               {/* Recipient Name & Campus */}
               <View style={styles.recipientBlock}>
@@ -405,31 +393,25 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginTop: 4,
   },
-  badgePillAmber: {
-    backgroundColor: "#FEF3C7",
-    paddingHorizontal: 10,
-    paddingVertical: 3.5,
-    borderRadius: 100,
-  },
-  badgePillAmberText: {
-    fontSize: 9.5,
+  certSubAward: {
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
-    color: "#92400E",
-    fontWeight: "700",
-    letterSpacing: 0.5,
+    color: "#B45309",
+    fontWeight: "800",
+    letterSpacing: 0.8,
+    textAlign: "center",
+    textTransform: "uppercase",
+    marginTop: 2,
   },
-  badgePillSlate: {
-    backgroundColor: "#F1F5F9",
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 100,
-  },
-  badgePillSlateText: {
+  certSubIntro: {
     fontSize: 9,
     fontFamily: FONTS.bodyMedium,
-    color: "#334155",
+    color: "#64748B",
     fontWeight: "600",
-    letterSpacing: 0.3,
+    letterSpacing: 0.4,
+    textAlign: "center",
+    textTransform: "uppercase",
+    marginTop: 2,
   },
   recipientBlock: {
     alignItems: "center",

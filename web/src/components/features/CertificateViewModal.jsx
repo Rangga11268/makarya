@@ -7,14 +7,10 @@ import {
   X,
   CheckCircle2,
   ExternalLink,
-  Building2,
-  Users,
-  Coins,
 } from "lucide-react";
 import { Button } from "../ui/Button";
 import { MakaryaCertificate } from "./MakaryaCertificate";
 import { exportElementToPdf } from "../../utils/exportPdf";
-import { formatCurrency } from "../../utils/formatCurrency";
 
 export function CertificateViewModal({ certificate, isOpen, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -56,14 +52,14 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 md:p-6 print:p-0 print:bg-white print:static">
-      <div className="bg-surface w-full max-w-5xl rounded-3xl shadow-2xl border border-border overflow-hidden flex flex-col my-auto animate-in fade-in zoom-in-95 duration-200 print:shadow-none print:border-none print:max-w-none print:w-full">
-        {/* Modal Top Actions (Hidden on Print) */}
-        <div className="px-5 sm:px-6 py-4 border-b border-border flex items-center justify-between bg-slate-50/90 print:hidden">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-3 sm:p-5 print:p-0 print:bg-white print:static">
+      <div className="bg-white w-full max-w-4xl max-h-[92vh] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto print:shadow-none print:border-none print:max-w-none print:w-full">
+        {/* Modal Header */}
+        <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-white shrink-0 print:hidden">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            <span className="text-xs font-bold uppercase tracking-wider text-dark-900 font-sans">
-              Sertifikat Digital Terverifikasi Makarya
+            <ShieldCheck className="w-4.5 h-4.5 text-emerald-600" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-900 font-sans">
+              Sertifikat Digital Resmi
             </span>
           </div>
 
@@ -72,7 +68,7 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
               variant="outline"
               size="sm"
               onClick={handleCopyLink}
-              className="text-xs font-semibold h-8.5"
+              className="text-xs font-semibold h-8"
             >
               {copied ? (
                 <>
@@ -82,7 +78,7 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 mr-1.5" />
-                  Salin Tautan
+                  Salin Link
                 </>
               )}
             </Button>
@@ -91,7 +87,7 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
               variant="outline"
               size="sm"
               onClick={handlePrint}
-              className="text-xs font-semibold h-8.5 hidden sm:inline-flex"
+              className="text-xs font-semibold h-8 hidden sm:inline-flex"
             >
               <Printer className="w-3.5 h-3.5 mr-1.5" />
               Cetak
@@ -102,12 +98,12 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
               size="sm"
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className="text-xs font-bold h-8.5 shadow-xs bg-[#0F172A] text-white hover:bg-slate-800"
+              className="text-xs font-bold h-8 shadow-xs bg-[#0F172A] text-white hover:bg-slate-800"
             >
               {downloading ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin mr-1.5" />
-                  Menyiapkan PDF...
+                  Menyiapkan...
                 </>
               ) : (
                 <>
@@ -119,7 +115,7 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
 
             <button
               onClick={onClose}
-              className="p-1.5 text-muted hover:text-dark-900 rounded-lg hover:bg-slate-200/60 transition-colors ml-1"
+              className="p-1.5 text-slate-400 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors ml-1 cursor-pointer"
               aria-label="Tutup modal"
             >
               <X className="w-5 h-5" />
@@ -127,72 +123,25 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Certificate Display Body */}
-        <div className="p-3 sm:p-6 md:p-8 bg-slate-100/60 overflow-x-auto print:p-0 print:bg-white">
-          <div className="min-w-[700px] sm:min-w-0">
+        {/* Certificate Display Area */}
+        <div className="p-3 sm:p-5 bg-slate-100/60 overflow-y-auto flex-1 print:p-0 print:bg-white flex items-center justify-center">
+          <div className="w-full">
             <MakaryaCertificate certificate={certificate} innerRef={certRef} />
-          </div>
-
-          {/* Quick Context Summary Below Certificate */}
-          <div className="mt-4 max-w-4xl mx-auto bg-white border border-slate-200 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs print:hidden">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
-              <div>
-                <span className="text-[10px] text-muted block">
-                  Mitra UMKM:
-                </span>
-                <strong className="text-slate-900 font-bold">
-                  {certificate.client_name || "-"}
-                </strong>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Coins className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div>
-                <span className="text-[10px] text-muted block">
-                  Honor Peran Terverifikasi:
-                </span>
-                <strong className="text-emerald-700 font-extrabold">
-                  {certificate.honor_amount || certificate.slot_budget
-                    ? formatCurrency(
-                        certificate.honor_amount || certificate.slot_budget,
-                      )
-                    : "Sesuai Kontrak"}
-                </strong>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-indigo-600 shrink-0" />
-              <div>
-                <span className="text-[10px] text-muted block">
-                  Model Formasi:
-                </span>
-                <strong className="text-slate-900 font-bold">
-                  {certificate.collaboration_type === "TIM" ||
-                  (certificate.team_breakdown &&
-                    certificate.team_breakdown.length > 0)
-                    ? `Tim (${certificate.team_breakdown?.length || 0} Peran)`
-                    : "Individu"}
-                </strong>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Modal Bottom Footer (Hidden on Print) */}
-        <div className="px-6 py-3.5 bg-slate-50/90 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted print:hidden">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Tautan Verifikasi Resmi:</span>
+        {/* Modal Footer */}
+        <div className="px-5 py-2.5 bg-white border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 shrink-0 print:hidden">
+          <div className="flex items-center gap-1.5 truncate">
+            <span>ID Kredensial:</span>
             <a
               href={verificationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#0F172A] hover:underline font-mono inline-flex items-center gap-1 font-bold"
+              className="text-slate-900 font-mono font-bold hover:underline inline-flex items-center gap-1"
             >
               {certificate.credential_id}
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3 text-slate-400" />
             </a>
           </div>
 
@@ -200,7 +149,7 @@ export function CertificateViewModal({ certificate, isOpen, onClose }) {
             variant="secondary"
             size="sm"
             onClick={onClose}
-            className="w-full sm:w-auto text-xs font-semibold"
+            className="text-xs h-7 px-3"
           >
             Tutup
           </Button>
