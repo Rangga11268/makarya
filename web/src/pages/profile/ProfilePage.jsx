@@ -480,7 +480,8 @@ export function ProfilePage() {
               <Badge variant={isUmkm ? "warning" : "brand"}>
                 {isUmkm
                   ? user?.status_badge || "Klien UMKM Terverifikasi"
-                  : user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"}
+                  : user?.status_badge ||
+                    "Mahasiswa Berprestasi & Terverifikasi"}
               </Badge>
               <Badge variant="success" className="flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" /> Terverifikasi Resmi
@@ -555,7 +556,8 @@ export function ProfilePage() {
         {userReviews.length === 0 ? (
           <div className="p-6 text-center bg-canvas rounded-2xl border border-border space-y-1">
             <p className="text-xs text-muted font-medium">
-              Belum ada ulasan yang diterima. Ulasan akan otomatis muncul setelah proyek diselesaikan dengan mitra.
+              Belum ada ulasan yang diterima. Ulasan akan otomatis muncul
+              setelah proyek diselesaikan dengan mitra.
             </p>
           </div>
         ) : (
@@ -579,14 +581,18 @@ export function ProfilePage() {
                         {rev.dari_nama || "Mitra Kemitraan"}
                       </span>
                       <span className="text-[10px] text-muted">
-                        {rev.created_at ? formatDate(rev.created_at) : "Baru saja"}
+                        {rev.created_at
+                          ? formatDate(rev.created_at)
+                          : "Baru saja"}
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs shrink-0">
                     <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
-                    <span>{rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}</span>
+                    <span>
+                      {rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}
+                    </span>
                   </div>
                 </div>
 

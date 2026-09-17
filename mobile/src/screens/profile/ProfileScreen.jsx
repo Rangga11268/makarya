@@ -632,61 +632,62 @@ export function ProfileScreen({ navigation }) {
                     : { color: COLORS.brandCyan },
                 ]}
               >
-              {isMahasiswa
-                ? user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"
-                : user?.status_badge || "Klien UMKM Terverifikasi"}
-            </Text>
-          </View>
+                {isMahasiswa
+                  ? user?.status_badge ||
+                    "Mahasiswa Berprestasi & Terverifikasi"
+                  : user?.status_badge || "Klien UMKM Terverifikasi"}
+              </Text>
+            </View>
 
-          {/* Quick Metrics Grid */}
-          <View style={styles.metricsGrid}>
-            <View style={styles.metricItem}>
-              <View style={styles.metricIconRow}>
-                <Star size={14} color="#F59E0B" fill="#F59E0B" />
-                <Text style={styles.metricValue}>
-                  {user?.rating_avg != null
-                    ? Number(user.rating_avg).toFixed(1)
-                    : "-"}
+            {/* Quick Metrics Grid */}
+            <View style={styles.metricsGrid}>
+              <View style={styles.metricItem}>
+                <View style={styles.metricIconRow}>
+                  <Star size={14} color="#F59E0B" fill="#F59E0B" />
+                  <Text style={styles.metricValue}>
+                    {user?.rating_avg != null
+                      ? Number(user.rating_avg).toFixed(1)
+                      : "-"}
+                  </Text>
+                </View>
+                <Text style={styles.metricLabel}>
+                  {user?.total_ulasan > 0
+                    ? `Reputasi (${user.total_ulasan})`
+                    : "Reputasi Skor"}
                 </Text>
               </View>
-              <Text style={styles.metricLabel}>
-                {user?.total_ulasan > 0
-                  ? `Reputasi (${user.total_ulasan})`
-                  : "Reputasi Skor"}
-              </Text>
+
+              <View style={styles.metricDivider} />
+
+              <View style={styles.metricItem}>
+                <Text style={styles.metricValue}>
+                  {isMahasiswa
+                    ? (user?.total_proyek_selesai ?? 0)
+                    : (user?.total_proyek_diterbitkan ?? 0)}
+                </Text>
+                <Text style={styles.metricLabel}>
+                  {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
+                </Text>
+              </View>
+
+              <View style={styles.metricDivider} />
+
+              <View style={styles.metricItem}>
+                <Text style={[styles.metricValue, { color: COLORS.success }]}>
+                  {user?.escrow_success_rate || "-"}
+                </Text>
+                <Text style={styles.metricLabel}>Sukses Escrow</Text>
+              </View>
             </View>
 
-            <View style={styles.metricDivider} />
-
-            <View style={styles.metricItem}>
-              <Text style={styles.metricValue}>
-                {isMahasiswa
-                  ? (user?.total_proyek_selesai ?? 0)
-                  : (user?.total_proyek_diterbitkan ?? 0)}
-              </Text>
-              <Text style={styles.metricLabel}>
-                {isMahasiswa ? "Proyek Tuntas" : "Proyek Diterbitkan"}
-              </Text>
-            </View>
-
-            <View style={styles.metricDivider} />
-
-            <View style={styles.metricItem}>
-              <Text style={[styles.metricValue, { color: COLORS.success }]}>
-                {user?.escrow_success_rate || "-"}
-              </Text>
-              <Text style={styles.metricLabel}>Sukses Escrow</Text>
-            </View>
-          </View>
-
-          {/* Edit Profile Action Button */}
-          <PebbleButton
-            variant="sapphire"
-            size="sm"
-            label="Edit Profil & Portofolio"
-            onPress={handleOpenEditModal}
-            style={{ width: "100%", marginTop: 12 }}
-          />
+            {/* Edit Profile Action Button */}
+            <PebbleButton
+              variant="sapphire"
+              size="sm"
+              label="Edit Profil & Portofolio"
+              onPress={handleOpenEditModal}
+              style={{ width: "100%", marginTop: 12 }}
+            />
           </View>
         </View>
 
@@ -1199,7 +1200,8 @@ export function ProfileScreen({ navigation }) {
             <View style={styles.certEmptyBox}>
               <MessageSquare size={22} color={COLORS.textSecondary} />
               <Text style={styles.certEmptyText}>
-                Belum ada ulasan yang diterima. Ulasan akan otomatis dicatat setelah proyek selesai dikerjakan bersama mitra.
+                Belum ada ulasan yang diterima. Ulasan akan otomatis dicatat
+                setelah proyek selesai dikerjakan bersama mitra.
               </Text>
             </View>
           ) : (
@@ -1236,9 +1238,7 @@ export function ProfileScreen({ navigation }) {
                   </View>
 
                   {rev.ulasan ? (
-                    <Text style={styles.reviewCommentText}>
-                      "{rev.ulasan}"
-                    </Text>
+                    <Text style={styles.reviewCommentText}>"{rev.ulasan}"</Text>
                   ) : null}
                 </View>
               ))}

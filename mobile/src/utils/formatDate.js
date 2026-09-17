@@ -16,3 +16,14 @@ export function isExpired(dateString) {
   deadline.setHours(23, 59, 59, 999);
   return deadline.getTime() < Date.now();
 }
+
+export function daysRemaining(dateString) {
+  if (!dateString) return 0;
+  const target = new Date(dateString);
+  if (isNaN(target.getTime())) return 0;
+  target.setHours(23, 59, 59, 999);
+  const now = new Date();
+  const diffTime = target - now;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays > 0 ? diffDays : 0;
+}

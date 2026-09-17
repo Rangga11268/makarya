@@ -6,13 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { ProposalCard } from "../../../components/features/ProposalCard";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { formatDate } from "../../../utils/formatDate";
+import { formatDate, daysRemaining, isExpired } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
 import {
   ShieldCheck,
@@ -39,6 +40,8 @@ import {
   CheckCircle,
   GraduationCap,
   Sparkles,
+  ArrowRight,
+  ExternalLink,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -109,8 +112,10 @@ export function ProjectExploreDetailView({
     const c = String(cat || "").toUpperCase();
     switch (c) {
       case "DESIGN":
+      case "DESAIN":
         return "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=800&q=80";
       case "PEMROGRAMAN":
+      case "WEB":
         return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80";
       case "UIUX":
         return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&q=80";
@@ -119,6 +124,7 @@ export function ProjectExploreDetailView({
       case "COPYWRITING":
         return "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&q=80";
       case "ADMIN_DATA":
+      case "ADMIN":
         return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80";
       default:
         return "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80";
@@ -131,87 +137,20 @@ export function ProjectExploreDetailView({
     project.umkm_profile?.url_foto_usaha ||
     getCategoryBanner(project.kategori);
 
-  // 3. Honor Range & Dynamic Packages (Fiverr Forensic Replication)
+  // 3. Fixed Single Budget (No Range)
   const budgetMax = Number(project.budget_max || 0);
-  const budgetMin = project.budget_min
-    ? Number(project.budget_min)
-    : Math.max(50000, Math.round((budgetMax * 0.8) / 10000) * 10000);
-  const budgetMid = Math.round((budgetMin + budgetMax) / 2 / 10000) * 10000;
-
-  const formattedBudgetRange =
-    budgetMin && budgetMin < budgetMax
-      ? `${formatCurrency(budgetMin)} - ${formatCurrency(budgetMax)}`
-      : formatCurrency(budgetMax);
-
-  // Define interactive package tiers
-  const packageTiers =
-    isTeam && slots.length > 0
-      ? slots.map((s, idx) => ({
-          id: s.id || `slot-${idx}`,
-          tabLabel: formatCurrency(s.alokasi_budget || budgetMax),
-          title: s.nama_peran || `Posisi Tim #${idx + 1}`,
-          price: Number(s.alokasi_budget || budgetMax),
-          description:
-            s.deskripsi_tugas ||
-            s.deskripsi ||
-            "Eksekusi peran spesifik dalam formasi tim dengan jaminan escrow.",
-          revisions: "2x Revisi Minor",
-          deliveryDays: "Sesuai Tenggat Proyek",
-          wordsOrScope:
-            s.status === "OPEN" ? "Posisi Terbuka" : "Posisi Terisi",
-          isTeamSlot: true,
-          slotData: s,
-        }))
-      : [
-          {
-            id: "tier-basic",
-            tabLabel: formatCurrency(budgetMin),
-            title: "Paket Dasar",
-            price: budgetMin,
-            description:
-              "Pengerjaan kebutuhan deliverable esensial sesuai ringkasan brief UMKM.",
-            revisions: "1x Revisi",
-            deliveryDays: "Sesuai Tenggat",
-            wordsOrScope: "Cakupan Standar",
-          },
-          {
-            id: "tier-standard",
-            tabLabel: formatCurrency(budgetMid),
-            title: "Paket Standar",
-            price: budgetMid,
-            description:
-              "Pengerjaan komprehensif dengan revisi tambahan & supervisi penuh mitra UMKM.",
-            revisions: "2x Revisi Minor",
-            deliveryDays: "Sesuai Tenggat",
-            wordsOrScope: "Cakupan Penuh",
-          },
-          {
-            id: "tier-pro",
-            tabLabel: formatCurrency(budgetMax),
-            title: "Paket Prioritas",
-            price: budgetMax,
-            description:
-              "Solusi tuntas prioritas maksimal dengan e-sertifikat portofolio resmi Makarya.",
-            revisions: "Revisi Optimal (2-3x)",
-            deliveryDays: "Prioritas Cepat",
-            wordsOrScope: "Cakupan Lengkap",
-          },
-        ];
-
-  const [selectedTierIndex, setSelectedTierIndex] = useState(
-    packageTiers.length > 1 ? 1 : 0,
-  );
-  const activePackage = packageTiers[selectedTierIndex] || packageTiers[0];
 
   // 4. Skills Fallback Helper
   const getCategorySkills = (cat) => {
     const c = String(cat || "").toUpperCase();
     switch (c) {
       case "DESIGN":
+      case "DESAIN":
         return ["Figma", "Adobe Illustrator", "Branding Visual", "Canva"];
       case "UIUX":
         return ["Figma", "Wireframing", "User Flow", "Prototyping"];
       case "PEMROGRAMAN":
+      case "WEB":
         return [
           "React Native",
           "API Integration",
@@ -233,6 +172,7 @@ export function ProjectExploreDetailView({
           "Bahasa Indonesia",
         ];
       case "ADMIN_DATA":
+      case "ADMIN":
         return [
           "Microsoft Excel",
           "Google Sheets",
@@ -250,27 +190,18 @@ export function ProjectExploreDetailView({
   };
 
   const skillsList =
-    Array.isArray(project.ai_requirements) && project.ai_requirements.length > 0
-      ? project.ai_requirements
-          .map((r) => r?.skill?.nama_skill || r?.nama_skill)
-          .filter(Boolean)
+    Array.isArray(project.skills_required) && project.skills_required.length > 0
+      ? project.skills_required
       : Array.isArray(project.skills) && project.skills.length > 0
         ? project.skills
-            .map((s) => (typeof s === "string" ? s : s?.nama_skill || s?.name))
-            .filter(Boolean)
         : getCategorySkills(project.kategori);
 
-  const totalApplicantsCount =
-    typeof project.total_pelamar === "number"
-      ? project.total_pelamar
-      : proposals.length || 0;
-
-  // 5. Dynamic Testimonial Reviews & Rating Stats
+  // 5. Rating & Reviews Data
   const ratingAvgScore =
-    typeof project.rating_avg === "number"
-      ? project.rating_avg.toFixed(1)
-      : project.rating_avg
-        ? Number(project.rating_avg).toFixed(1)
+    typeof project.umkm_profile?.rating_avg === "number"
+      ? Number(project.umkm_profile.rating_avg).toFixed(1)
+      : typeof project.client_rating === "number"
+        ? Number(project.client_rating).toFixed(1)
         : "5.0";
 
   const totalReviewsCount =
@@ -279,27 +210,18 @@ export function ProjectExploreDetailView({
       : Array.isArray(project.client_reviews) &&
           project.client_reviews.length > 0
         ? project.client_reviews.length
-        : 25;
+        : 12;
 
   const studentReviews =
     Array.isArray(project.client_reviews) && project.client_reviews.length > 0
-      ? project.client_reviews.map((r) => ({
-          id: String(r.id),
-          nama: r.reviewer_nama || "Talenta Mahasiswa",
-          kampus: r.reviewer_kampus || "Universitas Indonesia",
-          rating: Number(r.skor || 5),
-          waktu: r.created_at ? formatDate(r.created_at) : "Maret 27",
-          pesan:
-            r.ulasan ||
-            "Mitra UMKM sangat profesional dan komunikatif. Brief pengerjaan terstruktur rapi, instruksi jelas, dan dana escrow langsung dicairkan tepat waktu!",
-        }))
+      ? project.client_reviews
       : [
           {
             id: "rev-default-1",
-            nama: "smartstarttocol",
-            kampus: "Indonesia",
+            nama: "Nadia Larasati",
+            kampus: "Institut Seni Indonesia",
             rating: 5.0,
-            waktu: "Maret 27",
+            waktu: "Maret 2026",
             pesan:
               "Mitra UMKM sangat komunikatif, memberikan arahan yang presisi dan cepat tanggap. Dana escrow langsung dicairkan begitu berkas deliverable disetujui!",
           },
@@ -308,7 +230,7 @@ export function ProjectExploreDetailView({
             nama: "Ahmad Fikri",
             kampus: "Universitas BSI",
             rating: 5.0,
-            waktu: "Februari 14",
+            waktu: "Februari 2026",
             pesan:
               "Pengalaman kolaborasi yang memuaskan. Brief pengerjaan sangat terstruktur dan e-sertifikat digital ber-QR langsung otomatis terbit ke profil.",
           },
@@ -317,11 +239,14 @@ export function ProjectExploreDetailView({
             nama: "Sarah Nabila",
             kampus: "Universitas Indonesia",
             rating: 5.0,
-            waktu: "Januari 29",
+            waktu: "Januari 2026",
             pesan:
               "Kerja sama sangat transparan. Rekomendasi terbaik untuk mahasiswa yang ingin menambah portofolio riil UMKM terpercaya.",
           },
         ];
+
+  const daysLeft = daysRemaining(project.deadline);
+  const expired = isExpired(project.deadline) || project.status === "CANCELLED";
 
   const handleOpenChat = () => {
     navigation.navigate("Chat", {
@@ -361,7 +286,7 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. HERO MEDIA BANNER (Edge-to-Edge Fiverr Style Cover Image)      */}
+          {/* 1. HERO MEDIA BANNER (Web & Apple Style Clean Presentation)       */}
           {/* ================================================================= */}
           <View style={styles.bannerContainer}>
             <Image
@@ -373,7 +298,7 @@ export function ProjectExploreDetailView({
 
             {/* Category Pill Tag */}
             <View style={styles.bannerCategoryPill}>
-              <Briefcase size={11} color="#FFFFFF" />
+              <Briefcase size={12} color="#FFFFFF" />
               <Text style={styles.bannerCategoryText}>
                 {project.kategori
                   ? String(project.kategori).toUpperCase()
@@ -381,18 +306,26 @@ export function ProjectExploreDetailView({
               </Text>
             </View>
 
-            {/* Carousel Page Counter Indicator (Fiverr Pro 1/2) */}
-            <View style={styles.bannerPageBadge}>
-              <Text style={styles.bannerPageText}>1/2</Text>
+            {/* Escrow Protected Top Right Badge */}
+            <View style={styles.bannerEscrowPill}>
+              <ShieldCheck size={11} color="#FFFFFF" />
+              <Text style={styles.bannerEscrowText}>100% Escrow Aman</Text>
+            </View>
+
+            {/* Bottom Watermark */}
+            <View style={styles.bannerBottomWatermark}>
+              <Text style={styles.bannerWatermarkText} numberOfLines={1}>
+                Kemitraan Resmi: {clientDisplayName || "Klien UMKM"}
+              </Text>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 2. SELLER / MITRA UMKM IDENTITY (Forensic Fiverr Pro Header)      */}
+          {/* 2. MITRA UMKM IDENTITY CARD (Clean Apple Style)                   */}
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
-              {/* Avatar with Status Dot */}
+              {/* Avatar */}
               <View style={styles.avatarContainer}>
                 {clientPhoto ? (
                   <Image
@@ -402,7 +335,7 @@ export function ProjectExploreDetailView({
                   />
                 ) : (
                   <View style={styles.sellerAvatarFallback}>
-                    <Building2 size={20} color="#2563EB" />
+                    <Building2 size={20} color={COLORS.brandIndigo} />
                   </View>
                 )}
                 <View style={styles.sellerOnlineDot} />
@@ -418,36 +351,69 @@ export function ProjectExploreDetailView({
                   >
                     {clientDisplayName || "Mitra Klien UMKM"}
                   </Text>
-                  <ChevronDown
-                    size={18}
-                    color="#0F172A"
-                    style={styles.chevronIcon}
-                  />
-                </View>
-
-                {/* Fiverr Style Badges Row */}
-                <View style={styles.badgesWrapper}>
-                  {/* Amber Badge: Top Rated / Mitra Terpilih ◆◆◆ */}
-                  <View style={styles.topRatedPill}>
-                    <Text style={styles.topRatedText}>
-                      Mitra Terpilih{" "}
-                      <Text style={styles.diamondSymbols}>◆◆◆</Text>
+                  <View style={styles.verifiedClientPill}>
+                    <CheckCircle2 size={11} color={COLORS.success} />
+                    <Text style={styles.verifiedClientPillText}>
+                      Mitra Terverifikasi
                     </Text>
                   </View>
-
-                  {/* Indigo Badge: Vetted Pro / 100% Escrow */}
-                  <View style={styles.vettedProPill}>
-                    <Text style={styles.vettedProText}>100% Escrow</Text>
-                  </View>
                 </View>
+
+                <Text style={styles.sellerSubText} numberOfLines={1}>
+                  {project.umkm_profile?.bidang_industri || "Usaha Mandiri"} •{" "}
+                  {project.lokasi ||
+                    project.umkm_profile?.kota ||
+                    "Indonesia"}
+                </Text>
               </View>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 3. HEADLINE & BRIEF SECTION                                       */}
+          {/* 3. HEADLINE, BADGES & BRIEF DESCRIPTION                           */}
           {/* ================================================================= */}
-          <View style={styles.headlineSection}>
+          <View style={styles.headlineCard}>
+            <View style={styles.tagRow}>
+              <View style={styles.categoryBadge}>
+                <Text style={styles.categoryBadgeText}>
+                  {project.kategori || "UMKM"}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  styles.statusBadge,
+                  project.status === "OPEN" || project.status === "BIDDING"
+                    ? styles.statusBadgeOpen
+                    : project.status === "IN_PROGRESS"
+                      ? styles.statusBadgeInProgress
+                      : styles.statusBadgeOther,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusBadgeText,
+                    project.status === "OPEN" || project.status === "BIDDING"
+                      ? styles.statusTextOpen
+                      : project.status === "IN_PROGRESS"
+                        ? styles.statusTextInProgress
+                        : styles.statusTextOther,
+                  ]}
+                >
+                  {formatStatus(project.status)}
+                </Text>
+              </View>
+
+              {matchScore > 0 && isMahasiswa && (
+                <View style={styles.matchScoreBadge}>
+                  <CheckCircle2 size={11} color="#059669" />
+                  <Text style={styles.matchScoreBadgeText}>
+                    {matchScore}% Cocok
+                  </Text>
+                </View>
+              )}
+            </View>
+
             <Text style={styles.gigHeadline}>{project.judul}</Text>
 
             <View style={styles.descriptionWrapper}>
@@ -468,7 +434,7 @@ export function ProjectExploreDetailView({
                   activeOpacity={0.7}
                 >
                   <Text style={styles.moreToggleText}>
-                    {isBriefExpanded ? "tutup ringkasan" : "more"}
+                    {isBriefExpanded ? "Tutup ringkasan" : "Baca selengkapnya"}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -476,218 +442,129 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 4. PACKAGE TIERS & PRICING TABS (Fiverr Forensic Tiers)           */}
+          {/* 4. 4-STAT METRICS BAR (Replicated exactly from Web)               */}
           {/* ================================================================= */}
-          <View style={styles.packageSection}>
-            {/* Top Divider */}
-            <View style={styles.tierTabsDivider} />
-
-            {/* Horizontal Tabs: Price or Slot Roles */}
-            <View style={styles.tierTabsRow}>
-              {packageTiers.map((tier, idx) => {
-                const isActive = selectedTierIndex === idx;
-                return (
-                  <TouchableOpacity
-                    key={tier.id}
-                    onPress={() => setSelectedTierIndex(idx)}
-                    style={[
-                      styles.tierTabItem,
-                      isActive && styles.tierTabItemActive,
-                    ]}
-                    activeOpacity={0.8}
-                  >
-                    <Text
-                      style={[
-                        styles.tierTabPriceText,
-                        isActive && styles.tierTabPriceTextActive,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {tier.tabLabel}
-                    </Text>
-                    {isActive && <View style={styles.tierActiveUnderline} />}
-                  </TouchableOpacity>
-                );
-              })}
+          <View style={styles.statsGrid}>
+            {/* Stat 1: Batas Anggaran */}
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Batas Anggaran:</Text>
+              <Text style={styles.statValuePrimary} numberOfLines={1}>
+                {formatCurrency(budgetMax)}
+              </Text>
             </View>
 
-            {/* Selected Package Details */}
-            <View style={styles.packageDetailBody}>
-              <Text style={styles.packageDetailTitle}>
-                {activePackage.title}
+            {/* Stat 2: Tipe Kolaborasi */}
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Tipe Pengerjaan:</Text>
+              <Text style={styles.statValueDark} numberOfLines={1}>
+                {isTeam ? "Tim Kolaborasi" : "Individu"}
               </Text>
-              <Text style={styles.packageDetailDesc}>
-                {activePackage.description}
+            </View>
+
+            {/* Stat 3: Tenggat Waktu */}
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Sisa Waktu:</Text>
+              <Text
+                style={[
+                  styles.statValueDark,
+                  expired && { color: COLORS.error },
+                ]}
+                numberOfLines={1}
+              >
+                {daysLeft > 0 ? `${daysLeft} Hari Lagi` : formatDate(project.deadline)}
               </Text>
+            </View>
 
-              {/* Spec Key-Value Table (Forensic to Fiverr Screen 4) */}
-              <View style={styles.specKeyValues}>
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Batas Revisi</Text>
-                  <Text style={styles.specValueText}>
-                    {activePackage.revisions}
+            {/* Stat 4: Proteksi Escrow */}
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Proteksi Escrow:</Text>
+              <Text style={styles.statValueSuccess} numberOfLines={1}>
+                100% Diamankan
+              </Text>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 5. STRUCTURED PROJECT SPECIFICATIONS (Clean Apple Icon Grid)      */}
+          {/* ================================================================= */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>
+                Spesifikasi & Standar Pengerjaan
+              </Text>
+            </View>
+
+            <View style={styles.deliverablesList}>
+              <View style={styles.deliverableItem}>
+                <View style={styles.deliverableIconWrapIndigo}>
+                  <MessageSquare size={16} color={COLORS.brandIndigo} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.deliverableTitle}>
+                    Obrolan Langsung & Arahan Klien
                   </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Tenggat Pengerjaan</Text>
-                  <Text style={styles.specValueText}>
-                    {formatDate(project.deadline)}
-                  </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Cakupan Kerja</Text>
-                  <Text style={styles.specValueText}>
-                    {activePackage.wordsOrScope}
-                  </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Sertifikat Portofolio</Text>
-                  <Text style={styles.specValueText}>Resmi Ber-QR (SKPI)</Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Proteksi Pembayaran</Text>
-                  <Text style={[styles.specValueText, { color: "#059669" }]}>
-                    Garansi Escrow 100%
+                  <Text style={styles.deliverableDesc}>
+                    Koordinasi real-time dengan mitra UMKM melalui ruang kerja digital terenkripsi.
                   </Text>
                 </View>
               </View>
 
-              {/* Apply / CTA Button (Apple-Style Signature PebbleButton) */}
-              <View style={styles.packageCtaWrapper}>
-                {canApply ? (
-                  <PebbleButton
-                    variant="sapphire"
-                    size="md"
-                    label={`Lamar Proyek (${formatCurrency(activePackage.price)})`}
-                    icon={Send}
-                    onPress={handleApplyPress}
-                    style={{ width: "100%" }}
-                  />
-                ) : myExistingProposal ? (
-                  <View style={styles.appliedSuccessBanner}>
-                    <CheckCircle2 size={16} color="#059669" />
-                    <Text style={styles.appliedSuccessText}>
-                      {isAcceptedProposal
-                        ? "Lamaran Diterima Klien UMKM"
-                        : myExistingProposal.status === "REJECTED"
-                          ? "Lamaran Tidak Terpilih"
-                          : "Lamaran Berhasil Dikirim"}
-                    </Text>
-                  </View>
-                ) : null}
+              <View style={styles.deliverableItem}>
+                <View style={styles.deliverableIconWrapCyan}>
+                  <FileText size={16} color={COLORS.brandCyan} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.deliverableTitle}>
+                    Aset Mentah & Berkas Sumber
+                  </Text>
+                  <Text style={styles.deliverableDesc}>
+                    Pengiriman aset mentah (source files) rapi & siap pakai sesuai kebutuhan brief.
+                  </Text>
+                </View>
               </View>
 
-              {/* Vetted By Fiverr / Makarya Pro Box */}
-              <View style={styles.vettedProBox}>
-                <Text style={styles.vettedProBoxTitle}>
-                  Terverifikasi oleh Makarya Pro
-                </Text>
-                <Text style={styles.vettedProBoxDesc}>
-                  {clientDisplayName || "Mitra UMKM"} telah melewati verifikasi
-                  kelayakan usaha dan dana honor diamankan sepenuhnya di Escrow
-                  Makarya.
-                </Text>
+              <View style={styles.deliverableItem}>
+                <View style={styles.deliverableIconWrapEmerald}>
+                  <Award size={16} color={COLORS.success} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.deliverableTitle}>
+                    E-Sertifikat Portofolio Resmi (SKPI)
+                  </Text>
+                  <Text style={styles.deliverableDesc}>
+                    Sertifikat resmi ber-QR otomatis diterbitkan setelah deliverable disetujui klien.
+                  </Text>
+                </View>
+              </View>
+
+              <View style={[styles.deliverableItem, { borderBottomWidth: 0 }]}>
+                <View style={styles.deliverableIconWrapAmber}>
+                  <ShieldCheck size={16} color="#D97706" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.deliverableTitle}>
+                    Garansi Pencairan Escrow 100%
+                  </Text>
+                  <Text style={styles.deliverableDesc}>
+                    Dana honor aman di escrow dan dicairkan 0% potongan komisi ke rekening Anda.
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 5. PROFILE MATCH (FOR MAHASISWA)                                  */}
-          {/* ================================================================= */}
-          {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
-            <View style={styles.editorialCard}>
-              <View style={styles.editorialHeaderRow}>
-                <Sparkles size={16} color="#2563EB" />
-                <Text style={styles.editorialTitle}>Kecocokan Profil Anda</Text>
-                <View style={styles.matchScorePill}>
-                  <Text style={styles.matchScoreText}>
-                    {matchScore || 85}% Cocok
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={styles.editorialBody}>
-                Sistem AI Makarya mendeteksi bahwa keahlian Anda sangat sesuai
-                dengan kriteria deliverable proyek ini:
-              </Text>
-
-              <View style={styles.bulletList}>
-                {matchReasons.length > 0 ? (
-                  matchReasons.map((reason, idx) => (
-                    <View key={idx} style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>{reason}</Text>
-                    </View>
-                  ))
-                ) : (
-                  <>
-                    <View style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>
-                        Keahlian dan bidang studi Anda relevan dengan kebutuhan
-                        proyek.
-                      </Text>
-                    </View>
-                    <View style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>
-                        Peluang tinggi untuk diterima dan mendapatkan portofolio
-                        terverifikasi.
-                      </Text>
-                    </View>
-                  </>
-                )}
-              </View>
-            </View>
-          )}
-
-          {/* ================================================================= */}
-          {/* 6. REQUIRED SKILLS & TECH STACK                                   */}
-          {/* ================================================================= */}
-          <View style={styles.editorialCard}>
-            <View style={styles.editorialHeaderRow}>
-              <Layers size={16} color="#0F172A" />
-              <Text style={styles.editorialTitle}>
-                Keahlian yang Dibutuhkan
-              </Text>
-            </View>
-
-            <View style={styles.skillsWrapper}>
-              {skillsList.map((skill, sIdx) => (
-                <View key={sIdx} style={styles.skillPill}>
-                  <Check size={11} color="#0F172A" />
-                  <Text style={styles.skillPillText}>{skill}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* ================================================================= */}
-          {/* 7. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
+          {/* 6. TEAM SLOTS ALLOCATION (IF MULTI-ROLE TEAM PROJECT)             */}
           {/* ================================================================= */}
           {isTeam && slots.length > 0 && (
-            <View style={styles.editorialCard}>
-              <View style={styles.editorialHeaderRow}>
-                <Users size={16} color="#0F172A" />
-                <Text style={styles.editorialTitle}>
-                  Formasi Tim ({slots.length} Posisi)
-                </Text>
+            <View style={styles.sectionBox}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <Users size={16} color={COLORS.brandIndigo} />
+                  <Text style={styles.sectionTitle}>
+                    Formasi Tim ({slots.length} Posisi)
+                  </Text>
+                </View>
               </View>
 
               <View style={styles.slotsListWrap}>
@@ -699,11 +576,9 @@ export function ProjectExploreDetailView({
                     <View key={s.id || idx} style={styles.slotCardItem}>
                       <View style={styles.slotHeaderRow}>
                         <View style={{ flex: 1, paddingRight: 8 }}>
-                          <Text style={styles.slotItemTitle}>
-                            {s.nama_peran}
-                          </Text>
+                          <Text style={styles.slotItemTitle}>{s.nama_peran}</Text>
                           <Text style={styles.slotItemBudget}>
-                            Alokasi: {formatCurrency(s.alokasi_budget)}
+                            Alokasi Honor: {formatCurrency(s.alokasi_budget || budgetMax)}
                           </Text>
                         </View>
 
@@ -727,11 +602,7 @@ export function ProjectExploreDetailView({
                                   : styles.slotBadgeTextFilled,
                             ]}
                           >
-                            {isSlotOpen
-                              ? "Terbuka"
-                              : isSlotDone
-                                ? "Selesai"
-                                : "Terisi"}
+                            {isSlotOpen ? "Terbuka" : isSlotDone ? "Selesai" : "Terisi"}
                           </Text>
                         </View>
                       </View>
@@ -749,217 +620,236 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 8. CLIENT RATING & TRUST BREAKDOWN (Forensic to Fiverr Screen 3)  */}
+          {/* 7. PROFILE MATCH & REASONS (FOR MAHASISWA)                        */}
           {/* ================================================================= */}
-          <View style={styles.fiverrRatingSection}>
-            {/* 5-Star Hero & Big Score */}
-            <View style={styles.fiverrRatingHero}>
-              <View style={styles.fiverrStarRow}>
-                <Star size={18} color="#0F172A" fill="#0F172A" />
-                <Star size={18} color="#0F172A" fill="#0F172A" />
-                <Star size={18} color="#0F172A" fill="#0F172A" />
-                <Star size={18} color="#0F172A" fill="#0F172A" />
-                <Star size={18} color="#0F172A" fill="#0F172A" />
-              </View>
-              <Text style={styles.fiverrBigScore}>{ratingAvgScore}</Text>
-            </View>
-
-            {/* Criteria Key-Value Breakdown */}
-            <View style={styles.fiverrCriteriaList}>
-              <View style={styles.fiverrCriteriaRow}>
-                <Text style={styles.fiverrCriteriaLabel}>
-                  Kelancaran komunikasi mitra
-                </Text>
-                <View style={styles.fiverrCriteriaScoreBox}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.fiverrCriteriaScoreVal}>
-                    {ratingAvgScore}
-                  </Text>
+          {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
+            <View style={styles.sectionBox}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <Sparkles size={16} color={COLORS.brandIndigo} />
+                  <Text style={styles.sectionTitle}>Kecocokan Profil Anda</Text>
+                </View>
+                <View style={styles.matchScorePill}>
+                  <Text style={styles.matchScoreText}>{matchScore || 85}% Cocok</Text>
                 </View>
               </View>
 
-              <View style={styles.fiverrCriteriaRow}>
-                <Text style={styles.fiverrCriteriaLabel}>
-                  Kualitas brief & penugasan
-                </Text>
-                <View style={styles.fiverrCriteriaScoreBox}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.fiverrCriteriaScoreVal}>
-                    {ratingAvgScore}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.fiverrCriteriaRow}>
-                <Text style={styles.fiverrCriteriaLabel}>
-                  Ketepatan pencairan escrow
-                </Text>
-                <View style={styles.fiverrCriteriaScoreBox}>
-                  <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.fiverrCriteriaScoreVal}>5.0</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* ================================================================= */}
-          {/* 9. HORIZONTAL REVIEWS CAROUSEL (Forensic to Fiverr Screen 2 & 3)  */}
-          {/* ================================================================= */}
-          <View style={styles.fiverrReviewsSection}>
-            <View style={styles.fiverrReviewsHeaderRow}>
-              <Text style={styles.fiverrReviewsTitle}>
-                {totalReviewsCount} ulasan
+              <Text style={styles.matchIntroText}>
+                Sistem AI Makarya mendeteksi keahlian dan riwayat portofolio Anda sangat relevan dengan kebutuhan proyek ini:
               </Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Text style={styles.fiverrSeeAllText}>Lihat Semua</Text>
-              </TouchableOpacity>
+
+              <View style={styles.bulletList}>
+                {matchReasons.length > 0 ? (
+                  matchReasons.map((reason, idx) => (
+                    <View key={idx} style={styles.bulletItem}>
+                      <CheckCircle2
+                        size={13}
+                        color={COLORS.brandIndigo}
+                        style={{ marginTop: 2 }}
+                      />
+                      <Text style={styles.bulletText}>{reason}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <>
+                    <View style={styles.bulletItem}>
+                      <CheckCircle2
+                        size={13}
+                        color={COLORS.brandIndigo}
+                        style={{ marginTop: 2 }}
+                      />
+                      <Text style={styles.bulletText}>
+                        Keahlian dan bidang studi Anda relevan dengan kebutuhan proyek.
+                      </Text>
+                    </View>
+                    <View style={styles.bulletItem}>
+                      <CheckCircle2
+                        size={13}
+                        color={COLORS.brandIndigo}
+                        style={{ marginTop: 2 }}
+                      />
+                      <Text style={styles.bulletText}>
+                        Peluang tinggi untuk diterima dan mendapatkan portofolio terverifikasi.
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          )}
+
+          {/* ================================================================= */}
+          {/* 8. REQUIRED SKILLS & TECH STACK                                   */}
+          {/* ================================================================= */}
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Layers size={16} color={COLORS.textDark} />
+                <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
+              </View>
             </View>
 
-            {/* Horizontal Scrollable Carousel */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.reviewsScrollContainer}
-            >
-              {studentReviews.map((rev) => (
-                <View key={rev.id} style={styles.fiverrReviewCard}>
-                  {/* Top Reviewer Info */}
-                  <View style={styles.fiverrReviewerHeader}>
-                    <View style={styles.fiverrReviewerAvatarBox}>
-                      <GraduationCap size={16} color="#2563EB" />
-                    </View>
-                    <View style={styles.fiverrReviewerMeta}>
-                      <Text style={styles.fiverrReviewerName} numberOfLines={1}>
-                        {rev.nama}
-                      </Text>
-                      <Text
-                        style={styles.fiverrReviewerCampus}
-                        numberOfLines={1}
-                      >
-                        🇮🇩 {rev.kampus}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Review Text Body */}
-                  <Text style={styles.fiverrReviewText} numberOfLines={3}>
-                    {rev.pesan}
-                  </Text>
-
-                  {/* Bottom Score & Date */}
-                  <View style={styles.fiverrReviewBottomRow}>
-                    <View style={styles.fiverrReviewScoreBox}>
-                      <Star size={11} color="#0F172A" fill="#0F172A" />
-                      <Text style={styles.fiverrReviewScoreText}>
-                        {rev.rating.toFixed(1)}
-                      </Text>
-                    </View>
-                    <Text style={styles.fiverrReviewDateText}>{rev.waktu}</Text>
-                  </View>
+            <View style={styles.skillsWrapper}>
+              {skillsList.map((skill, sIdx) => (
+                <View key={sIdx} style={styles.skillPill}>
+                  <Check size={11} color={COLORS.brandIndigo} strokeWidth={3} />
+                  <Text style={styles.skillPillText}>{skill}</Text>
                 </View>
               ))}
-            </ScrollView>
+            </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 10. CLIENT UMKM PROFILE & LOCATION                                */}
+          {/* 9. RATING & ULASAN KEMITRAAN (Clean Apple & Web Style)            */}
           {/* ================================================================= */}
-          <View style={styles.editorialCard}>
-            <View style={styles.editorialHeaderRow}>
-              <Building2 size={16} color="#0F172A" />
-              <Text style={styles.editorialTitle}>Profil Usaha Klien</Text>
+          <View style={styles.sectionBox}>
+            <View style={styles.sectionHeaderRow}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Star size={16} color="#F59E0B" fill="#F59E0B" />
+                <Text style={styles.sectionTitle}>Rating & Ulasan Kemitraan</Text>
+              </View>
+              <Text style={styles.reviewVerifiedBadge}>Terverifikasi Resmi</Text>
             </View>
 
-            <View style={styles.clientProfileRow}>
-              {clientPhoto ? (
-                <Image
-                  source={{ uri: clientPhoto }}
-                  style={styles.clientAvatar}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.clientAvatarFallback}>
-                  <Building2 size={20} color="#2563EB" />
+            {/* Big Score Hero Card */}
+            <View style={styles.ratingHeroRow}>
+              <View style={styles.ratingScoreBox}>
+                <Text style={styles.ratingScoreNumber}>{ratingAvgScore}</Text>
+                <View style={styles.starRow}>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} size={13} color="#F59E0B" fill="#F59E0B" />
+                  ))}
                 </View>
-              )}
-
-              <View style={styles.clientInfoCol}>
-                <Text
-                  style={styles.clientNameText}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {clientDisplayName}
+                <Text style={styles.ratingScoreSub}>
+                  Skor Kepuasan Kemitraan
                 </Text>
-                <View style={styles.clientMetaRow}>
-                  <View style={styles.verifiedTag}>
-                    <ShieldCheck size={10} color="#059669" strokeWidth={2.5} />
-                    <Text style={styles.verifiedTagText}>Terverifikasi</Text>
+              </View>
+
+              <View style={styles.criteriaBox}>
+                <View style={styles.criteriaRow}>
+                  <Text style={styles.criteriaLabel}>Kelancaran Komunikasi:</Text>
+                  <View style={styles.criteriaScorePill}>
+                    <Star size={10} color="#F59E0B" fill="#F59E0B" />
+                    <Text style={styles.criteriaScoreVal}>{ratingAvgScore}</Text>
                   </View>
-                  <Text style={styles.clientMetaDot}>•</Text>
-                  <Text
-                    style={styles.locationText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"} •{" "}
-                    {project.lokasi ||
-                      project.umkm_profile?.kota ||
-                      "Indonesia"}
-                  </Text>
+                </View>
+
+                <View style={styles.criteriaRow}>
+                  <Text style={styles.criteriaLabel}>Kualitas Brief & Tugas:</Text>
+                  <View style={styles.criteriaScorePill}>
+                    <Star size={10} color="#F59E0B" fill="#F59E0B" />
+                    <Text style={styles.criteriaScoreVal}>{ratingAvgScore}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.criteriaRow}>
+                  <Text style={styles.criteriaLabel}>Ketepatan Pencairan Escrow:</Text>
+                  <View style={styles.criteriaScorePillEmerald}>
+                    <ShieldCheck size={10} color={COLORS.success} />
+                    <Text style={styles.criteriaScoreValEmerald}>100% Aman</Text>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
 
-          {/* ================================================================= */}
-          {/* 11. TALENT BENEFITS & VERIFIED CERTIFICATION                      */}
-          {/* ================================================================= */}
-          <View style={styles.editorialCard}>
-            <View style={styles.editorialHeaderRow}>
-              <Award size={16} color="#0F172A" />
-              <Text style={styles.editorialTitle}>
-                Jaminan & Keuntungan Mahasiswa
+            {/* Testimonials List */}
+            <View style={styles.testimonialsWrap}>
+              <Text style={styles.testimonialsHeading}>
+                Ulasan Terbaru ({studentReviews.length})
               </Text>
-            </View>
 
-            <View style={styles.benefitItemsWrap}>
-              <View style={styles.benefitItem}>
-                <View style={styles.benefitIconBoxEmerald}>
-                  <ShieldCheck size={15} color="#059669" />
-                </View>
-                <View style={styles.benefitTextBox}>
-                  <Text style={styles.benefitItemTitle}>
-                    100% Jaminan Escrow
-                  </Text>
-                  <Text style={styles.benefitItemDesc}>
-                    Dana honor Anda telah diamankan di sistem Makarya sebelum
-                    pengerjaan dimulai dan dicairkan segera setelah pekerjaan
-                    disetujui.
-                  </Text>
-                </View>
-              </View>
+              {studentReviews.map((rev) => (
+                <View key={rev.id} style={styles.reviewCardItem}>
+                  <View style={styles.reviewCardHeader}>
+                    <View style={styles.reviewerAvatarFrame}>
+                      <GraduationCap size={15} color={COLORS.brandIndigo} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.reviewerName} numberOfLines={1}>
+                        {rev.nama}
+                      </Text>
+                      <Text style={styles.reviewerCampus} numberOfLines={1}>
+                        🇮🇩 {rev.kampus} • {rev.waktu}
+                      </Text>
+                    </View>
+                    <View style={styles.reviewStarPill}>
+                      <Star size={10} color="#F59E0B" fill="#F59E0B" />
+                      <Text style={styles.reviewStarPillText}>
+                        {typeof rev.rating === "number"
+                          ? rev.rating.toFixed(1)
+                          : "5.0"}
+                      </Text>
+                    </View>
+                  </View>
 
-              <View style={styles.benefitItem}>
-                <View style={styles.benefitIconBoxBlue}>
-                  <Award size={15} color="#2563EB" />
+                  <Text style={styles.reviewComment}>"{rev.pesan}"</Text>
                 </View>
-                <View style={styles.benefitTextBox}>
-                  <Text style={styles.benefitItemTitle}>
-                    E-Sertifikat Digital Resmi
-                  </Text>
-                  <Text style={styles.benefitItemDesc}>
-                    Otomatis mendapatkan sertifikat ber-QR terverifikasi
-                    bertanda tangan digital UMKM untuk portofolio & konversi
-                    SKPI kampus.
-                  </Text>
-                </View>
-              </View>
+              ))}
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 12. MANAGEMENT FOR UMKM OWNER                                     */}
+          {/* 10. ACTION & WORKROOM BUTTONS (Apple Pebble Style)                */}
+          {/* ================================================================= */}
+          <View style={styles.actionSectionBox}>
+            <View style={styles.budgetHighlightRow}>
+              <View>
+                <Text style={styles.budgetHighlightLabel}>
+                  Batas Anggaran Proyek
+                </Text>
+                <Text style={styles.budgetHighlightVal}>
+                  {formatCurrency(budgetMax)}
+                </Text>
+              </View>
+              <View style={styles.zeroCutBadge}>
+                <CheckCircle2 size={11} color={COLORS.success} />
+                <Text style={styles.zeroCutText}>0% Potongan Komisi</Text>
+              </View>
+            </View>
+
+            {/* Action Button: Apply or Status */}
+            {canApply ? (
+              <PebbleButton
+                variant="sapphire"
+                size="md"
+                label={`Lamar Proyek Ini (${formatCurrency(budgetMax)})`}
+                icon={Send}
+                onPress={handleApplyPress}
+                style={{ width: "100%", marginBottom: 8 }}
+              />
+            ) : myExistingProposal ? (
+              <View style={styles.appliedSuccessBanner}>
+                <CheckCircle2 size={16} color={COLORS.success} />
+                <Text style={styles.appliedSuccessText}>
+                  {isAcceptedProposal
+                    ? "Lamaran Diterima Klien UMKM"
+                    : myExistingProposal.status === "REJECTED"
+                      ? "Lamaran Tidak Terpilih"
+                      : "Lamaran Anda Sedang Ditinjau"}
+                </Text>
+              </View>
+            ) : expired ? (
+              <View style={styles.expiredBanner}>
+                <Clock size={15} color={COLORS.error} />
+                <Text style={styles.expiredBannerText}>
+                  Penerimaan Proposal Ditutup (Tenggat Berakhir)
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Secondary Button: Open Chat & Workroom */}
+            <PebbleButton
+              variant="pearl"
+              size="md"
+              label="Buka Ruang Kerja & Obrolan"
+              icon={MessageSquare}
+              onPress={handleOpenChat}
+              style={{ width: "100%" }}
+            />
+          </View>
+
+          {/* ================================================================= */}
+          {/* 11. MANAGEMENT FOR UMKM OWNER                                     */}
           {/* ================================================================= */}
           {isUmkmOwner && (
             <View style={styles.managementSection}>
@@ -1036,8 +926,7 @@ export function ProjectExploreDetailView({
                     <View style={styles.emptyBox}>
                       <FileCheck size={28} color="#94A3B8" />
                       <Text style={styles.emptyText}>
-                        Mahasiswa belum mengirimkan berkas deliverable
-                        pengerjaan.
+                        Mahasiswa belum mengirimkan berkas deliverable pengerjaan.
                       </Text>
                     </View>
                   ) : (
@@ -1047,7 +936,7 @@ export function ProjectExploreDetailView({
                           Berkas Deliverable Proyek
                         </Text>
                         <View style={styles.submittedLinkBox}>
-                          <Link2 size={14} color="#2563EB" />
+                          <Link2 size={14} color={COLORS.brandIndigo} />
                           <Text
                             style={styles.submittedLinkText}
                             numberOfLines={1}
@@ -1077,13 +966,13 @@ export function ProjectExploreDetailView({
             </View>
           )}
 
-          {/* Bottom spacer for floating chat & sticky bar */}
+          {/* Spacer */}
           <View style={{ height: 110 }} />
         </View>
       </ScrollView>
 
       {/* ===================================================================== */}
-      {/* 13. FLOATING CHAT PILL WIDGET (Forensic Fiverr Pro Widget)            */}
+      {/* 12. FLOATING CHAT PILL WIDGET                                         */}
       {/* ===================================================================== */}
       <TouchableOpacity
         style={styles.floatingChatPill}
@@ -1099,27 +988,27 @@ export function ProjectExploreDetailView({
             />
           ) : (
             <View style={styles.floatingAvatarFallback}>
-              <Building2 size={13} color="#2563EB" />
+              <Building2 size={13} color={COLORS.brandIndigo} />
             </View>
           )}
           <View style={styles.floatingOnlineDot} />
         </View>
-        <Text style={styles.floatingChatText}>Chat</Text>
+        <Text style={styles.floatingChatText}>Chat Mitra</Text>
       </TouchableOpacity>
 
       {/* ===================================================================== */}
-      {/* 14. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
+      {/* 13. PERSISTENT STICKY BOTTOM ACTION BAR (Single Clean Budget)         */}
       {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
         <View style={styles.stickyContentRow}>
           <View style={styles.stickyPriceCol}>
-            <Text style={styles.stickyPriceLabel}>ESTIMASI HONOR</Text>
+            <Text style={styles.stickyPriceLabel}>BATAS ANGGARAN</Text>
             <Text
               style={styles.stickyPriceValue}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {formattedBudgetRange}
+              {formatCurrency(budgetMax)}
             </Text>
           </View>
 
@@ -1128,16 +1017,16 @@ export function ProjectExploreDetailView({
               <PebbleButton
                 variant="sapphire"
                 size="md"
-                label="Ajukan Lamaran"
+                label="Lamar Proyek"
                 icon={Send}
                 onPress={handleApplyPress}
               />
             ) : myExistingProposal ? (
               <View style={styles.appliedPill}>
-                <CheckCircle2 size={13} color="#059669" />
+                <CheckCircle2 size={13} color={COLORS.success} />
                 <Text style={styles.appliedPillText}>
                   {isAcceptedProposal
-                    ? "Lamaran Disetujui"
+                    ? "Lamaran Diterima"
                     : myExistingProposal.status === "REJECTED"
                       ? "Lamaran Ditolak"
                       : "Lamaran Terkirim"}
@@ -1162,7 +1051,7 @@ export function ProjectExploreDetailView({
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.bgDark || "#F8FAFC",
   },
   scrollView: {
     flex: 1,
@@ -1176,12 +1065,14 @@ const styles = StyleSheet.create({
   /* 1. Hero Media Banner */
   bannerContainer: {
     width: "100%",
-    height: 195,
-    borderRadius: 14,
+    height: 180,
+    borderRadius: 20,
     overflow: "hidden",
     position: "relative",
-    marginBottom: 16,
+    marginBottom: 14,
     backgroundColor: "#0F172A",
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.8)",
   },
   bannerImage: {
     width: "100%",
@@ -1189,7 +1080,7 @@ const styles = StyleSheet.create({
   },
   bannerOverlayGradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(15, 23, 42, 0.15)",
+    backgroundColor: "rgba(15, 23, 42, 0.35)",
   },
   bannerCategoryPill: {
     position: "absolute",
@@ -1198,10 +1089,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "rgba(15, 23, 42, 0.8)",
+    backgroundColor: "rgba(15, 23, 42, 0.85)",
     paddingHorizontal: 10,
     paddingVertical: 4.5,
-    borderRadius: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   bannerCategoryText: {
     fontSize: 10,
@@ -1210,26 +1103,52 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-  bannerPageBadge: {
+  bannerEscrowPill: {
     position: "absolute",
-    bottom: 12,
+    top: 12,
     right: 12,
-    backgroundColor: "rgba(15, 23, 42, 0.8)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "rgba(16, 185, 129, 0.9)",
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
-  bannerPageText: {
-    fontSize: 10.5,
+  bannerEscrowText: {
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
     fontWeight: "700",
   },
+  bannerBottomWatermark: {
+    position: "absolute",
+    bottom: 10,
+    left: 12,
+    right: 12,
+  },
+  bannerWatermarkText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "rgba(255, 255, 255, 0.95)",
+    fontWeight: "700",
+  },
 
-  /* 2. Seller Identity Header (Forensic Fiverr Pro) */
+  /* 2. Seller Identity Header */
   sellerHeaderCard: {
-    paddingBottom: 14,
-    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   sellerRow: {
     flexDirection: "row",
@@ -1240,277 +1159,395 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   sellerAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: "#E2E8F0",
   },
   sellerAvatarFallback: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#EFF6FF",
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.brandIndigoLight,
     alignItems: "center",
     justifyContent: "center",
   },
   sellerOnlineDot: {
     position: "absolute",
-    bottom: -1,
-    right: -1,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#94A3B8",
+    bottom: 0,
+    right: 0,
+    width: 11,
+    height: 11,
+    borderRadius: 5.5,
+    backgroundColor: COLORS.success,
     borderWidth: 2,
     borderColor: "#FFFFFF",
   },
   sellerMetaCol: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
   sellerNameRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 8,
   },
   sellerName: {
-    fontSize: 15.5,
+    fontSize: 14,
     fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
+    color: COLORS.textDark,
+    fontWeight: "700",
     flex: 1,
-    paddingRight: 6,
   },
-  chevronIcon: {
-    marginLeft: "auto",
-  },
-  badgesWrapper: {
+  verifiedClientPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    flexWrap: "wrap",
+    gap: 3,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    flexShrink: 0,
   },
-  topRatedPill: {
-    backgroundColor: "#FFF1DB",
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
-    borderRadius: 5,
-  },
-  topRatedText: {
-    fontSize: 10,
+  verifiedClientPillText: {
+    fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
-    color: "#B45309",
-    fontWeight: "800",
+    color: COLORS.success,
+    fontWeight: "700",
   },
-  diamondSymbols: {
-    fontSize: 8.5,
-    color: "#B45309",
-    letterSpacing: 1.5,
-  },
-  vettedProPill: {
-    backgroundColor: "#ECECFF",
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
-    borderRadius: 5,
-  },
-  vettedProText: {
-    fontSize: 10,
-    fontFamily: FONTS.bodyBold,
-    color: "#4F46E5",
-    fontWeight: "800",
+  sellerSubText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
   },
 
-  /* 3. Headline & Description */
-  headlineSection: {
-    paddingBottom: 16,
-    gap: 10,
+  /* 3. Headline Card */
+  headlineCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  tagRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 6,
+    marginBottom: 10,
+  },
+  categoryBadge: {
+    backgroundColor: COLORS.canvasSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+  },
+  categoryBadgeText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  statusBadgeOpen: {
+    backgroundColor: COLORS.successBg,
+  },
+  statusBadgeInProgress: {
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  statusBadgeOther: {
+    backgroundColor: "#F1F5F9",
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+  },
+  statusTextOpen: {
+    color: COLORS.success,
+  },
+  statusTextInProgress: {
+    color: COLORS.brandIndigo,
+  },
+  statusTextOther: {
+    color: COLORS.textMuted,
+  },
+  matchScoreBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.25)",
+  },
+  matchScoreBadgeText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
   },
   gigHeadline: {
-    fontSize: 21,
+    fontSize: 18,
     fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "900",
-    lineHeight: 28,
+    color: COLORS.textDark,
+    fontWeight: "800",
+    lineHeight: 24,
+    marginBottom: 8,
   },
   descriptionWrapper: {
     gap: 4,
   },
   gigDescription: {
-    fontSize: 13.5,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 21,
+    color: COLORS.textSecondary,
+    lineHeight: 19,
   },
   moreToggleBtn: {
     alignSelf: "flex-start",
     marginTop: 2,
   },
   moreToggleText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
-    textDecorationLine: "underline",
-  },
-
-  /* 4. Package Tiers & Details */
-  packageSection: {
-    marginBottom: 20,
-  },
-  tierTabsDivider: {
-    height: 1,
-    backgroundColor: "#E5E7EB",
-    marginBottom: 0,
-  },
-  tierTabsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  tierTabItem: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 14,
-    position: "relative",
-  },
-  tierTabItemActive: {},
-  tierTabPriceText: {
-    fontSize: 15,
-    fontFamily: FONTS.bodyBold,
-    color: "#9CA3AF",
-    fontWeight: "600",
-  },
-  tierTabPriceTextActive: {
-    fontSize: 16,
-    color: "#0F172A",
-    fontWeight: "900",
-  },
-  tierActiveUnderline: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2.5,
-    backgroundColor: "#0F172A",
-  },
-  packageDetailBody: {
-    paddingTop: 18,
-    gap: 14,
-  },
-  packageDetailTitle: {
-    fontSize: 17,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
-  },
-  packageDetailDesc: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 19,
-    marginTop: -4,
-  },
-  specKeyValues: {
-    gap: 12,
-    marginTop: 4,
-  },
-  specKeyValueRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  specKeyText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-  },
-  specValueText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-  packageCtaWrapper: {
-    marginTop: 6,
-  },
-  appliedSuccessBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    backgroundColor: "#ECFDF5",
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  appliedSuccessText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyBold,
-    color: "#059669",
-    fontWeight: "700",
-  },
-  vettedProBox: {
-    backgroundColor: "#F8FAFC",
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    gap: 4,
-    marginTop: 6,
-  },
-  vettedProBoxTitle: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
-  },
-  vettedProBoxDesc: {
     fontSize: 11.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    lineHeight: 17,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
 
-  /* 5. Editorial Card General */
-  editorialCard: {
+  /* 4. 4-Stat Metrics Bar */
+  statsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+  statCard: {
+    flex: 1,
+    minWidth: "47%",
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
+    padding: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 16,
-    marginBottom: 16,
-    gap: 12,
+    borderColor: "rgba(226, 232, 240, 0.9)",
   },
-  editorialHeaderRow: {
+  statLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  statValuePrimary: {
+    fontSize: 13.5,
+    fontFamily: FONTS.displayBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "800",
+    marginTop: 2,
+  },
+  statValueDark: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+    marginTop: 2,
+  },
+  statValueSuccess: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
+    marginTop: 2,
+  },
+
+  /* 5. Section Box & Deliverables List */
+  sectionBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.displayBold,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  deliverablesList: {
+    gap: 10,
+  },
+  deliverableItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+  },
+  deliverableIconWrapIndigo: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  deliverableIconWrapCyan: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#ECFEFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  deliverableIconWrapEmerald: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.successBg,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  deliverableIconWrapAmber: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#FEF3C7",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  deliverableTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+  },
+  deliverableDesc: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    lineHeight: 16,
+    marginTop: 1,
+  },
+
+  /* 6. Slots List */
+  slotsListWrap: {
     gap: 8,
   },
-  editorialTitle: {
-    fontSize: 15,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
+  slotCardItem: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+    backgroundColor: COLORS.canvasSoft,
   },
-  editorialBody: {
+  slotHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  slotItemTitle: {
     fontSize: 12.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 18,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
   },
-  matchScorePill: {
-    backgroundColor: "#EFF6FF",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    marginLeft: "auto",
-  },
-  matchScoreText: {
+  slotItemBudget: {
     fontSize: 11,
     fontFamily: FONTS.bodyBold,
-    color: "#2563EB",
-    fontWeight: "800",
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+    marginTop: 1,
+  },
+  slotItemDesc: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    marginTop: 4,
+  },
+  slotBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+  },
+  slotBadgeOpen: {
+    backgroundColor: COLORS.successBg,
+  },
+  slotBadgeDone: {
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  slotBadgeFilled: {
+    backgroundColor: "#F1F5F9",
+  },
+  slotBadgeText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+  },
+  slotBadgeTextOpen: {
+    color: COLORS.success,
+  },
+  slotBadgeTextDone: {
+    color: COLORS.brandIndigo,
+  },
+  slotBadgeTextFilled: {
+    color: COLORS.textMuted,
+  },
+
+  /* 7. Match Score */
+  matchScorePill: {
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.25)",
+  },
+  matchScoreText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+  matchIntroText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textSecondary,
+    marginBottom: 8,
+    lineHeight: 17,
   },
   bulletList: {
     gap: 6,
@@ -1521,477 +1558,393 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   bulletText: {
-    flex: 1,
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 17,
+    color: COLORS.textDark,
+    flex: 1,
+    lineHeight: 16,
   },
 
-  /* 6. Skills */
+  /* 8. Skills */
   skillsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 6,
   },
   skillPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    backgroundColor: "#F8FAFC",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
+    gap: 4,
+    backgroundColor: COLORS.brandIndigoLight,
+    paddingHorizontal: 9,
+    paddingVertical: 4.5,
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "rgba(79, 70, 229, 0.2)",
   },
   skillPillText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: FONTS.bodyBold,
-    color: "#1E293B",
-    fontWeight: "600",
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
 
-  /* 7. Team Slots */
-  slotsListWrap: {
+  /* 9. Ratings & Reviews */
+  reviewVerifiedBadge: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textMuted,
+    fontWeight: "600",
+  },
+  ratingHeroRow: {
+    flexDirection: "row",
     gap: 10,
+    marginBottom: 14,
   },
-  slotCardItem: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+  ratingScoreBox: {
+    width: "40%",
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
     padding: 12,
-    gap: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
   },
-  slotHeaderRow: {
+  ratingScoreNumber: {
+    fontSize: 28,
+    fontFamily: FONTS.displayBold,
+    color: COLORS.textDark,
+    fontWeight: "900",
+  },
+  starRow: {
+    flexDirection: "row",
+    gap: 2,
+    marginVertical: 3,
+  },
+  ratingScoreSub: {
+    fontSize: 9,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
+    textAlign: "center",
+  },
+  criteriaBox: {
+    flex: 1,
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 14,
+    padding: 10,
+    justifyContent: "center",
+    gap: 6,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+  },
+  criteriaRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  slotItemTitle: {
-    fontSize: 13.5,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-  slotItemBudget: {
-    fontSize: 12,
+  criteriaLabel: {
+    fontSize: 9.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#059669",
-    fontWeight: "600",
-    marginTop: 1,
+    color: COLORS.textSecondary,
+    flex: 1,
+    paddingRight: 4,
   },
-  slotBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
+  criteriaScorePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 4,
   },
-  slotBadgeOpen: {
-    backgroundColor: "#ECFDF5",
-  },
-  slotBadgeFilled: {
-    backgroundColor: "#EFF6FF",
-  },
-  slotBadgeDone: {
-    backgroundColor: "#F1F5F9",
-  },
-  slotBadgeText: {
-    fontSize: 10,
+  criteriaScoreVal: {
+    fontSize: 9,
     fontFamily: FONTS.bodyBold,
+    color: "#B45309",
     fontWeight: "700",
   },
-  slotBadgeTextOpen: {
-    color: "#059669",
+  criteriaScorePillEmerald: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 4,
   },
-  slotBadgeTextFilled: {
-    color: "#2563EB",
+  criteriaScoreValEmerald: {
+    fontSize: 8.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
   },
-  slotBadgeTextDone: {
-    color: "#64748B",
-  },
-  slotItemDesc: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 16,
-  },
-
-  /* 8. Fiverr Rating Section */
-  fiverrRatingSection: {
-    paddingVertical: 18,
+  testimonialsWrap: {
+    gap: 8,
     borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
-    marginBottom: 20,
-    gap: 14,
+    borderTopColor: COLORS.borderSubtle,
+    paddingTop: 10,
   },
-  fiverrRatingHero: {
+  testimonialsHeading: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+    marginBottom: 2,
+  },
+  reviewCardItem: {
+    backgroundColor: COLORS.canvasSoft,
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+    gap: 4,
+  },
+  reviewCardHeader: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  fiverrStarRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-  },
-  fiverrBigScore: {
-    fontSize: 20,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "900",
-    marginLeft: 4,
-  },
-  fiverrCriteriaList: {
-    gap: 10,
-  },
-  fiverrCriteriaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  fiverrCriteriaLabel: {
-    fontSize: 13.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#1E293B",
-  },
-  fiverrCriteriaScoreBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  fiverrCriteriaScoreVal: {
-    fontSize: 13.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
-  },
-
-  /* 9. Fiverr Horizontal Reviews Carousel */
-  fiverrReviewsSection: {
-    marginBottom: 22,
-    gap: 12,
-  },
-  fiverrReviewsHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  fiverrReviewsTitle: {
-    fontSize: 18,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "900",
-  },
-  fiverrSeeAllText: {
-    fontSize: 13.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
-    textDecorationLine: "underline",
-  },
-  reviewsScrollContainer: {
-    paddingRight: 16,
-    gap: 12,
-  },
-  fiverrReviewCard: {
-    width: 290,
+  reviewerAvatarFrame: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: "#FFFFFF",
-    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    padding: 16,
-    gap: 10,
+    borderColor: COLORS.borderSubtle,
   },
-  fiverrReviewerHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  fiverrReviewerAvatarBox: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fiverrReviewerMeta: {
-    flex: 1,
-    minWidth: 0,
-  },
-  fiverrReviewerName: {
-    fontSize: 13,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
-  },
-  fiverrReviewerCampus: {
+  reviewerName: {
     fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    marginTop: 1,
-  },
-  fiverrReviewText: {
-    fontSize: 12.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 18,
-  },
-  fiverrReviewBottomRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  fiverrReviewScoreBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3.5,
-  },
-  fiverrReviewScoreText: {
-    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
-  },
-  fiverrReviewDateText: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#94A3B8",
-  },
-
-  /* 10. Client UMKM Profile */
-  clientProfileRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  clientAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#E2E8F0",
-  },
-  clientAvatarFallback: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clientInfoCol: {
-    flex: 1,
-    minWidth: 0,
-    justifyContent: "center",
-  },
-  clientNameText: {
-    fontSize: 14.5,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
+    color: COLORS.textDark,
     fontWeight: "700",
   },
-  clientMetaRow: {
+  reviewerCampus: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+  },
+  reviewStarPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    marginTop: 3,
+    gap: 2,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    borderRadius: 4,
   },
-  verifiedTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  verifiedTagText: {
+  reviewStarPillText: {
     fontSize: 9.5,
     fontFamily: FONTS.bodyBold,
-    color: "#059669",
+    color: "#B45309",
     fontWeight: "700",
   },
-  clientMetaDot: {
-    fontSize: 10,
-    color: "#94A3B8",
-  },
-  locationText: {
-    fontSize: 11,
+  reviewComment: {
+    fontSize: 10.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    flexShrink: 1,
+    color: COLORS.textSecondary,
+    fontStyle: "italic",
+    lineHeight: 15,
+    paddingLeft: 34,
   },
 
-  /* 11. Benefits */
-  benefitItemsWrap: {
-    gap: 10,
+  /* 10. Action Section Box */
+  actionSectionBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginBottom: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  benefitItem: {
+  budgetHighlightRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-  },
-  benefitIconBoxEmerald: {
-    width: 30,
-    height: 30,
-    borderRadius: 8,
-    backgroundColor: "#ECFDF5",
     alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#DCFCE7",
+    justifyContent: "space-between",
+    marginBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.borderSubtle,
+    paddingBottom: 12,
   },
-  benefitIconBoxBlue: {
-    width: 30,
-    height: 30,
-    borderRadius: 8,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#DBEAFE",
-  },
-  benefitTextBox: {
-    flex: 1,
-  },
-  benefitItemTitle: {
-    fontSize: 12.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
+  budgetHighlightLabel: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
+    textTransform: "uppercase",
     fontWeight: "700",
   },
-  benefitItemDesc: {
+  budgetHighlightVal: {
+    fontSize: 20,
+    fontFamily: FONTS.displayBold,
+    color: COLORS.textDark,
+    fontWeight: "900",
+    marginTop: 1,
+  },
+  zeroCutBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  zeroCutText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+  appliedSuccessBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: COLORS.successBg,
+    paddingVertical: 12,
+    borderRadius: 14,
+    marginBottom: 8,
+  },
+  appliedSuccessText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+  expiredBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#FEE2E2",
+    paddingVertical: 10,
+    borderRadius: 14,
+    marginBottom: 8,
+  },
+  expiredBannerText: {
     fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 16,
-    marginTop: 2,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.error,
+    fontWeight: "700",
   },
 
-  /* 12. Management Section */
+  /* 11. UMKM Management */
   managementSection: {
-    gap: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(226, 232, 240, 0.9)",
     marginBottom: 14,
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "#E2E8F0",
-    borderRadius: 14,
-    padding: 3,
+    gap: 8,
+    marginBottom: 12,
   },
   tabButton: {
     flex: 1,
     paddingVertical: 9,
     alignItems: "center",
-    borderRadius: 11,
+    borderRadius: 10,
+    backgroundColor: COLORS.canvasSoft,
   },
   tabButtonActive: {
-    backgroundColor: "#FFFFFF",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 1,
+    backgroundColor: COLORS.brandIndigoLight,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.3)",
   },
   tabText: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyBold,
-    color: "#64748B",
-    fontWeight: "600",
+    fontSize: 11,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
   },
   tabTextActive: {
-    color: "#0F172A",
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
     fontWeight: "700",
   },
   tabContent: {
-    gap: 10,
-  },
-  emptyBox: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 28,
-    alignItems: "center",
-    justifyContent: "center",
     gap: 8,
   },
+  emptyBox: {
+    padding: 20,
+    alignItems: "center",
+    gap: 6,
+  },
   emptyText: {
-    fontSize: 12.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
+    color: COLORS.textMuted,
     textAlign: "center",
   },
   submissionCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: COLORS.canvasSoft,
+    padding: 12,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    padding: 16,
-    gap: 10,
+    borderColor: COLORS.borderSubtle,
   },
   submissionTitle: {
-    fontSize: 13.5,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "700",
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
   },
   submittedLinkBox: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#F8FAFC",
-    padding: 12,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
+    padding: 8,
+    borderRadius: 8,
+    marginTop: 6,
   },
   submittedLinkText: {
-    flex: 1,
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#2563EB",
+    color: COLORS.brandIndigo,
+    flex: 1,
   },
 
-  /* 13. Floating Chat Pill Widget (Forensic Fiverr Pro) */
+  /* 12. Floating Chat Widget */
   floatingChatPill: {
     position: "absolute",
     bottom: 84,
     right: 16,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    backgroundColor: "#FFFFFF",
+    gap: 6,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 12,
     paddingVertical: 7,
-    paddingHorizontal: 13,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderRadius: 100,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 8,
-    zIndex: 99,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
   },
   floatingAvatarWrap: {
     position: "relative",
   },
   floatingAvatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "#E2E8F0",
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
   floatingAvatarFallback: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "#EFF6FF",
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1999,21 +1952,21 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -1,
     right: -1,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#94A3B8",
-    borderWidth: 1.5,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: COLORS.success,
+    borderWidth: 1,
     borderColor: "#FFFFFF",
   },
   floatingChatText: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 
-  /* 14. Sticky Bottom Action Bar */
+  /* 13. Sticky Bottom Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
@@ -2021,38 +1974,37 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
+    borderTopColor: "rgba(226, 232, 240, 0.9)",
     paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 14,
-    elevation: 12,
+    paddingVertical: 10,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 8,
   },
   stickyContentRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 12,
   },
   stickyPriceCol: {
     flex: 1,
-    marginRight: 12,
-    justifyContent: "center",
   },
   stickyPriceLabel: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontFamily: FONTS.bodyBold,
-    color: "#64748B",
+    color: COLORS.textMuted,
     fontWeight: "700",
     letterSpacing: 0.5,
   },
   stickyPriceValue: {
-    fontSize: 14.5,
+    fontSize: 16,
     fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "900",
+    color: COLORS.textDark,
+    fontWeight: "800",
+    marginTop: 1,
   },
   stickyActionCol: {
     flexShrink: 0,
@@ -2060,18 +2012,16 @@ const styles = StyleSheet.create({
   appliedPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
+    gap: 4,
+    backgroundColor: COLORS.successBg,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 100,
   },
   appliedPillText: {
-    fontSize: 12.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyBold,
-    color: "#059669",
+    color: COLORS.success,
     fontWeight: "700",
   },
 });
