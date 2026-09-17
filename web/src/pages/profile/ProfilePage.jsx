@@ -1,13 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { authApi } from "../../api";
+import { authApi, ratingApi } from "../../api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { MahasiswaProfileForm } from "./components/MahasiswaProfileForm";
 import { UmkmProfileForm } from "./components/UmkmProfileForm";
-import { Save, CheckCircle2, Star, Camera, Loader2 } from "lucide-react";
+import { formatDate } from "../../utils/formatDate";
+import {
+  Save,
+  CheckCircle2,
+  Star,
+  Camera,
+  Loader2,
+  Image as ImageIcon,
+  GraduationCap,
+  Building2,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 export function ProfilePage() {
   const { user, updateUser } = useAuthStore();
@@ -15,7 +27,39 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const fileInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [userReviews, setUserReviews] = useState([]);
+
+  const isUmkm = user?.role === "UMKM";
+
+  const defaultBannerFallback = isUmkm
+    ? "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1200&q=80"
+    : "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1200&q=80";
+
+  const bannerPresets = [
+    {
+      id: "p1",
+      label: "Modern Tech",
+      url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
+    },
+    {
+      id: "p2",
+      label: "Creative Studio",
+      url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1200&q=80",
+    },
+    {
+      id: "p3",
+      label: "Business & Commerce",
+      url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1200&q=80",
+    },
+    {
+      id: "p4",
+      label: "UI/UX & Design",
+      url: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1200&q=80",
+    },
+  ];
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -57,7 +101,60 @@ export function ProfilePage() {
     }
   };
 
-  const isUmkm = user?.role === "UMKM";
+  const handleBannerChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      addToast("Harap pilih file gambar (JPG/PNG/WebP)", "error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      addToast("Ukuran gambar maksimal 5MB", "error");
+      return;
+    }
+
+    try {
+      setUploadingBanner(true);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64Data = event.target.result;
+          const res = await authApi.updateProfile({ banner_url: base64Data });
+          if (res?.data) {
+            updateUser(res.data);
+            addToast("Banner cover profil berhasil diperbarui!", "success");
+          }
+        } catch (err) {
+          console.error("Gagal mengunggah banner:", err);
+          addToast("Gagal memperbarui banner cover. Coba lagi.", "error");
+        } finally {
+          setUploadingBanner(false);
+          if (bannerInputRef.current) bannerInputRef.current.value = "";
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setUploadingBanner(false);
+      addToast("Gagal membaca file gambar.", "error");
+    }
+  };
+
+  const handleSelectBannerPreset = async (url) => {
+    try {
+      setUploadingBanner(true);
+      const res = await authApi.updateProfile({ banner_url: url });
+      if (res?.data) {
+        updateUser(res.data);
+        addToast("Banner preset berhasil diterapkan!", "success");
+      }
+    } catch (err) {
+      addToast("Gagal menerapkan banner preset.", "error");
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
 
   // Form states for Mahasiswa
   const [mhsData, setMhsData] = useState({
@@ -118,7 +215,13 @@ export function ProfilePage() {
     async function loadProfile() {
       try {
         setFetching(true);
-        const res = await authApi.getMe();
+        const [res, revRes] = await Promise.all([
+          authApi.getMe(),
+          user?.id
+            ? ratingApi.getByUser(user.id).catch(() => ({ data: [] }))
+            : Promise.resolve({ data: [] }),
+        ]);
+
         if (res.data) {
           const d = res.data;
           if (isUmkm) {
@@ -156,14 +259,18 @@ export function ProfilePage() {
             updateUser(d);
           }
         }
+
+        if (Array.isArray(revRes?.data)) {
+          setUserReviews(revRes.data);
+        }
       } catch (err) {
-        // Fallback to initial state
+        // Fallback
       } finally {
         setFetching(false);
       }
     }
     loadProfile();
-  }, [isUmkm]);
+  }, [isUmkm, user?.id]);
 
   const handleAddSkill = (e) => {
     e?.preventDefault();
@@ -186,8 +293,8 @@ export function ProfilePage() {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
+      setLoading(true);
       const payload = isUmkm
         ? {
             nama_usaha: umkmData.nama_usaha.trim(),
@@ -220,7 +327,7 @@ export function ProfilePage() {
       if (res?.data && updateUser) {
         updateUser(res.data);
       }
-      addToast("Profil dan rekening pencairan berhasil disimpan!", "success");
+      addToast("Profil dan data akun berhasil disimpan!", "success");
     } catch (err) {
       addToast(
         err.response?.data?.detail || "Gagal menyimpan perubahan profil.",
@@ -264,76 +371,132 @@ export function ProfilePage() {
         <p className="text-xs sm:text-sm text-muted font-sans mt-1">
           {isUmkm
             ? user?.profil_subtitle ||
-              "Lengkapi informasi usaha dan rekening pencairan Anda agar talenta mahasiswa dapat berkolaborasi secara aman."
+              "Lengkapi informasi usaha, banner cover, dan rekening pencairan agar talenta mahasiswa dapat berkolaborasi secara aman."
             : user?.profil_subtitle ||
-              "Profil talenta muda dengan rekam jejak deliverable memuaskan"}
+              "Profil talenta muda dengan rekam jejak deliverable terverifikasi"}
         </p>
       </div>
 
-      {/* Profile ID Card Banner */}
-      <div className="bg-surface border border-border rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5 shadow-xs">
-        <div
-          className="relative group cursor-pointer shrink-0"
-          onClick={() => fileInputRef.current?.click()}
-          title="Klik untuk mengubah foto profil"
-        >
+      {/* Profile ID Card with Cover Banner */}
+      <div className="bg-surface border border-border rounded-3xl overflow-hidden shadow-xs">
+        {/* Cover Banner Header */}
+        <div className="relative w-full h-36 sm:h-48 bg-slate-900 overflow-hidden group">
+          <img
+            src={user?.banner_url || defaultBannerFallback}
+            alt="Cover Banner"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+
+          {/* Change Banner Button */}
           <input
             type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
+            ref={bannerInputRef}
+            onChange={handleBannerChange}
             accept="image/*"
             className="hidden"
           />
-          {user?.url_foto ? (
-            <img
-              src={user.url_foto}
-              alt="Foto Profil"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-xs border-2 border-slate-200"
-            />
-          ) : (
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-xs select-none">
-              {initial}
-            </div>
-          )}
-
-          {/* Hover overlay with camera icon */}
-          <div className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
-            <Camera className="w-5 h-5" />
-            <span className="text-[9px] font-bold mt-0.5">Ubah</span>
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => bannerInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-xs font-bold border border-white/20 transition-all shadow-xs"
+              title="Unggah banner kustom"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Ganti Banner</span>
+            </button>
           </div>
 
-          {/* Uploading spinner */}
-          {uploadingPhoto && (
-            <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center text-white">
-              <Loader2 className="w-6 h-6 animate-spin" />
+          {/* Presets Quick Selector */}
+          <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1.5 bg-black/50 backdrop-blur-md p-1 rounded-xl border border-white/20">
+            {bannerPresets.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleSelectBannerPreset(p.url)}
+                className="px-2 py-0.5 rounded-md text-[10px] font-bold text-white/90 hover:bg-white/20 transition-colors"
+                title={`Pilih tema ${p.label}`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {uploadingBanner && (
+            <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-xs font-bold gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Mengunggah banner...</span>
             </div>
           )}
         </div>
 
-        <div className="flex-1 text-center sm:text-left space-y-1.5">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-            <h2 className="text-xl font-bold text-dark-900 font-sans">
-              {isUmkm ? umkmData.nama_usaha : mhsData.nama_lengkap}
-            </h2>
-            <Badge variant={isUmkm ? "warning" : "brand"}>
-              {isUmkm
-                ? user?.status_badge || "Klien UMKM Terverifikasi"
-                : user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"}
-            </Badge>
-            <Badge variant="success" className="flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" /> Terverifikasi Resmi
-            </Badge>
+        {/* User Info Bar */}
+        <div className="p-5 sm:p-6 flex flex-col sm:flex-row items-center sm:items-end gap-5 -mt-12 sm:-mt-14 relative z-10">
+          {/* Avatar with Upload */}
+          <div
+            className="relative group cursor-pointer shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            title="Klik untuk mengubah foto profil"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+            {user?.url_foto ? (
+              <img
+                src={user.url_foto}
+                alt="Foto Profil"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-md border-4 border-white bg-surface"
+              />
+            ) : (
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-md border-4 border-white select-none">
+                {initial}
+              </div>
+            )}
+
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity border-4 border-transparent">
+              <Camera className="w-5 h-5" />
+              <span className="text-[9px] font-bold mt-0.5">Ubah</span>
+            </div>
+
+            {uploadingPhoto && (
+              <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center text-white">
+                <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+            )}
           </div>
 
-          <p className="text-xs text-muted flex flex-wrap items-center justify-center sm:justify-start gap-2">
-            <span>{user?.email}</span>
-            <span>|</span>
-            <span>
-              {isUmkm
-                ? `${umkmData.bidang_industri}, ${umkmData.kota}`
-                : `${mhsData.prodi}, NIM ${mhsData.nim}, Semester ${mhsData.semester}`}
-            </span>
-          </p>
+          {/* User Name & Badges */}
+          <div className="flex-1 text-center sm:text-left space-y-1.5">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h2 className="text-xl font-bold text-dark-900 font-sans">
+                {isUmkm ? umkmData.nama_usaha : mhsData.nama_lengkap}
+              </h2>
+              <Badge variant={isUmkm ? "warning" : "brand"}>
+                {isUmkm
+                  ? user?.status_badge || "Klien UMKM Terverifikasi"
+                  : user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"}
+              </Badge>
+              <Badge variant="success" className="flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Terverifikasi Resmi
+              </Badge>
+            </div>
+
+            <p className="text-xs text-muted flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <span>{user?.email}</span>
+              <span>|</span>
+              <span>
+                {isUmkm
+                  ? `${umkmData.bidang_industri}, ${umkmData.kota}`
+                  : `${mhsData.prodi}, NIM ${mhsData.nim}, Semester ${mhsData.semester}`}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -345,7 +508,7 @@ export function ProfilePage() {
             <span>
               {user?.rating_avg != null
                 ? Number(user.rating_avg).toFixed(1)
-                : "-"}
+                : "5.0"}
             </span>
           </div>
           <span className="text-[10px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium truncate w-full">
@@ -367,13 +530,76 @@ export function ProfilePage() {
 
         <div className="bg-surface border border-border rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-xs min-w-0">
           <span className="text-base sm:text-2xl font-bold text-emerald-600 font-serif">
-            {user?.escrow_success_rate || "-"}
+            {user?.escrow_success_rate || "100%"}
           </span>
           <span className="text-[10px] sm:text-xs text-muted font-sans mt-0.5 sm:mt-1 font-medium truncate w-full">
             Sukses Escrow
           </span>
         </div>
       </div>
+
+      {/* Ratings & Reviews Received Card */}
+      <Card className="p-6 space-y-4 bg-surface border-border rounded-3xl shadow-xs">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
+            <h3 className="text-sm font-bold text-dark-900 uppercase tracking-wider">
+              Ulasan & Penilaian yang Diterima ({userReviews.length})
+            </h3>
+          </div>
+          <span className="text-xs font-semibold text-muted">
+            Transparan & Terverifikasi
+          </span>
+        </div>
+
+        {userReviews.length === 0 ? (
+          <div className="p-6 text-center bg-canvas rounded-2xl border border-border space-y-1">
+            <p className="text-xs text-muted font-medium">
+              Belum ada ulasan yang diterima. Ulasan akan otomatis muncul setelah proyek diselesaikan dengan mitra.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {userReviews.map((rev) => (
+              <div
+                key={rev.id}
+                className="p-4 bg-canvas rounded-2xl border border-border space-y-2 text-xs shadow-2xs"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-surface border border-border flex items-center justify-center font-bold text-xs text-brand-indigo">
+                      {isUmkm ? (
+                        <GraduationCap className="w-3.5 h-3.5" />
+                      ) : (
+                        <Building2 className="w-3.5 h-3.5" />
+                      )}
+                    </div>
+                    <div>
+                      <span className="font-bold text-dark-900 block truncate max-w-[140px]">
+                        {rev.dari_nama || "Mitra Kemitraan"}
+                      </span>
+                      <span className="text-[10px] text-muted">
+                        {rev.created_at ? formatDate(rev.created_at) : "Baru saja"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs shrink-0">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                    <span>{rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}</span>
+                  </div>
+                </div>
+
+                {rev.ulasan && (
+                  <p className="text-xs text-slate-700 italic leading-relaxed pl-9">
+                    "{rev.ulasan}"
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
 
       {/* Main Profile Form */}
       <form onSubmit={handleSaveProfile} className="space-y-6">

@@ -33,8 +33,15 @@ async def lifespan(app: FastAPI):
     # 0. Pastikan skema tabel terdaftar di database
     try:
         Base.metadata.create_all(bind=engine)
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE profile_mhs ADD COLUMN IF NOT EXISTS banner_url TEXT;"))
+            conn.execute(text("ALTER TABLE profile_umkm ADD COLUMN IF NOT EXISTS banner_url TEXT;"))
+            conn.execute(text("ALTER TABLE profile_umkm ADD COLUMN IF NOT EXISTS rating_avg NUMERIC(3, 2) DEFAULT 0.00;"))
+            conn.execute(text("ALTER TABLE profile_umkm ADD COLUMN IF NOT EXISTS total_proyek_selesai INTEGER DEFAULT 0;"))
+            conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS banner_url TEXT;"))
+            conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS budget_min NUMERIC(12, 2);"))
     except Exception as e:
-        print(f"[STARTUP] Gagal create_all metadata: {e}")
+        print(f"[STARTUP] Gagal create_all / alter metadata: {e}")
 
     # 1. Jalankan langsung pemeriksaan deadline saat server mulai
     try:

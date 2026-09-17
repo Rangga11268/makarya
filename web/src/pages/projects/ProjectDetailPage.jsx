@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
-import { projectApi } from "../../api";
+import { projectApi, ratingApi, proposalApi } from "../../api";
 import { Card, AppleGlossyCard } from "../../components/ui/Card";
 import {
   AppleMessageIcon,
@@ -50,8 +50,12 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
+  Star,
+  Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import { ProjectChatModal } from "../../components/features/ProjectChatModal";
+import { RatingModal } from "../../components/features/RatingModal";
 
 export function ProjectDetailPage() {
   const { id } = useParams();
@@ -62,6 +66,11 @@ export function ProjectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [isBriefExpanded, setIsBriefExpanded] = useState(false);
+  const [projectReviews, setProjectReviews] = useState([]);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingTarget, setRatingTarget] = useState(null);
+  const [hasUserReviewed, setHasUserReviewed] = useState(false);
+  const [eligibleReviewTarget, setEligibleReviewTarget] = useState(null);
 
   const getCategorySvg = (catCode) => {
     switch (catCode) {
@@ -122,6 +131,29 @@ export function ProjectDetailPage() {
     addToast("Tautan proyek disalin ke clipboard!", "success");
   };
 
+  const getCategoryBanner = (cat) => {
+    const c = String(cat || "").toUpperCase();
+    switch (c) {
+      case "DESIGN":
+      case "DESAIN":
+        return "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1200&q=80";
+      case "PEMROGRAMAN":
+      case "WEB":
+        return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80";
+      case "UIUX":
+        return "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1200&q=80";
+      case "VIDEO":
+        return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&q=80";
+      case "COPYWRITING":
+        return "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80";
+      case "ADMIN_DATA":
+      case "ADMIN":
+        return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80";
+      default:
+        return "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1200&q=80";
+    }
+  };
+
   const fetchProject = async () => {
     try {
       setLoading(true);
@@ -134,8 +166,49 @@ export function ProjectDetailPage() {
         setLoading(false);
         return;
       }
-      const res = await projectApi.getDetail(projectId);
-      setProject(res.data);
+      const [res, ratingsRes] = await Promise.all([
+        projectApi.getDetail(projectId),
+        ratingApi.getByProject(projectId).catch(() => ({ data: [] })),
+      ]);
+      const proj = res.data;
+      setProject(proj);
+      const revs = Array.isArray(ratingsRes.data) ? ratingsRes.data : [];
+      setProjectReviews(revs);
+
+      if (user?.id) {
+        const alreadyReviewed = revs.some(
+          (r) => String(r.dari_user_id) === String(user.id),
+        );
+        setHasUserReviewed(alreadyReviewed);
+
+        // Check if user is MHS and eligible to review UMKM
+        if (user.role === "MHS") {
+          const isDoneOrApproved =
+            proj.status === "DONE" ||
+            proj.status === "COMPLETED" ||
+            proj.submissions?.some((s) => s.status === "APPROVED");
+          if (isDoneOrApproved) {
+            setEligibleReviewTarget({
+              targetUserId: proj.umkm_id,
+              recipientName: proj.umkm_profile?.nama_usaha || "Klien UMKM",
+            });
+          }
+        } else if (user.role === "UMKM" && String(proj.umkm_id) === String(user.id)) {
+          // Check if UMKM is eligible to review accepted student
+          try {
+            const propRes = await proposalApi.getByProject(projectId).catch(() => ({ data: [] }));
+            const acceptedProp = (propRes.data || []).find((p) => p.status === "ACCEPTED");
+            if (acceptedProp) {
+              setEligibleReviewTarget({
+                targetUserId: acceptedProp.mhs_id,
+                recipientName: acceptedProp.mahasiswa_nama || "Talenta Mahasiswa",
+              });
+            }
+          } catch (e) {
+            // Ignored
+          }
+        }
+      }
     } catch (err) {
       console.error("Gagal memuat detail proyek:", err);
     } finally {
@@ -145,7 +218,7 @@ export function ProjectDetailPage() {
 
   useEffect(() => {
     fetchProject();
-  }, [id]);
+  }, [id, user?.id]);
 
   if (loading) {
     return (
@@ -219,6 +292,36 @@ export function ProjectDetailPage() {
         {/* LEFT COLUMN: MAIN PROJECT BRIEF & WORKFLOW ROADMAP (8 cols) */}
         {/* ========================================================================= */}
         <div className="lg:col-span-8 space-y-6">
+          {/* Project Cover Media Banner */}
+          <div className="relative w-full h-48 sm:h-64 rounded-3xl overflow-hidden border border-border shadow-xs bg-slate-900">
+            <img
+              src={
+                project.banner_url ||
+                project.thumbnail_url ||
+                project.umkm_profile?.url_foto_usaha ||
+                getCategoryBanner(project.kategori)
+              }
+              alt={project.judul}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-900/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xs">
+              {getCategorySvg(project.kategori)}
+              <span>{project.kategori || "UMKM Digital"}</span>
+            </div>
+            {project.umkm_profile?.nama_usaha && (
+              <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between text-white">
+                <span className="text-xs font-bold text-white/95 truncate drop-shadow-sm flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
+                  Kemitraan Resmi: {project.umkm_profile.nama_usaha}
+                </span>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-500/80 backdrop-blur-md border border-white/30 text-white shadow-xs">
+                  100% Escrow Protected
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* Card 1: Main Project Header & Overview */}
           <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-2xl shadow-xs">
             <div className="space-y-4">
@@ -643,6 +746,123 @@ export function ProjectDetailPage() {
               </li>
             </ul>
           </Card>
+
+          {/* Card 4: Rating & Testimonial Reviews Breakdown */}
+          <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-3xl shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+              <div>
+                <h3 className="text-sm font-bold text-dark-900 uppercase tracking-wider flex items-center gap-2">
+                  <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
+                  Rating & Ulasan Kemitraan ({projectReviews.length} Ulasan)
+                </h3>
+                <p className="text-xs text-muted mt-0.5">
+                  Reputasi transparan dari talenta mahasiswa dan mitra UMKM yang telah berkolaborasi.
+                </p>
+              </div>
+
+              {eligibleReviewTarget && !hasUserReviewed && (
+                <Button
+                  variant="brand"
+                  size="sm"
+                  onClick={() => {
+                    setRatingTarget(eligibleReviewTarget);
+                    setRatingModalOpen(true);
+                  }}
+                  className="shrink-0 text-xs font-bold"
+                >
+                  <Star className="w-3.5 h-3.5 mr-1.5 fill-current" />
+                  Beri Ulasan
+                </Button>
+              )}
+            </div>
+
+            {/* Score Hero & Criteria */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-4 bg-canvas rounded-2xl border border-border flex flex-col items-center justify-center text-center space-y-1">
+                <div className="flex items-center gap-1.5 text-2xl font-black text-dark-900">
+                  <Star className="w-6 h-6 fill-amber-400 text-amber-500" />
+                  <span>
+                    {project.rating_avg ? Number(project.rating_avg).toFixed(1) : "5.0"}
+                  </span>
+                </div>
+                <span className="text-xs font-semibold text-muted">
+                  Skor Kepuasan Kemitraan
+                </span>
+              </div>
+
+              <div className="sm:col-span-2 p-4 bg-canvas rounded-2xl border border-border space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted">Kelancaran Komunikasi Mitra:</span>
+                  <span className="font-bold text-dark-900 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-dark-900 text-dark-900" /> 5.0
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted">Kualitas Deliverables & Brief:</span>
+                  <span className="font-bold text-dark-900 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-dark-900 text-dark-900" /> 5.0
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted">Ketepatan Pencairan Escrow:</span>
+                  <span className="font-bold text-emerald-600 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" /> 100% Aman
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
+                Ulasan Terbaru
+              </h4>
+
+              {projectReviews.length === 0 ? (
+                <div className="p-6 text-center bg-canvas rounded-2xl border border-border space-y-1">
+                  <p className="text-xs text-muted font-medium">
+                    Belum ada ulasan untuk proyek ini. Ulasan akan otomatis tampil setelah hasil kerja selesai & disetujui.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {projectReviews.map((rev) => (
+                    <div
+                      key={rev.id}
+                      className="p-4 bg-canvas rounded-2xl border border-border space-y-2 text-xs"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-surface border border-border flex items-center justify-center font-bold text-xs text-brand-indigo">
+                            <GraduationCap className="w-3.5 h-3.5" />
+                          </div>
+                          <div>
+                            <span className="font-bold text-dark-900 block">
+                              {rev.dari_nama || "Pengguna Terverifikasi"}
+                            </span>
+                            <span className="text-[10px] text-muted">
+                              {rev.created_at ? formatDate(rev.created_at) : "Baru saja"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-bold text-xs">
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                          <span>{rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}</span>
+                        </div>
+                      </div>
+
+                      {rev.ulasan && (
+                        <p className="text-xs text-slate-700 italic leading-relaxed pl-9">
+                          "{rev.ulasan}"
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
         </div>
 
         {/* ========================================================================= */}
@@ -941,6 +1161,21 @@ export function ProjectDetailPage() {
         }
         partnerRole={isOwner ? "MHS" : "UMKM"}
       />
+
+      {/* Give Rating & Review Modal */}
+      {ratingModalOpen && (
+        <RatingModal
+          isOpen={ratingModalOpen}
+          onClose={() => setRatingModalOpen(false)}
+          projectId={project?.id}
+          keUserId={ratingTarget?.targetUserId}
+          recipientName={ratingTarget?.recipientName}
+          onSuccess={() => {
+            setHasUserReviewed(true);
+            fetchProject();
+          }}
+        />
+      )}
     </div>
   );
 }

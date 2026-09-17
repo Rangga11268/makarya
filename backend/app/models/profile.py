@@ -14,6 +14,7 @@ class ProfileMhs(Base):
     url_ktm = Column(Text, nullable=True)
     url_foto = Column(Text, nullable=True)
     url_portofolio = Column(Text, nullable=True)
+    banner_url = Column(Text, nullable=True)
     bio = Column(Text, nullable=True)
     rating_avg = Column(Numeric(precision=3, scale=2), default=0.00, nullable=False)
     total_proyek_selesai = Column(Integer, default=0, nullable=False)
@@ -34,7 +35,10 @@ class ProfileUmkm(Base):
     kota = Column(String(100), nullable=True)
     no_kontak = Column(String(20), nullable=True)
     url_foto_usaha = Column(Text, nullable=True)
+    banner_url = Column(Text, nullable=True)
     url_ttd = Column(Text, nullable=True)
+    rating_avg = Column(Numeric(precision=3, scale=2), default=0.00, nullable=False)
+    total_proyek_selesai = Column(Integer, default=0, nullable=False)
 
     # Relationship
     user = relationship("User", back_populates="profile_umkm")

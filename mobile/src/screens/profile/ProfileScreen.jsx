@@ -27,8 +27,9 @@ import { AddSkillModal } from "../../components/features/profile/AddSkillModal";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { showConfirm } from "../../store/dialogStore";
-import { authApi, certificateApi } from "../../api";
+import { authApi, certificateApi, ratingApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { formatDate } from "../../utils/formatDate";
 import { MobileCertificateModal } from "../../components/features/certificates/MobileCertificateModal";
 import {
   ProdiVectorIcon,
@@ -65,6 +66,9 @@ import {
   Sparkles,
   Briefcase,
   Layers,
+  Image as ImageIcon,
+  MessageSquare,
+  GraduationCap,
 } from "lucide-react-native";
 
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
@@ -77,6 +81,37 @@ export function ProfileScreen({ navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [escrowAlertsEnabled, setEscrowAlertsEnabled] = useState(true);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [userReviews, setUserReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+
+  const defaultBannerFallback =
+    user?.role === "UMKM"
+      ? "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1200&q=80"
+      : "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1200&q=80";
+
+  const bannerPresets = [
+    {
+      id: "p1",
+      label: "Tech",
+      url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80",
+    },
+    {
+      id: "p2",
+      label: "Creative",
+      url: "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1200&q=80",
+    },
+    {
+      id: "p3",
+      label: "Business",
+      url: "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1200&q=80",
+    },
+    {
+      id: "p4",
+      label: "Design",
+      url: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1200&q=80",
+    },
+  ];
 
   const handlePickPhoto = async () => {
     try {
@@ -116,6 +151,62 @@ export function ProfileScreen({ navigation }) {
       showToast("Gagal mengunggah foto profil.", "error");
     } finally {
       setIsUploadingPhoto(false);
+    }
+  };
+
+  const handlePickBanner = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        showToast("Izin akses galeri diperlukan untuk memilih banner", "error");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [16, 7],
+        quality: 0.6,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setIsUploadingBanner(true);
+        const asset = result.assets[0];
+        const base64Data = asset.base64
+          ? `data:image/jpeg;base64,${asset.base64}`
+          : asset.uri;
+
+        const res = await authApi.updateProfile({
+          banner_url: base64Data,
+        });
+
+        if (res?.data) {
+          updateUser(res.data);
+          showToast("Banner cover profil berhasil diperbarui!", "success");
+        }
+      }
+    } catch (err) {
+      console.error("Gagal memperbarui banner cover:", err);
+      showToast("Gagal mengunggah banner.", "error");
+    } finally {
+      setIsUploadingBanner(false);
+    }
+  };
+
+  const handleSelectBannerPreset = async (presetUrl) => {
+    try {
+      setIsUploadingBanner(true);
+      const res = await authApi.updateProfile({ banner_url: presetUrl });
+      if (res?.data) {
+        updateUser(res.data);
+        showToast("Banner preset berhasil diterapkan!", "success");
+      }
+    } catch (err) {
+      showToast("Gagal menerapkan banner preset.", "error");
+    } finally {
+      setIsUploadingBanner(false);
     }
   };
 
@@ -195,6 +286,19 @@ export function ProfileScreen({ navigation }) {
     }
   };
 
+  const fetchUserReviews = async (userId) => {
+    if (!userId) return;
+    try {
+      setLoadingReviews(true);
+      const res = await ratingApi.getByUser(userId);
+      setUserReviews(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Gagal memuat ulasan pengguna mobile:", err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
   // Sinkronisasi data awal dari database saat mount
   useEffect(() => {
     authApi
@@ -205,12 +309,19 @@ export function ProfileScreen({ navigation }) {
           if (res.data.skills && Array.isArray(res.data.skills)) {
             setSkillsList(res.data.skills);
           }
+          if (res.data.id) {
+            fetchUserReviews(res.data.id);
+          }
         }
       })
       .catch(() => {});
 
+    if (user?.id) {
+      fetchUserReviews(user.id);
+    }
+
     fetchCertificates();
-  }, []);
+  }, [user?.id]);
 
   // Update skillsList jika user di store berubah
   useEffect(() => {
@@ -415,63 +526,112 @@ export function ProfileScreen({ navigation }) {
         contentContainerStyle={[styles.content, responsiveContainerStyle]}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Profile Hero Card */}
+        {/* 1. Profile Hero Card with Cover Banner */}
         <View style={styles.profileCard}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={handlePickPhoto}
-            disabled={isUploadingPhoto}
-            style={[
-              styles.avatarCircle,
-              isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-            ]}
-          >
-            {user?.url_foto ? (
-              <Image
-                source={{ uri: user.url_foto }}
-                style={styles.avatarImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <Text style={styles.avatarInitial}>
-                {isMahasiswa
-                  ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
-                  : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
-              </Text>
-            )}
+          {/* Cover Banner Header */}
+          <View style={styles.bannerContainer}>
+            <Image
+              source={{ uri: user?.banner_url || defaultBannerFallback }}
+              style={styles.bannerImage}
+              resizeMode="cover"
+            />
+            <View style={styles.bannerOverlay} />
 
-            {isUploadingPhoto ? (
-              <View style={styles.avatarLoadingOverlay}>
+            {/* Change Banner Button */}
+            <TouchableOpacity
+              style={styles.changeBannerBtn}
+              activeOpacity={0.8}
+              onPress={handlePickBanner}
+              disabled={isUploadingBanner}
+            >
+              {isUploadingBanner ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
-              </View>
-            ) : (
-              <View style={styles.avatarEditBadge}>
-                <Camera size={12} color="#FFFFFF" />
-              </View>
-            )}
-          </TouchableOpacity>
+              ) : (
+                <>
+                  <Camera size={12} color="#FFFFFF" />
+                  <Text style={styles.changeBannerText}>Ganti Banner</Text>
+                </>
+              )}
+            </TouchableOpacity>
 
-          <Text style={styles.userName}>
-            {isMahasiswa
-              ? user?.nama_lengkap || user?.nama || "Talenta Mahasiswa"
-              : user?.nama_usaha || user?.nama || "Pelaku Usaha UMKM"}
-          </Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
+            {/* Banner Preset Chips */}
+            <View style={styles.bannerPresetsContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.bannerPresetsScroll}
+              >
+                {bannerPresets.map((p) => (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={styles.bannerPresetChip}
+                    onPress={() => handleSelectBannerPreset(p.url)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.bannerPresetChipText}>{p.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
 
-          <View style={styles.roleTag}>
-            {isMahasiswa ? (
-              <ProdiVectorIcon size={14} color={COLORS.brandIndigo} />
-            ) : (
-              <ShieldCheck size={14} color={COLORS.brandCyan} />
-            )}
-            <Text
+          {/* Card Body Content */}
+          <View style={styles.profileCardBody}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handlePickPhoto}
+              disabled={isUploadingPhoto}
               style={[
-                styles.roleText,
-                isMahasiswa
-                  ? { color: COLORS.brandIndigo }
-                  : { color: COLORS.brandCyan },
+                styles.avatarCircle,
+                isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
               ]}
             >
+              {user?.url_foto ? (
+                <Image
+                  source={{ uri: user.url_foto }}
+                  style={styles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text style={styles.avatarInitial}>
+                  {isMahasiswa
+                    ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
+                    : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
+                </Text>
+              )}
+
+              {isUploadingPhoto ? (
+                <View style={styles.avatarLoadingOverlay}>
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                </View>
+              ) : (
+                <View style={styles.avatarEditBadge}>
+                  <Camera size={12} color="#FFFFFF" />
+                </View>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.userName}>
+              {isMahasiswa
+                ? user?.nama_lengkap || user?.nama || "Talenta Mahasiswa"
+                : user?.nama_usaha || user?.nama || "Pelaku Usaha UMKM"}
+            </Text>
+            <Text style={styles.userEmail}>{user?.email}</Text>
+
+            <View style={styles.roleTag}>
+              {isMahasiswa ? (
+                <ProdiVectorIcon size={14} color={COLORS.brandIndigo} />
+              ) : (
+                <ShieldCheck size={14} color={COLORS.brandCyan} />
+              )}
+              <Text
+                style={[
+                  styles.roleText,
+                  isMahasiswa
+                    ? { color: COLORS.brandIndigo }
+                    : { color: COLORS.brandCyan },
+                ]}
+              >
               {isMahasiswa
                 ? user?.status_badge || "Mahasiswa Berprestasi & Terverifikasi"
                 : user?.status_badge || "Klien UMKM Terverifikasi"}
@@ -527,6 +687,7 @@ export function ProfileScreen({ navigation }) {
             onPress={handleOpenEditModal}
             style={{ width: "100%", marginTop: 12 }}
           />
+          </View>
         </View>
 
         {/* 2. Bio Singkat Card */}
@@ -1004,7 +1165,88 @@ export function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 7. Settings & Security */}
+        {/* 8. Ulasan & Penilaian yang Diterima */}
+        <View style={styles.sectionBox}>
+          <View style={styles.sectionHeaderRow}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                flex: 1,
+              }}
+            >
+              <Star size={16} color="#F59E0B" fill="#F59E0B" />
+              <Text style={styles.sectionTitle} numberOfLines={1}>
+                Ulasan & Penilaian Diterima ({userReviews.length})
+              </Text>
+            </View>
+            <View style={styles.reviewSubHeaderTag}>
+              <Star size={11} color="#F59E0B" fill="#F59E0B" />
+              <Text style={styles.reviewSubHeaderTagText}>
+                {user?.rating_avg != null
+                  ? Number(user.rating_avg).toFixed(1)
+                  : "5.0"}
+              </Text>
+            </View>
+          </View>
+
+          {loadingReviews ? (
+            <View style={{ paddingVertical: 16, alignItems: "center" }}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            </View>
+          ) : userReviews.length === 0 ? (
+            <View style={styles.certEmptyBox}>
+              <MessageSquare size={22} color={COLORS.textSecondary} />
+              <Text style={styles.certEmptyText}>
+                Belum ada ulasan yang diterima. Ulasan akan otomatis dicatat setelah proyek selesai dikerjakan bersama mitra.
+              </Text>
+            </View>
+          ) : (
+            <View style={{ gap: 10 }}>
+              {userReviews.map((rev) => (
+                <View key={rev.id} style={styles.reviewItemCard}>
+                  <View style={styles.reviewItemHeader}>
+                    <View style={styles.reviewerInfoLeft}>
+                      <View style={styles.reviewerAvatarIcon}>
+                        {isMahasiswa ? (
+                          <Building size={14} color={COLORS.brandCyan} />
+                        ) : (
+                          <GraduationCap size={14} color={COLORS.brandIndigo} />
+                        )}
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.reviewerName} numberOfLines={1}>
+                          {rev.dari_nama || "Mitra Kemitraan"}
+                        </Text>
+                        <Text style={styles.reviewDateText}>
+                          {rev.created_at
+                            ? formatDate(rev.created_at)
+                            : "Baru saja"}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.reviewScorePill}>
+                      <Star size={11} color="#F59E0B" fill="#F59E0B" />
+                      <Text style={styles.reviewScorePillText}>
+                        {rev.skor ? Number(rev.skor).toFixed(1) : "5.0"}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {rev.ulasan ? (
+                    <Text style={styles.reviewCommentText}>
+                      "{rev.ulasan}"
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* 9. Settings & Security */}
         <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Pengaturan & Notifikasi</Text>
 
@@ -1156,8 +1398,7 @@ const styles = StyleSheet.create({
     backgroundColor:
       Platform.OS === "android" ? "#FFFFFF" : "rgba(255, 255, 255, 0.92)",
     borderRadius: 24,
-    padding: 20,
-    alignItems: "center",
+    overflow: "hidden",
     borderWidth: 1,
     borderColor:
       Platform.OS === "android"
@@ -1169,7 +1410,70 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 2,
-    elevation: Platform.OS === "android" ? 0 : 2,
+  },
+  bannerContainer: {
+    position: "relative",
+    width: "100%",
+    height: 120,
+    backgroundColor: "#0F172A",
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+  },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(15, 23, 42, 0.35)",
+  },
+  changeBannerBtn: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.65)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+  },
+  changeBannerText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: "#FFFFFF",
+  },
+  bannerPresetsContainer: {
+    position: "absolute",
+    bottom: 8,
+    right: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    borderRadius: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+  },
+  bannerPresetsScroll: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  bannerPresetChip: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  bannerPresetChipText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: "rgba(255, 255, 255, 0.9)",
+  },
+  profileCardBody: {
+    padding: 18,
+    paddingTop: 0,
+    alignItems: "center",
   },
   avatarCircle: {
     width: 76,
@@ -1177,13 +1481,21 @@ const styles = StyleSheet.create({
     borderRadius: 38,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    marginTop: -38,
+    marginBottom: 10,
     position: "relative",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
   },
   avatarImage: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
   },
   avatarLoadingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -1776,5 +2088,89 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
     marginTop: 1,
+  },
+  reviewSubHeaderTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(245, 158, 11, 0.3)",
+  },
+  reviewSubHeaderTagText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: "#B45309",
+    fontWeight: "700",
+  },
+  reviewItemCard: {
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: "#FFFFFF",
+    gap: 6,
+  },
+  reviewItemHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  reviewerInfoLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flex: 1,
+  },
+  reviewerAvatarIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.canvasSoft,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.borderSubtle,
+  },
+  reviewerName: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 12,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  reviewDateText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 10,
+    color: COLORS.textMuted,
+    marginTop: 1,
+  },
+  reviewScorePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(245, 158, 11, 0.25)",
+  },
+  reviewScorePillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 10,
+    color: "#92400E",
+    fontWeight: "700",
+  },
+  reviewCommentText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    lineHeight: 17,
+    color: COLORS.textSecondary,
+    fontStyle: "italic",
+    paddingLeft: 36,
   },
 });

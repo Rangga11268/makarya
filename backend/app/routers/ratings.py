@@ -11,7 +11,7 @@ from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal, ProposalStatus
 from app.models.submission import Submission, SubmissionStatus
 from app.models.rating import Rating
-from app.models.profile import ProfileMhs
+from app.models.profile import ProfileMhs, ProfileUmkm
 from app.schemas.rating import RatingCreateRequest, RatingResponse
 
 router = APIRouter(prefix="/ratings", tags=["Ratings & Reviews"])
@@ -143,8 +143,31 @@ def give_rating(
         )
         mhs_profile.total_proyek_selesai += 1
 
+    # 7. Auto-update reputasi (rating_avg) profil UMKM jika penerima adalah UMKM
+    umkm_profile = (
+        db.query(ProfileUmkm).filter(ProfileUmkm.user_id == body.ke_user_id).first()
+    )
+    if umkm_profile:
+        avg_score = (
+            db.query(func.avg(Rating.skor))
+            .filter(Rating.ke_user_id == body.ke_user_id)
+            .scalar()
+        )
+        umkm_profile.rating_avg = (
+            Decimal(str(round(avg_score, 2)))
+            if avg_score
+            else Decimal(str(body.skor))
+        )
+        umkm_profile.total_proyek_selesai += 1
+
     db.commit()
     db.refresh(new_rating)
+
+    dari_nama = current_user.email.split("@")[0]
+    if current_user.profile_mhs and current_user.profile_mhs.nama_lengkap:
+        dari_nama = current_user.profile_mhs.nama_lengkap
+    elif current_user.profile_umkm and current_user.profile_umkm.nama_usaha:
+        dari_nama = current_user.profile_umkm.nama_usaha
 
     return RatingResponse(
         id=new_rating.id,
@@ -155,8 +178,19 @@ def give_rating(
         ulasan=new_rating.ulasan,
         created_at=new_rating.created_at,
         project_judul=project.judul,
-        dari_nama=current_user.email.split("@")[0],
+        dari_nama=dari_nama,
     )
+
+
+def _resolve_dari_nama(r: Rating) -> str:
+    if r.dari_user:
+        if r.dari_user.profile_mhs and r.dari_user.profile_mhs.nama_lengkap:
+            return r.dari_user.profile_mhs.nama_lengkap
+        if r.dari_user.profile_umkm and r.dari_user.profile_umkm.nama_usaha:
+            return r.dari_user.profile_umkm.nama_usaha
+        if r.dari_user.email:
+            return r.dari_user.email.split("@")[0]
+    return "Pengguna Makarya"
 
 
 @router.get("/user/{user_id}", response_model=List[RatingResponse])
@@ -180,7 +214,7 @@ def get_user_ratings(user_id: UUID, db: Session = Depends(get_db)):
                 ulasan=r.ulasan,
                 created_at=r.created_at,
                 project_judul=r.project.judul if r.project else None,
-                dari_nama=r.dari_user.email.split("@")[0] if r.dari_user else None,
+                dari_nama=_resolve_dari_nama(r),
             )
         )
     return results
@@ -188,7 +222,7 @@ def get_user_ratings(user_id: UUID, db: Session = Depends(get_db)):
 
 @router.get("/project/{project_id}", response_model=List[RatingResponse])
 def get_project_ratings(project_id: UUID, db: Session = Depends(get_db)):
-    """Melihat Seluruh Ulasan yang Diterima oleh Suatu Proyek"""
+    """Melihat Seluruh Ulasan yang Terkait dengan Suatu Proyek"""
     ratings = (
         db.query(Rating)
         .filter(Rating.project_id == project_id)
@@ -207,7 +241,7 @@ def get_project_ratings(project_id: UUID, db: Session = Depends(get_db)):
                 ulasan=r.ulasan,
                 created_at=r.created_at,
                 project_judul=r.project.judul if r.project else None,
-                dari_nama=r.dari_user.email.split("@")[0] if r.dari_user else None,
+                dari_nama=_resolve_dari_nama(r),
             )
         )
     return results

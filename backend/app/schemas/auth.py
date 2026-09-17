@@ -106,3 +106,4 @@ class ProfileUpdateRequest(BaseModel):
     nama_pemilik_rekening: Optional[str] = None
     url_ttd: Optional[str] = None
     signature_url: Optional[str] = None
+    banner_url: Optional[str] = None

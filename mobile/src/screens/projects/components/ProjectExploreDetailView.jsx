@@ -144,54 +144,62 @@ export function ProjectExploreDetailView({
       : formatCurrency(budgetMax);
 
   // Define interactive package tiers
-  const packageTiers = isTeam && slots.length > 0
-    ? slots.map((s, idx) => ({
-        id: s.id || `slot-${idx}`,
-        tabLabel: formatCurrency(s.alokasi_budget || budgetMax),
-        title: s.nama_peran || `Posisi Tim #${idx + 1}`,
-        price: Number(s.alokasi_budget || budgetMax),
-        description: s.deskripsi_tugas || s.deskripsi || "Eksekusi peran spesifik dalam formasi tim dengan jaminan escrow.",
-        revisions: "2x Revisi Minor",
-        deliveryDays: "Sesuai Tenggat Proyek",
-        wordsOrScope: s.status === "OPEN" ? "Posisi Terbuka" : "Posisi Terisi",
-        isTeamSlot: true,
-        slotData: s,
-      }))
-    : [
-        {
-          id: "tier-basic",
-          tabLabel: formatCurrency(budgetMin),
-          title: "Paket Dasar",
-          price: budgetMin,
-          description: "Pengerjaan kebutuhan deliverable esensial sesuai ringkasan brief UMKM.",
-          revisions: "1x Revisi",
-          deliveryDays: "Sesuai Tenggat",
-          wordsOrScope: "Cakupan Standar",
-        },
-        {
-          id: "tier-standard",
-          tabLabel: formatCurrency(budgetMid),
-          title: "Paket Standar",
-          price: budgetMid,
-          description: "Pengerjaan komprehensif dengan revisi tambahan & supervisi penuh mitra UMKM.",
+  const packageTiers =
+    isTeam && slots.length > 0
+      ? slots.map((s, idx) => ({
+          id: s.id || `slot-${idx}`,
+          tabLabel: formatCurrency(s.alokasi_budget || budgetMax),
+          title: s.nama_peran || `Posisi Tim #${idx + 1}`,
+          price: Number(s.alokasi_budget || budgetMax),
+          description:
+            s.deskripsi_tugas ||
+            s.deskripsi ||
+            "Eksekusi peran spesifik dalam formasi tim dengan jaminan escrow.",
           revisions: "2x Revisi Minor",
-          deliveryDays: "Sesuai Tenggat",
-          wordsOrScope: "Cakupan Penuh",
-        },
-        {
-          id: "tier-pro",
-          tabLabel: formatCurrency(budgetMax),
-          title: "Paket Prioritas",
-          price: budgetMax,
-          description: "Solusi tuntas prioritas maksimal dengan e-sertifikat portofolio resmi Makarya.",
-          revisions: "Revisi Optimal (2-3x)",
-          deliveryDays: "Prioritas Cepat",
-          wordsOrScope: "Cakupan Lengkap",
-        },
-      ];
+          deliveryDays: "Sesuai Tenggat Proyek",
+          wordsOrScope:
+            s.status === "OPEN" ? "Posisi Terbuka" : "Posisi Terisi",
+          isTeamSlot: true,
+          slotData: s,
+        }))
+      : [
+          {
+            id: "tier-basic",
+            tabLabel: formatCurrency(budgetMin),
+            title: "Paket Dasar",
+            price: budgetMin,
+            description:
+              "Pengerjaan kebutuhan deliverable esensial sesuai ringkasan brief UMKM.",
+            revisions: "1x Revisi",
+            deliveryDays: "Sesuai Tenggat",
+            wordsOrScope: "Cakupan Standar",
+          },
+          {
+            id: "tier-standard",
+            tabLabel: formatCurrency(budgetMid),
+            title: "Paket Standar",
+            price: budgetMid,
+            description:
+              "Pengerjaan komprehensif dengan revisi tambahan & supervisi penuh mitra UMKM.",
+            revisions: "2x Revisi Minor",
+            deliveryDays: "Sesuai Tenggat",
+            wordsOrScope: "Cakupan Penuh",
+          },
+          {
+            id: "tier-pro",
+            tabLabel: formatCurrency(budgetMax),
+            title: "Paket Prioritas",
+            price: budgetMax,
+            description:
+              "Solusi tuntas prioritas maksimal dengan e-sertifikat portofolio resmi Makarya.",
+            revisions: "Revisi Optimal (2-3x)",
+            deliveryDays: "Prioritas Cepat",
+            wordsOrScope: "Cakupan Lengkap",
+          },
+        ];
 
   const [selectedTierIndex, setSelectedTierIndex] = useState(
-    packageTiers.length > 1 ? 1 : 0
+    packageTiers.length > 1 ? 1 : 0,
   );
   const activePackage = packageTiers[selectedTierIndex] || packageTiers[0];
 
@@ -268,7 +276,8 @@ export function ProjectExploreDetailView({
   const totalReviewsCount =
     typeof project.total_reviews === "number"
       ? project.total_reviews
-      : Array.isArray(project.client_reviews) && project.client_reviews.length > 0
+      : Array.isArray(project.client_reviews) &&
+          project.client_reviews.length > 0
         ? project.client_reviews.length
         : 25;
 
@@ -409,7 +418,11 @@ export function ProjectExploreDetailView({
                   >
                     {clientDisplayName || "Mitra Klien UMKM"}
                   </Text>
-                  <ChevronDown size={18} color="#0F172A" style={styles.chevronIcon} />
+                  <ChevronDown
+                    size={18}
+                    color="#0F172A"
+                    style={styles.chevronIcon}
+                  />
                 </View>
 
                 {/* Fiverr Style Badges Row */}
@@ -417,7 +430,8 @@ export function ProjectExploreDetailView({
                   {/* Amber Badge: Top Rated / Mitra Terpilih ◆◆◆ */}
                   <View style={styles.topRatedPill}>
                     <Text style={styles.topRatedText}>
-                      Mitra Terpilih <Text style={styles.diamondSymbols}>◆◆◆</Text>
+                      Mitra Terpilih{" "}
+                      <Text style={styles.diamondSymbols}>◆◆◆</Text>
                     </Text>
                   </View>
 
@@ -573,8 +587,9 @@ export function ProjectExploreDetailView({
                   Terverifikasi oleh Makarya Pro
                 </Text>
                 <Text style={styles.vettedProBoxDesc}>
-                  {clientDisplayName || "Mitra UMKM"} telah melewati verifikasi kelayakan
-                  usaha dan dana honor diamankan sepenuhnya di Escrow Makarya.
+                  {clientDisplayName || "Mitra UMKM"} telah melewati verifikasi
+                  kelayakan usaha dan dana honor diamankan sepenuhnya di Escrow
+                  Makarya.
                 </Text>
               </View>
             </View>
@@ -589,7 +604,9 @@ export function ProjectExploreDetailView({
                 <Sparkles size={16} color="#2563EB" />
                 <Text style={styles.editorialTitle}>Kecocokan Profil Anda</Text>
                 <View style={styles.matchScorePill}>
-                  <Text style={styles.matchScoreText}>{matchScore || 85}% Cocok</Text>
+                  <Text style={styles.matchScoreText}>
+                    {matchScore || 85}% Cocok
+                  </Text>
                 </View>
               </View>
 
@@ -619,7 +636,8 @@ export function ProjectExploreDetailView({
                         style={{ marginTop: 2 }}
                       />
                       <Text style={styles.bulletText}>
-                        Keahlian dan bidang studi Anda relevan dengan kebutuhan proyek.
+                        Keahlian dan bidang studi Anda relevan dengan kebutuhan
+                        proyek.
                       </Text>
                     </View>
                     <View style={styles.bulletItem}>
@@ -629,7 +647,8 @@ export function ProjectExploreDetailView({
                         style={{ marginTop: 2 }}
                       />
                       <Text style={styles.bulletText}>
-                        Peluang tinggi untuk diterima dan mendapatkan portofolio terverifikasi.
+                        Peluang tinggi untuk diterima dan mendapatkan portofolio
+                        terverifikasi.
                       </Text>
                     </View>
                   </>
@@ -644,7 +663,9 @@ export function ProjectExploreDetailView({
           <View style={styles.editorialCard}>
             <View style={styles.editorialHeaderRow}>
               <Layers size={16} color="#0F172A" />
-              <Text style={styles.editorialTitle}>Keahlian yang Dibutuhkan</Text>
+              <Text style={styles.editorialTitle}>
+                Keahlian yang Dibutuhkan
+              </Text>
             </View>
 
             <View style={styles.skillsWrapper}>
@@ -678,7 +699,9 @@ export function ProjectExploreDetailView({
                     <View key={s.id || idx} style={styles.slotCardItem}>
                       <View style={styles.slotHeaderRow}>
                         <View style={{ flex: 1, paddingRight: 8 }}>
-                          <Text style={styles.slotItemTitle}>{s.nama_peran}</Text>
+                          <Text style={styles.slotItemTitle}>
+                            {s.nama_peran}
+                          </Text>
                           <Text style={styles.slotItemBudget}>
                             Alokasi: {formatCurrency(s.alokasi_budget)}
                           </Text>
@@ -749,7 +772,9 @@ export function ProjectExploreDetailView({
                 </Text>
                 <View style={styles.fiverrCriteriaScoreBox}>
                   <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.fiverrCriteriaScoreVal}>{ratingAvgScore}</Text>
+                  <Text style={styles.fiverrCriteriaScoreVal}>
+                    {ratingAvgScore}
+                  </Text>
                 </View>
               </View>
 
@@ -759,7 +784,9 @@ export function ProjectExploreDetailView({
                 </Text>
                 <View style={styles.fiverrCriteriaScoreBox}>
                   <Star size={12} color="#0F172A" fill="#0F172A" />
-                  <Text style={styles.fiverrCriteriaScoreVal}>{ratingAvgScore}</Text>
+                  <Text style={styles.fiverrCriteriaScoreVal}>
+                    {ratingAvgScore}
+                  </Text>
                 </View>
               </View>
 
@@ -805,7 +832,10 @@ export function ProjectExploreDetailView({
                       <Text style={styles.fiverrReviewerName} numberOfLines={1}>
                         {rev.nama}
                       </Text>
-                      <Text style={styles.fiverrReviewerCampus} numberOfLines={1}>
+                      <Text
+                        style={styles.fiverrReviewerCampus}
+                        numberOfLines={1}
+                      >
                         🇮🇩 {rev.kampus}
                       </Text>
                     </View>

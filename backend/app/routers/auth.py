@@ -310,6 +310,7 @@ def get_my_profile(
                 "semester": 6,
                 "bio": mhs.bio or "",
                 "url_foto": mhs.url_foto or None,
+                "banner_url": mhs.banner_url or None,
                 "url_portofolio": mhs.url_portofolio,
                 "github_url": portfolio_links.get("github") or "",
                 "figma_url": portfolio_links.get("figma") or "",
@@ -357,6 +358,7 @@ def get_my_profile(
                 "kota": umkm.kota or "",
                 "no_kontak": umkm.no_kontak or "",
                 "url_foto": umkm.url_foto_usaha or None,
+                "banner_url": umkm.banner_url or None,
                 "url_ttd": umkm.url_ttd or None,
                 "nama_bank": "",
                 "nomor_rekening": "",
@@ -398,6 +400,8 @@ def update_profile(
             mhs.bio = body.bio.strip()
         if body.photo_url is not None:
             mhs.url_foto = body.photo_url if body.photo_url.strip() else None
+        if body.banner_url is not None:
+            mhs.banner_url = body.banner_url.strip() if body.banner_url.strip() else None
 
         # Update Prodi jika ada
         if body.prodi_id is not None:
@@ -468,6 +472,8 @@ def update_profile(
             umkm.no_kontak = body.no_kontak.strip()
         if body.photo_url is not None:
             umkm.url_foto_usaha = body.photo_url if body.photo_url.strip() else None
+        if body.banner_url is not None:
+            umkm.banner_url = body.banner_url.strip() if body.banner_url.strip() else None
         if body.url_ttd is not None or body.signature_url is not None:
             raw_ttd = body.url_ttd if body.url_ttd is not None else body.signature_url
             umkm.url_ttd = raw_ttd.strip() if raw_ttd and raw_ttd.strip() else None
