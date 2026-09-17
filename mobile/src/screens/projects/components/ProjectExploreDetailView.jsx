@@ -10,7 +10,6 @@ import {
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
-import { Button } from "../../../components/ui/Button";
 import { ProposalCard } from "../../../components/features/ProposalCard";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
@@ -25,7 +24,6 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
-  AlertTriangle,
   Users,
   Send,
   Clock,
@@ -35,6 +33,10 @@ import {
   Check,
   FileText,
   XCircle,
+  Sparkles,
+  Award,
+  Layers,
+  CheckCheck,
 } from "lucide-react-native";
 
 export function ProjectExploreDetailView({
@@ -88,6 +90,80 @@ export function ProjectExploreDetailView({
 
   const isLongDescription = rawDescription.length > 280;
 
+  // 1. AI Match Calculations & Reasons
+  const matchScore =
+    typeof project.match_score === "number"
+      ? Math.round(project.match_score)
+      : project.match_score
+        ? Math.round(Number(project.match_score))
+        : 0;
+
+  const matchReasons = Array.isArray(project.match_reasons)
+    ? project.match_reasons
+    : [];
+
+  // 2. Skills Fallback Helper
+  const getCategorySkills = (cat) => {
+    const c = String(cat || "").toUpperCase();
+    switch (c) {
+      case "DESIGN":
+        return ["Figma", "Adobe Illustrator", "Branding Visual", "Canva"];
+      case "UIUX":
+        return ["Figma", "Wireframing", "User Flow", "Prototyping"];
+      case "PEMROGRAMAN":
+        return [
+          "React Native",
+          "API Integration",
+          "JavaScript / TypeScript",
+          "Git Workflow",
+        ];
+      case "VIDEO":
+        return [
+          "CapCut / Premiere",
+          "Video Editing",
+          "Reels & TikTok",
+          "Storyboarding",
+        ];
+      case "COPYWRITING":
+        return [
+          "SEO Writing",
+          "Copywriting Produk",
+          "Social Media Content",
+          "Bahasa Indonesia",
+        ];
+      case "ADMIN_DATA":
+        return [
+          "Microsoft Excel",
+          "Google Sheets",
+          "Data Entry",
+          "Ketelitian Data",
+        ];
+      default:
+        return [
+          "Komunikasi Tim",
+          "Manajemen Waktu",
+          "Kreativitas",
+          "Eksekusi Tepat Waktu",
+        ];
+    }
+  };
+
+  const skillsList =
+    Array.isArray(project.ai_requirements) && project.ai_requirements.length > 0
+      ? project.ai_requirements
+          .map((r) => r?.skill?.nama_skill || r?.nama_skill)
+          .filter(Boolean)
+      : Array.isArray(project.skills) && project.skills.length > 0
+        ? project.skills
+            .map((s) => (typeof s === "string" ? s : s?.nama_skill || s?.name))
+            .filter(Boolean)
+        : getCategorySkills(project.kategori);
+
+  const totalApplicantsCount =
+    typeof project.total_pelamar === "number"
+      ? project.total_pelamar
+      : proposals.length || 0;
+
   const handleOpenChat = () => {
     navigation.navigate("Chat", {
       projectId: project.id,
@@ -111,10 +187,10 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. PROJECT HERO CARD (Spacious & Clean)                           */}
+          {/* 1. PROJECT HERO CARD                                              */}
           {/* ================================================================= */}
           <View style={styles.headerCard}>
-            {/* Category & Recruitment Status Row */}
+            {/* Category & Status Badges */}
             <View style={styles.badgeRow}>
               <View style={styles.categoryPill}>
                 <Briefcase size={11} color="#475569" />
@@ -167,18 +243,27 @@ export function ProjectExploreDetailView({
               </View>
             </View>
 
-            {/* Title */}
+            {/* Project Title */}
             <Text style={styles.projectTitle}>{project.judul}</Text>
 
-            {/* Published meta */}
-            <View style={styles.publishedRow}>
-              <Calendar size={12} color="#64748B" />
-              <Text style={styles.publishedText}>
-                Diterbitkan {formatDate(project.created_at || new Date())}
-              </Text>
+            {/* Meta Row: Published Date & Total Applicants */}
+            <View style={styles.metaSubRow}>
+              <View style={styles.publishedRow}>
+                <Calendar size={12} color="#64748B" />
+                <Text style={styles.publishedText}>
+                  Diterbitkan {formatDate(project.created_at || new Date())}
+                </Text>
+              </View>
+
+              <View style={styles.applicantBadge}>
+                <Users size={11} color="#2563EB" />
+                <Text style={styles.applicantBadgeText}>
+                  {totalApplicantsCount} Pelamar
+                </Text>
+              </View>
             </View>
 
-            {/* Responsive Key Metrics Container */}
+            {/* Responsive 2-Row Key Metrics Container */}
             <View style={styles.metricsContainer}>
               {/* Highlight Row: Budget */}
               <View style={styles.metricHighlightRow}>
@@ -234,61 +319,143 @@ export function ProjectExploreDetailView({
           </View>
 
           {/* ================================================================= */}
-          {/* 2. CLIENT UMKM PROFILE CARD                                       */}
+          {/* 2. AI MATCH & COMPATIBILITY CARD (FOR MAHASISWA)                  */}
           {/* ================================================================= */}
-          <View style={styles.sectionCard}>
-            <View style={styles.clientProfileRow}>
-              {clientPhoto ? (
-                <Image
-                  source={{ uri: clientPhoto }}
-                  style={styles.clientAvatar}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.clientAvatarFallback}>
-                  <Building2
-                    size={20}
-                    color={COLORS.brandIndigo || "#2563EB"}
-                  />
+          {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
+            <View style={styles.aiMatchCard}>
+              <View style={styles.aiMatchHeader}>
+                <View style={styles.aiMatchTitleRow}>
+                  <Sparkles size={16} color="#7C3AED" />
+                  <Text style={styles.aiMatchTitle}>Kecocokan Profil Anda</Text>
                 </View>
-              )}
-
-              <View style={styles.clientInfoCol}>
-                <Text
-                  style={styles.clientNameText}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {clientDisplayName}
-                </Text>
-                <View style={styles.clientMetaRow}>
-                  <View style={styles.verifiedTag}>
-                    <ShieldCheck size={10} color="#059669" strokeWidth={2.5} />
-                    <Text style={styles.verifiedTagText}>Terverifikasi</Text>
-                  </View>
-                  <Text style={styles.clientMetaDot}>•</Text>
-                  <Text
-                    style={styles.locationText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {project.lokasi || "Indonesia"}
-                  </Text>
+                <View style={styles.aiScoreBadge}>
+                  <Text style={styles.aiScoreText}>{matchScore || 85}% Cocok</Text>
                 </View>
               </View>
 
-              <PebbleButton
-                variant="ice"
-                size="sm"
-                label="Tanya"
-                icon={MessageSquare}
-                onPress={handleOpenChat}
-              />
+              <Text style={styles.aiMatchDesc}>
+                Sistem AI Makarya menganalisis bahwa profil dan rekam jejak Anda
+                sangat relevan dengan kriteria proyek ini:
+              </Text>
+
+              <View style={styles.aiReasonsList}>
+                {matchReasons.length > 0 ? (
+                  matchReasons.map((reason, idx) => (
+                    <View key={idx} style={styles.aiReasonItem}>
+                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <Text style={styles.aiReasonText}>{reason}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <>
+                    <View style={styles.aiReasonItem}>
+                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <Text style={styles.aiReasonText}>
+                        Keahlian dan bidang program studi Anda selaras dengan kebutuhan proyek.
+                      </Text>
+                    </View>
+                    <View style={styles.aiReasonItem}>
+                      <CheckCheck size={13} color="#7C3AED" style={{ marginTop: 2 }} />
+                      <Text style={styles.aiReasonText}>
+                        Peluang besar terpilih sebagai mitra talenta digital klien UMKM ini.
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          )}
+
+          {/* ================================================================= */}
+          {/* 3. REQUIRED SKILLS & TECH STACK                                   */}
+          {/* ================================================================= */}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <Layers size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Text style={styles.sectionTitle}>Keahlian yang Dibutuhkan</Text>
+            </View>
+            <Text style={styles.sectionSubtitle}>
+              Keahlian dan perangkat lunak pendukung yang direkomendasikan:
+            </Text>
+
+            <View style={styles.skillsWrapper}>
+              {skillsList.map((skill, sIdx) => (
+                <View key={sIdx} style={styles.skillChip}>
+                  <Check size={11} color="#2563EB" />
+                  <Text style={styles.skillChipText}>{skill}</Text>
+                </View>
+              ))}
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 3. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
+          {/* 4. SCOPE OF WORK & EXPECTED DELIVERABLES                          */}
+          {/* ================================================================= */}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeaderRow}>
+              <FileText size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Text style={styles.sectionTitle}>
+                Deskripsi & Lingkup Pengerjaan
+              </Text>
+            </View>
+
+            <View style={styles.descriptionWrap}>
+              <Text
+                style={styles.descriptionText}
+                numberOfLines={
+                  isLongDescription && !isBriefExpanded ? 6 : undefined
+                }
+              >
+                {rawDescription ||
+                  "Tidak ada rincian catatan tambahan dari klien."}
+              </Text>
+
+              {isLongDescription && (
+                <TouchableOpacity
+                  onPress={() => setIsBriefExpanded(!isBriefExpanded)}
+                  style={styles.expandBtn}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.expandBtnText}>
+                    {isBriefExpanded
+                      ? "Tampilkan Lebih Sedikit"
+                      : "Baca Selengkapnya"}
+                  </Text>
+                  {isBriefExpanded ? (
+                    <ChevronUp size={14} color="#2563EB" />
+                  ) : (
+                    <ChevronDown size={14} color="#2563EB" />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Expected Output & Collaboration Guidelines */}
+            <View style={styles.guidelineBox}>
+              <Text style={styles.guidelineTitle}>Ketentuan & Format Luaran:</Text>
+              <View style={styles.guidelineRow}>
+                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
+                <Text style={styles.guidelineText}>
+                  Format Berkas: Tautan Google Drive, Figma, GitHub, atau Dokumen resmi.
+                </Text>
+              </View>
+              <View style={styles.guidelineRow}>
+                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
+                <Text style={styles.guidelineText}>
+                  Batas Revisi: Maksimal 2x penyesuaian minor setelah draft pertama dikirim.
+                </Text>
+              </View>
+              <View style={styles.guidelineRow}>
+                <CheckCircle2 size={13} color="#059669" style={{ marginTop: 2 }} />
+                <Text style={styles.guidelineText}>
+                  Komunikasi Terbuka: Koordinasi langsung melalui fitur Chat in-app Makarya.
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 5. TEAM SLOTS BREAKDOWN (IF TEAM COLLABORATION)                   */}
           {/* ================================================================= */}
           {isTeam && slots.length > 0 && (
             <View style={styles.sectionCard}>
@@ -347,9 +514,9 @@ export function ProjectExploreDetailView({
                         </View>
                       </View>
 
-                      {s.deskripsi ? (
+                      {s.deskripsi_tugas || s.deskripsi ? (
                         <Text style={styles.slotDescriptionText}>
-                          {s.deskripsi}
+                          {s.deskripsi_tugas || s.deskripsi}
                         </Text>
                       ) : null}
                     </View>
@@ -360,50 +527,116 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 4. PROJECT SCOPE & BRIEF INSTRUCTIONS                             */}
+          {/* 6. CLIENT UMKM PROFILE & REPUTATION CARD                          */}
           {/* ================================================================= */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeaderRow}>
-              <FileText size={16} color={COLORS.brandIndigo || "#2563EB"} />
-              <Text style={styles.sectionTitle}>
-                Lingkup Pengerjaan & Brief
-              </Text>
+              <Building2 size={16} color={COLORS.brandIndigo || "#2563EB"} />
+              <Text style={styles.sectionTitle}>Tentang Klien UMKM</Text>
             </View>
 
-            <View style={styles.descriptionWrap}>
-              <Text
-                style={styles.descriptionText}
-                numberOfLines={
-                  isLongDescription && !isBriefExpanded ? 6 : undefined
-                }
-              >
-                {rawDescription ||
-                  "Tidak ada rincian catatan tambahan dari klien."}
-              </Text>
-
-              {isLongDescription && (
-                <TouchableOpacity
-                  onPress={() => setIsBriefExpanded(!isBriefExpanded)}
-                  style={styles.expandBtn}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.expandBtnText}>
-                    {isBriefExpanded
-                      ? "Tampilkan Lebih Sedikit"
-                      : "Baca Selengkapnya"}
-                  </Text>
-                  {isBriefExpanded ? (
-                    <ChevronUp size={14} color="#2563EB" />
-                  ) : (
-                    <ChevronDown size={14} color="#2563EB" />
-                  )}
-                </TouchableOpacity>
+            <View style={styles.clientProfileRow}>
+              {clientPhoto ? (
+                <Image
+                  source={{ uri: clientPhoto }}
+                  style={styles.clientAvatar}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.clientAvatarFallback}>
+                  <Building2
+                    size={20}
+                    color={COLORS.brandIndigo || "#2563EB"}
+                  />
+                </View>
               )}
+
+              <View style={styles.clientInfoCol}>
+                <Text
+                  style={styles.clientNameText}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {clientDisplayName}
+                </Text>
+                <View style={styles.clientMetaRow}>
+                  <View style={styles.verifiedTag}>
+                    <ShieldCheck size={10} color="#059669" strokeWidth={2.5} />
+                    <Text style={styles.verifiedTagText}>Terverifikasi</Text>
+                  </View>
+                  <Text style={styles.clientMetaDot}>•</Text>
+                  <Text
+                    style={styles.locationText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"} • {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
+                  </Text>
+                </View>
+              </View>
+
+              <PebbleButton
+                variant="ice"
+                size="sm"
+                label="Tanya"
+                icon={MessageSquare}
+                onPress={handleOpenChat}
+              />
+            </View>
+
+            {/* Client Trust Indicator Pills */}
+            <View style={styles.clientTrustRow}>
+              <View style={styles.trustItem}>
+                <ShieldCheck size={12} color="#059669" />
+                <Text style={styles.trustItemText}>Dana Escrow 100% Didanai</Text>
+              </View>
+              <View style={styles.trustItem}>
+                <Clock size={12} color="#2563EB" />
+                <Text style={styles.trustItemText}>Komunikasi Responsif</Text>
+              </View>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 5. CANCELLATION DETAILS (IF CANCELLED)                            */}
+          {/* 7. TALENT BENEFITS & VERIFIED CERTIFICATION                       */}
+          {/* ================================================================= */}
+          <View style={styles.benefitsCard}>
+            <View style={styles.benefitHeaderRow}>
+              <Award size={16} color="#D97706" />
+              <Text style={styles.benefitHeaderTitle}>
+                Keuntungan & Garansi Mahasiswa
+              </Text>
+            </View>
+
+            <View style={styles.benefitItemsWrap}>
+              <View style={styles.benefitItem}>
+                <View style={styles.benefitIconBox}>
+                  <ShieldCheck size={15} color="#059669" />
+                </View>
+                <View style={styles.benefitTextBox}>
+                  <Text style={styles.benefitItemTitle}>100% Jaminan Escrow</Text>
+                  <Text style={styles.benefitItemDesc}>
+                    Dana honor Anda telah diamankan di sistem Makarya sebelum pengerjaan dimulai dan dicairkan segera setelah pekerjaan disetujui.
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.benefitItem}>
+                <View style={styles.benefitIconBox}>
+                  <Award size={15} color="#D97706" />
+                </View>
+                <View style={styles.benefitTextBox}>
+                  <Text style={styles.benefitItemTitle}>E-Sertifikat Digital Resmi</Text>
+                  <Text style={styles.benefitItemDesc}>
+                    Otomatis mendapatkan sertifikat ber-QR terverifikasi bertanda tangan digital UMKM untuk portofolio & konversi SKPI kampus.
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 8. CANCELLATION DETAILS (IF CANCELLED)                            */}
           {/* ================================================================= */}
           {project.status === "CANCELLED" && (
             <View style={styles.cancelledCard}>
@@ -422,7 +655,7 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 6. MANAGEMENT FOR UMKM OWNER                                      */}
+          {/* 9. MANAGEMENT FOR UMKM OWNER                                      */}
           {/* ================================================================= */}
           {isUmkmOwner && (
             <View style={styles.managementSection}>
@@ -541,7 +774,7 @@ export function ProjectExploreDetailView({
           )}
 
           {/* ================================================================= */}
-          {/* 7. MAHASISWA APPLIED STATUS BANNER                                */}
+          {/* 10. MAHASISWA APPLIED STATUS BANNER                               */}
           {/* ================================================================= */}
           {isMahasiswa && myExistingProposal && (
             <View style={styles.appliedStatusCard}>
@@ -584,7 +817,7 @@ export function ProjectExploreDetailView({
       </ScrollView>
 
       {/* ===================================================================== */}
-      {/* 8. PERSISTENT STICKY BOTTOM ACTION BAR                                */}
+      {/* 11. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
       {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
         <View style={styles.stickyContentRow}>
@@ -666,8 +899,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    padding: 20,
-    marginBottom: 16,
+    padding: 18,
+    marginBottom: 14,
     gap: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
@@ -743,12 +976,18 @@ const styles = StyleSheet.create({
     color: "#64748B",
   },
   projectTitle: {
-    fontSize: 19,
+    fontSize: 18.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "800",
-    lineHeight: 26,
+    lineHeight: 25,
     marginTop: 2,
+  },
+  metaSubRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
   },
   publishedRow: {
     flexDirection: "row",
@@ -756,10 +995,27 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   publishedText: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
   },
+  applicantBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  applicantBadgeText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+
+  /* Metrics Grid */
   metricsContainer: {
     backgroundColor: "#F8FAFC",
     borderRadius: 14,
@@ -767,7 +1023,7 @@ const styles = StyleSheet.create({
     borderColor: "#E2E8F0",
     padding: 10,
     gap: 8,
-    marginTop: 4,
+    marginTop: 2,
   },
   metricHighlightRow: {
     flexDirection: "row",
@@ -881,14 +1137,75 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  /* 2. Section Card & Client Profile */
+  /* 2. AI Match Card */
+  aiMatchCard: {
+    backgroundColor: "#FAF5FF",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#E9D5FF",
+    padding: 16,
+    marginBottom: 14,
+    gap: 10,
+  },
+  aiMatchHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  aiMatchTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  aiMatchTitle: {
+    fontSize: 13.5,
+    fontFamily: FONTS.displayBold,
+    color: "#6B21A8",
+    fontWeight: "700",
+  },
+  aiScoreBadge: {
+    backgroundColor: "#7C3AED",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  aiScoreText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "800",
+  },
+  aiMatchDesc: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#581C87",
+    lineHeight: 17,
+  },
+  aiReasonsList: {
+    gap: 6,
+    marginTop: 2,
+  },
+  aiReasonItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+  },
+  aiReasonText: {
+    flex: 1,
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#6B21A8",
+    lineHeight: 16,
+  },
+
+  /* Common Section Card */
   sectionCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 14,
     gap: 12,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
@@ -896,86 +1213,102 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  clientProfileRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  clientAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#E2E8F0",
-  },
-  clientAvatarFallback: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  clientInfoCol: {
-    flex: 1,
-    minWidth: 0,
-    justifyContent: "center",
-  },
-  clientNameText: {
-    fontSize: 14.5,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-  clientMetaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    marginTop: 3,
-  },
-  verifiedTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  verifiedTagText: {
-    fontSize: 9.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#059669",
-    fontWeight: "700",
-  },
-  clientMetaDot: {
-    fontSize: 10,
-    color: "#94A3B8",
-  },
-  locationText: {
-    fontSize: 11,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    flexShrink: 1,
-  },
-
-  /* 3. Team Slots */
   sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   sectionTitle: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "700",
   },
   sectionSubtitle: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
     marginTop: -4,
   },
+
+  /* 3. Skills Chips */
+  skillsWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 2,
+  },
+  skillChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  skillChipText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#334155",
+    fontWeight: "600",
+  },
+
+  /* 4. Description & Guidelines */
+  descriptionWrap: {
+    gap: 8,
+  },
+  descriptionText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#334155",
+    lineHeight: 20,
+  },
+  expandBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+  },
+  expandBtnText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: "#2563EB",
+    fontWeight: "700",
+  },
+  guidelineBox: {
+    backgroundColor: "#F8FAFC",
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    gap: 6,
+    marginTop: 4,
+  },
+  guidelineTitle: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+    marginBottom: 2,
+  },
+  guidelineRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+  },
+  guidelineText: {
+    flex: 1,
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#475569",
+    lineHeight: 16,
+  },
+
+  /* 5. Team Slots */
   slotsContainer: {
     gap: 10,
     marginTop: 4,
@@ -1041,38 +1374,156 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  /* 4. Description Wrap */
-  descriptionWrap: {
-    gap: 8,
+  /* 6. Client UMKM Profile */
+  clientProfileRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
-  descriptionText: {
-    fontSize: 13,
+  clientAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#E2E8F0",
+  },
+  clientAvatarFallback: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#EFF6FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clientInfoCol: {
+    flex: 1,
+    minWidth: 0,
+    justifyContent: "center",
+  },
+  clientNameText: {
+    fontSize: 14.5,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  clientMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 3,
+  },
+  verifiedTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  verifiedTagText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#059669",
+    fontWeight: "700",
+  },
+  clientMetaDot: {
+    fontSize: 10,
+    color: "#94A3B8",
+  },
+  locationText: {
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 21,
+    color: "#64748B",
+    flexShrink: 1,
   },
-  expandBtn: {
+  clientTrustRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+  },
+  trustItem: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    alignSelf: "flex-start",
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 8,
     paddingVertical: 4,
+    borderRadius: 6,
   },
-  expandBtnText: {
-    fontSize: 12,
+  trustItemText: {
+    fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
-    color: "#2563EB",
-    fontWeight: "700",
+    color: "#475569",
+    fontWeight: "600",
   },
 
-  /* 5. Cancelled Card */
+  /* 7. Benefits Card */
+  benefitsCard: {
+    backgroundColor: "#FFFBEB",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+    padding: 16,
+    marginBottom: 14,
+    gap: 12,
+  },
+  benefitHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  benefitHeaderTitle: {
+    fontSize: 13.5,
+    fontFamily: FONTS.displayBold,
+    color: "#92400E",
+    fontWeight: "700",
+  },
+  benefitItemsWrap: {
+    gap: 10,
+  },
+  benefitItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+  },
+  benefitIconBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 7,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#FDE68A",
+  },
+  benefitTextBox: {
+    flex: 1,
+  },
+  benefitItemTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: "#78350F",
+    fontWeight: "700",
+  },
+  benefitItemDesc: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#92400E",
+    lineHeight: 16,
+    marginTop: 2,
+  },
+
+  /* 8. Cancelled Card */
   cancelledCard: {
     backgroundColor: "#FEF2F2",
     borderRadius: 16,
     borderWidth: 1,
     borderColor: "#FEE2E2",
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 14,
     gap: 6,
   },
   cancelledHeader: {
@@ -1093,10 +1544,10 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  /* 6. Management Sections */
+  /* 9. Management Section */
   managementSection: {
     gap: 12,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   tabContainer: {
     flexDirection: "row",
@@ -1178,14 +1629,14 @@ const styles = StyleSheet.create({
     color: "#2563EB",
   },
 
-  /* 7. Applied Status Card */
+  /* 10. Applied Status Card */
   appliedStatusCard: {
     backgroundColor: "#F0FDF4",
     borderRadius: 18,
     borderWidth: 1,
     borderColor: "#BBF7D0",
     padding: 18,
-    marginBottom: 16,
+    marginBottom: 14,
     gap: 10,
   },
   appliedStatusHeader: {
@@ -1232,7 +1683,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  /* 8. Sticky Bottom Action Bar */
+  /* 11. Sticky Bottom Action Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
