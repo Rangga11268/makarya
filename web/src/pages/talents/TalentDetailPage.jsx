@@ -58,6 +58,16 @@ export function TalentDetailPage() {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
+  const categoryLabels = {
+    DESIGN: "Desain Grafis",
+    DESAIN: "Desain Grafis",
+    UIUX: "UI/UX Design",
+    PEMROGRAMAN: "Web & Coding",
+    VIDEO: "Video & Animasi",
+    COPYWRITING: "Copywriting & SEO",
+    ADMIN_DATA: "Admin & Data",
+  };
+
   // 1. Fetch Talent Detail & Showcase Certificates
   const fetchTalent = async () => {
     try {
@@ -260,6 +270,38 @@ export function TalentDetailPage() {
               {initial}
             </div>
           )}
+      {/* Main Profile Header Card with Cover Banner */}
+      <div className="bg-surface rounded-2xl border border-border shadow-xs overflow-hidden">
+        {/* Cover Banner */}
+        <div className="relative w-full h-36 sm:h-44 bg-slate-900 overflow-hidden">
+          <img
+            src={
+              talent.banner_url ||
+              "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80"
+            }
+            alt={talent.nama_lengkap}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+        </div>
+
+        <div className="p-6 sm:p-8 -mt-12 relative z-10">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            {/* Avatar */}
+            {talent.url_foto ? (
+              <img
+                src={talent.url_foto}
+                alt={talent.nama_lengkap}
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shrink-0 shadow-md border-4 border-white bg-white"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shrink-0 shadow-md border-4 border-white">
+                {initial}
+              </div>
+            )}
 
           {/* Identity Info */}
           <div className="flex-1 text-center sm:text-left space-y-3 min-w-0">
@@ -353,6 +395,7 @@ export function TalentDetailPage() {
               Dana Dijamin Sistem
             </span>
           </div>
+        </div>
         </div>
       </div>
 
@@ -680,6 +723,10 @@ export function TalentDetailPage() {
                                 </span>
                                 <span>|</span>
                                 <span>{p.kategori || "UMKM Digital"}</span>
+                                <span>•</span>
+                                <span className="font-medium text-slate-600">
+                                  {categoryLabels[p.kategori] || p.kategori || "Proyek Digital"}
+                                </span>
                               </div>
                             </div>
                             <div

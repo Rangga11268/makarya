@@ -201,8 +201,10 @@ export function ProjectExploreDetailView({
       ? project.total_reviews
       : Array.isArray(project.client_reviews) &&
           project.client_reviews.length > 0
+      : Array.isArray(project.client_reviews)
         ? project.client_reviews.length
         : 12;
+        : 0;
 
   const studentReviews =
     Array.isArray(project.client_reviews) && project.client_reviews.length > 0
@@ -236,6 +238,7 @@ export function ProjectExploreDetailView({
               "Kerja sama sangat transparan. Rekomendasi terbaik untuk mahasiswa yang ingin menambah portofolio riil UMKM terpercaya.",
           },
         ];
+      : [];
 
   const handleOpenChat = () => {
     navigation.navigate("Chat", {
@@ -730,6 +733,38 @@ export function ProjectExploreDetailView({
                 const reviewDate = rev.created_at
                   ? formatDate(rev.created_at)
                   : rev.waktu || "Baru saja";
+            {studentReviews.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.reviewsScrollContainer}
+              >
+                {studentReviews.map((rev, idx) => {
+                  const reviewerName =
+                    rev.reviewer_nama ||
+                    rev.dari_nama ||
+                    rev.nama ||
+                    "Mahasiswa Terverifikasi";
+                  const reviewerCampus =
+                    rev.reviewer_kampus ||
+                    rev.institusi ||
+                    rev.kampus ||
+                    "Perguruan Tinggi Indonesia";
+                  const reviewComment =
+                    rev.ulasan ||
+                    rev.komentar ||
+                    rev.pesan ||
+                    rev.catatan ||
+                    "Penyelesaian kerja tuntas dan komunikasi berjalan sangat lancar.";
+                  const reviewScore =
+                    rev.skor != null && !isNaN(Number(rev.skor))
+                      ? Number(rev.skor).toFixed(1)
+                      : rev.rating != null && !isNaN(Number(rev.rating))
+                        ? Number(rev.rating).toFixed(1)
+                        : "5.0";
+                  const reviewDate = rev.created_at
+                    ? formatDate(rev.created_at)
+                    : rev.waktu || "Baru saja";
 
                 return (
                   <View
@@ -740,6 +775,30 @@ export function ProjectExploreDetailView({
                     <View style={styles.fiverrReviewerHeader}>
                       <View style={styles.fiverrReviewerAvatarBox}>
                         <GraduationCap size={16} color="#2563EB" />
+                  return (
+                    <View
+                      key={rev.id || `rev-${idx}`}
+                      style={styles.fiverrReviewCard}
+                    >
+                      {/* Top Reviewer Info */}
+                      <View style={styles.fiverrReviewerHeader}>
+                        <View style={styles.fiverrReviewerAvatarBox}>
+                          <GraduationCap size={16} color="#2563EB" />
+                        </View>
+                        <View style={styles.fiverrReviewerMeta}>
+                          <Text
+                            style={styles.fiverrReviewerName}
+                            numberOfLines={1}
+                          >
+                            {reviewerName}
+                          </Text>
+                          <Text
+                            style={styles.fiverrReviewerCampus}
+                            numberOfLines={1}
+                          >
+                            🇮🇩 {reviewerCampus}
+                          </Text>
+                        </View>
                       </View>
                       <View style={styles.fiverrReviewerMeta}>
                         <Text
@@ -761,6 +820,10 @@ export function ProjectExploreDetailView({
                     <Text style={styles.fiverrReviewText} numberOfLines={3}>
                       {reviewComment}
                     </Text>
+                      {/* Review Text Body */}
+                      <Text style={styles.fiverrReviewText} numberOfLines={3}>
+                        {reviewComment}
+                      </Text>
 
                     {/* Bottom Score & Date */}
                     <View style={styles.fiverrReviewBottomRow}>
@@ -768,6 +831,16 @@ export function ProjectExploreDetailView({
                         <Star size={11} color="#0F172A" fill="#0F172A" />
                         <Text style={styles.fiverrReviewScoreText}>
                           {reviewScore}
+                      {/* Bottom Score & Date */}
+                      <View style={styles.fiverrReviewBottomRow}>
+                        <View style={styles.fiverrReviewScoreBox}>
+                          <Star size={11} color="#0F172A" fill="#0F172A" />
+                          <Text style={styles.fiverrReviewScoreText}>
+                            {reviewScore}
+                          </Text>
+                        </View>
+                        <Text style={styles.fiverrReviewDateText}>
+                          {reviewDate}
                         </Text>
                       </View>
                       <Text style={styles.fiverrReviewDateText}>
@@ -778,6 +851,16 @@ export function ProjectExploreDetailView({
                 );
               })}
             </ScrollView>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <View style={styles.fiverrEmptyReviewBox}>
+                <Text style={styles.fiverrEmptyReviewText}>
+                  Belum ada ulasan untuk proyek ini. Ulasan akan otomatis tampil setelah hasil kerja selesai & disetujui.
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* ================================================================= */}
@@ -1653,6 +1736,22 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     fontFamily: FONTS.bodyRegular,
     color: "#94A3B8",
+  },
+  fiverrEmptyReviewBox: {
+    padding: 16,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  fiverrEmptyReviewText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: "#94A3B8",
+    textAlign: "center",
+    lineHeight: 18,
   },
 
   /* 10. Client Profile Row */
