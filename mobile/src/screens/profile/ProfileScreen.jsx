@@ -28,6 +28,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { showConfirm } from "../../store/dialogStore";
 import { authApi, certificateApi } from "../../api";
+import { formatCurrency } from "../../utils/formatCurrency";
 import { MobileCertificateModal } from "../../components/features/certificates/MobileCertificateModal";
 import {
   ProdiVectorIcon,
@@ -740,15 +741,18 @@ export function ProfileScreen({ navigation }) {
         {isMahasiswa && (
           <View style={styles.sectionBox}>
             <View style={styles.sectionHeaderRow}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}>
                 <Award size={16} color={COLORS.primary} />
-                <Text style={styles.sectionTitle}>Sertifikat & Portofolio</Text>
+                <Text style={styles.sectionTitle} numberOfLines={1}>Sertifikat & Portofolio</Text>
               </View>
-              {certificates.length > 0 && (
-                <Text style={styles.certCountBadge}>
-                  {certificates.filter((c) => c.is_showcase).length}/{certificates.length} Tampil
-                </Text>
-              )}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Portfolio")}
+                activeOpacity={0.7}
+                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+              >
+                <Text style={styles.editInlineLink}>Hub Portofolio</Text>
+                <ChevronRight size={12} color={COLORS.brandIndigo} />
+              </TouchableOpacity>
             </View>
 
             {loadingCerts ? (
@@ -761,20 +765,42 @@ export function ProfileScreen({ navigation }) {
                 <Text style={styles.certEmptyText}>
                   Belum ada sertifikat proyek selesai. Selesaikan proyek pertama Anda untuk mendapatkan sertifikat digital resmi.
                 </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Portfolio")}
+                  style={styles.openEmptyPortfolioBtn}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.openEmptyPortfolioText}>Buka Halaman Portofolio</Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <View style={{ gap: 10 }}>
-                {certificates.map((cert) => (
+                {certificates.slice(0, 3).map((cert) => (
                   <View key={cert.id} style={styles.certItemCard}>
                     <View style={styles.certItemHeader}>
-                      <View style={styles.certRoleTag}>
-                        <Text style={styles.certRoleTagText}>{cert.role_name}</Text>
+                      <View style={styles.certTagsLeft}>
+                        <View style={styles.certRoleTag}>
+                          <Text style={styles.certRoleTagText} numberOfLines={1}>
+                            {cert.role_name}
+                          </Text>
+                        </View>
+                        {(cert.honor_amount || cert.slot_budget) ? (
+                          <View style={styles.certHonorTag}>
+                            <Text style={styles.certHonorTagText} numberOfLines={1}>
+                              {formatCurrency(cert.honor_amount || cert.slot_budget)}
+                            </Text>
+                          </View>
+                        ) : null}
                       </View>
-                      <Text style={styles.certCredText}>{cert.credential_id}</Text>
+                      <Text style={styles.certCredText} numberOfLines={1} ellipsizeMode="middle">
+                        {cert.credential_id}
+                      </Text>
                     </View>
 
-                    <Text style={styles.certProjectTitle}>{cert.project_title}</Text>
-                    <Text style={styles.certClientText}>
+                    <Text style={styles.certProjectTitle} numberOfLines={2}>
+                      {cert.project_title}
+                    </Text>
+                    <Text style={styles.certClientText} numberOfLines={1}>
                       Mitra UMKM: <Text style={styles.boldText}>{cert.client_name}</Text>
                     </Text>
 
@@ -814,6 +840,26 @@ export function ProfileScreen({ navigation }) {
                     </View>
                   </View>
                 ))}
+
+                {/* Gateway CTA to Full Portfolio Screen */}
+                <TouchableOpacity
+                  style={styles.portfolioBannerCta}
+                  onPress={() => navigation.navigate("Portfolio")}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.portfolioBannerIconWrap}>
+                    <Sparkles size={16} color={COLORS.brandIndigo} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.portfolioBannerTitle}>
+                      Lihat Portofolio Digital & Ulasan Lengkap
+                    </Text>
+                    <Text style={styles.portfolioBannerSubtitle}>
+                      Kelola deliverable karya, ulasan klien & bagikan portofolio resmi
+                    </Text>
+                  </View>
+                  <ChevronRight size={16} color={COLORS.brandIndigo} />
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -1478,28 +1524,55 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 8,
+  },
+  certTagsLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexShrink: 1,
   },
   certRoleTag: {
     backgroundColor: "rgba(79, 70, 229, 0.1)",
     paddingHorizontal: 7,
-    paddingVertical: 2,
+    paddingVertical: 2.5,
     borderRadius: 6,
   },
   certRoleTagText: {
     fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: COLORS.primary,
-  },
-  certCredText: {
-    fontSize: 10,
-    fontFamily: FONTS.mono,
-    color: COLORS.textMuted,
     fontWeight: "700",
   },
+  certHonorTag: {
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(16, 185, 129, 0.25)",
+  },
+  certHonorTagText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    fontWeight: "700",
+  },
+  certCredText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.mono || FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+    maxWidth: 120,
+    flexShrink: 0,
+    textAlign: "right",
+  },
   certProjectTitle: {
-    fontSize: 12,
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: COLORS.textDark,
+    marginTop: 2,
+    lineHeight: 18,
   },
   certClientText: {
     fontSize: 11,
@@ -1514,13 +1587,14 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.borderSubtle,
     paddingTop: 8,
     marginTop: 2,
+    gap: 8,
   },
   toggleShowcaseBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 4.5,
     borderRadius: 8,
   },
   showcaseActive: {
@@ -1545,12 +1619,56 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: COLORS.primary,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 5.5,
     borderRadius: 8,
   },
   viewCertBtnText: {
     fontSize: 11,
     fontFamily: FONTS.bodyBold,
     color: "#FFF",
+  },
+  openEmptyPortfolioBtn: {
+    marginTop: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: COLORS.brandIndigoLight,
+  },
+  openEmptyPortfolioText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  portfolioBannerCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "rgba(79, 70, 229, 0.05)",
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(79, 70, 229, 0.15)",
+    marginTop: 4,
+  },
+  portfolioBannerIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: COLORS.brandIndigoLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  portfolioBannerTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  portfolioBannerSubtitle: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    marginTop: 1,
   },
 });

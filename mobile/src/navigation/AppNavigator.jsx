@@ -9,6 +9,7 @@ import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { ChatScreen } from "../screens/chat/ChatScreen";
 import { ChatListScreen } from "../screens/chat/ChatListScreen";
 import { HelpScreen } from "../screens/help/HelpScreen";
+import { PortfolioScreen } from "../screens/portfolio/PortfolioScreen";
 import { SplashScreen } from "../screens/onboarding/SplashScreen";
 import { CustomDialog } from "../components/ui/CustomDialog";
 import { useAuthStore } from "../store/authStore";
@@ -75,6 +76,7 @@ export function AppNavigator() {
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="ChatList" component={ChatListScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Portfolio" component={PortfolioScreen} />
             <Stack.Screen name="Help" component={HelpScreen} />
           </>
         ) : (

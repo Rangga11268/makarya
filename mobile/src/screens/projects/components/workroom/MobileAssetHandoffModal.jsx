@@ -126,17 +126,46 @@ export function MobileAssetHandoffModal({
                 {projectTitle}
               </Text>
               {(roleName || submitterName) && (
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginTop: 4,
+                  }}
+                >
                   {roleName ? (
-                    <View style={{ backgroundColor: "rgba(79, 70, 229, 0.08)", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                      <Text style={{ fontSize: 10, fontFamily: FONTS.displayBold, color: "#4F46E5" }}>
+                    <View
+                      style={{
+                        backgroundColor: "rgba(79, 70, 229, 0.08)",
+                        paddingHorizontal: 6,
+                        paddingVertical: 2,
+                        borderRadius: 4,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: FONTS.displayBold,
+                          color: "#4F46E5",
+                        }}
+                      >
                         Peran: {roleName}
                       </Text>
                     </View>
                   ) : null}
                   {submitterName ? (
-                    <Text style={{ fontSize: 10.5, fontFamily: FONTS.bodyMedium, color: "#334155" }}>
-                      Talenta: <Text style={{ fontFamily: FONTS.displayBold }}>{submitterName}</Text>
+                    <Text
+                      style={{
+                        fontSize: 10.5,
+                        fontFamily: FONTS.bodyMedium,
+                        color: "#334155",
+                      }}
+                    >
+                      Talenta:{" "}
+                      <Text style={{ fontFamily: FONTS.displayBold }}>
+                        {submitterName}
+                      </Text>
                     </Text>
                   ) : null}
                 </View>

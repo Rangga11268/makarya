@@ -95,7 +95,8 @@ export function AssetHandoffModal({
                 )}
                 {submitterName && (
                   <span className="font-medium text-slate-700">
-                    Talenta: <strong className="text-dark-900">{submitterName}</strong>
+                    Talenta:{" "}
+                    <strong className="text-dark-900">{submitterName}</strong>
                   </span>
                 )}
               </div>

@@ -63,6 +63,9 @@ export const submissionApi = {
 
 export const ratingApi = {
   create: (data) => api.post("/ratings", data),
+  giveRating: (data) => api.post("/ratings", data),
+  getByUser: (userId) => api.get(`/ratings/user/${userId}`),
+  getByProject: (projectId) => api.get(`/ratings/project/${projectId}`),
 };
 
 export const chatApi = {
