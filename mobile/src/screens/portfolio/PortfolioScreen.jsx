@@ -24,7 +24,6 @@ import { formatDate } from "../../utils/formatDate";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import {
   Award,
-  Star,
   ShieldCheck,
   CheckCircle2,
   ExternalLink,
@@ -32,11 +31,8 @@ import {
   EyeOff,
   Building2,
   Share2,
-  Sparkles,
   Briefcase,
   MessageSquare,
-  FileCheck,
-  Layers,
   Coins,
   ArrowRight,
 } from "lucide-react-native";
@@ -153,7 +149,7 @@ export function PortfolioScreen({ navigation }) {
         title="Portofolio & Reputasi"
         subtitle={
           isMahasiswa
-            ? "Showcase karya dan ulasan industri resmi"
+            ? "Showcase karya dan kredensial resmi"
             : "Rekam jejak kepuasan proyek mitra UMKM"
         }
         showBack
@@ -173,8 +169,8 @@ export function PortfolioScreen({ navigation }) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
+            colors={[COLORS.brandIndigo || "#0F172A"]}
+            tintColor={COLORS.brandIndigo || "#0F172A"}
           />
         }
       >
@@ -183,8 +179,7 @@ export function PortfolioScreen({ navigation }) {
           <View style={styles.heroCard}>
             <View style={styles.heroTopRow}>
               <View style={styles.heroBadge}>
-                <Sparkles size={13} color="#4338CA" />
-                <Award size={13} color="#4338CA" />
+                <ShieldCheck size={13} color="#0F172A" />
                 <Text style={styles.heroBadgeText}>
                   {isMahasiswa
                     ? "Kredensial Portofolio Resmi"
@@ -197,7 +192,7 @@ export function PortfolioScreen({ navigation }) {
                 style={styles.shareIconBtn}
                 activeOpacity={0.7}
               >
-                <Share2 size={14} color={COLORS.primary} />
+                <Share2 size={13} color={COLORS.brandIndigo} />
                 <Text style={styles.shareIconBtnText}>Bagikan</Text>
               </TouchableOpacity>
             </View>
@@ -223,22 +218,22 @@ export function PortfolioScreen({ navigation }) {
                     : myProjects.length || user?.total_proyek_diterbitkan || 0}
                 </Text>
                 <Text style={styles.metricLbl}>
-                  {isMahasiswa ? "Karya Terverifikasi" : "Total Proyek"}
+                  {isMahasiswa ? "Karya Selesai" : "Total Proyek"}
                 </Text>
               </View>
 
               <View style={styles.metricDivider} />
 
               <View style={styles.metricCol}>
-                <View style={styles.starRow}>
-                  <Star size={14} color="#F59E0B" fill="#F59E0B" />
-                  <Text style={[styles.metricVal, { color: "#B45309" }]}>
+                <View style={styles.scoreRow}>
+                  <CheckCircle2 size={13} color={COLORS.success} />
+                  <Text style={[styles.metricVal, { color: "#0F172A" }]}>
                     {averageRating}
                   </Text>
                 </View>
                 <Text style={styles.metricLbl}>
                   {ratings.length > 0
-                    ? `Rating (${ratings.length})`
+                    ? `Kepuasan (${ratings.length})`
                     : "Skor Kepuasan"}
                 </Text>
               </View>
@@ -264,10 +259,10 @@ export function PortfolioScreen({ navigation }) {
               onPress={() => setActiveTab("certs")}
               activeOpacity={0.8}
             >
-              <Award
+              <Briefcase
                 size={14}
                 color={
-                  activeTab === "certs" ? COLORS.primary : COLORS.textMuted
+                  activeTab === "certs" ? COLORS.brandIndigo : COLORS.textMuted
                 }
               />
               <Text
@@ -292,7 +287,7 @@ export function PortfolioScreen({ navigation }) {
               <MessageSquare
                 size={14}
                 color={
-                  activeTab === "reviews" ? COLORS.primary : COLORS.textMuted
+                  activeTab === "reviews" ? COLORS.brandIndigo : COLORS.textMuted
                 }
               />
               <Text
@@ -301,7 +296,7 @@ export function PortfolioScreen({ navigation }) {
                   activeTab === "reviews" && styles.tabBtnTextActive,
                 ]}
               >
-                Ulasan ({ratings.length})
+                Ulasan Klien ({ratings.length})
               </Text>
             </TouchableOpacity>
           </View>
@@ -309,7 +304,7 @@ export function PortfolioScreen({ navigation }) {
           {/* 3. TAB CONTENT */}
           {loading ? (
             <View style={styles.loaderWrap}>
-              <ActivityIndicator size="small" color={COLORS.primary} />
+              <ActivityIndicator size="small" color={COLORS.brandIndigo} />
               <Text style={styles.loaderText}>Memuat lembar portofolio...</Text>
             </View>
           ) : activeTab === "certs" ? (
@@ -325,7 +320,7 @@ export function PortfolioScreen({ navigation }) {
                     </Text>
                   </View>
                   <Text style={styles.showcaseHint}>
-                    Atur visibilitas per sertifikat
+                    Atur visibilitas karya
                   </Text>
                 </View>
               )}
@@ -334,7 +329,7 @@ export function PortfolioScreen({ navigation }) {
                 certificates.length === 0 ? (
                   <View style={styles.emptyCard}>
                     <View style={styles.emptyIconCircle}>
-                      <Award size={28} color={COLORS.primary} />
+                      <Briefcase size={26} color={COLORS.brandIndigo} />
                     </View>
                     <Text style={styles.emptyTitle}>
                       Belum Ada Sertifikat Terbit
@@ -397,7 +392,7 @@ export function PortfolioScreen({ navigation }) {
                         {/* Credential ID & Team Meta Bar */}
                         <View style={styles.certMetaRow}>
                           <Text style={styles.credIdText} numberOfLines={1}>
-                            No. Kredensial: {cert.credential_id}
+                            Kredensial: {cert.credential_id}
                           </Text>
                           {cert.collaboration_type === "TIM" && (
                             <View style={styles.teamTypePill}>
@@ -417,7 +412,7 @@ export function PortfolioScreen({ navigation }) {
                             }
                             activeOpacity={0.7}
                           >
-                            <ExternalLink size={12} color={COLORS.primary} />
+                            <ExternalLink size={12} color={COLORS.brandIndigo} />
                             <Text
                               style={styles.deliverableLinkText}
                               numberOfLines={1}
@@ -443,7 +438,7 @@ export function PortfolioScreen({ navigation }) {
                             {isToggling ? (
                               <ActivityIndicator
                                 size="small"
-                                color={COLORS.primary}
+                                color={COLORS.brandIndigo}
                               />
                             ) : cert.is_showcase ? (
                               <>
@@ -480,39 +475,41 @@ export function PortfolioScreen({ navigation }) {
                     );
                   })
                 )
-              ) : /* UMKM: Riwayat Proyek */
-              myProjects.length === 0 ? (
-                <View style={styles.emptyCard}>
-                  <Text style={styles.emptyTitle}>
-                    Belum Ada Proyek Diterbitkan
-                  </Text>
-                  <Text style={styles.emptyDesc}>
-                    Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
-                    dengan talenta mahasiswa terpilih.
-                  </Text>
-                </View>
               ) : (
-                myProjects.map((p) => (
-                  <View key={p.id} style={styles.certCard}>
-                    <View style={styles.certCardHeader}>
-                      <View style={styles.roleTag}>
-                        <Text style={styles.roleTagText}>{p.kategori}</Text>
-                      </View>
-                      <Text style={styles.credIdText}>
-                        {formatDate(p.created_at)}
-                      </Text>
-                    </View>
-                    <Text style={styles.certTitle}>{p.judul}</Text>
-                    <View style={styles.honorBadgeBar}>
-                      <View style={styles.honorPill}>
-                        <Coins size={12} color="#059669" />
-                        <Text style={styles.honorPillText}>
-                          Pagu: {formatCurrency(p.budget_max)}
+                /* UMKM: Riwayat Proyek */
+                myProjects.length === 0 ? (
+                  <View style={styles.emptyCard}>
+                    <Text style={styles.emptyTitle}>
+                      Belum Ada Proyek Diterbitkan
+                    </Text>
+                    <Text style={styles.emptyDesc}>
+                      Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
+                      dengan talenta mahasiswa terpilih.
+                    </Text>
+                  </View>
+                ) : (
+                  myProjects.map((p) => (
+                    <View key={p.id} style={styles.certCard}>
+                      <View style={styles.certCardHeader}>
+                        <View style={styles.roleTag}>
+                          <Text style={styles.roleTagText}>{p.kategori}</Text>
+                        </View>
+                        <Text style={styles.credIdText}>
+                          {formatDate(p.created_at)}
                         </Text>
                       </View>
+                      <Text style={styles.certTitle}>{p.judul}</Text>
+                      <View style={styles.honorBadgeBar}>
+                        <View style={styles.honorPill}>
+                          <Coins size={12} color="#059669" />
+                          <Text style={styles.honorPillText}>
+                            Pagu: {formatCurrency(p.budget_max)}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                ))
+                  ))
+                )
               )}
             </View>
           ) : (
@@ -521,11 +518,11 @@ export function PortfolioScreen({ navigation }) {
               {ratings.length === 0 ? (
                 <View style={styles.emptyCard}>
                   <View style={styles.emptyIconCircle}>
-                    <Star size={28} color="#F59E0B" />
+                    <MessageSquare size={26} color={COLORS.brandIndigo} />
                   </View>
                   <Text style={styles.emptyTitle}>Belum Ada Ulasan</Text>
                   <Text style={styles.emptyDesc}>
-                    Ulasan kepuasan dan rating bintang dari mitra industri akan
+                    Ulasan kepuasan dan penilaian dari mitra industri akan
                     muncul di sini setelah proyek disetujui.
                   </Text>
                 </View>
@@ -551,9 +548,9 @@ export function PortfolioScreen({ navigation }) {
                         </Text>
                       </View>
 
-                      <View style={styles.starScoreBadge}>
-                        <Star size={12} color="#F59E0B" fill="#F59E0B" />
-                        <Text style={styles.starScoreText}>
+                      <View style={styles.scorePill}>
+                        <CheckCircle2 size={11} color="#059669" />
+                        <Text style={styles.scorePillText}>
                           {r.skor_bintang || 5}.0
                         </Text>
                       </View>
@@ -602,7 +599,7 @@ export function PortfolioScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: COLORS.bgSoft,
+    backgroundColor: COLORS.bgDark || "#F8FAFC",
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -611,16 +608,16 @@ const styles = StyleSheet.create({
   },
   heroCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 22,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(226, 232, 240, 0.95)",
-    padding: 18,
+    padding: 16,
     gap: 10,
     marginBottom: 14,
     shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: 2,
   },
   heroTopRow: {
@@ -632,40 +629,41 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "#EEF2FF",
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 3.5,
     borderRadius: 8,
   },
   heroBadgeText: {
     fontSize: 10.5,
-    fontFamily: FONTS.displayBold,
-    color: "#4338CA",
-    textTransform: "uppercase",
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
   shareIconBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 3.5,
     borderRadius: 8,
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
   },
   shareIconBtnText: {
     fontSize: 11,
-    fontFamily: FONTS.displayBold,
-    color: COLORS.primary,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
   heroTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
-    marginTop: 2,
+    fontWeight: "700",
   },
   heroSubtitle: {
-    fontSize: 12,
-    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
   metricsRow: {
@@ -674,9 +672,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: "#F8FAFC",
     borderRadius: 14,
-    paddingVertical: 12,
+    paddingVertical: 11,
     paddingHorizontal: 8,
-    marginTop: 6,
+    marginTop: 4,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
@@ -689,6 +687,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
+    fontWeight: "700",
   },
   metricLbl: {
     fontSize: 9.5,
@@ -696,20 +695,20 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     textAlign: "center",
   },
-  starRow: {
+  scoreRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
   metricDivider: {
     width: 1,
-    height: 28,
+    height: 26,
     backgroundColor: "#E2E8F0",
   },
   tabSwitcher: {
     flexDirection: "row",
-    backgroundColor: "rgba(241, 245, 249, 0.9)",
-    borderRadius: 14,
+    backgroundColor: "rgba(241, 245, 249, 0.95)",
+    borderRadius: 13,
     padding: 3,
     gap: 4,
     marginBottom: 14,
@@ -720,8 +719,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    paddingVertical: 10,
-    borderRadius: 11,
+    paddingVertical: 9,
+    borderRadius: 10,
   },
   tabBtnActive: {
     backgroundColor: "#FFFFFF",
@@ -733,12 +732,14 @@ const styles = StyleSheet.create({
   },
   tabBtnText: {
     fontSize: 11.5,
-    fontFamily: FONTS.displayMedium,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textMuted,
+    fontWeight: "600",
   },
   tabBtnTextActive: {
-    fontFamily: FONTS.displayBold,
-    color: COLORS.primary,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
   showcaseInfoRow: {
     flexDirection: "row",
@@ -764,15 +765,15 @@ const styles = StyleSheet.create({
   },
   certCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(226, 232, 240, 0.95)",
-    padding: 14,
-    gap: 8,
+    padding: 13,
+    gap: 7,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
-    shadowRadius: 6,
+    shadowRadius: 5,
     elevation: 1,
   },
   certCardHeader: {
@@ -782,16 +783,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   roleTag: {
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    backgroundColor: "rgba(15, 23, 42, 0.06)",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 2.5,
     borderRadius: 6,
-    maxWidth: "60%",
+    maxWidth: "55%",
   },
   roleTagText: {
     fontSize: 10.5,
-    fontFamily: FONTS.displayBold,
-    color: COLORS.primary,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
   },
   certMetaRow: {
     flexDirection: "row",
@@ -801,18 +803,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   credIdText: {
-    fontSize: 10,
-    fontFamily: FONTS.mono,
+    fontSize: 9.5,
+    fontFamily: FONTS.mono || FONTS.bodyRegular,
     color: COLORS.textMuted,
-    maxWidth: "38%",
-    textAlign: "right",
     flex: 1,
   },
   certTitle: {
-    fontSize: 14,
+    fontSize: 13.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
-    lineHeight: 19,
+    lineHeight: 18,
+    fontWeight: "700",
   },
   clientMetaRow: {
     flexDirection: "row",
@@ -826,8 +827,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   boldText: {
-    fontFamily: FONTS.displayBold,
+    fontFamily: FONTS.bodyBold,
     color: "#1E293B",
+    fontWeight: "700",
   },
   honorBadgeBar: {
     flexDirection: "row",
@@ -840,27 +842,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     backgroundColor: "#ECFDF5",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#A7F3D0",
   },
   honorPillText: {
-    fontSize: 10.5,
-    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
     color: "#047857",
+    fontWeight: "700",
   },
   teamTypePill: {
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
   },
   teamTypePillText: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontFamily: FONTS.bodyMedium,
     color: "#475569",
+    fontWeight: "600",
   },
   deliverableLinkBtn: {
     flexDirection: "row",
@@ -870,8 +874,8 @@ const styles = StyleSheet.create({
   },
   deliverableLinkText: {
     fontSize: 11,
-    fontFamily: FONTS.displayMedium,
-    color: COLORS.primary,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.brandIndigo,
     textDecorationLine: "underline",
     flex: 1,
   },
@@ -881,8 +885,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderTopWidth: 1,
     borderTopColor: "#F1F5F9",
-    paddingTop: 10,
-    marginTop: 4,
+    paddingTop: 9,
+    marginTop: 3,
     gap: 8,
   },
   showcaseBtn: {
@@ -891,8 +895,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    paddingVertical: 7,
-    borderRadius: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   showcaseBtnActive: {
     backgroundColor: "#ECFDF5",
@@ -901,12 +905,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#F1F5F9",
   },
   showcaseBtnTextActive: {
-    fontSize: 10.5,
-    fontFamily: FONTS.displayBold,
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
     color: COLORS.success,
+    fontWeight: "700",
   },
   showcaseBtnTextInactive: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
@@ -916,74 +921,80 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 5,
-    backgroundColor: COLORS.primary,
-    paddingVertical: 7,
-    borderRadius: 10,
+    backgroundColor: COLORS.brandIndigo,
+    paddingVertical: 6.5,
+    borderRadius: 8,
   },
   viewModalBtnText: {
-    fontSize: 11,
-    fontFamily: FONTS.displayBold,
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
+    fontWeight: "700",
   },
   reviewCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: "rgba(226, 232, 240, 0.95)",
-    padding: 14,
+    padding: 13,
     gap: 8,
   },
   reviewHeader: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 9,
   },
   reviewerAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.primary,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: COLORS.brandIndigo,
     alignItems: "center",
     justifyContent: "center",
   },
   reviewerInitial: {
-    fontSize: 14,
-    fontFamily: FONTS.displayBold,
+    fontSize: 13,
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
+    fontWeight: "700",
   },
   reviewerName: {
-    fontSize: 13,
-    fontFamily: FONTS.displayBold,
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
     color: "#0F172A",
+    fontWeight: "700",
   },
   reviewProjectName: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
   },
-  starScoreBadge: {
+  scorePill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
-    backgroundColor: "#FEF3C7",
+    backgroundColor: "#ECFDF5",
     paddingHorizontal: 7,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
-  starScoreText: {
-    fontSize: 11,
-    fontFamily: FONTS.displayBold,
-    color: "#92400E",
+  scorePillText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#047857",
+    fontWeight: "700",
   },
   reviewQuoteBox: {
     backgroundColor: "#F8FAFC",
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 9,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: COLORS.brandIndigo,
   },
   reviewQuoteText: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: "#334155",
     fontStyle: "italic",
@@ -1014,48 +1025,50 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: 18,
+    padding: 22,
     alignItems: "center",
-    gap: 8,
+    gap: 7,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
   emptyIconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "rgba(15, 23, 42, 0.05)",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   emptyTitle: {
-    fontSize: 15,
-    fontFamily: FONTS.displayBold,
+    fontSize: 14.5,
+    fontFamily: FONTS.bodyBold,
     color: "#0F172A",
+    fontWeight: "700",
   },
   emptyDesc: {
-    fontSize: 11.5,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: COLORS.textMuted,
     textAlign: "center",
-    lineHeight: 17,
+    lineHeight: 16,
   },
   emptyCta: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 12,
-    marginTop: 8,
+    backgroundColor: COLORS.brandIndigo,
+    paddingHorizontal: 15,
+    paddingVertical: 8.5,
+    borderRadius: 10,
+    marginTop: 6,
   },
   emptyCtaText: {
-    fontSize: 12,
-    fontFamily: FONTS.displayBold,
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
     color: "#FFFFFF",
+    fontWeight: "700",
   },
   loaderWrap: {
     paddingVertical: 32,
@@ -1063,7 +1076,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   loaderText: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontFamily: FONTS.bodyMedium,
     color: COLORS.textMuted,
   },

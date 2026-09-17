@@ -12,6 +12,8 @@ export const COLORS = {
   canvas: "#F8FAFC",
 
   // Brand Palette (High-End Deep Slate & Graphite - No cheap neon purple/blue)
+  primary: "#4F46E5", // Indigo 600: Primary brand accent
+  primaryLight: "rgba(79, 70, 229, 0.08)",
   brandIndigo: "#0F172A", // Slate 900: Primary CTA & key interactive highlights
   brandIndigoDark: "#020617", // Slate 950: Pressed state
   brandIndigoLight: "#F1F5F9", // Slate 100: Soft active pills & backgrounds
