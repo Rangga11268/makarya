@@ -287,7 +287,9 @@ export function PortfolioScreen({ navigation }) {
               <MessageSquare
                 size={14}
                 color={
-                  activeTab === "reviews" ? COLORS.brandIndigo : COLORS.textMuted
+                  activeTab === "reviews"
+                    ? COLORS.brandIndigo
+                    : COLORS.textMuted
                 }
               />
               <Text
@@ -366,7 +368,10 @@ export function PortfolioScreen({ navigation }) {
                           </View>
                           <View style={styles.honorPill}>
                             <Coins size={12} color="#059669" />
-                            <Text style={styles.honorPillText} numberOfLines={1}>
+                            <Text
+                              style={styles.honorPillText}
+                              numberOfLines={1}
+                            >
                               {formatCurrency(
                                 cert.honor_amount || cert.slot_budget || 0,
                               )}
@@ -396,9 +401,7 @@ export function PortfolioScreen({ navigation }) {
                           </Text>
                           {cert.collaboration_type === "TIM" && (
                             <View style={styles.teamTypePill}>
-                              <Text style={styles.teamTypePillText}>
-                                Tim
-                              </Text>
+                              <Text style={styles.teamTypePillText}>Tim</Text>
                             </View>
                           )}
                         </View>
@@ -412,7 +415,10 @@ export function PortfolioScreen({ navigation }) {
                             }
                             activeOpacity={0.7}
                           >
-                            <ExternalLink size={12} color={COLORS.brandIndigo} />
+                            <ExternalLink
+                              size={12}
+                              color={COLORS.brandIndigo}
+                            />
                             <Text
                               style={styles.deliverableLinkText}
                               numberOfLines={1}
@@ -475,41 +481,39 @@ export function PortfolioScreen({ navigation }) {
                     );
                   })
                 )
+              ) : /* UMKM: Riwayat Proyek */
+              myProjects.length === 0 ? (
+                <View style={styles.emptyCard}>
+                  <Text style={styles.emptyTitle}>
+                    Belum Ada Proyek Diterbitkan
+                  </Text>
+                  <Text style={styles.emptyDesc}>
+                    Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
+                    dengan talenta mahasiswa terpilih.
+                  </Text>
+                </View>
               ) : (
-                /* UMKM: Riwayat Proyek */
-                myProjects.length === 0 ? (
-                  <View style={styles.emptyCard}>
-                    <Text style={styles.emptyTitle}>
-                      Belum Ada Proyek Diterbitkan
-                    </Text>
-                    <Text style={styles.emptyDesc}>
-                      Terbitkan kebutuhan proyek Anda untuk mulai berkolaborasi
-                      dengan talenta mahasiswa terpilih.
-                    </Text>
-                  </View>
-                ) : (
-                  myProjects.map((p) => (
-                    <View key={p.id} style={styles.certCard}>
-                      <View style={styles.certCardHeader}>
-                        <View style={styles.roleTag}>
-                          <Text style={styles.roleTagText}>{p.kategori}</Text>
-                        </View>
-                        <Text style={styles.credIdText}>
-                          {formatDate(p.created_at)}
+                myProjects.map((p) => (
+                  <View key={p.id} style={styles.certCard}>
+                    <View style={styles.certCardHeader}>
+                      <View style={styles.roleTag}>
+                        <Text style={styles.roleTagText}>{p.kategori}</Text>
+                      </View>
+                      <Text style={styles.credIdText}>
+                        {formatDate(p.created_at)}
+                      </Text>
+                    </View>
+                    <Text style={styles.certTitle}>{p.judul}</Text>
+                    <View style={styles.honorBadgeBar}>
+                      <View style={styles.honorPill}>
+                        <Coins size={12} color="#059669" />
+                        <Text style={styles.honorPillText}>
+                          Pagu: {formatCurrency(p.budget_max)}
                         </Text>
                       </View>
-                      <Text style={styles.certTitle}>{p.judul}</Text>
-                      <View style={styles.honorBadgeBar}>
-                        <View style={styles.honorPill}>
-                          <Coins size={12} color="#059669" />
-                          <Text style={styles.honorPillText}>
-                            Pagu: {formatCurrency(p.budget_max)}
-                          </Text>
-                        </View>
-                      </View>
                     </View>
-                  ))
-                )
+                  </View>
+                ))
               )}
             </View>
           ) : (

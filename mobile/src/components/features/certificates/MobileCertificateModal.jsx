@@ -8,6 +8,8 @@ import {
   ScrollView,
   Share,
   Platform,
+  Image,
+  Linking,
 } from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
@@ -18,10 +20,9 @@ import {
   Copy,
   Share2,
   X,
+  ExternalLink,
   GraduationCap,
   Building2,
-  Calendar,
-  Users,
   Coins,
 } from "lucide-react-native";
 import { formatCurrency } from "../../../utils/formatCurrency";
@@ -33,7 +34,24 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
 
   if (!certificate) return null;
 
-  const verificationUrl = `https://makarya.id/certificates/verify/${certificate.credential_id}`;
+  const recipientName =
+    certificate.recipient_name ||
+    certificate.user_name ||
+    certificate.nama_lengkap ||
+    "Penerima Sertifikat";
+
+  const clientName = certificate.client_name || "Mitra Klien UMKM";
+  const projectTitle = certificate.project_title || "Proyek Kemitraan Industri";
+  const roleName = certificate.role_name || "Pelaksana Proyek";
+  const campus =
+    certificate.recipient_kampus ||
+    certificate.universitas ||
+    "Perguruan Tinggi Terdaftar";
+  const prodi =
+    certificate.recipient_prodi || certificate.prodi || "Talenta Industri";
+  const credentialId = certificate.credential_id || "MKY-2026-OFFICIAL";
+
+  const verificationUrl = `https://makarya.id/certificates/verify/${credentialId}`;
 
   const handleCopy = async () => {
     try {
@@ -42,7 +60,7 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
         title: "Tautan Verifikasi Sertifikat",
       });
       setCopied(true);
-      showToast("Tautan verifikasi dibuka untuk disalin!", "success");
+      showToast("Tautan verifikasi siap disalin / dibagikan!", "success");
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       showToast("Gagal membagikan tautan", "error");
@@ -52,11 +70,17 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Sertifikat Penyelesaian Proyek Makarya: ${certificate.project_title} (${certificate.role_name}) oleh ${certificate.recipient_name}. Verifikasi resmi di: ${verificationUrl}`,
+        message: `Sertifikat Resmi Makarya: ${projectTitle} (${roleName}) oleh ${recipientName}. Verifikasi & unduh PDF di: ${verificationUrl}`,
       });
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleOpenWebPdf = () => {
+    Linking.openURL(verificationUrl).catch(() => {
+      showToast("Gagal membuka tautan browser", "error");
+    });
   };
 
   return (
@@ -68,11 +92,11 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
     >
       <View style={styles.overlay}>
         <View style={styles.container}>
-          {/* Header */}
+          {/* Top Modal Header */}
           <View style={styles.headerRow}>
             <View style={styles.headerTitleRow}>
               <ShieldCheck size={18} color={COLORS.success} />
-              <Text style={styles.headerTitle}>Sertifikat Terverifikasi</Text>
+              <Text style={styles.headerTitle}>Sertifikat Digital Resmi</Text>
             </View>
             <TouchableOpacity
               onPress={onClose}
@@ -87,84 +111,75 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {/* Certificate Frame */}
+            {/* ================= OFFICIAL CERTIFICATE CANVAS ================= */}
             <View style={styles.certCard}>
-              <View style={styles.emblemContainer}>
-                <Award size={32} color={COLORS.primary} />
-              </View>
-
-              <Text style={styles.brandSubtitle}>
-                PLATFORM MAKARYA INDONESIA
-              </Text>
-              <Text style={styles.certTitle}>
-                Sertifikat Penyelesaian Proyek
-              </Text>
-              <Text style={styles.certDescEnglish}>
-                Certificate of Project Completion
-              </Text>
-
-              <View style={styles.divider} />
-
-              <Text style={styles.introText}>
-                Dengan bangga menyatakan bahwa mahasiswa:
-              </Text>
-
-              <Text style={styles.recipientName}>
-                {certificate.recipient_name}
-              </Text>
-
-              <View style={styles.campusRow}>
-                <GraduationCap size={14} color={COLORS.primary} />
-                <Text style={styles.campusText}>
-                  {certificate.recipient_kampus}, {certificate.recipient_prodi}
-                </Text>
-              </View>
-
-              <Text style={styles.completionText}>
-                Telah menuntaskan seluruh penugasan kerja industri dengan
-                standar profesional sebagai:
-              </Text>
-
-              {/* Project & Role Info Box */}
-              <View style={styles.infoBox}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <View style={styles.roleTag}>
-                    <Text style={styles.roleTagText}>
-                      {certificate.role_name}
+              {/* Top Banner with Makarya Accents */}
+              <View style={styles.certTopAccentRow}>
+                <View style={styles.certBrandRow}>
+                  <View style={styles.certLogoSquare}>
+                    <Award size={18} color="#FFFFFF" />
+                  </View>
+                  <View>
+                    <Text style={styles.brandTitleText}>MAKARYA</Text>
+                    <Text style={styles.brandSubtitleText}>
+                      PLATFORM KOLABORASI INDUSTRI
                     </Text>
                   </View>
-                  <Text style={styles.collabTypeText}>
-                    {certificate.collaboration_type === "TIM" ||
-                    (certificate.team_breakdown &&
-                      certificate.team_breakdown.length > 0)
-                      ? `Tim (${certificate.team_breakdown?.length || 0} Peran)`
-                      : "Individu"}
-                  </Text>
                 </View>
 
-                <Text style={styles.projectTitleText}>
-                  {certificate.project_title}
-                </Text>
+                <View style={styles.verifiedTopPill}>
+                  <ShieldCheck size={12} color="#059669" />
+                  <Text style={styles.verifiedTopPillText}>ESCROW VERIFIED</Text>
+                </View>
+              </View>
 
-                {/* Verified Honor Amount */}
-                <View style={styles.honorRow}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
+              {/* Main Title */}
+              <Text style={styles.certMainTitle}>SERTIFIKAT</Text>
+
+              {/* Badges */}
+              <View style={styles.badgePillAmber}>
+                <Text style={styles.badgePillAmberText}>
+                  PENGHARGAAN PRESTASI PROYEK INDUSTRI
+                </Text>
+              </View>
+
+              <View style={styles.badgePillSlate}>
+                <Text style={styles.badgePillSlateText}>
+                  SERTIFIKAT INI DENGAN BANGGA DISERAHKAN KEPADA
+                </Text>
+              </View>
+
+              {/* Recipient Name & Campus */}
+              <View style={styles.recipientBlock}>
+                <Text style={styles.recipientNameText}>{recipientName}</Text>
+                <View style={styles.campusRow}>
+                  <GraduationCap size={13} color={COLORS.brandIndigo} />
+                  <Text style={styles.campusText}>
+                    {campus} • {prodi}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Statement Description */}
+              <Text style={styles.statementText}>
+                Sertifikat ini diberikan atas penyelesaian penugasan proyek
+                industri bersama mitra{" "}
+                <Text style={styles.boldDarkText}>{clientName}</Text> pada
+                proyek{" "}
+                <Text style={styles.boldDarkText}>"{projectTitle}"</Text> sebagai{" "}
+                <Text style={styles.roleHighlightText}>{roleName}</Text>, dan
+                membuktikan kompetensi profesional serta integritas kerja yang
+                telah terverifikasi resmi oleh Makarya Escrow Guarantee.
+              </Text>
+
+              {/* Project Meta Card */}
+              <View style={styles.metaBox}>
+                <View style={styles.metaRow}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
                     <Coins size={13} color="#059669" />
-                    <Text style={styles.honorLabel}>Honor Terverifikasi:</Text>
+                    <Text style={styles.metaLabel}>Honor Peran:</Text>
                   </View>
-                  <Text style={styles.honorValue}>
+                  <Text style={styles.honorValueText}>
                     {certificate.honor_amount || certificate.slot_budget
                       ? formatCurrency(
                           certificate.honor_amount || certificate.slot_budget,
@@ -173,135 +188,99 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
                   </Text>
                 </View>
 
-                <View style={styles.clientRow}>
-                  <Building2 size={13} color={COLORS.textSecondary} />
-                  <Text style={styles.clientText}>
-                    Mitra UMKM:{" "}
-                    <Text style={styles.boldText}>
-                      {certificate.client_name}
-                    </Text>
-                  </Text>
+                <View style={styles.metaRow}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                    <Building2 size={13} color={COLORS.textMuted} />
+                    <Text style={styles.metaLabel}>Mitra Klien UMKM:</Text>
+                  </View>
+                  <Text style={styles.metaValueText}>{clientName}</Text>
                 </View>
-
-                {/* Team Breakdown if team project */}
-                {certificate.team_breakdown &&
-                  certificate.team_breakdown.length > 0 && (
-                    <View style={styles.teamBreakdownContainer}>
-                      <View style={styles.teamBreakdownHeader}>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 4,
-                          }}
-                        >
-                          <Users size={12} color={COLORS.primary} />
-                          <Text style={styles.teamBreakdownTitle}>
-                            Pagu Formasi Tim Klien:
-                          </Text>
-                        </View>
-                        {certificate.total_project_budget ? (
-                          <Text style={styles.teamTotalBudget}>
-                            Total{" "}
-                            {formatCurrency(certificate.total_project_budget)}
-                          </Text>
-                        ) : null}
-                      </View>
-
-                      <View style={styles.teamSlotsList}>
-                        {certificate.team_breakdown.map((member, mIdx) => {
-                          const isCurrentRole =
-                            member.nama_peran?.toLowerCase() ===
-                            certificate.role_name?.toLowerCase();
-                          return (
-                            <View
-                              key={mIdx}
-                              style={[
-                                styles.teamSlotItem,
-                                isCurrentRole && styles.teamSlotItemActive,
-                              ]}
-                            >
-                              <View
-                                style={{
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  gap: 4,
-                                  flex: 1,
-                                }}
-                              >
-                                <View
-                                  style={[
-                                    styles.teamSlotDot,
-                                    isCurrentRole && {
-                                      backgroundColor: COLORS.primary,
-                                    },
-                                  ]}
-                                />
-                                <Text
-                                  style={[
-                                    styles.teamSlotRoleName,
-                                    isCurrentRole &&
-                                      styles.teamSlotRoleNameActive,
-                                  ]}
-                                  numberOfLines={1}
-                                >
-                                  {member.nama_peran}
-                                  {member.mhs_nama
-                                    ? ` (${member.mhs_nama})`
-                                    : ""}
-                                </Text>
-                              </View>
-                              <Text
-                                style={[
-                                  styles.teamSlotBudget,
-                                  isCurrentRole && styles.teamSlotBudgetActive,
-                                ]}
-                              >
-                                {formatCurrency(member.alokasi_budget)}
-                              </Text>
-                            </View>
-                          );
-                        })}
-                      </View>
-                    </View>
-                  )}
               </View>
 
-              {/* Credential ID and Date */}
-              <View style={styles.credRow}>
-                <View style={styles.credCol}>
-                  <Text style={styles.credLabel}>ID KREDENSIAL RESMI</Text>
-                  <Text style={styles.credId}>{certificate.credential_id}</Text>
+              {/* Signatures & Seal Section */}
+              <View style={styles.signaturesSection}>
+                {/* Left: Mitra Signature */}
+                <View style={styles.signColumn}>
+                  <View style={styles.signVectorWrap}>
+                    <Text style={styles.signScriptText}>ttd digital</Text>
+                  </View>
+                  <View style={styles.signLine} />
+                  <Text style={styles.signNameText} numberOfLines={1}>
+                    {clientName}
+                  </Text>
+                  <Text style={styles.signRoleText}>Mitra Klien UMKM</Text>
                 </View>
 
-                <View style={styles.verifiedBadge}>
-                  <CheckCircle2 size={14} color={COLORS.success} />
-                  <Text style={styles.verifiedText}>Valid Resmi</Text>
+                {/* Center: Gold Rosette Medal */}
+                <View style={styles.sealCenterWrap}>
+                  <View style={styles.sealGoldCircle}>
+                    <Award size={22} color="#92400E" />
+                  </View>
+                  <Text style={styles.sealText}>TERVERIFIKASI</Text>
+                </View>
+
+                {/* Right: User's Official Signature */}
+                <View style={styles.signColumn}>
+                  <View style={styles.signImageWrap}>
+                    <Image
+                      source={require("../../../../assets/signature.png")}
+                      style={styles.signatureImg}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View style={styles.signLine} />
+                  <Text style={styles.signNameText}>Rangga / Direktur</Text>
+                  <Text style={styles.signRoleText}>Platform Makarya</Text>
+                </View>
+              </View>
+
+              {/* Bottom Credential Bar */}
+              <View style={styles.bottomCredRow}>
+                <View style={{ gap: 2 }}>
+                  <Text style={styles.credLabelText}>ID KREDENSIAL RESMI</Text>
+                  <Text style={styles.credIdText}>{credentialId}</Text>
+                </View>
+                <View style={styles.verifiedMiniTag}>
+                  <CheckCircle2 size={11} color={COLORS.success} />
+                  <Text style={styles.verifiedMiniTagText}>Valid Resmi</Text>
                 </View>
               </View>
             </View>
 
             {/* Actions */}
-            <View style={styles.actionRow}>
+            <View style={styles.actionColumn}>
               <TouchableOpacity
-                style={styles.outlineBtn}
-                onPress={handleCopy}
-                activeOpacity={0.8}
+                style={styles.downloadPdfBtn}
+                onPress={handleOpenWebPdf}
+                activeOpacity={0.85}
               >
-                <Copy size={16} color={COLORS.text} />
-                <Text style={styles.outlineBtnText}>
-                  {copied ? "Tersalin!" : "Salin Link"}
+                <ExternalLink size={16} color="#FFF" />
+                <Text style={styles.downloadPdfBtnText}>
+                  Buka & Unduh PDF di Web
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.primaryBtn}
-                onPress={handleShare}
-                activeOpacity={0.8}
-              >
-                <Share2 size={16} color="#FFF" />
-                <Text style={styles.primaryBtnText}>Bagikan Sertifikat</Text>
-              </TouchableOpacity>
+              <View style={styles.actionRow}>
+                <TouchableOpacity
+                  style={styles.outlineBtn}
+                  onPress={handleCopy}
+                  activeOpacity={0.8}
+                >
+                  <Copy size={15} color={COLORS.textDark} />
+                  <Text style={styles.outlineBtnText}>
+                    {copied ? "Tersalin!" : "Salin Link"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.secondaryBtn}
+                  onPress={handleShare}
+                  activeOpacity={0.8}
+                >
+                  <Share2 size={15} color="#FFF" />
+                  <Text style={styles.secondaryBtnText}>Bagikan</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -313,24 +292,27 @@ export function MobileCertificateModal({ visible, certificate, onClose }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.65)",
+    backgroundColor: "rgba(15, 23, 42, 0.7)",
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: COLORS.surface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    maxHeight: "90%",
-    paddingBottom: Platform.OS === "ios" ? 34 : 24,
+    backgroundColor: "#F8FAFC",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: "92%",
+    paddingBottom: Platform.OS === "ios" ? 34 : 20,
   },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 14,
+    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: "#E2E8F0",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   headerTitleRow: {
     flexDirection: "row",
@@ -339,266 +321,327 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 14,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
   closeBtn: {
     padding: 4,
   },
   scrollContent: {
-    padding: 20,
-    gap: 16,
+    padding: 16,
+    gap: 14,
   },
   certCard: {
-    backgroundColor: "#F8FAFC",
-    borderWidth: 2,
-    borderColor: "#CBD5E1",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+    borderColor: "#E2E8F0",
     borderRadius: 20,
-    padding: 20,
+    padding: 18,
+    alignItems: "center",
+    gap: 10,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  certTopAccentRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+    paddingBottom: 10,
+  },
+  certBrandRow: {
+    flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  emblemContainer: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: "rgba(79, 70, 229, 0.1)",
+  certLogoSquare: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#0F172A",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
   },
-  brandSubtitle: {
-    fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
+  brandTitleText: {
+    fontSize: 13,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "800",
+    letterSpacing: 0.5,
+  },
+  brandSubtitleText: {
+    fontSize: 8,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
+    letterSpacing: 0.5,
+  },
+  verifiedTopPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  verifiedTopPillText: {
+    fontSize: 9,
+    fontFamily: FONTS.bodyBold,
+    color: "#059669",
+    fontWeight: "700",
+  },
+  certMainTitle: {
+    fontSize: 26,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "900",
     letterSpacing: 1.5,
+    marginTop: 4,
   },
-  certTitle: {
-    fontSize: 18,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
+  badgePillAmber: {
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 10,
+    paddingVertical: 3.5,
+    borderRadius: 100,
+  },
+  badgePillAmberText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#92400E",
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  badgePillSlate: {
+    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 100,
+  },
+  badgePillSlateText: {
+    fontSize: 9,
+    fontFamily: FONTS.bodyMedium,
+    color: "#334155",
+    fontWeight: "600",
+    letterSpacing: 0.3,
+  },
+  recipientBlock: {
+    alignItems: "center",
+    gap: 4,
+    marginVertical: 4,
+  },
+  recipientNameText: {
+    fontSize: 20,
+    fontFamily: FONTS.displayBold,
+    color: "#0F172A",
+    fontWeight: "900",
     textAlign: "center",
     textTransform: "uppercase",
-  },
-  certDescEnglish: {
-    fontSize: 11,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
-  },
-  divider: {
-    width: 60,
-    height: 2,
-    backgroundColor: COLORS.primary,
-    borderRadius: 2,
-    marginVertical: 6,
-  },
-  introText: {
-    fontSize: 11,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
-    textAlign: "center",
-  },
-  recipientName: {
-    fontSize: 18,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
-    textAlign: "center",
   },
   campusRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
   },
   campusText: {
     fontSize: 11,
-    fontFamily: FONTS.medium,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
   },
-  completionText: {
+  statementText: {
     fontSize: 11,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyRegular,
+    color: "#475569",
     textAlign: "center",
-    marginTop: 4,
+    lineHeight: 16.5,
+    paddingHorizontal: 4,
   },
-  infoBox: {
+  boldDarkText: {
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  roleHighlightText: {
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.primary,
+    fontWeight: "700",
+  },
+  metaBox: {
     width: "100%",
-    backgroundColor: "#FFF",
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 14,
-    padding: 12,
-    gap: 6,
-    marginVertical: 6,
-  },
-  roleTag: {
-    backgroundColor: "rgba(79, 70, 229, 0.1)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    alignSelf: "flex-start",
-  },
-  roleTagText: {
-    fontSize: 11,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-  },
-  collabTypeText: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  honorRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  honorLabel: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bold,
-    color: "#065F46",
-  },
-  honorValue: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bold,
-    color: "#047857",
-  },
-  teamBreakdownContainer: {
-    marginTop: 4,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    gap: 6,
-  },
-  teamBreakdownHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  teamBreakdownTitle: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
-  },
-  teamTotalBudget: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-  },
-  teamSlotsList: {
-    gap: 4,
     backgroundColor: "#F8FAFC",
-    padding: 6,
-    borderRadius: 8,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    borderRadius: 12,
+    padding: 10,
+    gap: 6,
+    marginVertical: 4,
   },
-  teamSlotItem: {
+  metaRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 3,
-    paddingHorizontal: 4,
-    borderRadius: 4,
   },
-  teamSlotItemActive: {
-    backgroundColor: "rgba(79, 70, 229, 0.08)",
+  metaLabel: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
   },
-  teamSlotDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "#94A3B8",
-  },
-  teamSlotRoleName: {
-    fontSize: 10,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
-  },
-  teamSlotRoleNameActive: {
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-  },
-  teamSlotBudget: {
-    fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
-  },
-  teamSlotBudgetActive: {
-    color: COLORS.primary,
-  },
-  projectTitleText: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
-  },
-  clientRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  clientText: {
+  honorValueText: {
     fontSize: 11,
-    fontFamily: FONTS.regular,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyBold,
+    color: "#059669",
+    fontWeight: "700",
   },
-  boldText: {
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
+  metaValueText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
-  credRow: {
+  signaturesSection: {
     width: "100%",
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: "#E2E8F0",
     paddingTop: 12,
     marginTop: 4,
   },
-  credCol: {
+  signColumn: {
+    flex: 1,
+    alignItems: "center",
     gap: 2,
   },
-  credLabel: {
-    fontSize: 9,
-    fontFamily: FONTS.bold,
-    color: COLORS.textSecondary,
+  signVectorWrap: {
+    height: 38,
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
-  credId: {
-    fontSize: 11,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
+  signScriptText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 13,
+    fontStyle: "italic",
+    color: "#475569",
   },
-  verifiedBadge: {
+  signImageWrap: {
+    height: 38,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  signatureImg: {
+    width: 72,
+    height: 36,
+  },
+  signLine: {
+    width: "80%",
+    height: 1,
+    backgroundColor: "#0F172A",
+    marginVertical: 3,
+  },
+  signNameText: {
+    fontSize: 10,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  signRoleText: {
+    fontSize: 8.5,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    textAlign: "center",
+  },
+  sealCenterWrap: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 4,
+  },
+  sealGoldCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FEF3C7",
+    borderWidth: 1.5,
+    borderColor: "#D97706",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sealText: {
+    fontSize: 7.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#92400E",
+    fontWeight: "900",
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  bottomCredRow: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "#ECFDF5",
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    justifyContent: "space-between",
+    backgroundColor: "#F8FAFC",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 8,
+    marginTop: 4,
   },
-  verifiedText: {
+  credLabelText: {
+    fontSize: 8,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textMuted,
+  },
+  credIdText: {
     fontSize: 10,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.mono || FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
+  },
+  verifiedMiniTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  verifiedMiniTagText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
     color: COLORS.success,
+    fontWeight: "700",
+  },
+  actionColumn: {
+    gap: 8,
+    marginTop: 2,
+  },
+  downloadPdfBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#0F172A",
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  downloadPdfBtnText: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
   actionRow: {
     flexDirection: "row",
-    gap: 10,
-    marginTop: 6,
+    gap: 8,
   },
   outlineBtn: {
     flex: 1,
@@ -606,30 +649,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    height: 44,
-    borderRadius: 12,
+    height: 40,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
+    borderColor: "#CBD5E1",
+    backgroundColor: "#FFFFFF",
   },
   outlineBtnText: {
-    fontSize: 12,
-    fontFamily: FONTS.bold,
-    color: COLORS.text,
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
-  primaryBtn: {
-    flex: 1.5,
+  secondaryBtn: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    height: 44,
-    borderRadius: 12,
+    height: 40,
+    borderRadius: 10,
     backgroundColor: COLORS.primary,
   },
-  primaryBtnText: {
-    fontSize: 12,
-    fontFamily: FONTS.bold,
-    color: "#FFF",
+  secondaryBtnText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 });
