@@ -26,6 +26,7 @@ import { TalentListScreen } from "../talents/TalentListScreen";
 import { Header } from "../../components/ui/Header";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
+import { PromoBanner } from "../../components/features/PromoBanner";
 
 export function ProjectListScreen({ navigation, route }) {
   const { user } = useAuthStore();
@@ -183,6 +184,11 @@ export function ProjectListScreen({ navigation, route }) {
           onFilterPress={() => setIsFilterModalOpen(true)}
           activeFilterCount={activeFilterCount}
         />
+      </View>
+
+      {/* Featured Guarantee & Collaboration Promo Banner */}
+      <View style={styles.bannerSection}>
+        <PromoBanner />
       </View>
 
       {/* Segmented Tabs */}
@@ -381,6 +387,12 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 4,
     backgroundColor: "transparent",
+  },
+
+  // Promo Banner Section
+  bannerSection: {
+    paddingTop: 4,
+    paddingBottom: 6,
   },
 
   // Segmented Tabs Section

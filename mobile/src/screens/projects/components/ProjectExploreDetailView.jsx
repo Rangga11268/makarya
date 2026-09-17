@@ -188,10 +188,18 @@ export function ProjectExploreDetailView({
   // 5. Rating & Reviews Data
   const ratingAvgScore =
     typeof project.umkm_profile?.rating_avg === "number"
+    project.umkm_profile?.rating_avg != null &&
+    !isNaN(Number(project.umkm_profile.rating_avg))
       ? Number(project.umkm_profile.rating_avg).toFixed(1)
       : typeof project.client_rating === "number"
+      : project.client_rating != null &&
+          !isNaN(Number(project.client_rating))
         ? Number(project.client_rating).toFixed(1)
         : "5.0";
+        : project.rating_avg != null &&
+            !isNaN(Number(project.rating_avg))
+          ? Number(project.rating_avg).toFixed(1)
+          : "5.0";
 
   const totalReviewsCount =
     typeof project.total_reviews === "number"
@@ -714,6 +722,50 @@ export function ProjectExploreDetailView({
                   <View style={styles.fiverrReviewerHeader}>
                     <View style={styles.fiverrReviewerAvatarBox}>
                       <GraduationCap size={16} color="#2563EB" />
+              {studentReviews.map((rev, idx) => {
+                const reviewerName =
+                  rev.dari_nama || rev.nama || "Mahasiswa Terverifikasi";
+                const reviewerCampus =
+                  rev.institusi || rev.kampus || "Perguruan Tinggi Indonesia";
+                const reviewComment =
+                  rev.komentar ||
+                  rev.pesan ||
+                  rev.catatan ||
+                  "Kolaborasi sangat memuaskan, instruksi jelas dan pencairan escrow aman.";
+                const reviewScore =
+                  rev.skor != null && !isNaN(Number(rev.skor))
+                    ? Number(rev.skor).toFixed(1)
+                    : rev.rating != null && !isNaN(Number(rev.rating))
+                      ? Number(rev.rating).toFixed(1)
+                      : "5.0";
+                const reviewDate = rev.created_at
+                  ? formatDate(rev.created_at)
+                  : rev.waktu || "Baru saja";
+
+                return (
+                  <View
+                    key={rev.id || `rev-${idx}`}
+                    style={styles.fiverrReviewCard}
+                  >
+                    {/* Top Reviewer Info */}
+                    <View style={styles.fiverrReviewerHeader}>
+                      <View style={styles.fiverrReviewerAvatarBox}>
+                        <GraduationCap size={16} color="#2563EB" />
+                      </View>
+                      <View style={styles.fiverrReviewerMeta}>
+                        <Text
+                          style={styles.fiverrReviewerName}
+                          numberOfLines={1}
+                        >
+                          {reviewerName}
+                        </Text>
+                        <Text
+                          style={styles.fiverrReviewerCampus}
+                          numberOfLines={1}
+                        >
+                          🇮🇩 {reviewerCampus}
+                        </Text>
+                      </View>
                     </View>
                     <View style={styles.fiverrReviewerMeta}>
                       <Text style={styles.fiverrReviewerName} numberOfLines={1}>
@@ -732,6 +784,10 @@ export function ProjectExploreDetailView({
                   <Text style={styles.fiverrReviewText} numberOfLines={3}>
                     {rev.pesan}
                   </Text>
+                    {/* Review Text Body */}
+                    <Text style={styles.fiverrReviewText} numberOfLines={3}>
+                      {reviewComment}
+                    </Text>
 
                   {/* Bottom Score & Date */}
                   <View style={styles.fiverrReviewBottomRow}>
@@ -739,12 +795,24 @@ export function ProjectExploreDetailView({
                       <Star size={11} color="#0F172A" fill="#0F172A" />
                       <Text style={styles.fiverrReviewScoreText}>
                         {rev.rating.toFixed(1)}
+                    {/* Bottom Score & Date */}
+                    <View style={styles.fiverrReviewBottomRow}>
+                      <View style={styles.fiverrReviewScoreBox}>
+                        <Star size={11} color="#0F172A" fill="#0F172A" />
+                        <Text style={styles.fiverrReviewScoreText}>
+                          {reviewScore}
+                        </Text>
+                      </View>
+                      <Text style={styles.fiverrReviewDateText}>
+                        {reviewDate}
                       </Text>
                     </View>
                     <Text style={styles.fiverrReviewDateText}>{rev.waktu}</Text>
                   </View>
                 </View>
               ))}
+                );
+              })}
             </ScrollView>
           </View>
 
