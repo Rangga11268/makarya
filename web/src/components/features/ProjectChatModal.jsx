@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Check,
   CheckCheck,
+  CheckCircle2,
   MessageSquare,
   Layers,
   Sparkles,
@@ -275,6 +276,55 @@ export function ProjectChatModal({
             </div>
           ) : (
             messages.map((m, idx) => {
+              const isSystemMessage =
+                m.attachment_type === "SYSTEM_EVENT" ||
+                m.attachment_type === "STATUS_UPDATE" ||
+                m.message?.startsWith("✓ Tawaran proyek") ||
+                m.message?.startsWith("✕ Tawaran proyek") ||
+                m.message?.startsWith("✓ Tawaran") ||
+                m.message?.startsWith("✕ Tawaran");
+
+              if (isSystemMessage) {
+                const isAccepted =
+                  m.message?.includes("diterima") || m.message?.startsWith("✓");
+                const cleanText = (m.message || "")
+                  .replace(/^[✓✕\s]+/, "")
+                  .replace(/\(IN_PROGRESS\)/gi, "")
+                  .replace(/IN_PROGRESS/gi, "Sedang Berjalan")
+                  .trim();
+
+                return (
+                  <div
+                    key={m.id || idx}
+                    className="w-full flex justify-center my-3 px-4 animate-in fade-in duration-200"
+                  >
+                    <div
+                      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border shadow-2xs max-w-sm text-center leading-relaxed ${
+                        isAccepted
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                          : "bg-slate-100 border-slate-200 text-slate-700"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                          isAccepted
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-slate-200 text-slate-600"
+                        }`}
+                      >
+                        {isAccepted ? (
+                          <CheckCircle2 className="w-3 h-3" />
+                        ) : (
+                          <ShieldCheck className="w-3 h-3" />
+                        )}
+                      </div>
+                      <span>{m.message}</span>
+                      <span>{cleanText}</span>
+                    </div>
+                  </div>
+                );
+              }
+
               const isMe = m.sender_id === user?.id;
 
               return (

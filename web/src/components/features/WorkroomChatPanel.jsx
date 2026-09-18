@@ -24,6 +24,13 @@ import {
   Crown,
   FileText,
   Copy,
+  Pin,
+  Reply,
+  Edit3,
+  Trash2,
+  Search,
+  Sparkles,
+  MoreVertical,
 } from "lucide-react";
 
 export function WorkroomChatPanel({
@@ -70,6 +77,15 @@ export function WorkroomChatPanel({
   const [showRosterModal, setShowRosterModal] = useState(false);
   const [showBriefPinned, setShowBriefPinned] = useState(true);
 
+  // New Chat Feature States
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [partnerTyping, setPartnerTyping] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [activeMenuId, setActiveMenuId] = useState(null);
+
   // Quick Attachment State
   const [showAttachInput, setShowAttachInput] = useState(false);
   const [attachUrl, setAttachUrl] = useState("");
@@ -77,6 +93,27 @@ export function WorkroomChatPanel({
 
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const typingTimerRef = useRef(null);
+
+  const playMessageChime = () => {
+    try {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.25);
+    } catch (_) {}
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -218,6 +255,62 @@ export function WorkroomChatPanel({
             }
 
             // B. Handle ROOM_PRESENCE / USER_PRESENCE (Status Online/Offline Lawan Bicara)
+            // B. Handle TYPING INDICATOR
+            if (incoming.type === "USER_TYPING") {
+              if (partnerId && String(incoming.user_id) === String(partnerId)) {
+                setPartnerTyping(Boolean(incoming.is_typing));
+              }
+              return;
+            }
+
+            // C. Handle MESSAGE_EDITED
+            if (incoming.type === "MESSAGE_EDITED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incoming.message_id || m.id === incoming.id
+                    ? {
+                        ...m,
+                        message: incoming.message,
+                        is_edited: true,
+                        updated_at: incoming.updated_at,
+                      }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // D. Handle MESSAGE_DELETED
+            if (incoming.type === "MESSAGE_DELETED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incoming.message_id || m.id === incoming.id
+                    ? {
+                        ...m,
+                        message: "Pesan ini telah dihapus",
+                        is_deleted: true,
+                        attachment_url: null,
+                        attachment_type: null,
+                      }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // E. Handle MESSAGE_PINNED
+            if (incoming.type === "MESSAGE_PINNED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incoming.message_id || m.id === incoming.id
+                    ? { ...m, is_pinned: incoming.is_pinned }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // F. Handle ROOM_PRESENCE / USER_PRESENCE (Status Online/Offline Lawan Bicara)
             if (
               incoming.type === "ROOM_PRESENCE" &&
               Array.isArray(incoming.online_users)
@@ -248,6 +341,7 @@ export function WorkroomChatPanel({
             }
 
             // C. Handle incoming Chat Message
+            // G. Handle incoming Chat Message
             if (incoming.id) {
               // Jika sedang dalam percakapan dengan partner tertentu, abaikan pesan orang ketiga
               if (
@@ -270,6 +364,7 @@ export function WorkroomChatPanel({
                     partner_id: incoming.sender_id,
                   }),
                 );
+                playMessageChime();
               }
 
               setMessages((prev) => {
@@ -318,8 +413,55 @@ export function WorkroomChatPanel({
   }, [messages]);
 
   // 2. Kirim pesan (WebSocket atau Fallback REST)
+  // Handle typing signal broadcast
+  const handleInputChange = (val) => {
+    setInputText(val);
+    if (
+      wsRef.current &&
+      wsRef.current.readyState === WebSocket.OPEN &&
+      partnerId
+    ) {
+      try {
+        wsRef.current.send(
+          JSON.stringify({ type: "TYPING", partner_id: partnerId }),
+        );
+        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+        typingTimerRef.current = setTimeout(() => {
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(
+              JSON.stringify({ type: "STOP_TYPING", partner_id: partnerId }),
+            );
+          }
+        }, 2000);
+      } catch (_) {}
+    }
+  };
+
+  // 2. Kirim atau Edit pesan
   const handleSendMessage = async (e) => {
     if (e) e.preventDefault();
+
+    // Mode Edit Pesan
+    if (editingMessage) {
+      const cleanEdit = editText.trim();
+      if (!cleanEdit) return;
+      try {
+        const res = await chatApi.editMessage(editingMessage.id, cleanEdit);
+        setMessages((prev) =>
+          prev.map((m) => (m.id === editingMessage.id ? res.data : m)),
+        );
+        setEditingMessage(null);
+        setEditText("");
+        addToast("Pesan berhasil diedit", "success");
+      } catch (err) {
+        addToast(
+          err?.response?.data?.detail || "Gagal mengedit pesan",
+          "danger",
+        );
+      }
+      return;
+    }
+
     const cleanText = inputText.trim();
     if (!cleanText && !attachUrl.trim()) return;
 
@@ -335,17 +477,42 @@ export function WorkroomChatPanel({
       customType = attachType;
     }
 
+    let replyMetaStr = null;
+    if (replyingTo) {
+      replyMetaStr = JSON.stringify({
+        id: replyingTo.id,
+        sender_name: replyingTo.sender_name || partnerName,
+        text: replyingTo.message,
+      });
+    }
+
     const payload = {
       recipient_id: partnerId || null,
       message:
         cleanText || (customUrl ? "Lampiran tautan pengerjaan proyek" : ""),
       attachment_url: customUrl,
       attachment_type: customType,
+      reply_to_id: replyingTo ? replyingTo.id : null,
+      reply_to_meta: replyMetaStr,
     };
 
     setInputText("");
     setAttachUrl("");
     setShowAttachInput(false);
+    setReplyingTo(null);
+
+    // Stop typing immediately
+    if (
+      wsRef.current &&
+      wsRef.current.readyState === WebSocket.OPEN &&
+      partnerId
+    ) {
+      try {
+        wsRef.current.send(
+          JSON.stringify({ type: "STOP_TYPING", partner_id: partnerId }),
+        );
+      } catch (_) {}
+    }
 
     // Kirim via WebSocket jika aktif
     if (
@@ -374,6 +541,62 @@ export function WorkroomChatPanel({
     } finally {
       setSending(false);
     }
+  };
+
+  // 3. Hapus Pesan
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm("Apakah Anda yakin ingin menarik/menghapus pesan ini?"))
+      return;
+    try {
+      await chatApi.deleteMessage(messageId);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? {
+                ...m,
+                is_deleted: true,
+                message: "Pesan ini telah dihapus",
+                attachment_url: null,
+                attachment_type: null,
+              }
+            : m,
+        ),
+      );
+      addToast("Pesan telah dihapus", "info");
+    } catch (err) {
+      addToast(
+        err?.response?.data?.detail || "Gagal menghapus pesan",
+        "danger",
+      );
+    }
+  };
+
+  // 4. Pin / Unpin Pesan
+  const handleTogglePinMessage = async (messageId) => {
+    try {
+      const res = await chatApi.togglePinMessage(messageId);
+      setMessages((prev) =>
+        prev.map((m) => (m.id === messageId ? res.data : m)),
+      );
+      addToast(
+        res.data.is_pinned
+          ? "Pesan berhasil disematkan di atas obrolan"
+          : "Sematan pesan dilepas",
+        "success",
+      );
+    } catch (err) {
+      addToast(
+        err?.response?.data?.detail || "Gagal menyematkan pesan",
+        "danger",
+      );
+    }
+  };
+
+  // 5. Salin Pesan
+  const handleCopyMessage = (text) => {
+    if (!text) return;
+    navigator.clipboard?.writeText(text);
+    addToast("Teks pesan disalin ke clipboard", "info");
   };
 
   const formatTime = (isoString) => {
@@ -630,7 +853,87 @@ export function WorkroomChatPanel({
         {headerExtra && (
           <div className="flex items-center gap-2 shrink-0">{headerExtra}</div>
         )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsSearching(!isSearching)}
+            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+              isSearching
+                ? "bg-brand-indigo text-white border-brand-indigo"
+                : "border-border bg-surface hover:bg-slate-100 text-slate-600"
+            }`}
+            title="Cari riwayat pesan"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          {headerExtra && (
+            <div className="flex items-center gap-2 shrink-0">
+              {headerExtra}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* In-Chat Search Bar */}
+      {isSearching && (
+        <div className="px-4 py-2 bg-slate-50 border-b border-border flex items-center gap-2 animate-in slide-in-from-top-2">
+          <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <input
+            type="text"
+            placeholder="Cari pesan dalam obrolan ini..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            className="flex-1 text-xs bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-400"
+            autoFocus
+          />
+          {searchKeyword && (
+            <button
+              type="button"
+              onClick={() => setSearchKeyword("")}
+              className="text-slate-400 hover:text-slate-600 p-1"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              setIsSearching(false);
+              setSearchKeyword("");
+            }}
+            className="text-[11px] text-slate-500 font-semibold hover:text-slate-800 px-1.5 py-0.5"
+          >
+            Tutup
+          </button>
+        </div>
+      )}
+
+      {/* Pinned Messages Bar */}
+      {(() => {
+        const pinnedMsg = messages.find((m) => m.is_pinned && !m.is_deleted);
+        if (!pinnedMsg) return null;
+        return (
+          <div className="px-4 py-2 bg-amber-50/90 border-b border-amber-200/80 flex items-center justify-between gap-2 text-xs text-amber-950 animate-in slide-in-from-top-1">
+            <div className="flex items-center gap-2 min-w-0">
+              <Pin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+              <div className="min-w-0 flex items-center gap-1 text-[11px]">
+                <span className="font-bold shrink-0">Pesan Disematkan:</span>
+                <span className="truncate text-amber-900 font-medium">
+                  {pinnedMsg.sender_name ? `${pinnedMsg.sender_name}: ` : ""}
+                  {pinnedMsg.message}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleTogglePinMessage(pinnedMsg.id)}
+              className="text-[10px] text-amber-800 hover:text-amber-950 font-bold bg-amber-100 px-2 py-0.5 rounded border border-amber-300/60 shrink-0 cursor-pointer"
+            >
+              Lepas Pin
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Pinned Project Brief Announcement Card */}
       {showBriefPinned && (
@@ -700,438 +1003,720 @@ export function WorkroomChatPanel({
             </p>
           </div>
         ) : (
-          messages.map((m, idx) => {
-            const isMe = String(m.sender_id) === String(user?.id);
+          messages
+            .filter((m) => {
+              if (!searchKeyword.trim()) return true;
+              return m.message
+                ?.toLowerCase()
+                .includes(searchKeyword.toLowerCase());
+            })
+            .map((m, idx) => {
+              const isSystemMessage =
+                m.attachment_type === "SYSTEM_EVENT" ||
+                m.attachment_type === "STATUS_UPDATE" ||
+                m.message?.startsWith("✓ Tawaran proyek") ||
+                m.message?.startsWith("✕ Tawaran proyek") ||
+                m.message?.startsWith("✓ Tawaran") ||
+                m.message?.startsWith("✕ Tawaran");
 
-            return (
-              <div
-                key={m.id || idx}
-                className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
-              >
-                {!isMe &&
-                  (m.sender_photo || partnerPhoto ? (
-                    <img
-                      src={m.sender_photo || partnerPhoto}
-                      alt={m.sender_name || partnerName}
-                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  ) : (
+              if (isSystemMessage) {
+                const isAccepted =
+                  m.message?.includes("diterima") || m.message?.startsWith("✓");
+                const cleanText = (m.message || "")
+                  .replace(/^[✓✕\s]+/, "")
+                  .replace(/\(IN_PROGRESS\)/gi, "")
+                  .replace(/IN_PROGRESS/gi, "Sedang Berjalan")
+                  .trim();
+
+                return (
+                  <div
+                    key={m.id || idx}
+                    className="w-full flex justify-center my-3.5 px-4 animate-in fade-in duration-200"
+                    className="w-full flex justify-center my-3 px-4 animate-in fade-in duration-200"
+                  >
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none ${
-                        m.sender_role === "UMKM"
-                          ? "bg-amber-100 text-amber-900"
-                          : "bg-brand-indigo text-white"
+                      className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium border shadow-xs max-w-lg text-center leading-relaxed ${
+                      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border shadow-2xs max-w-xl text-center leading-normal ${
+                        isAccepted
+                          ? "bg-emerald-50/90 border-emerald-200/80 text-emerald-800"
+                          : "bg-slate-100/90 border-slate-200 text-slate-700"
+                          ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
+                          : "bg-slate-100/90 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
                       }`}
                     >
-                      {(m.sender_name || partnerName || "P")
-                        .charAt(0)
-                        .toUpperCase()}
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                        className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                          isAccepted
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-slate-200 text-slate-600"
+                            ? "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
+                            : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        {isAccepted ? (
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <CheckCircle2 className="w-3 h-3" />
+                        ) : (
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          <ShieldCheck className="w-3 h-3" />
+                        )}
+                      </div>
+                      <span>{m.message}</span>
+                      <span>{cleanText}</span>
                     </div>
-                  ))}
+                  </div>
+                );
+              }
 
+              const isMe = String(m.sender_id) === String(user?.id);
+
+              let replyMeta = null;
+              if (m.reply_to_meta) {
+                try {
+                  replyMeta = JSON.parse(m.reply_to_meta);
+                } catch (_) {}
+              }
+
+              return (
                 <div
-                  className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs shadow-xs ${
-                    isMe
-                      ? "bg-brand-indigo text-white rounded-br-xs"
-                      : "bg-surface border border-border text-dark-900 rounded-bl-xs"
+                  key={m.id || idx}
+                  className={`group relative flex items-start gap-2 ${
+                    isMe ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {/* SENDER NAME & ROLE LABEL BADGE */}
-                  {!isMe && (
-                    <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                      <span className="font-bold text-[11px] text-slate-900">
-                        {m.sender_name || partnerName}
-                      </span>
-                      {m.sender_role_label && (
-                        <span
-                          className={`text-[10px] px-2 py-0.5 rounded-md font-semibold border ${
-                            m.sender_role_label === "Project Owner" ||
-                            m.sender_role === "UMKM"
-                              ? "bg-slate-100 text-slate-700 border-slate-200"
-                              : m.sender_role_label.includes("Desain") ||
-                                  m.sender_role_label.includes("UI")
-                                ? "bg-purple-50 text-purple-800 border-purple-200"
-                                : m.sender_role_label.includes("Programmer") ||
-                                    m.sender_role_label.includes("Dev")
-                                  ? "bg-sky-50 text-sky-800 border-sky-200"
-                                  : "bg-indigo-50 text-brand-indigo border-indigo-100"
-                          }`}
-                        >
-                          {m.sender_role_label === "Project Owner"
-                            ? "Pemilik Proyek"
-                            : m.sender_role_label}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  {!isMe &&
+                    (m.sender_photo || partnerPhoto ? (
+                      <img
+                        src={m.sender_photo || partnerPhoto}
+                        alt={m.sender_name || partnerName}
+                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none ${
+                          m.sender_role === "UMKM"
+                            ? "bg-amber-100 text-amber-900"
+                            : "bg-brand-indigo text-white"
+                        }`}
+                      >
+                        {(m.sender_name || partnerName || "P")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+                    ))}
 
-                  {/* Text Message (Deduplicate if PROJECT_OFFER) */}
-                  {m.message && m.attachment_type !== "PROJECT_OFFER" && (
-                    <p className="whitespace-pre-wrap leading-relaxed">
-                      {m.message}
-                    </p>
-                  )}
-
-                  {/* Project Offer Interactive Card (Apple-style / Clean & Modern) */}
-                  {m.attachment_type === "PROJECT_OFFER" ? (
-                    (() => {
-                      let offer = {};
-                      try {
-                        offer = JSON.parse(m.attachment_url || "{}");
-                      } catch {
-                        offer = {};
-                      }
-                      const offerStatus = (
-                        offer.status || "PENDING"
-                      ).toUpperCase();
-                      const isResponding = respondingOfferId === m.id;
-
-                      return (
-                        <div
-                          className={`mt-1 p-4 rounded-2xl border transition-all ${
-                            isMe
-                              ? "bg-white/10 border-white/20 text-white"
-                              : "bg-white border-slate-200 text-slate-900 shadow-xs"
-                          }`}
-                        >
-                          {/* Header badge & escrow guarantee */}
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <div
-                              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                                isMe
-                                  ? "bg-white/20 text-white"
-                                  : "bg-indigo-50 text-brand-indigo"
-                              }`}
-                            >
-                              <ShieldCheck className="w-3 h-3" />
-                              <span>TAWARAN PROYEK</span>
-                            </div>
-                            <span
-                              className={`text-[10px] font-bold flex items-center gap-1 ${
-                                isMe ? "text-emerald-200" : "text-emerald-700"
-                              }`}
-                            >
-                              <ShieldCheck className="w-3 h-3" />
-                              100% Escrow
-                            </span>
-                          </div>
-
-                          {/* Project Title */}
-                          <h5
-                            className={`text-sm font-bold leading-snug mb-2.5 ${
-                              isMe ? "text-white" : "text-slate-900"
-                            }`}
-                          >
-                            {offer.projectTitle || "Proyek Kolaborasi"}
-                          </h5>
-
-                          {/* Position / Role Highlight Pill */}
-                          <div
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl mb-2.5 text-xs font-semibold ${
-                              isMe
-                                ? "bg-white/15 text-white"
-                                : "bg-indigo-50/90 text-brand-indigo border border-indigo-100"
-                            }`}
-                          >
-                            <Users className="w-3.5 h-3.5 shrink-0" />
-                            <span className="leading-snug break-words">
-                              {getCleanRoleName(offer)}
-                              {offer.tipe_kolaborasi === "TIM" && (
-                                <span className="opacity-80 font-medium ml-1.5 text-[10px]">
-                                  (Proyek Tim)
-                                </span>
-                              )}
-                            </span>
-                          </div>
-
-                          {/* Clean Details Box */}
-                          <div
-                            className={`flex items-center justify-between p-2.5 rounded-xl mb-2.5 text-xs ${
-                              isMe
-                                ? "bg-white/10 text-white"
-                                : "bg-slate-50 border border-slate-100 text-slate-800"
-                            }`}
-                          >
-                            <div>
-                              <span
-                                className={`block text-[10px] ${
-                                  isMe ? "text-white/70" : "text-slate-500"
-                                }`}
-                              >
-                                {offer.posisi
-                                  ? "Alokasi Posisi"
-                                  : "Nilai Proyek"}
-                              </span>
-                              <span className="font-bold text-sm">
-                                {offer.budget
-                                  ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
-                                  : "Sesuai Diskusi"}
-                              </span>
-                            </div>
-
-                            {offer.deadline && (
-                              <div className="text-right">
-                                <span
-                                  className={`block text-[10px] ${
-                                    isMe ? "text-white/70" : "text-slate-500"
-                                  }`}
-                                >
-                                  Tenggat
-                                </span>
-                                <span className="font-semibold flex items-center gap-1 justify-end text-xs">
-                                  <Clock className="w-3 h-3 opacity-70" />
-                                  {offer.deadline}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Formasi Peran Tim List (If Team Project) */}
-                          {(() => {
-                            const matchedProject =
-                              activeProject?.id === offer.projectId
-                                ? activeProject
-                                : myProjects.find(
-                                    (p) => p.id === offer.projectId,
-                                  );
-
-                            const effectiveSlots =
-                              offer.slots &&
-                              Array.isArray(offer.slots) &&
-                              offer.slots.length > 0
-                                ? offer.slots
-                                : matchedProject?.slots &&
-                                    Array.isArray(matchedProject.slots) &&
-                                    matchedProject.slots.length > 0
-                                  ? matchedProject.slots
-                                  : projectSlots &&
-                                      Array.isArray(projectSlots) &&
-                                      projectSlots.length > 0
-                                    ? projectSlots
-                                    : [];
-
-                            if (!effectiveSlots || effectiveSlots.length === 0)
-                              return null;
-
-                            return (
-                              <div
-                                className={`p-2.5 rounded-xl mb-3 border text-left ${
-                                  isMe
-                                    ? "bg-white/10 border-white/15"
-                                    : "bg-slate-50 border-slate-200"
-                                }`}
-                              >
-                                <span
-                                  className={`text-[10px] font-bold block mb-1.5 uppercase ${
-                                    isMe ? "text-white/80" : "text-slate-500"
-                                  }`}
-                                >
-                                  Formasi Peran Tim ({effectiveSlots.length}{" "}
-                                  Posisi):
-                                </span>
-                                <div className="space-y-1">
-                                  {effectiveSlots.map((s, idx) => {
-                                    const isThisSlot =
-                                      (offer.slotId &&
-                                        String(s.id) ===
-                                          String(offer.slotId)) ||
-                                      s.nama_peran === offer.posisi ||
-                                      (offer.budget &&
-                                        Number(s.alokasi_budget) ===
-                                          Number(offer.budget));
-                                    return (
-                                      <div
-                                        key={s.id || idx}
-                                        className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
-                                          isThisSlot
-                                            ? isMe
-                                              ? "bg-white/20 text-white font-bold border border-white/30"
-                                              : "bg-indigo-50 text-brand-indigo font-bold border border-indigo-200"
-                                            : isMe
-                                              ? "text-white/70"
-                                              : "text-slate-600 bg-white border border-slate-100"
-                                        }`}
-                                      >
-                                        <div className="flex items-center gap-1.5 min-w-0">
-                                          <span className="truncate">
-                                            {s.nama_peran}
-                                          </span>
-                                          {isThisSlot && (
-                                            <span
-                                              className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
-                                                isMe
-                                                  ? "bg-white/20 text-white"
-                                                  : "bg-brand-indigo text-white"
-                                              }`}
-                                            >
-                                              Ditawarkan
-                                            </span>
-                                          )}
-                                        </div>
-                                        <span className="shrink-0 text-[10px] font-semibold ml-2">
-                                          {s.alokasi_budget
-                                            ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
-                                            : "Sesuai Proyek"}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            );
-                          })()}
-
-                          {/* Actions for Student / Status for UMKM */}
-                          {offerStatus === "PENDING" ? (
-                            !isMe ? (
-                              <div className="flex items-center gap-2 pt-1">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleRespondOffer(m.id, "ACCEPT")
-                                  }
-                                  disabled={isResponding}
-                                  className="flex-1 py-2 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
-                                >
-                                  {isResponding ? (
-                                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                  ) : (
-                                    <>
-                                      <CheckCircle2 className="w-3.5 h-3.5" />
-                                      <span>Terima Tawaran</span>
-                                    </>
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleRespondOffer(m.id, "REJECT")
-                                  }
-                                  disabled={isResponding}
-                                  className="py-2 px-4 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                  <span>Tolak</span>
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-1.5 text-[11px] text-white/80 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/20">
-                                <Clock className="w-3.5 h-3.5 text-white/80 shrink-0" />
-                                <span>Menunggu tanggapan dari talenta...</span>
-                              </div>
-                            )
-                          ) : offerStatus === "ACCEPTED" ? (
-                            <div
-                              className={`flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg border ${
-                                isMe
-                                  ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/30"
-                                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              }`}
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                              <span>Tawaran Diterima (Kolaborasi Dimulai)</span>
-                            </div>
-                          ) : (
-                            <div
-                              className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg border ${
-                                isMe
-                                  ? "bg-white/10 text-white/70 border-white/20"
-                                  : "bg-slate-100 text-slate-600 border-slate-200"
-                              }`}
-                            >
-                              <X className="w-3.5 h-3.5 opacity-70 shrink-0" />
-                              <span>Tawaran Ditolak</span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()
-                  ) : m.attachment_url ? (
-                    <a
-                      href={m.attachment_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`mt-2 flex items-center gap-2 p-2 rounded-xl border transition-colors ${
-                        isMe
-                          ? "bg-white/15 border-white/25 text-white hover:bg-white/20"
-                          : "bg-canvas border-border text-brand-indigo hover:bg-slate-100"
+                  {/* Message Bubble + Action buttons */}
+                  <div className="relative max-w-[85%] sm:max-w-[75%]">
+                    {/* Hover Action Bar */}
+                    <div
+                      className={`absolute -top-3.5 z-20 hidden group-hover:flex items-center gap-0.5 p-1 bg-white rounded-xl shadow-md border border-slate-200 text-slate-600 text-xs transition-opacity ${
+                        isMe ? "right-2" : "left-2"
                       }`}
                     >
-                      <div className="p-1 rounded-lg bg-white/20">
-                        <Link2 className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="flex-1 min-w-0 text-left">
-                        <span className="block text-[9px] font-bold opacity-80 uppercase">
-                          {m.attachment_type === "FIGMA"
-                            ? "Tautan Figma"
-                            : "Tautan Berkas"}
-                        </span>
-                        <span className="block text-xs font-mono truncate">
-                          {m.attachment_url}
-                        </span>
-                      </div>
-                      <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
-                    </a>
-                  ) : null}
-
-                  {/* Timestamp & WhatsApp Read Receipt */}
-                  <div
-                    className={`flex items-center justify-end gap-1 mt-1 text-[9px] ${
-                      isMe ? "text-white/70" : "text-muted"
-                    }`}
-                  >
-                    <span>{formatTime(m.created_at)}</span>
-                    {isMe && (
-                      <span
-                        className="inline-flex items-center ml-0.5"
-                        title={
-                          m.is_read
-                            ? "Dibaca (Centang 2 Biru)"
-                            : m.id
-                              ? "Tersampaikan (Centang 2)"
-                              : "Terkirim (Centang 1)"
-                        }
+                      <button
+                        type="button"
+                        onClick={() => setReplyingTo(m)}
+                        className="p-1 hover:bg-slate-100 rounded-lg text-slate-700 transition-colors"
+                        title="Balas Pesan"
                       >
-                        {m.is_read ? (
-                          <CheckCheck className="w-3.5 h-3.5 text-sky-400" />
-                        ) : m.id ? (
-                          <CheckCheck className="w-3.5 h-3.5 text-white/70" />
-                        ) : (
-                          <Check className="w-3.5 h-3.5 text-white/70" />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {isMe &&
-                  (user?.url_foto ? (
-                    <img
-                      src={user.url_foto}
-                      alt="Me"
-                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
-                    />
-                  ) : (
-                    <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
-                      {(
-                        user?.nama_lengkap ||
-                        user?.nama_usaha ||
-                        user?.email ||
-                        "U"
-                      )
-                        .charAt(0)
-                        .toUpperCase()}
+                        <Reply className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyMessage(m.message)}
+                        className="p-1 hover:bg-slate-100 rounded-lg text-slate-700 transition-colors"
+                        title="Salin Teks"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleTogglePinMessage(m.id)}
+                        className={`p-1 hover:bg-slate-100 rounded-lg transition-colors ${
+                          m.is_pinned
+                            ? "text-amber-600 font-bold"
+                            : "text-slate-700"
+                        }`}
+                        title={m.is_pinned ? "Lepas Pin" : "Sematkan Pesan"}
+                      >
+                        <Pin className="w-3.5 h-3.5" />
+                      </button>
+                      {isMe && !m.is_deleted && (
+                        <>
+                          {m.attachment_type !== "PROJECT_OFFER" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingMessage(m);
+                                setEditText(m.message || "");
+                              }}
+                              className="p-1 hover:bg-slate-100 rounded-lg text-slate-700 transition-colors"
+                              title="Edit Pesan"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMessage(m.id)}
+                            className="p-1 hover:bg-rose-50 rounded-lg text-rose-600 transition-colors"
+                            title="Hapus Pesan"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      )}
                     </div>
-                  ))}
-              </div>
-            );
-          })
+
+                    <div
+                      className={`rounded-2xl px-4 py-2.5 text-xs shadow-xs ${
+                        isMe
+                          ? "bg-brand-indigo text-white rounded-br-xs"
+                          : "bg-surface border border-border text-dark-900 rounded-bl-xs"
+                      }`}
+                    >
+                      {/* Pinned Tag Header if pinned */}
+                      {m.is_pinned && !m.is_deleted && (
+                        <div
+                          className={`flex items-center gap-1 text-[10px] font-bold mb-1.5 pb-1 border-b ${
+                            isMe
+                              ? "text-amber-200 border-white/20"
+                              : "text-amber-700 border-amber-200"
+                          }`}
+                        >
+                          <Pin className="w-3 h-3" />
+                          <span>Pesan Disematkan</span>
+                        </div>
+                      )}
+
+                      {/* Quoted Message Preview Box */}
+                      {replyMeta && (
+                        <div
+                          className={`mb-2 p-2 rounded-xl text-left border-l-3 ${
+                            isMe
+                              ? "bg-black/15 border-white text-white/90"
+                              : "bg-slate-100 border-brand-indigo text-slate-700"
+                          }`}
+                        >
+                          <span className="block text-[10px] font-bold opacity-80">
+                            {replyMeta.sender_name || "Pesan"}
+                          </span>
+                          <span className="block text-[11px] truncate mt-0.5">
+                            {replyMeta.text}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* SENDER NAME & ROLE LABEL BADGE */}
+                      {!isMe && (
+                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                          <span className="font-bold text-[11px] text-slate-900">
+                            {m.sender_name || partnerName}
+                          </span>
+                          {m.sender_role_label && (
+                            <span
+                              className={`text-[10px] px-2 py-0.5 rounded-md font-semibold border ${
+                                m.sender_role_label === "Project Owner" ||
+                                m.sender_role === "UMKM"
+                                  ? "bg-slate-100 text-slate-700 border-slate-200"
+                                  : m.sender_role_label.includes("Desain") ||
+                                      m.sender_role_label.includes("UI")
+                                    ? "bg-purple-50 text-purple-800 border-purple-200"
+                                    : m.sender_role_label.includes(
+                                          "Programmer",
+                                        ) || m.sender_role_label.includes("Dev")
+                                      ? "bg-sky-50 text-sky-800 border-sky-200"
+                                      : "bg-indigo-50 text-brand-indigo border-indigo-100"
+                              }`}
+                            >
+                              {m.sender_role_label === "Project Owner"
+                                ? "Pemilik Proyek"
+                                : m.sender_role_label}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Deleted Message Placeholder */}
+                      {m.is_deleted ? (
+                        <p className="italic opacity-70 text-[11px] flex items-center gap-1.5">
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Pesan ini telah dihapus</span>
+                        </p>
+                      ) : (
+                        /* Text Message (Deduplicate if PROJECT_OFFER) */
+                        m.message &&
+                        m.attachment_type !== "PROJECT_OFFER" && (
+                          <p className="whitespace-pre-wrap leading-relaxed">
+                            {m.message}
+                          </p>
+                        )
+                      )}
+
+                      {/* Project Offer Interactive Card */}
+                      {!m.is_deleted &&
+                      m.attachment_type === "PROJECT_OFFER" ? (
+                        (() => {
+                          let offer = {};
+                          try {
+                            offer = JSON.parse(m.attachment_url || "{}");
+                          } catch {
+                            offer = {};
+                          }
+                          const offerStatus = (
+                            offer.status || "PENDING"
+                          ).toUpperCase();
+                          const isResponding = respondingOfferId === m.id;
+
+                          const matchedProject =
+                            activeProject?.id === offer.projectId
+                              ? activeProject
+                              : myProjects.find(
+                                  (p) => p.id === offer.projectId,
+                                );
+
+                          const effectiveSlots =
+                            offer.slots &&
+                            Array.isArray(offer.slots) &&
+                            offer.slots.length > 0
+                              ? offer.slots
+                              : matchedProject?.slots &&
+                                  Array.isArray(matchedProject.slots) &&
+                                  matchedProject.slots.length > 0
+                                ? matchedProject.slots
+                                : projectSlots &&
+                                    Array.isArray(projectSlots) &&
+                                    projectSlots.length > 0
+                                  ? projectSlots
+                                  : [];
+
+                          return (
+                            <div
+                              className={`mt-1 p-4 rounded-2xl border transition-all ${
+                                isMe
+                                  ? "bg-white/10 border-white/20 text-white"
+                                  : "bg-white border-slate-200 text-slate-900 shadow-xs"
+                              }`}
+                            >
+                              {/* Header badge & escrow guarantee */}
+                              <div className="flex items-center justify-between gap-2 mb-2">
+                                <div
+                                  className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                                    isMe
+                                      ? "bg-white/20 text-white"
+                                      : "bg-indigo-50 text-brand-indigo"
+                                  }`}
+                                >
+                                  <ShieldCheck className="w-3 h-3" />
+                                  <span>TAWARAN PROYEK</span>
+                                </div>
+                                <span
+                                  className={`text-[10px] font-bold flex items-center gap-1 ${
+                                    isMe
+                                      ? "text-emerald-200"
+                                      : "text-emerald-700"
+                                  }`}
+                                >
+                                  <ShieldCheck className="w-3 h-3" />
+                                  100% Escrow
+                                </span>
+                              </div>
+
+                              {/* Project Title */}
+                              <h5
+                                className={`text-sm font-bold leading-snug mb-2.5 ${
+                                  isMe ? "text-white" : "text-slate-900"
+                                }`}
+                              >
+                                {offer.projectTitle || "Proyek Kolaborasi"}
+                              </h5>
+
+                              {/* Position / Role Highlight Pill */}
+                              <div
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl mb-2.5 text-xs font-semibold ${
+                                  isMe
+                                    ? "bg-white/15 text-white"
+                                    : "bg-indigo-50/90 text-brand-indigo border border-indigo-100"
+                                }`}
+                              >
+                                <Users className="w-3.5 h-3.5 shrink-0" />
+                                <span className="leading-snug break-words">
+                                  {getCleanRoleName(offer)}
+                                  {offer.tipe_kolaborasi === "TIM" && (
+                                    <span className="opacity-80 font-medium ml-1.5 text-[10px]">
+                                      (Proyek Tim)
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+
+                              {/* Clean Details Box */}
+                              <div
+                                className={`flex items-center justify-between p-2.5 rounded-xl mb-2.5 text-xs ${
+                                  isMe
+                                    ? "bg-white/10 text-white"
+                                    : "bg-slate-50 border border-slate-100 text-slate-800"
+                                }`}
+                              >
+                                <div>
+                                  <span
+                                    className={`block text-[10px] ${
+                                      isMe ? "text-white/70" : "text-slate-500"
+                                    }`}
+                                  >
+                                    {offer.posisi
+                                      ? "Alokasi Posisi"
+                                      : "Nilai Proyek"}
+                                  </span>
+                                  <span className="font-bold text-sm">
+                                    {offer.budget
+                                      ? `Rp ${Number(offer.budget).toLocaleString("id-ID")}`
+                                      : "Sesuai Diskusi"}
+                                  </span>
+                                </div>
+
+                                {offer.deadline && (
+                                  <div className="text-right">
+                                    <span
+                                      className={`block text-[10px] ${
+                                        isMe
+                                          ? "text-white/70"
+                                          : "text-slate-500"
+                                      }`}
+                                    >
+                                      Tenggat
+                                    </span>
+                                    <span className="font-semibold flex items-center gap-1 justify-end text-xs">
+                                      <Clock className="w-3 h-3 opacity-70" />
+                                      {offer.deadline}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Formasi Peran Tim List (If Team Project) */}
+                              {effectiveSlots && effectiveSlots.length > 0 && (
+                                <div
+                                  className={`p-2.5 rounded-xl mb-3 border text-left ${
+                                    isMe
+                                      ? "bg-white/10 border-white/15"
+                                      : "bg-slate-50 border-slate-200"
+                                  }`}
+                                >
+                                  <span
+                                    className={`text-[10px] font-bold block mb-1.5 uppercase ${
+                                      isMe ? "text-white/80" : "text-slate-500"
+                                    }`}
+                                  >
+                                    Formasi Peran Tim ({effectiveSlots.length}{" "}
+                                    Posisi):
+                                  </span>
+                                  <div className="space-y-1">
+                                    {effectiveSlots.map((s, idx) => {
+                                      const isThisSlot =
+                                        (offer.slotId &&
+                                          String(s.id) ===
+                                            String(offer.slotId)) ||
+                                        s.nama_peran === offer.posisi ||
+                                        (offer.budget &&
+                                          Number(s.alokasi_budget) ===
+                                            Number(offer.budget));
+                                      return (
+                                        <div
+                                          key={s.id || idx}
+                                          className={`flex items-center justify-between p-1.5 rounded-lg text-[11px] ${
+                                            isThisSlot
+                                              ? isMe
+                                                ? "bg-white/20 text-white font-bold border border-white/30"
+                                                : "bg-indigo-50 text-brand-indigo font-bold border border-indigo-200"
+                                              : isMe
+                                                ? "text-white/70"
+                                                : "text-slate-600 bg-white border border-slate-100"
+                                          }`}
+                                        >
+                                          <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="truncate">
+                                              {s.nama_peran}
+                                            </span>
+                                            {isThisSlot && (
+                                              <span
+                                                className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                                                  isMe
+                                                    ? "bg-white/20 text-white"
+                                                    : "bg-brand-indigo text-white"
+                                                }`}
+                                              >
+                                                Ditawarkan
+                                              </span>
+                                            )}
+                                          </div>
+                                          <span className="shrink-0 text-[10px] font-semibold ml-2">
+                                            {s.alokasi_budget
+                                              ? `Rp ${Number(s.alokasi_budget).toLocaleString("id-ID")}`
+                                              : "Sesuai Proyek"}
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Actions for Student / Status for UMKM */}
+                              {offerStatus === "PENDING" ? (
+                                !isMe ? (
+                                  <div className="flex items-center gap-2 pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleRespondOffer(m.id, "ACCEPT")
+                                      }
+                                      disabled={isResponding}
+                                      className="flex-1 py-2 px-4 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                                    >
+                                      {isResponding ? (
+                                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                      ) : (
+                                        <>
+                                          <CheckCircle2 className="w-3.5 h-3.5" />
+                                          <span>Terima Tawaran</span>
+                                        </>
+                                      )}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        handleRespondOffer(m.id, "REJECT")
+                                      }
+                                      disabled={isResponding}
+                                      className="py-2 px-4 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-bold text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                      <span>Tolak</span>
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center gap-1.5 text-[11px] text-white/80 bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/20">
+                                    <Clock className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                                    <span>
+                                      Menunggu tanggapan dari talenta...
+                                    </span>
+                                  </div>
+                                )
+                              ) : offerStatus === "ACCEPTED" ? (
+                                <div
+                                  className={`flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg border ${
+                                    isMe
+                                      ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/30"
+                                      : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                  }`}
+                                >
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <span>
+                                    Tawaran Diterima (Kolaborasi Dimulai)
+                                  </span>
+                                </div>
+                              ) : (
+                                <div
+                                  className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1.5 rounded-lg border ${
+                                    isMe
+                                      ? "bg-white/10 text-white/70 border-white/20"
+                                      : "bg-slate-100 text-slate-600 border-slate-200"
+                                  }`}
+                                >
+                                  <X className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                                  <span>Tawaran Ditolak</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()
+                      ) : !m.is_deleted && m.attachment_url ? (
+                        <a
+                          href={m.attachment_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`mt-2 flex items-center gap-2 p-2 rounded-xl border transition-colors ${
+                            isMe
+                              ? "bg-white/15 border-white/25 text-white hover:bg-white/20"
+                              : "bg-canvas border-border text-brand-indigo hover:bg-slate-100"
+                          }`}
+                        >
+                          <div className="p-1 rounded-lg bg-white/20">
+                            <Link2 className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="flex-1 min-w-0 text-left">
+                            <span className="block text-[9px] font-bold opacity-80 uppercase">
+                              {m.attachment_type === "FIGMA"
+                                ? "Tautan Figma"
+                                : "Tautan Berkas"}
+                            </span>
+                            <span className="block text-xs font-mono truncate">
+                              {m.attachment_url}
+                            </span>
+                          </div>
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                        </a>
+                      ) : null}
+
+                      {/* Timestamp, Edited Badge & Read Receipt */}
+                      <div
+                        className={`flex items-center justify-end gap-1 mt-1 text-[9px] ${
+                          isMe ? "text-white/70" : "text-muted"
+                        }`}
+                      >
+                        {m.is_edited && !m.is_deleted && (
+                          <span className="italic mr-1 opacity-80">diedit</span>
+                        )}
+                        <span>{formatTime(m.created_at)}</span>
+                        {isMe && (
+                          <span
+                            className="inline-flex items-center ml-0.5"
+                            title={
+                              m.is_read
+                                ? "Dibaca (Centang 2 Biru)"
+                                : m.id
+                                  ? "Tersampaikan (Centang 2)"
+                                  : "Terkirim (Centang 1)"
+                            }
+                          >
+                            {m.is_read ? (
+                              <CheckCheck className="w-3.5 h-3.5 text-sky-400" />
+                            ) : m.id ? (
+                              <CheckCheck className="w-3.5 h-3.5 text-white/70" />
+                            ) : (
+                              <Check className="w-3.5 h-3.5 text-white/70" />
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {isMe &&
+                    (user?.url_foto ? (
+                      <img
+                        src={user.url_foto}
+                        alt="Me"
+                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
+                        {(
+                          user?.nama_lengkap ||
+                          user?.nama_usaha ||
+                          user?.email ||
+                          "U"
+                        )
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
+                    ))}
+                </div>
+              );
+            })
         )}
+        {/* Typing Indicator in Thread Footer */}
+        {partnerTyping && (
+          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-1">
+            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
+              {partnerName.charAt(0).toUpperCase()}
+            </div>
+            <div className="px-3 py-1.5 rounded-2xl bg-slate-100 border border-slate-200 text-slate-600 text-xs flex items-center gap-1.5 shadow-2xs">
+              <span className="text-[11px] font-medium">
+                {partnerName} sedang mengetik
+              </span>
+              <span className="flex items-center gap-0.5 ml-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" />
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.2s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.4s]" />
+              </span>
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Quick Reply Chips */}
+      {!isProjectDone && (
+        <div className="px-3 py-1.5 bg-slate-50/80 border-t border-slate-200/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+          <span className="text-[10px] font-bold text-slate-400 shrink-0 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-brand-indigo" />
+            Pesan Cepat:
+          </span>
+          {[
+            "Siap, segera saya kerjakan!",
+            "Bisa tolong kirimkan rincian briefnya?",
+            "Tautan progres sudah saya perbarui.",
+            "Apakah ada revisi untuk bagian ini?",
+          ].map((chip, cIdx) => (
+            <button
+              key={cIdx}
+              type="button"
+              onClick={() => handleInputChange(chip)}
+              className="text-[10px] px-2.5 py-1 rounded-full bg-white hover:bg-indigo-50 hover:text-brand-indigo text-slate-700 font-medium border border-slate-200 shrink-0 transition-colors shadow-2xs cursor-pointer"
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Quoted Message Preview Bar Above Input */}
+      {replyingTo && (
+        <div className="px-4 py-2 bg-indigo-50/90 border-t border-indigo-100 flex items-center justify-between gap-2 animate-in slide-in-from-bottom-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Reply className="w-3.5 h-3.5 text-brand-indigo shrink-0" />
+            <div className="min-w-0 text-xs">
+              <span className="font-bold text-brand-indigo block text-[10px]">
+                Membalas {replyingTo.sender_name || partnerName}
+              </span>
+              <span className="text-slate-600 truncate block text-[11px]">
+                {replyingTo.message}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setReplyingTo(null)}
+            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Edit Mode Preview Bar Above Input */}
+      {editingMessage && (
+        <div className="px-4 py-2 bg-amber-50/90 border-t border-amber-200 flex items-center justify-between gap-2 animate-in slide-in-from-bottom-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Edit3 className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+            <div className="min-w-0 text-xs">
+              <span className="font-bold text-amber-800 block text-[10px]">
+                Mengedit Pesan
+              </span>
+              <span className="text-slate-600 truncate block text-[11px]">
+                {editingMessage.message}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setEditingMessage(null);
+              setEditText("");
+            }}
+            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* 3. Attachment Bar Toggle Panel */}
       {showAttachInput && (
@@ -1172,8 +1757,9 @@ export function WorkroomChatPanel({
 
       {/* Anti-Bypass Escrow Guard Warning */}
       {(() => {
-        if (!inputText || inputText.trim().length < 5) return null;
-        const text = inputText.trim();
+        const textToCheck = editingMessage ? editText : inputText;
+        if (!textToCheck || textToCheck.trim().length < 5) return null;
+        const text = textToCheck.trim();
         let warn = null;
         if (/(?:\+?62|08)[0-9\s.-]{8,14}/.test(text)) {
           warn = {
@@ -1278,14 +1864,44 @@ export function WorkroomChatPanel({
             onChange={(e) => setInputText(e.target.value)}
             className="flex-1 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
           />
+          {editingMessage ? (
+            <input
+              type="text"
+              placeholder="Edit pesan Anda..."
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              className="flex-1 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-amber-50/40 border border-amber-300 text-dark-900 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              autoFocus
+            />
+          ) : (
+            <input
+              type="text"
+              placeholder="Tulis pesan atau koordinasi tugas..."
+              value={inputText}
+              onChange={(e) => handleInputChange(e.target.value)}
+              className="flex-1 text-xs sm:text-sm px-3.5 py-2 rounded-xl bg-canvas border border-border text-dark-900 focus:outline-none focus:ring-1 focus:ring-brand-indigo"
+            />
+          )}
 
           <button
             type="submit"
-            disabled={(!inputText.trim() && !attachUrl.trim()) || sending}
-            className="px-3.5 py-2 rounded-xl bg-brand-indigo text-white font-bold text-xs flex items-center gap-1.5 shadow-brand disabled:opacity-40 hover:bg-brand-indigo-dark transition-colors shrink-0"
+            disabled={
+              editingMessage
+                ? !editText.trim()
+                : (!inputText.trim() && !attachUrl.trim()) || sending
+            }
+            className={`px-3.5 py-2 rounded-xl text-white font-bold text-xs flex items-center gap-1.5 disabled:opacity-40 transition-colors shrink-0 ${
+              editingMessage
+                ? "bg-amber-600 hover:bg-amber-700 shadow-xs"
+                : "bg-brand-indigo hover:bg-brand-indigo-dark shadow-brand"
+            }`}
           >
-            <span>Kirim</span>
-            <Send className="w-3.5 h-3.5" />
+            <span>{editingMessage ? "Simpan" : "Kirim"}</span>
+            {editingMessage ? (
+              <Check className="w-3.5 h-3.5" />
+            ) : (
+              <Send className="w-3.5 h-3.5" />
+            )}
           </button>
         </form>
       )}

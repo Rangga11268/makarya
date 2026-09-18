@@ -81,6 +81,16 @@ export const chatApi = {
   markRead: (projectId) => api.patch(`/chat/project/${projectId}/read`),
   respondToOffer: (messageId, action) =>
     api.post(`/chat/offer/${messageId}/respond`, { action }),
+  editMessage: (messageId, message) =>
+    api.patch(`/chat/messages/${messageId}`, { message }),
+  deleteMessage: (messageId) => api.delete(`/chat/messages/${messageId}`),
+  togglePinMessage: (messageId) => api.post(`/chat/messages/${messageId}/pin`),
+  deleteConversation: (projectId, partnerId) =>
+    api.delete(`/chat/project/${projectId}/conversations`, {
+      params: { partner_id: partnerId },
+    }),
+  deleteGroupRoom: (projectId) =>
+    api.delete(`/chat/project/${projectId}/group`),
 };
 
 export const talentApi = {

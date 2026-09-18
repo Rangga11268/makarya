@@ -10,6 +10,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   Platform,
+  Alert,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
@@ -17,6 +18,7 @@ import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { chatApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
+import { useToastStore } from "../../store/toastStore";
 import { Header } from "../../components/ui/Header";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { ProjectBriefVectorIcon } from "../../components/icons/CategoryIcons";
@@ -28,10 +30,13 @@ import {
   GraduationCap,
   Clock,
   ArrowRight,
+  Trash2,
+  Users,
 } from "lucide-react-native";
 
 export function ChatListScreen({ navigation }) {
   const { user } = useAuthStore();
+  const { showToast } = useToastStore();
   const insets = useSafeAreaInsets();
   const { responsiveContainerStyle } = useResponsiveLayout();
 
@@ -190,6 +195,43 @@ export function ChatListScreen({ navigation }) {
     }
   };
 
+  const handleDeleteConversation = (item) => {
+    const isGroup = Boolean(item.is_group);
+    const title = isGroup ? "Hapus Obrolan Grup" : "Hapus Percakapan";
+    const msg = isGroup
+      ? `Apakah Anda yakin ingin membersihkan riwayat obrolan grup proyek "${item.project_title || "Proyek"}"?`
+      : `Apakah Anda yakin ingin menghapus seluruh riwayat percakapan dengan ${item.partner_name || "Mitra"}?`;
+
+    Alert.alert(title, msg, [
+      { text: "Batal", style: "cancel" },
+      {
+        text: "Hapus",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            if (isGroup) {
+              await chatApi.deleteGroupRoom(item.project_id);
+            } else {
+              await chatApi.deleteConversation(item.project_id, item.partner_id);
+            }
+            setConversations((prev) => prev.filter((c) => c.id !== item.id));
+            showToast(
+              isGroup
+                ? "Obrolan grup berhasil dibersihkan"
+                : "Percakapan berhasil dihapus",
+              "info",
+            );
+          } catch (err) {
+            showToast(
+              err?.response?.data?.detail || "Gagal menghapus percakapan",
+              "danger",
+            );
+          }
+        },
+      },
+    ]);
+  };
+
   const renderItem = ({ item }) => {
     const isPartnerMhs =
       item.partner_role === "MHS" || item.partner_role === "MAHASISWA";
@@ -212,6 +254,7 @@ export function ChatListScreen({ navigation }) {
             members: item.members || [],
           })
         }
+        onLongPress={() => handleDeleteConversation(item)}
       >
         {/* Partner Avatar with Online/Offline Status Indicator */}
         <View style={styles.avatarContainer}>

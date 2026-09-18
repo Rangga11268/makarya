@@ -10,6 +10,8 @@ class ChatMessageCreate(BaseModel):
     message: Optional[str] = Field(None, max_length=1000, description="Isi pesan chat")
     attachment_url: Optional[str] = Field(None, max_length=5000, description="URL atau payload JSON lampiran (opsional)")
     attachment_type: Optional[str] = Field(None, max_length=50, description="Tipe lampiran (opsional)")
+    reply_to_id: Optional[UUID] = None
+    reply_to_meta: Optional[str] = None
 
     @field_validator("message")
     @classmethod
@@ -44,8 +46,14 @@ class ChatMessageCreate(BaseModel):
                 return clean_url
             if not (clean_url.startswith("http://") or clean_url.startswith("https://") or clean_url.startswith("/")):
                 raise ValueError("URL lampiran harus dimulai dengan 'http://' atau 'https://'")
+            if not (clean_url.startswith("http://") or clean_url.startswith("https://") or clean_url.startswith("/") or clean_url.startswith("data:")):
+                raise ValueError("URL lampiran harus dimulai dengan 'http://' atau 'https://' atau data base64")
             return clean_url
         return None
+
+
+class ChatMessageEditRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=1000, description="Isi pesan yang diperbarui")
 
 
 class ChatMessageResponse(BaseModel):
@@ -61,7 +69,13 @@ class ChatMessageResponse(BaseModel):
     attachment_url: Optional[str] = None
     attachment_type: Optional[str] = None
     is_read: bool
+    is_edited: bool = False
+    is_deleted: bool = False
+    is_pinned: bool = False
+    reply_to_id: Optional[UUID] = None
+    reply_to_meta: Optional[str] = None
     created_at: datetime
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 

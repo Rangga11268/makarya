@@ -24,6 +24,8 @@ import {
   Sparkles,
   X,
   ShieldCheck,
+  Trash2,
+  MoreVertical,
 } from "lucide-react";
 
 export function ChatPage() {
@@ -441,6 +443,48 @@ export function ChatPage() {
     }
   };
 
+  const handleDeleteConversation = async (conv, e) => {
+    if (e) e.stopPropagation();
+    const isGroup = conv.is_group;
+    const confirmMsg = isGroup
+      ? "Apakah Anda yakin ingin membersihkan/menghapus riwayat obrolan grup proyek ini?"
+      : `Apakah Anda yakin ingin menghapus percakapan dengan ${conv.partner_name || "mitra ini"}?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      if (isGroup) {
+        await chatApi.deleteGroupRoom(conv.project_id);
+      } else {
+        await chatApi.deleteConversation(conv.project_id, conv.partner_id);
+      }
+      setConversations((prev) => prev.filter((c) => c.id !== conv.id));
+      if (
+        selectedConv &&
+        ((isGroup &&
+          selectedConv.is_group &&
+          String(selectedConv.project_id) === String(conv.project_id)) ||
+          (!isGroup &&
+            !selectedConv.is_group &&
+            String(selectedConv.partner_id) === String(conv.partner_id)))
+      ) {
+        setSelectedConv(null);
+        setMobileViewChat(false);
+        navigate("/chat", { replace: true });
+      }
+      addToast(
+        isGroup
+          ? "Obrolan grup berhasil dihapus"
+          : "Percakapan berhasil dihapus",
+        "info",
+      );
+    } catch (err) {
+      addToast(
+        err?.response?.data?.detail || "Gagal menghapus percakapan",
+        "danger",
+      );
+    }
+  };
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-slate-50 font-sans flex text-slate-900">
       {/* ========================================================================= */}
@@ -564,11 +608,13 @@ export function ChatPage() {
                     String(selectedConv.project_id) ===
                       String(conv.project_id)));
 
+              const canDelete = !conv.is_group || isUmkm;
+
               return (
-                <button
+                <div
                   key={conv.id}
                   onClick={() => handleSelectConversation(conv)}
-                  className={`w-full p-3.5 text-left flex items-start gap-3 transition-colors cursor-pointer hover:bg-slate-50 ${
+                  className={`group relative w-full p-3.5 text-left flex items-start gap-3 transition-colors cursor-pointer hover:bg-slate-50 ${
                     isSelected
                       ? "bg-brand-indigo/5 border-l-4 border-brand-indigo pl-2.5"
                       : ""
@@ -670,19 +716,35 @@ export function ChatPage() {
                       </span>
                     </div>
 
-                    {/* Last message snippet & unread counter */}
+                    {/* Last message snippet, unread counter & delete button */}
                     <div className="flex items-center justify-between gap-2 mt-1">
-                      <p className="text-[11px] text-slate-500 truncate">
+                      <p className="text-[11px] text-slate-500 truncate flex-1">
                         {conv.last_message || "Mulai percakapan..."}
                       </p>
-                      {conv.unread_count > 0 && (
-                        <span className="px-1.5 py-0.5 rounded-md bg-brand-indigo text-[9px] font-bold text-white shrink-0">
-                          {conv.unread_count}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1 shrink-0">
+                        {conv.unread_count > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-md bg-brand-indigo text-[9px] font-bold text-white">
+                            {conv.unread_count}
+                          </span>
+                        )}
+                        {canDelete && (
+                          <button
+                            type="button"
+                            onClick={(e) => handleDeleteConversation(conv, e)}
+                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition-all cursor-pointer"
+                            title={
+                              conv.is_group
+                                ? "Hapus/Bersihkan Obrolan Grup"
+                                : "Hapus Percakapan"
+                            }
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })
           )}

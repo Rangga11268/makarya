@@ -40,6 +40,12 @@ async def lifespan(app: FastAPI):
             conn.execute(text("ALTER TABLE profile_umkm ADD COLUMN IF NOT EXISTS total_proyek_selesai INTEGER DEFAULT 0;"))
             conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS banner_url TEXT;"))
             conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS budget_min NUMERIC(12, 2);"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_edited BOOLEAN DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS is_pinned BOOLEAN DEFAULT FALSE;"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS reply_to_id UUID;"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS reply_to_meta TEXT;"))
+            conn.execute(text("ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE;"))
     except Exception as e:
         print(f"[STARTUP] Gagal create_all / alter metadata: {e}")
 

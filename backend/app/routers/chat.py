@@ -27,6 +27,7 @@ from app.models.notification import Notification, NotificationType
 from app.schemas.chat import (
     ChatMessageCreate,
     ChatMessageResponse,
+    ChatMessageEditRequest,
     ConversationItemResponse,
     GroupMemberItem,
 )
@@ -786,7 +787,13 @@ async def get_chat_messages(
                 attachment_url=m.attachment_url,
                 attachment_type=m.attachment_type,
                 is_read=m.is_read,
+                is_edited=getattr(m, "is_edited", False) or False,
+                is_deleted=getattr(m, "is_deleted", False) or False,
+                is_pinned=getattr(m, "is_pinned", False) or False,
+                reply_to_id=getattr(m, "reply_to_id", None),
+                reply_to_meta=getattr(m, "reply_to_meta", None),
                 created_at=m.created_at,
+                updated_at=getattr(m, "updated_at", None),
             )
         )
 
@@ -844,6 +851,8 @@ async def send_chat_message(
         message=msg_content or "Lampiran tautan berkas",
         attachment_url=body.attachment_url,
         attachment_type=body.attachment_type,
+        reply_to_id=body.reply_to_id,
+        reply_to_meta=body.reply_to_meta,
         is_read=False,
     )
     db.add(new_msg)
@@ -866,7 +875,13 @@ async def send_chat_message(
         attachment_url=new_msg.attachment_url,
         attachment_type=new_msg.attachment_type,
         is_read=new_msg.is_read,
+        is_edited=False,
+        is_deleted=False,
+        is_pinned=False,
+        reply_to_id=new_msg.reply_to_id,
+        reply_to_meta=new_msg.reply_to_meta,
         created_at=new_msg.created_at,
+        updated_at=new_msg.updated_at,
     )
 
     broadcast_payload = json.loads(msg_response.model_dump_json())
@@ -1063,7 +1078,8 @@ async def respond_to_project_offer(
             sender_id=current_user.id,
             recipient_id=msg.sender_id,
             message=f"✓ Tawaran proyek \"{project.judul}\" telah diterima resmi oleh {mhs_name}. Status proyek kini aktif (IN_PROGRESS)!",
-            attachment_type=None,
+            message=f"Tawaran proyek \"{project.judul}\" telah diterima resmi oleh {mhs_name}. Status proyek: Sedang Berjalan.",
+            attachment_type="SYSTEM_EVENT",
             attachment_url=None,
         )
         db.add(confirm_msg)
@@ -1099,7 +1115,8 @@ async def respond_to_project_offer(
             sender_id=current_user.id,
             recipient_id=msg.sender_id,
             message=f"✕ Tawaran proyek \"{project.judul}\" ditolak oleh {mhs_name}.",
-            attachment_type=None,
+            message=f"Tawaran proyek \"{project.judul}\" ditolak oleh {mhs_name}.",
+            attachment_type="SYSTEM_EVENT",
             attachment_url=None,
         )
         db.add(reject_msg)
@@ -1123,6 +1140,230 @@ async def respond_to_project_offer(
             "offer_status": "REJECTED",
             "project_status": project.status.value,
         }
+
+
+# ============================================================================
+# 5C. REST ENDPOINTS: EDIT, DELETE, PIN MESSAGES & CLEAR CONVERSATIONS
+# ============================================================================
+@router.patch("/messages/{message_id}", response_model=ChatMessageResponse)
+async def edit_chat_message(
+    message_id: UUID,
+    payload: ChatMessageEditRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Mengedit teks pesan chat (hanya diperbolehkan untuk pengirim asli).
+    """
+    msg = db.query(ChatMessage).filter(ChatMessage.id == message_id).first()
+    if not msg:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesan tidak ditemukan.")
+
+    if msg.sender_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda hanya dapat mengedit pesan yang Anda kirim sendiri.")
+
+    if msg.is_deleted:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Pesan yang telah dihapus tidak dapat diedit.")
+
+    project = verify_project_participation(msg.project_id, current_user, db)
+
+    msg.message = payload.message.strip()
+    msg.is_edited = True
+    msg.updated_at = datetime.now()
+    db.commit()
+    db.refresh(msg)
+
+    sender_name, sender_role, sender_photo = resolve_sender_display(current_user)
+    sender_role_label = resolve_project_member_role(current_user, project)
+
+    resp = ChatMessageResponse(
+        id=msg.id,
+        project_id=msg.project_id,
+        sender_id=msg.sender_id,
+        recipient_id=msg.recipient_id,
+        sender_name=sender_name,
+        sender_role=sender_role,
+        sender_photo=sender_photo,
+        sender_role_label=sender_role_label,
+        message=msg.message,
+        attachment_url=msg.attachment_url,
+        attachment_type=msg.attachment_type,
+        is_read=msg.is_read,
+        is_edited=True,
+        is_deleted=False,
+        is_pinned=msg.is_pinned,
+        reply_to_id=msg.reply_to_id,
+        reply_to_meta=msg.reply_to_meta,
+        created_at=msg.created_at,
+        updated_at=msg.updated_at,
+    )
+
+    broadcast_data = json.loads(resp.model_dump_json())
+    broadcast_data["type"] = "MESSAGE_EDITED"
+    await manager.broadcast(str(msg.project_id), broadcast_data)
+    if msg.recipient_id:
+        await manager.send_to_user(str(msg.recipient_id), broadcast_data)
+    await manager.send_to_user(str(current_user.id), broadcast_data)
+
+    return resp
+
+
+@router.delete("/messages/{message_id}")
+async def delete_chat_message(
+    message_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Menghapus/menarik pesan chat (pengirim asli atau Project Owner).
+    """
+    msg = db.query(ChatMessage).filter(ChatMessage.id == message_id).first()
+    if not msg:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesan tidak ditemukan.")
+
+    project = verify_project_participation(msg.project_id, current_user, db)
+    is_owner = project.umkm_id == current_user.id
+
+    if msg.sender_id != current_user.id and not is_owner:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Anda tidak memiliki izin untuk menghapus pesan ini.")
+
+    project_id_str = str(msg.project_id)
+    recipient_id_str = str(msg.recipient_id) if msg.recipient_id else None
+
+    # Soft delete agar timeline tetap konsisten
+    msg.is_deleted = True
+    msg.message = "Pesan ini telah dihapus."
+    msg.attachment_url = None
+    msg.attachment_type = None
+    db.commit()
+
+    delete_event = {
+        "type": "MESSAGE_DELETED",
+        "message_id": str(message_id),
+        "project_id": project_id_str,
+    }
+    await manager.broadcast(project_id_str, delete_event)
+    if recipient_id_str:
+        await manager.send_to_user(recipient_id_str, delete_event)
+    await manager.send_to_user(str(current_user.id), delete_event)
+
+    return {"status": "SUCCESS", "message": "Pesan berhasil dihapus."}
+
+
+@router.post("/messages/{message_id}/pin")
+async def toggle_pin_message(
+    message_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Menyematkan (Pin) atau melepas sematan (Unpin) pesan penting di ruang proyek.
+    """
+    msg = db.query(ChatMessage).filter(ChatMessage.id == message_id).first()
+    if not msg:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesan tidak ditemukan.")
+
+    verify_project_participation(msg.project_id, current_user, db)
+
+    msg.is_pinned = not bool(msg.is_pinned)
+    db.commit()
+    db.refresh(msg)
+
+    pin_event = {
+        "type": "MESSAGE_PINNED",
+        "message_id": str(msg.id),
+        "is_pinned": msg.is_pinned,
+        "project_id": str(msg.project_id),
+        "message_text": msg.message,
+    }
+    await manager.broadcast(str(msg.project_id), pin_event)
+    if msg.recipient_id:
+        await manager.send_to_user(str(msg.recipient_id), pin_event)
+    await manager.send_to_user(str(current_user.id), pin_event)
+
+    return {
+        "status": "SUCCESS",
+        "message_id": str(msg.id),
+        "is_pinned": msg.is_pinned,
+        "message": "Status sematan pesan berhasil diperbarui.",
+    }
+
+
+@router.delete("/project/{project_id}/conversations")
+async def delete_conversation(
+    project_id: UUID,
+    partner_id: Optional[UUID] = Query(None, description="Lawan bicara dalam percakapan 1-on-1"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Menghapus seluruh riwayat percakapan direct (1-on-1) antara current_user dan partner_id pada proyek tertentu.
+    """
+    verify_project_participation(project_id, current_user, db)
+
+    query = db.query(ChatMessage).filter(ChatMessage.project_id == project_id)
+    if partner_id:
+        query = query.filter(
+            or_(
+                (ChatMessage.sender_id == current_user.id) & (ChatMessage.recipient_id == partner_id),
+                (ChatMessage.sender_id == partner_id) & (ChatMessage.recipient_id == current_user.id),
+            )
+        )
+    else:
+        query = query.filter(
+            or_(
+                ChatMessage.sender_id == current_user.id,
+                ChatMessage.recipient_id == current_user.id,
+            )
+        )
+
+    deleted_count = query.delete(synchronize_session=False)
+    db.commit()
+
+    delete_conv_event = {
+        "type": "CONVERSATION_DELETED",
+        "project_id": str(project_id),
+        "partner_id": str(partner_id) if partner_id else None,
+        "deleted_by": str(current_user.id),
+    }
+    await manager.send_to_user(str(current_user.id), delete_conv_event)
+    if partner_id:
+        await manager.send_to_user(str(partner_id), delete_conv_event)
+
+    return {"status": "SUCCESS", "message": f"Percakapan berhasil dihapus ({deleted_count} pesan dibersihkan)."}
+
+
+@router.delete("/project/{project_id}/group")
+async def delete_group_room(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Menghapus/membersihkan obrolan grup proyek (hanya dapat dilakukan oleh Project Owner / UMKM).
+    """
+    project = verify_project_participation(project_id, current_user, db)
+    if project.umkm_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Hanya pemilik proyek (UMKM) yang dapat membersihkan ruang obrolan grup.",
+        )
+
+    deleted_count = (
+        db.query(ChatMessage)
+        .filter(ChatMessage.project_id == project_id, ChatMessage.recipient_id.is_(None))
+        .delete(synchronize_session=False)
+    )
+    db.commit()
+
+    group_event = {
+        "type": "GROUP_ROOM_CLEARED",
+        "project_id": str(project_id),
+        "message": "Ruang obrolan grup proyek telah dibersihkan oleh Project Owner.",
+    }
+    await manager.broadcast(str(project_id), group_event)
+
+    return {"status": "SUCCESS", "message": f"Ruang obrolan grup proyek berhasil dibersihkan ({deleted_count} pesan)."}
 
 
 # ============================================================================
@@ -1220,16 +1461,45 @@ async def websocket_chat_endpoint(
                     continue
 
                 # B. Pesan Chat Biasa (CHAT_MESSAGE)
+                # B. Indikator Sedang Mengetik (TYPING / STOP_TYPING)
+                if msg_type in ["TYPING", "STOP_TYPING"]:
+                    partner_raw = data_json.get("partner_id")
+                    is_typing_flag = (msg_type == "TYPING")
+                    sender_name, _, _ = resolve_sender_display(current_user)
+                    typing_event = {
+                        "type": "USER_TYPING",
+                        "project_id": room_id,
+                        "user_id": user_id_str,
+                        "user_name": sender_name,
+                        "partner_id": str(partner_raw) if partner_raw else None,
+                        "is_typing": is_typing_flag,
+                    }
+                    await manager.broadcast(room_id, typing_event)
+                    if partner_raw:
+                        await manager.send_to_user(str(partner_raw), typing_event)
+                    continue
+
+                # C. Pesan Chat Biasa (CHAT_MESSAGE)
                 msg_text = str(data_json.get("message") or "").strip()
                 att_url = data_json.get("attachment_url")
                 att_type = data_json.get("attachment_type")
                 recip_id_raw = data_json.get("recipient_id")
+                reply_to_id_raw = data_json.get("reply_to_id")
+                reply_to_meta = data_json.get("reply_to_meta")
+                
                 recip_id = None
                 if recip_id_raw:
                     try:
                         recip_id = UUID(str(recip_id_raw))
                     except (ValueError, TypeError):
                         recip_id = None
+
+                reply_to_id = None
+                if reply_to_id_raw:
+                    try:
+                        reply_to_id = UUID(str(reply_to_id_raw))
+                    except (ValueError, TypeError):
+                        reply_to_id = None
 
                 if not msg_text and not att_url:
                     continue
@@ -1246,6 +1516,7 @@ async def websocket_chat_endpoint(
                     continue
 
                 final_msg = msg_text or "Lampiran tautan berkas"
+                final_msg = msg_text or "Lampiran berkas"
 
                 # Simpan pesan ke database
                 new_msg = ChatMessage(
@@ -1255,6 +1526,8 @@ async def websocket_chat_endpoint(
                     message=final_msg,
                     attachment_url=att_url,
                     attachment_type=att_type,
+                    reply_to_id=reply_to_id,
+                    reply_to_meta=json.dumps(reply_to_meta) if isinstance(reply_to_meta, dict) else (str(reply_to_meta) if reply_to_meta else None),
                     is_read=False,
                 )
                 db.add(new_msg)
@@ -1278,7 +1551,13 @@ async def websocket_chat_endpoint(
                     "attachment_url": new_msg.attachment_url,
                     "attachment_type": new_msg.attachment_type,
                     "is_read": new_msg.is_read,
+                    "is_edited": False,
+                    "is_deleted": False,
+                    "is_pinned": False,
+                    "reply_to_id": str(new_msg.reply_to_id) if new_msg.reply_to_id else None,
+                    "reply_to_meta": new_msg.reply_to_meta,
                     "created_at": new_msg.created_at.isoformat(),
+                    "updated_at": new_msg.updated_at.isoformat() if new_msg.updated_at else None,
                 }
 
                 # Broadcast ke seluruh peserta yang sedang membuka chat room ini

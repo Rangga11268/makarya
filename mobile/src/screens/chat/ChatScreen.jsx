@@ -12,7 +12,10 @@ import {
   Modal,
   Linking,
   Image,
+  Alert,
+  ScrollView,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, SHADOWS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
@@ -41,6 +44,14 @@ import {
   AlertTriangle,
   Clock,
   Users,
+  Reply,
+  Edit3,
+  Trash2,
+  Pin,
+  Copy,
+  Search,
+  Sparkles,
+  MoreVertical,
 } from "lucide-react-native";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 
@@ -86,6 +97,16 @@ export function ChatScreen({ route, navigation }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
+
+  // New Chat States
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [partnerTyping, setPartnerTyping] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedActionMessage, setSelectedActionMessage] = useState(null);
+
+  const typingTimerRef = useRef(null);
 
   // Muat data seluruh anggota resmi proyek jika mode grup
   useEffect(() => {
@@ -324,7 +345,68 @@ export function ChatScreen({ route, navigation }) {
         socket.onmessage = (event) => {
           try {
             const incomingMsg = JSON.parse(event.data);
-            if (incomingMsg && incomingMsg.id) {
+            if (!incomingMsg) return;
+
+            // A. Handle TYPING INDICATOR
+            if (incomingMsg.type === "USER_TYPING") {
+              if (
+                targetRecipientId &&
+                String(incomingMsg.user_id) === String(targetRecipientId)
+              ) {
+                setPartnerTyping(Boolean(incomingMsg.is_typing));
+              }
+              return;
+            }
+
+            // B. Handle MESSAGE_EDITED
+            if (incomingMsg.type === "MESSAGE_EDITED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incomingMsg.message_id || m.id === incomingMsg.id
+                    ? {
+                        ...m,
+                        message: incomingMsg.message,
+                        is_edited: true,
+                        updated_at: incomingMsg.updated_at,
+                      }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // C. Handle MESSAGE_DELETED
+            if (incomingMsg.type === "MESSAGE_DELETED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incomingMsg.message_id || m.id === incomingMsg.id
+                    ? {
+                        ...m,
+                        message: "Pesan ini telah dihapus",
+                        is_deleted: true,
+                        attachment_url: null,
+                        attachment_type: null,
+                      }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // D. Handle MESSAGE_PINNED
+            if (incomingMsg.type === "MESSAGE_PINNED") {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === incomingMsg.message_id || m.id === incomingMsg.id
+                    ? { ...m, is_pinned: incomingMsg.is_pinned }
+                    : m,
+                ),
+              );
+              return;
+            }
+
+            // E. Handle regular incoming message
+            if (incomingMsg.id) {
               // Jika sedang dalam percakapan dengan partner tertentu, abaikan pesan orang lain
               if (
                 targetRecipientId &&
@@ -337,6 +419,14 @@ export function ChatScreen({ route, navigation }) {
               setMessages((prev) => {
                 const exists = prev.some((m) => m.id === incomingMsg.id);
                 if (exists) return prev;
+                const existsIdx = prev.findIndex(
+                  (m) => m.id === incomingMsg.id,
+                );
+                if (existsIdx !== -1) {
+                  const copy = [...prev];
+                  copy[existsIdx] = incomingMsg;
+                  return copy;
+                }
                 return [...prev, incomingMsg];
               });
               setTimeout(() => {
@@ -374,6 +464,35 @@ export function ChatScreen({ route, navigation }) {
   }, [currentProjectId]);
 
   // 3. Kirim pesan (WebSocket langsung atau fallback REST)
+  // Handle typing signal broadcast
+  const handleInputChange = (val) => {
+    setInputText(val);
+    if (
+      wsRef.current &&
+      wsConnected &&
+      wsRef.current.readyState === WebSocket.OPEN &&
+      targetRecipientId
+    ) {
+      try {
+        wsRef.current.send(
+          JSON.stringify({ type: "TYPING", partner_id: targetRecipientId }),
+        );
+        if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+        typingTimerRef.current = setTimeout(() => {
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(
+              JSON.stringify({
+                type: "STOP_TYPING",
+                partner_id: targetRecipientId,
+              }),
+            );
+          }
+        }, 2000);
+      } catch (_) {}
+    }
+  };
+
+  // 3. Kirim atau Edit pesan (WebSocket langsung atau fallback REST)
   const handleSendMessage = async (customAttachment = null) => {
     if (isUnassignedTalent) {
       showToast(
@@ -383,17 +502,70 @@ export function ChatScreen({ route, navigation }) {
       return;
     }
 
+    // Mode Edit Pesan
+    if (editingMessage) {
+      const cleanEdit = inputText.trim();
+      if (!cleanEdit) return;
+      try {
+        setSending(true);
+        const res = await chatApi.editMessage(editingMessage.id, cleanEdit);
+        setMessages((prev) =>
+          prev.map((m) => (m.id === editingMessage.id ? res.data : m)),
+        );
+        setEditingMessage(null);
+        setInputText("");
+        showToast("Pesan berhasil diedit", "success");
+      } catch (err) {
+        showToast(
+          err?.response?.data?.detail || "Gagal mengedit pesan",
+          "danger",
+        );
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
     const textToSend = inputText.trim();
     if (!textToSend && !customAttachment) return;
+
+    let replyMetaStr = null;
+    if (replyingTo) {
+      replyMetaStr = JSON.stringify({
+        id: replyingTo.id,
+        sender_name: replyingTo.sender_name || resolvedPartnerName,
+        text: replyingTo.message,
+      });
+    }
 
     const payload = {
       recipient_id: targetRecipientId,
       message: textToSend || (customAttachment ? "Lampiran tautan berkas" : ""),
       attachment_url: customAttachment?.url || null,
       attachment_type: customAttachment?.type || null,
+      reply_to_id: replyingTo ? replyingTo.id : null,
+      reply_to_meta: replyMetaStr,
     };
 
     setInputText("");
+    setReplyingTo(null);
+
+    // Stop typing
+    if (
+      wsRef.current &&
+      wsConnected &&
+      wsRef.current.readyState === WebSocket.OPEN &&
+      targetRecipientId
+    ) {
+      try {
+        wsRef.current.send(
+          JSON.stringify({
+            type: "STOP_TYPING",
+            partner_id: targetRecipientId,
+          }),
+        );
+      } catch (_) {}
+    }
 
     // Jika WebSocket aktif, kirim via socket
     if (
@@ -422,6 +594,69 @@ export function ChatScreen({ route, navigation }) {
     } finally {
       setSending(false);
     }
+  };
+
+  // 4. Hapus Pesan
+  const handleDeleteMessage = (msgId) => {
+    Alert.alert(
+      "Tarik Pesan",
+      "Apakah Anda yakin ingin menarik/menghapus pesan ini?",
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await chatApi.deleteMessage(msgId);
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === msgId
+                    ? {
+                        ...m,
+                        is_deleted: true,
+                        message: "Pesan ini telah dihapus",
+                        attachment_url: null,
+                        attachment_type: null,
+                      }
+                    : m,
+                ),
+              );
+              showToast("Pesan berhasil dihapus", "info");
+            } catch (err) {
+              showToast(
+                err?.response?.data?.detail || "Gagal menghapus pesan",
+                "danger",
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  // 5. Pin / Unpin Pesan
+  const handleTogglePinMessage = async (msgId) => {
+    try {
+      const res = await chatApi.togglePinMessage(msgId);
+      setMessages((prev) => prev.map((m) => (m.id === msgId ? res.data : m)));
+      showToast(
+        res.data.is_pinned ? "Pesan disematkan" : "Sematan pesan dilepas",
+        "success",
+      );
+    } catch (err) {
+      showToast(
+        err?.response?.data?.detail || "Gagal menyematkan pesan",
+        "danger",
+      );
+    }
+  };
+
+  // 6. Copy Pesan
+  const handleCopyMessage = async (text) => {
+    if (!text) return;
+    await Clipboard.setStringAsync(text);
+    showToast("Pesan disalin ke clipboard", "info");
   };
 
   const handleSendAttachment = () => {
@@ -542,8 +777,72 @@ export function ChatScreen({ route, navigation }) {
   };
 
   const renderMessageItem = ({ item }) => {
+    const isSystemMessage =
+      item.attachment_type === "SYSTEM_EVENT" ||
+      item.attachment_type === "STATUS_UPDATE" ||
+      item.message?.startsWith("✓ Tawaran proyek") ||
+      item.message?.startsWith("✕ Tawaran proyek") ||
+      item.message?.startsWith("✓ Tawaran") ||
+      item.message?.startsWith("✕ Tawaran");
+
+    if (isSystemMessage) {
+      const isAccepted =
+        item.message?.includes("diterima") || item.message?.startsWith("✓");
+      const cleanText = (item.message || "")
+        .replace(/^[✓✕\s]+/, "")
+        .replace(/\(IN_PROGRESS\)/gi, "")
+        .replace(/IN_PROGRESS/gi, "Sedang Berjalan")
+        .trim();
+
+      return (
+        <View style={styles.systemEventContainer}>
+          <View
+            style={[
+              styles.systemEventPill,
+              isAccepted
+                ? styles.systemEventPillAccepted
+                : styles.systemEventPillNeutral,
+            ]}
+          >
+            <View
+              style={[
+                styles.systemEventIconWrap,
+                isAccepted
+                  ? styles.systemEventIconWrapAccepted
+                  : styles.systemEventIconWrapNeutral,
+              ]}
+            >
+              {isAccepted ? (
+                <CheckCircle2 size={13} color="#059669" />
+              ) : (
+                <ShieldCheck size={13} color="#475569" />
+              )}
+            </View>
+            <Text
+              style={[
+                styles.systemEventText,
+                isAccepted
+                  ? styles.systemEventTextAccepted
+                  : styles.systemEventTextNeutral,
+              ]}
+            >
+              {item.message}
+              {cleanText}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     const isMe = item.sender_id === user?.id;
     const isOffer = item.attachment_type === "PROJECT_OFFER";
+
+    let replyMeta = null;
+    if (item.reply_to_meta) {
+      try {
+        replyMeta = JSON.parse(item.reply_to_meta);
+      } catch (_) {}
+    }
 
     return (
       <View
@@ -580,7 +879,9 @@ export function ChatScreen({ route, navigation }) {
             </View>
           ))}
 
-        <View
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onLongPress={() => setSelectedActionMessage(item)}
           style={[
             styles.bubbleBox,
             isOffer
@@ -592,6 +893,57 @@ export function ChatScreen({ route, navigation }) {
                 : styles.bubbleBoxPartner,
           ]}
         >
+          {/* Pinned Tag if pinned */}
+          {item.is_pinned && !item.is_deleted && (
+            <View
+              style={[
+                styles.bubblePinnedTag,
+                isMe ? styles.bubblePinnedTagMe : styles.bubblePinnedTagPartner,
+              ]}
+            >
+              <Pin size={10} color={isMe ? "#FEF08A" : "#D97706"} />
+              <Text
+                style={[
+                  styles.bubblePinnedTagText,
+                  isMe ? { color: "#FEF08A" } : { color: "#D97706" },
+                ]}
+              >
+                Disematkan
+              </Text>
+            </View>
+          )}
+
+          {/* Quoted Message Box inside Bubble */}
+          {replyMeta && (
+            <View
+              style={[
+                styles.quotedBubbleBox,
+                isMe ? styles.quotedBubbleBoxMe : styles.quotedBubbleBoxPartner,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.quotedSenderText,
+                  isMe ? { color: "#E0E7FF" } : { color: COLORS.brandIndigo },
+                ]}
+                numberOfLines={1}
+              >
+                {replyMeta.sender_name || "Pesan"}
+              </Text>
+              <Text
+                style={[
+                  styles.quotedBodyText,
+                  isMe
+                    ? { color: "rgba(255,255,255,0.85)" }
+                    : { color: COLORS.textMuted },
+                ]}
+                numberOfLines={1}
+              >
+                {replyMeta.text}
+              </Text>
+            </View>
+          )}
+
           {/* Sender Header if Partner (only on regular text messages) */}
           {!isMe && !isOffer && (
             <View style={styles.senderHeader}>
@@ -619,9 +971,36 @@ export function ChatScreen({ route, navigation }) {
               {item.message}
             </Text>
           ) : null}
+          {/* Deleted Message Placeholder */}
+          {item.is_deleted ? (
+            <View style={styles.deletedMessageRow}>
+              <Trash2
+                size={12}
+                color={isMe ? "rgba(255,255,255,0.7)" : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.deletedMessageText,
+                  isMe && { color: "rgba(255,255,255,0.7)" },
+                ]}
+              >
+                Pesan ini telah dihapus
+              </Text>
+            </View>
+          ) : /* Text Message (Exclude auto text when it is a PROJECT_OFFER) */
+          item.message && !isOffer ? (
+            <Text
+              style={[
+                styles.messageText,
+                isMe ? styles.messageTextMe : styles.messageTextPartner,
+              ]}
+            >
+              {item.message}
+            </Text>
+          ) : null}
 
           {/* Attachment Preview Card */}
-          {isOffer ? (
+          {!item.is_deleted && isOffer ? (
             (() => {
               let offer = {};
               try {
@@ -752,6 +1131,7 @@ export function ChatScreen({ route, navigation }) {
                         style={[
                           styles.offerDetailValue,
                           isMe && { color: "#FFFFFF" },
+                          isMe ? { color: "#FFFFFF" } : { color: "#0F172A" },
                         ]}
                       >
                         {offer.budget
@@ -760,7 +1140,7 @@ export function ChatScreen({ route, navigation }) {
                       </Text>
                     </View>
 
-                    {offer.deadline ? (
+                    {offer.deadline && (
                       <View
                         style={[
                           styles.offerDetailCol,
@@ -775,28 +1155,24 @@ export function ChatScreen({ route, navigation }) {
                         >
                           Tenggat
                         </Text>
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 3,
-                          }}
-                        >
+                        <View style={styles.offerDeadlineRow}>
                           <Clock
                             size={11}
-                            color={isMe ? "rgba(255,255,255,0.85)" : "#64748B"}
+                            color={isMe ? "rgba(255,255,255,0.7)" : "#64748B"}
                           />
                           <Text
                             style={[
-                              styles.offerDetailDeadlineText,
-                              isMe && { color: "#FFFFFF" },
+                              styles.offerDeadlineValue,
+                              isMe
+                                ? { color: "#FFFFFF" }
+                                : { color: "#0F172A" },
                             ]}
                           >
                             {offer.deadline}
                           </Text>
                         </View>
                       </View>
-                    ) : null}
+                    )}
                   </View>
 
                   {/* Formasi Peran Tim (If Team Project with Slots) */}
@@ -1040,7 +1416,7 @@ export function ChatScreen({ route, navigation }) {
                 </View>
               );
             })()
-          ) : item.attachment_url ? (
+          ) : !item.is_deleted && item.attachment_url ? (
             <TouchableOpacity
               style={[
                 styles.attachmentCard,
@@ -1086,8 +1462,19 @@ export function ChatScreen({ route, navigation }) {
           ) : null}
 
           {/* Regular Bubble Footer: Time & WhatsApp Checkmark (only for normal messages) */}
+          {/* Regular Bubble Footer: Time & WhatsApp Checkmark */}
           {!isOffer && (
             <View style={styles.bubbleFooter}>
+              {item.is_edited && !item.is_deleted && (
+                <Text
+                  style={[
+                    styles.editedLabelText,
+                    isMe && { color: "rgba(255,255,255,0.7)" },
+                  ]}
+                >
+                  diedit
+                </Text>
+              )}
               <Text
                 style={[
                   styles.timeText,
@@ -1109,7 +1496,7 @@ export function ChatScreen({ route, navigation }) {
               )}
             </View>
           )}
-        </View>
+        </TouchableOpacity>
 
         {isMe &&
           (userPhoto ? (
@@ -1138,6 +1525,11 @@ export function ChatScreen({ route, navigation }) {
     );
   };
 
+  const filteredDisplayMessages = displayMessages.filter((m) => {
+    if (!searchKeyword.trim()) return true;
+    return m.message?.toLowerCase().includes(searchKeyword.toLowerCase());
+  });
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -1145,6 +1537,7 @@ export function ChatScreen({ route, navigation }) {
       keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
       {/* 1. Header Bar (Standar Desain Makarya Mobile - Clean Centered Apple Style) */}
+      {/* 1. Header Bar */}
       <Header
         onBack={() => navigation.goBack()}
         centerContent={
@@ -1279,7 +1672,67 @@ export function ChatScreen({ route, navigation }) {
           )
         }
         rightAction={null}
+        rightAction={
+          <TouchableOpacity
+            onPress={() => setIsSearching(!isSearching)}
+            style={{ padding: 6 }}
+            activeOpacity={0.7}
+          >
+            <Search
+              size={18}
+              color={isSearching ? COLORS.brandIndigo : COLORS.textDark}
+            />
+          </TouchableOpacity>
+        }
       />
+
+      {/* In-Chat Search Bar */}
+      {isSearching && (
+        <View style={styles.searchBarContainer}>
+          <Search size={14} color={COLORS.textMuted} />
+          <TextInput
+            style={styles.searchBarInput}
+            placeholder="Cari pesan di sini..."
+            placeholderTextColor={COLORS.textMuted}
+            value={searchKeyword}
+            onChangeText={setSearchKeyword}
+            autoFocus
+          />
+          {searchKeyword ? (
+            <TouchableOpacity onPress={() => setSearchKeyword("")}>
+              <X size={14} color={COLORS.textMuted} />
+            </TouchableOpacity>
+          ) : null}
+          <TouchableOpacity
+            onPress={() => {
+              setIsSearching(false);
+              setSearchKeyword("");
+            }}
+          >
+            <Text style={styles.searchBarCloseText}>Batal</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Pinned Messages Banner */}
+      {(() => {
+        const pinnedMsg = messages.find((m) => m.is_pinned && !m.is_deleted);
+        if (!pinnedMsg) return null;
+        return (
+          <View style={styles.pinnedBanner}>
+            <Pin size={12} color="#D97706" />
+            <Text style={styles.pinnedBannerText} numberOfLines={1}>
+              <Text style={{ fontWeight: "700" }}>Disematkan: </Text>
+              {pinnedMsg.message}
+            </Text>
+            <TouchableOpacity
+              onPress={() => handleTogglePinMessage(pinnedMsg.id)}
+            >
+              <Text style={styles.pinnedBannerAction}>Lepas</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      })()}
 
       {/* 2. Messages List */}
       {loading ? (
@@ -1288,6 +1741,7 @@ export function ChatScreen({ route, navigation }) {
         <FlatList
           ref={flatListRef}
           data={displayMessages}
+          data={filteredDisplayMessages}
           keyExtractor={(item, index) => item.id || String(index)}
           renderItem={renderMessageItem}
           contentContainerStyle={[
@@ -1353,6 +1807,87 @@ export function ChatScreen({ route, navigation }) {
             )
           }
         />
+      )}
+
+      {/* Typing Indicator Footer */}
+      {partnerTyping && (
+        <View style={styles.typingIndicatorWrap}>
+          <Text style={styles.typingIndicatorText}>
+            {resolvedPartnerName} sedang mengetik...
+          </Text>
+        </View>
+      )}
+
+      {/* Quick Reply Chips Horizontal List */}
+      {!isUnassignedTalent && (
+        <View style={styles.quickChipsWrapper}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickChipsScroll}
+          >
+            <View style={styles.quickChipHeader}>
+              <Sparkles size={11} color={COLORS.brandIndigo} />
+              <Text style={styles.quickChipHeaderText}>Cepat:</Text>
+            </View>
+            {[
+              "Siap, segera saya kerjakan!",
+              "Bisa tolong rincian briefnya?",
+              "Tautan progres sudah diperbarui.",
+              "Apakah ada revisi untuk ini?",
+            ].map((chip, cIdx) => (
+              <TouchableOpacity
+                key={cIdx}
+                style={styles.quickChip}
+                onPress={() => handleInputChange(chip)}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.quickChipText}>{chip}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Quoted Reply Preview Bar */}
+      {replyingTo && (
+        <View style={styles.replyPreviewBar}>
+          <Reply size={14} color={COLORS.brandIndigo} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.replyPreviewSender} numberOfLines={1}>
+              Membalas {replyingTo.sender_name || resolvedPartnerName}
+            </Text>
+            <Text style={styles.replyPreviewText} numberOfLines={1}>
+              {replyingTo.message}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => setReplyingTo(null)}>
+            <X size={16} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Edit Mode Preview Bar */}
+      {editingMessage && (
+        <View style={styles.editPreviewBar}>
+          <Edit3 size={14} color="#D97706" />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.editPreviewSender} numberOfLines={1}>
+              Mengedit Pesan
+            </Text>
+            <Text style={styles.editPreviewText} numberOfLines={1}>
+              {editingMessage.message}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              setEditingMessage(null);
+              setInputText("");
+            }}
+          >
+            <X size={16} color={COLORS.textMuted} />
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Anti-Bypass Escrow Guard Warning */}
@@ -1884,6 +2419,130 @@ export function ChatScreen({ route, navigation }) {
                 );
               }}
             />
+          </View>
+        </View>
+      </Modal>
+
+      {/* 7. Modal Aksi Pesan (Long Press Action Sheet) */}
+      <Modal
+        visible={Boolean(selectedActionMessage)}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedActionMessage(null)}
+      >
+        <View style={styles.actionSheetModalOverlay}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setSelectedActionMessage(null)}
+          />
+          <View style={styles.actionSheetContainer}>
+            <View style={styles.actionSheetHandle} />
+            <View style={styles.actionSheetHeader}>
+              <Text style={styles.actionSheetTitle} numberOfLines={1}>
+                Opsi Pesan
+              </Text>
+              <Text style={styles.actionSheetSubtitle} numberOfLines={1}>
+                {selectedActionMessage?.message || "Lampiran"}
+              </Text>
+            </View>
+
+            {/* Balas */}
+            <TouchableOpacity
+              style={styles.actionSheetItem}
+              onPress={() => {
+                setReplyingTo(selectedActionMessage);
+                setSelectedActionMessage(null);
+              }}
+              activeOpacity={0.7}
+            >
+              <Reply size={18} color={COLORS.brandIndigo} />
+              <Text style={styles.actionSheetItemText}>Balas Pesan</Text>
+            </TouchableOpacity>
+
+            {/* Salin Teks */}
+            {selectedActionMessage?.message && (
+              <TouchableOpacity
+                style={styles.actionSheetItem}
+                onPress={() => {
+                  handleCopyMessage(selectedActionMessage.message);
+                  setSelectedActionMessage(null);
+                }}
+                activeOpacity={0.7}
+              >
+                <Copy size={18} color="#475569" />
+                <Text style={styles.actionSheetItemText}>Salin Teks</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Sematkan / Lepas Sematan */}
+            {!selectedActionMessage?.is_deleted && (
+              <TouchableOpacity
+                style={styles.actionSheetItem}
+                onPress={() => {
+                  handleTogglePinMessage(selectedActionMessage.id);
+                  setSelectedActionMessage(null);
+                }}
+                activeOpacity={0.7}
+              >
+                <Pin
+                  size={18}
+                  color={
+                    selectedActionMessage?.is_pinned ? "#D97706" : "#475569"
+                  }
+                />
+                <Text style={styles.actionSheetItemText}>
+                  {selectedActionMessage?.is_pinned
+                    ? "Lepas Sematan"
+                    : "Sematkan Pesan"}
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Edit Pesan (Hanya pengirim asli) */}
+            {selectedActionMessage?.sender_id === user?.id &&
+              !selectedActionMessage?.is_deleted &&
+              selectedActionMessage?.attachment_type !== "PROJECT_OFFER" && (
+                <TouchableOpacity
+                  style={styles.actionSheetItem}
+                  onPress={() => {
+                    setEditingMessage(selectedActionMessage);
+                    setInputText(selectedActionMessage.message || "");
+                    setSelectedActionMessage(null);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Edit3 size={18} color="#D97706" />
+                  <Text style={styles.actionSheetItemText}>Edit Pesan</Text>
+                </TouchableOpacity>
+              )}
+
+            {/* Hapus / Tarik Pesan (Hanya pengirim asli) */}
+            {selectedActionMessage?.sender_id === user?.id &&
+              !selectedActionMessage?.is_deleted && (
+                <TouchableOpacity
+                  style={[
+                    styles.actionSheetItem,
+                    styles.actionSheetItemDestructive,
+                  ]}
+                  onPress={() => {
+                    const msgId = selectedActionMessage.id;
+                    setSelectedActionMessage(null);
+                    handleDeleteMessage(msgId);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Trash2 size={18} color="#EF4444" />
+                  <Text
+                    style={[
+                      styles.actionSheetItemText,
+                      styles.actionSheetItemTextDestructive,
+                    ]}
+                  >
+                    Tarik / Hapus Pesan
+                  </Text>
+                </TouchableOpacity>
+              )}
           </View>
         </View>
       </Modal>
@@ -3054,5 +3713,325 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyBold,
     fontWeight: "700",
     color: COLORS.brandIndigo,
+  },
+  // In-Chat Search Bar
+  searchBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2E8F0",
+    gap: 8,
+  },
+  searchBarInput: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textDark,
+    paddingVertical: 4,
+  },
+  searchBarCloseText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.brandIndigo,
+    fontWeight: "600",
+  },
+  // Pinned Message Banner
+  pinnedBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#FDE68A",
+    gap: 8,
+  },
+  pinnedBannerText: {
+    flex: 1,
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyMedium,
+    color: "#92400E",
+  },
+  pinnedBannerAction: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#B45309",
+    fontWeight: "700",
+  },
+  // Pinned Bubble Tag
+  bubblePinnedTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+  },
+  bubblePinnedTagMe: {
+    backgroundColor: "rgba(254, 240, 138, 0.2)",
+  },
+  bubblePinnedTagPartner: {
+    backgroundColor: "rgba(245, 158, 11, 0.1)",
+  },
+  bubblePinnedTagText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+  },
+  // Quoted Reply Bubble Box
+  quotedBubbleBox: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginBottom: 6,
+    borderLeftWidth: 3,
+  },
+  quotedBubbleBoxMe: {
+    backgroundColor: "rgba(0, 0, 0, 0.15)",
+    borderLeftColor: "#FFFFFF",
+  },
+  quotedBubbleBoxPartner: {
+    backgroundColor: "#F1F5F9",
+    borderLeftColor: COLORS.brandIndigo,
+  },
+  quotedSenderText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: "700",
+  },
+  quotedBodyText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    marginTop: 1,
+  },
+  // Deleted Message Row
+  deletedMessageRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 2,
+  },
+  deletedMessageText: {
+    fontSize: 12,
+    fontStyle: "italic",
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+  },
+  editedLabelText: {
+    fontSize: 9.5,
+    color: COLORS.textMuted,
+    marginRight: 4,
+    fontStyle: "italic",
+  },
+  // Typing Indicator
+  typingIndicatorWrap: {
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    backgroundColor: "transparent",
+  },
+  typingIndicatorText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textMuted,
+    fontStyle: "italic",
+  },
+  // Quick Chips
+  quickChipsWrapper: {
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+    paddingVertical: 6,
+  },
+  quickChipsScroll: {
+    paddingHorizontal: 12,
+    alignItems: "center",
+    gap: 6,
+  },
+  quickChipHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingRight: 4,
+  },
+  quickChipHeaderText: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  quickChip: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    paddingHorizontal: 10,
+    paddingVertical: 4.5,
+    borderRadius: 100,
+  },
+  quickChipText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: "#334155",
+  },
+  // Reply Preview Bar
+  replyPreviewBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EEF2FF",
+    borderTopWidth: 1,
+    borderTopColor: "#C7D2FE",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 10,
+  },
+  replyPreviewSender: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.brandIndigo,
+    fontWeight: "700",
+  },
+  replyPreviewText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#475569",
+  },
+  // Edit Preview Bar
+  editPreviewBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFBEB",
+    borderTopWidth: 1,
+    borderTopColor: "#FDE68A",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    gap: 10,
+  },
+  editPreviewSender: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "#B45309",
+    fontWeight: "700",
+  },
+  editPreviewText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#78350F",
+  },
+  // Action Sheet Modal
+  actionSheetModalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "flex-end",
+  },
+  actionSheetContainer: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 32,
+  },
+  actionSheetHandle: {
+    width: 36,
+    height: 4,
+    backgroundColor: "#E2E8F0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 12,
+  },
+  actionSheetHeader: {
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+    marginBottom: 6,
+  },
+  actionSheetTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textDark,
+    fontWeight: "700",
+  },
+  actionSheetSubtitle: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular,
+    color: COLORS.textMuted,
+    marginTop: 2,
+  },
+  actionSheetItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    gap: 12,
+    borderRadius: 10,
+  },
+  actionSheetItemText: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyMedium,
+    color: "#1E293B",
+  },
+  actionSheetItemDestructive: {},
+  actionSheetItemTextDestructive: {
+    color: "#EF4444",
+    fontWeight: "600",
+  },
+  // System Event Announcement Badge
+  systemEventContainer: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 10,
+    paddingHorizontal: 16,
+  },
+  systemEventPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    maxWidth: "92%",
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 24,
+    borderWidth: 1,
+    gap: 8,
+  },
+  systemEventPillAccepted: {
+    backgroundColor: "#ECFDF5",
+    borderColor: "#A7F3D0",
+  },
+  systemEventPillNeutral: {
+    backgroundColor: "#F1F5F9",
+    borderColor: "#E2E8F0",
+  },
+  systemEventIconWrap: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  systemEventIconWrapAccepted: {
+    backgroundColor: "#D1FAE5",
+  },
+  systemEventIconWrapNeutral: {
+    backgroundColor: "#E2E8F0",
+  },
+  systemEventText: {
+    fontSize: 11.5,
+    lineHeight: 16,
+    flexShrink: 1,
+    textAlign: "center",
+  },
+  systemEventTextAccepted: {
+    fontFamily: FONTS.bodyMedium,
+    color: "#065F46",
+    fontWeight: "600",
+  },
+  systemEventTextNeutral: {
+    fontFamily: FONTS.bodyMedium,
+    color: "#334155",
+    fontWeight: "500",
   },
 });
