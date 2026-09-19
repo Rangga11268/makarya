@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
+import { Avatar } from "../../../components/ui/Avatar";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import {
@@ -330,17 +331,13 @@ export function PendingProposalView({
             </h3>
 
             <div className="flex items-center gap-3 p-3 bg-canvas rounded-2xl border border-border">
-              {proposal.project_umkm_foto || proposal.umkm_foto ? (
-                <img
-                  src={proposal.project_umkm_foto || proposal.umkm_foto}
-                  alt="Klien"
-                  className="w-10 h-10 rounded-xl object-cover border border-border shrink-0"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-dark-900 shrink-0">
-                  <Building2 className="w-5 h-5 text-brand-indigo" />
-                </div>
-              )}
+              <Avatar
+                src={proposal.project_umkm_foto || proposal.umkm_foto}
+                name={proposal.project_umkm_nama || proposal.umkm_nama || proposal.umkm_profile?.nama_usaha || "Klien UMKM"}
+                role="UMKM"
+                size="md"
+                className="rounded-xl border border-border shrink-0"
+              />
               <div className="min-w-0">
                 <span className="font-bold text-dark-900 text-sm block truncate">
                   {proposal.project_umkm_nama ||

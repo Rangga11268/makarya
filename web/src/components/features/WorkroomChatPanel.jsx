@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { chatApi, getChatWsUrl } from "../../api";
+import { Avatar } from "../ui/Avatar";
 import { ProjectBriefVectorIcon } from "../icons/ProjectVectorIcon";
 import {
   Send,
@@ -733,26 +734,13 @@ export function WorkroomChatPanel({
                 {rosterMembers && rosterMembers.length > 0 ? (
                   rosterMembers.slice(0, 3).map((mem, i) => (
                     <div key={mem.user_id || i} className="relative">
-                      {mem.url_foto ? (
-                        <img
-                          src={mem.url_foto}
-                          alt={mem.nama_lengkap}
-                          className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border-2 border-white shadow-2xs"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        <div
-                          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs border-2 border-white shadow-2xs ${
-                            mem.is_owner
-                              ? "bg-amber-100 text-amber-900"
-                              : "bg-brand-indigo text-white"
-                          }`}
-                        >
-                          {(mem.nama_lengkap || "A").charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <Avatar
+                        src={mem.url_foto}
+                        name={mem.nama_lengkap || "Anggota"}
+                        role={mem.is_owner ? "UMKM" : "MHS"}
+                        size="sm"
+                        className="w-8 h-8 sm:w-9 sm:h-9 text-[10px] sm:text-xs border-2 border-white shadow-2xs"
+                      />
                       <span
                         className={`absolute bottom-0 right-0 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full border border-white ${
                           mem.is_online ? "bg-emerald-500" : "bg-slate-300"
@@ -795,26 +783,13 @@ export function WorkroomChatPanel({
           ) : (
             /* 1-ON-1 DIRECT CHAT HEADER */
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              {partnerPhoto ? (
-                <img
-                  src={partnerPhoto}
-                  alt={partnerName}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl object-cover shrink-0 border border-border shadow-xs"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-              ) : (
-                <div
-                  className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border shadow-xs ${
-                    partnerRole === "UMKM"
-                      ? "bg-amber-100 text-amber-900 border-amber-200"
-                      : "bg-brand-indigo text-white border-brand-indigo"
-                  }`}
-                >
-                  {(partnerName || "M").charAt(0).toUpperCase()}
-                </div>
-              )}
+              <Avatar
+                src={partnerPhoto}
+                name={partnerName}
+                role={partnerRole}
+                size="md"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl shrink-0 border border-border shadow-xs"
+              />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-xs sm:text-sm font-bold text-dark-900 leading-tight truncate">
@@ -1075,29 +1050,15 @@ export function WorkroomChatPanel({
                     isMe ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {!isMe &&
-                    (m.sender_photo || partnerPhoto ? (
-                      <img
-                        src={m.sender_photo || partnerPhoto}
-                        alt={m.sender_name || partnerName}
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none ${
-                          m.sender_role === "UMKM"
-                            ? "bg-amber-100 text-amber-900"
-                            : "bg-brand-indigo text-white"
-                        }`}
-                      >
-                        {(m.sender_name || partnerName || "P")
-                          .charAt(0)
-                          .toUpperCase()}
-                      </div>
-                    ))}
+                  {!isMe && (
+                    <Avatar
+                      src={m.sender_photo || partnerPhoto}
+                      name={m.sender_name || partnerName || "Partner"}
+                      role={m.sender_role || partnerRole}
+                      size="xs"
+                      className="mt-0.5 border border-border shadow-xs"
+                    />
+                  )}
 
                   {/* Message Bubble + Action buttons */}
                   <div className="relative max-w-[85%] sm:max-w-[75%]">
@@ -1587,25 +1548,15 @@ export function WorkroomChatPanel({
                     </div>
                   </div>
 
-                  {isMe &&
-                    (user?.url_foto ? (
-                      <img
-                        src={user.url_foto}
-                        alt="Me"
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
-                      />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
-                        {(
-                          user?.nama_lengkap ||
-                          user?.nama_usaha ||
-                          user?.email ||
-                          "U"
-                        )
-                          .charAt(0)
-                          .toUpperCase()}
-                      </div>
-                    ))}
+                  {isMe && (
+                    <Avatar
+                      src={user?.url_foto}
+                      name={user?.nama_lengkap || user?.nama_usaha || user?.email || "Saya"}
+                      role={user?.role}
+                      size="xs"
+                      className="mt-0.5 border border-border shadow-xs"
+                    />
+                  )}
                 </div>
               );
             })
@@ -1934,28 +1885,13 @@ export function WorkroomChatPanel({
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="relative shrink-0">
-                          {mem.url_foto ? (
-                            <img
-                              src={mem.url_foto}
-                              alt={mem.nama_lengkap}
-                              className="w-9 h-9 rounded-xl object-cover border border-slate-200"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          ) : (
-                            <div
-                              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
-                                mem.is_owner
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "bg-brand-indigo text-white"
-                              }`}
-                            >
-                              {(mem.nama_lengkap || "A")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </div>
-                          )}
+                          <Avatar
+                            src={mem.url_foto}
+                            name={mem.nama_lengkap || "Anggota"}
+                            role={mem.is_owner ? "UMKM" : "MHS"}
+                            size="md"
+                            className="w-9 h-9 rounded-xl border border-slate-200"
+                          />
                           <span
                             className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${
                               mem.is_online ? "bg-emerald-500" : "bg-slate-300"

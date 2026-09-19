@@ -7,6 +7,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { StarRating } from "../../components/ui/StarRating";
+import { Avatar } from "../../components/ui/Avatar";
 import { CertificateViewModal } from "../../components/features/CertificateViewModal";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatStatus } from "../../utils/formatStatus";
@@ -258,36 +259,32 @@ export function TalentDetailPage() {
       {/* Main Profile Header Card with Cover Banner */}
       <div className="bg-surface rounded-2xl border border-border shadow-xs overflow-hidden">
         {/* Cover Banner */}
-        <div className="relative w-full h-36 sm:h-44 bg-slate-900 overflow-hidden">
-          <img
-            src={
-              talent.banner_url ||
-              "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80"
-            }
-            alt={talent.nama_lengkap}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+        <div className="relative w-full h-36 sm:h-44 bg-gradient-to-r from-indigo-950 via-slate-900 to-purple-950 overflow-hidden">
+          {talent.banner_url && (
+            <img
+              src={talent.banner_url}
+              alt={talent.nama_lengkap}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
         </div>
 
         <div className="px-6 pb-6 pt-0 sm:px-8 sm:pb-8 relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {/* Avatar */}
             <div className="-mt-12 sm:-mt-14 shrink-0">
-              {talent.url_foto ? (
-                <img
-                  src={talent.url_foto}
-                  alt={talent.nama_lengkap}
-                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-md border-4 border-white bg-white"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-              ) : (
-                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-brand-indigo text-white font-serif text-3xl sm:text-4xl font-bold flex items-center justify-center shadow-md border-4 border-white">
-                  {initial}
-                </div>
-              )}
+              <Avatar
+                src={talent.url_foto}
+                name={talent.nama_lengkap}
+                role="MHS"
+                size="2xl"
+                className="rounded-2xl border-4 border-white shadow-md w-24 h-24 sm:w-28 sm:h-28 text-3xl sm:text-4xl"
+              />
             </div>
 
             {/* Identity Info */}

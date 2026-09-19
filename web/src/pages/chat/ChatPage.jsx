@@ -11,6 +11,7 @@ import { useToastStore } from "../../store/toastStore";
 import { WorkroomChatPanel } from "../../components/features/WorkroomChatPanel";
 import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 import { Button } from "../../components/ui/Button";
+import { Avatar } from "../../components/ui/Avatar";
 import {
   PlusCircle,
   ChevronDown,
@@ -626,32 +627,16 @@ export function ChatPage() {
                       conv.members && conv.members.length > 0 ? (
                         <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 relative overflow-hidden flex items-center justify-center p-0.5 shadow-2xs">
                           <div className="flex items-center -space-x-1.5">
-                            {conv.members.slice(0, 2).map((mem, idx) =>
-                              mem.url_foto ? (
-                                <img
-                                  key={mem.user_id || idx}
-                                  src={mem.url_foto}
-                                  alt={mem.nama_lengkap}
-                                  className="w-5 h-5 rounded-full object-cover border border-white"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = "none";
-                                  }}
-                                />
-                              ) : (
-                                <div
-                                  key={mem.user_id || idx}
-                                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold border border-white ${
-                                    mem.is_owner
-                                      ? "bg-amber-100 text-amber-900"
-                                      : "bg-brand-indigo text-white"
-                                  }`}
-                                >
-                                  {(mem.nama_lengkap || "A")
-                                    .charAt(0)
-                                    .toUpperCase()}
-                                </div>
-                              ),
-                            )}
+                            {conv.members.slice(0, 2).map((mem, idx) => (
+                              <Avatar
+                                key={mem.user_id || idx}
+                                src={mem.url_foto}
+                                name={mem.nama_lengkap || "Member"}
+                                role={mem.is_owner ? "UMKM" : "MHS"}
+                                size="xs"
+                                className="w-5 h-5 text-[8px] border border-white"
+                              />
+                            ))}
                             {conv.members.length > 2 && (
                               <div className="w-4 h-4 rounded-full bg-slate-200 text-slate-700 border border-white flex items-center justify-center text-[7px] font-bold">
                                 +{conv.members.length - 2}
@@ -664,25 +649,14 @@ export function ChatPage() {
                           <Users className="w-5 h-5" />
                         </div>
                       )
-                    ) : conv.partner_photo ? (
-                      <img
-                        src={conv.partner_photo}
-                        alt={conv.partner_name}
-                        className="w-10 h-10 rounded-xl object-cover border border-slate-200"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
                     ) : (
-                      <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs border ${
-                          conv.partner_role === "UMKM"
-                            ? "bg-amber-100 text-amber-900 border-amber-200"
-                            : "bg-brand-indigo text-white border-brand-indigo"
-                        }`}
-                      >
-                        {(conv.partner_name || "M").charAt(0).toUpperCase()}
-                      </div>
+                      <Avatar
+                        src={conv.partner_photo}
+                        name={conv.partner_name || "Mitra"}
+                        role={conv.partner_role}
+                        size="md"
+                        className="rounded-xl border border-slate-200"
+                      />
                     )}
                     <span
                       className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${

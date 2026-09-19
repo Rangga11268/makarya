@@ -128,9 +128,21 @@ export function RatingModal({
             </span>
           </div>
 
-          {renderStarSelector("1. Kualitas Hasil Deliverable", skorKualitas, setSkorKualitas)}
-          {renderStarSelector("2. Ketepatan Waktu & Deadline", skorWaktu, setSkorWaktu)}
-          {renderStarSelector("3. Komunikasi & Koordinasi", skorKomunikasi, setSkorKomunikasi)}
+          {renderStarSelector(
+            "1. Kualitas Hasil Deliverable",
+            skorKualitas,
+            setSkorKualitas,
+          )}
+          {renderStarSelector(
+            "2. Ketepatan Waktu & Deadline",
+            skorWaktu,
+            setSkorWaktu,
+          )}
+          {renderStarSelector(
+            "3. Komunikasi & Koordinasi",
+            skorKomunikasi,
+            setSkorKomunikasi,
+          )}
         </div>
 
         <TextArea

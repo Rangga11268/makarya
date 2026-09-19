@@ -46,6 +46,7 @@ import {
 
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
 import { projectApi } from "../../../api";
+import { Avatar } from "../../../components/ui/Avatar";
 import { WorkspaceProjectHUD } from "./workspace/WorkspaceProjectHUD";
 import { SmartDeliverableCard } from "./workspace/SmartDeliverableCard";
 import { AssetHandoffModal } from "./workspace/AssetHandoffModal";
@@ -99,9 +100,7 @@ export function WorkroomWorkspaceDetail({
 
   const handleDownloadSpk = async () => {
     const targetProjId =
-      activeProjectId ||
-      selectedProject?.id ||
-      selectedProposal?.project_id;
+      activeProjectId || selectedProject?.id || selectedProposal?.project_id;
     if (!targetProjId) return;
     try {
       setDownloadingSpk(true);
@@ -936,7 +935,9 @@ export function WorkroomWorkspaceDetail({
                   <span>Surat Perjanjian Kerja Sama (SPK) Digital</span>
                 </span>
                 <p className="text-[11px] text-indigo-900/70 dark:text-indigo-300/80 leading-relaxed">
-                  Dokumen resmi ber-watermark Makarya yang memuat butir kesepakatan, batasan revisi maksimal 2x, garansi escrow, dan tanda tangan sistem.
+                  Dokumen resmi ber-watermark Makarya yang memuat butir
+                  kesepakatan, batasan revisi maksimal 2x, garansi escrow, dan
+                  tanda tangan sistem.
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -1219,17 +1220,13 @@ export function WorkroomWorkspaceDetail({
                       </div>
 
                       <div className="flex items-start gap-3.5">
-                        {clientData.fotoUsaha ? (
-                          <img
-                            src={clientData.fotoUsaha}
-                            alt={clientData.namaUsaha}
-                            className="w-14 h-14 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
-                          />
-                        ) : (
-                          <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
-                            {clientData.namaUsaha.charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                        <Avatar
+                          src={clientData.fotoUsaha}
+                          name={clientData.namaUsaha}
+                          role="UMKM"
+                          size="xl"
+                          className="rounded-2xl"
+                        />
 
                         <div className="flex-1 min-w-0 space-y-1">
                           <h4 className="font-extrabold text-dark-900 text-sm sm:text-base leading-tight">
@@ -1289,17 +1286,13 @@ export function WorkroomWorkspaceDetail({
                       </div>
 
                       <div className="flex items-start gap-3.5">
-                        {studentData.foto ? (
-                          <img
-                            src={studentData.foto}
-                            alt={studentData.namaLengkap}
-                            className="w-14 h-14 rounded-2xl object-cover border border-border shrink-0 shadow-xs"
-                          />
-                        ) : (
-                          <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center justify-center font-extrabold text-base shrink-0 shadow-2xs">
-                            {studentData.namaLengkap.charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                        <Avatar
+                          src={studentData.foto}
+                          name={studentData.namaLengkap}
+                          role="MHS"
+                          size="xl"
+                          className="rounded-2xl"
+                        />
 
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-center gap-1.5">
@@ -1567,19 +1560,13 @@ export function WorkroomWorkspaceDetail({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                       <div>
                         <div className="flex items-center gap-2">
-                          {prop.mhs_profile?.url_foto ? (
-                            <img
-                              src={prop.mhs_profile.url_foto}
-                              alt={prop.mhs_profile?.nama_lengkap || "Pelamar"}
-                              className="w-7 h-7 rounded-full object-cover shrink-0 border border-border shadow-xs"
-                            />
-                          ) : (
-                            <div className="w-7 h-7 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs shrink-0">
-                              {(prop.mhs_profile?.nama_lengkap || "M")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </div>
-                          )}
+                          <Avatar
+                            src={prop.mhs_profile?.url_foto}
+                            name={prop.mhs_profile?.nama_lengkap || "Mahasiswa"}
+                            role="MHS"
+                            size="xs"
+                            className="border border-border shadow-xs"
+                          />
                           <span className="text-xs font-bold text-dark-900">
                             {prop.mhs_profile?.nama_lengkap ||
                               "Mahasiswa Pelamar"}

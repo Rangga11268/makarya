@@ -216,9 +216,11 @@ export function InvoiceReceiptModal({
                 Surat Perjanjian Kerja & Jaminan Escrow 100%
               </Text>
               <Text style={styles.legalNoticeText}>
-                Faktur & SPK ini merupakan bukti sah kesepakatan kerja dan transaksi penjaminan dana melalui
-                sistem Rekening Bersama Makarya (Maksimal revisi 2x dan proteksi HAKI). Dokumen ini sah digunakan untuk
-                pembukuan operasional UMKM & portofolio mahasiswa.
+                Faktur & SPK ini merupakan bukti sah kesepakatan kerja dan
+                transaksi penjaminan dana melalui sistem Rekening Bersama
+                Makarya (Maksimal revisi 2x dan proteksi HAKI). Dokumen ini sah
+                digunakan untuk pembukuan operasional UMKM & portofolio
+                mahasiswa.
               </Text>
             </View>
           </ScrollView>

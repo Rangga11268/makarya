@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ProjectBriefVectorIcon } from "../icons/ProjectVectorIcon";
+import { Avatar } from "../ui/Avatar";
 
 export function ProjectChatModal({
   isOpen,
@@ -199,20 +200,15 @@ export function ProjectChatModal({
 
       {/* Modal Dialog */}
       <div className="relative w-full max-w-2xl bg-surface rounded-3xl border border-border shadow-2xl z-10 flex flex-col h-[85vh] max-h-[720px] overflow-hidden animate-in zoom-in-95 duration-200">
-        {/* 1. Modal Header */}
         <div className="px-6 py-4 border-b border-border bg-canvas/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            {partnerPhoto ? (
-              <img
-                src={partnerPhoto}
-                alt={partnerName}
-                className="w-10 h-10 rounded-2xl object-cover shrink-0 border border-border shadow-xs"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-2xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-sm shrink-0 border border-brand-indigo/20">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-            )}
+            <Avatar
+              src={partnerPhoto}
+              name={partnerName}
+              role={partnerRole}
+              size="md"
+              className="rounded-2xl shrink-0 border border-border shadow-xs"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm sm:text-base font-bold text-dark-900 leading-tight">
@@ -331,20 +327,15 @@ export function ProjectChatModal({
                   key={m.id || idx}
                   className={`flex items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
                 >
-                  {!isMe &&
-                    (m.sender_photo || partnerPhoto ? (
-                      <img
-                        src={m.sender_photo || partnerPhoto}
-                        alt={m.sender_name || partnerName}
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mt-0.5 shadow-xs"
-                      />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5 select-none">
-                        {(m.sender_name || partnerName || "P")
-                          .charAt(0)
-                          .toUpperCase()}
-                      </div>
-                    ))}
+                  {!isMe && (
+                    <Avatar
+                      src={m.sender_photo || partnerPhoto}
+                      name={m.sender_name || partnerName || "Partner"}
+                      role={partnerRole}
+                      size="xs"
+                      className="mt-0.5 border border-border shadow-xs"
+                    />
+                  )}
 
                   <div
                     className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs shadow-xs ${
@@ -429,25 +420,15 @@ export function ProjectChatModal({
                     </div>
                   </div>
 
-                  {isMe &&
-                    (user?.url_foto ? (
-                      <img
-                        src={user.url_foto}
-                        alt="Me"
-                        className="w-7 h-7 rounded-full object-cover shrink-0 border border-border mb-0.5 shadow-xs"
-                      />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-brand-indigo text-white flex items-center justify-center font-bold text-[10px] shrink-0 mb-0.5 select-none">
-                        {(
-                          user?.nama_lengkap ||
-                          user?.nama_usaha ||
-                          user?.email ||
-                          "U"
-                        )
-                          .charAt(0)
-                          .toUpperCase()}
-                      </div>
-                    ))}
+                  {isMe && (
+                    <Avatar
+                      src={user?.url_foto}
+                      name={user?.nama_lengkap || user?.nama_usaha || user?.email || "Saya"}
+                      role={user?.role}
+                      size="xs"
+                      className="mb-0.5 border border-border shadow-xs"
+                    />
+                  )}
                 </div>
               );
             })

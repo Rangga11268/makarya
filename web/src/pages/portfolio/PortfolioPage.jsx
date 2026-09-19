@@ -7,6 +7,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { StarRating } from "../../components/ui/StarRating";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { Avatar } from "../../components/ui/Avatar";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
@@ -150,20 +151,13 @@ export function PortfolioPage() {
       {/* ID Badge Card */}
       <div className="bg-surface border border-border rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-xs">
         <div className="flex items-center gap-4 text-center sm:text-left">
-          {user?.url_foto ? (
-            <img
-              src={user.url_foto}
-              alt={user?.nama || "Avatar"}
-              className="w-16 h-16 rounded-2xl object-cover shrink-0 shadow-xs border-2 border-slate-100"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-2xl bg-brand-indigo text-white text-2xl font-bold flex items-center justify-center shrink-0 shadow-xs select-none">
-              {(user?.nama || user?.email || "U").charAt(0).toUpperCase()}
-            </div>
-          )}
+          <Avatar
+            src={user?.url_foto}
+            name={user?.nama || user?.nama_lengkap || user?.nama_usaha || user?.email}
+            role={user?.role}
+            size="2xl"
+            className="rounded-2xl shrink-0 shadow-xs border-2 border-slate-100"
+          />
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-dark-900 font-sans">

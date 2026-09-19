@@ -246,3 +246,4 @@ def generate_spk_pdf(project, umkm_user, profile_umkm, mhs_user, profile_mhs, pr
     doc.build(elements)
     buffer.seek(0)
     return buffer
+

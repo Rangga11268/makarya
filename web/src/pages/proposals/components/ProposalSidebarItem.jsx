@@ -2,6 +2,7 @@ import React from "react";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
+import { Avatar } from "../../../components/ui/Avatar";
 
 export function ProposalSidebarItem({
   isUmkm,
@@ -24,29 +25,26 @@ export function ProposalSidebarItem({
             : "bg-canvas border-border hover:bg-surface hover:border-dark-900/20"
         }`}
       >
-        <div className="flex items-center justify-between gap-1 mb-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted truncate">
-            {proj.kategori}
-          </span>
+        <div className="flex items-center justify-between gap-2 mb-1.5">
           <span
-            className={`inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-md border ${
+            className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-md ${
               isDone
-                ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                 : overdue
-                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  ? "bg-rose-50 text-rose-700 border border-rose-200"
                   : proj.status === "IN_PROGRESS"
-                    ? "bg-brand-indigo/10 text-brand-indigo border-brand-indigo/20"
-                    : "bg-amber-50 text-amber-800 border-amber-200"
+                    ? "bg-brand-indigo-light text-brand-indigo border border-brand-indigo/20"
+                    : "bg-amber-50 text-amber-700 border border-amber-200"
             }`}
           >
             <span
-              className={`w-1 h-1 rounded-full ${
+              className={`w-1.5 h-1.5 rounded-full ${
                 isDone
                   ? "bg-emerald-500"
                   : overdue
                     ? "bg-rose-500"
                     : proj.status === "IN_PROGRESS"
-                      ? "bg-indigo-600"
+                      ? "bg-brand-indigo"
                       : "bg-amber-500"
               }`}
             />
@@ -64,17 +62,12 @@ export function ProposalSidebarItem({
 
         {proj.accepted_mhs_nama && (
           <div className="flex items-center gap-1.5 mt-1.5">
-            {proj.accepted_mhs_foto ? (
-              <img
-                src={proj.accepted_mhs_foto}
-                alt={proj.accepted_mhs_nama}
-                className="w-4 h-4 rounded-full object-cover shrink-0 border border-border"
-              />
-            ) : (
-              <div className="w-4 h-4 rounded-full bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-[9px] shrink-0">
-                {proj.accepted_mhs_nama.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <Avatar
+              src={proj.accepted_mhs_foto}
+              name={proj.accepted_mhs_nama}
+              role="MHS"
+              size="xs"
+            />
             <span className="text-[11px] text-muted truncate">
               {proj.accepted_mhs_nama}
             </span>
@@ -152,17 +145,12 @@ export function ProposalSidebarItem({
       </h4>
 
       <div className="flex items-center gap-1.5 mt-1.5">
-        {prop.project_umkm_foto ? (
-          <img
-            src={prop.project_umkm_foto}
-            alt={prop.project_umkm_nama || "Klien UMKM"}
-            className="w-4 h-4 rounded-full object-cover shrink-0 border border-border"
-          />
-        ) : (
-          <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-[9px] shrink-0">
-            {(prop.project_umkm_nama || "K").charAt(0).toUpperCase()}
-          </div>
-        )}
+        <Avatar
+          src={prop.project_umkm_foto}
+          name={prop.project_umkm_nama || "Klien UMKM"}
+          role="UMKM"
+          size="xs"
+        />
         <span className="text-[11px] text-muted truncate">
           {prop.project_umkm_nama || "Klien UMKM"}
         </span>

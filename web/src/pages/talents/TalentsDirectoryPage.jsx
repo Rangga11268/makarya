@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { StarRating } from "../../components/ui/StarRating";
+import { Avatar } from "../../components/ui/Avatar";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -378,17 +379,13 @@ export function TalentsDirectoryPage() {
                   <div className="flex items-start justify-between gap-3 mb-3.5">
                     <div className="flex items-center gap-3">
                       <Link to={`/talents/${talent.id}`} className="shrink-0">
-                        {talent.url_foto ? (
-                          <img
-                            src={talent.url_foto}
-                            alt={talent.nama_lengkap}
-                            className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover shrink-0 shadow-xs select-none hover:scale-105 transition-transform cursor-pointer border border-border"
-                          />
-                        ) : (
-                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-brand-indigo text-white font-serif text-base font-bold flex items-center justify-center shrink-0 shadow-xs select-none hover:scale-105 transition-transform cursor-pointer">
-                            {initial}
-                          </div>
-                        )}
+                        <Avatar
+                          src={talent.url_foto}
+                          name={talent.nama_lengkap}
+                          role="MHS"
+                          size="lg"
+                          className="rounded-xl hover:scale-105 transition-transform"
+                        />
                       </Link>
 
                       <div className="min-w-0">

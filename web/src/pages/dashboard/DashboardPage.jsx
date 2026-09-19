@@ -4,6 +4,7 @@ import { useAuthStore } from "../../store/authStore";
 import { projectApi, proposalApi, walletApi, talentApi } from "../../api";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
+import { Avatar } from "../../components/ui/Avatar";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining } from "../../utils/formatDate";
 import { formatStatus } from "../../utils/formatStatus";
@@ -472,17 +473,13 @@ export function DashboardPage() {
             className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all shrink-0 select-none"
             title="Kelola Profil Anda"
           >
-            {user?.url_foto ? (
-              <img
-                src={user.url_foto}
-                alt={userDisplayName}
-                className="w-7 h-7 rounded-lg object-cover border border-slate-200"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-lg bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
-                {userDisplayName.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <Avatar
+              src={user?.url_foto}
+              name={userDisplayName}
+              role={user?.role}
+              size="sm"
+              className="rounded-lg"
+            />
             <span className="text-xs font-bold text-slate-800 hidden sm:inline max-w-[100px] truncate">
               {userDisplayName}
             </span>
@@ -955,17 +952,13 @@ export function DashboardPage() {
                 className="p-3.5 rounded-2xl border border-slate-200 hover:border-slate-300 bg-slate-50/40 flex flex-col justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {t.url_foto ? (
-                    <img
-                      src={t.url_foto}
-                      alt={t.nama_lengkap}
-                      className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white font-bold flex items-center justify-center text-xs shrink-0">
-                      {(t.nama_lengkap || "M").charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <Avatar
+                    src={t.url_foto}
+                    name={t.nama_lengkap}
+                    role="MHS"
+                    size="md"
+                    className="rounded-xl"
+                  />
                   <div className="min-w-0 flex-1">
                     <h4 className="text-xs font-bold text-slate-900 truncate">
                       {t.nama_lengkap}

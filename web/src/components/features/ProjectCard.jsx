@@ -13,6 +13,8 @@ import {
   ChevronRight,
   ShieldCheck,
 } from "lucide-react";
+import { Avatar } from "../ui/Avatar";
+import { ProjectCoverBanner } from "../ui/ProjectCoverBanner";
 
 export const getCategoryBanner = (cat) => {
   switch (cat) {
@@ -83,15 +85,16 @@ export function ProjectCard({ project }) {
     >
       <div>
         {/* 1. Cover Banner 16:9 Image */}
-        <div className="relative w-full h-36 bg-slate-900 overflow-hidden">
-          <img
-            src={bannerUri || getCategoryBanner(project.kategori)}
-            alt={project.judul}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={() => setBannerError(true)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-
+        <ProjectCoverBanner
+          src={
+            project.banner_url ||
+            project.url_banner ||
+            project.umkm_profile?.banner_url
+          }
+          category={project.kategori}
+          title={project.judul}
+          className="w-full h-36"
+        >
           {/* Category Badge on Banner Top-Left */}
           <div className="absolute top-2.5 left-2.5">
             <span className="px-2 py-0.5 rounded-lg bg-slate-900/80 backdrop-blur-xs text-white font-medium text-[11px] border border-white/15 shadow-xs">
@@ -127,24 +130,18 @@ export function ProjectCard({ project }) {
               </span>
             </div>
           )}
-        </div>
+        </ProjectCoverBanner>
 
         {/* 2. Card Body */}
         <div className="p-4">
           {/* Client Header */}
           <div className="flex items-center gap-2 mb-2 min-w-0">
-            {clientPhoto && !imgError ? (
-              <img
-                src={clientPhoto}
-                alt={clientName}
-                className="w-5 h-5 rounded-full object-cover shrink-0 border border-slate-200"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-[9px] shrink-0">
-                <Building2 className="w-3 h-3" />
-              </div>
-            )}
+            <Avatar
+              src={clientPhoto}
+              name={clientName}
+              role="UMKM"
+              size="xs"
+            />
             <span className="text-xs font-medium text-slate-600 truncate">
               {clientName}
             </span>

@@ -8,6 +8,7 @@ import { Badge } from "../../components/ui/Badge";
 import { MahasiswaProfileForm } from "./components/MahasiswaProfileForm";
 import { UmkmProfileForm } from "./components/UmkmProfileForm";
 import { formatDate } from "../../utils/formatDate";
+import { Avatar } from "../../components/ui/Avatar";
 import {
   Save,
   CheckCircle2,
@@ -380,11 +381,14 @@ export function ProfilePage() {
       {/* Profile ID Card with Cover Banner */}
       <div className="bg-surface border border-border rounded-3xl overflow-hidden shadow-xs">
         {/* Cover Banner Header */}
-        <div className="relative w-full h-36 sm:h-48 bg-slate-900 overflow-hidden group">
+        <div className="relative w-full h-36 sm:h-48 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 overflow-hidden group">
           <img
             src={user?.banner_url || defaultBannerFallback}
             alt="Cover Banner"
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
@@ -446,17 +450,13 @@ export function ProfilePage() {
               accept="image/*"
               className="hidden"
             />
-            {user?.url_foto ? (
-              <img
-                src={user.url_foto}
-                alt="Foto Profil"
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-md border-4 border-white bg-surface"
-              />
-            ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-dark-900 text-white text-2xl font-bold flex items-center justify-center shadow-md border-4 border-white select-none">
-                {initial}
-              </div>
-            )}
+            <Avatar
+              src={user?.url_foto}
+              name={user?.nama_lengkap || user?.nama_usaha || user?.email || "User"}
+              role={user?.role}
+              size="2xl"
+              className="shadow-md border-4 border-white bg-surface"
+            />
 
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity border-4 border-transparent">

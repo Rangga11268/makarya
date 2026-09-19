@@ -13,6 +13,8 @@ import {
 } from "../../components/ui/AppleGlossyIcons";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
+import { Avatar } from "../../components/ui/Avatar";
+import { ProjectCoverBanner } from "../../components/ui/ProjectCoverBanner";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate, daysRemaining, isExpired } from "../../utils/formatDate";
 import { extractIdFromSlug, getProjectUrl } from "../../utils/slugify";
@@ -301,18 +303,16 @@ export function ProjectDetailPage() {
         {/* ========================================================================= */}
         <div className="lg:col-span-8 space-y-6">
           {/* Project Cover Media Banner */}
-          <div className="relative w-full h-48 sm:h-64 rounded-3xl overflow-hidden border border-border shadow-xs bg-slate-900">
-            <img
-              src={
-                project.banner_url ||
-                project.thumbnail_url ||
-                project.umkm_profile?.url_foto_usaha ||
-                getCategoryBanner(project.kategori)
-              }
-              alt={project.judul}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <ProjectCoverBanner
+            src={
+              project.banner_url ||
+              project.thumbnail_url ||
+              project.umkm_profile?.url_foto_usaha
+            }
+            category={project.kategori}
+            title={project.judul}
+            className="w-full h-48 sm:h-64 rounded-3xl"
+          >
             <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-3 py-1 rounded-xl bg-dark-900/80 backdrop-blur-md border border-white/20 text-white text-xs font-bold shadow-xs">
               {getCategorySvg(project.kategori)}
               <span>{project.kategori || "UMKM Digital"}</span>
@@ -328,7 +328,7 @@ export function ProjectDetailPage() {
                 </span>
               </div>
             )}
-          </div>
+          </ProjectCoverBanner>
 
           {/* Card 1: Main Project Header & Overview */}
           <Card className="p-5 sm:p-6 space-y-5 bg-surface border-border rounded-2xl shadow-xs">
@@ -402,24 +402,15 @@ export function ProjectDetailPage() {
 
               {/* Client Pill */}
               <div className="flex items-center gap-3 pt-1">
-                {project.umkm_profile?.url_foto_usaha ||
-                project.umkm_profile?.url_foto ? (
-                  <img
-                    src={
-                      project.umkm_profile.url_foto_usaha ||
-                      project.umkm_profile.url_foto
-                    }
-                    alt={project.umkm_profile?.nama_usaha || "Klien UMKM"}
-                    className="w-9 h-9 rounded-full object-cover shrink-0 shadow-xs border border-border"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-dark-900 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                    {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
-                  </div>
-                )}
+                <Avatar
+                  src={
+                    project.umkm_profile?.url_foto_usaha ||
+                    project.umkm_profile?.url_foto
+                  }
+                  name={project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                  role="UMKM"
+                  size="md"
+                />
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-dark-900">
@@ -1019,24 +1010,16 @@ export function ProjectDetailPage() {
 
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                {project.umkm_profile?.url_foto_usaha ||
-                project.umkm_profile?.url_foto ? (
-                  <img
-                    src={
-                      project.umkm_profile.url_foto_usaha ||
-                      project.umkm_profile.url_foto
-                    }
-                    alt={project.umkm_profile?.nama_usaha || "Klien UMKM"}
-                    className="w-11 h-11 rounded-2xl object-cover shrink-0 shadow-xs border border-border"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <div className="w-11 h-11 rounded-2xl bg-dark-900 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs">
-                    {project.umkm_profile?.nama_usaha?.charAt(0) || "U"}
-                  </div>
-                )}
+                <Avatar
+                  src={
+                    project.umkm_profile?.url_foto_usaha ||
+                    project.umkm_profile?.url_foto
+                  }
+                  name={project.umkm_profile?.nama_usaha || "Klien UMKM"}
+                  role="UMKM"
+                  size="lg"
+                  className="rounded-2xl"
+                />
                 <div>
                   <h4 className="text-sm font-bold text-dark-900 leading-snug">
                     {project.umkm_profile?.nama_usaha || "Klien UMKM"}

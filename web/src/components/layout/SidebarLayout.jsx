@@ -24,6 +24,7 @@ import {
 import { cn } from "../../utils/cn";
 import { Button } from "../ui/Button";
 import { NotificationBell } from "../features/NotificationBell";
+import { Avatar } from "../ui/Avatar";
 
 export function SidebarLayout() {
   const { user, logout, isAuthenticated, fetchProfile } = useAuthStore();
@@ -291,17 +292,13 @@ export function SidebarLayout() {
                   className="flex items-center gap-1.5 p-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer border border-transparent hover:border-slate-200 select-none active:scale-95 touch-manipulation"
                   aria-label="Menu Profil"
                 >
-                  {user?.url_foto ? (
-                    <img
-                      src={user.url_foto}
-                      alt={userDisplayName}
-                      className="w-8 h-8 rounded-full object-cover shadow-2xs border border-slate-200"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center shadow-2xs">
-                      {userInitial}
-                    </div>
-                  )}
+                  <Avatar
+                    src={user?.url_foto}
+                    name={userDisplayName}
+                    role={user?.role}
+                    size="sm"
+                    className="shadow-2xs border border-slate-200"
+                  />
                   <ChevronDown
                     className={cn(
                       "w-3.5 h-3.5 text-slate-400 transition-transform duration-150 hidden sm:block",
@@ -486,17 +483,13 @@ export function SidebarLayout() {
 
             {/* Header: User Info */}
             <div className="flex items-center gap-3.5 pb-3 border-b border-slate-100">
-              {user?.url_foto ? (
-                <img
-                  src={user.url_foto}
-                  alt={userDisplayName}
-                  className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shadow-xs shrink-0"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white text-base font-bold flex items-center justify-center shadow-xs shrink-0">
-                  {userInitial}
-                </div>
-              )}
+              <Avatar
+                src={user?.url_foto}
+                name={userDisplayName}
+                role={user?.role}
+                size="xl"
+                className="rounded-2xl border border-slate-200 shadow-xs shrink-0"
+              />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold text-slate-900 truncate">
                   {userDisplayName}

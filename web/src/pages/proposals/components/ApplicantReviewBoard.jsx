@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
+import { Avatar } from "../../../components/ui/Avatar";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import {
@@ -345,19 +346,13 @@ export function ApplicantReviewBoard({
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     {/* Candidate Identity & Credentials */}
                     <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                      {prop.mhs_profile?.url_foto ? (
-                        <img
-                          src={prop.mhs_profile.url_foto}
-                          alt={prop.mhs_profile?.nama_lengkap || "Mahasiswa"}
-                          className="w-12 h-12 rounded-2xl object-cover border border-border shadow-xs shrink-0"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-2xl bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20 flex items-center justify-center font-bold text-base shrink-0">
-                          {(prop.mhs_profile?.nama_lengkap || "M")
-                            .charAt(0)
-                            .toUpperCase()}
-                        </div>
-                      )}
+                      <Avatar
+                        src={prop.mhs_profile?.url_foto}
+                        name={prop.mhs_profile?.nama_lengkap || "Mahasiswa"}
+                        role="MHS"
+                        size="lg"
+                        className="rounded-2xl"
+                      />
 
                       <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">

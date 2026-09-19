@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 
 import { NotificationBell } from "../features/NotificationBell";
+import { Avatar } from "../ui/Avatar";
 
 export function Navbar() {
   const { user, isAuthenticated, logout, fetchProfile } = useAuthStore();
@@ -466,20 +467,13 @@ export function Navbar() {
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                     className="flex items-center gap-2 p-1 pl-1.5 pr-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 transition-all shadow-2xs group cursor-pointer select-none"
                   >
-                    {user?.url_foto ? (
-                      <img
-                        src={user.url_foto}
-                        alt="Profile"
-                        className="w-7 h-7 rounded-full object-cover shadow-xs border border-slate-200"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                        {initialLetter}
-                      </div>
-                    )}
+                    <Avatar
+                      src={user?.url_foto}
+                      name={userDisplayName}
+                      role={user?.role}
+                      size="xs"
+                      className="shadow-xs border border-slate-200"
+                    />
                     <div className="hidden sm:flex flex-col text-left leading-none">
                       <span className="text-[11px] font-bold text-slate-900 truncate max-w-[120px]">
                         {user?.nama ||

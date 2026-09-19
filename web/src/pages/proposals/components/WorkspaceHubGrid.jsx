@@ -4,6 +4,7 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate, isExpired } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
 import { Button } from "../../../components/ui/Button";
+import { Avatar } from "../../../components/ui/Avatar";
 import { WorkspaceEmptyRecommendations } from "./WorkspaceEmptyRecommendations";
 import {
   Search,
@@ -351,17 +352,13 @@ function UmkmProjectGridCard({ project, onOpen }) {
         <div className="p-3 bg-canvas rounded-2xl border border-border space-y-1.5">
           {project.accepted_mhs_nama ? (
             <div className="flex items-center gap-2.5">
-              {project.accepted_mhs_foto ? (
-                <img
-                  src={project.accepted_mhs_foto}
-                  alt={project.accepted_mhs_nama}
-                  className="w-7 h-7 rounded-full object-cover border border-border shrink-0"
-                />
-              ) : (
-                <div className="w-7 h-7 rounded-full bg-brand-indigo/10 text-brand-indigo font-bold text-xs flex items-center justify-center shrink-0">
-                  {project.accepted_mhs_nama.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <Avatar
+                src={project.accepted_mhs_foto}
+                name={project.accepted_mhs_nama || "Mahasiswa"}
+                role="MHS"
+                size="xs"
+                className="border border-border shrink-0"
+              />
               <div className="min-w-0">
                 <span className="text-[10px] font-bold text-muted uppercase block leading-none">
                   Mahasiswa Pelaksana
@@ -516,17 +513,13 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
 
         {/* Client UMKM Info */}
         <div className="p-3 bg-canvas rounded-2xl border border-border flex items-center gap-2.5">
-          {proposal.project_umkm_foto || proposal.umkm_foto ? (
-            <img
-              src={proposal.project_umkm_foto || proposal.umkm_foto}
-              alt="UMKM"
-              className="w-7 h-7 rounded-full object-cover border border-border shrink-0"
-            />
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-surface border border-border flex items-center justify-center text-dark-900 shrink-0">
-              <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
-            </div>
-          )}
+          <Avatar
+            src={proposal.project_umkm_foto || proposal.umkm_foto}
+            name={proposal.project_umkm_nama || proposal.umkm_nama || proposal.umkm_profile?.nama_usaha || "Klien UMKM"}
+            role="UMKM"
+            size="xs"
+            className="border border-border shrink-0"
+          />
           <div className="min-w-0">
             <span className="text-[10px] font-bold text-muted uppercase block leading-none">
               Klien UMKM
