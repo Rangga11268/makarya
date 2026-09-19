@@ -825,7 +825,7 @@ export function ProjectDetailScreen({ route, navigation }) {
           handleRejectProposal={handleRejectProposal}
           handleOpenApproveModal={handleOpenApproveModal}
           renderSubmissionNote={renderSubmissionNote}
-          fetchProject={fetchProject}
+          fetchProject={loadDetail}
           showToast={showToast}
         />
       )}

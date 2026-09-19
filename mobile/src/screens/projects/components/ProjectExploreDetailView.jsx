@@ -1121,8 +1121,11 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
             ) : isUmkmOwner ? (
-              <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-                {(project.status === "OPEN" || project.status === "BIDDING") && (
+              <View
+                style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+              >
+                {(project.status === "OPEN" ||
+                  project.status === "BIDDING") && (
                   <PebbleButton
                     variant="sapphire"
                     size="sm"
