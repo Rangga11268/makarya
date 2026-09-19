@@ -463,8 +463,14 @@ export function ProjectExploreDetailView({
                   style={styles.deleteProjectBtn}
                   activeOpacity={0.7}
                 >
-                  <Trash2 size={14} color="#DC2626" style={{ marginRight: 6 }} />
-                  <Text style={styles.deleteProjectBtnText}>Hapus Proyek Ini</Text>
+                  <Trash2
+                    size={14}
+                    color="#DC2626"
+                    style={{ marginRight: 6 }}
+                  />
+                  <Text style={styles.deleteProjectBtnText}>
+                    Hapus Proyek Ini
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : canApply ? (
@@ -1196,27 +1202,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 0.5,
   },
-  bannerPageBadge: {
-    position: "absolute",
-    bottom: 12,
-    right: 12,
-    backgroundColor: "rgba(15, 23, 42, 0.8)",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  bannerPageText: {
-    fontSize: 10.5,
-    fontFamily: FONTS.bodyBold,
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
 
-  /* 2. Seller Identity Header (Forensic Fiverr Pro) */
   /* 2. Seller Identity Header */
   sellerHeaderCard: {
     paddingBottom: 14,
-    marginBottom: 14,
     marginBottom: 12,
   },
   sellerRow: {
@@ -1224,37 +1213,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  avatarContainer: {
-    position: "relative",
-  },
-  sellerAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#E2E8F0",
-  },
-  sellerAvatarFallback: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#EFF6FF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sellerOnlineDot: {
-    position: "absolute",
-    bottom: -1,
-    right: -1,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#94A3B8",
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
   sellerMetaCol: {
     flex: 1,
-    gap: 4,
     gap: 3,
   },
   sellerNameRow: {
@@ -1263,7 +1223,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sellerName: {
-    fontSize: 15.5,
     fontSize: 16,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
@@ -1271,20 +1230,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 6,
   },
-  chevronIcon: {
-    marginLeft: "auto",
-  },
-  badgesWrapper: {
   verifiedInlineTag: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    flexWrap: "wrap",
-  },
-  topRatedPill: {
-    backgroundColor: "#FFF1DB",
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
     gap: 3.5,
     backgroundColor: "#ECFDF5",
     paddingHorizontal: 6.5,
@@ -1293,62 +1241,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#A7F3D0",
   },
-  topRatedText: {
   verifiedInlineText: {
     fontSize: 10,
     fontFamily: FONTS.bodyBold,
-    color: "#B45309",
     color: "#059669",
     fontWeight: "800",
   },
-  diamondSymbols: {
-    fontSize: 8.5,
-    color: "#B45309",
-    letterSpacing: 1.5,
   sellerSubMetaText: {
     fontSize: 12,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
   },
-  vettedProPill: {
-    backgroundColor: "#ECECFF",
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
-    borderRadius: 5,
-  },
-  vettedProText: {
-    fontSize: 10,
-    fontFamily: FONTS.bodyBold,
-    color: "#4F46E5",
-    fontWeight: "800",
-  },
 
-  /* 3. Headline & Description */
   /* 3. Headline & Unified Metrics Grid */
   headlineSection: {
     paddingBottom: 16,
-    gap: 10,
     gap: 12,
   },
   gigHeadline: {
-    fontSize: 21,
     fontSize: 20,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
-    lineHeight: 28,
     lineHeight: 27,
   },
-  descriptionWrapper: {
-    gap: 4,
   metricsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
     marginTop: 4,
   },
-  gigDescription: {
-    fontSize: 13.5,
   metricItem: {
     flex: 1,
     minWidth: "47%",
@@ -1365,12 +1287,8 @@ const styles = StyleSheet.create({
   metricLabel: {
     fontSize: 10.5,
     fontFamily: FONTS.bodyRegular,
-    color: "#334155",
-    lineHeight: 21,
     color: "#64748B",
   },
-  moreToggleBtn: {
-    alignSelf: "flex-start",
   metricLabelEscrow: {
     fontSize: 10.5,
     fontFamily: FONTS.bodyBold,
@@ -1384,75 +1302,34 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     marginTop: 2,
   },
-  moreToggleText: {
-    fontSize: 13,
   metricValue: {
     fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "800",
-    textDecorationLine: "underline",
     marginTop: 2,
   },
-
-  /* 4. Single Package Price & Specs */
-  packageSection: {
-    marginBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#E5E7EB",
-    paddingTop: 16,
   metricValueEscrow: {
     fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#166534",
     fontWeight: "800",
   },
-  packageDetailBody: {
-    gap: 14,
-  },
-  packageHeaderRow: {
   escrowInlineRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
     gap: 4,
     marginTop: 2,
   },
-  packageDetailTitle: {
-    fontSize: 16,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "800",
-    flex: 1,
 
   /* 4. Action Section */
   actionSection: {
     marginBottom: 16,
   },
-  packagePriceHighlight: {
-    fontSize: 18,
-    fontFamily: FONTS.displayBold,
-    color: "#0F172A",
-    fontWeight: "900",
-  },
-  packageDetailDesc: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-    lineHeight: 19,
-    marginTop: -4,
-  },
-  specKeyValues: {
-    gap: 12,
-    marginTop: 4,
-  },
-  specKeyValueRow: {
   deleteProjectBtn: {
     paddingVertical: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     justifyContent: "center",
     borderRadius: 12,
     backgroundColor: "#FEF2F2",
@@ -1460,23 +1337,11 @@ const styles = StyleSheet.create({
     borderColor: "#FECACA",
     marginTop: 4,
   },
-  specKeyText: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyRegular,
-    color: "#475569",
-  },
-  specValueText: {
-    fontSize: 13,
   deleteProjectBtnText: {
     fontSize: 12,
     fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "700",
     color: "#DC2626",
     fontWeight: "800",
-  },
-  packageCtaWrapper: {
-    marginTop: 6,
   },
   appliedSuccessBanner: {
     flexDirection: "row",
@@ -1495,12 +1360,6 @@ const styles = StyleSheet.create({
     color: "#059669",
     fontWeight: "700",
   },
-  vettedProBox: {
-    backgroundColor: "#F8FAFC",
-    borderRadius: 12,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
 
   /* 5. Description & Brief */
   descriptionWrapper: {
@@ -1516,20 +1375,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginTop: 4,
   },
-  vettedProBoxTitle: {
   moreToggleText: {
     fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
-    color: "#0F172A",
-    fontWeight: "800",
     color: "#2563EB",
     fontWeight: "700",
-  },
-  vettedProBoxDesc: {
-    fontSize: 11.5,
-    fontFamily: FONTS.bodyRegular,
-    color: "#64748B",
-    lineHeight: 16.5,
   },
 
   /* 5. Editorial Cards (Profile Match, Skills, Team) */
