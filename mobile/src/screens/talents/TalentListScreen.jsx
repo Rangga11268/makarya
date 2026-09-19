@@ -22,6 +22,7 @@ import { TalentFilterModal } from "../../components/features/talents/TalentFilte
 import { TalentDetailModal } from "../../components/features/talents/TalentDetailModal";
 import { TalentInviteModal } from "../../components/features/talents/TalentInviteModal";
 import { Button } from "../../components/ui/Button";
+import { Avatar } from "../../components/ui/Avatar";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TalentCardSkeleton } from "../../components/ui/Skeleton";
@@ -357,19 +358,15 @@ export function TalentListScreen({ navigation }) {
 
     return (
       <View style={styles.talentCard}>
-        {/* 1. Header: Avatar + Name & Prodi + Status Tag */}
         <View style={styles.cardHeaderRow}>
-          {item.url_foto ? (
-            <Image
-              source={{ uri: item.url_foto }}
-              style={styles.avatarImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.avatarBox}>
-              <Text style={styles.avatarLetter}>{initial}</Text>
-            </View>
-          )}
+          <Avatar
+            src={item.url_foto}
+            name={item.nama_lengkap}
+            role="MHS"
+            size={44}
+            rounded="xl"
+            style={{ marginRight: 12 }}
+          />
 
           <View style={styles.headerInfoCol}>
             <View style={styles.nameRow}>

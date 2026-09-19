@@ -24,6 +24,7 @@ import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { ChatSkeleton } from "../../components/ui/Skeleton";
 import { Header } from "../../components/ui/Header";
+import { Avatar } from "../../components/ui/Avatar";
 import { ProjectBriefVectorIcon } from "../../components/icons/CategoryIcons";
 import {
   ArrowLeft,
@@ -850,33 +851,23 @@ export function ChatScreen({ route, navigation }) {
           isMe ? styles.bubbleRowMe : styles.bubbleRowPartner,
         ]}
       >
-        {!isMe &&
-          ((
-            talentId
-              ? resolvedPartnerPhoto
-              : item.sender_photo || resolvedPartnerPhoto
-          ) ? (
-            <Image
-              source={{
-                uri: talentId
-                  ? resolvedPartnerPhoto
-                  : item.sender_photo || resolvedPartnerPhoto,
-              }}
-              style={styles.chatAvatarSmall}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.chatAvatarPlaceholder}>
-              <Text style={styles.chatAvatarPlaceholderText}>
-                {(talentId
-                  ? resolvedPartnerName
-                  : item.sender_name || resolvedPartnerName || "P"
-                )
-                  .charAt(0)
-                  .toUpperCase()}
-              </Text>
-            </View>
-          ))}
+        {!isMe && (
+          <Avatar
+            src={
+              talentId
+                ? resolvedPartnerPhoto
+                : item.sender_photo || resolvedPartnerPhoto
+            }
+            name={
+              talentId
+                ? resolvedPartnerName
+                : item.sender_name || resolvedPartnerName || "Partner"
+            }
+            role={partnerRole}
+            size={28}
+            style={{ marginRight: 6 }}
+          />
+        )}
 
         <TouchableOpacity
           activeOpacity={0.88}
@@ -1497,29 +1488,15 @@ export function ChatScreen({ route, navigation }) {
           )}
         </TouchableOpacity>
 
-        {isMe &&
-          (userPhoto ? (
-            <Image
-              source={{ uri: userPhoto }}
-              style={styles.chatAvatarSmall}
-              resizeMode="cover"
-            />
-          ) : (
-            <View
-              style={[
-                styles.chatAvatarPlaceholder,
-                styles.chatAvatarPlaceholderMe,
-              ]}
-            >
-              <Text
-                style={[styles.chatAvatarPlaceholderText, { color: "#FFFFFF" }]}
-              >
-                {(user?.nama_lengkap || user?.nama_usaha || user?.email || "U")
-                  .charAt(0)
-                  .toUpperCase()}
-              </Text>
-            </View>
-          ))}
+        {isMe && (
+          <Avatar
+            src={userPhoto}
+            name={user?.nama_lengkap || user?.nama_usaha || user?.email || "Saya"}
+            role={user?.role}
+            size={28}
+            style={{ marginLeft: 6 }}
+          />
+        )}
       </View>
     );
   };
@@ -1558,44 +1535,13 @@ export function ChatScreen({ route, navigation }) {
                           idx > 0 && { marginLeft: -7 },
                         ]}
                       >
-                        {mem.url_foto ? (
-                          <Image
-                            source={{ uri: mem.url_foto }}
-                            style={styles.headerStackAvatarImg}
-                            resizeMode="cover"
-                          />
-                        ) : (
-                          <View
-                            style={[
-                              styles.headerStackAvatarFallback,
-                              mem.is_owner
-                                ? { backgroundColor: "#FEF3C7" }
-                                : { backgroundColor: COLORS.brandIndigo },
-                            ]}
-                          >
-                            <Text
-                              style={[
-                                styles.headerStackAvatarText,
-                                mem.is_owner
-                                  ? { color: "#92400E" }
-                                  : { color: "#FFFFFF" },
-                              ]}
-                            >
-                              {(mem.nama_lengkap || "A")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </Text>
-                          </View>
-                        )}
-                        <View
-                          style={[
-                            styles.headerStackOnlineDot,
-                            {
-                              backgroundColor: mem.is_online
-                                ? "#10B981"
-                                : "#94A3B8",
-                            },
-                          ]}
+                        <Avatar
+                          src={mem.url_foto}
+                          name={mem.nama_lengkap || "Member"}
+                          role={mem.is_owner ? "UMKM" : "MHS"}
+                          size={24}
+                          showOnlineDot={true}
+                          isOnline={mem.is_online}
                         />
                       </View>
                     ))
@@ -1628,19 +1574,13 @@ export function ChatScreen({ route, navigation }) {
           ) : (
             <View style={styles.headerCenterWrap}>
               <View style={styles.headerCenterNameRow}>
-                {resolvedPartnerPhoto ? (
-                  <Image
-                    source={{ uri: resolvedPartnerPhoto }}
-                    style={styles.headerPartnerAvatarSmall}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={styles.headerPartnerAvatarPlaceholderSmall}>
-                    <Text style={styles.headerPartnerAvatarTextSmall}>
-                      {(resolvedPartnerName || "M").charAt(0).toUpperCase()}
-                    </Text>
-                  </View>
-                )}
+                <Avatar
+                  src={resolvedPartnerPhoto}
+                  name={resolvedPartnerName || "Mitra"}
+                  role={partnerRole}
+                  size={24}
+                  style={{ marginRight: 6 }}
+                />
                 <Text style={styles.headerName} numberOfLines={1}>
                   {resolvedPartnerName}
                 </Text>
@@ -2337,47 +2277,14 @@ export function ChatScreen({ route, navigation }) {
                   <View style={styles.rosterMemberCard}>
                     <View style={styles.rosterMemberLeft}>
                       <View style={{ position: "relative" }}>
-                        {mem.url_foto ? (
-                          <Image
-                            source={{ uri: mem.url_foto }}
-                            style={styles.rosterMemberAvatar}
-                            resizeMode="cover"
-                          />
-                        ) : (
-                          <View
-                            style={[
-                              styles.rosterMemberAvatar,
-                              mem.is_owner
-                                ? { backgroundColor: "#FEF3C7" }
-                                : { backgroundColor: COLORS.brandIndigo },
-                              {
-                                alignItems: "center",
-                                justifyContent: "center",
-                              },
-                            ]}
-                          >
-                            <Text
-                              style={{
-                                fontFamily: FONTS.bodyBold,
-                                fontSize: 13,
-                                color: mem.is_owner ? "#92400E" : "#FFFFFF",
-                              }}
-                            >
-                              {(mem.nama_lengkap || "A")
-                                .charAt(0)
-                                .toUpperCase()}
-                            </Text>
-                          </View>
-                        )}
-                        <View
-                          style={[
-                            styles.rosterOnlineDot,
-                            {
-                              backgroundColor: mem.is_online
-                                ? "#10B981"
-                                : "#94A3B8",
-                            },
-                          ]}
+                        <Avatar
+                          src={mem.url_foto}
+                          name={mem.nama_lengkap || "Member"}
+                          role={mem.is_owner ? "UMKM" : "MHS"}
+                          size={40}
+                          rounded="xl"
+                          showOnlineDot={true}
+                          isOnline={mem.is_online}
                         />
                       </View>
 

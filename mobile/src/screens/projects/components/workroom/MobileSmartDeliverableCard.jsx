@@ -11,6 +11,7 @@ import {
 import { FONTS } from "../../../../theme/fonts";
 import { formatDate } from "../../../../utils/formatDate";
 import { AppleGlossyCard } from "../../../../components/ui/AppleGlossyCard";
+import { Avatar } from "../../../../components/ui/Avatar";
 import { formatCurrency } from "../../../../utils/formatCurrency";
 import {
   ExternalLink,
@@ -175,19 +176,13 @@ export function MobileSmartDeliverableCard({
       {/* 1. Integrated Clean Header: Submitter + Role + Status */}
       <View style={styles.topHeader}>
         <View style={styles.submitterIdentity}>
-          {submitterPhoto ? (
-            <Image
-              source={{ uri: submitterPhoto }}
-              style={styles.submitterAvatar}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.submitterAvatarFallback}>
-              <Text style={styles.submitterAvatarInitial}>
-                {submitterName.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+          <Avatar
+            src={submitterPhoto}
+            name={submitterName}
+            role="MHS"
+            size={36}
+            style={{ marginRight: 10 }}
+          />
 
           <View style={styles.submitterInfo}>
             <View style={styles.nameRow}>

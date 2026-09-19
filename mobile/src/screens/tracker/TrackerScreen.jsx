@@ -23,6 +23,7 @@ import {
   ProjectBriefVectorIcon,
 } from "../../components/icons/CategoryIcons";
 import { Header, HeaderCircleButton } from "../../components/ui/Header";
+import { Avatar } from "../../components/ui/Avatar";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { TrackerCardSkeleton } from "../../components/ui/Skeleton";
 import { PebbleButton } from "../../components/ui/PebbleButton";
@@ -507,19 +508,13 @@ export function TrackerScreen({ navigation }) {
                     ) : // Individual Project Student Avatar
                     item.accepted_mhs_nama ? (
                       <View style={styles.singleTalentRow}>
-                        {item.accepted_mhs_foto ? (
-                          <Image
-                            source={{ uri: item.accepted_mhs_foto }}
-                            style={styles.talentAvatarImg}
-                            resizeMode="cover"
-                          />
-                        ) : (
-                          <View style={styles.talentAvatarCircle}>
-                            <Text style={styles.talentAvatarText}>
-                              {item.accepted_mhs_nama.charAt(0).toUpperCase()}
-                            </Text>
-                          </View>
-                        )}
+                        <Avatar
+                          src={item.accepted_mhs_foto}
+                          name={item.accepted_mhs_nama || "Mahasiswa"}
+                          role="MHS"
+                          size={24}
+                          style={{ marginRight: 6 }}
+                        />
                         <Text style={styles.talentNameText} numberOfLines={1}>
                           {item.accepted_mhs_nama}
                         </Text>
@@ -539,19 +534,13 @@ export function TrackerScreen({ navigation }) {
                   // Mahasiswa View: Show Client UMKM Avatar & Name
                   <View style={styles.talentAvatarRow}>
                     <View style={styles.singleTalentRow}>
-                      {clientPhoto ? (
-                        <Image
-                          source={{ uri: clientPhoto }}
-                          style={styles.talentAvatarImg}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <View style={styles.clientAvatarCircle}>
-                          <Text style={styles.clientAvatarText}>
-                            {(clientName || "K").charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                      )}
+                      <Avatar
+                        src={clientPhoto}
+                        name={clientName || "Klien UMKM"}
+                        role="UMKM"
+                        size={24}
+                        style={{ marginRight: 6 }}
+                      />
                       <Text style={styles.talentNameText} numberOfLines={1}>
                         {clientName}
                       </Text>

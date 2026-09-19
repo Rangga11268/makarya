@@ -18,6 +18,7 @@ import {
 } from "lucide-react-native";
 import { ProjectBriefVectorIcon } from "../icons/CategoryIcons";
 import { PebbleButton } from "../ui/PebbleButton";
+import { Avatar } from "../ui/Avatar";
 
 export function TalentBentoCard({
   talent = {},
@@ -68,23 +69,14 @@ export function TalentBentoCard({
 
       {/* Profile Info Header */}
       <View style={styles.headerRow}>
-        <View style={styles.avatarContainer}>
-          {talent.url_foto && !imgError ? (
-            <Image
-              source={{ uri: talent.url_foto }}
-              style={styles.avatarImage}
-              resizeMode="cover"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarInitialText}>{initial}</Text>
-            </View>
-          )}
-          <View style={styles.verifiedDotBadge}>
-            <CheckCircle2 size={12} color="#FFFFFF" fill={COLORS.success} />
-          </View>
-        </View>
+        <Avatar
+          src={talent.url_foto}
+          name={talentName}
+          role="MHS"
+          size={42}
+          showVerifiedDot={true}
+          isVerified={true}
+        />
 
         <View style={styles.headerMetaCol}>
           <Text style={styles.talentName} numberOfLines={1}>

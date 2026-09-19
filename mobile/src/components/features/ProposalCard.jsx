@@ -7,6 +7,7 @@ import { Badge } from "../ui/Badge";
 import { PebbleButton } from "../ui/PebbleButton";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { Star, Clock, ShieldCheck, Users } from "lucide-react-native";
+import { Avatar } from "../ui/Avatar";
 
 export function ProposalCard({
   proposal,
@@ -39,20 +40,13 @@ export function ProposalCard({
     <View style={styles.card}>
       {/* Mhs Info */}
       <View style={styles.header}>
-        {mhs.url_foto && !imgError ? (
-          <Image
-            source={{ uri: mhs.url_foto }}
-            style={styles.avatarImage}
-            resizeMode="cover"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {mhs.nama_lengkap ? mhs.nama_lengkap.charAt(0) : "M"}
-            </Text>
-          </View>
-        )}
+        <Avatar
+          src={mhs.url_foto}
+          name={mhs.nama_lengkap || "Mahasiswa"}
+          role="MHS"
+          size={42}
+          style={{ marginRight: 10 }}
+        />
 
         <View style={styles.info}>
           <Text style={styles.name}>

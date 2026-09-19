@@ -13,6 +13,7 @@ import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { Button } from "../../../components/ui/Button";
+import { Avatar } from "../../../components/ui/Avatar";
 import { AppleGlossyCard } from "../../../components/ui/AppleGlossyCard";
 import { AppleMessageIcon } from "../../../components/ui/AppleGlossyIcons";
 import { formatCurrency } from "../../../utils/formatCurrency";
@@ -185,26 +186,15 @@ export function WorkroomActiveView({
         <View style={styles.heroCard}>
           {/* Top: Partner Profile & Clean Chat Shortcut */}
           <View style={styles.partnerHeaderRow}>
-            <View style={styles.partnerAvatarWrap}>
-              {activePartnerPhoto ? (
-                <Image
-                  source={{ uri: activePartnerPhoto }}
-                  style={styles.partnerAvatar}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.partnerAvatarPlaceholder}>
-                  <Text style={styles.partnerAvatarText}>
-                    {(resolvedPartnerName || (isUmkmOwner ? "M" : "K"))
-                      .charAt(0)
-                      .toUpperCase()}
-                  </Text>
-                </View>
-              )}
-              <View style={styles.onlineBadge}>
-                <CheckCircle2 size={10} color="#FFFFFF" fill="#10B981" />
-              </View>
-            </View>
+            <Avatar
+              src={activePartnerPhoto}
+              name={resolvedPartnerName || (isUmkmOwner ? "Mahasiswa" : "Klien UMKM")}
+              role={isUmkmOwner ? "MHS" : "UMKM"}
+              size={48}
+              showVerifiedDot={true}
+              isVerified={true}
+              style={{ marginRight: 12 }}
+            />
 
             <View style={styles.partnerInfoCol}>
               <Text style={styles.partnerRoleLabel} numberOfLines={1}>

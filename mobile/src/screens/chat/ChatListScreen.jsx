@@ -20,6 +20,7 @@ import { chatApi } from "../../api";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
 import { Header } from "../../components/ui/Header";
+import { Avatar } from "../../components/ui/Avatar";
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
 import { ProjectBriefVectorIcon } from "../../components/icons/CategoryIcons";
 import {
@@ -270,50 +271,20 @@ export function ChatListScreen({ navigation }) {
                   },
                 ]}
               >
-                {item.members.slice(0, 2).map((m, mIdx) =>
-                  m.url_foto ? (
-                    <Image
-                      key={m.user_id || mIdx}
-                      source={{ uri: m.url_foto }}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 10,
-                        borderWidth: 1,
-                        borderColor: "#FFFFFF",
-                        marginLeft: mIdx > 0 ? -6 : 0,
-                      }}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View
-                      key={m.user_id || mIdx}
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 10,
-                        backgroundColor: m.is_owner
-                          ? "#FEF3C7"
-                          : COLORS.brandIndigo,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderWidth: 1,
-                        borderColor: "#FFFFFF",
-                        marginLeft: mIdx > 0 ? -6 : 0,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          fontFamily: FONTS.bodyBold,
-                          color: m.is_owner ? "#92400E" : "#FFFFFF",
-                        }}
-                      >
-                        {(m.nama_lengkap || "A").charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  ),
-                )}
+                {item.members.slice(0, 2).map((m, mIdx) => (
+                  <Avatar
+                    key={m.user_id || mIdx}
+                    src={m.url_foto}
+                    name={m.nama_lengkap || "Member"}
+                    role={m.is_owner ? "UMKM" : "MHS"}
+                    size={20}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "#FFFFFF",
+                      marginLeft: mIdx > 0 ? -6 : 0,
+                    }}
+                  />
+                ))}
               </View>
             ) : (
               <View
@@ -322,30 +293,26 @@ export function ChatListScreen({ navigation }) {
                 <Users size={20} color={COLORS.brandIndigo} />
               </View>
             )
-          ) : item.partner_photo ? (
-            <Image
-              source={{ uri: item.partner_photo }}
-              style={styles.avatarImg}
-              resizeMode="cover"
-            />
           ) : (
+            <Avatar
+              src={item.partner_photo}
+              name={item.partner_name || "Mitra"}
+              role={item.partner_role}
+              size={48}
+              showOnlineDot={true}
+              isOnline={item.is_online}
+            />
+          )}
+          {isGroup && (
             <View
               style={[
-                styles.avatarFallback,
-                isPartnerMhs ? styles.avatarMhs : styles.avatarUmkm,
+                styles.statusDotBadge,
+                {
+                  backgroundColor: item.is_online ? "#10B981" : "#94A3B8",
+                },
               ]}
-            >
-              <Text style={styles.avatarInitial}>{initial}</Text>
-            </View>
+            />
           )}
-          <View
-            style={[
-              styles.statusDotBadge,
-              {
-                backgroundColor: item.is_online ? "#10B981" : "#94A3B8",
-              },
-            ]}
-          />
         </View>
 
         {/* Conversation Details */}

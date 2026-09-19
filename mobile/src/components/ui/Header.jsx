@@ -17,6 +17,7 @@ import {
   MessageSquare,
   ShieldCheck,
 } from "lucide-react-native";
+import { Avatar } from "./Avatar";
 
 export function HeaderCircleButton({
   onPress,
@@ -216,16 +217,17 @@ export function Header({
                 ? React.createElement(rightIcon, { size: 18, color: "#0F172A" })
                 : null}
           </TouchableOpacity>
-        ) : userProfile && (userProfile.photoUrl || userProfile.url_foto) ? (
+        ) : userProfile ? (
           <TouchableOpacity
             onPress={onProfilePress}
             style={styles.headerCircleBtn}
             activeOpacity={0.8}
           >
-            <Image
-              source={{ uri: userProfile.photoUrl || userProfile.url_foto }}
-              style={styles.miniAvatarImage}
-              resizeMode="cover"
+            <Avatar
+              src={userProfile.photoUrl || userProfile.url_foto}
+              name={userProfile.nama || userProfile.name || userProfile.nama_lengkap}
+              role={userProfile.role}
+              size={34}
             />
           </TouchableOpacity>
         ) : (

@@ -15,6 +15,7 @@ import { FONTS } from "../../../theme/fonts";
 import { projectApi } from "../../../api";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
+import { Avatar } from "../../../components/ui/Avatar";
 import { renderProjectCategoryVectorIcon } from "../../../components/icons/CategoryIcons";
 import {
   WorkspaceDeskVectorIcon,
@@ -301,18 +302,14 @@ export function WorkspaceEmptyRecommendationDeck({
                     {item.judul}
                   </Text>
 
-                  {/* Client Info */}
                   <View style={styles.clientRow}>
-                    {clientPhoto ? (
-                      <Image
-                        source={{ uri: clientPhoto }}
-                        style={styles.clientAvatar}
-                      />
-                    ) : (
-                      <View style={styles.clientAvatarFallback}>
-                        <Building2 size={11} color={COLORS.brandIndigo} />
-                      </View>
-                    )}
+                    <Avatar
+                      src={clientPhoto}
+                      name={clientName}
+                      role="UMKM"
+                      size={20}
+                      style={{ marginRight: 6 }}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={styles.clientNameText} numberOfLines={1}>
                         {clientName}

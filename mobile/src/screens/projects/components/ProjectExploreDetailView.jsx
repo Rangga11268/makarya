@@ -11,6 +11,7 @@ import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
 import { PebbleButton } from "../../../components/ui/PebbleButton";
 import { ProposalCard } from "../../../components/features/ProposalCard";
+import { Avatar } from "../../../components/ui/Avatar";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDate } from "../../../utils/formatDate";
 import { formatStatus } from "../../../utils/formatStatus";
@@ -277,21 +278,15 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
-              {/* Avatar with Status Dot */}
-              <View style={styles.avatarContainer}>
-                {clientPhoto ? (
-                  <Image
-                    source={{ uri: clientPhoto }}
-                    style={styles.sellerAvatar}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={styles.sellerAvatarFallback}>
-                    <Building2 size={20} color="#2563EB" />
-                  </View>
-                )}
-                <View style={styles.sellerOnlineDot} />
-              </View>
+              <Avatar
+                src={clientPhoto}
+                name={clientDisplayName || "Klien UMKM"}
+                role="UMKM"
+                size={44}
+                showOnlineDot={true}
+                isOnline={true}
+                style={{ marginRight: 12 }}
+              />
 
               {/* Name & Badges */}
               <View style={styles.sellerMetaCol}>
@@ -773,17 +768,13 @@ export function ProjectExploreDetailView({
             </View>
 
             <View style={styles.clientProfileRow}>
-              {clientPhoto ? (
-                <Image
-                  source={{ uri: clientPhoto }}
-                  style={styles.clientAvatar}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.clientAvatarFallback}>
-                  <Building2 size={20} color="#2563EB" />
-                </View>
-              )}
+              <Avatar
+                src={clientPhoto}
+                name={clientDisplayName || "Klien UMKM"}
+                role="UMKM"
+                size={44}
+                style={{ marginRight: 12 }}
+              />
 
               <View style={styles.clientInfoCol}>
                 <Text
@@ -992,20 +983,14 @@ export function ProjectExploreDetailView({
         onPress={handleOpenChat}
         activeOpacity={0.85}
       >
-        <View style={styles.floatingAvatarWrap}>
-          {clientPhoto ? (
-            <Image
-              source={{ uri: clientPhoto }}
-              style={styles.floatingAvatar}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.floatingAvatarFallback}>
-              <Building2 size={13} color="#2563EB" />
-            </View>
-          )}
-          <View style={styles.floatingOnlineDot} />
-        </View>
+        <Avatar
+          src={clientPhoto}
+          name={clientDisplayName || "Klien UMKM"}
+          role="UMKM"
+          size={24}
+          showOnlineDot={true}
+          isOnline={true}
+        />
         <Text style={styles.floatingChatText}>Chat</Text>
       </TouchableOpacity>
 

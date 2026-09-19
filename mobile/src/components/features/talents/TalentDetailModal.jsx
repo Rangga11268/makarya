@@ -27,6 +27,7 @@ import {
   LinkedinVectorIcon,
 } from "../../icons/ProfileVectorIcons";
 import { PebbleButton } from "../../ui/PebbleButton";
+import { Avatar } from "../../ui/Avatar";
 
 export function TalentDetailModal({
   visible,
@@ -83,21 +84,18 @@ export function TalentDetailModal({
             </View>
 
             <View style={styles.detailProfileTop}>
-              {talent.url_foto ? (
-                <Image
-                  source={{ uri: talent.url_foto }}
-                  style={styles.detailAvatarImage}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.detailAvatarBox}>
-                  <Text style={styles.detailAvatarLetter}>
-                    {talent.nama_lengkap
-                      ? talent.nama_lengkap.charAt(0).toUpperCase()
-                      : "M"}
-                  </Text>
-                </View>
-              )}
+              <Avatar
+                src={talent.url_foto}
+                name={talent.nama_lengkap}
+                role="MHS"
+                size={64}
+                rounded="2xl"
+                style={{
+                  borderWidth: 3,
+                  borderColor: "#FFFFFF",
+                  marginRight: 14,
+                }}
+              />
 
               <View style={styles.detailInfoCol}>
                 <View style={styles.nameRow}>

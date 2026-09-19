@@ -22,6 +22,7 @@ import { Button } from "../../components/ui/Button";
 import { PebbleButton } from "../../components/ui/PebbleButton";
 import { OrganicRibbonBackground } from "../../components/ui/OrganicRibbonBackground";
 import { Input } from "../../components/ui/Input";
+import { Avatar } from "../../components/ui/Avatar";
 import { EditProfileModal } from "../../components/features/profile/EditProfileModal";
 import { AddSkillModal } from "../../components/features/profile/AddSkillModal";
 import { useAuthStore } from "../../store/authStore";
@@ -581,24 +582,18 @@ export function ProfileScreen({ navigation }) {
               activeOpacity={0.8}
               onPress={handlePickPhoto}
               disabled={isUploadingPhoto}
-              style={[
-                styles.avatarCircle,
-                isMahasiswa ? styles.avatarMhs : styles.avatarUmkm,
-              ]}
+              style={{ position: "relative" }}
             >
-              {user?.url_foto ? (
-                <Image
-                  source={{ uri: user.url_foto }}
-                  style={styles.avatarImage}
-                  resizeMode="cover"
-                />
-              ) : (
-                <Text style={styles.avatarInitial}>
-                  {isMahasiswa
-                    ? (user?.nama_lengkap || "D").charAt(0).toUpperCase()
-                    : (user?.nama_usaha || "U").charAt(0).toUpperCase()}
-                </Text>
-              )}
+              <Avatar
+                src={user?.url_foto}
+                name={isMahasiswa ? user?.nama_lengkap || user?.email : user?.nama_usaha || user?.email}
+                role={user?.role}
+                size={76}
+                style={{
+                  borderWidth: 3,
+                  borderColor: "#FFFFFF",
+                }}
+              />
 
               {isUploadingPhoto ? (
                 <View style={styles.avatarLoadingOverlay}>

@@ -12,6 +12,7 @@ import { FONTS } from "../../theme/fonts";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { Users, Clock, ChevronRight, Check } from "lucide-react-native";
+import { Avatar } from "../ui/Avatar";
 
 export const getCategoryBanner = (cat) => {
   switch (cat) {
@@ -183,18 +184,13 @@ export function ProjectCard({ project, onPress }) {
       <View style={styles.cardBody}>
         {/* Client Row */}
         <View style={styles.clientRow}>
-          {clientPhoto && !imgError ? (
-            <Image
-              source={{ uri: clientPhoto }}
-              style={styles.clientAvatarImage}
-              resizeMode="cover"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <View style={styles.clientAvatarFallback}>
-              <Text style={styles.clientAvatarText}>{clientInitial}</Text>
-            </View>
-          )}
+          <Avatar
+            src={clientPhoto}
+            name={clientName}
+            role="UMKM"
+            size={22}
+            style={{ marginRight: 6 }}
+          />
 
           <Text style={styles.clientNameText} numberOfLines={1}>
             {clientName}

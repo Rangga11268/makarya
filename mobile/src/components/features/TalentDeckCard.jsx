@@ -18,6 +18,7 @@ import { ProjectBriefVectorIcon } from "../icons/CategoryIcons";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { PebbleButton } from "../ui/PebbleButton";
+import { Avatar } from "../ui/Avatar";
 
 export function TalentDeckCard({
   talent,
@@ -83,18 +84,14 @@ export function TalentDeckCard({
         >
           {/* Top Header Row */}
           <View style={styles.topRow}>
-            <View style={styles.avatarGroup}>
-              {avatarUrl ? (
-                <Image source={{ uri: avatarUrl }} style={styles.avatarImg} />
-              ) : (
-                <View style={styles.avatarInitialWrap}>
-                  <Text style={styles.avatarInitialText}>{initial}</Text>
-                </View>
-              )}
-              <View style={styles.verifiedDot}>
-                <CheckCircle2 size={13} color="#FFFFFF" fill="#059669" />
-              </View>
-            </View>
+            <Avatar
+              src={avatarUrl}
+              name={talentName}
+              role="MHS"
+              size={54}
+              showVerifiedDot={true}
+              isVerified={true}
+            />
 
             {/* Quick Action Pills on Top Right */}
             <View style={styles.topActionsRow}>
