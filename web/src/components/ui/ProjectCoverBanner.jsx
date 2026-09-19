@@ -50,7 +50,8 @@ export function ProjectCoverBanner({
       case "COPYWRITING":
         return {
           gradient: "from-emerald-950 via-teal-950 to-slate-950",
-          accentColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+          accentColor:
+            "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
           icon: <CategoryCopySvg size={48} className="text-emerald-400/30" />,
         };
       case "ADMIN_DATA":
@@ -85,15 +86,13 @@ export function ProjectCoverBanner({
         >
           {/* Subtle Grid Accent Lines */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px]" />
-          
+
           {/* Decorative Glow Orb */}
           <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-indigo-500/10 blur-3xl" />
           <div className="absolute -bottom-12 -left-12 w-56 h-56 rounded-full bg-purple-500/10 blur-3xl" />
 
           {/* Center Watermark Icon */}
-          <div className="transform scale-150 opacity-25">
-            {theme.icon}
-          </div>
+          <div className="transform scale-150 opacity-25">{theme.icon}</div>
         </div>
       )}
 

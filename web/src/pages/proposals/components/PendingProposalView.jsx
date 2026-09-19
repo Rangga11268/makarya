@@ -333,7 +333,12 @@ export function PendingProposalView({
             <div className="flex items-center gap-3 p-3 bg-canvas rounded-2xl border border-border">
               <Avatar
                 src={proposal.project_umkm_foto || proposal.umkm_foto}
-                name={proposal.project_umkm_nama || proposal.umkm_nama || proposal.umkm_profile?.nama_usaha || "Klien UMKM"}
+                name={
+                  proposal.project_umkm_nama ||
+                  proposal.umkm_nama ||
+                  proposal.umkm_profile?.nama_usaha ||
+                  "Klien UMKM"
+                }
                 role="UMKM"
                 size="md"
                 className="rounded-xl border border-border shrink-0"

@@ -515,7 +515,12 @@ function MhsProposalGridCard({ proposal, submission, onOpen }) {
         <div className="p-3 bg-canvas rounded-2xl border border-border flex items-center gap-2.5">
           <Avatar
             src={proposal.project_umkm_foto || proposal.umkm_foto}
-            name={proposal.project_umkm_nama || proposal.umkm_nama || proposal.umkm_profile?.nama_usaha || "Klien UMKM"}
+            name={
+              proposal.project_umkm_nama ||
+              proposal.umkm_nama ||
+              proposal.umkm_profile?.nama_usaha ||
+              "Klien UMKM"
+            }
             role="UMKM"
             size="xs"
             className="border border-border shrink-0"

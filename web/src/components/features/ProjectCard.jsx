@@ -136,12 +136,7 @@ export function ProjectCard({ project }) {
         <div className="p-4">
           {/* Client Header */}
           <div className="flex items-center gap-2 mb-2 min-w-0">
-            <Avatar
-              src={clientPhoto}
-              name={clientName}
-              role="UMKM"
-              size="xs"
-            />
+            <Avatar src={clientPhoto} name={clientName} role="UMKM" size="xs" />
             <span className="text-xs font-medium text-slate-600 truncate">
               {clientName}
             </span>

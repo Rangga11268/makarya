@@ -83,7 +83,7 @@ export function PortfolioPage() {
         is_showcase: updatedStatus,
       });
       setCertificates((prev) =>
-        prev.map((c) => (c.id === cert.id ? res.data : c))
+        prev.map((c) => (c.id === cert.id ? res.data : c)),
       );
       addToast({
         type: "success",
@@ -122,10 +122,14 @@ export function PortfolioPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
-            {isUmkm ? "Profil & Riwayat Kemitraan" : "Portofolio Karya & Sertifikasi"}
+            {isUmkm
+              ? "Profil & Riwayat Kemitraan"
+              : "Portofolio Karya & Sertifikasi"}
           </span>
           <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight leading-tight mt-1">
-            {isUmkm ? "Rekam Jejak Usaha UMKM" : "Karya Terverifikasi & Sertifikat Resmi"}
+            {isUmkm
+              ? "Rekam Jejak Usaha UMKM"
+              : "Karya Terverifikasi & Sertifikat Resmi"}
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-1">
             {isUmkm
@@ -153,7 +157,12 @@ export function PortfolioPage() {
         <div className="flex items-center gap-4 text-center sm:text-left">
           <Avatar
             src={user?.url_foto}
-            name={user?.nama || user?.nama_lengkap || user?.nama_usaha || user?.email}
+            name={
+              user?.nama ||
+              user?.nama_lengkap ||
+              user?.nama_usaha ||
+              user?.email
+            }
             role={user?.role}
             size="2xl"
             className="rounded-2xl shrink-0 shadow-xs border-2 border-slate-100"
@@ -240,12 +249,14 @@ export function PortfolioPage() {
                 </h2>
               </div>
               <p className="text-xs text-muted mt-0.5">
-                Setiap proyek selesai secara otomatis menghasilkan sertifikat resmi dan dapat Anda tampilkan di profil publik talenta.
+                Setiap proyek selesai secara otomatis menghasilkan sertifikat
+                resmi dan dapat Anda tampilkan di profil publik talenta.
               </p>
             </div>
             {certificates.length > 0 && (
               <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full w-fit">
-                {certificates.filter((c) => c.is_showcase).length} dari {certificates.length} tampil publik
+                {certificates.filter((c) => c.is_showcase).length} dari{" "}
+                {certificates.length} tampil publik
               </span>
             )}
           </div>
@@ -268,10 +279,16 @@ export function PortfolioPage() {
                 Belum Ada Sertifikat Proyek
               </h3>
               <p className="text-xs text-muted max-w-md mx-auto">
-                Selesaikan penugasan proyek UMKM pertama Anda hingga disetujui klien untuk secara otomatis memperoleh sertifikat digital resmi dan showcase portofolio.
+                Selesaikan penugasan proyek UMKM pertama Anda hingga disetujui
+                klien untuk secara otomatis memperoleh sertifikat digital resmi
+                dan showcase portofolio.
               </p>
               <Link to="/projects">
-                <Button variant="brand" size="sm" className="text-xs font-bold shadow-xs">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="text-xs font-bold shadow-xs"
+                >
                   Cari Lowongan Proyek UMKM
                 </Button>
               </Link>
@@ -306,7 +323,10 @@ export function PortfolioPage() {
                       </h3>
                       <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-0.5">
                         <Building2 className="w-3.5 h-3.5 text-muted" />
-                        Klien: <strong className="text-dark-900">{cert.client_name}</strong>
+                        Klien:{" "}
+                        <strong className="text-dark-900">
+                          {cert.client_name}
+                        </strong>
                       </p>
                     </div>
 

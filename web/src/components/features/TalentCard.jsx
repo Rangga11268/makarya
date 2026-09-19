@@ -14,12 +14,7 @@ export function TalentCard({
     <div className="bg-surface rounded-2xl border border-border p-5 flex flex-col justify-between hover:border-brand-indigo/30 hover:shadow-xs transition-all duration-200 group">
       <div>
         <div className="flex items-start gap-3.5 mb-3.5">
-          <Avatar
-            src={avatarUrl}
-            name={name}
-            role="MHS"
-            size="lg"
-          />
+          <Avatar src={avatarUrl} name={name} role="MHS" size="lg" />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">

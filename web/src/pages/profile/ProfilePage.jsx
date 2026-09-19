@@ -452,7 +452,9 @@ export function ProfilePage() {
             />
             <Avatar
               src={user?.url_foto}
-              name={user?.nama_lengkap || user?.nama_usaha || user?.email || "User"}
+              name={
+                user?.nama_lengkap || user?.nama_usaha || user?.email || "User"
+              }
               role={user?.role}
               size="2xl"
               className="shadow-md border-4 border-white bg-surface"

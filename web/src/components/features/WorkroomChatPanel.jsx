@@ -1551,7 +1551,12 @@ export function WorkroomChatPanel({
                   {isMe && (
                     <Avatar
                       src={user?.url_foto}
-                      name={user?.nama_lengkap || user?.nama_usaha || user?.email || "Saya"}
+                      name={
+                        user?.nama_lengkap ||
+                        user?.nama_usaha ||
+                        user?.email ||
+                        "Saya"
+                      }
                       role={user?.role}
                       size="xs"
                       className="mt-0.5 border border-border shadow-xs"
