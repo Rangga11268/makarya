@@ -13,6 +13,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { Users, Clock, ChevronRight, Check } from "lucide-react-native";
 import { Avatar } from "../ui/Avatar";
+import { ProjectCoverBanner } from "../ui/ProjectCoverBanner";
 
 export const getCategoryBanner = (cat) => {
   switch (cat) {
@@ -133,11 +134,10 @@ export function ProjectCard({ project, onPress }) {
     >
       {/* 1. Cover Banner 16:9 Image with Overlays */}
       <View style={styles.bannerContainer}>
-        <Image
-          source={{ uri: bannerUri || getCategoryBanner(project.kategori) }}
-          style={styles.bannerImage}
-          resizeMode="cover"
-          onError={() => setBannerError(true)}
+        <ProjectCoverBanner
+          src={clientUploadedBanner}
+          category={project.kategori}
+          height={140}
         />
         <View style={styles.bannerGradientOverlay} />
 

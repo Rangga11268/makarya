@@ -37,7 +37,7 @@ import {
 } from "lucide-react-native";
 import { projectApi } from "../../../api";
 import { MobileEditProjectModal } from "./MobileEditProjectModal";
-import { getCategoryBanner } from "../../../components/features/ProjectCard";
+import { ProjectCoverBanner } from "../../../components/ui/ProjectCoverBanner";
 
 export function ProjectExploreDetailView({
   project,
@@ -303,39 +303,24 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. HERO MEDIA BANNER (Edge-to-Edge Fiverr Style Cover Image)      */}
-          {/* 1. HERO MEDIA BANNER (16:9 Clean Aspect Ratio)                    */}
+          {/* 1. HERO MEDIA BANNER (Web-Identical SVG Mesh Canvas Fallback)     */}
           {/* ================================================================= */}
-          <View style={styles.bannerContainer}>
-            <Image
-              source={{
-                uri: projectBannerUri || getCategoryBanner(project.kategori),
-              }}
-              style={styles.bannerImage}
-              resizeMode="cover"
-              onError={() => setBannerError(true)}
-            />
-            <View style={styles.bannerOverlayGradient} />
-
-            {/* Category Pill Tag */}
-            <View style={styles.bannerCategoryPill}>
-              <Briefcase size={11} color="#FFFFFF" />
-              <Text style={styles.bannerCategoryText}>
-                {project.kategori
-                  ? String(project.kategori).toUpperCase()
-                  : "UMKM DIGITAL"}
-              </Text>
-            </View>
-
-            {/* Carousel Page Counter Indicator (Fiverr Pro 1/2) */}
-            <View style={styles.bannerPageBadge}>
-              <Text style={styles.bannerPageText}>1/2</Text>
-            </View>
-          </View>
+          <ProjectCoverBanner
+            src={
+              project.banner_url ||
+              project.url_banner ||
+              project.thumbnail_url ||
+              project.umkm_profile?.banner_url ||
+              project.umkm_profile?.url_foto_usaha
+            }
+            category={project.kategori}
+            title={project.judul}
+            height={195}
+            style={{ marginBottom: 16 }}
+          />
 
           {/* ================================================================= */}
-          {/* 2. SELLER / MITRA UMKM IDENTITY (Forensic Fiverr Pro Header)      */}
-          {/* 2. MITRA UMKM IDENTITY (Clean Typographic Metadata)                */}
+          {/* 2. MITRA UMKM IDENTITY (Clean Title + Verified Checkmark Icon)    */}
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
@@ -344,13 +329,11 @@ export function ProjectExploreDetailView({
                 name={clientDisplayName || "Klien UMKM"}
                 role="UMKM"
                 size={44}
-                size={46}
                 showOnlineDot={true}
                 isOnline={true}
                 style={{ marginRight: 12 }}
               />
 
-              {/* Name & Badges */}
               <View style={styles.sellerMetaCol}>
                 <View style={styles.sellerNameRow}>
                   <Text
@@ -360,33 +343,17 @@ export function ProjectExploreDetailView({
                   >
                     {clientDisplayName || "Mitra Klien UMKM"}
                   </Text>
-                  <ChevronDown
-                    size={18}
-                    color="#0F172A"
-                    style={styles.chevronIcon}
+                  <CheckCircle2
+                    size={16}
+                    color="#059669"
+                    fill="#059669"
+                    stroke="#FFFFFF"
+                    strokeWidth={2}
+                    style={{ marginLeft: 6 }}
                   />
-                  <View style={styles.verifiedInlineTag}>
-                    <CheckCircle2 size={12} color="#059669" />
-                    <Text style={styles.verifiedInlineText}>Verified</Text>
-                  </View>
                 </View>
 
-                {/* Fiverr Style Badges Row */}
-                <View style={styles.badgesWrapper}>
-                  {/* Amber Badge: Top Rated / Mitra Terpilih ◆◆◆ */}
-                  <View style={styles.topRatedPill}>
-                    <Text style={styles.topRatedText}>
-                      Mitra Terpilih{" "}
-                      <Text style={styles.diamondSymbols}>◆◆◆</Text>
-                    </Text>
-                  </View>
-
-                  {/* Indigo Badge: Vetted Pro / 100% Escrow */}
-                  <View style={styles.vettedProPill}>
-                    <Text style={styles.vettedProText}>100% Escrow</Text>
-                  </View>
-                </View>
-                {/* Clean Subtitle Metadata with Dot Separators */}
+                {/* Single Clean Metadata Line with Dot Separators */}
                 <Text style={styles.sellerSubMetaText} numberOfLines={1}>
                   {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
                   {" • "}
