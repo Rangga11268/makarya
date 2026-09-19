@@ -218,25 +218,15 @@ export function ProjectCard({ project, onPress }) {
           {project.judul}
         </Text>
 
-        {/* Spec Chips (Team/Individu, Escrow) */}
-        <View style={styles.metadataRow}>
-          {isTeam ? (
-            <View style={styles.teamChip}>
-              <Users size={11} color="#6D28D9" />
-              <Text style={styles.teamTagText}>
-                {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.individuChip}>
-              <Text style={styles.metaSubtleText}>Individu</Text>
-            </View>
-          )}
-
-          <View style={styles.escrowChip}>
-            <Text style={styles.escrowChipText}>100% Escrow</Text>
+        {/* Spec Tag (Clean, neutral, only shown if team) */}
+        {isTeam && (
+          <View style={styles.teamTagWrapper}>
+            <Users size={11} color="#475569" />
+            <Text style={styles.teamTagText}>
+              {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
+            </Text>
           </View>
-        </View>
+        )}
 
         {/* Footer: Budget & Applicants */}
         <View style={styles.footerRow}>
@@ -439,48 +429,24 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 12,
   },
-  teamChip: {
+  teamTagWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
-    backgroundColor: "#F5F3FF",
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#EDE9FE",
-  },
-  teamTagText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
-    color: "#6D28D9",
-  },
-  individuChip: {
-    backgroundColor: "#F8FAFC",
+    gap: 4,
+    backgroundColor: "#F1F5F9",
     paddingHorizontal: 7,
     paddingVertical: 2.5,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    alignSelf: "flex-start",
+    marginBottom: 10,
   },
-  metaSubtleText: {
-    fontFamily: FONTS.bodyRegular,
+  teamTagText: {
+    fontFamily: FONTS.bodyMedium,
     fontSize: 10.5,
-    color: COLORS.textMuted,
-  },
-  escrowChip: {
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#D1FAE5",
-  },
-  escrowChipText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
-    color: "#059669",
-    fontWeight: "700",
+    color: "#475569",
+    fontWeight: "600",
   },
   footerRow: {
     flexDirection: "row",

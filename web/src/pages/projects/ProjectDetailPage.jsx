@@ -343,9 +343,6 @@ export function ProjectDetailPage() {
                   <Building2 className="w-3.5 h-3.5 text-brand-indigo" />
                   Kemitraan Resmi: {project.umkm_profile.nama_usaha}
                 </span>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-emerald-500/80 backdrop-blur-md border border-white/30 text-white shadow-xs">
-                  100% Escrow Protected
-                </span>
               </div>
             )}
           </ProjectCoverBanner>

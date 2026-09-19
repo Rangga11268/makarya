@@ -370,7 +370,7 @@ export function ProjectExploreDetailView({
           <View style={styles.headlineSection}>
             <Text style={styles.gigHeadline}>{project.judul}</Text>
 
-            {/* 4-Stat Metric Cards Grid */}
+            {/* 3-Stat Metric Cards Grid */}
             <View style={styles.metricsGrid}>
               <View style={styles.metricItem}>
                 <Text style={styles.metricLabel}>Pagu Anggaran</Text>
@@ -397,14 +397,6 @@ export function ProjectExploreDetailView({
                 <Text style={styles.metricValue} numberOfLines={1}>
                   {isTeam ? `Tim (${slots.length} Peran)` : "Individu"}
                 </Text>
-              </View>
-
-              <View style={[styles.metricItem, styles.metricItemEscrow]}>
-                <Text style={styles.metricLabelEscrow}>Proteksi Dana</Text>
-                <View style={styles.escrowInlineRow}>
-                  <ShieldCheck size={12} color="#059669" />
-                  <Text style={styles.metricValueEscrow}>100% Escrow</Text>
-                </View>
               </View>
             </View>
           </View>
