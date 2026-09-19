@@ -1121,13 +1121,6 @@ export function ProjectExploreDetailView({
                 </Text>
               </View>
             ) : isUmkmOwner ? (
-              <PebbleButton
-                variant="pearl"
-                size="sm"
-                label={`${proposals.length} Pelamar`}
-                icon={Users}
-                onPress={() => setActiveTab("proposals")}
-              />
               <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
                 {(project.status === "OPEN" || project.status === "BIDDING") && (
                   <PebbleButton
