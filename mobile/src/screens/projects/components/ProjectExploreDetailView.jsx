@@ -505,7 +505,6 @@ export function ProjectExploreDetailView({
               <Text
                 style={styles.gigDescription}
                 numberOfLines={
-                  isLongDescription && !isBriefExpanded ? 4 : undefined
                   isLongDescription && !isBriefExpanded ? 5 : undefined
                 }
               >
@@ -520,140 +519,10 @@ export function ProjectExploreDetailView({
                   activeOpacity={0.7}
                 >
                   <Text style={styles.moreToggleText}>
-                    {isBriefExpanded ? "tutup ringkasan" : "more"}
                     {isBriefExpanded ? "Tutup ringkasan" : "Baca selengkapnya"}
                   </Text>
                 </TouchableOpacity>
               )}
-            </View>
-          </View>
-
-          {/* ================================================================= */}
-          {/* 4. SINGLE PACKAGE PRICING & SPECS (Forensic Fiverr Screen 4)      */}
-          {/* ================================================================= */}
-          <View style={styles.packageSection}>
-            <View style={styles.packageDetailBody}>
-              <View style={styles.packageHeaderRow}>
-                <Text style={styles.packageDetailTitle}>
-                  {isTeam ? "Paket Kolaborasi Tim" : "Paket Pengerjaan Tuntas"}
-                </Text>
-                <Text style={styles.packagePriceHighlight}>
-                  {formatCurrency(budgetMax)}
-                </Text>
-              </View>
-
-              <Text style={styles.packageDetailDesc}>
-                Pengerjaan deliverable tuntas bergaransi escrow dengan proteksi
-                0% komisi bagi talenta mahasiswa.
-              </Text>
-
-              {/* Spec Key-Value Table (Forensic to Fiverr Screen 4) */}
-              <View style={styles.specKeyValues}>
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Batas Revisi</Text>
-                  <Text style={styles.specValueText}>
-                    2x Revisi Terstruktur
-                  </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Tenggat Pengerjaan</Text>
-                  <Text style={styles.specValueText}>
-                    {formatDate(project.deadline)}
-                  </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Cakupan Kerja</Text>
-                  <Text style={styles.specValueText}>
-                    {isTeam
-                      ? "Formasi Tim Kolaborasi"
-                      : "Pengerjaan Mandiri Tuntas"}
-                  </Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Sertifikat Portofolio</Text>
-                  <Text style={styles.specValueText}>Resmi Ber-QR (SKPI)</Text>
-                </View>
-
-                <View style={styles.specKeyValueRow}>
-                  <Text style={styles.specKeyText}>Proteksi Pembayaran</Text>
-                  <Text style={[styles.specValueText, { color: "#059669" }]}>
-                    Garansi Escrow 100% Aman
-                  </Text>
-                </View>
-              </View>
-
-              {/* Apply / CTA Button (Apple-Style Signature PebbleButton) */}
-              <View style={styles.packageCtaWrapper}>
-                {isUmkmOwner &&
-                (project.status === "OPEN" || project.status === "BIDDING") ? (
-                  <View style={{ gap: 8, width: "100%" }}>
-                    <PebbleButton
-                      variant="sapphire"
-                      size="md"
-                      label="Edit Spesifikasi Proyek"
-                      icon={Edit3}
-                      onPress={handleEditPress}
-                      style={{ width: "100%" }}
-                    />
-                    <TouchableOpacity
-                      onPress={handleDeletePress}
-                      style={{
-                        paddingVertical: 10,
-                        alignItems: "center",
-                        borderRadius: 12,
-                        backgroundColor: "#FEF2F2",
-                        borderWidth: 1,
-                        borderColor: "#FECACA",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontFamily: FONTS.bold,
-                          color: "#DC2626",
-                        }}
-                      >
-                        Hapus Proyek Ini
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : canApply ? (
-                  <PebbleButton
-                    variant="sapphire"
-                    size="md"
-                    label={`Lamar Proyek (${formatCurrency(budgetMax)})`}
-                    icon={Send}
-                    onPress={handleApplyPress}
-                    style={{ width: "100%" }}
-                  />
-                ) : myExistingProposal ? (
-                  <View style={styles.appliedSuccessBanner}>
-                    <CheckCircle2 size={16} color="#059669" />
-                    <Text style={styles.appliedSuccessText}>
-                      {isAcceptedProposal
-                        ? "Lamaran Diterima Klien UMKM"
-                        : myExistingProposal.status === "REJECTED"
-                          ? "Lamaran Tidak Terpilih"
-                          : "Lamaran Berhasil Dikirim"}
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-
-              {/* Vetted By Fiverr / Makarya Pro Box */}
-              <View style={styles.vettedProBox}>
-                <Text style={styles.vettedProBoxTitle}>
-                  Terverifikasi oleh Makarya Pro
-                </Text>
-                <Text style={styles.vettedProBoxDesc}>
-                  {clientDisplayName || "Mitra UMKM"} telah melewati verifikasi
-                  kelayakan usaha dan dana honor diamankan sepenuhnya di Escrow
-                  Makarya.
-                </Text>
-              </View>
             </View>
           </View>
 
