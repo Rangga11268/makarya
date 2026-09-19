@@ -919,15 +919,6 @@ export function ProjectDetailPage() {
             </div>
 
             {isOwner ? (
-              <Link to="/proposals">
-                <Button
-                  variant="brand"
-                  size="lg"
-                  className="w-full text-xs font-bold shadow-brand"
-                >
-                  Kelola Pelamar Proyek Ini
-                </Button>
-              </Link>
               <div className="space-y-2.5">
                 <Link to={`/proposals?project=${project.id}`} className="block">
                   <Button
@@ -940,7 +931,8 @@ export function ProjectDetailPage() {
                   </Button>
                 </Link>
 
-                {(project.status === "OPEN" || project.status === "BIDDING") && (
+                {(project.status === "OPEN" ||
+                  project.status === "BIDDING") && (
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button
                       type="button"
