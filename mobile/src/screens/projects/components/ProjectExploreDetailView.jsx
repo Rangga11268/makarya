@@ -471,7 +471,6 @@ export function ProjectExploreDetailView({
 
               {/* Apply / CTA Button (Apple-Style Signature PebbleButton) */}
               <View style={styles.packageCtaWrapper}>
-                {canApply ? (
                 {isUmkmOwner &&
                 (project.status === "OPEN" || project.status === "BIDDING") ? (
                   <View style={{ gap: 8, width: "100%" }}>
