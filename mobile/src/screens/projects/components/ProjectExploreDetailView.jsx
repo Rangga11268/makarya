@@ -353,12 +353,11 @@ export function ProjectExploreDetailView({
                   />
                 </View>
 
-                {/* Single Clean Metadata Line with Dot Separators */}
+                {/* Single Clean Metadata Line */}
                 <Text style={styles.sellerSubMetaText} numberOfLines={1}>
                   {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
-                  {" • "}
+                  {", "}
                   {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
-                  {ratingAvgScore ? ` • ⭐ ${ratingAvgScore}` : ""}
                 </Text>
               </View>
             </View>
@@ -837,13 +836,13 @@ export function ProjectExploreDetailView({
                     <ShieldCheck size={10} color="#059669" strokeWidth={2.5} />
                     <Text style={styles.verifiedTagText}>Terverifikasi</Text>
                   </View>
-                  <Text style={styles.clientMetaDot}>•</Text>
                   <Text
                     style={styles.locationText}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"} •{" "}
+                    {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
+                    {", "}
                     {project.lokasi ||
                       project.umkm_profile?.kota ||
                       "Indonesia"}
