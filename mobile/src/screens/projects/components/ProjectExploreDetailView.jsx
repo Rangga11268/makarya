@@ -32,7 +32,11 @@ import {
   Star,
   GraduationCap,
   Sparkles,
+  Edit3,
+  Trash2,
 } from "lucide-react-native";
+import { projectApi } from "../../../api";
+import { MobileEditProjectModal } from "./MobileEditProjectModal";
 
 export function ProjectExploreDetailView({
   project,
@@ -72,8 +76,47 @@ export function ProjectExploreDetailView({
   handleRejectProposal,
   handleOpenApproveModal,
   renderSubmissionNote,
+  fetchProject,
+  showToast,
 }) {
   if (!project) return null;
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
+  const handleEditPress = () => {
+    setEditModalVisible(true);
+  };
+
+  const handleDeletePress = () => {
+    if (showConfirm) {
+      showConfirm({
+        title: "Hapus Proyek Ini?",
+        message: `Apakah Anda yakin ingin menghapus proyek "${project.judul}"? Tindakan ini permanen dan akan membatalkan seluruh lamaran yang masuk.`,
+        confirmText: "Hapus Proyek",
+        cancelText: "Batal",
+        onConfirm: async () => {
+          try {
+            await projectApi.delete(project.id);
+            if (showToast) showToast("Proyek berhasil dihapus", "success");
+            navigation.goBack();
+          } catch (err) {
+            if (showToast)
+              showToast(
+                err.response?.data?.detail || "Gagal menghapus proyek",
+                "danger",
+              );
+          }
+        },
+      });
+    }
+  };
+
+  const handleConfirmUpdateProject = async (projId, payload) => {
+    await projectApi.update(projId, payload);
+    if (showToast)
+      showToast("Spesifikasi proyek berhasil diperbarui!", "success");
+    if (fetchProject) fetchProject();
+  };
 
   const isTeam = project.tipe_kolaborasi === "TIM";
   const slots = Array.isArray(project.slots) ? project.slots : [];
@@ -429,6 +472,40 @@ export function ProjectExploreDetailView({
               {/* Apply / CTA Button (Apple-Style Signature PebbleButton) */}
               <View style={styles.packageCtaWrapper}>
                 {canApply ? (
+                {isUmkmOwner &&
+                (project.status === "OPEN" || project.status === "BIDDING") ? (
+                  <View style={{ gap: 8, width: "100%" }}>
+                    <PebbleButton
+                      variant="sapphire"
+                      size="md"
+                      label="Edit Spesifikasi Proyek"
+                      icon={Edit3}
+                      onPress={handleEditPress}
+                      style={{ width: "100%" }}
+                    />
+                    <TouchableOpacity
+                      onPress={handleDeletePress}
+                      style={{
+                        paddingVertical: 10,
+                        alignItems: "center",
+                        borderRadius: 12,
+                        backgroundColor: "#FEF2F2",
+                        borderWidth: 1,
+                        borderColor: "#FECACA",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontFamily: FONTS.bold,
+                          color: "#DC2626",
+                        }}
+                      >
+                        Hapus Proyek Ini
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : canApply ? (
                   <PebbleButton
                     variant="sapphire"
                     size="md"
@@ -1052,10 +1129,38 @@ export function ProjectExploreDetailView({
                 icon={Users}
                 onPress={() => setActiveTab("proposals")}
               />
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                {(project.status === "OPEN" || project.status === "BIDDING") && (
+                  <PebbleButton
+                    variant="sapphire"
+                    size="sm"
+                    label="Edit"
+                    icon={Edit3}
+                    onPress={handleEditPress}
+                  />
+                )}
+                <PebbleButton
+                  variant="pearl"
+                  size="sm"
+                  label={`${proposals.length} Pelamar`}
+                  icon={Users}
+                  onPress={() => setActiveTab("proposals")}
+                />
+              </View>
             ) : null}
           </View>
         </View>
       </View>
+
+      {/* Edit Project Modal */}
+      {editModalVisible && (
+        <MobileEditProjectModal
+          visible={editModalVisible}
+          onClose={() => setEditModalVisible(false)}
+          project={project}
+          onConfirmUpdate={handleConfirmUpdateProject}
+        />
+      )}
     </View>
   );
 }

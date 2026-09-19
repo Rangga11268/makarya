@@ -19,6 +19,8 @@ import {
   Search,
   Building2,
   Sparkles,
+  Edit3,
+  Trash2,
 } from "lucide-react";
 
 export function ApplicantReviewBoard({
@@ -27,6 +29,8 @@ export function ApplicantReviewBoard({
   onBack,
   onAcceptProposal,
   onRejectProposal,
+  onEditProject,
+  onDeleteProject,
   parseCoverLetter,
   allProjects = [],
   onSelectProject,
@@ -159,6 +163,24 @@ export function ApplicantReviewBoard({
               <span>Lihat Detail Katalog</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
+
+            <button
+              type="button"
+              onClick={() => onEditProject && onEditProject(project)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-canvas border border-border text-dark-900 font-bold text-xs hover:bg-slate-100 transition-colors shadow-2xs"
+            >
+              <Edit3 className="w-3 h-3 text-brand-indigo" />
+              <span>Edit Proyek</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onDeleteProject && onDeleteProject(project)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-canvas border border-rose-200 text-rose-600 font-bold text-xs hover:bg-rose-50 transition-colors shadow-2xs"
+            >
+              <Trash2 className="w-3 h-3 text-rose-500" />
+              <span>Hapus</span>
+            </button>
           </div>
         </div>
 

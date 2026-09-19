@@ -19,6 +19,8 @@ export const authApi = {
 
 export const projectApi = {
   create: (data) => api.post("/projects", data),
+  update: (id, data) => api.patch(`/projects/${id}`, data),
+  delete: (id) => api.delete(`/projects/${id}`),
   browse: (params) => api.get("/projects", { params }),
   getAll: (params) => api.get("/projects", { params }),
   getDetail: (id) => api.get(`/projects/${id}`),

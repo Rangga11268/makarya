@@ -28,6 +28,8 @@ import {
   TerminateProjectModal,
   ResignProposalModal,
 } from "./components/ContractActionModals";
+import { EditProjectModal } from "../../components/features/EditProjectModal";
+import { DeleteProjectModal } from "../../components/features/DeleteProjectModal";
 import { WorkroomWorkspaceDetail } from "./components/WorkroomWorkspaceDetail";
 import { WorkspaceHubGrid } from "./components/WorkspaceHubGrid";
 import { ApplicantReviewBoard } from "./components/ApplicantReviewBoard";
@@ -112,7 +114,36 @@ export function ProposalBoardPage() {
   const [reopenModalOpen, setReopenModalOpen] = useState(false);
   const [terminateModalOpen, setTerminateModalOpen] = useState(false);
   const [resignModalOpen, setResignModalOpen] = useState(false);
+  const [editProjectModalOpen, setEditProjectModalOpen] = useState(false);
+  const [deleteProjectModalOpen, setDeleteProjectModalOpen] = useState(false);
+  const [projectToManage, setProjectToManage] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  const handleOpenEditProject = (proj) => {
+    setProjectToManage(proj || selectedProject);
+    setEditProjectModalOpen(true);
+  };
+
+  const handleOpenDeleteProject = (proj) => {
+    setProjectToManage(proj || selectedProject);
+    setDeleteProjectModalOpen(true);
+  };
+
+  const handleConfirmUpdateProject = async (projId, payload) => {
+    const res = await projectApi.update(projId, payload);
+    showSuccess("Proyek Diperbarui", "Spesifikasi proyek berhasil diperbarui.");
+    if (selectedProject && selectedProject.id === projId) {
+      setSelectedProject(res.data);
+    }
+    await loadData();
+  };
+
+  const handleConfirmDeleteProject = async (projId) => {
+    await projectApi.delete(projId);
+    showSuccess("Proyek Dihapus", "Proyek telah berhasil dihapus.");
+    setSelectedProject(null);
+    await loadData();
+  };
 
   // Target project id from route param or query string
   const targetProjectId = routeProjectId || searchParams.get("project");
@@ -744,6 +775,8 @@ export function ProposalBoardPage() {
           onBack={handleBackToHub}
           onAcceptProposal={handleAcceptProposal}
           onRejectProposal={handleRejectProposal}
+          onEditProject={handleOpenEditProject}
+          onDeleteProject={handleOpenDeleteProject}
           parseCoverLetter={parseCoverLetter}
           allProjects={myProjects}
           onSelectProject={handleSelectProject}
@@ -885,6 +918,26 @@ export function ProposalBoardPage() {
         onConfirm={handleResignProposal}
         loading={actionLoading}
       />
+
+      {/* Edit Project Modal */}
+      {editProjectModalOpen && (
+        <EditProjectModal
+          isOpen={editProjectModalOpen}
+          onClose={() => setEditProjectModalOpen(false)}
+          project={projectToManage}
+          onConfirmUpdate={handleConfirmUpdateProject}
+        />
+      )}
+
+      {/* Delete Project Modal */}
+      {deleteProjectModalOpen && (
+        <DeleteProjectModal
+          isOpen={deleteProjectModalOpen}
+          onClose={() => setDeleteProjectModalOpen(false)}
+          project={projectToManage}
+          onConfirmDelete={handleConfirmDeleteProject}
+        />
+      )}
     </div>
   );
 }

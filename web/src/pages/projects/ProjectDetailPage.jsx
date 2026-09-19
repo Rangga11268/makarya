@@ -55,9 +55,13 @@ import {
   Star,
   Sparkles,
   GraduationCap,
+  Edit3,
+  Trash2,
 } from "lucide-react";
 import { ProjectChatModal } from "../../components/features/ProjectChatModal";
 import { RatingModal } from "../../components/features/RatingModal";
+import { EditProjectModal } from "../../components/features/EditProjectModal";
+import { DeleteProjectModal } from "../../components/features/DeleteProjectModal";
 
 export function ProjectDetailPage() {
   const { id } = useParams();
@@ -73,6 +77,20 @@ export function ProjectDetailPage() {
   const [ratingTarget, setRatingTarget] = useState(null);
   const [hasUserReviewed, setHasUserReviewed] = useState(false);
   const [eligibleReviewTarget, setEligibleReviewTarget] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleConfirmUpdate = async (projId, payload) => {
+    const res = await projectApi.update(projId, payload);
+    setProject(res.data);
+    addToast("Spesifikasi proyek berhasil diperbarui!", "success");
+  };
+
+  const handleConfirmDelete = async (projId) => {
+    await projectApi.delete(projId);
+    addToast("Proyek berhasil dihapus.", "success");
+    navigate("/proposals");
+  };
 
   const getCategorySvg = (catCode) => {
     switch (catCode) {
@@ -910,6 +928,43 @@ export function ProjectDetailPage() {
                   Kelola Pelamar Proyek Ini
                 </Button>
               </Link>
+              <div className="space-y-2.5">
+                <Link to={`/proposals?project=${project.id}`} className="block">
+                  <Button
+                    variant="brand"
+                    size="lg"
+                    className="w-full text-xs font-bold shadow-brand"
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    <span>Kelola Pelamar Proyek Ini</span>
+                  </Button>
+                </Link>
+
+                {(project.status === "OPEN" || project.status === "BIDDING") && (
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="md"
+                      onClick={() => setEditModalOpen(true)}
+                      className="w-full text-xs font-bold border-slate-200 text-dark-900 hover:bg-slate-50"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 mr-1.5 text-brand-indigo" />
+                      <span>Edit Proyek</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="md"
+                      onClick={() => setDeleteModalOpen(true)}
+                      className="w-full text-xs font-bold border-rose-200 text-rose-600 hover:bg-rose-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1.5 text-rose-500" />
+                      <span>Hapus</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
             ) : user?.role === "UMKM" ? (
               <div className="space-y-4 pt-1">
                 <div className="p-4 bg-canvas rounded-2xl border border-border text-center space-y-2 shadow-xs">
@@ -1182,6 +1237,26 @@ export function ProjectDetailPage() {
             setHasUserReviewed(true);
             fetchProject();
           }}
+        />
+      )}
+
+      {/* Edit Project Modal */}
+      {editModalOpen && (
+        <EditProjectModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          project={project}
+          onConfirmUpdate={handleConfirmUpdate}
+        />
+      )}
+
+      {/* Delete Project Modal */}
+      {deleteModalOpen && (
+        <DeleteProjectModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          project={project}
+          onConfirmDelete={handleConfirmDelete}
         />
       )}
     </div>
