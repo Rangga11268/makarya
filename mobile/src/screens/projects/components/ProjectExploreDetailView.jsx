@@ -37,6 +37,7 @@ import {
 } from "lucide-react-native";
 import { projectApi } from "../../../api";
 import { MobileEditProjectModal } from "./MobileEditProjectModal";
+import { getCategoryBanner } from "../../../components/features/ProjectCard";
 
 export function ProjectExploreDetailView({
   project,
@@ -163,6 +164,7 @@ export function ProjectExploreDetailView({
         return "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=800&q=80";
     }
   };
+  // 2. Banner Error State
 
   const [bannerError, setBannerError] = useState(false);
 
@@ -302,6 +304,7 @@ export function ProjectExploreDetailView({
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
           {/* 1. HERO MEDIA BANNER (Edge-to-Edge Fiverr Style Cover Image)      */}
+          {/* 1. HERO MEDIA BANNER (16:9 Clean Aspect Ratio)                    */}
           {/* ================================================================= */}
           <View style={styles.bannerContainer}>
             <Image
@@ -332,6 +335,7 @@ export function ProjectExploreDetailView({
 
           {/* ================================================================= */}
           {/* 2. SELLER / MITRA UMKM IDENTITY (Forensic Fiverr Pro Header)      */}
+          {/* 2. MITRA UMKM IDENTITY (Clean Typographic Metadata)                */}
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
@@ -340,6 +344,7 @@ export function ProjectExploreDetailView({
                 name={clientDisplayName || "Klien UMKM"}
                 role="UMKM"
                 size={44}
+                size={46}
                 showOnlineDot={true}
                 isOnline={true}
                 style={{ marginRight: 12 }}
@@ -360,6 +365,10 @@ export function ProjectExploreDetailView({
                     color="#0F172A"
                     style={styles.chevronIcon}
                   />
+                  <View style={styles.verifiedInlineTag}>
+                    <CheckCircle2 size={12} color="#059669" />
+                    <Text style={styles.verifiedInlineText}>Verified</Text>
+                  </View>
                 </View>
 
                 {/* Fiverr Style Badges Row */}
@@ -377,21 +386,127 @@ export function ProjectExploreDetailView({
                     <Text style={styles.vettedProText}>100% Escrow</Text>
                   </View>
                 </View>
+                {/* Clean Subtitle Metadata with Dot Separators */}
+                <Text style={styles.sellerSubMetaText} numberOfLines={1}>
+                  {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
+                  {" • "}
+                  {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
+                  {ratingAvgScore ? ` • ⭐ ${ratingAvgScore}` : ""}
+                </Text>
               </View>
             </View>
           </View>
 
           {/* ================================================================= */}
           {/* 3. HEADLINE & BRIEF SECTION                                       */}
+          {/* 3. HEADLINE & CORE METRICS BAR                                    */}
           {/* ================================================================= */}
           <View style={styles.headlineSection}>
             <Text style={styles.gigHeadline}>{project.judul}</Text>
+
+            {/* 4-Stat Metric Cards Grid */}
+            <View style={styles.metricsGrid}>
+              <View style={styles.metricItem}>
+                <Text style={styles.metricLabel}>Pagu Anggaran</Text>
+                <Text style={styles.metricValuePrimary}>
+                  {formatCurrency(budgetMax)}
+                </Text>
+              </View>
+
+              <View style={styles.metricItem}>
+                <Text style={styles.metricLabel}>Tenggat Waktu</Text>
+                <Text
+                  style={[
+                    styles.metricValue,
+                    isProjectExpired && { color: "#DC2626" },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {formatDate(project.deadline)}
+                </Text>
+              </View>
+
+              <View style={styles.metricItem}>
+                <Text style={styles.metricLabel}>Kolaborasi</Text>
+                <Text style={styles.metricValue} numberOfLines={1}>
+                  {isTeam ? `Tim (${slots.length} Peran)` : "Individu"}
+                </Text>
+              </View>
+
+              <View style={[styles.metricItem, styles.metricItemEscrow]}>
+                <Text style={styles.metricLabelEscrow}>Proteksi Dana</Text>
+                <View style={styles.escrowInlineRow}>
+                  <ShieldCheck size={12} color="#059669" />
+                  <Text style={styles.metricValueEscrow}>100% Escrow</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* ================================================================= */}
+          {/* 4. ACTIONS & CTA SECTION                                          */}
+          {/* ================================================================= */}
+          <View style={styles.actionSection}>
+            {isUmkmOwner &&
+            (project.status === "OPEN" || project.status === "BIDDING") ? (
+              <View style={{ gap: 8, width: "100%" }}>
+                <PebbleButton
+                  variant="sapphire"
+                  size="md"
+                  label="Edit Spesifikasi Proyek"
+                  icon={Edit3}
+                  onPress={handleEditPress}
+                  style={{ width: "100%" }}
+                />
+                <TouchableOpacity
+                  onPress={handleDeletePress}
+                  style={styles.deleteProjectBtn}
+                  activeOpacity={0.7}
+                >
+                  <Trash2 size={14} color="#DC2626" style={{ marginRight: 6 }} />
+                  <Text style={styles.deleteProjectBtnText}>Hapus Proyek Ini</Text>
+                </TouchableOpacity>
+              </View>
+            ) : canApply ? (
+              <PebbleButton
+                variant="sapphire"
+                size="md"
+                label={`Lamar Proyek (${formatCurrency(budgetMax)})`}
+                icon={Send}
+                onPress={handleApplyPress}
+                style={{ width: "100%" }}
+              />
+            ) : myExistingProposal ? (
+              <View style={styles.appliedSuccessBanner}>
+                <CheckCircle2 size={16} color="#059669" />
+                <Text style={styles.appliedSuccessText}>
+                  {isAcceptedProposal
+                    ? "Lamaran Diterima Klien UMKM"
+                    : myExistingProposal.status === "REJECTED"
+                      ? "Lamaran Tidak Terpilih"
+                      : "Lamaran Berhasil Dikirim"}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          {/* ================================================================= */}
+          {/* 5. BRIEF & DETAILED REQUIREMENTS                                  */}
+          {/* ================================================================= */}
+          <View style={styles.editorialCard}>
+            <View style={styles.editorialHeaderRow}>
+              <Layers size={16} color="#0F172A" />
+              <Text style={styles.editorialTitle}>
+                Rincian Kebutuhan & Deskripsi Brief
+              </Text>
+            </View>
 
             <View style={styles.descriptionWrapper}>
               <Text
                 style={styles.gigDescription}
                 numberOfLines={
                   isLongDescription && !isBriefExpanded ? 4 : undefined
+                  isLongDescription && !isBriefExpanded ? 5 : undefined
                 }
               >
                 {rawDescription ||
@@ -406,6 +521,7 @@ export function ProjectExploreDetailView({
                 >
                   <Text style={styles.moreToggleText}>
                     {isBriefExpanded ? "tutup ringkasan" : "more"}
+                    {isBriefExpanded ? "Tutup ringkasan" : "Baca selengkapnya"}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -1228,9 +1344,11 @@ const styles = StyleSheet.create({
   },
 
   /* 2. Seller Identity Header (Forensic Fiverr Pro) */
+  /* 2. Seller Identity Header */
   sellerHeaderCard: {
     paddingBottom: 14,
     marginBottom: 14,
+    marginBottom: 12,
   },
   sellerRow: {
     flexDirection: "row",
@@ -1268,6 +1386,7 @@ const styles = StyleSheet.create({
   sellerMetaCol: {
     flex: 1,
     gap: 4,
+    gap: 3,
   },
   sellerNameRow: {
     flexDirection: "row",
@@ -1276,6 +1395,7 @@ const styles = StyleSheet.create({
   },
   sellerName: {
     fontSize: 15.5,
+    fontSize: 16,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "800",
@@ -1286,6 +1406,7 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   badgesWrapper: {
+  verifiedInlineTag: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -1295,18 +1416,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF1DB",
     paddingHorizontal: 7.5,
     paddingVertical: 3,
+    gap: 3.5,
+    backgroundColor: "#ECFDF5",
+    paddingHorizontal: 6.5,
+    paddingVertical: 2,
     borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
   },
   topRatedText: {
+  verifiedInlineText: {
     fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: "#B45309",
+    color: "#059669",
     fontWeight: "800",
   },
   diamondSymbols: {
     fontSize: 8.5,
     color: "#B45309",
     letterSpacing: 1.5,
+  sellerSubMetaText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyRegular,
+    color: "#64748B",
   },
   vettedProPill: {
     backgroundColor: "#ECECFF",
@@ -1322,36 +1455,75 @@ const styles = StyleSheet.create({
   },
 
   /* 3. Headline & Description */
+  /* 3. Headline & Unified Metrics Grid */
   headlineSection: {
     paddingBottom: 16,
     gap: 10,
+    gap: 12,
   },
   gigHeadline: {
     fontSize: 21,
+    fontSize: 20,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
     lineHeight: 28,
+    lineHeight: 27,
   },
   descriptionWrapper: {
     gap: 4,
+  metricsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 4,
   },
   gigDescription: {
     fontSize: 13.5,
+  metricItem: {
+    flex: 1,
+    minWidth: "47%",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  metricItemEscrow: {
+    backgroundColor: "#F0FDF4",
+    borderColor: "#BBF7D0",
+  },
+  metricLabel: {
+    fontSize: 10.5,
     fontFamily: FONTS.bodyRegular,
     color: "#334155",
     lineHeight: 21,
+    color: "#64748B",
   },
   moreToggleBtn: {
     alignSelf: "flex-start",
+  metricLabelEscrow: {
+    fontSize: 10.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#166534",
+    fontWeight: "700",
+  },
+  metricValuePrimary: {
+    fontSize: 13.5,
+    fontFamily: FONTS.displayBold,
+    color: "#2563EB",
+    fontWeight: "900",
     marginTop: 2,
   },
   moreToggleText: {
     fontSize: 13,
+  metricValue: {
+    fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "800",
     textDecorationLine: "underline",
+    marginTop: 2,
   },
 
   /* 4. Single Package Price & Specs */
@@ -1360,15 +1532,23 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#E5E7EB",
     paddingTop: 16,
+  metricValueEscrow: {
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#166534",
+    fontWeight: "800",
   },
   packageDetailBody: {
     gap: 14,
   },
   packageHeaderRow: {
+  escrowInlineRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 8,
+    gap: 4,
+    marginTop: 2,
   },
   packageDetailTitle: {
     fontSize: 16,
@@ -1376,6 +1556,10 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     fontWeight: "800",
     flex: 1,
+
+  /* 4. Action Section */
+  actionSection: {
+    marginBottom: 16,
   },
   packagePriceHighlight: {
     fontSize: 18,
@@ -1395,9 +1579,17 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   specKeyValueRow: {
+  deleteProjectBtn: {
+    paddingVertical: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    justifyContent: "center",
+    borderRadius: 12,
+    backgroundColor: "#FEF2F2",
+    borderWidth: 1,
+    borderColor: "#FECACA",
+    marginTop: 4,
   },
   specKeyText: {
     fontSize: 13,
@@ -1406,9 +1598,13 @@ const styles = StyleSheet.create({
   },
   specValueText: {
     fontSize: 13,
+  deleteProjectBtnText: {
+    fontSize: 12,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "700",
+    color: "#DC2626",
+    fontWeight: "800",
   },
   packageCtaWrapper: {
     marginTop: 6,
@@ -1436,14 +1632,29 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: "#E2E8F0",
+
+  /* 5. Description & Brief */
+  descriptionWrapper: {
     gap: 4,
+  },
+  gigDescription: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyRegular,
+    color: "#334155",
+    lineHeight: 20,
+  },
+  moreToggleBtn: {
+    alignSelf: "flex-start",
     marginTop: 4,
   },
   vettedProBoxTitle: {
+  moreToggleText: {
     fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "800",
+    color: "#2563EB",
+    fontWeight: "700",
   },
   vettedProBoxDesc: {
     fontSize: 11.5,
