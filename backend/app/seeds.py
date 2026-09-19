@@ -195,6 +195,7 @@ def seed_all():
                 "budget_max": Decimal("650000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=7)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": batik_user.id if batik_user else None,
@@ -204,6 +205,7 @@ def seed_all():
                 "budget_max": Decimal("400000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=6)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1581291518655-9523c932edcf?w=1000&auto=format&fit=crop&q=80",
             },
             # PEMROGRAMAN
             {
@@ -214,6 +216,7 @@ def seed_all():
                 "budget_max": Decimal("1200000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=14)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": dapur_user.id if dapur_user else None,
@@ -223,6 +226,7 @@ def seed_all():
                 "budget_max": Decimal("1500000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=20)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1556742049-0a67e557b6f3?w=1000&auto=format&fit=crop&q=80",
             },
             # UIUX
             {
@@ -233,6 +237,7 @@ def seed_all():
                 "budget_max": Decimal("950000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=10)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": kopi_user.id if kopi_user else None,
@@ -242,6 +247,7 @@ def seed_all():
                 "budget_max": Decimal("800000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=8)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1000&auto=format&fit=crop&q=80",
             },
             # VIDEO
             {
@@ -252,6 +258,7 @@ def seed_all():
                 "budget_max": Decimal("450000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=5)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": batik_user.id if batik_user else None,
@@ -261,6 +268,7 @@ def seed_all():
                 "budget_max": Decimal("500000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=7)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=1000&auto=format&fit=crop&q=80",
             },
             # COPYWRITING
             {
@@ -271,6 +279,7 @@ def seed_all():
                 "budget_max": Decimal("350000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=4)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": kopi_user.id if kopi_user else None,
@@ -280,6 +289,7 @@ def seed_all():
                 "budget_max": Decimal("300000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=5)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=1000&auto=format&fit=crop&q=80",
             },
             # ADMIN_DATA
             {
@@ -290,6 +300,7 @@ def seed_all():
                 "budget_max": Decimal("300000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=4)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1000&auto=format&fit=crop&q=80",
             },
             {
                 "umkm_id": batik_user.id if batik_user else None,
@@ -299,6 +310,7 @@ def seed_all():
                 "budget_max": Decimal("350000"),
                 "deadline": (datetime.now(timezone.utc) + timedelta(days=5)).date(),
                 "status": ProjectStatus.OPEN,
+                "banner_url": "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1000&auto=format&fit=crop&q=80",
             },
         ]
 
@@ -308,6 +320,9 @@ def seed_all():
             exists = db.query(Project).filter(Project.judul == p["judul"]).first()
             if not exists:
                 db.add(Project(**p))
+                print(f"  + Proyek dibuat: '{p['judul']}' ({p['kategori']})")
+            elif p.get("banner_url") and not exists.banner_url:
+                exists.banner_url = p["banner_url"]
                 print(f"  + Proyek dibuat: '{p['judul']}' ({p['kategori']})")
 
         db.commit()

@@ -306,7 +306,9 @@ export function ProjectDetailPage() {
           <ProjectCoverBanner
             src={
               project.banner_url ||
+              project.url_banner ||
               project.thumbnail_url ||
+              project.umkm_profile?.banner_url ||
               project.umkm_profile?.url_foto_usaha
             }
             category={project.kategori}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   CategoryDesignSvg,
   CategoryUiUxSvg,
@@ -17,6 +17,10 @@ export function ProjectCoverBanner({
   overlay = true,
 }) {
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
 
   const getCategoryTheme = (cat) => {
     const c = String(cat || "").toUpperCase();

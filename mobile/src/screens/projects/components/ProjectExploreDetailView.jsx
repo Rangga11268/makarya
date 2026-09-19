@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -121,11 +121,22 @@ export function ProjectExploreDetailView({
     }
   };
 
-  const projectBannerUri =
+  const [bannerError, setBannerError] = useState(false);
+
+  const clientUploadedBanner =
     project.banner_url ||
+    project.url_banner ||
     project.thumbnail_url ||
-    project.umkm_profile?.url_foto_usaha ||
-    getCategoryBanner(project.kategori);
+    project.umkm_profile?.banner_url ||
+    project.umkm_profile?.url_foto_usaha;
+
+  useEffect(() => {
+    setBannerError(false);
+  }, [project?.id, clientUploadedBanner]);
+
+  const projectBannerUri =
+    !bannerError &&
+    (clientUploadedBanner || getCategoryBanner(project.kategori));
 
   // 3. Fixed Single Budget (No Range)
   const budgetMax = Number(project.budget_max || 0);
@@ -251,9 +262,12 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.bannerContainer}>
             <Image
-              source={{ uri: projectBannerUri }}
+              source={{
+                uri: projectBannerUri || getCategoryBanner(project.kategori),
+              }}
               style={styles.bannerImage}
               resizeMode="cover"
+              onError={() => setBannerError(true)}
             />
             <View style={styles.bannerOverlayGradient} />
 

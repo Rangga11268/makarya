@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -80,6 +80,17 @@ export function ProjectCard({ project, onPress }) {
   const [imgError, setImgError] = useState(false);
   const [bannerError, setBannerError] = useState(false);
 
+  const clientUploadedBanner =
+    project.banner_url ||
+    project.url_banner ||
+    project.thumbnail_url ||
+    project.umkm_profile?.banner_url ||
+    project.umkm_profile?.url_foto_usaha;
+
+  useEffect(() => {
+    setBannerError(false);
+  }, [project?.id, clientUploadedBanner]);
+
   const isExpired =
     Boolean(
       project.deadline &&
@@ -112,10 +123,7 @@ export function ProjectCard({ project, onPress }) {
 
   const bannerUri =
     !bannerError &&
-    (project.banner_url ||
-      project.url_banner ||
-      project.umkm_profile?.banner_url ||
-      getCategoryBanner(project.kategori));
+    (clientUploadedBanner || getCategoryBanner(project.kategori));
 
   return (
     <TouchableOpacity

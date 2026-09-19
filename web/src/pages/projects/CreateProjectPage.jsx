@@ -1204,12 +1204,14 @@ export function CreateProjectPage() {
                   deskripsi_raw: formData.deskripsi_raw,
                   budget_max: formData.budget_max,
                   deadline: formData.deadline,
+                  banner_url: formData.banner_url || undefined,
                   total_pelamar: 0,
                   umkm_profile: {
                     nama_usaha: user?.email
                       ? user.email.split("@")[0].toUpperCase()
                       : "Usaha UMKM Anda",
                     kota: "Indonesia",
+                    banner_url: formData.banner_url || undefined,
                   },
                 }}
               />
