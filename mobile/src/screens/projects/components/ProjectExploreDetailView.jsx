@@ -490,67 +490,7 @@ export function ProjectExploreDetailView({
             </View>
           </View>
 
-          {/* ================================================================= */}
-          {/* 5. PROFILE MATCH (FOR MAHASISWA)                                  */}
-          {/* ================================================================= */}
-          {isMahasiswa && (matchScore > 0 || matchReasons.length > 0) && (
-            <View style={styles.editorialCard}>
-              <View style={styles.editorialHeaderRow}>
-                <Sparkles size={16} color="#2563EB" />
-                <Text style={styles.editorialTitle}>Kecocokan Profil Anda</Text>
-                <View style={styles.matchScorePill}>
-                  <Text style={styles.matchScoreText}>
-                    {matchScore || 85}% Cocok
-                  </Text>
-                </View>
-              </View>
 
-              <Text style={styles.editorialBody}>
-                Sistem AI Makarya mendeteksi bahwa keahlian Anda sangat sesuai
-                dengan kriteria deliverable proyek ini:
-              </Text>
-
-              <View style={styles.bulletList}>
-                {matchReasons.length > 0 ? (
-                  matchReasons.map((reason, idx) => (
-                    <View key={idx} style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>{reason}</Text>
-                    </View>
-                  ))
-                ) : (
-                  <>
-                    <View style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>
-                        Keahlian dan bidang studi Anda relevan dengan kebutuhan
-                        proyek.
-                      </Text>
-                    </View>
-                    <View style={styles.bulletItem}>
-                      <CheckCircle2
-                        size={13}
-                        color="#2563EB"
-                        style={{ marginTop: 2 }}
-                      />
-                      <Text style={styles.bulletText}>
-                        Peluang tinggi untuk diterima dan mendapatkan portofolio
-                        terverifikasi.
-                      </Text>
-                    </View>
-                  </>
-                )}
-              </View>
-            </View>
-          )}
 
           {/* ================================================================= */}
           {/* 6. REQUIRED SKILLS & TECH STACK                                   */}

@@ -148,21 +148,14 @@ export function ProjectCard({ project, onPress }) {
           </Text>
         </View>
 
-        {/* Top-right: Status or Match score */}
-        {isExpired ? (
+        {/* Top-right: Status when Expired */}
+        {isExpired && (
           <View style={styles.bannerStatusExpiredPill}>
             <Text style={styles.bannerStatusExpiredText}>
               {project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
             </Text>
           </View>
-        ) : project.match_score ? (
-          <View style={styles.bannerMatchBadge}>
-            <Check size={11} color="#059669" strokeWidth={2.5} />
-            <Text style={styles.bannerMatchBadgeText}>
-              {project.match_score}% Cocok
-            </Text>
-          </View>
-        ) : null}
+        )}
 
         {/* Bottom-right on Banner: Deadline Pill */}
         {deadlineInfo && !isExpired ? (
@@ -314,28 +307,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "700",
   },
-  bannerMatchBadge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  bannerMatchBadgeText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#059669",
-    fontWeight: "800",
-  },
+
   bannerDeadlinePill: {
     position: "absolute",
     bottom: 8,
