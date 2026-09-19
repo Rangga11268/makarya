@@ -16,11 +16,15 @@ export function RatingModal({
   onSuccess,
 }) {
   const targetUserId = keUserId || mhsId;
-  const [skor, setSkor] = useState(5);
+  const [skorKualitas, setSkorKualitas] = useState(5);
+  const [skorWaktu, setSkorWaktu] = useState(5);
+  const [skorKomunikasi, setSkorKomunikasi] = useState(5);
   const [ulasan, setUlasan] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { addToast } = useToastStore();
+
+  const avgSkor = Math.round((skorKualitas + skorWaktu + skorKomunikasi) / 3);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +40,10 @@ export function RatingModal({
       await ratingApi.giveRating({
         project_id: projectId,
         ke_user_id: targetUserId,
-        skor: parseInt(skor, 10),
+        skor: avgSkor,
+        skor_kualitas: skorKualitas,
+        skor_waktu: skorWaktu,
+        skor_komunikasi: skorKomunikasi,
         ulasan: ulasan.trim() || null,
       });
 
@@ -70,11 +77,37 @@ export function RatingModal({
     }
   };
 
+  const renderStarSelector = (label, currentVal, setVal) => (
+    <div className="flex items-center justify-between py-1.5 border-b border-slate-100 dark:border-slate-800 last:border-0">
+      <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+        {label}
+      </span>
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => setVal(star)}
+            className="p-1 focus:outline-none transition-transform hover:scale-110 active:scale-95"
+          >
+            <Star
+              className={`w-5 h-5 ${
+                star <= currentVal
+                  ? "fill-amber-400 text-amber-400"
+                  : "fill-gray-100 text-gray-300 dark:fill-slate-800 dark:text-slate-700"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Beri Ulasan untuk ${recipientName || "Partner"}`}
+      title={`Beri Ulasan untuk ${recipientName || "Mitra Kerja"}`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
@@ -83,46 +116,27 @@ export function RatingModal({
           </div>
         )}
 
-        {/* Star Selection */}
-        <div className="space-y-1 text-center py-2">
-          <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
-            Tingkat Kepuasan (1 - 5 Bintang)
-          </label>
-          <div className="flex items-center justify-center gap-2 pt-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setSkor(star)}
-                className="p-1.5 focus:outline-none transition-transform hover:scale-110 active:scale-95"
-              >
-                <Star
-                  className={`w-8 h-8 ${
-                    star <= skor
-                      ? "fill-amber-400 text-amber-400"
-                      : "fill-gray-100 text-gray-300"
-                  }`}
-                />
-              </button>
-            ))}
+        {/* Multi-Criteria Rating Cards */}
+        <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-1">
+          <div className="flex items-center justify-between pb-2 mb-1 border-b border-slate-200/60 dark:border-slate-800">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Kriteria Penilaian
+            </span>
+            <span className="text-xs font-bold text-brand-indigo flex items-center gap-1">
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              Skor Rata-Rata: {avgSkor} / 5
+            </span>
           </div>
-          <p className="text-xs text-muted font-medium pt-1">
-            {skor === 5
-              ? "Sangat Memuaskan (5 / 5)"
-              : skor === 4
-                ? "Bagus & Sesuai Ekspektasi (4 / 5)"
-                : skor === 3
-                  ? "Cukup Baik (3 / 5)"
-                  : skor === 2
-                    ? "Kurang Memuaskan (2 / 5)"
-                    : "Perlu Banyak Perbaikan (1 / 5)"}
-          </p>
+
+          {renderStarSelector("1. Kualitas Hasil Deliverable", skorKualitas, setSkorKualitas)}
+          {renderStarSelector("2. Ketepatan Waktu & Deadline", skorWaktu, setSkorWaktu)}
+          {renderStarSelector("3. Komunikasi & Koordinasi", skorKomunikasi, setSkorKomunikasi)}
         </div>
 
         <TextArea
           label="Tuliskan Ulasan Anda"
           rows={3}
-          placeholder="Bagikan pengalaman kerja sama, ketepatan waktu, dan kualitas komunikasi..."
+          placeholder="Bagikan testimoni kerja sama, transparansi revisi, dan keandalan..."
           value={ulasan}
           onChange={(e) => setUlasan(e.target.value)}
         />
@@ -137,7 +151,7 @@ export function RatingModal({
             Batal
           </Button>
           <Button variant="primary" size="md" type="submit" loading={loading}>
-            Kirim Ulasan
+            Simpan Ulasan
           </Button>
         </div>
       </form>

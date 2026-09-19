@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 
 import { InvoiceReceiptModal } from "../../../components/features/InvoiceReceiptModal";
+import { projectApi } from "../../../api";
 import { WorkspaceProjectHUD } from "./workspace/WorkspaceProjectHUD";
 import { SmartDeliverableCard } from "./workspace/SmartDeliverableCard";
 import { AssetHandoffModal } from "./workspace/AssetHandoffModal";
@@ -94,6 +95,35 @@ export function WorkroomWorkspaceDetail({
   const [handoffModalOpen, setHandoffModalOpen] = React.useState(false);
   const [pendingSubmissionId, setPendingSubmissionId] = React.useState(null);
   const [approvalLoading, setApprovalLoading] = React.useState(false);
+  const [downloadingSpk, setDownloadingSpk] = React.useState(false);
+
+  const handleDownloadSpk = async () => {
+    const targetProjId =
+      activeProjectId ||
+      selectedProject?.id ||
+      selectedProposal?.project_id;
+    if (!targetProjId) return;
+    try {
+      setDownloadingSpk(true);
+      const res = await projectApi.getContractPdf(targetProjId);
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `SPK_Makarya_${String(targetProjId).slice(0, 8).toUpperCase()}.pdf`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal mengunduh SPK PDF:", err);
+    } finally {
+      setDownloadingSpk(false);
+    }
+  };
 
   const effectiveSubmissions = React.useMemo(() => {
     if (projectSubmissions && projectSubmissions.length > 0) {
@@ -892,10 +922,46 @@ export function WorkroomWorkspaceDetail({
                   Manajemen Kontrak & Garansi Escrow
                 </h3>
                 <p className="text-xs text-muted mt-0.5">
-                  Opsi pengelolaan kelanjutan penugasan dan jaminan saldo escrow
+                  Dokumen legalitas kesepakatan kerja dan jaminan saldo escrow
                 </p>
               </div>
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            </div>
+
+            {/* Official SPK Contract & Receipt Downloads */}
+            <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="font-bold text-indigo-950 dark:text-indigo-200 block text-xs mb-0.5 flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-brand-indigo" />
+                  <span>Surat Perjanjian Kerja Sama (SPK) Digital</span>
+                </span>
+                <p className="text-[11px] text-indigo-900/70 dark:text-indigo-300/80 leading-relaxed">
+                  Dokumen resmi ber-watermark Makarya yang memuat butir kesepakatan, batasan revisi maksimal 2x, garansi escrow, dan tanda tangan sistem.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleDownloadSpk}
+                  loading={downloadingSpk}
+                  className="text-xs font-bold shadow-xs bg-brand-indigo hover:bg-brand-indigo/90 text-white"
+                >
+                  <FileText className="w-3.5 h-3.5 mr-1.5" />
+                  Unduh SPK (PDF)
+                </Button>
+                {isUmkm && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInvoiceModalOpen(true)}
+                    className="text-xs font-bold border-indigo-200 text-indigo-900 dark:text-indigo-200 dark:border-indigo-800"
+                  >
+                    <Coins className="w-3.5 h-3.5 mr-1.5" />
+                    Resi Escrow
+                  </Button>
+                )}
+              </div>
             </div>
 
             {isUmkm && selectedProject?.status === "IN_PROGRESS" && (

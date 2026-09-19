@@ -26,6 +26,8 @@ export const projectApi = {
   getMilestones: (projectId) => api.get(`/projects/${projectId}/milestones`),
   updateMilestones: (projectId, data) =>
     api.put(`/projects/${projectId}/milestones`, data),
+  getContractPdf: (id) =>
+    api.get(`/projects/${id}/contract-pdf`, { responseType: "blob" }),
 };
 
 export const proposalApi = {

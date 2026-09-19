@@ -3,11 +3,13 @@ from typing import Optional, List
 from uuid import UUID
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role, get_optional_current_user
 from app.models.user import User, UserRole
+from app.services.contract_service import generate_spk_pdf
 import json
 from app.models.project import Project, ProjectCategory, ProjectStatus, ProjectSlot, ProjectMilestone
 from app.models.profile import ProfileUmkm, ProfileMhs
@@ -715,4 +717,70 @@ def update_project_milestone(
         "updated_by_id": str(milestone.updated_by_id) if milestone.updated_by_id else None,
         "message": "Milestone berhasil diperbarui",
     }
+
+
+@router.get("/{id}/contract-pdf")
+def get_project_contract_pdf(
+    id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Mengunduh Surat Perjanjian Kerja (SPK) Digital Proyek berformat PDF.
+    Hanya dapat diakses oleh UMKM pemilik proyek, mahasiswa pelaksana terkait, atau Admin.
+    """
+    project = db.query(Project).filter(Project.id == id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
+
+    # Ambil UMKM & Profilnya
+    umkm_user = db.query(User).filter(User.id == project.umkm_id).first()
+    profile_umkm = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == project.umkm_id).first()
+
+    # Ambil Mahasiswa & Profilnya
+    accepted_prop = (
+        db.query(Proposal)
+        .filter(Proposal.project_id == project.id, Proposal.status == ProposalStatus.ACCEPTED)
+        .first()
+    )
+
+    mhs_user = None
+    profile_mhs = None
+
+    if current_user.role == UserRole.MAHASISWA:
+        mhs_user = current_user
+        profile_mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
+    elif accepted_prop:
+        mhs_user = db.query(User).filter(User.id == accepted_prop.mhs_id).first()
+        profile_mhs = db.query(ProfileMhs).filter(ProfileMhs.user_id == accepted_prop.mhs_id).first()
+
+    # Authorization Check
+    is_owner = (project.umkm_id == current_user.id)
+    is_mhs_participant = bool(accepted_prop and accepted_prop.mhs_id == current_user.id) or (current_user.role == UserRole.MAHASISWA and bool(mhs_user))
+    is_admin = (current_user.role == UserRole.ADMIN)
+
+    if not (is_owner or is_mhs_participant or is_admin):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Anda tidak memiliki hak akses untuk mengunduh dokumen kontrak SPK proyek ini.",
+        )
+
+    pdf_buffer = generate_spk_pdf(
+        project=project,
+        umkm_user=umkm_user,
+        profile_umkm=profile_umkm,
+        mhs_user=mhs_user,
+        profile_mhs=profile_mhs,
+        proposal=accepted_prop,
+    )
+
+    filename = f"SPK_Makarya_{str(project.id)[:8].upper()}.pdf"
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"inline; filename={filename}",
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        },
+    )
 

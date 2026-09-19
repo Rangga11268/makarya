@@ -115,12 +115,16 @@ def give_rating(
             detail="Anda sudah memberikan rating untuk pengguna ini pada proyek ini",
         )
 
-    # 5. Buat rating baru
+    # 5. Buat rating baru (hitung rata-rata jika sub-kriteria diisi)
+    final_skor = body.skor
+    if body.skor_kualitas and body.skor_waktu and body.skor_komunikasi:
+        final_skor = max(1, min(5, int(round((body.skor_kualitas + body.skor_waktu + body.skor_komunikasi) / 3.0))))
+
     new_rating = Rating(
         project_id=body.project_id,
         dari_user_id=current_user.id,
         ke_user_id=body.ke_user_id,
-        skor=body.skor,
+        skor=final_skor,
         ulasan=body.ulasan,
     )
     db.add(new_rating)

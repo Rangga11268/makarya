@@ -826,7 +826,6 @@ export function ChatScreen({ route, navigation }) {
                   : styles.systemEventTextNeutral,
               ]}
             >
-              {item.message}
               {cleanText}
             </Text>
           </View>

@@ -3,11 +3,13 @@ from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
-# Schema request beri rating
 class RatingCreateRequest(BaseModel):
     project_id: UUID
     ke_user_id: UUID
-    skor: int = Field(..., ge=1, le=5, description="Skor rating antara 1 hingga 5")
+    skor: int = Field(..., ge=1, le=5, description="Skor rating keseluruhan antara 1 hingga 5")
+    skor_kualitas: Optional[int] = Field(None, ge=1, le=5, description="Skor kualitas hasil kerja (1-5)")
+    skor_waktu: Optional[int] = Field(None, ge=1, le=5, description="Skor ketepatan waktu (1-5)")
+    skor_komunikasi: Optional[int] = Field(None, ge=1, le=5, description="Skor komunikasi & koordinasi (1-5)")
     ulasan: Optional[str] = Field(None, max_length=1000, description="Ulasan opsional dari rating")
 
 

@@ -1031,38 +1031,28 @@ export function WorkroomChatPanel({
                 return (
                   <div
                     key={m.id || idx}
-                    className="w-full flex justify-center my-3.5 px-4 animate-in fade-in duration-200"
                     className="w-full flex justify-center my-3 px-4 animate-in fade-in duration-200"
                   >
                     <div
-                      className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-xs font-medium border shadow-xs max-w-lg text-center leading-relaxed ${
                       className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-medium border shadow-2xs max-w-xl text-center leading-normal ${
                         isAccepted
-                          ? "bg-emerald-50/90 border-emerald-200/80 text-emerald-800"
-                          : "bg-slate-100/90 border-slate-200 text-slate-700"
                           ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
                           : "bg-slate-100/90 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       <div
-                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
                         className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
                           isAccepted
-                            ? "bg-emerald-100 text-emerald-600"
-                            : "bg-slate-200 text-slate-600"
                             ? "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
                             : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
                         }`}
                       >
                         {isAccepted ? (
-                          <CheckCircle2 className="w-3.5 h-3.5" />
                           <CheckCircle2 className="w-3 h-3" />
                         ) : (
-                          <ShieldCheck className="w-3.5 h-3.5" />
                           <ShieldCheck className="w-3 h-3" />
                         )}
                       </div>
-                      <span>{m.message}</span>
                       <span>{cleanText}</span>
                     </div>
                   </div>

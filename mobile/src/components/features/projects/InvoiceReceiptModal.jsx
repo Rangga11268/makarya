@@ -19,6 +19,7 @@ import {
   Building2,
   GraduationCap,
   FileCheck,
+  FileText,
 } from "lucide-react-native";
 import { Button } from "../../ui/Button";
 
@@ -212,12 +213,12 @@ export function InvoiceReceiptModal({
             {/* Legal / Protection Notice */}
             <View style={styles.legalNoticeBox}>
               <Text style={styles.legalNoticeTitle}>
-                Jaminan Perlindungan Escrow 100%
+                Surat Perjanjian Kerja & Jaminan Escrow 100%
               </Text>
               <Text style={styles.legalNoticeText}>
-                Faktur ini merupakan bukti sah transaksi penjaminan dana melalui
-                sistem Rekening Bersama Makarya. Dokumen ini sah digunakan untuk
-                pembukuan operasional UMKM.
+                Faktur & SPK ini merupakan bukti sah kesepakatan kerja dan transaksi penjaminan dana melalui
+                sistem Rekening Bersama Makarya (Maksimal revisi 2x dan proteksi HAKI). Dokumen ini sah digunakan untuk
+                pembukuan operasional UMKM & portofolio mahasiswa.
               </Text>
             </View>
           </ScrollView>
@@ -225,10 +226,10 @@ export function InvoiceReceiptModal({
           {/* Bottom Action */}
           <View style={styles.bottomBar}>
             <Button
-              title="Bagikan / Simpan Bukti"
+              title="Bagikan / Simpan Faktur SPK"
               variant="brand"
               size="md"
-              icon={<FileCheck size={16} color="#FFFFFF" />}
+              icon={<FileText size={16} color="#FFFFFF" />}
               onPress={handleShare}
             />
           </View>

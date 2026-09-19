@@ -31,4 +31,5 @@ midtransclient==1.4.2
 # Testing & Quality Assurance
 pytest==9.1.1
 apscheduler>=3.10.4
+reportlab>=5.0.0
 

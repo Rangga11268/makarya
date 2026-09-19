@@ -318,7 +318,6 @@ export function ProjectChatModal({
                           <ShieldCheck className="w-3 h-3" />
                         )}
                       </div>
-                      <span>{m.message}</span>
                       <span>{cleanText}</span>
                     </div>
                   </div>
