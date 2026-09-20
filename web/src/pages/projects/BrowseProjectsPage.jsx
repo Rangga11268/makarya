@@ -28,8 +28,20 @@ export function BrowseProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [category, setCategory] = useState(searchParams.get("category") || "");
-  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const normalizeCategory = (cat) => {
+    if (!cat) return "";
+    const upper = cat.trim().toUpperCase();
+    return upper === "DESAIN" ? "DESIGN" : upper;
+  };
+
+  const [category, setCategory] = useState(
+    normalizeCategory(
+      searchParams.get("category") || searchParams.get("kategori") || "",
+    ),
+  );
+  const [keyword, setKeyword] = useState(
+    searchParams.get("keyword") || searchParams.get("search") || "",
+  );
   const [maxBudget, setMaxBudget] = useState(2000000);
   const [sortBy, setSortBy] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,8 +62,11 @@ export function BrowseProjectsPage() {
 
   // Sync URL → state
   useEffect(() => {
-    const urlCategory = searchParams.get("category") || "";
-    const urlKeyword = searchParams.get("keyword") || "";
+    const urlCategory = normalizeCategory(
+      searchParams.get("category") || searchParams.get("kategori") || "",
+    );
+    const urlKeyword =
+      searchParams.get("keyword") || searchParams.get("search") || "";
     setCategory(urlCategory);
     setKeyword(urlKeyword);
   }, [searchParams]);

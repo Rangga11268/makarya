@@ -1,39 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Platform,
 } from "react-native";
+import Svg, { Path, Rect } from "react-native-svg";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
-import { Users, Clock, ChevronRight, Check } from "lucide-react-native";
+import {
+  Clock,
+  MapPin,
+  Users,
+  ArrowUpRight,
+  Layers,
+} from "lucide-react-native";
 import { Avatar } from "../ui/Avatar";
-import { ProjectCoverBanner } from "../ui/ProjectCoverBanner";
-
-export const getCategoryBanner = (cat) => {
-  switch (cat) {
-    case "DESIGN":
-    case "DESAIN":
-      return "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=1000&auto=format&fit=crop&q=80";
-    case "UIUX":
-      return "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1000&auto=format&fit=crop&q=80";
-    case "PEMROGRAMAN":
-      return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80";
-    case "VIDEO":
-      return "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1000&auto=format&fit=crop&q=80";
-    case "COPYWRITING":
-      return "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1000&auto=format&fit=crop&q=80";
-    case "ADMIN_DATA":
-      return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1000&auto=format&fit=crop&q=80";
-    default:
-      return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80";
-  }
-};
 
 const getCategoryLabel = (cat) => {
   switch (cat) {
@@ -59,7 +44,6 @@ const getRemainingDaysInfo = (deadlineStr) => {
   if (!deadlineStr) return null;
   const deadline = new Date(deadlineStr);
   if (isNaN(deadline.getTime())) return null;
-
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const target = new Date(
@@ -68,7 +52,6 @@ const getRemainingDaysInfo = (deadlineStr) => {
     deadline.getDate(),
   );
   const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-
   if (diffDays < 0) return { text: "Berakhir", isUrgent: true };
   if (diffDays === 0) return { text: "Hari ini", isUrgent: true };
   if (diffDays === 1) return { text: "Sisa 1 hr", isUrgent: true };
@@ -78,19 +61,8 @@ const getRemainingDaysInfo = (deadlineStr) => {
 };
 
 export function ProjectCard({ project, onPress }) {
-  const [imgError, setImgError] = useState(false);
-  const [bannerError, setBannerError] = useState(false);
-
-  const clientUploadedBanner =
-    project.banner_url ||
-    project.url_banner ||
-    project.thumbnail_url ||
-    project.umkm_profile?.banner_url ||
-    project.umkm_profile?.url_foto_usaha;
-
-  useEffect(() => {
-    setBannerError(false);
-  }, [project?.id, clientUploadedBanner]);
+  const [cardWidth, setCardWidth] = useState(0);
+  const [topHeight, setTopHeight] = useState(0);
 
   const isExpired =
     Boolean(
@@ -112,345 +84,324 @@ export function ProjectCard({ project, onPress }) {
     rawClientName && rawClientName.toLowerCase() !== "string"
       ? rawClientName
       : "Klien UMKM";
-  const clientInitial = clientName ? clientName.charAt(0).toUpperCase() : "K";
   const clientPhoto =
     project.umkm_profile?.url_foto_usaha ||
     project.umkm_profile?.url_foto ||
     project.umkm_foto ||
     project.url_foto;
-
-  const clientCity = project.umkm_profile?.kota;
+  const clientCity = project.umkm_profile?.kota || "Indonesia";
   const deadlineInfo = getRemainingDaysInfo(project.deadline);
 
-  const bannerUri =
-    !bannerError &&
-    (clientUploadedBanner || getCategoryBanner(project.kategori));
+  const rawDesc = (project.deskripsi || project.deskripsi_raw || "").replace(
+    /<[^>]*>?/gm,
+    "",
+  );
+
+  // Exact Curved Tab Notch Geometry
+  const W = cardWidth;
+  const H = topHeight;
+  const r = 22; // Top-left corner radius
+  const notchW = 86; // Notch width for button
+  const notchH = 42; // Notch height
+  const fillet = 14; // Smooth fillet radius
+
+  // White Card SVG Path with Scooped Notch
+  const curvedCardPath =
+    W > 0 && H > 0
+      ? `M 0,${r} 
+         A ${r} ${r} 0 0 1 ${r},0 
+         L ${W - notchW - fillet},0 
+         A ${fillet} ${fillet} 0 0 1 ${W - notchW},${fillet} 
+         L ${W - notchW},${notchH - fillet} 
+         A ${fillet} ${fillet} 0 0 0 ${W - notchW + fillet},${notchH} 
+         L ${W},${notchH} 
+         L ${W},${H} 
+         L 0,${H} 
+         Z`
+      : "";
 
   return (
     <TouchableOpacity
       activeOpacity={0.88}
       onPress={onPress}
-      style={[styles.card, isExpired && styles.cardExpired]}
+      onLayout={(e) => setCardWidth(e.nativeEvent.layout.width)}
+      style={[styles.cardOuter, isExpired && styles.cardExpired]}
     >
-      {/* 1. Cover Banner 16:9 Image with Overlays */}
-      <View style={styles.bannerContainer}>
-        <ProjectCoverBanner
-          src={clientUploadedBanner}
-          category={project.kategori}
-          height={140}
-        />
-        <View style={styles.bannerGradientOverlay} />
-
-        {/* Top-left: Category Pill */}
-        <View style={styles.bannerCategoryPill}>
-          <Text style={styles.bannerCategoryText}>
-            {getCategoryLabel(project.kategori)}
-          </Text>
-        </View>
-
-        {/* Top-right: Status when Expired */}
-        {isExpired && (
-          <View style={styles.bannerStatusExpiredPill}>
-            <Text style={styles.bannerStatusExpiredText}>
-              {project.status === "CANCELLED" ? "Dibatalkan" : "Berakhir"}
-            </Text>
+      {/* 1. TOP SECTION (CURVED NOTCHED TAB) */}
+      <View
+        style={styles.topCurvedSection}
+        onLayout={(e) => setTopHeight(e.nativeEvent.layout.height)}
+      >
+        {/* Solid SVG Background: Fill canvas color (#F8FAFC) first, then white curved path */}
+        {W > 0 && H > 0 && (
+          <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+            <Svg width={W} height={H}>
+              {/* Solid Canvas background behind the notch to prevent Android elevation grey box */}
+              <Rect width={W} height={H} fill="#F8FAFC" />
+              {/* White Curved Card Body */}
+              <Path
+                d={curvedCardPath}
+                fill="#FFFFFF"
+                stroke="rgba(15, 23, 42, 0.08)"
+                strokeWidth={1}
+              />
+            </Svg>
           </View>
         )}
 
-        {/* Bottom-right on Banner: Deadline Pill */}
-        {deadlineInfo && !isExpired ? (
+        {/* Fallback solid background while measuring layout */}
+        {W === 0 && (
           <View
             style={[
-              styles.bannerDeadlinePill,
-              deadlineInfo.isUrgent && styles.bannerDeadlinePillUrgent,
+              StyleSheet.absoluteFillObject,
+              {
+                backgroundColor: "#FFFFFF",
+                borderTopLeftRadius: 22,
+                borderTopRightRadius: 22,
+              },
             ]}
-          >
-            <Clock
-              size={10.5}
-              color={deadlineInfo.isUrgent ? "#E11D48" : "#FFFFFF"}
+          />
+        )}
+
+        {/* Apple Style Detail Button nestled cleanly inside the notch */}
+        <View style={styles.appleButtonSlot}>
+          <View style={styles.applePillBtn}>
+            <Text style={styles.applePillBtnText}>Detail</Text>
+            <ArrowUpRight size={12.5} color="#FFFFFF" strokeWidth={2.4} />
+          </View>
+        </View>
+
+        {/* Header Content: Avatar + Title + UMKM Name */}
+        <View style={styles.headerRow}>
+          {/* Square Rounded Logo */}
+          <View style={styles.logoSquare}>
+            <Avatar
+              src={clientPhoto}
+              name={clientName}
+              role="UMKM"
+              size={38}
+              style={styles.avatarImg}
             />
-            <Text
-              style={[
-                styles.bannerDeadlineText,
-                deadlineInfo.isUrgent && styles.bannerDeadlineTextUrgent,
-              ]}
-            >
-              {deadlineInfo.text}
+          </View>
+
+          {/* Title & Subtitle */}
+          <View style={styles.titleColumn}>
+            <Text style={styles.jobTitle} numberOfLines={1}>
+              {project.judul}
+            </Text>
+            <Text style={styles.companyName} numberOfLines={1}>
+              {clientName}
             </Text>
           </View>
+        </View>
+
+        {/* Chips Row */}
+        <View style={styles.chipsRow}>
+          <View style={styles.chip}>
+            <MapPin size={10} color="#64748B" />
+            <Text style={styles.chipText} numberOfLines={1}>
+              {clientCity}
+            </Text>
+          </View>
+
+          <View style={styles.chip}>
+            <Layers size={10} color="#64748B" />
+            <Text style={styles.chipText}>
+              {getCategoryLabel(project.kategori)}
+            </Text>
+          </View>
+
+          <View style={styles.chip}>
+            <Users size={10} color="#64748B" />
+            <Text style={styles.chipText}>
+              {isTeam
+                ? slotsCount > 1
+                  ? `Tim (${slotsCount})`
+                  : "Tim"
+                : "Individu"}
+            </Text>
+          </View>
+        </View>
+
+        {/* Description Snippet (2 Lines) */}
+        {rawDesc ? (
+          <Text style={styles.descriptionSnippet} numberOfLines={2}>
+            {rawDesc}
+          </Text>
         ) : null}
       </View>
 
-      {/* 2. Card Content Body */}
-      <View style={styles.cardBody}>
-        {/* Client Row */}
-        <View style={styles.clientRow}>
-          <Avatar
-            src={clientPhoto}
-            name={clientName}
-            role="UMKM"
-            size={22}
-            style={{ marginRight: 6 }}
-          />
-
-          <Text style={styles.clientNameText} numberOfLines={1}>
-            {clientName}
+      {/* 2. ATTACHED BOTTOM WHITE PANEL */}
+      <View style={styles.bottomBar}>
+        <View style={styles.postedRow}>
+          <Clock size={12} color="#64748B" />
+          <Text style={styles.postedText}>
+            {deadlineInfo ? deadlineInfo.text : "Aktif"} ·{" "}
+            {project.total_pelamar || 0} pelamar
           </Text>
-          {clientCity ? (
-            <>
-              <Text style={styles.metaSlash}>/</Text>
-              <Text style={styles.clientCityText} numberOfLines={1}>
-                {clientCity}
-              </Text>
-            </>
-          ) : null}
         </View>
 
-        {/* Project Title */}
-        <Text style={styles.title} numberOfLines={2}>
-          {project.judul}
+        <Text style={styles.budgetText}>
+          {formatCurrency(project.budget_max)}
         </Text>
-
-        {/* Spec Tag (Clean, neutral, only shown if team) */}
-        {isTeam && (
-          <View style={styles.teamTagWrapper}>
-            <Users size={11} color="#475569" />
-            <Text style={styles.teamTagText}>
-              {slotsCount > 1 ? `Tim (${slotsCount} peran)` : "Tim"}
-            </Text>
-          </View>
-        )}
-
-        {/* Footer: Budget & Applicants */}
-        <View style={styles.footerRow}>
-          <View>
-            <Text style={styles.budgetLabel}>ANGGARAN</Text>
-            <Text style={styles.budgetValue}>
-              {formatCurrency(project.budget_max)}
-            </Text>
-          </View>
-
-          <View style={styles.footerRight}>
-            <Text style={styles.applicantText}>
-              {project.total_pelamar || 0} pelamar
-            </Text>
-            <ChevronRight size={14} color={COLORS.textMuted} />
-          </View>
-        </View>
       </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(15, 23, 42, 0.08)",
+  cardOuter: {
+    borderRadius: 22,
     marginBottom: 14,
-    overflow: "hidden",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: Platform.OS === "android" ? 1 : 3,
+    shadowRadius: 8,
+    elevation: Platform.OS === "android" ? 1 : 2,
+    overflow: "hidden",
+    backgroundColor: "transparent",
   },
   cardExpired: {
-    opacity: 0.75,
+    opacity: 0.65,
   },
 
-  // 1. Cover Banner
-  bannerContainer: {
-    width: "100%",
-    height: 132,
+  // 1. Top Curved Section
+  topCurvedSection: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 13,
+    minHeight: 140,
     position: "relative",
-    backgroundColor: "#0F172A",
   },
-  bannerImage: {
-    width: "100%",
-    height: "100%",
-  },
-  bannerGradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(15, 23, 42, 0.22)",
-  },
-  bannerCategoryPill: {
+  appleButtonSlot: {
     position: "absolute",
-    top: 10,
-    left: 10,
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
+    top: 4,
+    right: 4,
+    zIndex: 10,
   },
-  bannerCategoryText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-  bannerStatusExpiredPill: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "rgba(225, 29, 72, 0.9)",
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-    borderRadius: 8,
-  },
-  bannerStatusExpiredText: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 10,
-    color: "#FFFFFF",
-    fontWeight: "700",
-  },
-
-  bannerDeadlinePill: {
-    position: "absolute",
-    bottom: 8,
-    right: 10,
+  applePillBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3.5,
-    backgroundColor: "rgba(15, 23, 42, 0.8)",
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "#0F172A", // Apple Solid Dark Slate Pill
+    paddingHorizontal: 11,
+    paddingVertical: 5.5,
+    borderRadius: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  bannerDeadlinePillUrgent: {
-    backgroundColor: "rgba(255, 241, 242, 0.95)",
-    borderColor: "#FFE4E6",
-  },
-  bannerDeadlineText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 9.5,
+  applePillBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11.5,
     color: "#FFFFFF",
-    fontWeight: "600",
-  },
-  bannerDeadlineTextUrgent: {
-    color: "#E11D48",
     fontWeight: "700",
   },
-
-  // 2. Card Content Body
-  cardBody: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 14,
-  },
-  clientRow: {
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
-    gap: 6,
+    marginBottom: 11,
+    paddingRight: 80, // Reserve space for top-right curved notch
   },
-  clientAvatarImage: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "rgba(15, 23, 42, 0.04)",
-  },
-  clientAvatarFallback: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: COLORS.brandIndigoLight,
+  logoSquare: {
+    width: 38,
+    height: 38,
+    borderRadius: 11,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 10,
+    overflow: "hidden",
   },
-  clientAvatarText: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 9.5,
-    color: COLORS.brandIndigo,
+  avatarImg: {
+    borderRadius: 10,
   },
-  clientNameText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
-    color: COLORS.textSecondary,
-    maxWidth: "55%",
+  titleColumn: {
+    flex: 1,
+    justifyContent: "center",
   },
-  clientCityText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
-    flexShrink: 1,
-  },
-  metaSlash: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10,
-    color: "#CBD5E1",
-    marginHorizontal: 2,
-  },
-  title: {
+  jobTitle: {
     fontFamily: FONTS.headingBold,
-    fontSize: 14.5,
-    color: COLORS.textDark,
-    lineHeight: 20,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#0F172A",
     letterSpacing: -0.2,
-    marginBottom: 8,
+    marginBottom: 2,
   },
-  metadataRow: {
+  companyName: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    color: "#64748B",
+  },
+
+  // Chips
+  chipsRow: {
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
     gap: 6,
-    marginBottom: 12,
+    marginBottom: 9,
   },
-  teamTagWrapper: {
+  chip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#F1F5F9",
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 6,
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    alignSelf: "flex-start",
-    marginBottom: 10,
+    paddingHorizontal: 8.5,
+    paddingVertical: 3.5,
+    borderRadius: 14,
   },
-  teamTagText: {
+  chipText: {
     fontFamily: FONTS.bodyMedium,
     fontSize: 10.5,
     color: "#475569",
     fontWeight: "600",
   },
-  footerRow: {
+
+  // Description
+  descriptionSnippet: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 12,
+    color: "#64748B",
+    lineHeight: 17,
+  },
+
+  // 2. Bottom Attached Panel
+  bottomBar: {
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 10,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    borderWidth: 1,
     borderTopWidth: 1,
+    borderColor: "rgba(15, 23, 42, 0.08)",
     borderTopColor: "rgba(15, 23, 42, 0.06)",
   },
-  budgetLabel: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 9,
-    color: "#94A3B8",
-    fontWeight: "800",
-    letterSpacing: 0.5,
-  },
-  budgetValue: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 15,
-    color: COLORS.textDark,
-    letterSpacing: -0.3,
-    fontWeight: "800",
-    marginTop: 1,
-  },
-  footerRight: {
+  postedRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
+    gap: 5,
   },
-  applicantText: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
-    color: COLORS.textMuted,
+  postedText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 11.5,
+    color: "#64748B",
+  },
+  budgetText: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 15.5,
+    color: "#0F172A",
+    fontWeight: "800",
+    letterSpacing: -0.3,
   },
 });

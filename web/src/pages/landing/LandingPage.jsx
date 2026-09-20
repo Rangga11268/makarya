@@ -72,6 +72,18 @@ export function LandingPage() {
   // Freelancer Services Category Filter
   const [selectedServiceCategory, setSelectedServiceCategory] = useState("ALL");
 
+  // Obsidian UI Hero Interactive State
+  const [heroSearchQuery, setHeroSearchQuery] = useState("");
+  const [heroMousePos, setHeroMousePos] = useState({ x: "50%", y: "40%" });
+
+  const handleHeroMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHeroMousePos({
+      x: `${e.clientX - rect.left}px`,
+      y: `${e.clientY - rect.top}px`,
+    });
+  };
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -237,7 +249,7 @@ export function LandingPage() {
       categoryParam: "PEMROGRAMAN",
     },
     {
-      code: "DESAIN",
+      code: "DESIGN",
       title: "Desain Grafis & Brand Identity",
       badge: "Terpopuler",
       tagline: "Logo visual berkarakter, kemasan produk, & materi promosi",
@@ -258,7 +270,7 @@ export function LandingPage() {
         "Brand Book",
         "Canva Pro",
       ],
-      categoryParam: "DESAIN",
+      categoryParam: "DESIGN",
     },
     {
       code: "UIUX",
@@ -370,51 +382,118 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans selection:bg-cyan-500/20 selection:text-cyan-900 overflow-x-hidden relative">
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION & FULL-FIDELITY INTERACTIVE SAAS WORKROOM CANVAS          */}
+      {/* 1. HERO SECTION (ObsidianUI Radial Spotlight & Curved Viewport Frame)     */}
       {/* ========================================================================= */}
-      <section className="relative pt-0 pb-20 lg:pb-28">
-        {/* Full-Width Soft Cyan Announcement Strip (Axora Top Bar Style) */}
-        <div className="w-full bg-[#E0F7FA] border-b border-cyan-200/70 py-2.5 px-4 text-center">
+      <section
+        onMouseMove={handleHeroMouseMove}
+        className="relative pt-2 pb-16 lg:pb-24 px-2 sm:px-4 md:px-6"
+      >
+        {/* Full-Width Soft Cyan Announcement Strip */}
+        <div className="max-w-7xl mx-auto mb-3 bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 border border-cyan-200/80 rounded-2xl py-2 px-4 text-center shadow-2xs">
           <Link
             to="/projects"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-cyan-950 hover:text-cyan-800 transition-colors group"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-800 hover:text-slate-950 transition-colors group"
           >
-            <span className="font-bold">Kolaborasi Multi-Role Terkurasi:</span>
+            <span className="w-2 h-2 rounded-full bg-cyan-500 animate-ping mr-1" />
+            <span className="font-bold text-slate-900">
+              Kolaborasi Multi-Role Terkurasi:
+            </span>
             <span>
               Wujudkan proyek digital UMKM bersama talenta kampus terbaik.
             </span>
-            <span className="font-bold inline-flex items-center ml-1 text-cyan-800 group-hover:translate-x-0.5 transition-transform">
+            <span className="font-bold inline-flex items-center ml-1 text-cyan-700 group-hover:translate-x-0.5 transition-transform">
               Jelajahi Proyek <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
             </span>
           </Link>
         </div>
 
-        {/* Ambient Top Background Radial Glow */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-cyan-200/40 via-blue-100/30 to-transparent blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
+        {/* Obsidian Curved Hero Frame Container */}
+        <div
+          className="relative max-w-7xl mx-auto rounded-3xl md:rounded-[36px] border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden transition-all duration-300 pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-12 text-center"
+          style={{
+            background: `radial-gradient(750px circle at var(--mouse-x, 50%) var(--mouse-y, 40%), rgba(56, 189, 248, 0.08), transparent 65%), linear-gradient(to bottom, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)`,
+            "--mouse-x": heroMousePos.x,
+            "--mouse-y": heroMousePos.y,
+          }}
+        >
+          {/* Subtle Grid Background Pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                "linear-gradient(90deg, rgba(0,0,0,0.15) 1px, transparent 1px), linear-gradient(180deg, rgba(0,0,0,0.15) 1px, transparent 1px)",
+              backgroundSize: "60px 60px",
+            }}
+          />
 
-        {/* Hero Headline & CTA Area */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 text-center">
-          {/* Top Pill Badge */}
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white border border-cyan-200 text-cyan-900 text-xs font-semibold mb-6 shadow-sm hover:border-cyan-300 transition-colors cursor-default">
+          {/* Obsidian Interactive Pill Badge */}
+          <div className="relative z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 text-slate-800 text-xs font-semibold mb-6 shadow-2xs hover:border-slate-300 transition-all cursor-default">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span>Platform Kolaborasi Digital Mahasiswa & UMKM</span>
+            <span className="text-[10px] font-bold text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded-full">
+              Escrow Protected
+            </span>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
-            Ubah ide digital menjadi{" "}
-            <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-              proyek terkurasi.
+          {/* Main Obsidian Typography Headline */}
+          <h1 className="relative z-10 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tighter leading-[1.12] max-w-4xl mx-auto text-transparent bg-clip-text bg-gradient-to-b from-slate-950 via-slate-900 to-slate-600">
+            Ubah ide bisnis menjadi <br />
+            <span className="bg-gradient-to-r from-blue-700 via-cyan-600 to-teal-600 bg-clip-text text-transparent">
+              karya digital nyata.
             </span>
           </h1>
 
-          <p className="mt-5 text-sm sm:text-base lg:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="relative z-10 mt-4 text-sm sm:text-base lg:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Makarya menghubungkan pelaku usaha UMKM dengan mahasiswa bertalenta
             melalui sistem Rekening Bersama (Escrow) 100% aman dan formasi tim
             terkoordinasi.
           </p>
 
+          {/* Obsidian Interactive Search Command Input */}
+          <div className="relative z-10 mt-8 max-w-lg mx-auto">
+            <div className="relative flex items-center gap-2 p-1.5 bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-2xl shadow-sm hover:border-slate-300 hover:shadow-md transition-all">
+              <div className="flex items-center gap-2 pl-3 flex-1 min-w-0">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Cari kebutuhan proyek (Web, UI/UX, Video, Desain)..."
+                  value={heroSearchQuery}
+                  onChange={(e) => setHeroSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (heroSearchQuery.trim()) {
+                        navigate(
+                          `/projects?search=${encodeURIComponent(heroSearchQuery.trim())}`,
+                        );
+                      } else {
+                        navigate("/projects");
+                      }
+                    }
+                  }}
+                  className="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (heroSearchQuery.trim()) {
+                    navigate(
+                      `/projects?search=${encodeURIComponent(heroSearchQuery.trim())}`,
+                    );
+                  } else {
+                    navigate("/projects");
+                  }
+                }}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 shadow-xs"
+              >
+                <span>Cari</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
           {/* Clean Primary CTA Buttons */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="relative z-10 mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             {isAuthenticated ? (
               <button
                 type="button"
@@ -423,7 +502,7 @@ export function LandingPage() {
                     user?.role === "UMKM" ? "/create-project" : "/projects",
                   )
                 }
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
+                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
               >
                 <span>
                   {user?.role === "UMKM"
@@ -437,7 +516,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=UMKM")}
-                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
+                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
                 >
                   <span>Mulai Pasang Proyek</span>
                   <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -445,12 +524,36 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=MAHASISWA")}
-                  className="px-6 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
+                  className="px-6 py-3 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
                 >
                   Daftar Sebagai Mahasiswa
                 </button>
               </div>
             )}
+          </div>
+
+          {/* Social Proof Avatars Cluster */}
+          <div className="relative z-10 mt-8 flex items-center justify-center gap-3 text-xs text-slate-500">
+            <div className="flex -space-x-2">
+              <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-xs">
+                DR
+              </span>
+              <span className="w-7 h-7 rounded-full bg-cyan-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-xs">
+                AP
+              </span>
+              <span className="w-7 h-7 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-xs">
+                HW
+              </span>
+              <span className="w-7 h-7 rounded-full bg-amber-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-xs">
+                SR
+              </span>
+            </div>
+            <div className="text-left font-medium">
+              <span className="text-slate-900 font-bold">1.200+ Mahasiswa</span>{" "}
+              &{" "}
+              <span className="text-slate-900 font-bold">450+ Mitra UMKM</span>{" "}
+              terhubung aktif
+            </div>
           </div>
         </div>
 
@@ -950,30 +1053,28 @@ export function LandingPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. CAMPUS PARTNER INFINITE MARQUEE TICKER                                 */}
+      {/* 3. CAMPUS PARTNER INFINITE MARQUEE TICKER (Obsidian UI Edge Mask)         */}
       {/* ========================================================================= */}
-      <section className="py-8 bg-white border-y border-slate-200/80 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto px-4 mb-4 text-center">
-          <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+      <section className="py-6 bg-white border-y border-slate-200/80 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-4 mb-3 text-center">
+          <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
             Didukung Oleh Mahasiswa Berbakat Dari Berbagai Perguruan Tinggi
           </p>
         </div>
 
-        {/* Gradient edge masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-
-        {/* Infinite scrolling ticker track */}
-        <div className="flex animate-marquee gap-8 sm:gap-12 items-center text-slate-600 text-xs sm:text-sm font-semibold">
-          {[...campuses, ...campuses].map((c, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-2 hover:text-slate-900 transition-colors shrink-0 px-2 cursor-default"
-            >
-              <GraduationCap className="w-4 h-4 text-cyan-600" />
-              <span>{c}</span>
-            </div>
-          ))}
+        {/* Obsidian Marquee Container with CSS gradient fade mask */}
+        <div className="obsidian-marquee-mask relative overflow-hidden py-1">
+          <div className="flex animate-marquee gap-6 sm:gap-8 items-center text-slate-700 text-xs sm:text-sm font-semibold">
+            {[...campuses, ...campuses].map((c, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 text-slate-700 hover:text-slate-950 transition-colors shrink-0 bg-slate-50/90 border border-slate-200/80 rounded-full py-1.5 px-3.5 shadow-2xs cursor-default"
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>{c}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

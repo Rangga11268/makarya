@@ -279,7 +279,7 @@ def create_project(
 
 @router.get("", response_model=List[ProjectResponse])
 def browse_project(
-    kategori: Optional[ProjectCategory] = Query(None, description="Filter Berdasarkan kategori"),
+    kategori: Optional[str] = Query(None, description="Filter Berdasarkan kategori"),
     min_budget: Optional[Decimal] = Query(None, ge=0, description="Filter Berdasarkan budget minimum"),
     max_budget: Optional[Decimal] = Query(None, le=2000000, description="Filter Berdasarkan budget maksimum"),
     keyword: Optional[str] = Query(None, description="Filter Berdasarkan keyword, Judul atau deskripsi proyek"),
@@ -322,7 +322,11 @@ def browse_project(
         )
 
     if kategori:
-        query = query.filter(Project.kategori == kategori)
+        k_upper = str(kategori).strip().upper()
+        if k_upper == "DESAIN":
+            k_upper = "DESIGN"
+        if k_upper in ProjectCategory.__members__:
+            query = query.filter(Project.kategori == ProjectCategory[k_upper])
     if min_budget is not None:
         query = query.filter(Project.budget_max >= min_budget)
     if max_budget is not None:

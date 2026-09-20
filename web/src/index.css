@@ -106,6 +106,48 @@
   animation: fadeInFast 0.25s ease-out forwards;
 }
 
+/* Obsidian UI Styles & Utility Classes */
+.obsidian-radial-canvas {
+  background:
+    radial-gradient(
+      800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(56, 189, 248, 0.05),
+      transparent 60%
+    ),
+    linear-gradient(to bottom, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+}
+
+.obsidian-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.obsidian-card:hover {
+  border-color: rgba(148, 163, 184, 0.8);
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+}
+
+.obsidian-marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
 @media print {
   body {
     background: #ffffff !important;

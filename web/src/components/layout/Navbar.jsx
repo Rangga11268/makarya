@@ -112,9 +112,9 @@ export function Navbar() {
     {
       name: "Desain Grafis & Branding",
       desc: "Logo, identitas visual, grafis promosi UMKM",
-      code: "DESAIN",
+      code: "DESIGN",
       svgIcon: CategoryDesignSvg,
-      path: "/projects?category=DESAIN",
+      path: "/projects?category=DESIGN",
     },
     {
       name: "UI/UX & Prototipe Figma",
