@@ -280,13 +280,13 @@ export function PaymentGatewayModal({
             </div>
 
             {/* Modal Bottom Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-slate-200">
               <Button
                 type="button"
                 variant="outline"
                 size="md"
                 onClick={onClose}
-                className="text-xs font-semibold"
+                className="w-full sm:w-auto justify-center text-xs font-semibold"
               >
                 Batal
               </Button>
@@ -296,7 +296,7 @@ export function PaymentGatewayModal({
                 size="md"
                 loading={isProcessing}
                 onClick={handleSimulatePayment}
-                className="text-xs font-bold shadow-brand"
+                className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
               >
                 <Check className="w-4 h-4 mr-1.5" />
                 Simulasi Bayar Berhasil (Sandbox)
@@ -308,4 +308,3 @@ export function PaymentGatewayModal({
     </Modal>
   );
 }
-

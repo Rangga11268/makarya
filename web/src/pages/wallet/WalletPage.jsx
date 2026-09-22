@@ -754,12 +754,12 @@ export function WalletPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
               <Button
                 variant="outline"
                 size="md"
                 onClick={() => setSelectedReceipt(null)}
-                className="text-xs font-bold"
+                className="w-full sm:w-auto justify-center text-xs font-bold"
               >
                 Tutup
               </Button>
@@ -767,7 +767,7 @@ export function WalletPage() {
                 variant="brand"
                 size="md"
                 onClick={() => window.print()}
-                className="text-xs font-bold shadow-brand"
+                className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
               >
                 <Printer className="w-4 h-4 mr-1.5" />
                 Cetak / Simpan PDF
@@ -845,12 +845,13 @@ export function WalletPage() {
             required
           />
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
             <Button
               variant="secondary"
               size="md"
               onClick={() => setWithdrawModalOpen(false)}
               disabled={withdrawLoading}
+              className="w-full sm:w-auto justify-center"
             >
               Batal
             </Button>
@@ -859,6 +860,7 @@ export function WalletPage() {
               size="md"
               type="submit"
               loading={withdrawLoading}
+              className="w-full sm:w-auto justify-center"
             >
               Konfirmasi Penarikan
             </Button>
@@ -911,14 +913,14 @@ export function WalletPage() {
             </select>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3 border-t border-border">
             <Button
               type="button"
               variant="outline"
               size="md"
               onClick={() => setTopUpModalOpen(false)}
               disabled={topUpLoading}
-              className="text-xs font-bold"
+              className="w-full sm:w-auto justify-center text-xs font-bold"
             >
               Batal
             </Button>
@@ -927,7 +929,7 @@ export function WalletPage() {
               variant="brand"
               size="md"
               loading={topUpLoading}
-              className="text-xs font-bold shadow-brand"
+              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
             >
               Lanjut ke Pembayaran Midtrans
             </Button>

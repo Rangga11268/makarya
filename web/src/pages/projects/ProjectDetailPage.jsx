@@ -637,7 +637,7 @@ export function ProjectDetailPage() {
                     }
                     setChatModalOpen(true);
                   }}
-                  className="shrink-0 text-xs font-bold py-2 px-4 shadow-brand"
+                  className="w-full sm:w-auto shrink-0 justify-center text-xs font-bold py-2 px-4 shadow-brand"
                 >
                   Buka Obrolan
                 </Button>
@@ -890,13 +890,13 @@ export function ProjectDetailPage() {
 
                 {(project.status === "OPEN" ||
                   project.status === "BIDDING") && (
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2 pt-1">
                     <Button
                       type="button"
                       variant="outline"
                       size="md"
                       onClick={() => setEditModalOpen(true)}
-                      className="w-full text-xs font-bold border-slate-200 text-dark-900 hover:bg-slate-50"
+                      className="w-full text-xs font-bold border-slate-200 text-dark-900 hover:bg-slate-50 justify-center"
                     >
                       <Edit3 className="w-3.5 h-3.5 mr-1.5 text-brand-indigo" />
                       <span>Edit Proyek</span>
@@ -906,7 +906,7 @@ export function ProjectDetailPage() {
                       variant="outline"
                       size="md"
                       onClick={() => setDeleteModalOpen(true)}
-                      className="w-full text-xs font-bold border-rose-200 text-rose-600 hover:bg-rose-50"
+                      className="w-full text-xs font-bold border-rose-200 text-rose-600 hover:bg-rose-50 justify-center"
                     >
                       <Trash2 className="w-3.5 h-3.5 mr-1.5 text-rose-500" />
                       <span>Hapus</span>

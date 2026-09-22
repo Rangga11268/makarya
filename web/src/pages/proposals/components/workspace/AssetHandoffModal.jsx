@@ -185,13 +185,13 @@ export function AssetHandoffModal({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-5 sm:p-6 border-t border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-end gap-3">
+        <div className="p-5 sm:p-6 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
           <Button
             variant="outline"
             size="md"
             onClick={onClose}
             disabled={loading}
-            className="text-xs font-bold border-slate-200"
+            className="w-full sm:w-auto justify-center text-xs font-bold border-slate-200"
           >
             Batal
           </Button>
@@ -202,7 +202,7 @@ export function AssetHandoffModal({
             onClick={onConfirm}
             loading={loading}
             disabled={!isAllChecked || loading}
-            className="text-xs font-bold shadow-brand bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 px-5"
+            className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 px-5"
           >
             <CheckCircle2 className="w-4 h-4 mr-1.5" />
             Konfirmasi & Cairkan Honor

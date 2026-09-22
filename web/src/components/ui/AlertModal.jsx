@@ -136,12 +136,12 @@ export function AlertModal() {
         )}
 
         {/* Action Buttons */}
-        <div className="w-full flex items-center gap-2.5 mt-1">
+        <div className="w-full flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2.5 mt-1">
           {showCancel && (
             <button
               type="button"
               onClick={handleCancel}
-              className="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold bg-canvas hover:bg-slate-200/70 text-dark-900 border border-border transition-all select-none cursor-pointer"
+              className="w-full sm:flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold bg-canvas hover:bg-slate-200/70 text-dark-900 border border-border transition-all select-none cursor-pointer text-center"
             >
               {cancelText || "Batal"}
             </button>
@@ -151,8 +151,8 @@ export function AlertModal() {
             type="button"
             onClick={handleConfirm}
             className={cn(
-              "py-3 px-4 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all select-none cursor-pointer",
-              showCancel ? "flex-[1.3]" : "w-full",
+              "w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all select-none cursor-pointer text-center",
+              showCancel ? "sm:flex-[1.3]" : "sm:w-full",
               currentTheme.buttonBg,
             )}
           >

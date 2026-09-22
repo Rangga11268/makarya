@@ -637,7 +637,7 @@ export function ProfilePage() {
             variant="brand"
             size="lg"
             disabled={loading}
-            className="text-xs sm:text-sm font-bold shadow-brand"
+            className="w-full sm:w-auto justify-center text-xs sm:text-sm font-bold shadow-brand"
           >
             <Save className="w-4 h-4 mr-1.5" />
             {loading ? "Menyimpan Perubahan..." : "Simpan Perubahan Profil"}

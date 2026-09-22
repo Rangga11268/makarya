@@ -33,7 +33,8 @@ export function SubmissionModal({ isOpen, onClose, projectId, onSuccess }) {
       onSuccess?.();
       onClose();
     } catch (err) {
-      const msg = err.response?.data?.detail || "Gagal mengunggah hasil pekerjaan.";
+      const msg =
+        err.response?.data?.detail || "Gagal mengunggah hasil pekerjaan.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -41,7 +42,11 @@ export function SubmissionModal({ isOpen, onClose, projectId, onSuccess }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Unggah / Serahkan Hasil Kerja">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Unggah / Serahkan Hasil Kerja"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="p-3 text-xs font-medium bg-rose-50 border border-rose-200 text-rose-700 rounded-xl">
@@ -67,11 +72,23 @@ export function SubmissionModal({ isOpen, onClose, projectId, onSuccess }) {
           onChange={(e) => setCatatan(e.target.value)}
         />
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-          <Button variant="secondary" size="md" onClick={onClose} disabled={loading}>
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onClose}
+            disabled={loading}
+            className="w-full sm:w-auto justify-center"
+          >
             Batal
           </Button>
-          <Button variant="primary" size="md" type="submit" loading={loading}>
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+            loading={loading}
+            className="w-full sm:w-auto justify-center"
+          >
             Serahkan Pekerjaan
           </Button>
         </div>

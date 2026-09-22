@@ -248,14 +248,14 @@ export function BrowseProjectsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           {user?.role === "UMKM" ? (
-            <div className="flex items-center gap-2">
-              <Link to="/projects/new" className="sm:hidden">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <Link to="/projects/new" className="sm:hidden w-full">
                 <Button
                   variant="brand"
                   size="sm"
-                  className="text-xs font-bold shadow-brand"
+                  className="w-full justify-center text-xs font-bold shadow-brand"
                 >
                   <PlusCircle className="w-4 h-4 mr-1.5" />
                   Pasang Proyek
@@ -265,7 +265,7 @@ export function BrowseProjectsPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleResetFilter}
-                className="text-xs font-bold text-muted hover:text-dark-900"
+                className="w-full sm:w-auto justify-center text-xs font-bold text-muted hover:text-dark-900"
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-1" />
                 Reset Filter
@@ -276,7 +276,7 @@ export function BrowseProjectsPage() {
               variant="outline"
               size="sm"
               onClick={handleResetFilter}
-              className="text-xs font-bold text-muted hover:text-dark-900"
+              className="w-full sm:w-auto justify-center text-xs font-bold text-muted hover:text-dark-900"
             >
               <RotateCcw className="w-3.5 h-3.5 mr-1" />
               Reset Filter
@@ -302,11 +302,11 @@ export function BrowseProjectsPage() {
               </p>
             </div>
           </div>
-          <Link to="/talents" className="shrink-0">
+          <Link to="/talents" className="w-full sm:w-auto shrink-0">
             <Button
               variant="brand"
               size="sm"
-              className="text-xs font-bold shadow-brand"
+              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
             >
               Buka Direktori Mahasiswa
             </Button>

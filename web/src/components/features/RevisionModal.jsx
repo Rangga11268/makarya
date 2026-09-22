@@ -154,16 +154,23 @@ export function RevisionModal({
           </button>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
           <Button
             variant="secondary"
             size="md"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Batal
           </Button>
-          <Button variant="brand" size="md" type="submit" loading={loading}>
+          <Button
+            variant="brand"
+            size="md"
+            type="submit"
+            loading={loading}
+            className="w-full sm:w-auto justify-center"
+          >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Kirim Catatan Revisi
           </Button>

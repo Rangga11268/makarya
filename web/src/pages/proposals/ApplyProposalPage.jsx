@@ -549,13 +549,16 @@ export function ApplyProposalPage() {
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-4 border-t border-border flex items-center justify-between gap-4">
-                <Link to={`/projects/${project.id}`}>
+              <div className="pt-4 border-t border-border flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <Link
+                  to={`/projects/${project.id}`}
+                  className="w-full sm:w-auto"
+                >
                   <Button
                     type="button"
                     variant="outline"
                     size="md"
-                    className="text-xs font-bold"
+                    className="w-full sm:w-auto justify-center text-xs font-bold"
                   >
                     Batal
                   </Button>
@@ -566,7 +569,7 @@ export function ApplyProposalPage() {
                   variant="brand"
                   size="lg"
                   loading={submitting}
-                  className="text-xs sm:text-sm font-bold shadow-brand"
+                  className="w-full sm:w-auto justify-center text-xs sm:text-sm font-bold shadow-brand"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   Kirim Proposal Lamaran

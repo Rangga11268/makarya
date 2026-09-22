@@ -266,11 +266,11 @@ export function SmartDeliverableCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setPreviewOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
             >
               <Eye className="w-3.5 h-3.5 text-brand-indigo" />
               <span>Pratinjau</span>
@@ -280,7 +280,7 @@ export function SmartDeliverableCard({
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 active:scale-95"
             >
               <span>{linkMeta.actionText}</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -386,13 +386,13 @@ export function SmartDeliverableCard({
 
       {/* UMKM Review Action Buttons (Available for any unapproved submission) */}
       {isUmkm && !isApproved && (
-        <div className="pt-3 flex flex-wrap items-center justify-end gap-2.5 border-t border-slate-100">
+        <div className="pt-3 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 border-t border-slate-100">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onRequestRevision && onRequestRevision(submission)}
             disabled={submission.jumlah_revisi >= 2}
-            className="text-xs font-semibold border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shadow-2xs rounded-xl h-9 px-3.5 whitespace-nowrap"
+            className="w-full sm:w-auto justify-center text-xs font-semibold border-slate-300 bg-white text-slate-700 hover:bg-slate-50 shadow-2xs rounded-xl h-9 px-3.5 whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1.5 text-amber-600 shrink-0" />
             <span>
@@ -406,7 +406,7 @@ export function SmartDeliverableCard({
             variant="brand"
             size="sm"
             onClick={() => onApprove && onApprove(submission)}
-            className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs rounded-xl h-9 px-4 whitespace-nowrap border-0 active:scale-98"
+            className="w-full sm:w-auto justify-center text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs rounded-xl h-9 px-4 whitespace-nowrap border-0 active:scale-98"
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
             <span>

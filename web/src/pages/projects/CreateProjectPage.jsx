@@ -692,12 +692,12 @@ export function CreateProjectPage() {
               required
             />
 
-            <div className="flex items-center justify-end pt-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end pt-4 border-t border-border">
               <Button
                 variant="brand"
                 size="lg"
                 type="submit"
-                className="font-bold shadow-brand"
+                className="w-full sm:w-auto font-bold shadow-brand justify-center"
               >
                 <span>Lanjut ke Analisis AI Assistant</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -820,11 +820,12 @@ export function CreateProjectPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
                 <Button
                   variant="secondary"
                   size="md"
                   onClick={() => setCurrentStep(1)}
+                  className="w-full sm:w-auto justify-center"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   Kembali
@@ -833,7 +834,7 @@ export function CreateProjectPage() {
                   variant="brand"
                   size="lg"
                   onClick={() => setCurrentStep(3)}
-                  className="font-bold shadow-brand"
+                  className="w-full sm:w-auto justify-center font-bold shadow-brand"
                 >
                   <span>Lanjut ke Budget & Timeline</span>
                   <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -1155,11 +1156,12 @@ export function CreateProjectPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-border">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
               <Button
                 variant="secondary"
                 size="md"
                 onClick={() => setCurrentStep(2)}
+                className="w-full sm:w-auto justify-center"
               >
                 <ArrowLeft className="w-4 h-4 mr-1.5" />
                 Kembali
@@ -1168,7 +1170,7 @@ export function CreateProjectPage() {
                 variant="brand"
                 size="lg"
                 type="submit"
-                className="font-bold shadow-brand"
+                className="w-full sm:w-auto justify-center font-bold shadow-brand"
               >
                 <span>Pratinjau & Konfirmasi Publikasi</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -1289,12 +1291,13 @@ export function CreateProjectPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-border">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
               <Button
                 variant="secondary"
                 size="md"
                 onClick={() => setCurrentStep(3)}
                 disabled={submitting}
+                className="w-full sm:w-auto justify-center"
               >
                 <ArrowLeft className="w-4 h-4 mr-1.5" />
                 Kembali & Edit
@@ -1304,7 +1307,7 @@ export function CreateProjectPage() {
                 size="lg"
                 onClick={handleFinalSubmit}
                 loading={submitting}
-                className="font-bold shadow-brand text-sm sm:text-base px-8"
+                className="w-full sm:w-auto justify-center font-bold shadow-brand text-sm sm:text-base px-8"
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 Terbitkan Proyek Sekarang

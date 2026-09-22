@@ -101,13 +101,14 @@ export function DisputeTicketModal({
           </span>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
           <Button
             type="button"
             variant="secondary"
             size="sm"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Batal
           </Button>
@@ -116,7 +117,7 @@ export function DisputeTicketModal({
             variant="danger"
             size="sm"
             loading={loading}
-            className="font-bold"
+            className="w-full sm:w-auto justify-center font-bold"
           >
             Kirim Tiket Sengketa
           </Button>

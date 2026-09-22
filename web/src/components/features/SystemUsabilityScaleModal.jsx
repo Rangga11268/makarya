@@ -235,7 +235,9 @@ export function SystemUsabilityScaleModal({
         </div>
 
         {/* Live Score Summary Card */}
-        <div className={`p-4 border rounded-2xl space-y-3 ${result.colorClass}`}>
+        <div
+          className={`p-4 border rounded-2xl space-y-3 ${result.colorClass}`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5" />
@@ -260,7 +262,9 @@ export function SystemUsabilityScaleModal({
               </span>
             </div>
             <div>
-              <span className="text-[10px] opacity-75 block">Acceptability</span>
+              <span className="text-[10px] opacity-75 block">
+                Acceptability
+              </span>
               <span className="font-bold text-xs truncate block">
                 {result.acceptability}
               </span>
@@ -268,24 +272,24 @@ export function SystemUsabilityScaleModal({
           </div>
         </div>
 
-        {/* Modal Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+        {/* Footer Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3 border-t border-slate-200">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={resetForm}
-            className="text-xs font-semibold"
+            onClick={handleReset}
+            className="w-full sm:w-auto text-xs text-slate-500 hover:text-slate-800 justify-center"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Reset
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() => window.print()}
-              className="text-xs font-semibold"
+              className="w-full sm:w-auto justify-center text-xs font-semibold"
             >
               <Printer className="w-3.5 h-3.5 mr-1" />
               Cetak / Simpan PDF
@@ -294,7 +298,7 @@ export function SystemUsabilityScaleModal({
               variant="brand"
               size="sm"
               onClick={onClose}
-              className="text-xs font-bold shadow-brand"
+              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
             >
               <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
               Tutup & Simpan
@@ -305,4 +309,3 @@ export function SystemUsabilityScaleModal({
     </Modal>
   );
 }
-

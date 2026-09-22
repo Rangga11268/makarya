@@ -66,14 +66,14 @@ export function DeleteProjectModal({
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-2.5 pt-2">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-2">
           <Button
             type="button"
             variant="outline"
             size="md"
             onClick={onClose}
             disabled={loading}
-            className="text-xs font-bold rounded-xl"
+            className="w-full sm:w-auto justify-center text-xs font-bold rounded-xl"
           >
             Batal
           </Button>
@@ -83,7 +83,7 @@ export function DeleteProjectModal({
             size="md"
             onClick={handleDelete}
             loading={loading}
-            className="text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white"
+            className="w-full sm:w-auto justify-center text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white"
           >
             <Trash2 className="w-4 h-4 mr-1.5" />
             <span>Hapus Proyek</span>
@@ -93,4 +93,3 @@ export function DeleteProjectModal({
     </div>
   );
 }
-

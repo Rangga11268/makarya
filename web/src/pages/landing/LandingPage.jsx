@@ -493,7 +493,7 @@ export function LandingPage() {
           </div>
 
           {/* Clean Primary CTA Buttons */}
-          <div className="relative z-10 mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="relative z-10 mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md sm:max-w-none mx-auto">
             {isAuthenticated ? (
               <button
                 type="button"
@@ -502,7 +502,7 @@ export function LandingPage() {
                     user?.role === "UMKM" ? "/create-project" : "/projects",
                   )
                 }
-                className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-7 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all cursor-pointer"
               >
                 <span>
                   {user?.role === "UMKM"
@@ -512,11 +512,11 @@ export function LandingPage() {
                 <ArrowRight className="w-4 h-4 text-cyan-400" />
               </button>
             ) : (
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=UMKM")}
-                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-7 py-3.5 rounded-full font-bold text-xs sm:text-sm shadow-md shadow-slate-900/10 active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <span>Mulai Pasang Proyek</span>
                   <ArrowRight className="w-4 h-4 text-cyan-400" />
@@ -524,7 +524,7 @@ export function LandingPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/register?role=MAHASISWA")}
-                  className="px-6 py-3 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm shadow-2xs hover:shadow-sm active:scale-[0.98] transition-all cursor-pointer"
                 >
                   Daftar Sebagai Mahasiswa
                 </button>

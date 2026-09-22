@@ -113,13 +113,14 @@ export function ReopenProjectModal({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-3 border-t border-border">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Batal
           </Button>
@@ -128,7 +129,7 @@ export function ReopenProjectModal({
             variant="brand"
             size="sm"
             isLoading={loading}
-            className="shadow-brand font-bold"
+            className="w-full sm:w-auto justify-center shadow-brand font-bold"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1" />
             Buka Kembali Proyek
@@ -192,13 +193,14 @@ export function TerminateProjectModal({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-3 border-t border-border">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Kembali
           </Button>
@@ -206,7 +208,7 @@ export function TerminateProjectModal({
             type="submit"
             size="sm"
             isLoading={loading}
-            className="bg-rose-600 text-white hover:bg-rose-700 font-bold"
+            className="w-full sm:w-auto justify-center bg-rose-600 text-white hover:bg-rose-700 font-bold"
           >
             <XCircle className="w-3.5 h-3.5 mr-1" />
             Ya, Batalkan Proyek
@@ -283,13 +285,14 @@ export function ResignProposalModal({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-3 border-t border-border">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Batal
           </Button>
@@ -297,7 +300,7 @@ export function ResignProposalModal({
             type="submit"
             size="sm"
             isLoading={loading}
-            className="bg-rose-600 text-white hover:bg-rose-700 font-bold"
+            className="w-full sm:w-auto justify-center bg-rose-600 text-white hover:bg-rose-700 font-bold"
           >
             Konfirmasi Pengunduran Diri
           </Button>

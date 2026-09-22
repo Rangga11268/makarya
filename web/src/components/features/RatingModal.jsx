@@ -153,16 +153,23 @@ export function RatingModal({
           onChange={(e) => setUlasan(e.target.value)}
         />
 
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 pt-2 border-t border-border">
           <Button
             variant="secondary"
             size="md"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto justify-center"
           >
             Batal
           </Button>
-          <Button variant="primary" size="md" type="submit" loading={loading}>
+          <Button
+            variant="primary"
+            size="md"
+            type="submit"
+            loading={loading}
+            className="w-full sm:w-auto justify-center"
+          >
             Simpan Ulasan
           </Button>
         </div>

@@ -529,12 +529,12 @@ export function ApplicantReviewBoard({
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 self-end sm:self-auto">
+                      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => onRejectProposal(prop)}
-                          className="text-xs font-bold text-rose-600 border-rose-200 hover:bg-rose-50"
+                          className="w-full sm:w-auto justify-center text-xs font-bold text-rose-600 border-rose-200 hover:bg-rose-50"
                         >
                           Tolak
                         </Button>
@@ -542,7 +542,7 @@ export function ApplicantReviewBoard({
                           variant="brand"
                           size="sm"
                           onClick={() => onAcceptProposal(prop)}
-                          className="text-xs font-bold shadow-brand"
+                          className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
                         >
                           <ShieldCheck className="w-3.5 h-3.5 mr-1" />
                           Terima & Kunci Escrow

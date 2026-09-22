@@ -69,7 +69,9 @@ export function EditProjectModal({
         deskripsi_raw: project.deskripsi_raw || project.deskripsi || "",
         budget_min: project.budget_min ? String(project.budget_min) : "",
         budget_max: project.budget_max ? String(project.budget_max) : "",
-        deadline: project.deadline ? String(project.deadline).split("T")[0] : "",
+        deadline: project.deadline
+          ? String(project.deadline).split("T")[0]
+          : "",
         banner_url: project.banner_url || "",
       });
       setErrorMsg("");
@@ -90,7 +92,9 @@ export function EditProjectModal({
     }
     const numMax = parseFloat(formData.budget_max) || 0;
     if (numMax <= 0 || numMax > 2000000) {
-      setErrorMsg("Anggaran maksimal harus di antara Rp 50.000 s/d Rp 2.000.000");
+      setErrorMsg(
+        "Anggaran maksimal harus di antara Rp 50.000 s/d Rp 2.000.000",
+      );
       return;
     }
 
@@ -103,7 +107,9 @@ export function EditProjectModal({
         kategori: formData.kategori,
         deskripsi_raw: formData.deskripsi_raw.trim(),
         budget_max: numMax,
-        budget_min: formData.budget_min ? parseFloat(formData.budget_min) : undefined,
+        budget_min: formData.budget_min
+          ? parseFloat(formData.budget_min)
+          : undefined,
         deadline: formData.deadline,
         banner_url: formData.banner_url ? formData.banner_url.trim() : null,
       };
@@ -134,7 +140,8 @@ export function EditProjectModal({
                 Edit Kebutuhan Proyek UMKM
               </h3>
               <p className="text-[11px] text-muted">
-                Perbarui detail brief, anggaran, tenggat waktu, atau cover banner proyek.
+                Perbarui detail brief, anggaran, tenggat waktu, atau cover
+                banner proyek.
               </p>
             </div>
           </div>
@@ -149,11 +156,18 @@ export function EditProjectModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-4 max-h-[80vh] overflow-y-auto"
+        >
           {errorMsg && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{typeof errorMsg === "string" ? errorMsg : JSON.stringify(errorMsg)}</span>
+              <span>
+                {typeof errorMsg === "string"
+                  ? errorMsg
+                  : JSON.stringify(errorMsg)}
+              </span>
             </div>
           )}
 
@@ -165,7 +179,9 @@ export function EditProjectModal({
             <input
               type="text"
               value={formData.judul}
-              onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, judul: e.target.value })
+              }
               placeholder="Contoh: Desain Menu Resto & Feed Instagram"
               className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-dark-900 focus:bg-white focus:outline-none focus:border-brand-indigo transition-all font-medium"
               required
@@ -180,7 +196,9 @@ export function EditProjectModal({
               </label>
               <select
                 value={formData.kategori}
-                onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, kategori: e.target.value })
+                }
                 className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-dark-900 focus:bg-white focus:outline-none focus:border-brand-indigo transition-all font-medium"
               >
                 {CATEGORIES.map((c) => (
@@ -198,7 +216,9 @@ export function EditProjectModal({
               <input
                 type="date"
                 value={formData.deadline}
-                onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, deadline: e.target.value })
+                }
                 className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-dark-900 focus:bg-white focus:outline-none focus:border-brand-indigo transition-all font-medium"
                 required
               />
@@ -214,7 +234,9 @@ export function EditProjectModal({
               <input
                 type="number"
                 value={formData.budget_max}
-                onChange={(e) => setFormData({ ...formData, budget_max: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, budget_max: e.target.value })
+                }
                 min="50000"
                 max="2000000"
                 step="25000"
@@ -231,7 +253,9 @@ export function EditProjectModal({
               <input
                 type="number"
                 value={formData.budget_min}
-                onChange={(e) => setFormData({ ...formData, budget_min: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, budget_min: e.target.value })
+                }
                 min="50000"
                 max="2000000"
                 step="25000"
@@ -249,7 +273,9 @@ export function EditProjectModal({
             <textarea
               rows={4}
               value={formData.deskripsi_raw}
-              onChange={(e) => setFormData({ ...formData, deskripsi_raw: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, deskripsi_raw: e.target.value })
+              }
               placeholder="Jelaskan kebutuhan spesifik, preferensi referensi, dan hasil kerja yang diharapkan..."
               className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-dark-900 focus:bg-white focus:outline-none focus:border-brand-indigo transition-all leading-relaxed"
               required
@@ -314,7 +340,9 @@ export function EditProjectModal({
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setFormData({ ...formData, banner_url: p.url })}
+                    onClick={() =>
+                      setFormData({ ...formData, banner_url: p.url })
+                    }
                     className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
                       formData.banner_url === p.url
                         ? "bg-brand-indigo/10 border-brand-indigo text-brand-indigo font-bold"
@@ -329,14 +357,14 @@ export function EditProjectModal({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-4 border-t border-slate-200">
             <Button
               type="button"
               variant="outline"
               size="md"
               onClick={onClose}
               disabled={loading}
-              className="text-xs font-bold rounded-xl"
+              className="w-full sm:w-auto justify-center text-xs font-bold rounded-xl"
             >
               Batal
             </Button>
@@ -345,7 +373,7 @@ export function EditProjectModal({
               variant="brand"
               size="md"
               loading={loading}
-              className="text-xs font-bold rounded-xl shadow-brand"
+              className="w-full sm:w-auto justify-center text-xs font-bold rounded-xl shadow-brand"
             >
               <CheckCircle2 className="w-4 h-4 mr-1.5" />
               <span>Simpan Perubahan</span>
@@ -356,4 +384,3 @@ export function EditProjectModal({
     </div>
   );
 }
-
