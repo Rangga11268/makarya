@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import {
   View,
   Text,
@@ -8,17 +8,12 @@ import {
   SafeAreaView,
   Image,
   Platform,
-  TouchableOpacity,
 } from "react-native";
 import Svg, {
   Defs,
   RadialGradient,
-  LinearGradient,
   Stop,
   Rect,
-  Circle,
-  Path,
-  G,
 } from "react-native-svg";
 import { FONTS } from "../../theme/fonts";
 import { PebbleButton } from "../../components/ui/PebbleButton";
@@ -30,9 +25,25 @@ const { width: W, height: H } = Dimensions.get("window");
 const STATUSBAR_OFFSET =
   Platform.OS === "android" ? (StatusBar.currentHeight || 28) + 14 : 14;
 
-// Accurate Indonesian Top Universities Data with Authentic Identity Colors & Vector Emblems
+// Authentic Indonesian Top Universities Official Logos Mapping
+const CAMPUS_LOCAL_LOGOS = {
+  ui: require("../../../assets/campuses/ui.png"),
+  itb: require("../../../assets/campuses/itb.png"),
+  ugm: require("../../../assets/campuses/ugm.png"),
+  binus: require("../../../assets/campuses/binus.png"),
+  its: require("../../../assets/campuses/its.png"),
+  telkom: require("../../../assets/campuses/telkom.png"),
+  unair: require("../../../assets/campuses/unair.png"),
+  ub: require("../../../assets/campuses/ub.png"),
+  ipb: require("../../../assets/campuses/ipb.png"),
+  unpad: require("../../../assets/campuses/unpad.png"),
+  undip: require("../../../assets/campuses/undip.png"),
+  ubsi: require("../../../assets/campuses/ubsi.png"),
+};
+
+// Accurate Indonesian Top Universities Data with Authentic Identity Colors & Real Logos
 const CAMPUS_ROWS = [
-  // Row 1: UI, ITB, UGM
+  // Row 1: UI, ITB, UGM, UBSI
   [
     {
       id: "ui",
@@ -40,10 +51,7 @@ const CAMPUS_ROWS = [
       short: "UI",
       bg: "#FBBF24", // Makara Kuning Emas UI
       textColor: "#0F172A",
-      iconBg: "#0F172A",
-      iconColor: "#FBBF24",
-      type: "makara",
-      width: 178,
+      width: 182,
     },
     {
       id: "itb",
@@ -51,9 +59,6 @@ const CAMPUS_ROWS = [
       short: "ITB",
       bg: "#1D4ED8", // Ganesha Biru ITB
       textColor: "#FFFFFF",
-      iconBg: "rgba(255,255,255,0.2)",
-      iconColor: "#FFFFFF",
-      type: "ganesha",
       width: 140,
     },
     {
@@ -62,10 +67,15 @@ const CAMPUS_ROWS = [
       short: "UGM",
       bg: "#0F172A", // Surya Biru Navy UGM
       textColor: "#FFFFFF",
-      iconBg: "#F59E0B",
-      iconColor: "#0F172A",
-      type: "surya",
       width: 160,
+    },
+    {
+      id: "ubsi",
+      name: "Universitas BSI",
+      short: "UBSI",
+      bg: "#0284C7", // Biru UBSI
+      textColor: "#FFFFFF",
+      width: 145,
     },
   ],
   // Row 2: BINUS, ITS, TELKOM, UNPAD
@@ -76,9 +86,6 @@ const CAMPUS_ROWS = [
       short: "BINUS",
       bg: "#EA580C", // Oranye Binus
       textColor: "#FFFFFF",
-      iconBg: "rgba(255,255,255,0.2)",
-      iconColor: "#FFFFFF",
-      type: "binus_b",
       width: 156,
     },
     {
@@ -87,9 +94,6 @@ const CAMPUS_ROWS = [
       short: "ITS",
       bg: "#0284C7", // Biru Laut ITS
       textColor: "#FFFFFF",
-      iconBg: "#FFFFFF",
-      iconColor: "#0284C7",
-      type: "its_gear",
       width: 138,
     },
     {
@@ -98,10 +102,15 @@ const CAMPUS_ROWS = [
       short: "TELKOM",
       bg: "#DC2626", // Merah Telkom
       textColor: "#FFFFFF",
-      iconBg: "#FFFFFF",
-      iconColor: "#DC2626",
-      type: "telkom_torch",
       width: 165,
+    },
+    {
+      id: "unpad",
+      name: "UNPAD Bandung",
+      short: "UNPAD",
+      bg: "#2563EB", // Biru Padjadjaran
+      textColor: "#FFFFFF",
+      width: 148,
     },
   ],
   // Row 3: UNAIR, UB, IPB, UNDIP
@@ -112,9 +121,6 @@ const CAMPUS_ROWS = [
       short: "UNAIR",
       bg: "#CA8A04", // Kuning Emas Garuda Unair
       textColor: "#0F172A",
-      iconBg: "#1E3A8A",
-      iconColor: "#FDE047",
-      type: "garuda_unair",
       width: 152,
     },
     {
@@ -123,9 +129,6 @@ const CAMPUS_ROWS = [
       short: "UB",
       bg: "#1E3A8A", // Biru Brawijaya
       textColor: "#FFFFFF",
-      iconBg: "#F59E0B",
-      iconColor: "#1E3A8A",
-      type: "ub_raden",
       width: 130,
     },
     {
@@ -134,152 +137,34 @@ const CAMPUS_ROWS = [
       short: "IPB",
       bg: "#059669", // Hijau Daun IPB
       textColor: "#FFFFFF",
-      iconBg: "#FFFFFF",
-      iconColor: "#059669",
-      type: "ipb_leaf",
       width: 145,
     },
     {
-      id: "unpad",
-      name: "UNPAD",
-      short: "UNPAD",
-      bg: "#2563EB", // Biru Padjadjaran
+      id: "undip",
+      name: "UNDIP Semarang",
+      short: "UNDIP",
+      bg: "#0F172A", // Biru Diponegoro
       textColor: "#FFFFFF",
-      iconBg: "#FACC15",
-      iconColor: "#1E3A8A",
-      type: "unpad_crown",
-      width: 115,
+      width: 152,
     },
   ],
 ];
 
-// Accurate Vector Campus Crests
-function CampusVectorIcon({ type, color, bg }) {
+// Official Real Logo Emblem Container
+function CampusBadgeLogo({ id, name }) {
+  const logoSource = CAMPUS_LOCAL_LOGOS[id];
+
   return (
-    <View style={[styles.campusIconBox, { backgroundColor: bg }]}>
-      <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
-        {/* UI: Makara (Bunga Teratai & Pohon Kalpataru) */}
-        {type === "makara" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Circle cx="12" cy="7" r="3.5" fill={color} />
-            <Path d="M5 20c0-3.87 3.13-7 7-7s7 3.13 7 7" />
-            <Path d="M12 10v7M8 14h8" />
-          </G>
-        )}
-        {/* ITB: Lambang Ganesha Segilima */}
-        {type === "ganesha" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Path d="M12 2l8 5v10l-8 5-8-5V7l8-5z" />
-            <Circle cx="12" cy="12" r="2.5" fill={color} />
-            <Path d="M12 7v2.5M10 14.5l4-5" />
-          </G>
-        )}
-        {/* UGM: Lambang Surya Surya Matahari Segilima */}
-        {type === "surya" && (
-          <G stroke={color} strokeWidth={2} strokeLinecap="round">
-            <Circle cx="12" cy="12" r="3.5" fill={color} />
-            <Path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2.2 2.2M16.8 16.8l2.2 2.2M5 19l2.2-2.2M16.8 7.2l2.2-2.2" />
-          </G>
-        )}
-        {/* ITS: Lambang Ombak & Roda Gigi Segilima */}
-        {type === "its_gear" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Circle cx="12" cy="12" r="3" />
-            <Path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M4.5 19.5l2-2M17.5 6.5l2-2" />
-          </G>
-        )}
-        {/* BINUS: Monogram Identitas B */}
-        {type === "binus_b" && (
-          <G fill={color}>
-            <Path d="M6 3h7a4.5 4.5 0 0 1 3.8 6.9A4.5 4.5 0 0 1 14 19H6V3zm3.5 3v4h3.5a1.75 1.75 0 0 0 0-3.5H9.5zm0 6.5v4.5h4.2a2 2 0 0 0 0-4H9.5z" />
-          </G>
-        )}
-        {/* TELKOM: Lambang Obor & Lidah Api Telkom */}
-        {type === "telkom_torch" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Path d="M12 2c-3.5 4-6 7.5-6 11.5a6 6 0 1 0 12 0c0-4-2.5-7.5-6-11.5z" />
-            <Circle cx="12" cy="14" r="2" fill={color} />
-          </G>
-        )}
-        {/* UNAIR: Garuda Mukti */}
-        {type === "garuda_unair" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Path
-              d="M12 3l3 5 6 1-4.5 4 1.5 6-6-3.5L6 19l1.5-6L3 9l6-1z"
-              fill={color}
-              opacity={0.7}
-            />
-          </G>
-        )}
-        {/* UB: Raden Wijaya / Tugu Mahkota Brawijaya */}
-        {type === "ub_raden" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Circle cx="12" cy="12" r="7" />
-            <Path d="M12 5v14M5 12h14" />
-          </G>
-        )}
-        {/* IPB: Daun Tiga & Tunas Pertanian */}
-        {type === "ipb_leaf" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Path
-              d="M11 20A8 8 0 0 1 3 12C3 4 11 2 21 3c0 10-2 18-10 17z"
-              fill={color}
-              opacity={0.3}
-            />
-            <Path d="M3 21l8-8" />
-          </G>
-        )}
-        {/* UNPAD: Mahkota Padjadjaran */}
-        {type === "unpad_crown" && (
-          <G
-            stroke={color}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <Path
-              d="M3 6l3.5 10h11L21 6l-5.5 5L12 4l-3.5 7L3 6z"
-              fill={color}
-              opacity={0.4}
-            />
-          </G>
-        )}
-      </Svg>
+    <View style={styles.campusIconBox}>
+      {logoSource ? (
+        <Image
+          source={logoSource}
+          style={styles.realCampusLogo}
+          resizeMode="contain"
+        />
+      ) : (
+        <Text style={styles.fallbackInitial}>{name?.[0] || "U"}</Text>
+      )}
     </View>
   );
 }
@@ -331,7 +216,7 @@ export function AuthLandingScreen({ navigation }) {
             <Text style={styles.logoText}>Makarya</Text>
           </View>
 
-          {/* 1. Hero Block: Human, Evidence-Backed Copywriting (Antislop Compliant) */}
+          {/* 1. Hero Block */}
           <View style={styles.heroSection}>
             <View style={styles.badgeRow}>
               <ShieldCheck size={13} color="#34D399" />
@@ -350,7 +235,7 @@ export function AuthLandingScreen({ navigation }) {
             </Text>
           </View>
 
-          {/* 2. Structured, Angled University Pill Collage (Clean Staggered Stack) */}
+          {/* 2. Structured, Angled University Pill Collage */}
           <View style={styles.collageContainer}>
             <View style={styles.collageHeader}>
               <Text style={styles.collageLabel}>
@@ -374,11 +259,7 @@ export function AuthLandingScreen({ navigation }) {
                       { backgroundColor: c.bg, width: c.width },
                     ]}
                   >
-                    <CampusVectorIcon
-                      type={c.type}
-                      color={c.iconColor}
-                      bg={c.iconBg}
-                    />
+                    <CampusBadgeLogo id={c.id} name={c.name} />
                     <Text
                       style={[styles.campusPillText, { color: c.textColor }]}
                       numberOfLines={1}
@@ -404,11 +285,7 @@ export function AuthLandingScreen({ navigation }) {
                       { backgroundColor: c.bg, width: c.width },
                     ]}
                   >
-                    <CampusVectorIcon
-                      type={c.type}
-                      color={c.iconColor}
-                      bg={c.iconBg}
-                    />
+                    <CampusBadgeLogo id={c.id} name={c.name} />
                     <Text
                       style={[styles.campusPillText, { color: c.textColor }]}
                       numberOfLines={1}
@@ -434,11 +311,7 @@ export function AuthLandingScreen({ navigation }) {
                       { backgroundColor: c.bg, width: c.width },
                     ]}
                   >
-                    <CampusVectorIcon
-                      type={c.type}
-                      color={c.iconColor}
-                      bg={c.iconBg}
-                    />
+                    <CampusBadgeLogo id={c.id} name={c.name} />
                     <Text
                       style={[styles.campusPillText, { color: c.textColor }]}
                       numberOfLines={1}
@@ -451,7 +324,7 @@ export function AuthLandingScreen({ navigation }) {
             </View>
           </View>
 
-          {/* 3. Action Buttons (Exact PebbleButton Onboarding Design) */}
+          {/* 3. Action Buttons */}
           <View style={styles.buttonBlock}>
             {/* Primary Action: Pearl White 3D Pebble */}
             <PebbleButton
@@ -587,23 +460,40 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
-    paddingVertical: 6.5,
+    paddingVertical: 6,
     borderRadius: 22,
-    gap: 6.5,
+    gap: 7,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.28,
     shadowRadius: 6,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
+    borderColor: "rgba(255, 255, 255, 0.18)",
   },
   campusIconBox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 25,
+    height: 25,
+    borderRadius: 13,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
+    padding: 2.5,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  realCampusLogo: {
+    width: "100%",
+    height: "100%",
+  },
+  fallbackInitial: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#0F172A",
   },
   campusPillText: {
     fontFamily: FONTS.bodyBold,
