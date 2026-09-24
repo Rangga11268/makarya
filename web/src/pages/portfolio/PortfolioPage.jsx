@@ -12,6 +12,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { getProjectUrl } from "../../utils/slugify";
 import { CertificateViewModal } from "../../components/features/CertificateViewModal";
+import { MbkmTranscriptModal } from "../../components/features/MbkmTranscriptModal";
 import { useToastStore } from "../../store/toastStore";
 import {
   Award,
@@ -27,6 +28,7 @@ import {
   Sparkles,
   Layers,
   FileCheck2,
+  Printer,
 } from "lucide-react";
 import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
@@ -40,6 +42,7 @@ export function PortfolioPage() {
   const [certificates, setCertificates] = useState([]);
   const [selectedCert, setSelectedCert] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMbkmModalOpen, setIsMbkmModalOpen] = useState(false);
   const [togglingId, setTogglingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -138,17 +141,29 @@ export function PortfolioPage() {
           </p>
         </div>
 
-        {isUmkm && (
-          <Link to="/projects/new">
+        {isUmkm ? (
+          <Link to="/projects/new" className="w-full sm:w-auto">
             <Button
               variant="brand"
               size="md"
-              className="shadow-brand text-xs font-bold shrink-0"
+              className="w-full sm:w-auto justify-center shadow-brand text-xs font-bold shrink-0 min-h-[44px]"
             >
               <PlusCircle className="w-4 h-4 mr-1.5" />
               Pasang Proyek Baru
             </Button>
           </Link>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
+            <Button
+              variant="brand"
+              size="md"
+              onClick={() => setIsMbkmModalOpen(true)}
+              className="w-full sm:w-auto justify-center shadow-brand text-xs font-bold shrink-0 min-h-[44px]"
+            >
+              <GraduationCap className="w-4 h-4 mr-1.5" />
+              <span>Unduh Transkrip Rekap MBKM (PDF)</span>
+            </Button>
+          </div>
         )}
       </div>
 
@@ -573,6 +588,15 @@ export function PortfolioPage() {
           setIsModalOpen(false);
           setSelectedCert(null);
         }}
+      />
+
+      {/* Official MBKM Portfolio Transcript Modal */}
+      <MbkmTranscriptModal
+        isOpen={isMbkmModalOpen}
+        onClose={() => setIsMbkmModalOpen(false)}
+        user={user}
+        certificates={certificates}
+        ratings={ratings}
       />
     </div>
   );

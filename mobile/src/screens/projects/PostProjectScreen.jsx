@@ -45,12 +45,60 @@ import {
   DollarSign,
   Camera,
   Image as ImageIcon,
+  Sparkles,
 } from "lucide-react-native";
 
 const STEPS = [
   { id: 1, title: "Brief & Cover" },
   { id: 2, title: "Anggaran & Tim" },
   { id: 3, title: "Pratinjau" },
+];
+
+const PROJECT_PRESETS = [
+  {
+    id: "logo_packaging",
+    label: "Desain Kemasan & Logo",
+    kategori: "DESIGN",
+    judul: "Desain Ulang Logo & Kemasan Produk UMKM",
+    deskripsi:
+      "Kami membutuhkan peremajaan identitas visual logo dan desain kemasan standing pouch/box yang menarik, modern, dan siap cetak untuk meningkatkan daya saing produk UMKM kami.",
+    budgetMin: "350000",
+    budgetMax: "650000",
+    tipeKolaborasi: "INDIVIDU",
+  },
+  {
+    id: "social_media",
+    label: "Konten Feed & Reels Promosi",
+    kategori: "VIDEO",
+    judul: "Produksi 10 Desain Feed & 3 Video Reels Promosi UMKM",
+    deskripsi:
+      "Dibutuhkan talenta mahasiswa kreatif untuk membuat rangkaian konten visual Instagram & TikTok, meliputi banner promosi diskon, carousel edukasi produk, dan short-form video reels.",
+    budgetMin: "400000",
+    budgetMax: "750000",
+    tipeKolaborasi: "INDIVIDU",
+  },
+  {
+    id: "web_menu",
+    label: "Website Menu & Profil Usaha",
+    kategori: "PEMROGRAMAN",
+    judul: "Pembuatan Website Landing Page & Katalog Menu Digital",
+    deskripsi:
+      "Kami memerlukan website profil usaha responsif yang memuat katalog produk, daftar harga/menu digital, tombol integrasi pemesanan WhatsApp, dan lokasi Google Maps.",
+    budgetMin: "800000",
+    budgetMax: "1600000",
+    tipeKolaborasi: "TIM",
+  },
+  {
+    id: "pos_excel",
+    label: "Sistem Kasir & Pembukuan",
+    kategori: "PEMROGRAMAN",
+    judul: "Sistem Kasir (POS) & Rekapitulasi Pembukuan Penjualan",
+    deskripsi:
+      "Membantu digitalisasi pencatatan stok gudang, input transaksi harian pelanggan, cetak struk nota belanja, serta laporan laba rugi otomatis bulanan.",
+    budgetMin: "1000000",
+    budgetMax: "2000000",
+    tipeKolaborasi: "TIM",
+  },
 ];
 
 import { useResponsiveLayout } from "../../hooks/useResponsiveLayout";
@@ -64,6 +112,7 @@ export function PostProjectScreen({ navigation }) {
   // Multi-step state: 1, 2, 3
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [activePresetId, setActivePresetId] = useState(null);
 
   // Form states
   const [judul, setJudul] = useState("");
@@ -75,6 +124,17 @@ export function PostProjectScreen({ navigation }) {
   const [deadline, setDeadline] = useState(
     new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
   );
+
+  const handleApplyPreset = (preset) => {
+    setActivePresetId(preset.id);
+    setJudul(preset.judul);
+    setKategori(preset.kategori);
+    setDeskripsi(preset.deskripsi);
+    setBudgetMin(preset.budgetMin);
+    setBudgetMax(preset.budgetMax);
+    setTipeKolaborasi(preset.tipeKolaborasi);
+    showToast(`Template "${preset.label}" diterapkan!`, "success");
+  };
 
   // Model Kolaborasi: INDIVIDU vs TIM
   const [tipeKolaborasi, setTipeKolaborasi] = useState("INDIVIDU");
@@ -439,6 +499,50 @@ export function PostProjectScreen({ navigation }) {
                   jelaskan ekspektasi hasil kerja proyek Anda.
                 </Text>
               </View>
+            </View>
+
+            {/* 1-Click Presets Strip (Terra Harmonia Style) */}
+            <View style={styles.presetBox}>
+              <View style={styles.presetHeaderRow}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <Sparkles size={14} color={COLORS.brandIndigo} />
+                  <Text style={styles.presetTitle}>Template Cepat (1-Click)</Text>
+                </View>
+                <Text style={styles.presetSubtitle}>Auto-isi form instan</Text>
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingRight: 8 }}
+              >
+                {PROJECT_PRESETS.map((p) => {
+                  const isSelected = activePresetId === p.id;
+                  return (
+                    <TouchableOpacity
+                      key={p.id}
+                      onPress={() => handleApplyPreset(p)}
+                      style={[
+                        styles.presetPill,
+                        isSelected && styles.presetPillActive,
+                      ]}
+                      activeOpacity={0.7}
+                    >
+                      <Sparkles
+                        size={13}
+                        color={isSelected ? "#38BDF8" : COLORS.brandIndigo}
+                      />
+                      <Text
+                        style={[
+                          styles.presetPillText,
+                          isSelected && styles.presetPillTextActive,
+                        ]}
+                      >
+                        {p.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
             </View>
 
             {/* Kategori Selector */}
@@ -1552,5 +1656,57 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted,
     lineHeight: 15,
     fontWeight: "500",
+  },
+  presetBox: {
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 20,
+    padding: 14,
+    marginBottom: 16,
+  },
+  presetHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  presetTitle: {
+    fontSize: 12,
+    fontFamily: FONTS.bold,
+    color: "#1E293B",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  presetSubtitle: {
+    fontSize: 10,
+    fontFamily: FONTS.regular,
+    color: "#64748B",
+  },
+  presetPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    marginRight: 8,
+    minHeight: 44,
+  },
+  presetPillActive: {
+    backgroundColor: "#0F172A",
+    borderColor: "#0F172A",
+  },
+  presetPillText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.semiBold,
+    color: "#334155",
+  },
+  presetPillTextActive: {
+    color: "#FFFFFF",
+    fontFamily: FONTS.bold,
   },
 });

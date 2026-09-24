@@ -32,6 +32,7 @@ import { authApi, certificateApi, ratingApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { MobileCertificateModal } from "../../components/features/certificates/MobileCertificateModal";
+import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -85,6 +86,7 @@ export function ProfileScreen({ navigation }) {
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [userReviews, setUserReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [susModalOpen, setSusModalOpen] = useState(false);
 
   const defaultBannerFallback =
     user?.role === "UMKM"
@@ -1331,6 +1333,26 @@ export function ProfileScreen({ navigation }) {
             <Text style={styles.menuItemTitle}>Panduan Penggunaan Makarya</Text>
             <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
+
+          {/* Pengujian Skripsi: System Usability Scale (SUS) Modal */}
+          <TouchableOpacity
+            style={[styles.menuRowItem, { backgroundColor: COLORS.brandIndigoLight || "#EEF2FF" }]}
+            activeOpacity={0.7}
+            onPress={() => setSusModalOpen(true)}
+          >
+            <View style={[styles.menuIconWrap, { backgroundColor: COLORS.brandIndigo }]}>
+              <Sparkles size={15} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.menuItemTitle, { color: COLORS.brandIndigo, fontFamily: FONTS.displayBold }]}>
+                Uji Usability Aplikasi (SUS)
+              </Text>
+              <Text style={{ fontSize: 11, fontFamily: FONTS.bodyRegular, color: COLORS.textMuted }}>
+                Kuesioner 10 Instrumen John Brooke untuk Evaluasi UX Skripsi
+              </Text>
+            </View>
+            <ChevronRight size={14} color={COLORS.brandIndigo} />
+          </TouchableOpacity>
         </View>
 
         {/* 9. Logout Button */}
@@ -1375,6 +1397,12 @@ export function ProfileScreen({ navigation }) {
           setCertModalVisible(false);
           setSelectedCert(null);
         }}
+      />
+
+      {/* MODAL SYSTEM USABILITY SCALE (SUS) EVALUASI SKRIPSI */}
+      <SystemUsabilityScaleModal
+        visible={susModalOpen}
+        onClose={() => setSusModalOpen(false)}
       />
     </View>
   );

@@ -27,7 +27,9 @@ import {
   Lock,
   Wallet,
   BookOpen,
+  Sparkles,
 } from "lucide-react-native";
+import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
 
 const FAQ_ITEMS = [
   {
@@ -85,6 +87,7 @@ const FAQ_ITEMS = [
 
 export function HelpScreen({ navigation }) {
   const [expandedId, setExpandedId] = useState("escrow");
+  const [susModalOpen, setSusModalOpen] = useState(false);
 
   const toggleAccordion = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -259,7 +262,29 @@ export function HelpScreen({ navigation }) {
             );
           })}
 
-          {/* 5. Footer Safe Note */}
+          {/* 5. SUS Research / Usability Testing Card */}
+          <View style={styles.susCardBox}>
+            <View style={styles.susIconCircle}>
+              <Sparkles size={18} color="#4F46E5" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.susCardTitle}>
+                Instrumen Evaluasi UX (SUS)
+              </Text>
+              <Text style={styles.susCardText}>
+                Ikuti pengujian System Usability Scale 10-skala John Brooke untuk validasi kelayakan antarmuka skripsi.
+              </Text>
+              <TouchableOpacity
+                style={styles.openSusBtn}
+                onPress={() => setSusModalOpen(true)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.openSusBtnText}>Mulai Pengujian SUS</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 6. Footer Safe Note */}
           <View style={styles.footerNote}>
             <CheckCircle2 size={13} color="#059669" />
             <Text style={styles.footerNoteText}>
@@ -268,6 +293,12 @@ export function HelpScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
+
+      {/* SUS Modal */}
+      <SystemUsabilityScaleModal
+        visible={susModalOpen}
+        onClose={() => setSusModalOpen(false)}
+      />
     </View>
   );
 }
@@ -472,5 +503,52 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     fontSize: 11,
     color: COLORS.textMuted,
+  },
+  susCardBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "#EEF2FF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "rgba(99, 102, 241, 0.25)",
+    marginTop: 8,
+    marginBottom: 6,
+    gap: 12,
+  },
+  susIconCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "#E0E7FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  susCardTitle: {
+    fontFamily: FONTS.displayBold,
+    fontSize: 13.5,
+    fontWeight: "700",
+    color: "#312E81",
+    marginBottom: 3,
+  },
+  susCardText: {
+    fontFamily: FONTS.bodyRegular,
+    fontSize: 11.5,
+    color: "#4338CA",
+    lineHeight: 16,
+    marginBottom: 10,
+  },
+  openSusBtn: {
+    backgroundColor: "#4F46E5",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    alignSelf: "flex-start",
+  },
+  openSusBtnText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 11.5,
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
 });

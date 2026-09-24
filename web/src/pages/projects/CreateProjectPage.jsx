@@ -32,7 +32,99 @@ import {
   Camera,
   UploadCloud,
   Image as ImageIcon,
+  Sparkles,
 } from "lucide-react";
+
+const PROJECT_PRESETS = [
+  {
+    id: "logo_packaging",
+    label: "Desain Kemasan & Logo UMKM",
+    kategori: "DESIGN",
+    judul: "Desain Ulang Logo & Kemasan Produk Makanan/Minuman",
+    deskripsi:
+      "Kami membutuhkan peremajaan identitas visual logo dan desain kemasan standing pouch/box yang menarik, modern, dan siap cetak untuk meningkatkan daya saing produk UMKM kami di pasar retail.",
+    budget_min: 350000,
+    budget_max: 650000,
+    tipe_kolaborasi: "INDIVIDU",
+    recommendedSkills: [
+      "Packaging Design",
+      "Logo Design",
+      "Figma",
+      "Adobe Illustrator",
+    ],
+    deliverables: [
+      "File Master Vektor (AI/PDF/SVG)",
+      "Mockup 3D Kemasan Realistis",
+      "Buku Panduan Warna & Tipografi",
+    ],
+  },
+  {
+    id: "social_media",
+    label: "Konten Feed & Reels Promosi",
+    kategori: "VIDEO",
+    judul: "Produksi 10 Desain Feed & 3 Video Reels Promosi UMKM",
+    deskripsi:
+      "Dibutuhkan talenta mahasiswa kreatif untuk membuat rangkaian konten visual Instagram & TikTok, meliputi banner promosi diskon, carousel edukasi produk, dan short-form video reels.",
+    budget_min: 400000,
+    budget_max: 750000,
+    tipe_kolaborasi: "INDIVIDU",
+    recommendedSkills: [
+      "CapCut / Premiere",
+      "Social Media Design",
+      "Canva / Photoshop",
+      "Copywriting",
+    ],
+    deliverables: [
+      "10 Template Feed Instagram Siap Posting",
+      "3 Video Reels / TikTok Berdurasi 15-30 Detik",
+      "Copywriting Caption & Tagar",
+    ],
+  },
+  {
+    id: "web_menu",
+    label: "Website Menu & Profil Usaha",
+    kategori: "PEMROGRAMAN",
+    judul: "Pembuatan Website Landing Page & Katalog Menu Digital",
+    deskripsi:
+      "Kami memerlukan website profil usaha responsif yang memuat katalog produk, daftar harga/menu digital, tombol integrasi pemesanan WhatsApp, dan lokasi Google Maps.",
+    budget_min: 800000,
+    budget_max: 1600000,
+    tipe_kolaborasi: "TIM",
+    recommendedSkills: [
+      "React / Tailwind CSS",
+      "UI/UX Figma",
+      "Mobile Responsive",
+      "SEO Dasar",
+    ],
+    deliverables: [
+      "Source Code Frontend Responsif",
+      "Deploy Hosting Aktif",
+      "Integrasi Tombol WhatsApp & QR Menu",
+    ],
+  },
+  {
+    id: "pos_excel",
+    label: "Sistem Pembukuan & Kasir Mini",
+    kategori: "PEMROGRAMAN",
+    judul: "Sistem Kasir (POS) & Rekapitulasi Pembukuan Penjualan",
+    deskripsi:
+      "Membantu digitalisasi pencatatan stok gudang, input transaksi harian pelanggan, cetak struk nota belanja, serta laporan laba rugi otomatis bulanan.",
+    budget_min: 1000000,
+    budget_max: 2000000,
+    tipe_kolaborasi: "TIM",
+    recommendedSkills: [
+      "Flutter / Web",
+      "Database Management",
+      "Excel Macro / Script",
+      "UI/UX Flow",
+    ],
+    deliverables: [
+      "Aplikasi Kasir / Dashboard Web",
+      "Laporan Rekap Penjualan Otomatis",
+      "Panduan Pengoperasian Sistem",
+    ],
+  },
+];
 
 export function CreateProjectPage() {
   const { user } = useAuthStore();
@@ -45,6 +137,42 @@ export function CreateProjectPage() {
   const [submitting, setSubmitting] = useState(false);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [activePresetId, setActivePresetId] = useState(null);
+
+  const handleApplyPreset = (preset) => {
+    setActivePresetId(preset.id);
+    setFormData((prev) => ({
+      ...prev,
+      judul: preset.judul,
+      kategori: preset.kategori,
+      deskripsi_raw: preset.deskripsi,
+      budget_min: preset.budget_min,
+      budget_max: preset.budget_max,
+      tipe_kolaborasi: preset.tipe_kolaborasi,
+      recommendedSkills: preset.recommendedSkills || [],
+      deliverables: preset.deliverables || [],
+      slots:
+        preset.tipe_kolaborasi === "TIM"
+          ? [
+              {
+                nama_peran: "Pelaksana Desain / UI",
+                alokasi_budget: Math.round(preset.budget_max * 0.45),
+                deskripsi_tugas: "Perancangan konsep visual dan aset grafis",
+              },
+              {
+                nama_peran: "Pelaksana Teknis / Web",
+                alokasi_budget: Math.round(preset.budget_max * 0.55),
+                deskripsi_tugas: "Implementasi sistem dan serah terima deliverable",
+              },
+            ]
+          : prev.slots,
+    }));
+    addToast({
+      type: "success",
+      title: "Template Diterapkan",
+      message: `Form proyek berhasil diisi otomatis dengan template "${preset.label}".`,
+    });
+  };
 
   // Form Data
   const [formData, setFormData] = useState({
@@ -522,6 +650,46 @@ export function CreateProjectPage() {
           </div>
 
           <form onSubmit={handleStep1Next} className="space-y-6">
+            {/* 1-Click Preset Templates (Terra Harmonia Style) */}
+            <div className="p-4 rounded-2xl bg-[#f8fafc] border border-slate-200/90 space-y-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4 text-brand-indigo" />
+                  <span>Template Kebutuhan Cepat (1-Click Presets)</span>
+                </div>
+                <span className="text-[11px] text-muted font-normal">
+                  Pilih salah satu untuk mengisi form proyek secara instan
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                {PROJECT_PRESETS.map((preset) => {
+                  const isSelected = activePresetId === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handleApplyPreset(preset)}
+                      className={`px-3.5 py-2.5 rounded-xl border text-left transition-all cursor-pointer min-h-[44px] flex items-center gap-2 text-xs select-none ${
+                        isSelected
+                          ? "bg-slate-900 text-white border-slate-900 shadow-xs font-bold"
+                          : "bg-white border-slate-200 text-slate-800 hover:border-brand-indigo hover:bg-slate-50"
+                      }`}
+                    >
+                      <Sparkles
+                        className={`w-3.5 h-3.5 shrink-0 ${
+                          isSelected ? "text-cyan-400" : "text-brand-indigo"
+                        }`}
+                      />
+                      <span className="truncate font-semibold">
+                        {preset.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <Input
               label="Judul Proyek Kebutuhan"
               placeholder="Contoh: Desain Ulang Logo & Kemasan Paper Cup Kedai Kopi"
