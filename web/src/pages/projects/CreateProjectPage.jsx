@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useToastStore } from "../../store/toastStore";
@@ -13,6 +13,10 @@ import { SectionHeader } from "../../components/ui/SectionHeader";
 import { ProjectCard } from "../../components/features/ProjectCard";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
+  SKILLS_TAXONOMY,
+  STANDARD_DELIVERABLES_BY_CATEGORY,
+} from "../../constants/formOptions";
+import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
@@ -26,13 +30,16 @@ import {
   HelpCircle,
   Plus,
   Trash2,
-  Cpu,
   Users,
   Info,
   Camera,
   UploadCloud,
   Image as ImageIcon,
   Sparkles,
+  Search,
+  X,
+  Layers,
+  Check,
 } from "lucide-react";
 
 const PROJECT_PRESETS = [
@@ -135,9 +142,13 @@ export function CreateProjectPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [wallet, setWallet] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [activePresetId, setActivePresetId] = useState(null);
+
+  // Step 2 Skill Tag Picker States
+  const [skillCategoryFilter, setSkillCategoryFilter] = useState("ALL");
+  const [skillSearchQuery, setSkillSearchQuery] = useState("");
+  const [customTagInput, setCustomTagInput] = useState("");
 
   const handleApplyPreset = (preset) => {
     setActivePresetId(preset.id);
@@ -167,6 +178,7 @@ export function CreateProjectPage() {
             ]
           : prev.slots,
     }));
+    setSkillCategoryFilter(preset.kategori);
     addToast({
       type: "success",
       title: "Template Diterapkan",
@@ -196,7 +208,7 @@ export function CreateProjectPage() {
         deskripsi_tugas: "Implementasi dan penyusunan deliverable final",
       },
     ],
-    // Step 2 AI Parsed Requirements
+    // Step 2 Deliverables & Skills
     deliverables: [],
     recommendedSkills: [],
     customDeliverableInput: "",
@@ -241,6 +253,32 @@ export function CreateProjectPage() {
     },
   ];
 
+  const skillCategoryTabs = [
+    { id: "ALL", label: "Semua Keahlian" },
+    { id: "DESIGN", label: "Desain Grafis" },
+    { id: "UIUX", label: "UI/UX Design" },
+    { id: "PEMROGRAMAN", label: "Web & Coding" },
+    { id: "VIDEO", label: "Video & Animasi" },
+    { id: "COPYWRITING", label: "Copywriting & SEO" },
+    { id: "ADMIN_DATA", label: "Admin & Data" },
+  ];
+
+  // Filter skills taxonomy in real-time
+  const filteredSkillsList = useMemo(() => {
+    let pool = [];
+    if (skillCategoryFilter === "ALL") {
+      Object.values(SKILLS_TAXONOMY).forEach((cat) => {
+        pool.push(...cat.skills);
+      });
+    } else if (SKILLS_TAXONOMY[skillCategoryFilter]) {
+      pool = [...SKILLS_TAXONOMY[skillCategoryFilter].skills];
+    }
+    const unique = Array.from(new Set(pool));
+    if (!skillSearchQuery.trim()) return unique;
+    const query = skillSearchQuery.toLowerCase().trim();
+    return unique.filter((s) => s.toLowerCase().includes(query));
+  }, [skillCategoryFilter, skillSearchQuery]);
+
   useEffect(() => {
     async function loadWallet() {
       try {
@@ -259,85 +297,6 @@ export function CreateProjectPage() {
     setFormData((prev) => ({ ...prev, deadline: dateStr }));
   }, []);
 
-  // AI Requirement Analyzer Engine
-  const runAiRequirementAnalyzer = (rawText, categoryId) => {
-    setAiAnalyzing(true);
-
-    setTimeout(() => {
-      let deliverables = [];
-      let skills = [];
-
-      if (categoryId === "DESIGN") {
-        deliverables = [
-          "File master vector logo beresolusi tinggi (.AI / .SVG)",
-          "Format siap pakai PNG transparan dan JPG (Mode RGB & CMYK)",
-          "Buku panduan warna brand (Hex code color palette)",
-          "Pratinjau mockup kemasan / paper cup produk",
-        ];
-        skills = [
-          "Logo & Branding",
-          "Desain Kemasan (Packaging)",
-          "Adobe Illustrator",
-          "Desain Menu & Banner",
-        ];
-      } else if (categoryId === "PEMROGRAMAN") {
-        deliverables = [
-          "Landing page responsive yang ramah perangkat mobile dan desktop",
-          "Integrasi tombol chat langsung WhatsApp untuk reservasi pelanggan",
-          "Katalog daftar menu digital dan informasi lokasi usaha",
-          "Kode sumber clean code dan panduan deployment hosting",
-        ];
-        skills = [
-          "Landing Page HTML/CSS",
-          "WordPress / Web Builder",
-          "Fullstack Web (React/Python/PHP)",
-        ];
-      } else if (categoryId === "UIUX") {
-        deliverables = [
-          "File desain prototipe interaktif di Figma (5-7 screen utama)",
-          "Desain komponen tombol, typography system, dan palet warna",
-          "Flow interaksi pengguna (User Journey & Wireframing)",
-        ];
-        skills = [
-          "UI/UX Website",
-          "UI/UX Mobile App",
-          "Wireframing & Prototyping",
-        ];
-      } else if (categoryId === "VIDEO") {
-        deliverables = [
-          "3 video pendek promosi (durasi 30-45 detik format 9:16 vertikal)",
-          "Editing transisi dinamis, efek estetik, dan audio trending bebas lisensi",
-          "File render akhir MP4 Full HD (1080x1920)",
-        ];
-        skills = ["Video Reels / TikTok Promosi", "Fotografi Produk UMKM"];
-      } else if (categoryId === "COPYWRITING") {
-        deliverables = [
-          "10 set caption postingan media sosial dengan formula Hook-Story-Offer",
-          "Riset hashtag relevan target lokal",
-          "Teks deskripsi storytelling menu unggulan",
-        ];
-        skills = ["Copywriting Iklan & Social Media", "Artikel SEO"];
-      } else {
-        deliverables = [
-          "Rekap data terstruktur ke dalam Google Spreadsheet",
-          "Otomatisasi rumus penjumlahan dan persentase keuntungan",
-          "Dashboard ringkasan grafik penjualan bulanan",
-        ];
-        skills = [
-          "Entry Data Excel / Spreadsheet",
-          "Pembukuan Keuangan Sederhana",
-        ];
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        deliverables,
-        recommendedSkills: skills,
-      }));
-      setAiAnalyzing(false);
-    }, 600);
-  };
-
   // Step 1 Validation & Next
   const handleStep1Next = (e) => {
     e.preventDefault();
@@ -349,14 +308,79 @@ export function CreateProjectPage() {
     }
     if (formData.deskripsi_raw.trim().length < 15) {
       setErrorMessage(
-        "Ceritakan kebutuhan usaha Anda minimal 15 karakter agar AI dapat menganalisis kebutuhan.",
+        "Ceritakan kebutuhan usaha Anda minimal 15 karakter agar mahasiswa memahami tujuan proyek.",
       );
       return;
     }
 
-    runAiRequirementAnalyzer(formData.deskripsi_raw, formData.kategori);
+    // Auto-populate deliverables and recommended skills if empty
+    if (formData.deliverables.length === 0) {
+      const defaultDeliverables =
+        STANDARD_DELIVERABLES_BY_CATEGORY[formData.kategori] || [];
+      const defaultSkills =
+        SKILLS_TAXONOMY[formData.kategori]?.skills.slice(0, 4) || [];
+      setFormData((prev) => ({
+        ...prev,
+        deliverables: defaultDeliverables,
+        recommendedSkills:
+          prev.recommendedSkills.length > 0
+            ? prev.recommendedSkills
+            : defaultSkills,
+      }));
+    }
+
+    setSkillCategoryFilter(formData.kategori);
     setCurrentStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 2 Handlers
+  const handleToggleSkill = (skill) => {
+    const isSelected = formData.recommendedSkills.includes(skill);
+    if (isSelected) {
+      setFormData((prev) => ({
+        ...prev,
+        recommendedSkills: prev.recommendedSkills.filter((s) => s !== skill),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        recommendedSkills: [...prev.recommendedSkills, skill],
+      }));
+    }
+  };
+
+  const handleAddCustomSkill = () => {
+    const trimmed = customTagInput.trim();
+    if (!trimmed) return;
+    if (!formData.recommendedSkills.includes(trimmed)) {
+      setFormData((prev) => ({
+        ...prev,
+        recommendedSkills: [...prev.recommendedSkills, trimmed],
+      }));
+    }
+    setCustomTagInput("");
+  };
+
+  const handleResetSkills = () => {
+    setFormData((prev) => ({
+      ...prev,
+      recommendedSkills: [],
+    }));
+  };
+
+  const handleLoadStandardDeliverables = () => {
+    const defaults =
+      STANDARD_DELIVERABLES_BY_CATEGORY[formData.kategori] || [];
+    setFormData((prev) => ({
+      ...prev,
+      deliverables: Array.from(new Set([...prev.deliverables, ...defaults])),
+    }));
+    addToast({
+      type: "info",
+      title: "Rekomendasi Dimuat",
+      message: `Daftar deliverable standar untuk kategori ${currentCatObj.label} telah ditambahkan.`,
+    });
   };
 
   // Step 2 Add/Remove Deliverable
@@ -473,13 +497,19 @@ export function CreateProjectPage() {
       setSubmitting(true);
 
       // Concatenate raw description with AI-structured deliverables
+      // Concatenate raw description with structured deliverables & skill tags
       const deliverablesText =
         formData.deliverables.length > 0
           ? `\n\n[Rincian Deliverable Kebutuhan]:\n` +
             formData.deliverables.map((d, i) => `${i + 1}. ${d}`).join("\n")
           : "";
+      const skillsText =
+        formData.recommendedSkills.length > 0
+          ? `\n\n[Tag Keahlian yang Dibutuhkan]:\n` +
+            formData.recommendedSkills.map((s) => `#${s}`).join(" ")
+          : "";
 
-      const fullDescription = `${formData.deskripsi_raw.trim()}${deliverablesText}`;
+      const fullDescription = `${formData.deskripsi_raw.trim()}${deliverablesText}${skillsText}`;
 
       const payload = {
         judul: formData.judul.trim(),
@@ -527,7 +557,7 @@ export function CreateProjectPage() {
       <SectionHeader
         badgeText="Panduan Penerbitan Proyek"
         title="Pasang Kebutuhan Proyek UMKM"
-        subtitle="Sistem cerdas Makarya membantu menstrukturkan kebutuhan usaha Anda agar mahasiswa memahami ekspektasi deliverable secara presisi."
+        subtitle="Platform Makarya membantu menstrukturkan spesifikasi deliverable & tag keahlian agar mahasiswa memahami ekspektasi hasil kerja secara presisi."
       />
 
       {/* 4-Step Progress Indicator */}
@@ -576,7 +606,7 @@ export function CreateProjectPage() {
                 Langkah 2
               </span>
               <span className="text-xs truncate block flex items-center gap-1">
-                AI Assistant <Cpu className="w-3 h-3 text-brand-cyan" />
+                Deliverable & Tag <Layers className="w-3 h-3 text-brand-cyan" />
               </span>
             </div>
           </div>
@@ -849,14 +879,14 @@ export function CreateProjectPage() {
             </div>
 
             <TextArea
-              label="Cerita Kebutuhan Usaha (Raw Brief)"
+              label="Cerita Kebutuhan Usaha (Brief Deskripsi)"
               rows={5}
               placeholder="Ceritakan dengan bahasa sehari-hari: Apa usaha Anda, target pembeli Anda, masalah apa yang ingin diatasi, atau contoh referensi yang Anda sukai..."
               value={formData.deskripsi_raw}
               onChange={(e) =>
                 setFormData({ ...formData, deskripsi_raw: e.target.value })
               }
-              helperText="AI Assistant Makarya akan membaca cerita ini untuk menyusun daftar kebutuhan spesifik pada langkah berikutnya."
+              helperText="Deskripsi ini akan dibaca oleh mahasiswa yang ingin mengajukan proposal pengerjaan."
               required
             />
 
@@ -867,7 +897,7 @@ export function CreateProjectPage() {
                 type="submit"
                 className="w-full sm:w-auto font-bold shadow-brand justify-center"
               >
-                <span>Lanjut ke Analisis AI Assistant</span>
+                <span>Lanjut ke Deliverable & Tag Keahlian</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
             </div>
@@ -876,140 +906,327 @@ export function CreateProjectPage() {
       )}
 
       {/* ======================================================== */}
-      {/* STEP 2: AI Requirement Assistant (Strukturisasi Deliverable) */}
+      {/* STEP 2: Spesifikasi Output Deliverable & Tag Keahlian */}
       {/* ======================================================== */}
       {currentStep === 2 && (
-        <Card className="p-6 sm:p-8 space-y-6 animate-in fade-in">
-          <div className="border-b border-border pb-4 space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-indigo-light text-brand-indigo text-xs font-bold mb-1">
-              <Cpu className="w-3.5 h-3.5" />
-              AI Requirement Engineering
+        <Card className="p-6 sm:p-8 space-y-8 animate-in fade-in">
+          <div className="border-b border-border pb-4 space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-brand-indigo/10 text-brand-indigo text-xs font-bold mb-1">
+              <Layers className="w-3.5 h-3.5 text-brand-indigo" />
+              Spesifikasi Output & Kebutuhan Keahlian
             </div>
             <h2 className="text-lg sm:text-xl font-extrabold text-dark-900 tracking-tight font-sans">
-              2. Hasil Strukturisasi Kebutuhan & Rekomendasi Deliverable
+              2. Tentukan Rincian Deliverable & Tag Keahlian Mahasiswa
             </h2>
             <p className="text-xs sm:text-sm text-muted">
-              AI telah memecah cerita kebutuhan Anda menjadi daftar deliverable
-              teknis yang jelas untuk mahasiswa. Anda dapat menambah atau
-              menyunting poin di bawah ini.
+              Definisikan hasil kerja konkret yang wajib diserahkan mahasiswa serta tentukan tag keahlian teknis agar proyek Anda tepat sasaran.
             </p>
           </div>
 
-          {aiAnalyzing ? (
-            <div className="py-12 text-center space-y-3">
-              <Cpu className="w-8 h-8 text-brand-indigo animate-spin mx-auto" />
-              <h4 className="text-sm font-bold text-dark-900">
-                AI sedang memproses kebutuhan usaha Anda...
-              </h4>
-              <p className="text-xs text-muted">
-                Mengekstrak spesifikasi output deliverable & pemetaan keahlian
-                digital.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Deliverable Items List */}
-              <div className="space-y-3">
-                <label className="block text-xs font-semibold text-dark-900 uppercase tracking-wider">
-                  Daftar Deliverable yang Wajib Diserahkan Mahasiswa (
-                  {formData.deliverables.length} Item)
-                </label>
+          <div className="space-y-8">
+            {/* Bagian 1: Deliverables Checklist */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-subtle pb-2.5">
+                <div>
+                  <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-brand-indigo" />
+                    <span>Daftar Deliverable yang Wajib Diserahkan</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-extrabold">
+                      {formData.deliverables.length} Item
+                    </span>
+                  </h3>
+                  <p className="text-xs text-muted mt-0.5">
+                    Mahasiswa harus mengunggah seluruh item ini saat serah terima hasil proyek.
+                  </p>
+                </div>
 
+                <button
+                  type="button"
+                  onClick={handleLoadStandardDeliverables}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-indigo/30 bg-brand-indigo-light/30 hover:bg-brand-indigo-light/60 text-brand-indigo text-xs font-bold transition-all shrink-0 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Muat Standar Kategori ({currentCatObj.label})</span>
+                </button>
+              </div>
+
+              {formData.deliverables.length === 0 ? (
+                <div className="p-6 rounded-2xl bg-canvas border border-dashed border-border text-center space-y-2">
+                  <p className="text-xs text-muted">
+                    Belum ada deliverable yang ditambahkan.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleLoadStandardDeliverables}
+                    className="text-xs font-bold text-brand-indigo hover:underline"
+                  >
+                    + Klik untuk muat rekomendasi standar kategori {currentCatObj.label}
+                  </button>
+                </div>
+              ) : (
                 <div className="space-y-2">
                   {formData.deliverables.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-3.5 rounded-xl bg-canvas border border-border flex items-center justify-between gap-3 text-xs text-dark-900"
+                      className="p-3.5 rounded-xl bg-canvas border border-border flex items-center justify-between gap-3 text-xs text-dark-900 group hover:border-slate-300 transition-colors"
                     >
                       <div className="flex items-start gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span className="font-medium">{item}</span>
+                        <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                          {idx + 1}
+                        </div>
+                        <span className="font-semibold text-slate-800 leading-relaxed">
+                          {item}
+                        </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveDeliverable(idx)}
-                        className="p-1 text-muted hover:text-rose-600 transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                         title="Hapus deliverable"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   ))}
                 </div>
+              )}
 
-                {/* Add Custom Deliverable Input */}
-                <div className="flex items-center gap-2 pt-2">
-                  <input
-                    type="text"
-                    placeholder="Tambahkan poin kebutuhan deliverable lainnya..."
-                    value={formData.customDeliverableInput}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        customDeliverableInput: e.target.value,
-                      })
+              {/* Add Custom Deliverable Input */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                <input
+                  type="text"
+                  placeholder="Ketik poin deliverable lain... (contoh: File master AI vektor, format PDF siap cetak, video 1080p)"
+                  value={formData.customDeliverableInput}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      customDeliverableInput: e.target.value,
+                    })
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddDeliverable();
                     }
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddDeliverable();
-                      }
-                    }}
-                    className="flex-1 px-3.5 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo"
-                  />
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={handleAddDeliverable}
-                    className="text-xs font-bold shrink-0"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Tambah Poin
-                  </Button>
-                </div>
-              </div>
-
-              {/* Recommended Skill Tags */}
-              <div className="p-4 rounded-2xl bg-brand-indigo-light/30 border border-brand-indigo/20 space-y-2">
-                <span className="text-xs font-bold text-brand-indigo block">
-                  Tag Keahlian Mahasiswa yang Direkomendasikan AI:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {formData.recommendedSkills.map((skill, idx) => (
-                    <Badge
-                      key={idx}
-                      variant="brand"
-                      className="text-xs py-1 px-3"
-                    >
-                      <Tag className="w-3 h-3 mr-1" />
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
+                  }}
+                  className="flex-1 px-3.5 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo min-h-[44px]"
+                />
                 <Button
                   variant="secondary"
                   size="md"
-                  onClick={() => setCurrentStep(1)}
-                  className="w-full sm:w-auto justify-center"
+                  onClick={handleAddDeliverable}
+                  className="text-xs font-bold shrink-0 min-h-[44px] justify-center"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-1.5" />
-                  Kembali
-                </Button>
-                <Button
-                  variant="brand"
-                  size="lg"
-                  onClick={() => setCurrentStep(3)}
-                  className="w-full sm:w-auto justify-center font-bold shadow-brand"
-                >
-                  <span>Lanjut ke Budget & Timeline</span>
-                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                  <Plus className="w-4 h-4 mr-1" />
+                  Tambah Item
                 </Button>
               </div>
             </div>
-          )}
+
+            {/* Bagian 2: Realtime Multi-Select Tag Keahlian Picker */}
+            <div className="space-y-4 pt-4 border-t border-border">
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-bold text-dark-900 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-brand-indigo" />
+                    <span>Tag Keahlian Mahasiswa yang Dibutuhkan</span>
+                  </h3>
+                  {formData.recommendedSkills.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleResetSkills}
+                      className="text-xs text-rose-600 hover:underline font-bold"
+                    >
+                      Hapus Semua Tag
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-muted leading-relaxed">
+                  Pilih keahlian atau tools yang relevan. Sistem Makarya akan mencocokkan proyek ini dengan profil mahasiswa yang sesuai.
+                </p>
+              </div>
+
+              {/* Selected Tags Tray */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2.5 shadow-xs">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+                    Tag Terpilih ({formData.recommendedSkills.length})
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    Klik tanda silang (x) untuk membatalkan
+                  </span>
+                </div>
+
+                {formData.recommendedSkills.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic py-1">
+                    Belum ada tag dipilih. Silakan pilih keahlian pada daftar di bawah.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {formData.recommendedSkills.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 text-cyan-200 border border-slate-700 text-xs font-bold shadow-xs animate-in fade-in"
+                      >
+                        <Tag className="w-3 h-3 text-cyan-400" />
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSkill(skill)}
+                          className="w-4 h-4 rounded-full bg-slate-700 hover:bg-rose-600 hover:text-white flex items-center justify-center text-[10px] ml-0.5 transition-colors cursor-pointer"
+                          title="Hapus tag ini"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Filter Tabs & Search Bar */}
+              <div className="space-y-3">
+                {/* Category Filter Tabs */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 no-scrollbar">
+                  {skillCategoryTabs.map((tab) => {
+                    const isActive = skillCategoryFilter === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setSkillCategoryFilter(tab.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer min-h-[36px] flex items-center gap-1.5 ${
+                          isActive
+                            ? "bg-slate-900 text-white shadow-xs"
+                            : "bg-canvas border border-border text-slate-700 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span>{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Real-time Search Input */}
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={skillSearchQuery}
+                    onChange={(e) => setSkillSearchQuery(e.target.value)}
+                    placeholder="Cari nama keahlian atau tools... (contoh: Figma, Canva, React, Excel, Video Reels)"
+                    className="w-full pl-9 pr-8 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo min-h-[44px]"
+                  />
+                  {skillSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSkillSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-dark-900"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Interactive Skills Chip Grid */}
+              <div className="p-4 rounded-2xl bg-canvas border border-border space-y-2.5">
+                <div className="flex items-center justify-between text-[11px] text-muted font-medium">
+                  <span>
+                    Daftar Keahlian ({filteredSkillsList.length} Opsi Tersedia):
+                  </span>
+                  <span>Klik untuk memilih atau membatalkan</span>
+                </div>
+
+                <div className="flex flex-wrap gap-2 max-h-56 overflow-y-auto pr-1">
+                  {filteredSkillsList.length === 0 ? (
+                    <div className="w-full py-6 text-center text-xs text-muted">
+                      Tidak ditemukan keahlian yang cocok dengan kata kunci "
+                      {skillSearchQuery}".
+                    </div>
+                  ) : (
+                    filteredSkillsList.map((skill, idx) => {
+                      const isSelected = formData.recommendedSkills.includes(skill);
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleToggleSkill(skill)}
+                          className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 select-none min-h-[40px] ${
+                            isSelected
+                              ? "bg-brand-indigo text-white border-brand-indigo shadow-xs font-bold"
+                              : "bg-surface text-slate-700 border-slate-200 hover:border-brand-indigo hover:bg-slate-50"
+                          }`}
+                        >
+                          {isSelected ? (
+                            <Check className="w-3.5 h-3.5 text-cyan-300 stroke-[3]" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5 text-slate-400" />
+                          )}
+                          <span>{skill}</span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              {/* Add Custom Tag Input */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <label className="text-[11px] font-bold text-slate-700 block">
+                  Keahlian khusus belum tercantum di atas? Tambahkan tag kustom Anda:
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={customTagInput}
+                    onChange={(e) => setCustomTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddCustomSkill();
+                      }
+                    }}
+                    placeholder="Contoh: Blender 3D, Midjourney, TikTok Shop POS..."
+                    className="flex-1 px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo min-h-[40px]"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddCustomSkill}
+                    className="text-xs font-bold shrink-0 min-h-[40px]"
+                  >
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Tambah Tag
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={() => setCurrentStep(1)}
+                className="w-full sm:w-auto justify-center min-h-[44px]"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                Kembali ke Konteks
+              </Button>
+              <Button
+                variant="brand"
+                size="lg"
+                onClick={() => setCurrentStep(3)}
+                className="w-full sm:w-auto justify-center font-bold shadow-brand min-h-[44px]"
+              >
+                <span>Lanjut ke Budget & Timeline</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+            </div>
+          </div>
         </Card>
       )}
 
@@ -1401,6 +1618,26 @@ export function CreateProjectPage() {
                 ))}
               </ul>
             </div>
+
+            {/* Tag Keahlian Summary */}
+            {formData.recommendedSkills.length > 0 && (
+              <div className="p-5 rounded-2xl bg-canvas border border-border space-y-2.5 text-left">
+                <h4 className="text-xs font-bold text-dark-900 uppercase tracking-wider">
+                  Tag Keahlian Mahasiswa yang Dibutuhkan ({formData.recommendedSkills.length} Tag):
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {formData.recommendedSkills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-brand-indigo-light text-brand-indigo text-xs font-bold border border-brand-indigo/20"
+                    >
+                      <Tag className="w-3 h-3 text-brand-indigo" />
+                      <span>{skill}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Team Slots Summary (If TIM) */}
             {formData.tipe_kolaborasi === "TIM" &&

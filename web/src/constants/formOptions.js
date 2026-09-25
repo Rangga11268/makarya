@@ -130,3 +130,128 @@ export const KOTA_OPTIONS = [
   "Manado",
   "Mataram",
 ];
+
+export const SKILLS_TAXONOMY = {
+  DESIGN: {
+    categoryLabel: "Desain Grafis & Kreatif",
+    skills: [
+      "Logo Design",
+      "Packaging & Kemasan",
+      "Banner & Spanduk",
+      "Menu Digital & Cetak",
+      "Adobe Illustrator",
+      "Adobe Photoshop",
+      "Mockup 3D Produk",
+      "Brand Identity Guide",
+      "Desain Label & Stiker",
+      "Flyer & Brosur Promosi",
+      "Vector Illustration",
+      "Canva Design",
+    ],
+  },
+  UIUX: {
+    categoryLabel: "UI/UX Design",
+    skills: [
+      "Figma UI/UX",
+      "Wireframing",
+      "Desain Aplikasi Mobile",
+      "Desain Website Responsif",
+      "Design System & Tokens",
+      "User Flow & Diagram",
+      "Interactive Prototype",
+      "Usability Testing",
+      "Micro-interactions",
+    ],
+  },
+  PEMROGRAMAN: {
+    categoryLabel: "Web & Pemrograman",
+    skills: [
+      "Landing Page Responsif",
+      "HTML5 & CSS3",
+      "React.js",
+      "Tailwind CSS",
+      "WordPress / Elementor",
+      "PHP / Laravel",
+      "Python / FastAPI",
+      "Sistem Kasir (POS)",
+      "Integrasi WhatsApp API",
+      "MySQL / PostgreSQL",
+      "Flutter Mobile",
+      "E-Commerce Web",
+      "REST API Integration",
+    ],
+  },
+  VIDEO: {
+    categoryLabel: "Video & Multimedia",
+    skills: [
+      "Video Reels & TikTok",
+      "CapCut Video Editing",
+      "Adobe Premiere Pro",
+      "Fotografi Produk UMKM",
+      "Motion Graphics",
+      "Audio & Voice Over",
+      "Storyboarding",
+      "Color Grading",
+      "YouTube Thumbnail & Video",
+    ],
+  },
+  COPYWRITING: {
+    categoryLabel: "Copywriting & SEO",
+    skills: [
+      "Copywriting Iklan & Sosmed",
+      "Caption Konten Media Sosial",
+      "Artikel Blog SEO",
+      "Storytelling Produk",
+      "Riset Tagar Lokal",
+      "Sales Pitch & Broadcast WA",
+      "Struktur Hook-Story-Offer",
+    ],
+  },
+  ADMIN_DATA: {
+    categoryLabel: "Admin & Data Excel",
+    skills: [
+      "Microsoft Excel / Sheets",
+      "Otomatisasi Rumus Excel",
+      "Rekap Transaksi & Stok",
+      "Pembukuan Kas UMKM",
+      "Laporan Laba Rugi Sederhana",
+      "Input Data Nota Penjualan",
+      "Visualisasi Grafik Data",
+    ],
+  },
+};
+
+export const STANDARD_DELIVERABLES_BY_CATEGORY = {
+  DESIGN: [
+    "File master vector resolusi tinggi (.AI / .SVG / .EPS)",
+    "Format siap pakai PNG transparan dan JPG (RGB & CMYK)",
+    "Buku panduan warna brand (Hex code color palette)",
+    "Pratinjau mockup kemasan / produk realistis",
+  ],
+  UIUX: [
+    "File desain prototipe interaktif di Figma (5-7 screen utama)",
+    "Komponen tombol, typography system, dan palet warna",
+    "Alur interaksi pengguna (User Journey & Wireframing)",
+  ],
+  PEMROGRAMAN: [
+    "Landing page responsif ramah perangkat mobile & desktop",
+    "Integrasi tombol chat langsung WhatsApp untuk reservasi/pesan",
+    "Katalog daftar menu digital dan informasi lokasi usaha",
+    "Kode sumber clean code dan panduan deployment hosting",
+  ],
+  VIDEO: [
+    "3 video pendek promosi (durasi 15-30 detik format 9:16 vertikal)",
+    "Editing transisi dinamis, efek estetik, dan musik bebas lisensi",
+    "File render akhir MP4 Full HD (1080x1920)",
+  ],
+  COPYWRITING: [
+    "10 set caption postingan media sosial dengan formula Hook-Story-Offer",
+    "Riset hashtag relevan target pelanggan lokal",
+    "Teks deskripsi storytelling menu & produk unggulan",
+  ],
+  ADMIN_DATA: [
+    "Rekap template data terstruktur di Google Spreadsheet / Excel",
+    "Otomatisasi rumus penjumlahan, stok, dan persentase keuntungan",
+    "Dashboard ringkasan grafik penjualan bulanan",
+  ],
+};
