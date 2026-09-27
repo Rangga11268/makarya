@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
 import {
@@ -76,6 +77,7 @@ const SUS_QUESTIONS = [
 export function SystemUsabilityScaleModal({
   visible,
   onClose,
+  onSave,
   currentUserRole = "Pengguna",
   currentUserName = "Responden Pengujian",
 }) {
@@ -91,6 +93,21 @@ export function SystemUsabilityScaleModal({
     9: 5,
     10: 1,
   });
+
+  useEffect(() => {
+    if (visible) {
+      AsyncStorage.getItem("makarya_sus_evaluation").then((saved) => {
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            if (parsed.answers) {
+              setAnswers(parsed.answers);
+            }
+          } catch (e) {}
+        }
+      });
+    }
+  }, [visible]);
 
   const handleSelect = (questionId, value) => {
     setAnswers((prev) => ({
@@ -167,6 +184,25 @@ export function SystemUsabilityScaleModal({
   };
 
   const result = calculateSUS();
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        score: result.finalScore,
+        grade: result.grade,
+        gradeLabel: result.gradeLabel,
+        acceptability: result.acceptability,
+        date: new Date().toISOString(),
+        answers,
+      };
+      await AsyncStorage.setItem(
+        "makarya_sus_evaluation",
+        JSON.stringify(payload)
+      );
+      onSave?.(payload);
+    } catch (e) {}
+    onClose();
+  };
 
   return (
     <Modal
@@ -325,7 +361,7 @@ export function SystemUsabilityScaleModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleSave}
               style={styles.saveBtn}
               activeOpacity={0.88}
             >
