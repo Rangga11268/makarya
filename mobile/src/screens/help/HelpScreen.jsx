@@ -262,24 +262,24 @@ export function HelpScreen({ navigation }) {
             );
           })}
 
-          {/* 5. SUS Research / Usability Testing Card */}
+          {/* 5. Usability Evaluation Card */}
           <View style={styles.susCardBox}>
             <View style={styles.susIconCircle}>
-              <Sparkles size={18} color="#4F46E5" />
+              <Sparkles size={18} color="#2563EB" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.susCardTitle}>
-                Instrumen Evaluasi UX (SUS)
+                Penilaian Kemudahan Aplikasi
               </Text>
               <Text style={styles.susCardText}>
-                Ikuti pengujian System Usability Scale 10-skala John Brooke untuk validasi kelayakan antarmuka skripsi.
+                Bantu evaluasi aplikasi Makarya dengan mengisi 10 pertanyaan singkat mengenai seberapa mudah dan nyaman aplikasi ini digunakan.
               </Text>
               <TouchableOpacity
                 style={styles.openSusBtn}
                 onPress={() => setSusModalOpen(true)}
                 activeOpacity={0.85}
               >
-                <Text style={styles.openSusBtnText}>Mulai Pengujian SUS</Text>
+                <Text style={styles.openSusBtnText}>Beri Penilaian Aplikasi</Text>
               </TouchableOpacity>
             </View>
           </View>

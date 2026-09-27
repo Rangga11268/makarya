@@ -1345,10 +1345,10 @@ export function ProfileScreen({ navigation }) {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.menuItemTitle, { color: COLORS.brandIndigo, fontFamily: FONTS.displayBold }]}>
-                Uji Usability Aplikasi (SUS)
+                Penilaian Kemudahan Aplikasi
               </Text>
               <Text style={{ fontSize: 11, fontFamily: FONTS.bodyRegular, color: COLORS.textMuted }}>
-                Kuesioner 10 Instrumen John Brooke untuk Evaluasi UX Skripsi
+                Kuesioner singkat evaluasi kenyamanan penggunaan aplikasi
               </Text>
             </View>
             <ChevronRight size={14} color={COLORS.brandIndigo} />

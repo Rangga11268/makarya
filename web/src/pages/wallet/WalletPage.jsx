@@ -17,7 +17,6 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { payWithSnap } from "../../utils/midtransSnap";
 import { PaymentGatewayModal } from "../../components/features/PaymentGatewayModal";
-import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
 import {
   Wallet as WalletIcon,
   ArrowDownLeft,
@@ -54,7 +53,6 @@ export function WalletPage() {
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
   const [paymentGatewayOpen, setPaymentGatewayOpen] = useState(false);
-  const [susModalOpen, setSusModalOpen] = useState(false);
 
   // Top Up state (UMKM)
   const [topUpNominal, setTopUpNominal] = useState("500000");
@@ -944,14 +942,6 @@ export function WalletPage() {
         nominal={topUpNominal}
         onSuccess={handleGatewaySuccess}
         userName={user?.nama_lengkap || user?.nama_usaha || user?.email}
-      />
-
-      {/* Thesis SUS Evaluation Modal */}
-      <SystemUsabilityScaleModal
-        isOpen={susModalOpen}
-        onClose={() => setSusModalOpen(false)}
-        currentUserRole={user?.role || "Pengguna"}
-        currentUserName={user?.nama_lengkap || user?.email}
       />
     </div>
   );

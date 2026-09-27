@@ -10,66 +10,65 @@ import {
 } from "react-native";
 import { COLORS } from "../../theme/colors";
 import { FONTS } from "../../theme/fonts";
-import { Button } from "../ui/Button";
 import {
-  GraduationCap,
+  ClipboardCheck,
   Award,
   CheckCircle2,
   RotateCcw,
   Sparkles,
   X,
-  HelpCircle,
+  Info,
 } from "lucide-react-native";
 
 const SUS_QUESTIONS = [
   {
     id: 1,
-    text: "Saya merasa akan sering menggunakan aplikasi Makarya ini dalam berkolaborasi proyek.",
+    text: "Saya merasa ingin sering menggunakan aplikasi Makarya ini untuk mencari atau mengelola proyek.",
     type: "positive",
   },
   {
     id: 2,
-    text: "Saya merasa aplikasi Makarya ini terlalu rumit untuk digunakan.",
+    text: "Saya merasa aplikasi Makarya ini terlalu rumit atau sulit dipahami.",
     type: "negative",
   },
   {
     id: 3,
-    text: "Saya merasa aplikasi Makarya ini mudah dan intuitif untuk digunakan.",
+    text: "Saya merasa aplikasi Makarya ini mudah dan praktis digunakan.",
     type: "positive",
   },
   {
     id: 4,
-    text: "Saya merasa membutuhkan bantuan teknis untuk dapat menggunakan aplikasi ini.",
+    text: "Saya merasa membutuhkan panduan atau bantuan orang lain untuk bisa menggunakan aplikasi ini.",
     type: "negative",
   },
   {
     id: 5,
-    text: "Saya merasa berbagai fitur pada aplikasi ini terintegrasi dengan sangat baik.",
+    text: "Saya merasa fitur-fitur di dalam aplikasi ini tersusun dan bekerja sama dengan sangat baik.",
     type: "positive",
   },
   {
     id: 6,
-    text: "Saya merasa ada terlalu banyak ketidakkonsistenan pada sistem aplikasi ini.",
+    text: "Saya merasa ada hal-hal yang tidak konsisten atau membingungkan di aplikasi ini.",
     type: "negative",
   },
   {
     id: 7,
-    text: "Saya merasa sebagian besar orang akan dapat mempelajari aplikasi ini dengan sangat cepat.",
+    text: "Saya yakin kebanyakan orang akan bisa mempelajari aplikasi ini dengan cepat.",
     type: "positive",
   },
   {
     id: 8,
-    text: "Saya merasa aplikasi ini sangat membingungkan ketika digunakan.",
+    text: "Saya merasa alur penggunaan aplikasi ini membingungkan.",
     type: "negative",
   },
   {
     id: 9,
-    text: "Saya merasa sangat percaya diri saat bernavigasi dan menggunakan aplikasi ini.",
+    text: "Saya merasa percaya diri dan nyaman saat bernavigasi di aplikasi ini.",
     type: "positive",
   },
   {
     id: 10,
-    text: "Saya harus mempelajari banyak hal terlebih dahulu sebelum dapat menggunakan aplikasi ini secara mandiri.",
+    text: "Saya harus banyak belajar terlebih dahulu sebelum bisa lancar menggunakan aplikasi ini.",
     type: "negative",
   },
 ];
@@ -132,27 +131,27 @@ export function SystemUsabilityScaleModal({
     const finalScore = Math.min(100, Math.max(0, (oddSum + evenSum) * 2.5));
 
     let grade = "F";
-    let gradeLabel = "Perlu Perbaikan Mendalam";
-    let acceptability = "Tidak Diterima (Not Acceptable)";
+    let gradeLabel = "Perlu Banyak Perbaikan";
+    let acceptability = "Belum Memuaskan";
     let scoreColor = "#DC2626"; // red
     let bgScoreColor = "#FEF2F2";
 
     if (finalScore >= 80.3) {
       grade = "A";
-      gradeLabel = "Sangat Memuaskan (Excellent)";
-      acceptability = "Sangat Diterima (Acceptable)";
+      gradeLabel = "Sangat Baik (Mudah Digunakan)";
+      acceptability = "Sangat Memuaskan";
       scoreColor = "#059669";
       bgScoreColor = "#ECFDF5";
     } else if (finalScore >= 68) {
       grade = "B";
-      gradeLabel = "Di Atas Rata-Rata Industri (Good)";
-      acceptability = "Diterima (Acceptable)";
+      gradeLabel = "Baik (Di Atas Rata-rata)";
+      acceptability = "Layak & Nyaman";
       scoreColor = "#2563EB";
       bgScoreColor = "#EFF6FF";
     } else if (finalScore >= 51) {
       grade = "C";
-      gradeLabel = "Cukup / Rata-Rata (OK)";
-      acceptability = "Marginal (Cukup Diterima)";
+      gradeLabel = "Cukup (Bisa Digunakan)";
+      acceptability = "Cukup Baik";
       scoreColor = "#D97706";
       bgScoreColor = "#FFFBEB";
     }
@@ -182,14 +181,14 @@ export function SystemUsabilityScaleModal({
           <View style={styles.headerRow}>
             <View style={styles.headerLeft}>
               <View style={styles.headerIconBox}>
-                <GraduationCap size={20} color={COLORS.brandIndigo} />
+                <ClipboardCheck size={20} color="#2563EB" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.modalTitle}>
-                  Uji Usability Sistem (SUS)
+                  Penilaian Kemudahan Aplikasi
                 </Text>
                 <Text style={styles.modalSubtitle}>
-                  Standar Evaluasi Akademik Skripsi (John Brooke, 1986)
+                  Kuesioner 10 pertanyaan singkat (Standar SUS)
                 </Text>
               </View>
             </View>
@@ -202,10 +201,18 @@ export function SystemUsabilityScaleModal({
             </TouchableOpacity>
           </View>
 
+          {/* Simple Explanation Note */}
+          <View style={styles.infoBanner}>
+            <Info size={14} color="#0369A1" style={{ marginTop: 1 }} />
+            <Text style={styles.infoBannerText}>
+              Bantu evaluasi aplikasi Makarya. Pilih nilai dari angka <Text style={{ fontWeight: "700" }}>1 (Sangat Tidak Setuju)</Text> hingga <Text style={{ fontWeight: "700" }}>5 (Sangat Setuju)</Text>.
+            </Text>
+          </View>
+
           {/* Respondent Tag */}
           <View style={styles.respondentBar}>
             <Text style={styles.respondentText}>
-              Responden: <Text style={styles.respondentBold}>{currentUserName}</Text> ({currentUserRole})
+              Pengisi: <Text style={styles.respondentBold}>{currentUserName}</Text> ({currentUserRole})
             </Text>
           </View>
 
@@ -226,7 +233,7 @@ export function SystemUsabilityScaleModal({
 
                 {/* Likert 1-5 Pills */}
                 <View style={styles.likertRow}>
-                  <Text style={styles.likertGuideText}>Sangat Tidak Setuju (1)</Text>
+                  <Text style={styles.likertGuideText}>Tidak Setuju (1)</Text>
                   <View style={styles.pillsContainer}>
                     {[1, 2, 3, 4, 5].map((val) => {
                       const isSelected = answers[q.id] === val;
@@ -276,7 +283,7 @@ export function SystemUsabilityScaleModal({
                       { color: result.scoreColor },
                     ]}
                   >
-                    Kalkulasi Skor SUS
+                    Hasil Skor Penilaian
                   </Text>
                 </View>
                 <Text
@@ -291,13 +298,13 @@ export function SystemUsabilityScaleModal({
 
               <View style={styles.resultDetailsRow}>
                 <View style={styles.resultDetailCol}>
-                  <Text style={styles.resultLabel}>Grade Skala:</Text>
+                  <Text style={styles.resultLabel}>Peringkat:</Text>
                   <Text style={[styles.resultValue, { color: result.scoreColor }]}>
                     Grade {result.grade}
                   </Text>
                 </View>
                 <View style={styles.resultDetailCol}>
-                  <Text style={styles.resultLabel}>Kategori:</Text>
+                  <Text style={styles.resultLabel}>Keterangan:</Text>
                   <Text style={styles.resultValueText}>
                     {result.gradeLabel}
                   </Text>
@@ -314,7 +321,7 @@ export function SystemUsabilityScaleModal({
               activeOpacity={0.7}
             >
               <RotateCcw size={14} color="#64748B" />
-              <Text style={styles.resetBtnText}>Reset</Text>
+              <Text style={styles.resetBtnText}>Atur Ulang</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -323,7 +330,7 @@ export function SystemUsabilityScaleModal({
               activeOpacity={0.8}
             >
               <CheckCircle2 size={15} color="#FFFFFF" />
-              <Text style={styles.saveBtnText}>Selesai & Simpan Skor</Text>
+              <Text style={styles.saveBtnText}>Selesai & Simpan</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -345,7 +352,7 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     maxHeight: "90%",
     backgroundColor: "#FFFFFF",
-    borderRadius: 28,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     overflow: "hidden",
@@ -372,23 +379,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    backgroundColor: COLORS.brandIndigo + "15",
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#EFF6FF",
     borderWidth: 1,
-    borderColor: COLORS.brandIndigo + "30",
+    borderColor: "#DBEAFE",
     justifyContent: "center",
     alignItems: "center",
   },
   modalTitle: {
     fontSize: 15,
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.headingBold || FONTS.bold,
+    fontWeight: "700",
     color: "#0F172A",
   },
   modalSubtitle: {
-    fontSize: 10,
-    fontFamily: FONTS.regular,
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular || FONTS.regular,
     color: "#64748B",
     marginTop: 1,
   },
@@ -401,20 +409,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 8,
   },
+  infoBanner: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    backgroundColor: "#F0F9FF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0F2FE",
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+  },
+  infoBannerText: {
+    flex: 1,
+    fontSize: 11,
+    fontFamily: FONTS.bodyRegular || FONTS.regular,
+    color: "#0369A1",
+    lineHeight: 16,
+  },
   respondentBar: {
     backgroundColor: "#F8FAFC",
     paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingVertical: 7,
     borderBottomWidth: 1,
     borderBottomColor: "#E2E8F0",
   },
   respondentText: {
     fontSize: 11,
-    fontFamily: FONTS.regular,
+    fontFamily: FONTS.bodyRegular || FONTS.regular,
     color: "#475569",
   },
   respondentBold: {
-    fontFamily: FONTS.bold,
+    fontFamily: FONTS.bodyBold || FONTS.bold,
+    fontWeight: "700",
     color: "#0F172A",
   },
   scrollBody: {
@@ -428,7 +454,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 12,
   },
   questionHeader: {
@@ -447,65 +473,62 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   qNumberText: {
-    fontSize: 10,
-    fontFamily: FONTS.bold,
-    color: "#334155",
+    fontSize: 10.5,
+    fontWeight: "700",
+    color: "#475569",
   },
   questionText: {
     flex: 1,
-    fontSize: 11.5,
-    fontFamily: FONTS.medium,
+    fontSize: 12.5,
+    fontFamily: FONTS.bodyMedium || FONTS.medium,
     color: "#1E293B",
-    lineHeight: 16,
+    lineHeight: 18,
   },
   likertRow: {
-    borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
-    paddingTop: 8,
+    flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    padding: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   likertGuideText: {
     fontSize: 9.5,
-    fontFamily: FONTS.regular,
     color: "#94A3B8",
+    fontWeight: "500",
   },
   pillsContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
+    gap: 6,
   },
   likertPill: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#F1F5F9",
     borderWidth: 1,
-    borderColor: "#CBD5E1",
+    borderColor: "#E2E8F0",
     justifyContent: "center",
     alignItems: "center",
   },
   likertPillActive: {
-    backgroundColor: COLORS.brandIndigo,
-    borderColor: COLORS.brandIndigo,
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: "#2563EB",
+    borderColor: "#1D4ED8",
   },
   likertPillText: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
-    color: "#334155",
+    fontSize: 12.5,
+    fontWeight: "600",
+    color: "#475569",
   },
   likertPillTextActive: {
     color: "#FFFFFF",
+    fontWeight: "700",
   },
   resultCard: {
+    borderRadius: 16,
     borderWidth: 1,
-    borderRadius: 20,
     padding: 14,
     marginTop: 4,
   },
@@ -513,45 +536,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 8,
+    paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(0,0,0,0.06)",
-    paddingBottom: 8,
   },
   resultHeaderTitle: {
-    fontSize: 12,
-    fontFamily: FONTS.bold,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    fontSize: 13,
+    fontWeight: "700",
   },
   resultScoreBig: {
-    fontSize: 22,
-    fontFamily: FONTS.bold,
+    fontSize: 18,
+    fontWeight: "800",
   },
   resultScoreMax: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
+    fontSize: 11,
+    fontWeight: "400",
     color: "#64748B",
   },
   resultDetailsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingTop: 8,
   },
   resultDetailCol: {
     gap: 2,
   },
   resultLabel: {
-    fontSize: 10,
-    fontFamily: FONTS.regular,
+    fontSize: 10.5,
     color: "#64748B",
   },
   resultValue: {
-    fontSize: 13,
-    fontFamily: FONTS.bold,
+    fontSize: 12.5,
+    fontWeight: "700",
   },
   resultValueText: {
-    fontSize: 11.5,
-    fontFamily: FONTS.medium,
+    fontSize: 12,
+    fontWeight: "600",
     color: "#1E293B",
   },
   footerRow: {
@@ -561,48 +581,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
-    backgroundColor: "#F8FAFC",
-    gap: 10,
+    borderTopColor: "#F1F5F9",
+    backgroundColor: "#FFFFFF",
   },
   resetBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#CBD5E1",
-    minHeight: 44,
-    justifyContent: "center",
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: "#F1F5F9",
   },
   resetBtnText: {
     fontSize: 12,
-    fontFamily: FONTS.medium,
+    fontWeight: "600",
     color: "#64748B",
   },
   saveBtn: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     gap: 6,
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: COLORS.brandIndigo,
-    minHeight: 44,
-    shadowColor: COLORS.brandIndigo,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    paddingVertical: 9,
+    borderRadius: 10,
+    backgroundColor: "#2563EB",
   },
   saveBtnText: {
     fontSize: 12.5,
-    fontFamily: FONTS.bold,
+    fontWeight: "700",
     color: "#FFFFFF",
   },
 });

@@ -3,64 +3,65 @@ import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
 import { Badge } from "../ui/Badge";
 import {
-  GraduationCap,
+  ClipboardCheck,
   Award,
   CheckCircle2,
   FileSpreadsheet,
   Printer,
   Sparkles,
   RotateCcw,
+  Info,
 } from "lucide-react";
 
 const SUS_QUESTIONS = [
   {
     id: 1,
-    text: "Saya merasa akan sering menggunakan sistem Makarya ini dalam berkolaborasi proyek.",
+    text: "Saya merasa ingin sering menggunakan sistem Makarya ini untuk mencari atau mengelola proyek.",
     type: "positive",
   },
   {
     id: 2,
-    text: "Saya merasa sistem Makarya ini terlalu rumit untuk digunakan.",
+    text: "Saya merasa sistem Makarya ini terlalu rumit atau sulit dipahami.",
     type: "negative",
   },
   {
     id: 3,
-    text: "Saya merasa sistem Makarya ini mudah dan intuitif untuk digunakan.",
+    text: "Saya merasa sistem Makarya ini mudah dan praktis digunakan.",
     type: "positive",
   },
   {
     id: 4,
-    text: "Saya merasa membutuhkan bantuan tenaga ahli/teknis untuk dapat menggunakan sistem ini.",
+    text: "Saya merasa membutuhkan panduan atau bantuan orang lain untuk bisa menggunakan sistem ini.",
     type: "negative",
   },
   {
     id: 5,
-    text: "Saya merasa berbagai fungsi dan fitur pada sistem ini terintegrasi dengan sangat baik.",
+    text: "Saya merasa fitur-fitur di dalam sistem ini tersusun dan bekerja sama dengan sangat baik.",
     type: "positive",
   },
   {
     id: 6,
-    text: "Saya merasa ada terlalu banyak ketidakkonsistenan pada sistem ini.",
+    text: "Saya merasa ada hal-hal yang tidak konsisten atau membingungkan di sistem ini.",
     type: "negative",
   },
   {
     id: 7,
-    text: "Saya merasa sebagian besar orang akan dapat mempelajari sistem ini dengan sangat cepat.",
+    text: "Saya yakin kebanyakan orang akan bisa mempelajari sistem ini dengan cepat.",
     type: "positive",
   },
   {
     id: 8,
-    text: "Saya merasa sistem ini sangat membingungkan ketika digunakan.",
+    text: "Saya merasa alur penggunaan sistem ini membingungkan.",
     type: "negative",
   },
   {
     id: 9,
-    text: "Saya merasa sangat percaya diri saat bernavigasi dan menggunakan sistem ini.",
+    text: "Saya merasa percaya diri dan nyaman saat bernavigasi di sistem ini.",
     type: "positive",
   },
   {
     id: 10,
-    text: "Saya harus mempelajari banyak hal terlebih dahulu sebelum dapat menggunakan sistem ini secara mandiri.",
+    text: "Saya harus banyak belajar terlebih dahulu sebelum bisa lancar menggunakan sistem ini.",
     type: "negative",
   },
 ];
@@ -104,29 +105,29 @@ export function SystemUsabilityScaleModal({
     const finalScore = totalRaw * 2.5;
 
     let grade = "C";
-    let adjective = "OK";
-    let acceptability = "Marginal";
-    let colorClass = "text-amber-600 bg-amber-50 border-amber-200";
+    let adjective = "Cukup Baik";
+    let acceptability = "Cukup Diterima";
+    let colorClass = "text-amber-700 bg-amber-50 border-amber-200";
 
     if (finalScore >= 80.3) {
       grade = "A";
-      adjective = "Excellent / Best Imaginable";
-      acceptability = "Acceptable (Sangat Layak)";
+      adjective = "Sangat Baik (Mudah Digunakan)";
+      acceptability = "Sangat Memuaskan";
       colorClass = "text-emerald-700 bg-emerald-50 border-emerald-300";
     } else if (finalScore >= 68) {
       grade = "B";
-      adjective = "Good";
-      acceptability = "Acceptable (Layak Digunakan)";
+      adjective = "Baik (Di Atas Rata-rata)";
+      acceptability = "Layak & Nyaman Digunakan";
       colorClass = "text-blue-700 bg-blue-50 border-blue-300";
     } else if (finalScore >= 51) {
       grade = "C";
-      adjective = "OK";
-      acceptability = "Marginal (Cukup)";
+      adjective = "Cukup (Bisa Digunakan)";
+      acceptability = "Cukup Diterima";
       colorClass = "text-amber-700 bg-amber-50 border-amber-300";
     } else {
       grade = "F";
-      adjective = "Poor / Awful";
-      acceptability = "Not Acceptable (Perlu Perbaikan)";
+      adjective = "Perlu Banyak Perbaikan";
+      acceptability = "Belum Memuaskan";
       colorClass = "text-rose-700 bg-rose-50 border-rose-300";
     }
 
@@ -170,21 +171,18 @@ export function SystemUsabilityScaleModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Instrumen Pengujian SUS (System Usability Scale) - Skripsi"
+      title="Penilaian Kemudahan Aplikasi (Evaluasi SUS)"
     >
       <div className="space-y-5 font-sans">
-        {/* Banner Info Skripsi */}
-        <div className="p-3.5 bg-brand-indigo-light/25 border border-brand-indigo/20 rounded-2xl flex items-start gap-3 text-xs">
-          <GraduationCap className="w-5 h-5 text-brand-indigo shrink-0 mt-0.5" />
+        {/* Banner Info Sederhana */}
+        <div className="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex items-start gap-3 text-xs">
+          <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h4 className="font-bold text-slate-900">
-              Evaluasi Kualitas Perangkat Lunak (ISO 9241-11)
+              Evaluasi Kemudahan Sistem
             </h4>
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Kuesioner standar SUS terdiri dari 10 pertanyaan Likert untuk
-              mengukur tingkat kebergunaan (usability) platform Makarya. Skor di
-              atas 68.0 menunjukkan sistem di atas rata-rata industri (*above
-              average*).
+              Bantu kami menyempurnakan platform Makarya dengan memberikan penilaian pada 10 pertanyaan di bawah ini (pilihan 1: Sangat Tidak Setuju s/d 5: Sangat Setuju).
             </p>
           </div>
         </div>
@@ -208,7 +206,7 @@ export function SystemUsabilityScaleModal({
               {/* Likert Scale 1-5 Radios */}
               <div className="flex items-center justify-between gap-1 pt-1.5 px-2 border-t border-slate-200/60 text-[11px]">
                 <span className="text-[10px] text-slate-400 font-medium">
-                  Sangat Tidak Setuju (1)
+                  Tidak Setuju (1)
                 </span>
                 <div className="flex items-center gap-2 sm:gap-3">
                   {[1, 2, 3, 4, 5].map((val) => (
@@ -242,7 +240,7 @@ export function SystemUsabilityScaleModal({
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5" />
               <span className="text-xs font-bold uppercase tracking-wider">
-                Hasil Kalkulasi SUS Score
+                Hasil Skor Penilaian
               </span>
             </div>
             <span className="text-2xl font-black font-sans tracking-tight">
@@ -250,60 +248,47 @@ export function SystemUsabilityScaleModal({
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-current/20 text-xs">
+          <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-current/15">
             <div>
-              <span className="text-[10px] opacity-75 block">Grade Letter</span>
-              <span className="font-black text-sm">Grade {result.grade}</span>
-            </div>
-            <div>
-              <span className="text-[10px] opacity-75 block">Adjective</span>
-              <span className="font-bold text-xs truncate block">
-                {result.adjective}
+              <span className="text-[10px] opacity-75 uppercase tracking-wide block">
+                Peringkat
+              </span>
+              <span className="font-bold text-sm">
+                Grade {result.grade} ({result.adjective})
               </span>
             </div>
             <div>
-              <span className="text-[10px] opacity-75 block">
-                Acceptability
+              <span className="text-[10px] opacity-75 uppercase tracking-wide block">
+                Keterangan
               </span>
-              <span className="font-bold text-xs truncate block">
-                {result.acceptability}
-              </span>
+              <span className="font-semibold">{result.acceptability}</span>
             </div>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-3 border-t border-slate-200">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
           <Button
-            variant="ghost"
+            type="button"
+            variant="outline"
             size="sm"
-            onClick={handleReset}
-            className="w-full sm:w-auto text-xs text-slate-500 hover:text-slate-800 justify-center"
+            onClick={resetForm}
+            className="flex items-center gap-1.5 text-slate-600 text-xs"
           >
-            <RotateCcw className="w-3.5 h-3.5 mr-1" />
-            Reset
+            <RotateCcw className="w-3.5 h-3.5" />
+            Atur Ulang
           </Button>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.print()}
-              className="w-full sm:w-auto justify-center text-xs font-semibold"
-            >
-              <Printer className="w-3.5 h-3.5 mr-1" />
-              Cetak / Simpan PDF
-            </Button>
-            <Button
-              variant="brand"
-              size="sm"
-              onClick={onClose}
-              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-              Tutup & Simpan
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            onClick={onClose}
+            className="flex items-center gap-1.5 text-xs shadow-xs"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            Selesai & Simpan
+          </Button>
         </div>
       </div>
     </Modal>

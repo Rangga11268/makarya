@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { SystemUsabilityScaleModal } from "../features/SystemUsabilityScaleModal";
 import {
+  ClipboardCheck,
   GraduationCap,
   ShieldCheck,
   Lock,
@@ -185,8 +186,8 @@ export function Footer() {
                   onClick={() => setSusModalOpen(true)}
                   className="hover:text-cyan-400 cursor-pointer transition-all inline-flex items-center gap-1.5 text-left text-cyan-300 font-medium hover:translate-x-0.5"
                 >
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  <span>Kuesioner Pengujian SUS (Skripsi)</span>
+                  <ClipboardCheck className="w-3.5 h-3.5" />
+                  <span>Penilaian Kemudahan Aplikasi</span>
                 </button>
               </li>
               <li>
