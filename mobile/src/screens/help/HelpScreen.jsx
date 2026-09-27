@@ -32,8 +32,7 @@ import {
   ArrowUpRight,
   Check,
 } from "lucide-react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
+import { UsabilityEvaluationCard } from "../../components/features/UsabilityEvaluationCard";
 
 const FAQ_ITEMS = [
   {
@@ -91,21 +90,6 @@ const FAQ_ITEMS = [
 
 export function HelpScreen({ navigation }) {
   const [expandedId, setExpandedId] = useState("escrow");
-  const [susModalOpen, setSusModalOpen] = useState(false);
-  const [savedEval, setSavedEval] = useState(null);
-
-  useEffect(() => {
-    loadSavedEvaluation();
-  }, []);
-
-  const loadSavedEvaluation = async () => {
-    try {
-      const data = await AsyncStorage.getItem("makarya_sus_evaluation");
-      if (data) {
-        setSavedEval(JSON.parse(data));
-      }
-    } catch (e) {}
-  };
 
   const toggleAccordion = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -280,87 +264,8 @@ export function HelpScreen({ navigation }) {
             );
           })}
 
-          {/* 5. Usability Evaluation Card (Rich & Informative) */}
-          <View style={styles.susCardBox}>
-            {/* Header: Icon + Titles + Status Badge */}
-            <View style={styles.susHeaderRow}>
-              <View style={styles.susHeaderLeft}>
-                <View style={styles.susIconCircle}>
-                  <ClipboardCheck size={18} color="#0F172A" />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.susCardTitle}>
-                    Penilaian Kemudahan Aplikasi
-                  </Text>
-                  <Text style={styles.susCardSubtitle}>
-                    Evaluasi Kenyamanan Pengguna (Standar SUS)
-                  </Text>
-                </View>
-              </View>
-
-              {savedEval ? (
-                <View style={styles.savedBadgePill}>
-                  <Check size={10} color="#059669" strokeWidth={3} />
-                  <Text style={styles.savedBadgePillText}>Sudah Diisi</Text>
-                </View>
-              ) : (
-                <View style={styles.pendingBadgePill}>
-                  <Text style={styles.pendingBadgePillText}>~2 Menit</Text>
-                </View>
-              )}
-            </View>
-
-            {/* Description Text */}
-            <Text style={styles.susCardText}>
-              Bantu riset & evaluasi platform Makarya. Berikan tanggapan Anda mengenai seberapa mudah dan praktis aplikasi ini digunakan.
-            </Text>
-
-            {/* 3 Pillar Feature Chips */}
-            <View style={styles.susPillarsRow}>
-              <View style={styles.susPillarChip}>
-                <Text style={styles.susPillarText}>🧭 Navigasi & Tampilan</Text>
-              </View>
-              <View style={styles.susPillarChip}>
-                <Text style={styles.susPillarText}>⚡ Alur Kerja Proyek</Text>
-              </View>
-              <View style={styles.susPillarChip}>
-                <Text style={styles.susPillarText}>🔒 Keamanan & Transaksi</Text>
-              </View>
-            </View>
-
-            {/* Live Score Display Banner (If user already submitted) */}
-            {savedEval && (
-              <View style={styles.savedScoreBanner}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.savedScoreLabel}>Hasil Penilaian Terakhir Anda:</Text>
-                  <Text style={styles.savedScoreValue}>
-                    Skor {savedEval.score} / 100 • Grade {savedEval.grade} ({savedEval.gradeLabel})
-                  </Text>
-                </View>
-                <View style={styles.savedCheckCircle}>
-                  <CheckCircle2 size={16} color="#059669" />
-                </View>
-              </View>
-            )}
-
-            {/* Action Footer */}
-            <View style={styles.susFooterRow}>
-              <Text style={styles.susFooterMetaText}>
-                10 Pertanyaan • Skala 1–5
-              </Text>
-
-              <TouchableOpacity
-                style={styles.openSusBtn}
-                onPress={() => setSusModalOpen(true)}
-                activeOpacity={0.88}
-              >
-                <Text style={styles.openSusBtnText}>
-                  {savedEval ? "Ubah Penilaian" : "Beri Penilaian"}
-                </Text>
-                <ArrowUpRight size={12} color="#FFFFFF" strokeWidth={2.4} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          {/* 5. Usability Evaluation Card */}
+          <UsabilityEvaluationCard style={{ marginTop: 14 }} />
 
           {/* 6. Footer Safe Note */}
           <View style={styles.footerNote}>
@@ -371,16 +276,6 @@ export function HelpScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
-
-      {/* SUS Modal */}
-      <SystemUsabilityScaleModal
-        visible={susModalOpen}
-        onClose={() => {
-          setSusModalOpen(false);
-          loadSavedEvaluation();
-        }}
-        onSave={(evalResult) => setSavedEval(evalResult)}
-      />
     </View>
   );
 }

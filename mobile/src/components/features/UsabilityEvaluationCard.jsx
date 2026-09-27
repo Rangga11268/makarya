@@ -14,11 +14,10 @@ import {
   CheckCircle2,
   ArrowUpRight,
   Check,
-  Award,
 } from "lucide-react-native";
 import { SystemUsabilityScaleModal } from "./SystemUsabilityScaleModal";
 
-export function UsabilityEvaluationCard({ style, userName, userRole }) {
+export function UsabilityEvaluationCard({ style }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [savedEval, setSavedEval] = useState(null);
 
@@ -37,7 +36,7 @@ export function UsabilityEvaluationCard({ style, userName, userRole }) {
 
   return (
     <View style={[styles.cardBox, style]}>
-      {/* 1. Header Row */}
+      {/* Header Row */}
       <View style={styles.headerRow}>
         <View style={styles.headerLeft}>
           <View style={styles.iconCircle}>
@@ -65,40 +64,25 @@ export function UsabilityEvaluationCard({ style, userName, userRole }) {
         )}
       </View>
 
-      {/* 2. Description */}
+      {/* Description */}
       <Text style={styles.cardText}>
-        Bantu riset & evaluasi platform Makarya. Berikan penilaian objektif Anda mengenai seberapa mudah dan nyaman aplikasi ini digunakan.
+        Bantu riset & evaluasi platform Makarya. Berikan tanggapan objektif Anda mengenai kemudahan navigasi dan pengalaman penggunaan aplikasi.
       </Text>
 
-      {/* 3. 3 Pillar Chips */}
-      <View style={styles.pillarsRow}>
-        <View style={styles.pillarChip}>
-          <Text style={styles.pillarText}>🧭 Navigasi & Tampilan</Text>
-        </View>
-        <View style={styles.pillarChip}>
-          <Text style={styles.pillarText}>⚡ Alur Kerja Proyek</Text>
-        </View>
-        <View style={styles.pillarChip}>
-          <Text style={styles.pillarText}>🔒 Keamanan Transaksi</Text>
-        </View>
-      </View>
-
-      {/* 4. Live Saved Score Banner */}
+      {/* Saved Score Banner (If Already Evaluated) */}
       {savedEval && (
         <View style={styles.savedScoreBanner}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.savedScoreLabel}>Hasil Penilaian Terakhir Anda:</Text>
+            <Text style={styles.savedScoreLabel}>Hasil Penilaian Anda:</Text>
             <Text style={styles.savedScoreValue}>
               Skor {savedEval.score} / 100 • Grade {savedEval.grade} ({savedEval.gradeLabel})
             </Text>
           </View>
-          <View style={styles.savedCheckCircle}>
-            <CheckCircle2 size={16} color="#059669" />
-          </View>
+          <CheckCircle2 size={16} color="#059669" />
         </View>
       )}
 
-      {/* 5. Footer Row with Apple Button */}
+      {/* Footer Row */}
       <View style={styles.footerRow}>
         <Text style={styles.footerMetaText}>
           10 Pertanyaan • Skala 1–5
@@ -116,7 +100,7 @@ export function UsabilityEvaluationCard({ style, userName, userRole }) {
         </TouchableOpacity>
       </View>
 
-      {/* Modal */}
+      {/* Evaluation Modal */}
       <SystemUsabilityScaleModal
         visible={modalOpen}
         onClose={() => {
@@ -124,8 +108,6 @@ export function UsabilityEvaluationCard({ style, userName, userRole }) {
           loadEvaluation();
         }}
         onSave={(res) => setSavedEval(res)}
-        currentUserName={userName || "Pengguna"}
-        currentUserRole={userRole || "Pengguna"}
       />
     </View>
   );
@@ -137,13 +119,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.85)",
-    marginVertical: 8,
+    borderColor: "rgba(226, 232, 240, 0.9)",
+    marginVertical: 4,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
-    elevation: Platform.OS === "android" ? 1 : 2,
+    elevation: 1,
   },
   headerRow: {
     flexDirection: "row",
@@ -156,152 +138,112 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     flex: 1,
-    marginRight: 8,
+    paddingRight: 8,
   },
   iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 11,
-    backgroundColor: "#F8FAFC",
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "#F1F5F9",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   cardTitle: {
-    fontFamily: FONTS.displayBold || FONTS.headingBold || FONTS.bold,
     fontSize: 13.5,
+    fontFamily: FONTS.headingBold || FONTS.bold,
     fontWeight: "700",
     color: "#0F172A",
   },
   cardSubtitle: {
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular || FONTS.regular,
-    fontSize: 10.5,
     color: "#64748B",
     marginTop: 1,
   },
   savedBadgePill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3.5,
+    gap: 4,
     backgroundColor: "#ECFDF5",
     borderWidth: 1,
     borderColor: "#A7F3D0",
-    paddingHorizontal: 7.5,
+    paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: 12,
   },
   savedBadgePillText: {
-    fontFamily: FONTS.bodyBold || FONTS.bold,
-    fontSize: 10,
-    color: "#059669",
+    fontSize: 10.5,
     fontWeight: "700",
+    color: "#059669",
   },
   pendingBadgePill: {
-    backgroundColor: "#F8FAFC",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    paddingHorizontal: 7.5,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  pendingBadgePillText: {
-    fontFamily: FONTS.bodyMedium || FONTS.medium,
-    fontSize: 10,
-    color: "#64748B",
-    fontWeight: "600",
-  },
-  cardText: {
-    fontFamily: FONTS.bodyRegular || FONTS.regular,
-    fontSize: 11.5,
-    color: "#475569",
-    lineHeight: 16.5,
-    marginBottom: 10,
-  },
-  pillarsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginBottom: 12,
-  },
-  pillarChip: {
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#F1F5F9",
     borderWidth: 1,
     borderColor: "#E2E8F0",
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
   },
-  pillarText: {
-    fontFamily: FONTS.bodyMedium || FONTS.medium,
+  pendingBadgePillText: {
     fontSize: 10.5,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  cardText: {
+    fontSize: 12,
+    fontFamily: FONTS.bodyRegular || FONTS.regular,
     color: "#475569",
-    fontWeight: "500",
+    lineHeight: 18,
+    marginBottom: 12,
   },
   savedScoreBanner: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#F0FDF4",
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#BBF7D0",
+    borderColor: "#E2E8F0",
     borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingVertical: 10,
     marginBottom: 12,
   },
   savedScoreLabel: {
-    fontFamily: FONTS.bodyMedium || FONTS.medium,
-    fontSize: 10,
-    color: "#166534",
-    marginBottom: 1,
+    fontSize: 10.5,
+    color: "#64748B",
+    marginBottom: 2,
   },
   savedScoreValue: {
-    fontFamily: FONTS.displayBold || FONTS.bold,
     fontSize: 12,
     fontWeight: "700",
-    color: "#15803D",
-  },
-  savedCheckCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "#DCFCE7",
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 8,
+    color: "#0F172A",
   },
   footerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 10,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "rgba(226, 232, 240, 0.7)",
+    borderTopColor: "#F8FAFC",
   },
   footerMetaText: {
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular || FONTS.regular,
-    fontSize: 10.5,
     color: "#94A3B8",
   },
   actionBtn: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4.5,
+    gap: 6,
     backgroundColor: "#0F172A",
-    paddingHorizontal: 13,
-    paddingVertical: 7,
-    borderRadius: 12,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
   },
   actionBtnText: {
-    fontFamily: FONTS.bodyBold || FONTS.bold,
-    fontSize: 11.5,
-    fontWeight: "700",
+    fontSize: 12,
+    fontWeight: "600",
     color: "#FFFFFF",
   },
 });

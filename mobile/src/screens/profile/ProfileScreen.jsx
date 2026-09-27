@@ -1334,12 +1334,8 @@ export function ProfileScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* 9. Usability Evaluation Rich Card (Pengujian Kemudahan Aplikasi) */}
-        <UsabilityEvaluationCard
-          userName={user?.nama_lengkap || user?.nama_usaha || user?.email}
-          userRole={user?.role}
-          style={{ marginBottom: 12 }}
-        />
+        {/* 9. Usability Evaluation Card */}
+        <UsabilityEvaluationCard style={{ marginBottom: 12 }} />
 
         {/* 10. Logout Button */}
         <PebbleButton
