@@ -1336,8 +1336,8 @@ export function ProfileScreen({ navigation }) {
 
         {/* 9. Usability Evaluation Rich Card (Pengujian Kemudahan Aplikasi) */}
         <UsabilityEvaluationCard
-          userName={profileData?.nama_lengkap || user?.nama_lengkap}
-          userRole={profileData?.role || user?.role}
+          userName={user?.nama_lengkap || user?.nama_usaha || user?.email}
+          userRole={user?.role}
           style={{ marginBottom: 12 }}
         />
 
