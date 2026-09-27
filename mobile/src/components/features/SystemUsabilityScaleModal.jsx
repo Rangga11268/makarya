@@ -146,8 +146,8 @@ export function SystemUsabilityScaleModal({
       grade = "B";
       gradeLabel = "Baik (Di Atas Rata-rata)";
       acceptability = "Layak & Nyaman";
-      scoreColor = "#2563EB";
-      bgScoreColor = "#EFF6FF";
+      scoreColor = "#0F172A";
+      bgScoreColor = "#F8FAFC";
     } else if (finalScore >= 51) {
       grade = "C";
       gradeLabel = "Cukup (Bisa Digunakan)";
@@ -181,7 +181,7 @@ export function SystemUsabilityScaleModal({
           <View style={styles.headerRow}>
             <View style={styles.headerLeft}>
               <View style={styles.headerIconBox}>
-                <ClipboardCheck size={20} color="#2563EB" />
+                <ClipboardCheck size={19} color="#0F172A" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.modalTitle}>
@@ -197,13 +197,13 @@ export function SystemUsabilityScaleModal({
               style={styles.closeBtn}
               activeOpacity={0.7}
             >
-              <X size={18} color="#64748B" />
+              <X size={17} color="#64748B" />
             </TouchableOpacity>
           </View>
 
           {/* Simple Explanation Note */}
           <View style={styles.infoBanner}>
-            <Info size={14} color="#0369A1" style={{ marginTop: 1 }} />
+            <Info size={14} color="#475569" style={{ marginTop: 1 }} />
             <Text style={styles.infoBannerText}>
               Bantu evaluasi aplikasi Makarya. Pilih nilai dari angka <Text style={{ fontWeight: "700" }}>1 (Sangat Tidak Setuju)</Text> hingga <Text style={{ fontWeight: "700" }}>5 (Sangat Setuju)</Text>.
             </Text>
@@ -231,7 +231,7 @@ export function SystemUsabilityScaleModal({
                   <Text style={styles.questionText}>{q.text}</Text>
                 </View>
 
-                {/* Likert 1-5 Pills */}
+                {/* Likert 1-5 Apple Pill Segmented Buttons */}
                 <View style={styles.likertRow}>
                   <Text style={styles.likertGuideText}>Tidak Setuju (1)</Text>
                   <View style={styles.pillsContainer}>
@@ -245,7 +245,7 @@ export function SystemUsabilityScaleModal({
                             styles.likertPill,
                             isSelected && styles.likertPillActive,
                           ]}
-                          activeOpacity={0.7}
+                          activeOpacity={0.75}
                         >
                           <Text
                             style={[
@@ -270,7 +270,7 @@ export function SystemUsabilityScaleModal({
                 styles.resultCard,
                 {
                   backgroundColor: result.bgScoreColor,
-                  borderColor: result.scoreColor + "40",
+                  borderColor: result.scoreColor + "30",
                 },
               ]}
             >
@@ -313,23 +313,23 @@ export function SystemUsabilityScaleModal({
             </View>
           </ScrollView>
 
-          {/* Footer Actions */}
+          {/* Footer Actions (Apple Style Buttons) */}
           <View style={styles.footerRow}>
             <TouchableOpacity
               onPress={handleReset}
               style={styles.resetBtn}
-              activeOpacity={0.7}
+              activeOpacity={0.75}
             >
-              <RotateCcw size={14} color="#64748B" />
+              <RotateCcw size={13.5} color="#64748B" />
               <Text style={styles.resetBtnText}>Atur Ulang</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={onClose}
               style={styles.saveBtn}
-              activeOpacity={0.8}
+              activeOpacity={0.88}
             >
-              <CheckCircle2 size={15} color="#FFFFFF" />
+              <CheckCircle2 size={14.5} color="#FFFFFF" strokeWidth={2.4} />
               <Text style={styles.saveBtnText}>Selesai & Simpan</Text>
             </TouchableOpacity>
           </View>
@@ -342,7 +342,7 @@ export function SystemUsabilityScaleModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.7)",
+    backgroundColor: "rgba(15, 23, 42, 0.65)",
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
@@ -356,11 +356,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E2E8F0",
     overflow: "hidden",
-    shadowColor: "#000",
+    shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.16,
     shadowRadius: 24,
-    elevation: 10,
+    elevation: 8,
   },
   headerRow: {
     flexDirection: "row",
@@ -368,23 +368,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 18,
-    paddingBottom: 12,
+    paddingBottom: 13,
     borderBottomWidth: 1,
     borderBottomColor: "#F1F5F9",
+    backgroundColor: "#FFFFFF",
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 11,
     flex: 1,
   },
   headerIconBox: {
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#F8FAFC",
     borderWidth: 1,
-    borderColor: "#DBEAFE",
+    borderColor: "#E2E8F0",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -401,9 +402,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   closeBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: "#F1F5F9",
     justifyContent: "center",
     alignItems: "center",
@@ -413,30 +414,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 8,
-    backgroundColor: "#F0F9FF",
+    backgroundColor: "#F8FAFC",
     borderBottomWidth: 1,
-    borderBottomColor: "#E0F2FE",
-    paddingHorizontal: 16,
+    borderBottomColor: "#E2E8F0",
+    paddingHorizontal: 18,
     paddingVertical: 9,
   },
   infoBannerText: {
     flex: 1,
     fontSize: 11,
     fontFamily: FONTS.bodyRegular || FONTS.regular,
-    color: "#0369A1",
+    color: "#475569",
     lineHeight: 16,
   },
   respondentBar: {
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 20,
     paddingVertical: 7,
     borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
+    borderBottomColor: "#F1F5F9",
   },
   respondentText: {
     fontSize: 11,
     fontFamily: FONTS.bodyRegular || FONTS.regular,
-    color: "#475569",
+    color: "#64748B",
   },
   respondentBold: {
     fontFamily: FONTS.bodyBold || FONTS.bold,
@@ -445,29 +446,37 @@ const styles = StyleSheet.create({
   },
   scrollBody: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   scrollContent: {
     padding: 16,
     gap: 12,
   },
   questionCard: {
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    borderRadius: 16,
-    padding: 12,
+    borderRadius: 18,
+    padding: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
   },
   questionHeader: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 8,
-    marginBottom: 10,
+    gap: 9,
+    marginBottom: 11,
   },
   qNumberBadge: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: "#F1F5F9",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 1,
@@ -475,22 +484,23 @@ const styles = StyleSheet.create({
   qNumberText: {
     fontSize: 10.5,
     fontWeight: "700",
-    color: "#475569",
+    color: "#334155",
   },
   questionText: {
     flex: 1,
-    fontSize: 12.5,
+    fontSize: 13,
     fontFamily: FONTS.bodyMedium || FONTS.medium,
-    color: "#1E293B",
-    lineHeight: 18,
+    fontWeight: "500",
+    color: "#0F172A",
+    lineHeight: 18.5,
   },
   likertRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F8FAFC",
     padding: 8,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
@@ -504,30 +514,35 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   likertPill: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#F1F5F9",
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "#CBD5E1",
     justifyContent: "center",
     alignItems: "center",
   },
   likertPillActive: {
-    backgroundColor: "#2563EB",
-    borderColor: "#1D4ED8",
+    backgroundColor: "#0F172A", // Apple Dark Solid Active
+    borderColor: "#0F172A",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    elevation: 2,
   },
   likertPillText: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontWeight: "600",
-    color: "#475569",
+    color: "#334155",
   },
   likertPillTextActive: {
     color: "#FFFFFF",
-    fontWeight: "700",
+    fontWeight: "800",
   },
   resultCard: {
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     padding: 14,
     marginTop: 4,
@@ -588,10 +603,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    backgroundColor: "#F1F5F9",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   resetBtnText: {
     fontSize: 12,
@@ -602,10 +619,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: "#2563EB",
+    paddingHorizontal: 18,
+    paddingVertical: 10.5,
+    borderRadius: 14,
+    backgroundColor: "#0F172A", // Apple Dark Slate Pill Button
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 2,
   },
   saveBtnText: {
     fontSize: 12.5,

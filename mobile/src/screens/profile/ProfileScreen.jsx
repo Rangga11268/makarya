@@ -1336,22 +1336,15 @@ export function ProfileScreen({ navigation }) {
 
           {/* Pengujian Skripsi: System Usability Scale (SUS) Modal */}
           <TouchableOpacity
-            style={[styles.menuRowItem, { backgroundColor: COLORS.brandIndigoLight || "#EEF2FF" }]}
+            style={styles.menuRowItem}
             activeOpacity={0.7}
             onPress={() => setSusModalOpen(true)}
           >
-            <View style={[styles.menuIconWrap, { backgroundColor: COLORS.brandIndigo }]}>
-              <Sparkles size={15} color="#FFFFFF" />
+            <View style={styles.menuIconWrap}>
+              <Sparkles size={15} color={COLORS.brandIndigo} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.menuItemTitle, { color: COLORS.brandIndigo, fontFamily: FONTS.displayBold }]}>
-                Penilaian Kemudahan Aplikasi
-              </Text>
-              <Text style={{ fontSize: 11, fontFamily: FONTS.bodyRegular, color: COLORS.textMuted }}>
-                Kuesioner singkat evaluasi kenyamanan penggunaan aplikasi
-              </Text>
-            </View>
-            <ChevronRight size={14} color={COLORS.brandIndigo} />
+            <Text style={styles.menuItemTitle}>Penilaian Kemudahan Aplikasi</Text>
+            <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
         </View>
 
