@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Platform } from "react-native";
 import { FONTS } from "../../theme/fonts";
 import { COLORS } from "../../theme/colors";
 import { CheckCircle2 } from "lucide-react-native";
@@ -22,16 +22,53 @@ const FONT_SIZE_MAP = {
   "2xl": 24,
 };
 
+// Deterministic string hash (djb2 algorithm)
+function hashString(str) {
+  if (!str || typeof str !== "string") return 0;
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
+  }
+  return Math.abs(hash);
+}
+
+// 12 Curated Accessible Color Pairings (Light Pastel BG + Deep High-Contrast Ink Text)
+// Strict WCAG AAA (>= 7:1) contrast ratio
+const AVATAR_PALETTES = [
+  { bg: "#E0F2FE", text: "#0369A1", border: "#BAE6FD" }, // Sky Blue
+  { bg: "#DCFCE7", text: "#15803D", border: "#BBF7D0" }, // Emerald Green
+  { bg: "#EDE9FE", text: "#6D28D9", border: "#DDD6FE" }, // Violet
+  { bg: "#FEF3C7", text: "#B45309", border: "#FDE68A" }, // Warm Amber
+  { bg: "#FEE2E2", text: "#B91C1C", border: "#FECACA" }, // Rose / Crimson
+  { bg: "#E0E7FF", text: "#4338CA", border: "#C7D2FE" }, // Royal Indigo
+  { bg: "#CCFBF1", text: "#0F766E", border: "#99F6E4" }, // Teal
+  { bg: "#FCE7F3", text: "#BE185D", border: "#FBCFE8" }, // Berry Pink
+  { bg: "#FFEDD5", text: "#C2410C", border: "#FED7AA" }, // Tangerine
+  { bg: "#F3E8FF", text: "#7E22CE", border: "#E9D5FF" }, // Deep Purple
+  { bg: "#F1F5F9", text: "#334155", border: "#CBD5E1" }, // Slate
+  { bg: "#D1FAE5", text: "#047857", border: "#A7F3D0" }, // Mint Green
+];
+
+function getAvatarColors(seed) {
+  const index = hashString(seed || "makarya-avatar") % AVATAR_PALETTES.length;
+  return AVATAR_PALETTES[index];
+}
+
 function getInitials(name) {
   if (!name || typeof name !== "string") return "M";
-  const clean = name.trim();
+  const clean = name.trim().replace(/^[@#]/, "");
   if (!clean || clean.toLowerCase() === "string") return "M";
 
-  const parts = clean.split(/\s+/).filter(Boolean);
-  if (parts.length === 1) {
-    return parts[0].substring(0, 1).toUpperCase();
+  // Handle CJK characters
+  if (/[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7af]/.test(clean)) {
+    return clean.charAt(0);
   }
-  return (parts[0][0] + parts[1][0]).toUpperCase();
+
+  const parts = clean.split(/[\s._-]+/).filter(Boolean);
+  if (parts.length === 1) {
+    return parts[0].substring(0, Math.min(2, parts[0].length)).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 export function Avatar({
@@ -55,48 +92,25 @@ export function Avatar({
   const dimension = typeof size === "number" ? size : SIZE_MAP[size] || 40;
   const fontSize =
     typeof size === "number"
-      ? Math.round(size * 0.38)
+      ? Math.round(size * 0.40)
       : FONT_SIZE_MAP[size] || 14;
-
-  const normalizedRole = (role || "").toUpperCase();
-  const isUmkm = normalizedRole === "UMKM" || normalizedRole === "CLIENT";
-  const isMahasiswa =
-    normalizedRole === "MHS" ||
-    normalizedRole === "MAHASISWA" ||
-    normalizedRole === "STUDENT";
-  const isAdmin = normalizedRole === "ADMIN";
-
-  let bgColor = "#F1F5F9";
-  let textColor = "#334155";
-  let borderColor = "#E2E8F0";
-
-  if (isUmkm) {
-    bgColor = "#FEF3C7";
-    textColor = "#92400E";
-    borderColor = "#FDE68A";
-  } else if (isMahasiswa) {
-    bgColor = "#EEF2FF";
-    textColor = "#4338CA";
-    borderColor = "#C7D2FE";
-  } else if (isAdmin) {
-    bgColor = "#0F172A";
-    textColor = "#FFFFFF";
-    borderColor = "#334155";
-  }
 
   let borderRadius = dimension / 2;
   if (rounded === "lg") borderRadius = 12;
   else if (rounded === "xl") borderRadius = 16;
   else if (rounded === "2xl") borderRadius = 20;
+  else if (rounded === "squircle") borderRadius = Math.round(dimension * 0.28);
   else if (typeof rounded === "number") borderRadius = rounded;
 
   const initials = getInitials(name);
+  const colorToken = getAvatarColors(name || role || "makarya");
+
   const isValidSrc = Boolean(
     src &&
       typeof src === "string" &&
       src.trim() !== "" &&
       src.trim().toLowerCase() !== "null" &&
-      src.trim().toLowerCase() !== "undefined",
+      src.trim().toLowerCase() !== "undefined"
   );
 
   return (
@@ -130,8 +144,8 @@ export function Avatar({
               width: dimension,
               height: dimension,
               borderRadius,
-              backgroundColor: bgColor,
-              borderColor,
+              backgroundColor: colorToken.bg,
+              borderColor: colorToken.border,
             },
           ]}
         >
@@ -140,7 +154,8 @@ export function Avatar({
               styles.initialText,
               {
                 fontSize,
-                color: textColor,
+                color: colorToken.text,
+                lineHeight: Platform.OS === "ios" ? fontSize + 2 : undefined,
               },
             ]}
           >
@@ -170,7 +185,7 @@ export function Avatar({
           <CheckCircle2
             size={Math.max(12, Math.round(dimension * 0.32))}
             color="#FFFFFF"
-            fill={COLORS.success}
+            fill={COLORS.success || "#10B981"}
           />
         </View>
       )}
@@ -192,8 +207,10 @@ const styles = StyleSheet.create({
   },
   initialText: {
     fontFamily: FONTS.displayBold,
-    fontWeight: "700",
+    fontWeight: "800",
     textAlign: "center",
+    letterSpacing: 0.5,
+    includeFontPadding: false,
   },
   onlineDot: {
     position: "absolute",

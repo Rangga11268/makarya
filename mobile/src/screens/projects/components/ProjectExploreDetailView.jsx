@@ -329,6 +329,7 @@ export function ProjectExploreDetailView({
                 name={clientDisplayName || "Klien UMKM"}
                 role="UMKM"
                 size={44}
+                rounded="squircle"
                 showOnlineDot={true}
                 isOnline={true}
                 style={{ marginRight: 12 }}
