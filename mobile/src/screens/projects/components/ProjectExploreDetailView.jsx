@@ -324,15 +324,19 @@ export function ProjectExploreDetailView({
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
-              <Avatar
-                src={clientPhoto}
-                name={clientDisplayName || "Klien UMKM"}
-                role="UMKM"
-                size={44}
-                showOnlineDot={true}
-                isOnline={true}
-                style={{ marginRight: 12 }}
-              />
+              <View style={styles.avatarGlossyWrapper}>
+                <Avatar
+                  src={clientPhoto}
+                  name={clientDisplayName || "Klien UMKM"}
+                  role="UMKM"
+                  size={46}
+                  rounded={14}
+                  showOnlineDot={false}
+                />
+                <View style={styles.umkmVerifiedBadge}>
+                  <Check size={9} color="#FFFFFF" strokeWidth={3.5} />
+                </View>
+              </View>
 
               <View style={styles.sellerMetaCol}>
                 <View style={styles.sellerNameRow}>
@@ -343,14 +347,10 @@ export function ProjectExploreDetailView({
                   >
                     {clientDisplayName || "Mitra Klien UMKM"}
                   </Text>
-                  <CheckCircle2
-                    size={16}
-                    color="#059669"
-                    fill="#059669"
-                    stroke="#FFFFFF"
-                    strokeWidth={2}
-                    style={{ marginLeft: 6 }}
-                  />
+                  <View style={styles.verifiedPill}>
+                    <ShieldCheck size={11} color="#4F46E5" strokeWidth={2.4} />
+                    <Text style={styles.verifiedPillText}>UMKM Terverifikasi</Text>
+                  </View>
                 </View>
 
                 {/* Single Clean Metadata Line */}
@@ -1111,6 +1111,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
+  avatarGlossyWrapper: {
+    position: "relative",
+    width: 48,
+    height: 48,
+    borderRadius: 15,
+    backgroundColor: "#FFFFFF",
+    padding: 1.5,
+    borderWidth: 1.5,
+    borderColor: "#EEF2FF",
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  umkmVerifiedBadge: {
+    position: "absolute",
+    bottom: -2,
+    right: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#4F46E5",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#4F46E5",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.35,
+    shadowRadius: 2,
+    elevation: 2,
+  },
   sellerMetaCol: {
     flex: 1,
     gap: 3,
@@ -1119,6 +1154,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 6,
   },
   sellerName: {
     fontSize: 16,
@@ -1127,6 +1164,23 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     flex: 1,
     paddingRight: 6,
+  },
+  verifiedPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3.5,
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#C7D2FE",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  verifiedPillText: {
+    fontFamily: FONTS.bodyBold,
+    fontSize: 9,
+    color: "#4338CA",
+    fontWeight: "800",
   },
   verifiedInlineTag: {
     flexDirection: "row",
