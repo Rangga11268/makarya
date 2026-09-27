@@ -32,7 +32,7 @@ import { authApi, certificateApi, ratingApi } from "../../api";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import { MobileCertificateModal } from "../../components/features/certificates/MobileCertificateModal";
-import { SystemUsabilityScaleModal } from "../../components/features/SystemUsabilityScaleModal";
+import { UsabilityEvaluationCard } from "../../components/features/UsabilityEvaluationCard";
 import {
   ProdiVectorIcon,
   CampusVectorIcon,
@@ -86,7 +86,6 @@ export function ProfileScreen({ navigation }) {
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [userReviews, setUserReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
-  const [susModalOpen, setSusModalOpen] = useState(false);
 
   const defaultBannerFallback =
     user?.role === "UMKM"
@@ -1333,29 +1332,23 @@ export function ProfileScreen({ navigation }) {
             <Text style={styles.menuItemTitle}>Panduan Penggunaan Makarya</Text>
             <ChevronRight size={14} color={COLORS.textMuted} />
           </TouchableOpacity>
-
-          {/* Pengujian Skripsi: System Usability Scale (SUS) Modal */}
-          <TouchableOpacity
-            style={styles.menuRowItem}
-            activeOpacity={0.7}
-            onPress={() => setSusModalOpen(true)}
-          >
-            <View style={styles.menuIconWrap}>
-              <Sparkles size={15} color={COLORS.brandIndigo} />
-            </View>
-            <Text style={styles.menuItemTitle}>Penilaian Kemudahan Aplikasi</Text>
-            <ChevronRight size={14} color={COLORS.textMuted} />
-          </TouchableOpacity>
         </View>
 
-        {/* 9. Logout Button */}
+        {/* 9. Usability Evaluation Rich Card (Pengujian Kemudahan Aplikasi) */}
+        <UsabilityEvaluationCard
+          userName={profileData?.nama_lengkap || user?.nama_lengkap}
+          userRole={profileData?.role || user?.role}
+          style={{ marginBottom: 12 }}
+        />
+
+        {/* 10. Logout Button */}
         <PebbleButton
           variant="ruby"
           size="md"
           label="Keluar dari Akun"
           icon={LogOut}
           onPress={handleLogout}
-          style={{ width: "100%", marginTop: 8 }}
+          style={{ width: "100%", marginTop: 4 }}
         />
 
         <View style={{ height: 30 }} />
@@ -1390,12 +1383,6 @@ export function ProfileScreen({ navigation }) {
           setCertModalVisible(false);
           setSelectedCert(null);
         }}
-      />
-
-      {/* MODAL SYSTEM USABILITY SCALE (SUS) EVALUASI SKRIPSI */}
-      <SystemUsabilityScaleModal
-        visible={susModalOpen}
-        onClose={() => setSusModalOpen(false)}
       />
     </View>
   );
