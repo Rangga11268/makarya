@@ -48,38 +48,40 @@ export function Skeleton({
 export function ProjectCardSkeleton() {
   return (
     <View style={styles.cardContainer}>
-      {/* 1. Header row: Avatar + Name/Date + Chip */}
+      {/* 1. Header row: Squircle Avatar + Name/City + Category Chip */}
       <View style={styles.row}>
-        <Skeleton width={38} height={38} borderRadius={19} />
-        <View style={{ flex: 1, gap: 6, marginLeft: 10 }}>
-          <Skeleton width="60%" height={13} borderRadius={4} />
-          <Skeleton width="38%" height={10} borderRadius={4} />
+        <Skeleton width={36} height={36} borderRadius={10} />
+        <View style={{ flex: 1, gap: 5, marginLeft: 10 }}>
+          <Skeleton width="55%" height={13} borderRadius={4} />
+          <Skeleton width="35%" height={10} borderRadius={4} />
         </View>
-        <Skeleton width={62} height={22} borderRadius={11} />
+        <Skeleton width={72} height={20} borderRadius={6} />
       </View>
 
-      {/* 2. Project Title Lines */}
-      <View style={{ gap: 6, marginVertical: 8 }}>
+      {/* 2. Project Title & Excerpt Lines */}
+      <View style={{ gap: 5, marginVertical: 6 }}>
         <Skeleton width="92%" height={15} borderRadius={4} />
-        <Skeleton width="68%" height={15} borderRadius={4} />
+        <Skeleton width="65%" height={15} borderRadius={4} />
+        <Skeleton width="80%" height={12} borderRadius={4} style={{ marginTop: 2 }} />
       </View>
 
-      {/* 3. Specs Grid (Budget & Duration) */}
-      <View style={styles.specsRow}>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Skeleton width="50%" height={10} borderRadius={4} />
-          <Skeleton width="75%" height={16} borderRadius={5} />
-        </View>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Skeleton width="50%" height={10} borderRadius={4} />
-          <Skeleton width="65%" height={16} borderRadius={5} />
-        </View>
+      {/* 3. Skill & Scope Chips */}
+      <View style={styles.pillsRow}>
+        <Skeleton width={80} height={20} borderRadius={6} />
+        <Skeleton width={60} height={20} borderRadius={6} />
+        <Skeleton width={50} height={20} borderRadius={6} />
       </View>
 
-      {/* 4. Footer Pill & Arrow */}
+      {/* 4. Footer Row: Budget + Deadline/Applicants */}
       <View style={styles.rowBetween}>
-        <Skeleton width={100} height={24} borderRadius={12} />
-        <Skeleton width={60} height={14} borderRadius={4} />
+        <View style={{ gap: 3 }}>
+          <Skeleton width={90} height={16} borderRadius={4} />
+          <Skeleton width={55} height={10} borderRadius={3} />
+        </View>
+        <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
+          <Skeleton width={65} height={20} borderRadius={6} />
+          <Skeleton width={55} height={14} borderRadius={4} />
+        </View>
       </View>
     </View>
   );

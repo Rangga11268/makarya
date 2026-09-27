@@ -66,17 +66,17 @@ export function Avatar({
     normalizedRole === "STUDENT";
   const isAdmin = normalizedRole === "ADMIN";
 
-  let bgColor = "#F8FAFC";
+  let bgColor = "#F1F5F9";
   let textColor = "#334155";
   let borderColor = "#E2E8F0";
 
   if (isUmkm) {
     bgColor = "#FEF3C7";
-    textColor = "#78350F";
+    textColor = "#92400E";
     borderColor = "#FDE68A";
   } else if (isMahasiswa) {
     bgColor = "#EEF2FF";
-    textColor = "#3730A3";
+    textColor = "#4338CA";
     borderColor = "#C7D2FE";
   } else if (isAdmin) {
     bgColor = "#0F172A";
@@ -188,11 +188,11 @@ const styles = StyleSheet.create({
   fallback: {
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1.5,
+    borderWidth: 1,
   },
   initialText: {
     fontFamily: FONTS.displayBold,
-    fontWeight: "800",
+    fontWeight: "700",
     textAlign: "center",
   },
   onlineDot: {
