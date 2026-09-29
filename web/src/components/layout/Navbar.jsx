@@ -231,7 +231,13 @@ export function Navbar() {
   };
 
   const roleInfo = getRoleBadge(user?.role);
-  const initialLetter = user?.email ? user.email.charAt(0).toUpperCase() : "U";
+  const userDisplayName =
+    user?.nama ||
+    user?.nama_lengkap ||
+    user?.nama_usaha ||
+    user?.email?.split("@")[0] ||
+    "Pengguna";
+  const initialLetter = userDisplayName ? userDisplayName.charAt(0).toUpperCase() : "U";
 
   const getHomeTarget = () => {
     if (!isAuthenticated) return "/";
