@@ -18,8 +18,6 @@ import {
   ArrowUpDown,
   Layers,
   GraduationCap,
-  X,
-  SlidersHorizontal,
 } from "lucide-react";
 import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
@@ -260,7 +258,9 @@ export function BrowseProjectsPage() {
             Jelajah Proyek UMKM Aktif
           </h1>
           <p className="text-xs sm:text-sm text-muted font-sans mt-0.5 max-w-2xl">
-            Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda dan tawarkan proposal terbaik.
+            {user?.role === "UMKM"
+              ? "Pantau proyek digital aktif di platform, atau temukan mahasiswa bertalenta untuk kebutuhan usaha Anda."
+              : "Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda dan tawarkan proposal terbaik."}
           </p>
         </div>
 
@@ -280,19 +280,19 @@ export function BrowseProjectsPage() {
         </div>
       </div>
 
-      {/* UMKM Recommendation Banner */}
+      {/* UMKM Recommendation Banner - Clean & Sleek */}
       {user?.role === "UMKM" && (
-        <div className="bg-brand-indigo/5 border border-brand-indigo/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <div className="w-9 h-9 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
+        <div className="bg-surface border border-brand-indigo/25 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3 text-left w-full sm:w-auto">
+            <div className="w-9 h-9 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center shrink-0 border border-brand-indigo/20">
               <GraduationCap className="w-4.5 h-4.5" />
             </div>
-            <div>
-              <h3 className="text-xs sm:text-sm font-bold text-dark-900">
-                Mencari Talenta Mahasiswa untuk Direkrut Langsung?
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xs sm:text-sm font-bold text-dark-900 truncate">
+                Ingin Rekrut Mahasiswa Langsung?
               </h3>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5">
-                Jelajahi direktori mahasiswa berprestasi dengan portofolio terverifikasi.
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 line-clamp-1">
+                Jelajahi direktori talenta berprestasi dengan portofolio terverifikasi.
               </p>
             </div>
           </div>
@@ -300,9 +300,9 @@ export function BrowseProjectsPage() {
             <Button
               variant="brand"
               size="sm"
-              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
+              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand py-2"
             >
-              Buka Direktori Mahasiswa
+              Buka Direktori Talenta
             </Button>
           </Link>
         </div>

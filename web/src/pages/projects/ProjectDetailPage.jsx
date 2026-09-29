@@ -955,6 +955,22 @@ export function ProjectDetailPage() {
                   melewati batas tenggat waktu.
                 </p>
               </div>
+            ) : user?.role === "UMKM" ? (
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700">
+                  <GraduationCap className="w-4 h-4 text-brand-indigo" />
+                  <span>Khusus Pelamar Mahasiswa</span>
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  Akun Klien UMKM tidak dapat mengajukan proposal ke proyek UMKM lain.
+                </p>
+                <Link to="/projects/new" className="block w-full">
+                  <Button variant="outline" size="sm" className="w-full text-xs font-bold rounded-xl">
+                    <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                    Pasang Proyek Serupa
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <Button
                 variant="brand"
@@ -1145,6 +1161,17 @@ export function ProjectDetailPage() {
               >
                 Ditutup
               </Button>
+            ) : user?.role === "UMKM" ? (
+              <Link to="/projects/new">
+                <Button
+                  variant="brand"
+                  size="md"
+                  className="text-xs font-bold shadow-brand py-2.5 px-4"
+                >
+                  <PlusCircle className="w-3.5 h-3.5 mr-1.5" />
+                  Pasang Proyek Serupa
+                </Button>
+              </Link>
             ) : (
               <Button
                 variant="brand"
