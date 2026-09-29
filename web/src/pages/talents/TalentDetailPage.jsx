@@ -836,6 +836,40 @@ export function TalentDetailPage() {
                   </div>
                 )}
               </div>
+            ) : isAuthenticated && user?.role === "MAHASISWA" ? (
+              <div className="space-y-4">
+                <div className="p-4 bg-brand-indigo-light/20 border border-brand-indigo/20 rounded-2xl space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-dark-900 text-xs">
+                    <GraduationCap className="w-4 h-4 text-brand-indigo shrink-0" />
+                    <span>Portofolio Rekan Mahasiswa</span>
+                  </div>
+                  <p className="text-xs text-muted leading-relaxed">
+                    Anda sedang melihat profil portofolio terverifikasi milik rekan mahasiswa. Fitur rekrutmen dan penawaran proyek langsung khusus diperuntukkan bagi <b>Klien UMKM</b>.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Link to="/projects" className="block w-full">
+                    <Button
+                      variant="brand"
+                      size="sm"
+                      className="w-full text-xs font-bold py-2.5"
+                    >
+                      Jelajahi Katalog Proyek UMKM
+                    </Button>
+                  </Link>
+
+                  <Link to="/talents" className="block w-full">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs font-semibold py-2 border-border hover:bg-canvas"
+                    >
+                      Kembali ke Direktori Talenta
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             ) : (
               <div className="space-y-4">
                 <p className="text-xs text-slate-600 leading-relaxed">

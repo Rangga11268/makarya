@@ -211,67 +211,72 @@ export function BrowseProjectsPage() {
   }, [currentPage, totalPages]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-4 sm:space-y-6 font-sans">
-      {/* 1. Explore Hub Switcher - Modern Segmented Control */}
-      <div className="flex items-center justify-between gap-3 border-b border-border/80 pb-3">
-        <div className="inline-flex p-1 bg-canvas rounded-2xl border border-border w-full sm:w-auto max-w-xs shadow-2xs">
-          <Link
-            to="/projects"
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center transition-all"
-          >
-            <ProjectBriefVectorIcon
-              size={13}
-              className="w-3.5 h-3.5 shrink-0 text-white"
-            />
-            <span className="truncate">Katalog Proyek</span>
-          </Link>
-          <Link
-            to="/talents"
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-muted hover:text-dark-900 hover:bg-surface transition-all text-center"
-          >
-            <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Direktori Talenta</span>
-          </Link>
-        </div>
-
-        {user?.role === "UMKM" && (
-          <Link to="/projects/new" className="hidden sm:inline-flex">
-            <Button
-              variant="brand"
-              size="sm"
-              className="text-xs font-bold shadow-brand"
-            >
-              <PlusCircle className="w-4 h-4 mr-1.5" />
-              Pasang Proyek
-            </Button>
-          </Link>
-        )}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 font-sans">
+      {/* Explore Hub Switcher - Responsive 2-column without horizontal slider */}
+      <div className="grid grid-cols-2 gap-2 max-w-md w-full border-b border-border pb-3">
+        <Link
+          to="/projects"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center"
+        >
+          <ProjectBriefVectorIcon
+            size={14}
+            className="w-3.5 h-3.5 shrink-0 text-white"
+          />
+          <span className="truncate">Katalog Proyek</span>
+        </Link>
+        <Link
+          to="/talents"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors text-center border border-border sm:border-transparent"
+        >
+          <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Direktori Talenta</span>
+        </Link>
       </div>
 
-      {/* 2. Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-brand-indigo font-sans">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted font-sans">
             Katalog Peluang &amp; Spesialisasi
           </span>
-          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900 tracking-tight mt-1">
             Jelajah Proyek UMKM Aktif
           </h1>
-          <p className="text-xs sm:text-sm text-muted font-sans mt-0.5 max-w-2xl">
-            {user?.role === "UMKM"
-              ? "Pantau proyek digital aktif di platform, atau temukan mahasiswa bertalenta untuk kebutuhan usaha Anda."
-              : "Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda dan tawarkan proposal terbaik."}
+          <p className="text-xs sm:text-sm text-muted font-sans mt-1">
+            Temukan proyek digital yang sesuai dengan spesialisasi keahlian Anda
+            dan tawarkan proposal terbaik.
           </p>
         </div>
 
-        {/* Desktop-only action buttons */}
-        <div className="hidden sm:flex items-center gap-2">
-          {(category || keyword.trim() || maxBudget < 2000000) && (
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          {user?.role === "UMKM" ? (
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <Link to="/projects/new" className="sm:hidden w-full">
+                <Button
+                  variant="brand"
+                  size="sm"
+                  className="w-full justify-center text-xs font-bold shadow-brand"
+                >
+                  <PlusCircle className="w-4 h-4 mr-1.5" />
+                  Pasang Proyek
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetFilter}
+                className="w-full sm:w-auto justify-center text-xs font-bold text-muted hover:text-dark-900"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                Reset Filter
+              </Button>
+            </div>
+          ) : (
             <Button
               variant="outline"
               size="sm"
               onClick={handleResetFilter}
-              className="text-xs font-bold text-muted hover:text-dark-900 rounded-xl"
+              className="w-full sm:w-auto justify-center text-xs font-bold text-muted hover:text-dark-900"
             >
               <RotateCcw className="w-3.5 h-3.5 mr-1" />
               Reset Filter
@@ -280,19 +285,20 @@ export function BrowseProjectsPage() {
         </div>
       </div>
 
-      {/* UMKM Recommendation Banner - Clean & Sleek */}
+      {/* UMKM Banner */}
       {user?.role === "UMKM" && (
-        <div className="bg-surface border border-brand-indigo/25 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
-          <div className="flex items-center gap-3 text-left w-full sm:w-auto">
-            <div className="w-9 h-9 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center shrink-0 border border-brand-indigo/20">
-              <GraduationCap className="w-4.5 h-4.5" />
+        <div className="bg-brand-indigo/5 border border-brand-indigo/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 text-center sm:text-left">
+            <div className="w-10 h-10 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0 shadow-xs">
+              <GraduationCap className="w-5 h-5" />
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xs sm:text-sm font-bold text-dark-900 truncate">
-                Ingin Rekrut Mahasiswa Langsung?
+            <div>
+              <h3 className="text-sm font-bold text-dark-900">
+                Mencari Talenta Mahasiswa untuk Direkrut Langsung?
               </h3>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5 line-clamp-1">
-                Jelajahi direktori talenta berprestasi dengan portofolio terverifikasi.
+              <p className="text-xs text-muted mt-0.5">
+                Jelajahi direktori mahasiswa berprestasi dengan portofolio
+                terverifikasi dan ulasan UMKM riil.
               </p>
             </div>
           </div>
@@ -300,81 +306,31 @@ export function BrowseProjectsPage() {
             <Button
               variant="brand"
               size="sm"
-              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand py-2"
+              className="w-full sm:w-auto justify-center text-xs font-bold shadow-brand"
             >
-              Buka Direktori Talenta
+              Buka Direktori Mahasiswa
             </Button>
           </Link>
         </div>
       )}
 
-      {/* 3. Mobile Search & Horizontal Category Slider (Smooth Swipeable Bar) */}
-      <div className="lg:hidden space-y-2.5">
-        {/* Mobile Search Bar */}
-        <div className="relative">
-          <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Cari kata kunci atau judul proyek..."
-            value={keyword}
-            onChange={(e) => handleKeywordChange(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo shadow-xs"
-          />
-          {keyword ? (
+      {/* Mobile-only: Category Filter Pills - Wraps naturally, NO horizontal slider */}
+      <div className="lg:hidden">
+        <div className="flex flex-wrap gap-1.5">
+          {categories.map((c) => (
             <button
-              onClick={() => handleKeywordChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted hover:text-dark-900 cursor-pointer"
+              key={c.key}
+              onClick={() => handleCategorySelect(c.key)}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                category === c.key
+                  ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                  : "bg-surface text-muted border-border hover:border-dark-900/30 hover:text-dark-900"
+              }`}
             >
-              <X className="w-3.5 h-3.5" />
+              {c.label}
             </button>
-          ) : null}
+          ))}
         </div>
-
-        {/* Mobile Category Pills: Sleek Horizontal Scroll with no wrapping */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-4 px-4 sm:mx-0 sm:px-0">
-          {categories.map((c) => {
-            const isActive = category === c.key;
-            return (
-              <button
-                key={c.key}
-                onClick={() => handleCategorySelect(c.key)}
-                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border select-none ${
-                  isActive
-                    ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                    : "bg-surface text-slate-600 border-border hover:border-dark-900/30 hover:text-dark-900"
-                }`}
-              >
-                {c.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Mobile Active Filter Badge & Reset Button */}
-        {(category || keyword.trim() || maxBudget < 2000000) && (
-          <div className="flex items-center justify-between gap-2 px-1 pt-0.5">
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] text-muted">
-              <span>Filter:</span>
-              {category && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-dark-900/5 text-dark-900 text-[11px] font-semibold border border-border">
-                  {categories.find((c) => c.key === category)?.label}
-                </span>
-              )}
-              {keyword.trim() && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-dark-900/5 text-dark-900 text-[11px] font-semibold border border-border truncate max-w-[120px]">
-                  "{keyword}"
-                </span>
-              )}
-            </div>
-            <button
-              onClick={handleResetFilter}
-              className="text-xs text-rose-600 font-semibold hover:underline shrink-0 flex items-center gap-1 cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Reset Filter
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 sm:gap-6 items-start">
@@ -456,17 +412,31 @@ export function BrowseProjectsPage() {
         </div>
 
         {/* Project Content Area */}
-        <div className="lg:col-span-3 col-span-1 space-y-4 sm:space-y-5">
-          {/* Top Control Bar — Single Row on Mobile & Desktop */}
-          <div className="flex items-center justify-between gap-2 p-3 sm:p-3.5 bg-surface border border-border rounded-2xl shadow-xs">
-            <div className="flex items-center gap-2 text-xs text-muted font-medium truncate">
-              <Layers className="w-4 h-4 text-dark-900 shrink-0" />
-              <span className="truncate">
+        <div className="lg:col-span-3 col-span-1 space-y-5">
+          {/* Mobile search bar */}
+          <div className="lg:hidden">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Cari kata kunci proyek..."
+                value={keyword}
+                onChange={(e) => handleKeywordChange(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-xs bg-surface border border-border rounded-xl text-dark-900 placeholder:text-muted/60 focus:outline-none focus:border-brand-indigo"
+              />
+            </form>
+          </div>
+
+          {/* Top Control Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-surface border border-border rounded-2xl shadow-xs">
+            <div className="flex items-center gap-2 text-xs text-muted font-medium">
+              <Layers className="w-4 h-4 text-dark-900" />
+              <span>
                 {loading ? (
                   "Memuat proyek..."
                 ) : (
                   <>
-                    <span className="hidden sm:inline">Menampilkan </span>
+                    Menampilkan{" "}
                     <b className="text-dark-900">
                       {sortedProjects.length > 0
                         ? `${(currentPage - 1) * itemsPerPage + 1}–${Math.min(
@@ -475,18 +445,18 @@ export function BrowseProjectsPage() {
                           )}`
                         : "0"}
                     </b>{" "}
-                    dari <b className="text-dark-900">{sortedProjects.length}</b>{" "}
-                    <span className="hidden xs:inline">Proyek Terbuka</span>
-                    <span className="xs:hidden">Proyek</span>
+                    dari{" "}
+                    <b className="text-dark-900">{sortedProjects.length}</b>{" "}
+                    Proyek Terbuka
                   </>
                 )}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-2 self-end sm:self-auto">
               <label
                 htmlFor="sort-select"
-                className="text-xs font-semibold text-muted items-center gap-1 shrink-0 hidden sm:flex"
+                className="text-xs font-semibold text-muted flex items-center gap-1 shrink-0"
               >
                 <ArrowUpDown className="w-3.5 h-3.5 text-muted" />
                 <span>Urutkan:</span>
@@ -498,7 +468,7 @@ export function BrowseProjectsPage() {
                   setSortBy(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="text-xs font-bold bg-canvas border border-border rounded-xl px-2.5 py-1.5 text-dark-900 focus:outline-none focus:border-brand-indigo cursor-pointer shadow-xs"
+                className="text-xs font-bold bg-canvas border border-border rounded-xl px-3 py-1.5 text-dark-900 focus:outline-none focus:border-brand-indigo cursor-pointer shadow-xs"
               >
                 <option value="newest">Terbaru</option>
                 <option value="deadline_soon">Tenggat Terdekat</option>

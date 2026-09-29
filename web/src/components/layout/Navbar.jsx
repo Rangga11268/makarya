@@ -187,13 +187,14 @@ export function Navbar() {
     if (user?.role === "UMKM") {
       return [
         { label: "Dashboard", path: "/dashboard", icon: Layers },
+        { label: "Direktori Talenta", path: "/talents", icon: GraduationCap },
         {
           label: "Proyek & Pelamar",
           path: "/proposals",
           icon: ProjectBriefVectorIcon,
         },
+        { label: "Katalog Proyek", path: "/projects", icon: Compass },
         { label: "Chat Kolaborasi", path: "/chat", icon: MessageSquare },
-        { label: "Direktori Talenta", path: "/talents", icon: GraduationCap },
         { label: "Dompet Escrow", path: "/wallet", icon: WalletIcon },
         { label: "Profil Usaha", path: "/profile", icon: UserCheck },
       ];
@@ -207,6 +208,7 @@ export function Navbar() {
         path: "/proposals",
         icon: ProjectBriefVectorIcon,
       },
+      { label: "Direktori Talenta", path: "/talents", icon: GraduationCap },
       { label: "Chat Kolaborasi", path: "/chat", icon: MessageSquare },
       { label: "Portofolio", path: "/portfolio", icon: UserCheck },
       { label: "Dompet", path: "/wallet", icon: WalletIcon },
@@ -231,13 +233,7 @@ export function Navbar() {
   };
 
   const roleInfo = getRoleBadge(user?.role);
-  const userDisplayName =
-    user?.nama ||
-    user?.nama_lengkap ||
-    user?.nama_usaha ||
-    user?.email?.split("@")[0] ||
-    "Pengguna";
-  const initialLetter = userDisplayName ? userDisplayName.charAt(0).toUpperCase() : "U";
+  const initialLetter = user?.email ? user.email.charAt(0).toUpperCase() : "U";
 
   const getHomeTarget = () => {
     if (!isAuthenticated) return "/";

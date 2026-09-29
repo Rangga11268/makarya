@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { talentApi } from "../../api";
+import { useAuthStore } from "../../store/authStore";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
@@ -37,6 +38,7 @@ import {
 import { ProjectBriefVectorIcon } from "../../components/icons/ProjectVectorIcon";
 
 export function TalentsDirectoryPage() {
+  const { isAuthenticated, user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [talents, setTalents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,24 +109,22 @@ export function TalentsDirectoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6 font-sans">
-      {/* Explore Hub Switcher - Modern Segmented Control */}
-      <div className="flex items-center justify-between gap-3 border-b border-border/80 pb-3">
-        <div className="inline-flex p-1 bg-canvas rounded-2xl border border-border w-full sm:w-auto max-w-xs shadow-2xs">
-          <Link
-            to="/projects"
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-muted hover:text-dark-900 hover:bg-surface transition-all text-center"
-          >
-            <ProjectBriefVectorIcon size={13} className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Katalog Proyek</span>
-          </Link>
-          <Link
-            to="/talents"
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center transition-all"
-          >
-            <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Direktori Talenta</span>
-          </Link>
-        </div>
+      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta - Responsive 2-col, no horizontal slider */}
+      <div className="grid grid-cols-2 gap-2 max-w-md w-full border-b border-border pb-3">
+        <Link
+          to="/projects"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors text-center border border-border sm:border-transparent"
+        >
+          <ProjectBriefVectorIcon size={14} className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Katalog Proyek</span>
+        </Link>
+        <Link
+          to="/talents"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center"
+        >
+          <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Direktori Talenta</span>
+        </Link>
       </div>
 
       {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
@@ -267,17 +267,17 @@ export function TalentsDirectoryPage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Pilihan Program Studi & Spesialisasi
           </span>
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+          <div className="flex flex-wrap gap-1.5 pb-1">
             {categoryPills.map((pill) => {
               const active = selectedProdi === pill.key;
               return (
                 <button
                   key={pill.key}
                   onClick={() => setSelectedProdi(pill.key)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 border ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 ${
                     active
-                      ? "bg-dark-900 text-white border-dark-900 shadow-xs"
-                      : "bg-canvas text-slate-700 hover:bg-slate-200/60 border-border"
+                      ? "bg-brand-indigo text-white shadow-xs"
+                      : "bg-canvas text-slate-700 hover:bg-slate-200/60 border border-border"
                   }`}
                 >
                   {pill.label}
@@ -572,28 +572,43 @@ export function TalentsDirectoryPage() {
                   )}
                 </div>
 
-                {/* Bottom Actions - Styled cleanly matching mobile layout */}
+                {/* Bottom Actions - Role-aware (UMKM can invite/chat, Mahasiswa can view portfolio) */}
                 <div className="pt-4 border-t border-border flex items-center gap-2">
-                  <Link to={`/talents/${talent.id}`} className="flex-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full font-semibold text-xs rounded-xl py-2 px-3 min-h-[38px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center"
-                    >
-                      Portofolio
-                    </Button>
-                  </Link>
+                  {isAuthenticated && user?.role === "MAHASISWA" ? (
+                    <Link to={`/talents/${talent.id}`} className="flex-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full font-semibold text-xs rounded-xl py-2 px-3 min-h-[38px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <span>Lihat Portofolio & Sertifikat</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-muted shrink-0" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Link to={`/talents/${talent.id}`} className="flex-1">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full font-semibold text-xs rounded-xl py-2 px-3 min-h-[38px] border-border hover:bg-canvas cursor-pointer flex items-center justify-center"
+                        >
+                          Portofolio
+                        </Button>
+                      </Link>
 
-                  <Link to={`/chat?talent=${talent.id}`} className="flex-1">
-                    <Button
-                      variant="brand"
-                      size="sm"
-                      className="w-full font-bold text-xs shadow-brand rounded-xl py-2 px-3 min-h-[38px] cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                      <span>Ajak Kolaborasi</span>
-                    </Button>
-                  </Link>
+                      <Link to={`/talents/${talent.id}`} className="flex-1">
+                        <Button
+                          variant="brand"
+                          size="sm"
+                          className="w-full font-bold text-xs shadow-brand rounded-xl py-2 px-3 min-h-[38px] cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                          <span>Ajak Kolaborasi</span>
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             );
