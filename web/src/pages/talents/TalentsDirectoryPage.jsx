@@ -107,22 +107,24 @@ export function TalentsDirectoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6 font-sans">
-      {/* Explore Hub Switcher: Proyek UMKM vs Direktori Talenta - Responsive 2-col, no horizontal slider */}
-      <div className="grid grid-cols-2 gap-2 max-w-md w-full border-b border-border pb-3">
-        <Link
-          to="/projects"
-          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-muted hover:text-dark-900 hover:bg-canvas transition-colors text-center border border-border sm:border-transparent"
-        >
-          <ProjectBriefVectorIcon size={14} className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Katalog Proyek</span>
-        </Link>
-        <Link
-          to="/talents"
-          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center"
-        >
-          <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">Direktori Talenta</span>
-        </Link>
+      {/* Explore Hub Switcher - Modern Segmented Control */}
+      <div className="flex items-center justify-between gap-3 border-b border-border/80 pb-3">
+        <div className="inline-flex p-1 bg-canvas rounded-2xl border border-border w-full sm:w-auto max-w-xs shadow-2xs">
+          <Link
+            to="/projects"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-muted hover:text-dark-900 hover:bg-surface transition-all text-center"
+          >
+            <ProjectBriefVectorIcon size={13} className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Katalog Proyek</span>
+          </Link>
+          <Link
+            to="/talents"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-dark-900 text-white shadow-xs text-center transition-all"
+          >
+            <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Direktori Talenta</span>
+          </Link>
+        </div>
       </div>
 
       {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
@@ -265,17 +267,17 @@ export function TalentsDirectoryPage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
             Pilihan Program Studi & Spesialisasi
           </span>
-          <div className="flex flex-wrap gap-1.5 pb-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
             {categoryPills.map((pill) => {
               const active = selectedProdi === pill.key;
               return (
                 <button
                   key={pill.key}
                   onClick={() => setSelectedProdi(pill.key)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 ${
+                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer select-none flex items-center gap-1.5 border ${
                     active
-                      ? "bg-brand-indigo text-white shadow-xs"
-                      : "bg-canvas text-slate-700 hover:bg-slate-200/60 border border-border"
+                      ? "bg-dark-900 text-white border-dark-900 shadow-xs"
+                      : "bg-canvas text-slate-700 hover:bg-slate-200/60 border-border"
                   }`}
                 >
                   {pill.label}
