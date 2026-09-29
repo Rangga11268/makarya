@@ -79,7 +79,7 @@ export function ProjectCard({ project }) {
   return (
     <Link
       to={getProjectUrl(project)}
-      className={`group block bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-300 hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full overflow-hidden ${
+      className={`group block bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 hover:bg-white hover:border-indigo-300 hover:shadow-lg transition-all duration-200 flex flex-col justify-between h-full overflow-hidden ${
         expired ? "opacity-75" : ""
       }`}
     >
