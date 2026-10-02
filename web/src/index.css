@@ -7,18 +7,9 @@
     @apply border-border;
   }
   body {
-    @apply bg-canvas text-dark-900 font-sans min-h-screen;
+    @apply bg-canvas text-dark-900 font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     letter-spacing: -0.015em;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.09) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(248, 250, 252, 0.85) 0px, transparent 100%),
-      radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.07) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(139, 92, 246, 0.07) 0px, transparent 50%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
   }
   h1,
   h2,

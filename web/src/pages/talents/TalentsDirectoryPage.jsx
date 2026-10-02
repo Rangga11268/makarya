@@ -128,7 +128,7 @@ export function TalentsDirectoryPage() {
       </div>
 
       {/* 1. Hero Showcase Section - Antislop: Clean, high-trust, cohesive with platform identity */}
-      <div className="bg-surface/85 backdrop-blur-md border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xs space-y-4">
+      <div className="bg-surface border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-indigo-light text-brand-indigo text-xs font-semibold tracking-tight border border-brand-indigo/15">
@@ -155,7 +155,7 @@ export function TalentsDirectoryPage() {
 
         {/* 4 Trust Highlights Strip - Clean surface without emoji or glowing gradients */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-1">
-          <div className="bg-canvas/80 border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
               <CampusVectorIcon
                 size={15}
@@ -168,7 +168,7 @@ export function TalentsDirectoryPage() {
             </span>
           </div>
 
-          <div className="bg-canvas/80 border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
               <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500 shrink-0" />
               <span className="truncate">Skor 5.0 Rata-rata</span>
@@ -178,7 +178,7 @@ export function TalentsDirectoryPage() {
             </span>
           </div>
 
-          <div className="bg-canvas/80 border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-dark-900 text-xs font-bold truncate">
               <ProjectBriefVectorIcon
                 size={14}
@@ -191,7 +191,7 @@ export function TalentsDirectoryPage() {
             </span>
           </div>
 
-          <div className="bg-canvas/80 border border-border rounded-2xl p-3 sm:p-3.5 text-left">
+          <div className="bg-canvas border border-border rounded-2xl p-3 sm:p-3.5 text-left">
             <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold truncate">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               <span className="truncate">100% Escrow</span>
@@ -204,7 +204,7 @@ export function TalentsDirectoryPage() {
       </div>
 
       {/* 2. Interactive Search & Filters Section */}
-      <div className="bg-surface/85 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-xs">
+      <div className="bg-surface rounded-2xl sm:rounded-3xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-xs">
         {/* Search Bar & Sort Row */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
@@ -374,7 +374,7 @@ export function TalentsDirectoryPage() {
             return (
               <div
                 key={talent.id}
-                className="bg-white/90 backdrop-blur-md rounded-2xl border border-border p-4 sm:p-5 flex flex-col justify-between hover:bg-white hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
+                className="bg-surface rounded-2xl border border-border p-4 sm:p-5 flex flex-col justify-between hover:border-brand-indigo/40 hover:shadow-md transition-all duration-200 group relative"
               >
                 <div>
                   {/* Top Profile Header */}
