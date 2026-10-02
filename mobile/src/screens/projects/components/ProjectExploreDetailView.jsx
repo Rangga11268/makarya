@@ -34,6 +34,7 @@ import {
   Sparkles,
   Edit3,
   Trash2,
+  MessageSquare,
 } from "lucide-react-native";
 import { projectApi } from "../../../api";
 import { MobileEditProjectModal } from "./MobileEditProjectModal";
@@ -303,7 +304,7 @@ export function ProjectExploreDetailView({
       >
         <View style={responsiveContainerStyle}>
           {/* ================================================================= */}
-          {/* 1. HERO MEDIA BANNER (Web-Identical SVG Mesh Canvas Fallback)     */}
+          {/* 1. HERO MEDIA BANNER (Compact 135px High-Density Canvas)          */}
           {/* ================================================================= */}
           <ProjectCoverBanner
             src={
@@ -315,12 +316,12 @@ export function ProjectExploreDetailView({
             }
             category={project.kategori}
             title={project.judul}
-            height={195}
-            style={{ marginBottom: 16 }}
+            height={135}
+            style={{ marginBottom: 12 }}
           />
 
           {/* ================================================================= */}
-          {/* 2. MITRA UMKM IDENTITY (Clean Title + Verified Checkmark Icon)    */}
+          {/* 2. MITRA UMKM IDENTITY (Unified High-Trust Card)                  */}
           {/* ================================================================= */}
           <View style={styles.sellerHeaderCard}>
             <View style={styles.sellerRow}>
@@ -328,11 +329,11 @@ export function ProjectExploreDetailView({
                 src={clientPhoto}
                 name={clientDisplayName || "Klien UMKM"}
                 role="UMKM"
-                size={44}
-                rounded="squircle"
+                size={42}
+                rounded={11}
                 showOnlineDot={true}
                 isOnline={true}
-                style={{ marginRight: 12 }}
+                style={{ marginRight: 10 }}
               />
 
               <View style={styles.sellerMetaCol}>
@@ -345,39 +346,51 @@ export function ProjectExploreDetailView({
                     {clientDisplayName || "Mitra Klien UMKM"}
                   </Text>
                   <CheckCircle2
-                    size={16}
-                    color="#059669"
-                    fill="#059669"
+                    size={14}
+                    color="#2563EB"
+                    fill="#2563EB"
                     stroke="#FFFFFF"
                     strokeWidth={2}
-                    style={{ marginLeft: 6 }}
+                    style={{ marginLeft: 4 }}
                   />
                 </View>
 
-                {/* Single Clean Metadata Line */}
-                <Text style={styles.sellerSubMetaText} numberOfLines={1}>
-                  {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
-                  {", "}
-                  {project.lokasi || project.umkm_profile?.kota || "Indonesia"}
-                </Text>
+                {/* Sub-meta: Location + Verified Score */}
+                <View style={styles.sellerSubMetaRow}>
+                  <Text style={styles.sellerSubMetaText} numberOfLines={1}>
+                    {project.lokasi || project.umkm_profile?.kota || "Indonesia"} • {project.umkm_profile?.bidang_industri || "Mitra UMKM"}
+                  </Text>
+                </View>
               </View>
+
+              <TouchableOpacity
+                onPress={handleOpenChat}
+                style={styles.headerChatBtn}
+                activeOpacity={0.8}
+              >
+                <MessageSquare size={14} color="#0F172A" />
+                <Text style={styles.headerChatBtnText}>Chat</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
           {/* ================================================================= */}
-          {/* 3. HEADLINE & BRIEF SECTION                                       */}
           {/* 3. HEADLINE & CORE METRICS BAR                                    */}
           {/* ================================================================= */}
           <View style={styles.headlineSection}>
             <Text style={styles.gigHeadline}>{project.judul}</Text>
 
-            {/* 3-Stat Metric Cards Grid */}
+            {/* 4-Stat Metric Cards Grid */}
             <View style={styles.metricsGrid}>
-              <View style={styles.metricItem}>
+              <View style={[styles.metricItem, styles.metricItemBudget]}>
                 <Text style={styles.metricLabel}>Pagu Anggaran</Text>
                 <Text style={styles.metricValuePrimary}>
                   {formatCurrency(budgetMax)}
                 </Text>
+                <View style={styles.escrowInlineRow}>
+                  <ShieldCheck size={11} color="#059669" strokeWidth={2.4} />
+                  <Text style={styles.metricLabelEscrow}>0% Potongan</Text>
+                </View>
               </View>
 
               <View style={styles.metricItem}>
@@ -391,12 +404,28 @@ export function ProjectExploreDetailView({
                 >
                   {formatDate(project.deadline)}
                 </Text>
+                <Text style={styles.metricSubLabel}>
+                  {isProjectExpired ? "Berakhir" : "Tenggat Proyek"}
+                </Text>
               </View>
 
               <View style={styles.metricItem}>
                 <Text style={styles.metricLabel}>Kolaborasi</Text>
                 <Text style={styles.metricValue} numberOfLines={1}>
-                  {isTeam ? `Tim (${slots.length} Peran)` : "Individu"}
+                  {isTeam ? `Tim (${slots.length} Slot)` : "Individu"}
+                </Text>
+                <Text style={styles.metricSubLabel}>
+                  {isTeam ? "Multi-Talenta" : "1 Pelaksana"}
+                </Text>
+              </View>
+
+              <View style={[styles.metricItem, styles.metricItemEscrow]}>
+                <Text style={styles.metricLabelEscrow}>Proteksi</Text>
+                <Text style={styles.metricValueEscrow} numberOfLines={1}>
+                  100% Escrow
+                </Text>
+                <Text style={styles.metricSubLabelEscrow}>
+                  Dana Terkunci Aman
                 </Text>
               </View>
             </View>
@@ -532,7 +561,19 @@ export function ProjectExploreDetailView({
                   const isSlotDone = s.status === "COMPLETED";
 
                   return (
-                    <View key={s.id || idx} style={styles.slotCardItem}>
+                    <TouchableOpacity
+                      key={s.id || idx}
+                      activeOpacity={isSlotOpen && canApply ? 0.75 : 1}
+                      onPress={() => {
+                        if (isSlotOpen && canApply) {
+                          handleApplyPress();
+                        }
+                      }}
+                      style={[
+                        styles.slotCardItem,
+                        isSlotOpen && canApply && styles.slotCardItemClickable,
+                      ]}
+                    >
                       <View style={styles.slotHeaderRow}>
                         <View style={{ flex: 1, paddingRight: 8 }}>
                           <Text style={styles.slotItemTitle}>
@@ -564,7 +605,7 @@ export function ProjectExploreDetailView({
                             ]}
                           >
                             {isSlotOpen
-                              ? "Terbuka"
+                              ? canApply ? "Lamar Posisi Ini →" : "Terbuka"
                               : isSlotDone
                                 ? "Selesai"
                                 : "Terisi"}
@@ -577,7 +618,7 @@ export function ProjectExploreDetailView({
                           {s.deskripsi_tugas || s.deskripsi}
                         </Text>
                       ) : null}
-                    </View>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -956,31 +997,12 @@ export function ProjectExploreDetailView({
       </ScrollView>
 
       {/* ===================================================================== */}
-      {/* 13. FLOATING CHAT PILL WIDGET (Forensic Fiverr Pro Widget)            */}
-      {/* ===================================================================== */}
-      <TouchableOpacity
-        style={styles.floatingChatPill}
-        onPress={handleOpenChat}
-        activeOpacity={0.85}
-      >
-        <Avatar
-          src={clientPhoto}
-          name={clientDisplayName || "Klien UMKM"}
-          role="UMKM"
-          size={24}
-          showOnlineDot={true}
-          isOnline={true}
-        />
-        <Text style={styles.floatingChatText}>Chat</Text>
-      </TouchableOpacity>
-
-      {/* ===================================================================== */}
-      {/* 14. PERSISTENT STICKY BOTTOM ACTION BAR                               */}
+      {/* 13. DOCKED UNIFIED BOTTOM ACTION BAR (Zero-Collision & HIG Compliant) */}
       {/* ===================================================================== */}
       <View style={styles.stickyBottomBar}>
         <View style={styles.stickyContentRow}>
           <View style={styles.stickyPriceCol}>
-            <Text style={styles.stickyPriceLabel}>ESTIMASI HONOR</Text>
+            <Text style={styles.stickyPriceLabel}>PAGU PROYEK</Text>
             <Text
               style={styles.stickyPriceValue}
               numberOfLines={1}
@@ -988,14 +1010,27 @@ export function ProjectExploreDetailView({
             >
               {formatCurrency(budgetMax)}
             </Text>
+            <View style={styles.dockedEscrowRow}>
+              <ShieldCheck size={11} color="#059669" strokeWidth={2.4} />
+              <Text style={styles.dockedEscrowText}>0% Potongan Mahasiswa</Text>
+            </View>
           </View>
 
           <View style={styles.stickyActionCol}>
+            <TouchableOpacity
+              style={styles.dockedChatBtn}
+              onPress={handleOpenChat}
+              activeOpacity={0.8}
+            >
+              <MessageSquare size={17} color="#0F172A" />
+              <Text style={styles.dockedChatBtnText}>Chat</Text>
+            </TouchableOpacity>
+
             {canApply ? (
               <PebbleButton
                 variant="sapphire"
                 size="md"
-                label="Ajukan Lamaran"
+                label="Lamar Proyek"
                 icon={Send}
                 onPress={handleApplyPress}
               />
@@ -1012,7 +1047,7 @@ export function ProjectExploreDetailView({
               </View>
             ) : isUmkmOwner ? (
               <View
-                style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+                style={{ flexDirection: "row", gap: 6, alignItems: "center" }}
               >
                 {(project.status === "OPEN" ||
                   project.status === "BIDDING") && (
@@ -1104,105 +1139,114 @@ const styles = StyleSheet.create({
 
   /* 2. Seller Identity Header */
   sellerHeaderCard: {
-    paddingBottom: 14,
+    backgroundColor: "#F8FAFC",
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     marginBottom: 12,
   },
   sellerRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
   },
   sellerMetaCol: {
     flex: 1,
-    gap: 3,
   },
   sellerNameRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
   sellerName: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "800",
-    flex: 1,
-    paddingRight: 6,
   },
-  verifiedInlineTag: {
+  sellerSubMetaRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3.5,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 6.5,
-    paddingVertical: 2,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  verifiedInlineText: {
-    fontSize: 10,
-    fontFamily: FONTS.bodyBold,
-    color: "#059669",
-    fontWeight: "800",
+    marginTop: 2,
   },
   sellerSubMetaText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
+  },
+  headerChatBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  headerChatBtnText: {
+    fontSize: 11,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
 
   /* 3. Headline & Unified Metrics Grid */
   headlineSection: {
-    paddingBottom: 16,
-    gap: 12,
+    paddingBottom: 12,
+    gap: 8,
   },
   gigHeadline: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
-    lineHeight: 27,
+    lineHeight: 24,
+    letterSpacing: -0.2,
   },
   metricsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginTop: 4,
+    marginTop: 2,
   },
   metricItem: {
     flex: 1,
     minWidth: "47%",
     backgroundColor: "#F8FAFC",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 10,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
-  metricItemEscrow: {
+  metricItemBudget: {
     backgroundColor: "#F0FDF4",
     borderColor: "#BBF7D0",
   },
+  metricItemEscrow: {
+    backgroundColor: "#F8FAFC",
+    borderColor: "#E2E8F0",
+  },
   metricLabel: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyRegular,
     color: "#64748B",
   },
   metricLabelEscrow: {
-    fontSize: 10.5,
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
     color: "#166534",
     fontWeight: "700",
   },
   metricValuePrimary: {
-    fontSize: 13.5,
+    fontSize: 14.5,
     fontFamily: FONTS.displayBold,
-    color: "#2563EB",
+    color: "#166534",
     fontWeight: "900",
     marginTop: 2,
   },
   metricValue: {
-    fontSize: 12.5,
+    fontSize: 13,
     fontFamily: FONTS.bodyBold,
     color: "#0F172A",
     fontWeight: "800",
@@ -1211,13 +1255,26 @@ const styles = StyleSheet.create({
   metricValueEscrow: {
     fontSize: 12.5,
     fontFamily: FONTS.bodyBold,
-    color: "#166534",
+    color: "#0F172A",
     fontWeight: "800",
+    marginTop: 2,
+  },
+  metricSubLabel: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#94A3B8",
+    marginTop: 1,
+  },
+  metricSubLabelEscrow: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyRegular,
+    color: "#059669",
+    marginTop: 1,
   },
   escrowInlineRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 3.5,
     marginTop: 2,
   },
 
@@ -1366,11 +1423,15 @@ const styles = StyleSheet.create({
   },
   slotCardItem: {
     backgroundColor: "#F8FAFC",
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     gap: 4,
+  },
+  slotCardItemClickable: {
+    borderColor: "#C7D2FE",
+    backgroundColor: "#F5F3FF",
   },
   slotHeaderRow: {
     flexDirection: "row",
@@ -1818,7 +1879,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  /* 14. Sticky Bottom Action Bar */
+  /* 13. Docked Unified Bottom Action Bar */
   stickyBottomBar: {
     position: "absolute",
     bottom: 0,
@@ -1828,7 +1889,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#E2E8F0",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 10,
+    paddingBottom: Platform.OS === "ios" ? 24 : 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.05,
@@ -1839,7 +1901,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    gap: 10,
   },
   stickyPriceCol: {
     flex: 1,
@@ -1852,14 +1914,46 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   stickyPriceValue: {
-    fontSize: 16,
+    fontSize: 15.5,
     fontFamily: FONTS.displayBold,
     color: "#0F172A",
     fontWeight: "900",
+    marginTop: 0.5,
+  },
+  dockedEscrowRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3.5,
     marginTop: 1,
   },
+  dockedEscrowText: {
+    fontSize: 9.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#059669",
+    fontWeight: "700",
+  },
   stickyActionCol: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
     flexShrink: 0,
+  },
+  dockedChatBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#F8FAFC",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    paddingHorizontal: 11,
+    paddingVertical: 9,
+    borderRadius: 10,
+  },
+  dockedChatBtnText: {
+    fontSize: 11.5,
+    fontFamily: FONTS.bodyBold,
+    color: "#0F172A",
+    fontWeight: "700",
   },
   appliedPill: {
     flexDirection: "row",
