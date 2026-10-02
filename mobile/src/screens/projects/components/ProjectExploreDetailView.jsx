@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 import { COLORS } from "../../../theme/colors";
 import { FONTS } from "../../../theme/fonts";
