@@ -12,15 +12,9 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { formatDate } from "../../utils/formatDate";
 import {
   Clock,
-  MapPin,
   Users,
   CheckCircle2,
-  Layers,
-  Palette,
-  Code,
-  Video,
-  FileText,
-  BarChart3,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react-native";
 import { Avatar } from "../ui/Avatar";
@@ -34,6 +28,7 @@ const getCategoryConfig = (cat) => {
         bg: "#EEF2FF",
         border: "#C7D2FE",
         text: "#4338CA",
+        accent: "#6366F1",
       };
     case "UIUX":
       return {
@@ -41,6 +36,7 @@ const getCategoryConfig = (cat) => {
         bg: "#F5F3FF",
         border: "#DDD6FE",
         text: "#6D28D9",
+        accent: "#8B5CF6",
       };
     case "PEMROGRAMAN":
       return {
@@ -48,6 +44,7 @@ const getCategoryConfig = (cat) => {
         bg: "#ECFEFF",
         border: "#A5F3FC",
         text: "#0E7490",
+        accent: "#06B6D4",
       };
     case "VIDEO":
       return {
@@ -55,6 +52,7 @@ const getCategoryConfig = (cat) => {
         bg: "#FFF1F2",
         border: "#FECDD3",
         text: "#BE123C",
+        accent: "#F43F5E",
       };
     case "COPYWRITING":
       return {
@@ -62,6 +60,7 @@ const getCategoryConfig = (cat) => {
         bg: "#FFFBEB",
         border: "#FDE68A",
         text: "#B45309",
+        accent: "#F59E0B",
       };
     case "ADMIN_DATA":
       return {
@@ -69,6 +68,7 @@ const getCategoryConfig = (cat) => {
         bg: "#ECFDF5",
         border: "#A7F3D0",
         text: "#047857",
+        accent: "#10B981",
       };
     default:
       return {
@@ -76,6 +76,7 @@ const getCategoryConfig = (cat) => {
         bg: "#F8FAFC",
         border: "#E2E8F0",
         text: "#475569",
+        accent: "#64748B",
       };
   }
 };
@@ -136,11 +137,12 @@ export function ProjectCard({ project, onPress }) {
   );
 
   // Extract skills/tags cleanly
-  const rawSkills = Array.isArray(project.skills_required) && project.skills_required.length > 0
-    ? project.skills_required
-    : Array.isArray(project.skills) && project.skills.length > 0
-      ? project.skills
-      : [];
+  const rawSkills =
+    Array.isArray(project.skills_required) && project.skills_required.length > 0
+      ? project.skills_required
+      : Array.isArray(project.skills) && project.skills.length > 0
+        ? project.skills
+        : [];
   const displaySkills = rawSkills.slice(0, 2);
   const remainingSkillsCount = rawSkills.length > 2 ? rawSkills.length - 2 : 0;
 
@@ -177,7 +179,7 @@ export function ProjectCard({ project, onPress }) {
               />
             </View>
             <Text style={styles.clientSubMeta} numberOfLines={1}>
-              {clientCity} • Mitra Terverifikasi
+              {clientCity} • Mitra Terverifikasi UMKM
             </Text>
           </View>
         </View>
@@ -213,7 +215,7 @@ export function ProjectCard({ project, onPress }) {
           <Text style={styles.metaChipText}>
             {isTeam
               ? slotsCount > 1
-                ? `Tim (${slotsCount} Anggota)`
+                ? `Tim (${slotsCount} Slot)`
                 : "Kolaborasi Tim"
               : "Individu"}
           </Text>
@@ -234,19 +236,21 @@ export function ProjectCard({ project, onPress }) {
         )}
       </View>
 
-      {/* Subtle Hairline Divider */}
-      <View style={styles.divider} />
-
-      {/* 4. Footer: Structured Budget & Activity Status */}
-      <View style={styles.footerRow}>
-        <View style={styles.budgetCol}>
+      {/* 4. Bento Sub-Container Footer (Signature High-Craft Modular Layout) */}
+      <View style={styles.bentoFooter}>
+        {/* Left Bento Column: Financial Clarity & 100% Escrow Guarantee */}
+        <View style={styles.bentoLeftCol}>
           <Text style={styles.budgetAmount}>
             {formatCurrency(project.budget_max)}
           </Text>
-          <Text style={styles.budgetLabel}>Honor Proyek</Text>
+          <View style={styles.escrowRow}>
+            <ShieldCheck size={11.5} color="#059669" strokeWidth={2.4} />
+            <Text style={styles.escrowText}>Pagu • 0% Potongan</Text>
+          </View>
         </View>
 
-        <View style={styles.footerRightCol}>
+        {/* Right Bento Column: Deadline Urgency & Applicant Tally */}
+        <View style={styles.bentoRightCol}>
           {deadlineInfo && (
             <View
               style={[
@@ -275,7 +279,7 @@ export function ProjectCard({ project, onPress }) {
           )}
 
           <View style={styles.applicantBadge}>
-            <Users size={12} color="#64748B" strokeWidth={2} />
+            <Users size={11.5} color="#64748B" strokeWidth={2} />
             <Text style={styles.applicantText}>
               {project.total_pelamar || 0} pelamar
             </Text>
@@ -289,16 +293,16 @@ export function ProjectCard({ project, onPress }) {
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    padding: 16,
+    borderRadius: 20,
+    padding: 15,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: Platform.OS === "android" ? 1 : 2,
+    shadowRadius: 8,
+    elevation: Platform.OS === "android" ? 1.5 : 2,
   },
   cardExpired: {
     opacity: 0.6,
@@ -309,7 +313,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 11,
+    marginBottom: 10,
   },
   clientGroup: {
     flexDirection: "row",
@@ -322,7 +326,7 @@ const styles = StyleSheet.create({
     borderColor: "#E2E8F0",
     borderRadius: 11,
     overflow: "hidden",
-    marginRight: 10,
+    marginRight: 9.5,
     backgroundColor: "#F8FAFC",
   },
   clientMetaCol: {
@@ -334,7 +338,7 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: "700",
     color: "#0F172A",
     maxWidth: "88%",
@@ -344,19 +348,19 @@ const styles = StyleSheet.create({
   },
   clientSubMeta: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 10.5,
     color: "#64748B",
     marginTop: 1,
   },
   categoryPill: {
-    paddingHorizontal: 8.5,
+    paddingHorizontal: 8,
     paddingVertical: 3.5,
-    borderRadius: 6,
+    borderRadius: 7,
     borderWidth: 1,
   },
   categoryPillText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
+    fontSize: 10,
     fontWeight: "700",
   },
 
@@ -366,18 +370,18 @@ const styles = StyleSheet.create({
   },
   projectTitle: {
     fontFamily: FONTS.headingBold,
-    fontSize: 15.5,
+    fontSize: 15,
     fontWeight: "700",
     color: "#0F172A",
-    lineHeight: 21,
-    letterSpacing: -0.25,
+    lineHeight: 20.5,
+    letterSpacing: -0.2,
     marginBottom: 4,
   },
   descriptionSnippet: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 12.5,
+    fontSize: 12,
     color: "#475569",
-    lineHeight: 18,
+    lineHeight: 17.5,
   },
 
   // 3. Chips Row
@@ -385,95 +389,100 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: 6,
+    gap: 5.5,
     marginBottom: 12,
   },
   metaChip: {
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
+    paddingHorizontal: 7.5,
+    paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
   metaChipText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11,
+    fontSize: 10.5,
     color: "#334155",
     fontWeight: "600",
   },
   skillChip: {
     backgroundColor: "#F8FAFC",
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
+    paddingHorizontal: 7.5,
+    paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: "#E2E8F0",
   },
   skillChipText: {
     fontFamily: FONTS.bodyRegular,
-    fontSize: 11,
+    fontSize: 10.5,
     color: "#475569",
     fontWeight: "500",
   },
   moreSkillChip: {
     backgroundColor: "#F1F5F9",
-    paddingHorizontal: 6.5,
-    paddingVertical: 3.5,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
     borderRadius: 6,
   },
   moreSkillChipText: {
     fontFamily: FONTS.bodyBold,
-    fontSize: 10.5,
+    fontSize: 10,
     color: "#64748B",
     fontWeight: "700",
   },
 
-  // Divider
-  divider: {
-    height: 1,
-    backgroundColor: "#F1F5F9",
-    marginBottom: 11,
-  },
-
-  // 4. Footer Row
-  footerRow: {
+  // 4. Bento Sub-Container Footer
+  bentoFooter: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+    borderRadius: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 9.5,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
   },
-  budgetCol: {
+  bentoLeftCol: {
     justifyContent: "center",
   },
   budgetAmount: {
     fontFamily: FONTS.displayBold,
-    fontSize: 16,
+    fontSize: 15.5,
     fontWeight: "800",
     color: "#0F172A",
     letterSpacing: -0.3,
   },
-  budgetLabel: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 10.5,
-    color: "#94A3B8",
-    marginTop: 0.5,
-  },
-  footerRightCol: {
+  escrowRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 3.5,
+    marginTop: 1.5,
+  },
+  escrowText: {
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#059669",
+  },
+  bentoRightCol: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
   },
   deadlineBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 7,
+    gap: 3.5,
+    paddingHorizontal: 6.5,
     paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1,
   },
   deadlineBadgeNormal: {
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "#FFFFFF",
     borderColor: "#E2E8F0",
   },
   deadlineBadgeUrgent: {
@@ -482,7 +491,7 @@ const styles = StyleSheet.create({
   },
   deadlineBadgeText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 10.5,
+    fontSize: 10,
     fontWeight: "600",
   },
   deadlineTextNormal: {
@@ -495,11 +504,18 @@ const styles = StyleSheet.create({
   applicantBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 3.5,
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 6.5,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
   applicantText: {
     fontFamily: FONTS.bodyMedium,
-    fontSize: 11.5,
+    fontSize: 10,
     color: "#64748B",
+    fontWeight: "600",
   },
 });
