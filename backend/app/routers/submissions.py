@@ -20,6 +20,28 @@ from app.routers.certificates import issue_certificate_for_proposal
 router = APIRouter(prefix="/submissions", tags=["Submissions & Revision Control"])
 
 
+CAMPUS_DOMAINS = {
+    "ubsi": "Universitas Bina Sarana Informatika (UBSI)",
+    "ui.ac.id": "Universitas Indonesia (UI)",
+    "itb.ac.id": "Institut Teknologi Bandung (ITB)",
+    "ugm.ac.id": "Universitas Gadjah Mada (UGM)",
+    "unpad.ac.id": "Universitas Padjadjaran (UNPAD)",
+    "undip.ac.id": "Universitas Diponegoro (UNDIP)",
+    "its.ac.id": "Institut Teknologi Sepuluh Nopember (ITS)",
+    "uns.ac.id": "Universitas Sebelas Maret (UNS)",
+}
+
+
+def _resolve_campus_name(email: str) -> str:
+    if not email or "@" not in email:
+        return "Universitas Terdaftar"
+    domain = email.split("@")[-1].lower()
+    for key, name in CAMPUS_DOMAINS.items():
+        if key in domain:
+            return name
+    return f"Kampus @{domain}"
+
+
 def format_submission_response(submission: Submission) -> dict:
     proposal = submission.proposal
     mhs = proposal.mahasiswa if proposal else None
@@ -29,20 +51,7 @@ def format_submission_response(submission: Submission) -> dict:
     submitter_name = (profile.nama_lengkap if profile and profile.nama_lengkap else (mhs.username if mhs else "Mahasiswa"))
     submitter_photo = profile.url_foto if profile else None
     submitter_prodi = profile.prodi.nama_prodi if (profile and profile.prodi) else "Informatika"
-
-    submitter_kampus = "Universitas Terdaftar"
-    if mhs and mhs.email:
-        email_domain = mhs.email.split("@")[-1].lower()
-        if "ubsi" in email_domain:
-            submitter_kampus = "Universitas Bina Sarana Informatika (UBSI)"
-        elif "ui.ac.id" in email_domain:
-            submitter_kampus = "Universitas Indonesia (UI)"
-        elif "itb.ac.id" in email_domain:
-            submitter_kampus = "Institut Teknologi Bandung (ITB)"
-        elif "ugm.ac.id" in email_domain:
-            submitter_kampus = "Universitas Gadjah Mada (UGM)"
-        else:
-            submitter_kampus = f"Kampus @{email_domain}"
+    submitter_kampus = _resolve_campus_name(mhs.email) if mhs else "Universitas Terdaftar"
 
     role_name = slot.nama_peran if slot and slot.nama_peran else "Pelaksana Utama"
     honor_amount = proposal.harga_tawar if proposal else (slot.alokasi_budget if slot else None)

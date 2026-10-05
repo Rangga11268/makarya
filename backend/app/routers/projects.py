@@ -4,7 +4,7 @@ from uuid import UUID
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import or_, and_
 from app.core.database import get_db
 from app.dependencies import get_current_user, require_role, get_optional_current_user
@@ -36,11 +36,11 @@ from sqlalchemy.sql import func
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
 
-def _resolve_accepted_mhs(proj_id: UUID, db: Session):
+def _resolve_accepted_mhs(proj: Project, db: Session):
     accepted_prop = (
         db.query(Proposal)
         .filter(
-            Proposal.project_id == proj_id,
+            Proposal.project_id == proj.id,
             Proposal.status == ProposalStatus.ACCEPTED,
         )
         .first()
@@ -60,12 +60,17 @@ def _build_project_response(
     db: Session,
     mhs_profile: Optional[ProfileMhs] = None,
     umkm_profile: Optional[ProfileUmkm] = None,
+    include_reviews: bool = True,
 ) -> ProjectResponse:
     if not umkm_profile:
-        umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
+        if proj.umkm and proj.umkm.profile_umkm:
+            umkm_profile = proj.umkm.profile_umkm
+        else:
+            umkm_profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == proj.umkm_id).first()
+
     umkm_summary = UmkmSummary.model_validate(umkm_profile) if umkm_profile else None
 
-    umkm_user = db.query(User).filter(User.id == proj.umkm_id).first()
+    umkm_user = proj.umkm or db.query(User).filter(User.id == proj.umkm_id).first()
     resolved_umkm_nama = (
         umkm_profile.nama_usaha
         if umkm_profile and umkm_profile.nama_usaha
@@ -76,22 +81,16 @@ def _build_project_response(
         Proposal.project_id == proj.id,
         Proposal.status != ProposalStatus.WITHDRAWN
     ).count()
-    acc_nama, acc_foto = _resolve_accepted_mhs(proj.id, db)
+
+    acc_nama, acc_foto = _resolve_accepted_mhs(proj, db)
     match_score, match_reasons = _calculate_match_score(proj, mhs_profile)
 
     slot_responses = []
     if proj.slots:
         for s in proj.slots:
-            slot_mhs_nama = None
+            slot_mhs_nama = s.accepted_mhs_nama
             resolved_mhs_id = s.accepted_mhs_id
-            if resolved_mhs_id:
-                m_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == resolved_mhs_id).first()
-                if m_prof and m_prof.nama_lengkap:
-                    slot_mhs_nama = m_prof.nama_lengkap
-                else:
-                    m_user = db.query(User).filter(User.id == resolved_mhs_id).first()
-                    slot_mhs_nama = m_user.username if m_user and m_user.username else (m_user.email.split("@")[0] if m_user else "Mahasiswa Terpilih")
-            else:
+            if not slot_mhs_nama:
                 acc_prop = (
                     db.query(Proposal)
                     .filter(
@@ -122,30 +121,30 @@ def _build_project_response(
             ))
 
     # Ratings and reviews for UMKM
-    ratings_query = db.query(Rating).filter(Rating.ke_user_id == proj.umkm_id).order_by(Rating.created_at.desc()).all()
-    total_reviews = len(ratings_query)
-    if total_reviews > 0:
-        avg_score = sum(r.skor for r in ratings_query) / total_reviews
-        rating_avg = round(float(avg_score), 1)
-    else:
-        rating_avg = 5.0
+    client_reviews = None
+    if include_reviews:
+        ratings_query = db.query(Rating).filter(Rating.ke_user_id == proj.umkm_id).order_by(Rating.created_at.desc()).all()
+        total_reviews = len(ratings_query)
+        if total_reviews > 0:
+            avg_score = sum(r.skor for r in ratings_query) / total_reviews
+            rating_avg = round(float(avg_score), 1)
+        else:
+            rating_avg = 5.0
 
-    client_reviews = []
-    for r in ratings_query[:5]:
-        mhs_prof = db.query(ProfileMhs).filter(ProfileMhs.user_id == r.dari_user_id).first()
-        mhs_u = db.query(User).filter(User.id == r.dari_user_id).first()
-        rev_nama = mhs_prof.nama_lengkap if (mhs_prof and mhs_prof.nama_lengkap) else (mhs_u.username if mhs_u and mhs_u.username else "Mahasiswa")
-        rev_kampus = mhs_prof.prodi.nama_prodi if (mhs_prof and mhs_prof.prodi) else None
-        client_reviews.append(
+        client_reviews = [
             ClientReviewItem(
                 id=r.id,
-                reviewer_nama=rev_nama,
-                reviewer_kampus=rev_kampus,
+                reviewer_nama=r.dari_user.profile_mhs.nama_lengkap if (r.dari_user and r.dari_user.profile_mhs and r.dari_user.profile_mhs.nama_lengkap) else (r.dari_user.username if r.dari_user else "Mahasiswa"),
+                reviewer_kampus=r.dari_user.profile_mhs.prodi.nama_prodi if (r.dari_user and r.dari_user.profile_mhs and r.dari_user.profile_mhs.prodi) else None,
                 skor=r.skor,
                 ulasan=r.ulasan,
                 created_at=r.created_at,
             )
-        )
+            for r in ratings_query[:5]
+        ]
+    else:
+        rating_avg = float(umkm_profile.rating_avg) if (umkm_profile and umkm_profile.rating_avg) else 5.0
+        total_reviews = int(umkm_profile.total_proyek_selesai) if (umkm_profile and umkm_profile.total_proyek_selesai) else 0
 
     return ProjectResponse(
         id=proj.id,
@@ -335,6 +334,10 @@ def browse_project(
         search = f"%{keyword}%"
         query = query.filter(or_(Project.judul.ilike(search), Project.deskripsi_raw.ilike(search)))
 
+    query = query.options(
+        joinedload(Project.umkm).joinedload(User.profile_umkm),
+        selectinload(Project.slots).joinedload(ProjectSlot.accepted_mhs).joinedload(User.profile_mhs),
+    )
     query = query.order_by(Project.created_at.desc())
     projects = query.offset(skip).limit(limit).all()
 
@@ -342,7 +345,7 @@ def browse_project(
     if current_user and current_user.role == UserRole.MHS:
         mhs_profile = db.query(ProfileMhs).filter(ProfileMhs.user_id == current_user.id).first()
 
-    return [_build_project_response(p, db, mhs_profile=mhs_profile) for p in projects]
+    return [_build_project_response(p, db, mhs_profile=mhs_profile, include_reviews=False) for p in projects]
 
 
 @router.get("/my-projects", response_model=List[ProjectResponse])
@@ -351,9 +354,18 @@ def get_my_projects(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.UMKM))
 ):
-    projects = db.query(Project).filter(Project.umkm_id == current_user.id).order_by(Project.created_at.desc()).all()
+    projects = (
+        db.query(Project)
+        .options(
+            joinedload(Project.umkm).joinedload(User.profile_umkm),
+            selectinload(Project.slots).joinedload(ProjectSlot.accepted_mhs).joinedload(User.profile_mhs),
+        )
+        .filter(Project.umkm_id == current_user.id)
+        .order_by(Project.created_at.desc())
+        .all()
+    )
     profile = db.query(ProfileUmkm).filter(ProfileUmkm.user_id == current_user.id).first()
-    return [_build_project_response(p, db, umkm_profile=profile) for p in projects]
+    return [_build_project_response(p, db, umkm_profile=profile, include_reviews=False) for p in projects]
 
 
 @router.get("/{id}", response_model=ProjectResponse)
@@ -362,7 +374,15 @@ def get_project_by_id(
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_current_user),
 ):
-    project = db.query(Project).filter(Project.id == id).first()
+    project = (
+        db.query(Project)
+        .options(
+            joinedload(Project.umkm).joinedload(User.profile_umkm),
+            selectinload(Project.slots).joinedload(ProjectSlot.accepted_mhs).joinedload(User.profile_mhs),
+        )
+        .filter(Project.id == id)
+        .first()
+    )
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proyek tidak ditemukan")
 

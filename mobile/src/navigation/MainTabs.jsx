@@ -23,6 +23,7 @@ import {
 } from "../components/icons/TabIcons";
 
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
+import { isMahasiswaRole } from "../utils/authRoles";
 
 const Tab = createBottomTabNavigator();
 
@@ -35,8 +36,7 @@ export function MainTabs() {
     useResponsiveLayout();
 
   const isMahasiswa =
-    user?.role === "MHS" ||
-    user?.role === "MAHASISWA" ||
+    isMahasiswaRole(user?.role) ||
     (user?.email && user.email.includes(".ac.id")) ||
     user?.email === "darell@ubsi.ac.id";
 
