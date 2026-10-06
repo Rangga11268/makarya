@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Makarya Brand Identity & Logo Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --card-border: #334155;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --sapphire: #2563EB;
+      --indigo: #4F46E5;
+      --emerald: #10B981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #090D16;
+      color: var(--text);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .hero-header {
+      text-align: center;
+      padding: 24px 0 12px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38BDF8;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preview-box {
+      height: 200px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .preview-box.light {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+    }
+    .preview-box.dark {
+      background: #0F172A;
+      border: 1px solid #1E293B;
+    }
+    .preview-box.mesh {
+      background: radial-gradient(circle at 50% 50%, #1E1B4B 0%, #0F172A 100%);
+      border: 1px solid #312E81;
+    }
+    .preview-box img, .preview-box svg {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .size-ladder {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: #090D16;
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .size-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .size-item span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .swatch {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero-header">
+      <span class="badge">Master Brand Identity</span>
+      <h1>Makarya Modern Vector Logo</h1>
+      <p class="subtitle">Desain logo resmi Makarya dengan simbol 'The Collaborative M-Fold' — pilar sinergi Mahasiswa & UMKM dengan jaminan escrow presisi.</p>
+    </div>
+
+    <div class="grid">
+      <!-- 1. Horizontal Lockup Light Mode -->
+      <div class="card">
+        <div class="card-title">
+          <span>Horizontal Lockup (Light Mode)</span>
+          <span style="color: #38BDF8;">Utama</span>
+        </div>
+        <div class="preview-box light">
+          <img src="/logo.svg" alt="Makarya Full Logo">
+        </div>
+        <p style="font-size: 12px; color: var(--muted); line-height: 1.5;">Digunakan untuk Navbar Website, Header Dokumen Resmi, dan Banner Aplikasi.</p>
+      </div>
+
+      <!-- 2. Symbol Icon Mark -->
+      <div class="card">
+        <div class="card-title">
+          <span>Symbol Monogram Mark</span>
+          <span style="color: #34D399;">512x512</span>
+        </div>
+        <div class="preview-box mesh">
+          <img src="/logo-icon.svg" alt="Makarya Icon" style="width: 140px; height: 140px;">
+        </div>
+        <p style="font-size: 12px; color: var(--muted); line-height: 1.5;">Digunakan untuk App Icon Mobile, Avatar Profil Sistem, dan Splash Screen.</p>
+      </div>
+
+      <!-- 3. Scalability & Favicon Test -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-title">
+          <span>Uji Skalabilitas Multi-Ukuran (16px, 32px, 64px, 128px)</span>
+          <span style="color: #818CF8;">Scalability Passed</span>
+        </div>
+        <div class="size-ladder">
+          <div class="size-item">
+            <img src="/logo-icon.svg" style="width: 16px; height: 16px;">
+            <span>16px (Favicon)</span>
+          </div>
+          <div class="size-item">
+            <img src="/logo-icon.svg" style="width: 32px; height: 32px;">
+            <span>32px (Tab Bar)</span>
+          </div>
+          <div class="size-item">
+            <img src="/logo-icon.svg" style="width: 64px; height: 64px;">
+            <span>64px (App Icon)</span>
+          </div>
+          <div class="size-item">
+            <img src="/logo-icon.svg" style="width: 128px; height: 128px;">
+            <span>128px (Badge)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
