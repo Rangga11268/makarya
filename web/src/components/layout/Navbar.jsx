@@ -250,13 +250,16 @@ export function Navbar() {
             {/* Brand Logo with Official Logo WebP */}
             <Link
               to={getHomeTarget()}
-              className="flex items-center group select-none shrink-0"
+              className="flex items-center gap-2.5 group select-none shrink-0"
             >
               <img
-                src="/logo.webp"
+                src="/logo-icon.webp"
                 alt="Makarya"
-                className="h-8 sm:h-8.5 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-8 w-8 object-contain transition-transform group-hover:scale-105"
               />
+              <span className="font-extrabold text-xl tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+                Makarya
+              </span>
             </Link>
 
             {/* Center Desktop Navigation for Guests */}

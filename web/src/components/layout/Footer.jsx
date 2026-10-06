@@ -26,12 +26,15 @@ export function Footer() {
         {/* Top Header Row: Brand Identity & Social Icons */}
         <div className="flex flex-col md:flex-row md:items-center justify-between pb-12 border-b border-slate-800/80 gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-            <Link to="/" className="flex items-center group select-none shrink-0">
+            <Link to="/" className="flex items-center gap-2.5 group select-none shrink-0">
               <img
-                src="/logo-white.webp"
+                src="/logo-icon.webp"
                 alt="Makarya"
-                className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
+                className="h-8 w-8 object-contain group-hover:scale-105 transition-transform"
               />
+              <span className="font-extrabold text-xl tracking-tight text-white group-hover:text-blue-400 transition-colors">
+                Makarya
+              </span>
             </Link>
             <span className="hidden sm:inline text-slate-700">|</span>
             <span className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed">

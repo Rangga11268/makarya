@@ -199,14 +199,17 @@ export function SidebarLayout() {
             <div className="flex items-center gap-3.5 shrink-0">
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2 group select-none"
+                className="flex items-center gap-2.5 group select-none"
                 title="Menuju Beranda Kerja Makarya"
               >
                 <img
-                  src="/logo.webp"
-                  alt="Makarya Logo"
-                  className="h-7.5 sm:h-8 w-auto object-contain transition-transform group-hover:scale-105"
+                  src="/logo-icon.webp"
+                  alt="Makarya"
+                  className="h-7.5 w-7.5 object-contain transition-transform group-hover:scale-105"
                 />
+                <span className="font-extrabold text-lg tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+                  Makarya
+                </span>
               </Link>
             </div>
 
