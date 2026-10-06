@@ -253,9 +253,9 @@ export function Navbar() {
               className="flex items-center group select-none shrink-0"
             >
               <img
-                src="/logo.svg"
+                src="/logo.webp"
                 alt="Makarya"
-                className="h-7 sm:h-7.5 w-auto object-contain transition-transform group-hover:scale-105"
+                className="h-8 sm:h-8.5 w-auto object-contain transition-transform group-hover:scale-105"
               />
             </Link>
 
