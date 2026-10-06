@@ -28,7 +28,7 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
             <Link to="/" className="flex items-center group select-none shrink-0">
               <img
-                src="/logo.webp"
+                src="/logo.svg"
                 alt="Makarya"
                 className="h-8 sm:h-9 w-auto object-contain brightness-0 invert group-hover:scale-105 transition-transform"
               />

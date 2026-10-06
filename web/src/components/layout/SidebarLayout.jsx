@@ -203,7 +203,7 @@ export function SidebarLayout() {
                 title="Menuju Beranda Kerja Makarya"
               >
                 <img
-                  src="/logo.webp"
+                  src="/logo.svg"
                   alt="Makarya Logo"
                   className="h-7 w-auto object-contain transition-transform group-hover:scale-105"
                 />

@@ -1,12 +1,16 @@
+<p align="center">
+  <img src="docs/assets/makarya-brand-showcase.jpg" alt="Makarya Official Brand Showcase" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
+</p>
+
 # 🚀 Makarya — Platform Micro-Freelancing Mahasiswa × UMKM
 
 > Platform digital yang menghubungkan mahasiswa aktif dengan UMKM lokal
-> untuk kolaborasi proyek digital skala mikro secara aman dan terstruktur.
+> untuk kolaborasi proyek digital skala mikro secara aman dan terstruktur dengan proteksi Escrow 100%.
 
-**Penyusun:** Darell Rangga Putra
-**Program Studi:** Sistem Informasi S1 — UBSI Kaliabang, Bekasi Utara
-**Semester:** 5
-**Target:** Skripsi / MVP
+**Penyusun:** Darell Rangga Putra  
+**Program Studi:** Sistem Informasi S1 — UBSI Kaliabang, Bekasi Utara  
+**Semester:** 5  
+**Target:** Skripsi / MVP  
 
 ---
 

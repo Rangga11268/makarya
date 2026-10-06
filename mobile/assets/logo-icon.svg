@@ -1,39 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
-    <linearGradient id="indigoGrad" x1="60" y1="100" x2="450" y2="420" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#4F46E5" />
-      <stop offset="50%" stop-color="#4338CA" />
-      <stop offset="100%" stop-color="#3730A3" />
+    <!-- Primary Sapphire to Indigo Gradient (Left Wing / Mahasiswa) -->
+    <linearGradient id="makaryaGradLeft" x1="64" y1="80" x2="320" y2="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="40%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
     </linearGradient>
-    <linearGradient id="cyanGrad" x1="120" y1="200" x2="390" y2="340" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#00F2FE" />
-      <stop offset="60%" stop-color="#4FACFE" />
-      <stop offset="100%" stop-color="#00C0FF" />
+
+    <!-- Deep Royal Indigo Gradient (Right Wing / UMKM) -->
+    <linearGradient id="makaryaGradRight" x1="448" y1="80" x2="192" y2="440" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="50%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#312E81" />
     </linearGradient>
-    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1E1B4B" flood-opacity="0.12" />
+
+    <!-- Emerald Glow Convergence (Escrow & Trust Apex) -->
+    <linearGradient id="makaryaGradApex" x1="200" y1="180" x2="312" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="50%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- Ambient Shadow for Tactile Elevation -->
+    <filter id="makaryaDropShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.16" />
     </filter>
   </defs>
 
-  <!-- Outer M Arch (Royal Indigo) -->
-  <path d="M 88 380 L 88 160 C 88 118, 140 100, 172 135 L 256 226 L 340 135 C 372 100, 424 118, 424 160 L 424 380" 
-        stroke="url(#indigoGrad)" 
-        stroke-width="48" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-        filter="url(#subtleShadow)" />
+  <g filter="url(#makaryaDropShadow)">
+    <!-- Left Wing (Pillar of Youth & Talent) -->
+    <path d="M 96 416 L 96 156 C 96 112, 148 90, 180 120 L 256 196 L 208 244 L 168 204 L 168 416 Z" 
+          fill="url(#makaryaGradLeft)" />
 
-  <!-- Inner Infinity Collaboration Loop (Electric Cyan) -->
-  <!-- Left Lobe -->
-  <path d="M 256 280 C 200 210, 120 210, 120 280 C 120 350, 200 350, 256 280 C 312 210, 392 210, 392 280 C 392 350, 312 350, 256 280 Z" 
-        stroke="url(#cyanGrad)" 
-        stroke-width="42" 
-        stroke-linecap="round" 
-        stroke-linejoin="round" />
+    <!-- Right Wing (Pillar of Enterprise & UMKM) -->
+    <path d="M 416 416 L 416 156 C 416 112, 364 90, 332 120 L 256 196 L 304 244 L 344 204 L 344 416 Z" 
+          fill="url(#makaryaGradRight)" />
 
-  <!-- Bottom Arch Support -->
-  <path d="M 180 300 C 205 350, 307 350, 332 300" 
-        stroke="url(#indigoGrad)" 
-        stroke-width="48" 
-        stroke-linecap="round" />
+    <!-- Central Synergistic Arch / Interlocking Nexus -->
+    <path d="M 256 196 L 332 272 C 348 288, 348 316, 332 332 L 284 380 C 268 396, 244 396, 228 380 L 180 332 C 164 316, 164 288, 180 272 Z" 
+          fill="url(#makaryaGradApex)" />
+
+    <!-- Inner Core Geometry Lens -->
+    <path d="M 256 252 L 288 284 C 294 290, 294 300, 288 306 L 256 338 L 224 306 C 218 300, 218 290, 224 284 Z" 
+          fill="#FFFFFF" 
+          fill-opacity="0.95" />
+  </g>
 </svg>

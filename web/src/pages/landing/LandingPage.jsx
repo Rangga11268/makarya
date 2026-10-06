@@ -1096,56 +1096,78 @@ export function LandingPage() {
             </p>
           </div>
 
-          {/* Core Engine Visual Card */}
-          <div className="relative max-w-3xl mx-auto mb-14 p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-            <div className="relative flex flex-col items-center justify-center text-center py-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-cyan-600/20 mb-4 animate-float-slow">
-                <Layers className="w-7 h-7" />
+          {/* Core Engine Visual Card & 3D Brand Showcase */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto mb-14">
+            {/* Left 3D Brand Mockup Showcase */}
+            <div className="lg:col-span-6 relative group">
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-emerald-600/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-700 pointer-events-none" />
+              <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-900 shadow-xl">
+                <img
+                  src="/branding/makarya-brand-showcase.jpg"
+                  alt="Makarya Official Brand Showcase"
+                  className="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute bottom-3 left-3 right-3 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between text-white text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-semibold text-slate-200">The Collaborative M-Fold</span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 font-mono">Escrow Nexus v2.0</span>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
-                Makarya Collaboration Engine
-              </h3>
-              <p className="text-xs text-slate-500 max-w-sm mt-1">
-                Sistem kontrak otomatis, pengamanan escrow, dan alur kerja tim
-                multidisiplin.
-              </p>
+            </div>
 
-              {/* Orbiting Feature Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 w-full">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
-                  <Lock className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Escrow 100%
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Rekening Terpisah
-                  </div>
+            {/* Right Core Engine Card */}
+            <div className="lg:col-span-6 p-7 sm:p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex flex-col items-start text-left py-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/20 mb-4">
+                  <Layers className="w-6 h-6" />
                 </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
-                  <Users className="w-4 h-4 text-blue-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Multi-Role Slot
+                <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
+                  Makarya Collaboration Engine
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                  Ekosistem yang menghubungkan talenta kampus terverifikasi dengan pelaku usaha mikro melalui sistem kontrak otomatis, proteksi escrow 100%, dan papan kerja kolaboratif.
+                </p>
+
+                {/* Orbiting Feature Badges */}
+                <div className="grid grid-cols-2 gap-3 mt-6 w-full">
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors">
+                    <Lock className="w-4 h-4 text-emerald-600 mb-1.5" />
+                    <div className="text-xs font-bold text-slate-900">
+                      Escrow 100%
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Rekening Terpisah & Aman
+                    </div>
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    Tim Terstruktur
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors">
+                    <Users className="w-4 h-4 text-blue-600 mb-1.5" />
+                    <div className="text-xs font-bold text-slate-900">
+                      Multi-Role Slot
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Tim Lintas Disiplin
+                    </div>
                   </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
-                  <GraduationCap className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Domain .ac.id
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 mb-1.5" />
+                    <div className="text-xs font-bold text-slate-900">
+                      Domain .ac.id
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Verifikasi Kampus
+                    </div>
                   </div>
-                  <div className="text-[10px] text-slate-500">
-                    Verifikasi Kampus
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center hover:border-slate-300 transition-colors">
-                  <Clock className="w-4 h-4 text-amber-600 mx-auto mb-1" />
-                  <div className="text-xs font-bold text-slate-900">
-                    Workroom Live
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    Milestone Terukur
+                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors">
+                    <Clock className="w-4 h-4 text-amber-600 mb-1.5" />
+                    <div className="text-xs font-bold text-slate-900">
+                      Workroom Live
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Milestone & Sertifikasi
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2117,15 +2139,19 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* Right Side: Horizontal Stacked Fade Spectrum Gradient Bars (Responsive & Hidden on XS to prevent overflow/cutoff) */}
-            <div className="hidden sm:flex lg:col-span-5 relative w-full h-[200px] sm:h-[250px] lg:h-[300px] flex-col justify-center gap-2 sm:gap-2.5 overflow-hidden rounded-2xl p-4 max-w-md mx-auto lg:max-w-none">
-              {/* Stacked Horizontal Gradient Strips */}
-              <div className="w-full h-7 sm:h-8 bg-gradient-to-r from-transparent via-cyan-100/60 to-cyan-400/80 rounded-full blur-[1px] animate-pulse-glow" />
-              <div className="w-5/6 ml-auto h-8 sm:h-9 bg-gradient-to-r from-transparent via-amber-200/50 to-amber-400/80 rounded-full blur-[1px]" />
-              <div className="w-full h-9 sm:h-10 bg-gradient-to-r from-transparent via-teal-200/60 via-cyan-300/80 to-blue-500/80 rounded-full blur-[1px]" />
-              <div className="w-4/5 ml-auto h-8 sm:h-9 bg-gradient-to-r from-transparent via-cyan-200/70 to-teal-400/80 rounded-full blur-[1px]" />
-              <div className="w-full h-7 sm:h-8 bg-gradient-to-r from-transparent via-blue-200/50 via-cyan-300/70 to-cyan-500/80 rounded-full blur-[1px] animate-pulse-glow" />
-              <div className="w-3/4 ml-auto h-6 sm:h-7 bg-gradient-to-r from-transparent via-amber-200/40 to-amber-400/70 rounded-full blur-[1px]" />
+            {/* Right Side: 3D Brand Showcase Perspective Card */}
+            <div className="hidden sm:flex lg:col-span-5 relative w-full items-center justify-center">
+              <div className="relative w-full max-w-md group">
+                <div className="absolute -inset-1 bg-gradient-to-tr from-blue-600/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition duration-500 pointer-events-none" />
+                <div className="relative rounded-2xl overflow-hidden border border-slate-200/80 shadow-2xl bg-slate-900">
+                  <img
+                    src="/branding/makarya-brand-showcase.jpg"
+                    alt="Makarya Collaboration"
+                    className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
