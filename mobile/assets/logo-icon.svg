@@ -1,48 +1,93 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
-    <!-- Primary Sapphire to Indigo Gradient (Left Wing / Mahasiswa) -->
-    <linearGradient id="makaryaGradLeft" x1="64" y1="80" x2="320" y2="440" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#38BDF8" />
+    <!-- Facet 1: Left Outer Vertical Column (Vibrant Cyan-Sapphire) -->
+    <linearGradient id="facetLeftPillar" x1="80" y1="420" x2="160" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E40AF" />
       <stop offset="40%" stop-color="#2563EB" />
-      <stop offset="100%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#38BDF8" />
     </linearGradient>
 
-    <!-- Deep Royal Indigo Gradient (Right Wing / UMKM) -->
-    <linearGradient id="makaryaGradRight" x1="448" y1="80" x2="192" y2="440" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#818CF8" />
-      <stop offset="50%" stop-color="#4F46E5" />
-      <stop offset="100%" stop-color="#312E81" />
+    <!-- Facet 2: Left Inner Diagonal Rib (Down to center valley) -->
+    <linearGradient id="facetLeftDiag" x1="160" y1="90" x2="270" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="45%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E1B4B" />
     </linearGradient>
 
-    <!-- Emerald Glow Convergence (Escrow & Trust Apex) -->
-    <linearGradient id="makaryaGradApex" x1="200" y1="180" x2="312" y2="340" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#34D399" />
-      <stop offset="50%" stop-color="#10B981" />
-      <stop offset="100%" stop-color="#059669" />
+    <!-- Facet 3: Right Inner Diagonal Rib (Up to right peak) -->
+    <linearGradient id="facetRightDiag" x1="250" y1="280" x2="360" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="55%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#818CF8" />
     </linearGradient>
 
-    <!-- Ambient Shadow for Tactile Elevation -->
-    <filter id="makaryaDropShadow" x="-10%" y="-10%" width="120%" height="125%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.16" />
+    <!-- Facet 4: Right Outer Vertical Column (Royal Indigo-Violet) -->
+    <linearGradient id="facetRightPillar" x1="350" y1="90" x2="440" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C7D2FE" />
+      <stop offset="35%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+
+    <!-- Facet 5: Bottom Inner Apex Bevel Shading -->
+    <linearGradient id="facetBottomBevel" x1="220" y1="360" x2="290" y2="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+
+    <!-- Specular Highlight Line (Chrome sheen) -->
+    <linearGradient id="facetSpecular" x1="80" y1="90" x2="430" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="100%" stop-color="#E0E7FF" stop-opacity="0.9" />
+    </linearGradient>
+
+    <filter id="mDropShadow" x="-10%" y="-5%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#0F172A" flood-opacity="0.22" />
     </filter>
   </defs>
 
-  <g filter="url(#makaryaDropShadow)">
-    <!-- Left Wing (Pillar of Youth & Talent) -->
-    <path d="M 96 416 L 96 156 C 96 112, 148 90, 180 120 L 256 196 L 208 244 L 168 204 L 168 416 Z" 
-          fill="url(#makaryaGradLeft)" />
+  <g filter="url(#mDropShadow)">
+    <!-- 1. Left Vertical Pillar -->
+    <path d="M 76 420 L 76 140 C 76 108, 100 84, 132 84 L 168 84 L 168 420 Z" 
+          fill="url(#facetLeftPillar)" />
 
-    <!-- Right Wing (Pillar of Enterprise & UMKM) -->
-    <path d="M 416 416 L 416 156 C 416 112, 364 90, 332 120 L 256 196 L 304 244 L 344 204 L 344 416 Z" 
-          fill="url(#makaryaGradRight)" />
+    <!-- 2. Right Vertical Pillar -->
+    <path d="M 344 84 L 380 84 C 412 84, 436 108, 436 140 L 436 420 L 344 420 Z" 
+          fill="url(#facetRightPillar)" />
 
-    <!-- Central Synergistic Arch / Interlocking Nexus -->
-    <path d="M 256 196 L 332 272 C 348 288, 348 316, 332 332 L 284 380 C 268 396, 244 396, 228 380 L 180 332 C 164 316, 164 288, 180 272 Z" 
-          fill="url(#makaryaGradApex)" />
+    <!-- 3. Left-to-Center Fold Diagonal -->
+    <path d="M 132 84 L 176 84 L 256 244 L 212 244 L 132 84 Z" 
+          fill="url(#facetLeftDiag)" />
+    
+    <path d="M 168 84 L 256 260 L 256 348 L 168 172 Z" 
+          fill="url(#facetLeftDiag)" />
 
-    <!-- Inner Core Geometry Lens -->
-    <path d="M 256 252 L 288 284 C 294 290, 294 300, 288 306 L 256 338 L 224 306 C 218 300, 218 290, 224 284 Z" 
-          fill="#FFFFFF" 
-          fill-opacity="0.95" />
+    <!-- 4. Center-to-Right Fold Diagonal -->
+    <path d="M 256 260 L 344 84 L 380 84 L 256 332 Z" 
+          fill="url(#facetRightDiag)" />
+    
+    <path d="M 256 332 L 344 156 L 344 420 L 256 348 Z" 
+          fill="url(#facetBottomBevel)" />
+
+    <!-- 5. Continuous Sleek Ribbon Silhouette (Top layer bevel fusion) -->
+    <!-- Left Wing -->
+    <path d="M 76 420 L 76 136 C 76 104, 102 84, 134 84 L 164 84 L 256 268 L 194 268 L 148 176 L 148 420 Z" 
+          fill="url(#facetLeftPillar)" />
+
+    <!-- Right Wing -->
+    <path d="M 436 420 L 436 136 C 436 104, 410 84, 378 84 L 348 84 L 256 268 L 318 268 L 364 176 L 364 420 Z" 
+          fill="url(#facetRightPillar)" />
+
+    <!-- Center V Chevron (Interlocking Ribbon Valley) -->
+    <path d="M 164 84 L 256 268 L 348 84 L 386 84 L 276 304 C 264 328, 248 328, 236 304 L 126 84 Z" 
+          fill="url(#facetRightDiag)" />
+
+    <!-- Top Chrome Specular Edge (Edge Highlight) -->
+    <path d="M 84 136 C 84 110, 106 90, 134 90 L 160 90 L 256 276 L 352 90 L 378 90 C 406 90, 428 110, 428 136" 
+          stroke="url(#facetSpecular)" 
+          stroke-width="3.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          fill="none" />
   </g>
 </svg>

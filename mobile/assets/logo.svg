@@ -1,55 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 100" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" fill="none">
   <defs>
-    <!-- Left Wing Gradient -->
-    <linearGradient id="navGradLeft" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#38BDF8" />
+    <!-- Facet 1: Left Outer Vertical Column (Vibrant Cyan-Sapphire) -->
+    <linearGradient id="lockupLeftPillar" x1="80" y1="420" x2="160" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E40AF" />
+      <stop offset="40%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+
+    <!-- Facet 2: Left Inner Diagonal Rib -->
+    <linearGradient id="lockupLeftDiag" x1="160" y1="90" x2="270" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA" />
       <stop offset="45%" stop-color="#2563EB" />
-      <stop offset="100%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#1E1B4B" />
     </linearGradient>
 
-    <!-- Right Wing Gradient -->
-    <linearGradient id="navGradRight" x1="90" y1="10" x2="30" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#818CF8" />
-      <stop offset="50%" stop-color="#4F46E5" />
-      <stop offset="100%" stop-color="#312E81" />
+    <!-- Facet 3: Right Inner Diagonal Rib -->
+    <linearGradient id="lockupRightDiag" x1="250" y1="280" x2="360" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="55%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#818CF8" />
     </linearGradient>
 
-    <!-- Emerald Apex Gradient -->
-    <linearGradient id="navGradApex" x1="40" y1="30" x2="60" y2="70" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#34D399" />
-      <stop offset="50%" stop-color="#10B981" />
-      <stop offset="100%" stop-color="#059669" />
+    <!-- Facet 4: Right Outer Vertical Column -->
+    <linearGradient id="lockupRightPillar" x1="350" y1="90" x2="440" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C7D2FE" />
+      <stop offset="35%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#3730A3" />
+    </linearGradient>
+
+    <!-- Specular Highlight Line -->
+    <linearGradient id="lockupSpecular" x1="80" y1="90" x2="430" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="100%" stop-color="#E0E7FF" stop-opacity="0.9" />
     </linearGradient>
   </defs>
 
-  <!-- Left Icon Mark (Optimized 96x96 bounds scaled to 84x84 inside 0 0 100 100) -->
-  <g transform="translate(8, 8) scale(0.164)">
-    <!-- Left Wing -->
-    <path d="M 96 416 L 96 156 C 96 112, 148 90, 180 120 L 256 196 L 208 244 L 168 204 L 168 416 Z" 
-          fill="url(#navGradLeft)" />
+  <!-- Scaled 3D Ribbon Icon (88px tall, centered) -->
+  <g transform="translate(6, 6) scale(0.172)">
+    <!-- 1. Left Vertical Pillar -->
+    <path d="M 76 420 L 76 136 C 76 104, 102 84, 134 84 L 164 84 L 256 268 L 194 268 L 148 176 L 148 420 Z" 
+          fill="url(#lockupLeftPillar)" />
 
-    <!-- Right Wing -->
-    <path d="M 416 416 L 416 156 C 416 112, 364 90, 332 120 L 256 196 L 304 244 L 344 204 L 344 416 Z" 
-          fill="url(#navGradRight)" />
+    <!-- 2. Right Vertical Pillar -->
+    <path d="M 436 420 L 436 136 C 436 104, 410 84, 378 84 L 348 84 L 256 268 L 318 268 L 364 176 L 364 420 Z" 
+          fill="url(#lockupRightPillar)" />
 
-    <!-- Central Synergistic Arch -->
-    <path d="M 256 196 L 332 272 C 348 288, 348 316, 332 332 L 284 380 C 268 396, 244 396, 228 380 L 180 332 C 164 316, 164 288, 180 272 Z" 
-          fill="url(#navGradApex)" />
+    <!-- 3. Center V Chevron (Interlocking Fold) -->
+    <path d="M 164 84 L 256 268 L 348 84 L 386 84 L 276 304 C 264 328, 248 328, 236 304 L 126 84 Z" 
+          fill="url(#lockupRightDiag)" />
 
-    <!-- Inner Core Geometry Lens -->
-    <path d="M 256 252 L 288 284 C 294 290, 294 300, 288 306 L 256 338 L 224 306 C 218 300, 218 290, 224 284 Z" 
-          fill="#FFFFFF" 
-          fill-opacity="0.95" />
+    <!-- 4. Top Specular Chrome Edge -->
+    <path d="M 84 136 C 84 110, 106 90, 134 90 L 160 90 L 256 276 L 352 90 L 378 90 C 406 90, 428 110, 428 136" 
+          stroke="url(#lockupSpecular)" 
+          stroke-width="5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          fill="none" />
   </g>
 
-  <!-- Right Wordmark: Bold, Ultra-Crisp, Optical Balance -->
-  <text x="110" y="68" 
+  <!-- Wordmark: Makarya (Bold Modern Typography) -->
+  <text x="104" y="68" 
         font-family="System-UI, -apple-system, 'Plus Jakarta Sans', 'Inter', sans-serif" 
         font-size="64" 
         font-weight="800" 
         letter-spacing="-1.5" 
         fill="#0F172A">Makarya</text>
 
-  <!-- Clean Brand Dot Accent -->
-  <circle cx="390" cy="62" r="6.5" fill="#2563EB" />
+  <!-- Brand Accent Dot -->
+  <circle cx="384" cy="62" r="6" fill="#2563EB" />
 </svg>
