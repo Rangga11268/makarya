@@ -1,44 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 100" fill="none">
   <defs>
     <!-- Left Wing Gradient -->
-    <linearGradient id="lockupGradLeft" x1="40" y1="40" x2="280" y2="300" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navGradLeft" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#38BDF8" />
-      <stop offset="40%" stop-color="#2563EB" />
+      <stop offset="45%" stop-color="#2563EB" />
       <stop offset="100%" stop-color="#1D4ED8" />
     </linearGradient>
 
     <!-- Right Wing Gradient -->
-    <linearGradient id="lockupGradRight" x1="320" y1="40" x2="160" y2="300" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navGradRight" x1="90" y1="10" x2="30" y2="90" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#818CF8" />
       <stop offset="50%" stop-color="#4F46E5" />
       <stop offset="100%" stop-color="#312E81" />
     </linearGradient>
 
     <!-- Emerald Apex Gradient -->
-    <linearGradient id="lockupGradApex" x1="140" y1="120" x2="220" y2="240" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navGradApex" x1="40" y1="30" x2="60" y2="70" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#34D399" />
       <stop offset="50%" stop-color="#10B981" />
       <stop offset="100%" stop-color="#059669" />
     </linearGradient>
-
-    <filter id="lockupShadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0F172A" flood-opacity="0.12" />
-    </filter>
   </defs>
 
-  <!-- Left Icon Mark (Scaled & Centered) -->
-  <g transform="translate(40, 20) scale(0.62)" filter="url(#lockupShadow)">
+  <!-- Left Icon Mark (Optimized 96x96 bounds scaled to 84x84 inside 0 0 100 100) -->
+  <g transform="translate(8, 8) scale(0.164)">
     <!-- Left Wing -->
     <path d="M 96 416 L 96 156 C 96 112, 148 90, 180 120 L 256 196 L 208 244 L 168 204 L 168 416 Z" 
-          fill="url(#lockupGradLeft)" />
+          fill="url(#navGradLeft)" />
 
     <!-- Right Wing -->
     <path d="M 416 416 L 416 156 C 416 112, 364 90, 332 120 L 256 196 L 304 244 L 344 204 L 344 416 Z" 
-          fill="url(#lockupGradRight)" />
+          fill="url(#navGradRight)" />
 
     <!-- Central Synergistic Arch -->
     <path d="M 256 196 L 332 272 C 348 288, 348 316, 332 332 L 284 380 C 268 396, 244 396, 228 380 L 180 332 C 164 316, 164 288, 180 272 Z" 
-          fill="url(#lockupGradApex)" />
+          fill="url(#navGradApex)" />
 
     <!-- Inner Core Geometry Lens -->
     <path d="M 256 252 L 288 284 C 294 290, 294 300, 288 306 L 256 338 L 224 306 C 218 300, 218 290, 224 284 Z" 
@@ -46,23 +42,14 @@
           fill-opacity="0.95" />
   </g>
 
-  <!-- Right Primary Wordmark (Makarya) -->
-  <text x="360" y="205" 
-        font-family="System-UI, -apple-system, 'Plus Jakarta Sans', 'Satoshi', sans-serif" 
-        font-size="136" 
-        font-weight="900" 
-        letter-spacing="-3.5" 
+  <!-- Right Wordmark: Bold, Ultra-Crisp, Optical Balance -->
+  <text x="110" y="68" 
+        font-family="System-UI, -apple-system, 'Plus Jakarta Sans', 'Inter', sans-serif" 
+        font-size="64" 
+        font-weight="800" 
+        letter-spacing="-1.5" 
         fill="#0F172A">Makarya</text>
 
-  <!-- Brand Spark Accent Dot -->
-  <circle cx="945" cy="195" r="14" fill="#2563EB" />
-  <circle cx="945" cy="195" r="6" fill="#38BDF8" />
-
-  <!-- Subtitle Descriptor: Kolaborasi Mahasiswa & UMKM -->
-  <text x="365" y="260" 
-        font-family="System-UI, -apple-system, 'Plus Jakarta Sans', sans-serif" 
-        font-size="28" 
-        font-weight="700" 
-        letter-spacing="5" 
-        fill="#64748B">KOLABORASI TALENTA &amp; UMKM</text>
+  <!-- Clean Brand Dot Accent -->
+  <circle cx="390" cy="62" r="6.5" fill="#2563EB" />
 </svg>

@@ -28,9 +28,9 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
             <Link to="/" className="flex items-center group select-none shrink-0">
               <img
-                src="/logo.svg"
+                src="/logo-white.svg"
                 alt="Makarya"
-                className="h-8 sm:h-9 w-auto object-contain brightness-0 invert group-hover:scale-105 transition-transform"
+                className="h-8 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform"
               />
             </Link>
             <span className="hidden sm:inline text-slate-700">|</span>

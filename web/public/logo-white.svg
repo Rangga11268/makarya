@@ -1,40 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 100" fill="none">
   <defs>
     <!-- Left Wing Gradient -->
-    <linearGradient id="navGradLeft" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navWhiteGradLeft" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#38BDF8" />
       <stop offset="45%" stop-color="#2563EB" />
       <stop offset="100%" stop-color="#1D4ED8" />
     </linearGradient>
 
     <!-- Right Wing Gradient -->
-    <linearGradient id="navGradRight" x1="90" y1="10" x2="30" y2="90" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navWhiteGradRight" x1="90" y1="10" x2="30" y2="90" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#818CF8" />
       <stop offset="50%" stop-color="#4F46E5" />
       <stop offset="100%" stop-color="#312E81" />
     </linearGradient>
 
     <!-- Emerald Apex Gradient -->
-    <linearGradient id="navGradApex" x1="40" y1="30" x2="60" y2="70" gradientUnits="userSpaceOnUse">
+    <linearGradient id="navWhiteGradApex" x1="40" y1="30" x2="60" y2="70" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#34D399" />
       <stop offset="50%" stop-color="#10B981" />
       <stop offset="100%" stop-color="#059669" />
     </linearGradient>
   </defs>
 
-  <!-- Left Icon Mark (Optimized 96x96 bounds scaled to 84x84 inside 0 0 100 100) -->
+  <!-- Left Icon Mark -->
   <g transform="translate(8, 8) scale(0.164)">
     <!-- Left Wing -->
     <path d="M 96 416 L 96 156 C 96 112, 148 90, 180 120 L 256 196 L 208 244 L 168 204 L 168 416 Z" 
-          fill="url(#navGradLeft)" />
+          fill="url(#navWhiteGradLeft)" />
 
     <!-- Right Wing -->
     <path d="M 416 416 L 416 156 C 416 112, 364 90, 332 120 L 256 196 L 304 244 L 344 204 L 344 416 Z" 
-          fill="url(#navGradRight)" />
+          fill="url(#navWhiteGradRight)" />
 
     <!-- Central Synergistic Arch -->
     <path d="M 256 196 L 332 272 C 348 288, 348 316, 332 332 L 284 380 C 268 396, 244 396, 228 380 L 180 332 C 164 316, 164 288, 180 272 Z" 
-          fill="url(#navGradApex)" />
+          fill="url(#navWhiteGradApex)" />
 
     <!-- Inner Core Geometry Lens -->
     <path d="M 256 252 L 288 284 C 294 290, 294 300, 288 306 L 256 338 L 224 306 C 218 300, 218 290, 224 284 Z" 
@@ -42,14 +42,14 @@
           fill-opacity="0.95" />
   </g>
 
-  <!-- Right Wordmark: Bold, Ultra-Crisp, Optical Balance -->
+  <!-- Right Wordmark: White Bold -->
   <text x="110" y="68" 
         font-family="System-UI, -apple-system, 'Plus Jakarta Sans', 'Inter', sans-serif" 
         font-size="64" 
         font-weight="800" 
         letter-spacing="-1.5" 
-        fill="#0F172A">Makarya</text>
+        fill="#FFFFFF">Makarya</text>
 
   <!-- Clean Brand Dot Accent -->
-  <circle cx="390" cy="62" r="6.5" fill="#2563EB" />
+  <circle cx="390" cy="62" r="6.5" fill="#38BDF8" />
 </svg>

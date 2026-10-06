@@ -1108,13 +1108,6 @@ export function LandingPage() {
                   className="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-transform duration-500"
                   loading="lazy"
                 />
-                <div className="absolute bottom-3 left-3 right-3 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between text-white text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-semibold text-slate-200">The Collaborative M-Fold</span>
-                  </div>
-                  <span className="text-[11px] text-slate-400 font-mono">Escrow Nexus v2.0</span>
-                </div>
               </div>
             </div>
 

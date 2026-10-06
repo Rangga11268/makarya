@@ -265,28 +265,7 @@ export function HelpScreen({ navigation }) {
             );
           })}
 
-          {/* 5. Brand Identity & Escrow Trust Showcase */}
-          <View style={styles.brandShowcaseCard}>
-            <Image
-              source={require("../../../assets/branding/makarya-brand-showcase.jpg")}
-              style={styles.brandShowcaseImage}
-              resizeMode="cover"
-            />
-            <View style={styles.brandShowcaseContent}>
-              <View style={styles.brandBadgeRow}>
-                <ShieldCheck size={12} color="#10B981" strokeWidth={2.4} />
-                <Text style={styles.brandBadgeText}>Identitas Resmi & Ekosistem Terpadu</Text>
-              </View>
-              <Text style={styles.brandShowcaseTitle}>
-                Makarya — Kolaborasi Talenta & UMKM
-              </Text>
-              <Text style={styles.brandShowcaseDesc}>
-                Platform micro-freelancing resmi mahasiswa dengan proteksi rekening bersama (escrow) 100% aman dan sertifikasi kompetensi digital.
-              </Text>
-            </View>
-          </View>
-
-          {/* 6. Usability Evaluation Card */}
+          {/* 5. Usability Evaluation Card */}
           <UsabilityEvaluationCard style={{ marginTop: 14 }} />
 
           {/* 7. Footer Safe Note */}
@@ -675,60 +654,5 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     fontWeight: "700",
     color: "#FFFFFF",
-  },
-  brandShowcaseCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: "rgba(226, 232, 240, 0.95)",
-    overflow: "hidden",
-    marginTop: 14,
-    marginBottom: 6,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  brandShowcaseImage: {
-    width: "100%",
-    height: 140,
-    backgroundColor: "#0F172A",
-  },
-  brandShowcaseContent: {
-    padding: 16,
-  },
-  brandBadgeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 9,
-    paddingVertical: 3.5,
-    borderRadius: 12,
-    backgroundColor: "#ECFDF5",
-    alignSelf: "flex-start",
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  brandBadgeText: {
-    fontFamily: FONTS.bodyMedium,
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#059669",
-  },
-  brandShowcaseTitle: {
-    fontFamily: FONTS.displayBold,
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#0F172A",
-    letterSpacing: -0.2,
-    marginBottom: 4,
-  },
-  brandShowcaseDesc: {
-    fontFamily: FONTS.bodyRegular,
-    fontSize: 11.5,
-    color: "#64748B",
-    lineHeight: 17,
   },
 });
